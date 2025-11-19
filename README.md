@@ -4,7 +4,7 @@ Setup:
 git clone https://github.com/OlivieriD/Les-Constructions-Dominic-Cyr
 
 
-cd les_constructions_dominic_cyr
+cd les_constructions_dominic_cyr 
 
 
 git remote add upstream https://github.com/OlivieriD/Les-Constructions-Dominic-Cyr.git
@@ -31,11 +31,11 @@ Commiting:
 ** Make sure you are on your personal branch and not the main branch ** 
 
 
-git add
+git add .
 
 
 git commit -m "message of commit"
 
 
-git push.
+git push
 
