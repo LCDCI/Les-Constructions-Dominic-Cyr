@@ -9,6 +9,18 @@ cd Les-Constructions-Dominic-Cyr
 
 git remote add upstream https://github.com/LCDCI/Les-Constructions-Dominic-Cyr.git
 
+**Note: make sure to be logged in to git on your console using**
+
+
+git config --global user.email "you@example.com"
+
+
+and
+
+
+git config --global user.name "Your Name"
+
+
 
 **Usage**
 
