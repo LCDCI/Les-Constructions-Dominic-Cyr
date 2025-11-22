@@ -1,10 +1,10 @@
 **Setup**
 
 
-git clone https://github.com/OlivieriD/Les-Constructions-Dominic-Cyr
+git clone https://github.com/LCDCI/Les-Constructions-Dominic-Cyr.git
 
 
-cd les_constructions_dominic_cyr 
+cd Les_Constructions_Dominic_Cyr 
 
 
 git remote add upstream https://github.com/OlivieriD/Les-Constructions-Dominic-Cyr.git
