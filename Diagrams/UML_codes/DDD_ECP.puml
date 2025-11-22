@@ -1,0 +1,368 @@
+@startuml
+hide circle
+top to bottom direction
+
+scale 0.4
+!define ENTITY(entityName) class entityName << Entity >>
+!define AGGREGATE_ROOT(aggregateRootName) class aggregateRootName << Aggregate Root >>
+!define VALUE_OBJECT(valueObjectName) class valueObjectName << Value Object >>
+!define ENUM(enumName) class enumName << Enum >>
+!define AGGREGATE(aggregateName) class aggregateName << Aggregate >>
+!pragma useVerticalIf on
+skinparam dpi 350
+skinparam packageStyle rectangle
+skinparam rectangle {
+    BackgroundColor #f7f4eb
+    BorderColor Black
+}
+
+rectangle "Users Subdomain" as UserManagementContext #LightBlue {
+    ENTITY(Users) #lightpink {
+        userIdentifier: UserIdentifier
+        firstName: String
+        lastName: String
+        email: String
+        phone: String
+        passwordHash: String
+        userRole: UserRole
+        address: Address
+        communicationLanguage: CommunicationLanguage
+        dateCreated: Date
+    }
+
+    VALUE_OBJECT(UserIdentifier) #Bisque {
+        userIdentifier: UUID
+    }
+    VALUE_OBJECT(Address) #Bisque {
+        StreetName: String
+        City: String
+        Province: String
+        PostalCode: String
+        Country: String
+    }
+
+    ENUM(UserRole) {
+        OWNER
+        SALESMAN
+        CONTRACTOR
+        CUSTOMER
+    }
+
+ENUM(CommunicationLanguage) {
+        ENGLISH
+        FRANCAIS
+    }
+
+    'Users relationships'
+    UserIdentifier "1" <-- "1" Users
+    Users "1" *-- "1..*" Address
+    Users "1" *-- "1" UserRole
+    Users "1" *-- "1" CommunicationLanguage
+}
+
+rectangle "Project  Subdomain" as ProjectManagementContext #LightGreen {
+    AGGREGATE_ROOT(Project) #lightpink {
+        projectIdentifier: ProjectIdentifier
+        projectName: String
+        projectDescription: String
+        lastUpdated: Date
+        city: String
+        startDate: Date
+        projectColor: ProjectColor
+        projectStatus: ProjectStatus
+        progressPercentage: int
+    }
+     VALUE_OBJECT(ProjectColor) #Bisque {
+               primaryHexColor: String
+               secondaryHexColor: String
+               tertiaryHexColor: String
+               accentColor: String
+      }
+
+
+    VALUE_OBJECT(ProjectIdentifier) #Bisque {
+        projectId: UUID
+    }
+
+    ENTITY(Image) #lightpink {
+        imageIdentifier: ImageIdentifier
+        postedOn: Date
+        publishedBy: UserIdentifier
+        ImageType: ImageType
+        url: String
+    }
+
+    ENTITY(Document) #lightpink {
+        documentIdentifier: DocumentIdentifier
+        uploadedOn: Date
+        uploadedBy: UserIdentifier
+        DocumentType: DocumentType
+        url: String
+    }
+
+    ENTITY(Schedule) #lightpink {
+        scheduleIdentifier: ScheduleIdentifier
+        updatedOn: Date
+        completionDate: Date
+        upcomingWork: UpcomingWork
+    }
+
+    VALUE_OBJECT(UpcomingWork) #Bisque {
+        work: boolean
+        workDate: Date
+        estimatedTime: String
+        completionDate: Date
+        totalTime: String
+    }
+
+
+       ENTITY(Lot) #lightpink {
+            lotIdentifier: LotIdentifier
+            location: String
+            price: Float
+            dimensions: String
+            status: LotStatus
+        }
+
+         ENUM(LotStatus) {
+                AVAILABLE
+                SOLD
+                PENDING
+            }
+
+    ENUM(ProjectStatus) {
+        PLANNED
+        IN_PROGRESS
+        DELAYED
+        COMPLETED
+        CANCELLED
+    }
+
+ ENUM(ImageType) {
+         PNG
+         JPG
+         WEBP
+         HEIC
+         BLOB
+        }
+ ENUM(DocumentType) {
+          PDF
+          DOCX
+          TXT
+          XLSX
+         }
+
+   VALUE_OBJECT(LotIdentifier) #Bisque {
+        lotIdentifier: UUID
+    }
+
+    VALUE_OBJECT(DocumentIdentifier) #Bisque {
+        documentTypeIdentifier: UUID
+    }
+    VALUE_OBJECT(ImageIdentifier) #Bisque {
+        imageIdentifier: UUID
+    }
+    VALUE_OBJECT(ScheduleIdentifier) #Bisque {
+        scheduleIdentifier: UUID
+    }
+
+
+  'Project Relationships'
+    Project "1" --> "1..*     " ScheduleIdentifier
+    Project "1" *-- "1" ProjectStatus
+    ProjectIdentifier "1" --> "1" Project
+    Project "1  "-->"1..*    " LotIdentifier
+    LotIdentifier "1  " <-- "1" Lot
+    Lot "1" *-- "1" LotStatus
+    Schedule "1" *--  "1" UpcomingWork
+    Project "1" --> "           0..*" ImageIdentifier
+    Project "1" --> "        0..*" DocumentIdentifier
+    Image "1" *-- "1"  ImageType
+    Document "1" *-- "1"  DocumentType
+    ScheduleIdentifier "1  " <-- "1" Schedule
+    DocumentIdentifier "1  "<--"1 " Document
+    ImageIdentifier "1" <-- "1" Image
+    Project "1" *-- "1" ProjectColor
+}
+
+
+rectangle "Billing Subdomain" as FinanceContext #LightCoral {
+    AGGREGATE(Bill) #lightpink {
+        billIdentifier: BillIdentifier
+        totalCost: Float
+        dateCreated: Date
+        dateDue: Date
+        currency: Currency
+        ownerRate: Float
+        isFinal: Boolean
+        billCategory: BillCategory
+        billLineItem: BillLineItem
+        billDocumentIdentifier: BillDocumentTypeIdentifier
+    }
+
+    VALUE_OBJECT(BillIdentifier) #Bisque{
+    billIdentifier: UUID
+    }
+
+    VALUE_OBJECT(BillLineItem) #Bisque {
+        description: String
+        billCategory: BillCategory
+        billLineItemCost: Float
+    }
+    ENUM(BillCategory){
+        MATERIALS
+        LABOR
+        PERMITS
+        OTHER
+    }
+
+    ENTITY(Payment) #lightpink {
+        paymentIdentifier: Paymentidentifier
+        amount: Float
+        paymentDate: Date
+        paymentType: PaymentType
+        paymentDetails: String
+    }
+
+    VALUE_OBJECT(Currency) #Bisque {
+        currencyMultiplier: Float
+        currencySign: String
+    }
+
+    ENUM(PaymentType) {
+        CASH
+        CREDIT
+        BANK_TRANSFER
+        CHEQUE
+    }
+
+    ENTITY(BillDocument) #lightpink {
+        billDocumentIdentifier: BillDocumentIdentifier
+        uploadedOn: Date
+        documentType: DocumentType
+        url: String
+        billDocumentType: BillDocumentType
+    }
+    VALUE_OBJECT(BillDocumentIdentifier) #Bisque {
+        billDocumentIdentifier: UUID
+    }
+
+    VALUE_OBJECT(PaymentIdentifier) #Bisque {
+        paymentIdentifier: UUID
+    }
+
+    ENUM (BillDocumentType) {
+          PDF
+          XLSX
+ }
+
+
+    'Bill Relationships'
+    BillDocumentIdentifier "1" <-- "1" BillDocument
+        BillIdentifier "1  "<-- "1"Bill
+        Bill "1" *-- "1" BillCategory
+        Bill "1" *-- "1..*" BillLineItem
+        Bill "1" --> "1..*     " PaymentIdentifier
+        Payment "1" *-- "1"PaymentType
+        Bill "1" *-- "1   " Currency
+        Bill "1" --> "0..*      " BillDocumentIdentifier
+        PaymentIdentifier "1" <-- "1" Payment
+        BillDocument "1" *-- "1" BillDocumentType
+}
+
+
+rectangle "Form Subdomain" as FormManagementContext #Khaki {
+    ENTITY(Form) #lightpink {
+        formIdentifier: FormIdentifier
+        title: String
+        formType: FormType
+        formStatus: FormStatus
+        formDetails: String
+        submissionDate: Date
+        isReadAndAccepted: Boolean
+    }
+
+    VALUE_OBJECT(FormIdentifier) #Bisque {
+        formId: UUID
+    }
+
+    ENUM(FormType) {
+        ELECTRICAL
+        PLUMBING
+        ORDER
+        WOODWORK
+        SALE
+        ADD_ONS
+        TIME_CARD
+        DELIVERY_NOTE
+        INVENTORY
+    }
+
+    ENUM(FormStatus) {
+        PENDING
+        SIGNED
+        REJECTED
+    }
+
+     'Form Relationships'
+        FormIdentifier "1" <-- "1 " Form
+        Form "1 "*-- "1" FormType
+        Form "1" *-- "1" FormStatus
+
+}
+
+rectangle "Communication Subdomain" as CommunicationContext #YellowGreen {
+   AGGREGATE(Notification) #lightpink {
+           notificationId: UUID
+           Subject: String
+           recipientId: UUID
+           sentDate: Date
+           type: NotificationType
+       }
+
+   AGGREGATE(ConversationThread) #lightpink {
+        threadIdentifier: ThreadIdentifier
+        createdOn: Date
+        participants: List<UserIdentifier>
+    }
+
+    ENTITY(Message) #lightpink {
+        messageIdentifier: UUID
+        senderIdentifier: UUID
+        body: String
+        sentDate: Date
+    }
+
+ VALUE_OBJECT(NotificationIdentifier) #Bisque {
+           notificationId: UUID
+       }
+
+    ENUM(NotificationType) {
+        EMAIL
+        SYSTEM_ALERT
+    }
+}
+
+    'Notification Relationships'
+    Notification "1  " --> "1 "ConversationThread
+    NotificationIdentifier "1" <-- "1" Notification
+    ConversationThread "1" --> "1   " Message
+    Notification "1" *-- "1" NotificationType
+
+    'Previous Cross-Class Relationships From Milestone 1'
+    'BillIdentifier "1"--> "1" Users'
+    'ProjectIdentifier "1" --> "1" Users'
+    'FormIdentifier "0..*" --> "1" Users'
+    'NotificationIdentifier "0..*" --> "1" Users'
+    'FileIdentifier "0..*" --> "1" Users'
+
+    'Cross-Class Relationships Milestone 2'
+    Bill "1" --> "1" UserIdentifier
+    Bill "1" --> "1" FormIdentifier
+    Project "1" --> "1" UserIdentifier
+    Project "1" --> "1" FormIdentifier
+    Project "1" --> "1" NotificationIdentifier
+    Project "1" --> "1" BillIdentifier
+}
+
+@enduml

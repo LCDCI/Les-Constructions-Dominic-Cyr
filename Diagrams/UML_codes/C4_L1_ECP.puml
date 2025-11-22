@@ -1,0 +1,43 @@
+@startuml C4-1_System_Context_Diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title C4-1: System Context : Les Constructions Dominic Cyr Web Application
+
+' Define External Systems (Dependencies)
+System(email_provider, "AWS Email Service", "Sends automated reminders and weekly schedule notifications.")
+' Keeping hosting_service outside the boundary for visual distinction as a separate entity
+System(authentication_service, "Auth0 Authentication Service", "Authenticates users, manages access control and protects against basic attacks.")
+System(esignature_service, "ezSign Service", "<<Considered a nice to have>> An integration for collecting digital signatures.")
+
+
+
+    System(web_application, "Les Constructions Dominic Cyr Web Application", "Centralized bilingual (English/French) web platform providing project tracking, document sharing between users and notifications.")
+
+
+
+Person(customer, "Customer", "Views project progress, schedules, photos, and cost estimates and receives reminders and notifications.")
+Person(salesman, "Salesman", "Creates and updates forms, quotes, and documents and collects electronic signatures.")
+Person(contractor, "Contractor", "Submits invoices, forms, and  updates and tracks timelines.")
+Person(owner, "Owner", "Manages platform content, lots for sale, users, schedules and financial reports.")
+
+Rel(customer, web_application, "Views project status, uploads documents (e.g., permits)", "Web Browser")
+Rel(salesman, web_application, "Creates quotes/forms, uploads documents, tracks leads", "Web Browser")
+Rel(contractor, web_application, "Submits invoices, updates project milestones and timelines", "Web Browser")
+Rel(owner, web_application, "Administers system, manages financial reports and key content", "Web Browser")
+
+Rel(web_application, email_provider, "Sends automated emails and notifications", "API")
+Rel(web_application, authentication_service, "Authenticates users and manages access tokens", "HTTPS/API")
+Rel(web_application, esignature_service, "Requests and verifies digital signatures", "API")
+
+' --- Visual Note: The boundary clearly shows the web_application is deployed within the AWS context. ---
+
+!$PERSON_BG_COLOR = "#31598C"
+!$PERSON_FONT_COLOR = "#FFFFFF"
+!$SYSTEM_BG_COLOR = "#31598C"
+!$SYSTEM_FONT_COLOR = "#FFFFFF"
+
+!$EXTERNAL_SYSTEM_BG_COLOR = "#A9A9A9"
+!$EXTERNAL_SYSTEM_FONT_COLOR = "#FFFFFF"
+
+@enduml
