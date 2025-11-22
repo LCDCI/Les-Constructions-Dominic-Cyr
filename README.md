@@ -4,10 +4,10 @@
 git clone https://github.com/LCDCI/Les-Constructions-Dominic-Cyr.git
 
 
-cd Les_Constructions_Dominic_Cyr 
+cd Les-Constructions-Dominic-Cyr 
 
 
-git remote add upstream https://github.com/OlivieriD/Les-Constructions-Dominic-Cyr.git
+git remote add upstream https://github.com/LCDCI/Les-Constructions-Dominic-Cyr.git
 
 
 **Usage**
