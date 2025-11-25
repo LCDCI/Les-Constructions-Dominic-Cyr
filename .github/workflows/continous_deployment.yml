@@ -1,0 +1,35 @@
+name: CD Webhook Trigger
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  call_webhook:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Call deployment webhook
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+          SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          REPO: ${{ github.repository }}
+          BRANCH: main
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "WEBHOOK_URL secret not set. Skipping webhook call."
+            exit 1
+          fi
+
+          echo "Triggering deployment webhook for $REPO@$SHA on branch $BRANCH"
+
+          curl --location --request POST "$WEBHOOK_URL" \
+            --header "Content-Type: application/json" \
+            --data "{
+              \"repository\": \"$REPO\",
+              \"branch\": \"$BRANCH\",
+              \"sha\": \"$SHA\"
+            }"
