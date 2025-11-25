@@ -1,21 +1,32 @@
-
 services:
-  app:
+
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    image: les_constructions_dominic_cyr_app:latest
+    container_name: backend
     ports:
       - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: "default"
-      JAVA_OPTS: "-Xms256m -Xmx512m"
-    volumes:
-      - ./logs:/app/logs
-    restart: unless-stopped
+    depends_on:
+      - files-service
+    networks:
+      - app-network
 
-    # healthcheck:
-    #   test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+  files-service:
+    build:
+      context: ./files-service
+      dockerfile: Dockerfile
+    container_name: files-service
+    ports:
+      - "8082:8082"
+    volumes:
+      - files-data:/app/files-data
+    networks:
+      - app-network
+
+volumes:
+  files-data:
+
+networks:
+  app-network:
+    driver: bridge
