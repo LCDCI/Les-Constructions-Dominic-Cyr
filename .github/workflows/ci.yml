@@ -41,7 +41,7 @@ jobs:
       - name: Build Java services (non-PR only)
         if: github.event_name != 'pull_request'
         run: ./gradlew clean build -x test
-        working-directory: ./backend
+        working-directory: src/main/java/com/ecp/les_constructions_dominic_cyr/backend/
 
       - name: Show changed files for analysis
         if: github.event_name == 'pull_request'
