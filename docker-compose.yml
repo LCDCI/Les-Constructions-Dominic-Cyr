@@ -1,32 +1,31 @@
-services:
+version: "3.9"
 
+services:
   backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: backend
+    container_name: lcdci-backend
     ports:
       - "8080:8080"
-    depends_on:
-      - files-service
-    networks:
-      - app-network
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend/les_constructions_dominic_cyr
+      dockerfile: Dockerfile
+    container_name: lcdci-frontend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
 
   files-service:
     build:
       context: ./files-service
       dockerfile: Dockerfile
-    container_name: files-service
+    container_name: lcdci-files-service
     ports:
-      - "8082:8082"
-    volumes:
-      - files-data:/app/files-data
-    networks:
-      - app-network
-
-volumes:
-  files-data:
-
-networks:
-  app-network:
-    driver: bridge
+      - "8081:8081"
+    restart: unless-stopped

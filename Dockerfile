@@ -1,43 +1,30 @@
-############################################################
-# 1) Build FRONTEND (React)
-############################################################
-FROM node:20 AS frontend-build
+# ================================
+# BACKEND - SPRING BOOT (Java 21)
+# ================================
+FROM eclipse-temurin:21-jdk AS build
+
 WORKDIR /app
 
-# Copy package.json and lock file
-COPY src/main/java/com/ecp/les_constructions_dominic_cyr/frontend/les_constructions_dominic_cyr/package*.json ./
+# Copy Gradle & wrapper
+COPY build.gradle settings.gradle gradlew gradlew.bat ./
+COPY gradle ./gradle
 
-RUN npm install
+# Download Gradle deps
+RUN ./gradlew dependencies --no-daemon || true
 
-# Copy the entire frontend code
-COPY src/main/java/com/ecp/les_constructions_dominic_cyr/frontend/les_constructions_dominic_cyr ./
+# Copy source code
+COPY src ./src
 
-RUN npm run build
+# Build artifact
+RUN ./gradlew clean build -x test --no-daemon
 
-
-############################################################
-# 2) Build BACKEND (Spring Boot)
-############################################################
-FROM gradle:8.5-jdk21 AS backend-build
-WORKDIR /app
-
-# Copy entire backend repository
-COPY . .
-
-# Copy frontend build output to Spring Boot static folder
-COPY --from=frontend-build /app/build ./src/main/resources/static
-
-RUN gradle clean build -x test --no-daemon
-
-
-############################################################
-# 3) Build FINAL RUNTIME IMAGE
-############################################################
+# ================================
+# Runtime image
+# ================================
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
+COPY --from=build /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
-
-COPY --from=backend-build /app/build/libs/*.jar app.jar
-
 ENTRYPOINT ["java", "-jar", "app.jar"]
