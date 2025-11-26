@@ -10,7 +10,7 @@ COPY build.gradle settings.gradle gradlew gradlew.bat ./
 COPY gradle ./gradle
 
 # Download Gradle deps
-RUN ./gradlew dependencies --no-daemon || true
+RUN ./gradlew dependencies --no-daemon
 
 # Copy source code
 COPY src ./src
