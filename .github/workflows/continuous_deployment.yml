@@ -1,4 +1,4 @@
-name: CD Webhook Trigger
+name: Continuous Deployment
 
 on:
   pull_request:
@@ -7,12 +7,15 @@ on:
       - main
 
 jobs:
-  call_webhook:
+  deploy:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
-      - name: Call deployment webhook
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Trigger deployment webhook
         env:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
           SHA: ${{ github.event.pull_request.merge_commit_sha }}
@@ -20,11 +23,11 @@ jobs:
           BRANCH: main
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
-            echo "WEBHOOK_URL secret not set. Skipping webhook call."
+            echo "WEBHOOK_URL secret not set. Skipping deployment."
             exit 1
           fi
 
-          echo "Triggering deployment webhook for $REPO@$SHA on branch $BRANCH"
+          echo "Triggering deployment for $REPO@$SHA"
 
           curl --location --request POST "$WEBHOOK_URL" \
             --header "Content-Type: application/json" \
@@ -33,3 +36,5 @@ jobs:
               \"branch\": \"$BRANCH\",
               \"sha\": \"$SHA\"
             }"
+
+          echo "Deployment webhook triggered successfully."
