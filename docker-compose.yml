@@ -29,3 +29,5 @@ services:
     ports:
       - "8081:8081"
     restart: unless-stopped
+    volumes:
+      - files-data:/app/files-data
