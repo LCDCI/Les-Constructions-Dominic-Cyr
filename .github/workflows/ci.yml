@@ -38,3 +38,6 @@ jobs:
 
       - name: Build project
         run: ./gradlew clean build --info
+
+      - name: Run tests
+        run: ./gradlew test
