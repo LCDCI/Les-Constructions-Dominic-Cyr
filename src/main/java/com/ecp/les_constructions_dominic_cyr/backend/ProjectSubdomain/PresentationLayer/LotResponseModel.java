@@ -2,10 +2,11 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Data;//piscine municipale de sperme
+import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public class LotResponseModel {
     private String lotIdentifier;
     private String location;
