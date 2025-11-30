@@ -1,44 +1,18 @@
 @startuml
-title Owner View Project Page SSD
+title Salesperson View Project Page SSD
 
-actor Owner
+actor Salesperson
 
-loop For each login attempt up to 10 tries
-    Owner -> System: login (email, password)
-    database Database
-    System -> Database:  validateRequestCredentials (email, passwordHash)
-    alt credentials valid
-        Database --> System: returnOwnerData (ownerIdentifier, firstName, lastName, email, passwordHash, phone, userRole, communicationLanguage, dateCreated)
-    else credentials invalid
-    Database --> System: returnRequestStatus (status)
-    end
-
-    alt login successful
-        System --> Owner: generateAuthenticationToken (sessionToken)
-        System --> Owner: returnOwnerDashboard (ownerIdentifier)
-    else login failed
-        System --> Owner: returnErrorMessage(errorMessage)
-        System --> Owner: redirect to Home Page
-    end
-end
 loop for every request attempt
- alt valid token
- Owner -> System: viewProjectPage (sessionToken, projectIdentifier, ownerIdentifier)
-    System -> Database: fetchProjectData (sessionToken, projectIdentifier, ownerIdentifier)
-    System --> Owner: returnProjectData ( sessionToken, projectIdentifier, ownerIdentifier, projectName, projectDescription, lastUpdated, city, startDate, projectColor, projectStatus, progressPercentage)
-    Owner -> System: viewSchedule_&_Milestones(sessionToken, projectIdentifier, ownerIdentifier)
-    System -> Database: fetchSchedule_&_Milestones_Data (sessionToken, projectIdentifier, ownerIdentifier)
-    Database --> System: returnSchedule_&_Milestones  (sessionToken, projectIdentifier, ownerIdentifier, schedule, progressPercentage, projectStatus)
-    System --> Owner: returnSchedule_&_Milestones  (sessionToken, projectIdentifier, ownerIdentifier, schedule, progressPercentage, projectStatus)
- else invalid token
-     Owner -> System: access protected resource (sessionToken)
-     System --> Owner: returnErrorMessage (errorMessage)
-     System --> Owner: redirect to Home page
+ alt valid SalespersonIdentifier && valid projectIdentifier
+ Salesperson -> System: inquireOnProjectPage (projectIdentifier, SalespersonIdentifier)
+    System --> Salesperson:  projectIdentifier, SalespersonIdentifier, projectName, projectDescription, lastUpdated, city, startDate, projectColor, projectStatus, progressPercentage
+    Salesperson -> System: inquireOnSchedule_&_Milestones(projectIdentifier, SalespersonIdentifier, scheduleIdentifier)
+    System --> Salesperson: projectIdentifier, SalespersonIdentifier, scheduleIdentifier, updatedOn, completionDate, UpcomingWork
+ else invalid SalespersonIdentifier || invalid projectIdentifier
+     Salesperson -> System: inquireOnProjectPage(projectIdentifier, SalespersonIdentifier)
+     System --> Salesperson: HTTPstatus, errorMessage
  end
-end
 
-Owner -> System: logout (sessionToken)
-System -> Database: invalidateSession (sessionToken)
-System --> Owner: logout (logoutStatus)
 
 @enduml
