@@ -22,8 +22,7 @@ func Load() *Config {
 		MinioEndpoint:  os.Getenv("MINIO_ENDPOINT"),
 		MinioAccessKey: os.Getenv("MINIO_ACCESS_KEY"),
 		MinioSecretKey: os.Getenv("MINIO_SECRET_KEY"),
-		// Ensure this bucket exists in MinIO or create it at startup
-		MinioBucket: "project-files",
+		MinioBucket:    "project-files",
 	}
 }
 

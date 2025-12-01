@@ -8,7 +8,6 @@ const (
 	CategoryOther    FileCategory = "OTHER"
 )
 
-// Validate checks if the category is one of the defined constants.
 func (fc FileCategory) Validate() bool {
 	switch fc {
 	case CategoryDocument, CategoryPhoto, CategoryOther:
