@@ -1,7 +1,6 @@
-package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.PresentationLayer;
 
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
-import lombok.AllArgsConstructor;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer.LotStatus;
 import lombok.Data;//piscine municipale de sperme
 import lombok.NoArgsConstructor;
 

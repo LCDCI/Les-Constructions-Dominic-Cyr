@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer;
 
 
 import jakarta.persistence.*;
@@ -29,5 +29,5 @@ public class Lot {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "lot_status")
-    private com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus LotStatus;
+    private com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer.LotStatus LotStatus;
 }
