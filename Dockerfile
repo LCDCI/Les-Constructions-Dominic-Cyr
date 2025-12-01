@@ -5,12 +5,12 @@ FROM node:20 AS frontend-build
 WORKDIR /app
 
 # Copy package.json and lock file
-COPY frontend/les_constructions_dominic_cyr/package*.json ./
+COPY src/main/java/com/ecp/les_constructions_dominic_cyr/frontend/les_constructions_dominic_cyr/package*.json ./
 
 RUN npm install
 
 # Copy the entire frontend code
-COPY frontend/les_constructions_dominic_cyr ./
+COPY src/main/java/com/ecp/les_constructions_dominic_cyr/frontend/les_constructions_dominic_cyr ./
 
 RUN npm run build
 

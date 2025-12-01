@@ -1,0 +1,15 @@
+package domain
+
+import "time"
+
+type File struct {
+	ID          string
+	FileName    string
+	ContentType string
+	Category    FileCategory
+	ProjectID   string
+	UploadedBy  string
+	Size        int64
+	ObjectKey   string
+	CreatedAt   time.Time
+}
