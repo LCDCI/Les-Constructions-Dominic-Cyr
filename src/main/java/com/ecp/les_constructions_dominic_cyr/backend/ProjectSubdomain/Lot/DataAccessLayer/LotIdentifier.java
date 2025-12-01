@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
