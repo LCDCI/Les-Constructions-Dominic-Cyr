@@ -28,7 +28,7 @@ var allowedDocumentTypes = map[string]bool{
 	"application/pdf": true,
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": true, // DOCX
 	"text/plain":               true,
-	"application/octet-stream": true, // TXT
+	"application/octet-stream": true,
 	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": true, // XLSX
 }
 
