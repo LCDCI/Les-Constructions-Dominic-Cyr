@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
 
   #######################################################################
@@ -11,7 +13,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      FILE_SERVICE_URL: "http://files-service:8080"
+      FILE_SERVICE_URL: "${FILE_SERVICE_URL}"
     depends_on:
       files-service:
         condition: service_started
@@ -27,12 +29,12 @@ services:
       dockerfile: Dockerfile
     container_name: files-service
     ports:
-      - "8082:8080"  # IMPORTANT: map external 8082 -> internal 8080
+      - "8082:8080"   # external 8082 -> internal 8080
     environment:
-      DB_URL: "postgres://admin:admin@files-db:5432/filesdb?sslmode=disable"
+      DB_URL: "${FILES_DB_URL}"
       MINIO_ENDPOINT: "minio:9000"
-      MINIO_ACCESS_KEY: "admin"
-      MINIO_SECRET_KEY: "admin123"
+      MINIO_ACCESS_KEY: "${MINIO_ROOT_USER}"
+      MINIO_SECRET_KEY: "${MINIO_ROOT_PASSWORD}"
     depends_on:
       files-db:
         condition: service_healthy
@@ -49,17 +51,16 @@ services:
     container_name: files-db
     restart: always
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: filesdb
+      POSTGRES_USER: "${FILES_DB_USER}"
+      POSTGRES_PASSWORD: "${FILES_DB_PASSWORD}"
+      POSTGRES_DB: "${FILES_DB_NAME}"
     ports:
-      - "5433:5432"
       - "5433:5432"
     volumes:
       - ./files-service/migrations:/docker-entrypoint-initdb.d
       - files-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d filesdb"]
+      test: ["CMD-SHELL", "pg_isready -U ${FILES_DB_USER} -d ${FILES_DB_NAME}"]
       interval: 3s
       timeout: 5s
       retries: 5
@@ -67,14 +68,14 @@ services:
       - app-network
 
   #######################################################################
-  # MINIO (S3-compatible object storage for files)
+  # MINIO (S3-compatible object storage)
   #######################################################################
   minio:
     image: minio/minio:latest
     container_name: minio
     environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: admin123
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
     command: server /data --console-address ":9001"
     ports:
       - "9000:9000"   # S3 API

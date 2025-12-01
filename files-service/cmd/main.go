@@ -25,8 +25,10 @@ func main() {
 	fileController := handlers.NewFileController(fileService)
 
 	r := gin.Default()
-	// Use the implemented error handler middleware
+
 	r.Use(middleware.ErrorHandler)
+
+	r.Use(middleware.InjectFakeUser()) // temporary until full auth implemented
 
 	fileController.RegisterRoutes(r)
 
