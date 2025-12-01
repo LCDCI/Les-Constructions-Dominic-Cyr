@@ -24,25 +24,8 @@ services:
     networks:
       - app-network
 
-  database:
-    image: postgres:15
-    container_name: postgres-database
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: lcdci
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    volumes:
-      - db-data:/var/lib/postgresql/data
-      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-      - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/data.sql
-    networks:
-      - app-network
-
 volumes:
   files-data:
-  db-data:
 
 networks:
   app-network:
