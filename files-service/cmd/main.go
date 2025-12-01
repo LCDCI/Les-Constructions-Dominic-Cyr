@@ -18,6 +18,7 @@ func main() {
 	cfg := config.Load()
 
 	db := config.InitPostgres(cfg)
+	defer db.Close()
 	minioClient := storage.NewMinioClient(cfg)
 
 	repo := repository.NewFileRepository(db)
