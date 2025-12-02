@@ -26,15 +26,7 @@ public class LotServiceImpl implements LotService{
         List<LotResponseModel> responseList = new ArrayList<>();
 
         for (Lot lot : lots) {
-            LotResponseModel dto = new LotResponseModel();
-
-            dto.setLotId(lot.getLotIdentifier().getLotId());
-            dto.setLocation(lot.getLocation());
-            dto.setPrice(lot.getPrice());
-            dto.setDimensions(lot.getDimensions());
-            dto.setLotStatus(lot.getLotStatus());
-
-            responseList.add(dto);
+            responseList.add(mapToResponse(lot));
         }
 
         return responseList;
@@ -88,12 +80,7 @@ public class LotServiceImpl implements LotService{
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
-        try{
-            lotRepository.delete(foundLot);
-        } catch (Exception e){
-            // will have to implement proper DatabaseException handling
-            throw e;
-        }
+        lotRepository.delete(foundLot);
     }
 
     private LotResponseModel mapToResponse(Lot lot) {

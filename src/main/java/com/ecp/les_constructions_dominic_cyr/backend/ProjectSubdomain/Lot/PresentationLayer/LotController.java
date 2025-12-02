@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/lots")
 public class LotController {
-    private LotService lotService;
+    private final LotService lotService;
     private static final int UUID_LENGTH = 36;
 
     public LotController(LotService lotService) {
