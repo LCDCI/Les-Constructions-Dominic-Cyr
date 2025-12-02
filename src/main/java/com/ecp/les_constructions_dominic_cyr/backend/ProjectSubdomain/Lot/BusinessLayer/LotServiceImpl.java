@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 public class LotServiceImpl implements LotService{
-    private LotRepository lotRepository;
+    private final LotRepository lotRepository;
 
     public LotServiceImpl(LotRepository lotRepository) {
         this.lotRepository = lotRepository;
@@ -22,66 +22,88 @@ public class LotServiceImpl implements LotService{
 
     @Override
     public List<LotResponseModel> getAllLots() {
-        List<Lot> lotEntities = lotRepository.findAll();
-        List<LotResponseModel> lotResponseModelList = new ArrayList<>();
-        for(Lot lot: lotEntities){
-            LotResponseModel lotResponseModel = new LotResponseModel();
-            BeanUtils.copyProperties(lot, lotResponseModel);
-            lotResponseModelList.add(lotResponseModel);
+        List<Lot> lots = lotRepository.findAll();
+        List<LotResponseModel> responseList = new ArrayList<>();
+
+        for (Lot lot : lots) {
+            LotResponseModel dto = new LotResponseModel();
+
+            dto.setLotId(lot.getLotIdentifier().getLotId());
+            dto.setLocation(lot.getLocation());
+            dto.setPrice(lot.getPrice());
+            dto.setDimensions(lot.getDimensions());
+            dto.setLotStatus(lot.getLotStatus());
+
+            responseList.add(dto);
         }
-        return lotResponseModelList;
+
+        return responseList;
     }
 
     @Override
     public LotResponseModel getLotById(String lotId) {
-        Lot lot = lotRepository.findLotByLotIdentifier(lotId);
-        if(lot == null){
+        Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
+
+        if (lot == null)
             throw new NotFoundException("Unknown Lot Id: " + lotId);
-        }
-        LotResponseModel lotResponseModel = new LotResponseModel();
-        BeanUtils.copyProperties(lot, lotResponseModel);
-        return lotResponseModel;
+
+        return mapToResponse(lot);
     }
 
     @Override
     public LotResponseModel addLot(LotRequestModel lotRequestModel) {
         Lot lot = new Lot();
-        BeanUtils.copyProperties(lotRequestModel, lot);
-        lot.setLotIdentifier(new LotIdentifier());
+        lot.setLocation(lotRequestModel.getLocation());
+        lot.setPrice(lotRequestModel.getPrice());
+        lot.setDimensions(lotRequestModel.getDimensions());
+        lot.setLotStatus(lotRequestModel.getLotStatus());
+        lot.setLotIdentifier(new LotIdentifier());   // always generate
+
 
         Lot savedLot = lotRepository.save(lot);
-        LotResponseModel lotResponseModel = new LotResponseModel();
-        BeanUtils.copyProperties(savedLot, lotResponseModel);
-        return lotResponseModel;
+        return mapToResponse(savedLot);
     }
 
     @Override
     public LotResponseModel updateLot(LotRequestModel lotRequestModel, String lotId) {
-        Lot foundLot = lotRepository.findLotByLotIdentifier(lotId);
+        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotId);
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
-        Lot lot = new Lot();
-        BeanUtils.copyProperties(lotRequestModel, lot);
-        lot.setId(foundLot.getId());
-        Lot updatedLot = lotRepository.save(lot);
 
-        LotResponseModel lotResponseModel = new LotResponseModel();
-        BeanUtils.copyProperties(updatedLot, lotResponseModel);
-        return lotResponseModel;
+        // Update the existing entity instead of creating a new one (preserve id and embedded lotIdentifier)
+        foundLot.setLocation(lotRequestModel.getLocation());
+        foundLot.setPrice(lotRequestModel.getPrice());
+        foundLot.setDimensions(lotRequestModel.getDimensions());
+        foundLot.setLotStatus(lotRequestModel.getLotStatus());
+
+        Lot updatedLot = lotRepository.save(foundLot);
+
+        return mapToResponse(updatedLot);
     }
 
     @Override
     public void deleteLot(String lotId) {
-        Lot foundLot = lotRepository.findLotByLotIdentifier(lotId);
+        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotId);
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
         try{
             lotRepository.delete(foundLot);
         } catch (Exception e){
-            //will have to implement the necessary exception handling classes in a utils folder
-            //throw new DatabaseException("Could not delete lot Id: " + lotId);
+            // will have to implement proper DatabaseException handling
+            throw e;
         }
     }
+
+    private LotResponseModel mapToResponse(Lot lot) {
+        LotResponseModel dto = new LotResponseModel();
+        dto.setLotId(lot.getLotIdentifier().getLotId());
+        dto.setLocation(lot.getLocation());
+        dto.setPrice(lot.getPrice());
+        dto.setDimensions(lot.getDimensions());
+        dto.setLotStatus(lot.getLotStatus());
+        return dto;
+    }
+
 }

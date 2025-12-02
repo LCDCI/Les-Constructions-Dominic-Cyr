@@ -4,6 +4,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataA
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @Entity
 @Table(name = "lots")
@@ -15,19 +16,23 @@ public class Lot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "lot_identifier")
+    @Embedded
     private LotIdentifier lotIdentifier;
 
-    @Column(name = "location")
     private String location;
 
-    @Column(name = "price")
     private Float price;
 
-    @Column(name = "dimensions")
     private String dimensions;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "lot_status")
-    private com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer.LotStatus LotStatus;
+    private LotStatus lotStatus;
+
+    public Lot(@NonNull LotIdentifier lotIdentifier, @NonNull String location, @NonNull Float price, @NonNull String dimensions, @NonNull LotStatus lotStatus) {
+        this.lotIdentifier = lotIdentifier;
+        this.location = location;
+        this.price = price;
+        this.dimensions = dimensions;
+        this.lotStatus = lotStatus;
+    }
 }
