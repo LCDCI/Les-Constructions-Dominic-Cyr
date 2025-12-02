@@ -25,7 +25,7 @@ public class LotController {
         return ResponseEntity.ok().body(lotService.getAllLots());
     }
 
-    @GetMapping("/{lotId} ")
+    @GetMapping("/{lotId}")
     public ResponseEntity<LotResponseModel> getLotById(@PathVariable String lotId){
         if(lotId.length() != UUID_LENGTH){
             throw new InvalidInputException("Invalid lot ID: " + lotId);
@@ -38,12 +38,20 @@ public class LotController {
         return ResponseEntity.status(HttpStatus.CREATED).body(lotService.addLot(lotRequestModel));
     }
 
-    @PutMapping("/{lotId} ")
+    @PutMapping("/{lotId}")
     public ResponseEntity<LotResponseModel> updateLot(@RequestBody LotRequestModel lotRequestModel,
                                                      @PathVariable String lotId){
         if(lotId.length() != UUID_LENGTH){
             throw new InvalidInputException("Invalid lot ID: " + lotId);
         }
         return ResponseEntity.ok().body(lotService.updateLot(lotRequestModel, lotId));
+    }
+    @DeleteMapping("/{lotId}")
+    public ResponseEntity<Void> deleteLot(@PathVariable String lotId){
+        if(lotId.length() != UUID_LENGTH){
+            throw new InvalidInputException("Invalid lot ID: " + lotId);
+        }
+        lotService.deleteLot(lotId);
+        return ResponseEntity.noContent().build();
     }
 }

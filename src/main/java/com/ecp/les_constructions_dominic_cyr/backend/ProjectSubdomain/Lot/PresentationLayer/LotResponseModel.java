@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class LotResponseModel {
-    private String lotIdentifier;
+    private String lotId;
     private String location;
     private Float price;
     private String dimensions;
-    private LotStatus status;
+    private LotStatus lotStatus;
 }

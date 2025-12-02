@@ -10,13 +10,14 @@ import java.util.UUID;
 @Getter
 public class LotIdentifier {
 
-    @Column(unique = true)
+    @Column(name = "lot_identifier", unique = true)
     private String lotId;
 
-    public LotIdentifier(String lotIdentifier) {
+    public LotIdentifier() {
         this.lotId = UUID.randomUUID().toString();
     }
 
-    public LotIdentifier() {
+    public LotIdentifier(String lotId) {
+        this.lotId = lotId;
     }
 }

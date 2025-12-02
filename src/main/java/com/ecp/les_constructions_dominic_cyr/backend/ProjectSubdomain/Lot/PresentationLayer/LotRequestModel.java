@@ -10,5 +10,5 @@ public class LotRequestModel {
     private String location;
     private Float price;
     private String dimensions;
-    private LotStatus status;
+    private LotStatus lotStatus;
 }
