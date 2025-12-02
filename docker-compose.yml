@@ -12,7 +12,7 @@ services:
     container_name: backend
     ports:
       - "8080:8080"
-    command: [ "/bin/bash", "-c", "echo 'Waiting 10s for database user initialization...' && sleep 10 && java -jar app.jar" ]
+    command: [ "/bin/bash", "-c", "./wait-for-it.sh postgres1:5432 --timeout=30 --strict -- java -jar app.jar" ]
     environment:
       FILE_SERVICE_URL: "${FILE_SERVICE_URL}"
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres1/cdc-db"

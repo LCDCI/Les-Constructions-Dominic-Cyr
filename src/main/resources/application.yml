@@ -19,13 +19,13 @@ spring:
 
   datasource:
     url: jdbc:postgresql://postgres1/cdc-db
-    username: user
-    password: pwd
+    username: ${DB_USERNAME:user}
+    password: ${DB_PASSWORD:pwd}
 
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: none   # use create to allow JPA to auto-generate from Entity classes; use none to use
+      ddl-auto: update   # use create to allow JPA to auto-generate from Entity classes; use none to use
 
     properties:
       hibernate:

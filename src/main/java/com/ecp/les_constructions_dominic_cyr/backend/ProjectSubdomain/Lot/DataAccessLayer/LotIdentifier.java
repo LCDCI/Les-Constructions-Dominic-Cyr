@@ -20,4 +20,11 @@ public class LotIdentifier {
     public LotIdentifier(String lotId) {
         this.lotId = lotId;
     }
+
+    @Override
+    public String toString() {
+        return "LotIdentifier{" +
+                "lotId='" + (lotId == null ? "" : lotId) + '\'' +
+                '}';
+    }
 }

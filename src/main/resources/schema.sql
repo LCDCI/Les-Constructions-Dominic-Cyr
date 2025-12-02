@@ -1,4 +1,4 @@
--- Remember to use PostgresSQL syntax in this file or else it won't work!
+-- Remember to use PostgreSQL syntax in this file or else it won't work!
 
 -- schema for lot
 DROP TABLE IF EXISTS lots;
