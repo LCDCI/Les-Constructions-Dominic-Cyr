@@ -12,14 +12,59 @@ services:
     container_name: backend
     ports:
       - "8080:8080"
+    command: [ "/bin/bash", "-c", "./wait-for-it.sh postgres1:5432 --timeout=30 --strict -- java -jar app.jar" ]
     environment:
       FILE_SERVICE_URL: "${FILE_SERVICE_URL}"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres1/cdc-db"
+      SPRING_DATASOURCE_USERNAME: "user"
+      SPRING_DATASOURCE_PASSWORD: "pwd"
+      SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+      SPRING_PROFILES_ACTIVE: "docker"
     depends_on:
-      files-service:
-        condition: service_started
+        files-service:
+          condition: service_started
+        postgres1:
+          condition: service_healthy
     networks:
       - app-network
 
+  #######################################################################
+  # POSTGRES (database)
+  #######################################################################
+  postgres1:
+    image: postgres:16
+    container_name: postgres1-cdc
+    hostname: postgres1
+    environment:
+      - POSTGRES_USER=user
+      - PGUSER=user
+      - POSTGRES_PASSWORD=pwd
+      - POSTGRES_DB=cdc-db
+    ports:
+      - "5434:5432"
+    volumes:
+      - cdc-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d cdc-db"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-cdc
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=constructions.dcyr@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - 9005:80
+    depends_on:
+      - postgres1
+    networks:
+      - app-network
   #######################################################################
   # FILES-SERVICE (Go + Gin + Postgres + MinIO)
   #######################################################################
@@ -91,6 +136,7 @@ services:
 volumes:
   files-db-data:
   minio-data:
+  cdc-db-data:
 
 networks:
   app-network:

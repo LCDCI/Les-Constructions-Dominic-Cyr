@@ -35,7 +35,7 @@ RUN gradle clean build -x test --no-daemon
 ############################################################
 # 3) FINAL RUNTIME IMAGE
 ############################################################
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 EXPOSE 8080
