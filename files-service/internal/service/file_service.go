@@ -24,7 +24,6 @@ func NewFileService(repo domain.FileRepository, storage StorageClient) domain.Fi
 
 func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) (domain.FileMetadata, error) {
 
-	// --- BASIC VALIDATION ---
 	if input.FileName == "" || input.ContentType == "" || len(input.Data) == 0 {
 		return domain.FileMetadata{}, domain.ErrValidation
 	}
@@ -33,27 +32,49 @@ func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) 
 		return domain.FileMetadata{}, domain.ErrValidation
 	}
 
-	projectFolder := strings.TrimSpace(input.ProjectID)
-	if projectFolder == "" {
-		projectFolder = "unassigned"
+	id := uuid.New().String()
+	dateFolder := time.Now().Format("2006-01-02")
+
+	var objectKey string
+
+	if input.Category == domain.CategoryDocument {
+		if strings.TrimSpace(input.ProjectID) == "" {
+			return domain.FileMetadata{}, domain.ErrValidation
+		}
+
+		objectKey = fmt.Sprintf(
+			"documents/%s/%s",
+			input.ProjectID,
+			id,
+		)
 	}
 
-	id := uuid.New().String()
+	if input.Category == domain.CategoryPhoto {
 
-	objectKey := fmt.Sprintf(
-		"%s/%s/%s",
-		projectFolder,
-		strings.ToLower(string(input.Category)),
-		id,
-	)
+		// PHOTO FOR SPECIFIC PROJECT
+		if strings.TrimSpace(input.ProjectID) != "" {
+			objectKey = fmt.Sprintf(
+				"photos/projects/%s/%s/%s",
+				input.ProjectID,
+				dateFolder,
+				id,
+			)
 
-	// Upload to MinIO
+		} else {
+			// GLOBAL PHOTO (Homepage, marketing images, etc.)
+			objectKey = fmt.Sprintf(
+				"photos/global/%s/%s",
+				dateFolder,
+				id,
+			)
+		}
+	}
+
 	_, err := s.storage.Upload(ctx, input.Data, objectKey, input.ContentType)
 	if err != nil {
 		return domain.FileMetadata{}, domain.ErrStorageFailed
 	}
 
-	// Build domain entity
 	file := domain.File{
 		ID:          id,
 		ProjectID:   input.ProjectID,
@@ -66,9 +87,7 @@ func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) 
 		CreatedAt:   time.Now(),
 	}
 
-	// Save to DB
 	if err := s.repo.Save(ctx, &file); err != nil {
-
 		_ = s.storage.Delete(ctx, objectKey)
 		return domain.FileMetadata{}, err
 	}
@@ -86,7 +105,6 @@ func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) 
 
 func (s *fileService) Get(ctx context.Context, fileID string) ([]byte, string, error) {
 
-	// Load metadata first
 	f, err := s.repo.FindById(ctx, fileID)
 	if err != nil {
 		return nil, "", err
@@ -95,7 +113,6 @@ func (s *fileService) Get(ctx context.Context, fileID string) ([]byte, string, e
 		return nil, "", domain.ErrNotFound
 	}
 
-	// Download blob
 	data, err := s.storage.Download(ctx, f.ObjectKey)
 	if err != nil {
 		return nil, "", err
@@ -114,11 +131,9 @@ func (s *fileService) Delete(ctx context.Context, fileID string) error {
 		return domain.ErrNotFound
 	}
 
-	// Delete blob from storage
 	if err := s.storage.Delete(ctx, f.ObjectKey); err != nil {
 		return err
 	}
 
-	// Delete row (hard delete for now)
 	return s.repo.Delete(ctx, fileID)
 }
