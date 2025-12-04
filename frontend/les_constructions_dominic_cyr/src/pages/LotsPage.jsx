@@ -14,7 +14,6 @@ export default function LotsPage() {
       const data = await fetchLots();
       setLots(Array.isArray(data) ? data : []);
     } catch (e) {
-      console.error('fetchLots error (caught in page):', e);
       // Show the real error message temporarily to help diagnose
       const msg =
         e && e.response

@@ -11,3 +11,17 @@ CREATE TABLE lots (
                      dimensions VARCHAR(255) NOT NULL,
                      lot_status VARCHAR(50) NOT NULL
 );
+
+-- schema for house
+DROP TABLE IF EXISTS houses;
+CREATE TABLE houses (
+                    id SERIAL PRIMARY KEY,
+                    house_identifier UUID NOT NULL UNIQUE,
+                    house_name VARCHAR(255) NOT NULL,
+                    location VARCHAR(255) NOT NULL,
+                    description TEXT NOT NULL,
+                    number_of_rooms INTEGER NOT NULL,
+                    number_of_bedrooms INTEGER NOT NULL,
+                    number_of_bathrooms INTEGER NOT NULL,
+                    construction_year INTEGER NOT NULL
+);
