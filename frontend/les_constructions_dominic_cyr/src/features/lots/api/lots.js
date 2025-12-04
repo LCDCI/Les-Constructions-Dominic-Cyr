@@ -1,15 +1,12 @@
-import axios from 'axios'
+import client from '../../../client' // resolves to src/client.js
 
-// Vite exposes env vars as import.meta.env.VITE_*
-const BASE = import.meta.env.VITE_API_BASE || '/api/v1/lots'
-
-const api = axios.create({
-  baseURL: BASE,
-  timeout: 7000,
-  headers: { 'Content-Type': 'application/json' },
-})
-
+// Normal fetch implementation — uses client.baseURL + '/lots'
 export async function fetchLots() {
-  const res = await api.get('/')
+  const res = await client.get('/lots')
   return res.data || []
+}
+
+export async function fetchLotById(id) {
+  const res = await client.get(`/lots/${id}`)
+  return res.data
 }

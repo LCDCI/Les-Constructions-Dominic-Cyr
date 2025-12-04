@@ -14,8 +14,15 @@ export default function LotsPage() {
       const data = await fetchLots()
       setLots(Array.isArray(data) ? data : [])
     } catch (e) {
-      console.error('fetchLots error', e)
-      setError('Unable to load lots. Please try again later.')
+      console.error('fetchLots error (caught in page):', e)
+      // Show the real error message temporarily to help diagnose
+      const msg =
+        e && e.response
+          ? `Request failed ${e.response.status}: ${JSON.stringify(e.response.data)}`
+          : e && e.message
+          ? e.message
+          : 'Unknown error'
+      setError(msg)
       setLots([])
     } finally {
       setLoading(false)
@@ -34,7 +41,12 @@ export default function LotsPage() {
       </div>
 
       {loading && <div className="info">Loading lots…</div>}
-      {error && <div className="error">{error}</div>}
+      {error && (
+        <div className="error">
+          <strong>Unable to load lots.</strong>
+          <div style={{ marginTop: 8, whiteSpace: 'pre-wrap', color: '#900' }}>{String(error)}</div>
+        </div>
+      )}
       {!loading && !error && <LotList lots={lots} />}
       {!loading && !error && lots.length === 0 && (
         <div className="info">No lots available at the moment.</div>

@@ -31,3 +31,8 @@
     background: #f9a825; 
     color: #222; 
 } /* yellow */
+/* Price cell: right-align currency values */
+.lots-table td.price {
+    text-align: right;
+    white-space: nowrap;
+}
