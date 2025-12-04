@@ -55,7 +55,7 @@ func (fc *FileController) upload(c *gin.Context) {
 
 	category := domain.FileCategory(strings.ToUpper(categoryRaw))
 	if !category.Validate() {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid category. Use DOCUMENT or PHOTO"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid category. Use DOCUMENT, PHOTO, or OTHER"})
 		return
 	}
 
