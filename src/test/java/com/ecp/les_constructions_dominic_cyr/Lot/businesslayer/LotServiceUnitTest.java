@@ -1,6 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.Lot.businesslayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.BusinessLayer.LotService;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.BusinessLayer.LotServiceImpl;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer.LotIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer.LotRepository;
@@ -9,6 +10,10 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.Presen
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.PresentationLayer.LotResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.ActiveProfiles;
@@ -20,16 +25,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@TestPropertySource(properties = "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration")
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 public class LotServiceUnitTest {
 
-    @Autowired
-    private LotService lotService;
-
-    @MockitoBean
+    @Mock
     private LotRepository lotRepository;
+
+    @InjectMocks
+    private LotServiceImpl lotService;
 
     private Lot buildLotEntity(String lotId, String location, float price, String dims, LotStatus status) {
         var id = new LotIdentifier(lotId);

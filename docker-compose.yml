@@ -98,7 +98,7 @@ services:
       MINIO_ACCESS_KEY: "${MINIO_ROOT_USER}"
       MINIO_SECRET_KEY: "${MINIO_ROOT_PASSWORD}"
     healthcheck:
-      test: [ "CMD-SHELL", "wget -qO- --timeout=5 http://localhost:8080/health || exit 1" ]
+      test: [ "CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/health || exit 1" ]
       interval: 5s
       timeout: 3s
       retries: 5

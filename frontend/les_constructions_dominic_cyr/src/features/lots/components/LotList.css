@@ -1,7 +1,7 @@
 .lots-table { 
     width: 100%; 
-    border-collapse: 
-    collapse; margin-top: 12px; 
+    border-collapse: collapse;
+    margin-top: 12px;
 }
 .lots-table th, .lots-table td { 
     border: 1px solid #e0e0e0; 
@@ -87,7 +87,6 @@
 }
 .meta-item { color: #444 }
 .meta-item .price { font-weight: 600 }
-.meta-item .status { display: inline-block; }
 .meta-item .status { display: inline-block; }
 .meta-item .status[aria-label]::after { content: attr(aria-label); display: none; }
 

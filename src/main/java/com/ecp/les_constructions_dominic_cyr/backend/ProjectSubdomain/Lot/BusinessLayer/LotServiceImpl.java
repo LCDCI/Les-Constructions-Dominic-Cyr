@@ -46,12 +46,13 @@ public class LotServiceImpl implements LotService{
     @Override
     public LotResponseModel addLot(LotRequestModel lotRequestModel) {
         Lot lot = new Lot();
+        validateLotRequest(lotRequestModel);
+        
         lot.setLocation(lotRequestModel.getLocation());
         lot.setPrice(lotRequestModel.getPrice());
         lot.setDimensions(lotRequestModel.getDimensions());
         lot.setLotStatus(lotRequestModel.getLotStatus());
         lot.setLotIdentifier(new LotIdentifier());   // always generate
-        validateLotRequest(lotRequestModel);
 
         Lot savedLot = lotRepository.save(lot);
         return mapToResponse(savedLot);
@@ -63,6 +64,7 @@ public class LotServiceImpl implements LotService{
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
+        Lot updatedLot = lotRepository.save(foundLot);
 
         // Update the existing entity instead of creating a new one (preserve id and embedded lotIdentifier)
         foundLot.setLocation(lotRequestModel.getLocation());
@@ -70,8 +72,6 @@ public class LotServiceImpl implements LotService{
         foundLot.setDimensions(lotRequestModel.getDimensions());
         foundLot.setLotStatus(lotRequestModel.getLotStatus());
         validateLotRequest(lotRequestModel);
-
-        Lot updatedLot = lotRepository.save(foundLot);
 
         return mapToResponse(updatedLot);
     }
