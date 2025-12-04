@@ -5,9 +5,24 @@ import (
 	"files-service/internal/model"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
+
+var allowedDocumentTypes = map[string]bool{
+	"application/pdf": true,
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": true,
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":       true,
+	"text/plain":               true,
+	"application/octet-stream": true,
+}
+
+var allowedImageTypes = map[string]bool{
+	"image/png":  true,
+	"image/jpeg": true,
+	"image/webp": true,
+}
 
 type FileController struct {
 	s domain.FileService
@@ -23,15 +38,6 @@ func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 	r.DELETE("/files/:id", fc.delete)
 }
 
-// Allowed document MIME types for Ticket CDC-121 (documents only)
-var allowedDocumentTypes = map[string]bool{
-	"application/pdf": true,
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": true, // DOCX
-	"text/plain":               true,
-	"application/octet-stream": true,
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": true, // XLSX
-}
-
 func (fc *FileController) upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -39,13 +45,34 @@ func (fc *FileController) upload(c *gin.Context) {
 		return
 	}
 
-	// Validate MIME type (documents only for CDC-121)
 	contentType := file.Header.Get("Content-Type")
-	if !allowedDocumentTypes[contentType] {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Unsupported file type. Allowed: PDF, DOCX, TXT, XLSX.",
-		})
+
+	categoryRaw := c.PostForm("category")
+	if categoryRaw == "" {
+		categoryRaw = string(domain.CategoryOther)
+	}
+
+	category := domain.FileCategory(strings.ToUpper(categoryRaw))
+	if !category.Validate() {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid category. Use DOCUMENT, PHOTO, or OTHER"})
 		return
+	}
+
+	switch category {
+	case domain.CategoryDocument:
+		if !allowedDocumentTypes[contentType] {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Unsupported document type. Allowed: PDF, DOCX, XLSX, TXT",
+			})
+			return
+		}
+	case domain.CategoryPhoto:
+		if !allowedImageTypes[contentType] {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Unsupported photo type. Allowed: PNG, JPG, JPEG, WEBP",
+			})
+			return
+		}
 	}
 
 	src, err := file.Open()
@@ -61,15 +88,10 @@ func (fc *FileController) upload(c *gin.Context) {
 		return
 	}
 
-	category := c.PostForm("category")
-	if category == "" {
-		category = string(domain.CategoryOther)
-	}
-
 	input := domain.FileUploadInput{
 		FileName:    file.Filename,
 		ContentType: contentType,
-		Category:    domain.FileCategory(category),
+		Category:    category,
 		ProjectID:   c.PostForm("projectId"),
 		UploadedBy:  c.PostForm("uploadedBy"),
 		Data:        fileBytes,
