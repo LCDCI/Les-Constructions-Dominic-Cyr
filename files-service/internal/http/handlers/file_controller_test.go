@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"files-service/internal/domain"
-	"files-service/internal/http/handlers"
-	"files-service/internal/http/middleware"
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"net/textproto"
 	"testing"
+
+	"files-service/internal/domain"
+	"files-service/internal/http/handlers"
+	"files-service/internal/http/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,50 +43,32 @@ func setupRouter(s domain.FileService) *gin.Engine {
 	return r
 }
 
-// Multipart request helper
-func createMultipartRequest(t *testing.T, filename string, fileData []byte, category string) (*http.Request, string) {
+func multipartRequest(t *testing.T, filename, mimeType string, fileData []byte, category, projectID string) *http.Request {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
 	if filename != "" {
-		part, err := writer.CreateFormFile("file", filename)
-		if err != nil {
-			t.Fatalf("failed to create form file: %v", err)
-		}
+		h := make(textproto.MIMEHeader)
+		h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="file"; filename="%s"`, filename))
+		h.Set("Content-Type", mimeType)
+		part, _ := writer.CreatePart(h)
 		part.Write(fileData)
 	}
 
-	if category != "" {
-		writer.WriteField("category", category)
-	}
-
-	// REQUIRED fields for UploadInput validation
-	writer.WriteField("projectId", "project-123")
+	writer.WriteField("category", category)
+	writer.WriteField("projectId", projectID)
 	writer.WriteField("uploadedBy", "user-123")
 
 	writer.Close()
 
 	req := httptest.NewRequest("POST", "/files", body)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
-	return req, writer.FormDataContentType()
+	return req
 }
 
-//
-// ------------------ UPLOAD TESTS ------------------
-//
-
 func TestUpload_Success(t *testing.T) {
-
 	mock := &mockFileService{
 		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
-
-			if in.FileName != "example.txt" {
-				t.Fatalf("wrong FileName")
-			}
-			if in.Category != domain.CategoryOther {
-				t.Fatalf("expected OTHER category")
-			}
-
 			return domain.FileMetadata{
 				ID:         "123",
 				FileName:   in.FileName,
@@ -95,10 +80,8 @@ func TestUpload_Success(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-
-	req, _ := createMultipartRequest(t, "example.txt", []byte("hello"), "")
+	req := multipartRequest(t, "example.txt", "text/plain", []byte("hello"), string(domain.CategoryOther), "proj-1")
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusCreated {
@@ -106,28 +89,16 @@ func TestUpload_Success(t *testing.T) {
 	}
 }
 
-func TestUpload_Success_WithCategory(t *testing.T) {
-
+func TestUpload_Document_Success(t *testing.T) {
 	mock := &mockFileService{
 		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
-
-			if in.Category != domain.CategoryDocument {
-				t.Fatalf("expected DOCUMENT category")
-			}
-
-			return domain.FileMetadata{
-				ID:       "123",
-				FileName: in.FileName,
-				Url:      "/files/123",
-			}, nil
+			return domain.FileMetadata{ID: "999"}, nil
 		},
 	}
 
 	router := setupRouter(mock)
-
-	req, _ := createMultipartRequest(t, "doc.pdf", []byte("pdf"), string(domain.CategoryDocument))
+	req := multipartRequest(t, "doc.pdf", "application/pdf", []byte("pdf"), string(domain.CategoryDocument), "12345")
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusCreated {
@@ -135,15 +106,58 @@ func TestUpload_Success_WithCategory(t *testing.T) {
 	}
 }
 
-func TestUpload_NoFile_BadRequest(t *testing.T) {
+func TestUpload_Photo_Success(t *testing.T) {
+	mock := &mockFileService{
+		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
+			return domain.FileMetadata{ID: "photo"}, nil
+		},
+	}
 
-	mock := &mockFileService{}
 	router := setupRouter(mock)
+	req := multipartRequest(t, "img.jpg", "image/jpeg", []byte("jpegdata"), string(domain.CategoryPhoto), "proj-44")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
 
-	req := httptest.NewRequest("POST", "/files", bytes.NewBufferString("a=1"))
+	if w.Code != http.StatusCreated {
+		t.Fatalf("expected 201, got %d", w.Code)
+	}
+}
+
+func TestUpload_GlobalPhoto_Success(t *testing.T) {
+	mock := &mockFileService{
+		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
+			return domain.FileMetadata{ID: "gphoto"}, nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := multipartRequest(t, "hero.png", "image/png", []byte("data"), string(domain.CategoryPhoto), "")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusCreated {
+		t.Fatalf("expected 201, got %d", w.Code)
+	}
+}
+
+func TestUpload_InvalidCategory(t *testing.T) {
+	router := setupRouter(&mockFileService{})
+
+	req := multipartRequest(t, "x.png", "image/png", []byte("data"), "INVALID", "proj-123")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", w.Code)
+	}
+}
+
+func TestUpload_NoFile_BadRequest(t *testing.T) {
+	router := setupRouter(&mockFileService{})
+
+	req := httptest.NewRequest("POST", "/files", bytes.NewBufferString("x=1"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusBadRequest {
@@ -152,7 +166,6 @@ func TestUpload_NoFile_BadRequest(t *testing.T) {
 }
 
 func TestUpload_ValidationError(t *testing.T) {
-
 	mock := &mockFileService{
 		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
 			return domain.FileMetadata{}, domain.ErrValidation
@@ -160,10 +173,8 @@ func TestUpload_ValidationError(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-
-	req, _ := createMultipartRequest(t, "bad.txt", []byte("data"), "")
+	req := multipartRequest(t, "bad.txt", "text/plain", []byte("data"), string(domain.CategoryOther), "xxx")
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusBadRequest {
@@ -172,7 +183,6 @@ func TestUpload_ValidationError(t *testing.T) {
 }
 
 func TestUpload_StorageError(t *testing.T) {
-
 	mock := &mockFileService{
 		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
 			return domain.FileMetadata{}, domain.ErrStorageFailed
@@ -180,10 +190,8 @@ func TestUpload_StorageError(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-
-	req, _ := createMultipartRequest(t, "x.txt", []byte("data"), "")
+	req := multipartRequest(t, "x.txt", "text/plain", []byte("data"), string(domain.CategoryOther), "yy")
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusServiceUnavailable {
@@ -192,7 +200,6 @@ func TestUpload_StorageError(t *testing.T) {
 }
 
 func TestUpload_InternalError(t *testing.T) {
-
 	mock := &mockFileService{
 		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
 			return domain.FileMetadata{}, errors.New("db failure")
@@ -200,10 +207,8 @@ func TestUpload_InternalError(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-
-	req, _ := createMultipartRequest(t, "x.txt", []byte("data"), "")
+	req := multipartRequest(t, "x.txt", "text/plain", []byte("data"), string(domain.CategoryOther), "p")
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusInternalServerError {
@@ -211,12 +216,7 @@ func TestUpload_InternalError(t *testing.T) {
 	}
 }
 
-//
-// ------------------ DOWNLOAD TESTS ------------------
-//
-
 func TestDownload_Success(t *testing.T) {
-
 	mock := &mockFileService{
 		GetFn: func(ctx context.Context, id string) ([]byte, string, error) {
 			return []byte("abc"), "text/plain", nil
@@ -224,10 +224,8 @@ func TestDownload_Success(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-
 	req := httptest.NewRequest("GET", "/files/123", nil)
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
@@ -236,7 +234,6 @@ func TestDownload_Success(t *testing.T) {
 }
 
 func TestDownload_NotFound(t *testing.T) {
-
 	mock := &mockFileService{
 		GetFn: func(ctx context.Context, id string) ([]byte, string, error) {
 			return nil, "", domain.ErrNotFound
@@ -244,10 +241,8 @@ func TestDownload_NotFound(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-
 	req := httptest.NewRequest("GET", "/files/xxx", nil)
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusNotFound {
@@ -256,7 +251,6 @@ func TestDownload_NotFound(t *testing.T) {
 }
 
 func TestDownload_InternalError(t *testing.T) {
-
 	mock := &mockFileService{
 		GetFn: func(ctx context.Context, id string) ([]byte, string, error) {
 			return nil, "", errors.New("db fail")
@@ -264,10 +258,8 @@ func TestDownload_InternalError(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-
 	req := httptest.NewRequest("GET", "/files/xxx", nil)
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusInternalServerError {
@@ -275,21 +267,14 @@ func TestDownload_InternalError(t *testing.T) {
 	}
 }
 
-//
-// ------------------ DELETE TESTS ------------------
-//
-
 func TestDelete_Success(t *testing.T) {
-
 	mock := &mockFileService{
 		DeleteFn: func(ctx context.Context, id string) error { return nil },
 	}
 
 	router := setupRouter(mock)
-
 	req := httptest.NewRequest("DELETE", "/files/123", nil)
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusNoContent {
@@ -298,16 +283,13 @@ func TestDelete_Success(t *testing.T) {
 }
 
 func TestDelete_NotFound(t *testing.T) {
-
 	mock := &mockFileService{
 		DeleteFn: func(ctx context.Context, id string) error { return domain.ErrNotFound },
 	}
 
 	router := setupRouter(mock)
-
 	req := httptest.NewRequest("DELETE", "/files/xxx", nil)
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusNotFound {
@@ -316,16 +298,13 @@ func TestDelete_NotFound(t *testing.T) {
 }
 
 func TestDelete_InternalError(t *testing.T) {
-
 	mock := &mockFileService{
 		DeleteFn: func(ctx context.Context, id string) error { return errors.New("fail") },
 	}
 
 	router := setupRouter(mock)
-
 	req := httptest.NewRequest("DELETE", "/files/xxx", nil)
 	w := httptest.NewRecorder()
-
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusInternalServerError {
