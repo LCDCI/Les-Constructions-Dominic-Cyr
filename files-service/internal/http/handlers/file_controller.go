@@ -21,7 +21,6 @@ var allowedDocumentTypes = map[string]bool{
 var allowedImageTypes = map[string]bool{
 	"image/png":  true,
 	"image/jpeg": true,
-	"image/jpg":  true,
 	"image/webp": true,
 }
 
