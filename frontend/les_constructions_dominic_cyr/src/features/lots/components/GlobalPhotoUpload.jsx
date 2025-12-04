@@ -10,7 +10,7 @@ export default function GlobalPhotoUpload({ onUploaded }) {
 
   async function uploadPhoto() {
     if (!file) {
-      alert('Choose a file first');
+      setError('Choose a file first');
       return;
     }
     setUploading(true);
