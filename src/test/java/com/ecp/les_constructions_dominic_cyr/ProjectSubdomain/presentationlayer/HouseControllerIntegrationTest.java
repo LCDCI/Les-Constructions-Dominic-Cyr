@@ -1,12 +1,10 @@
 package com.ecp.les_constructions_dominic_cyr.ProjectSubdomain.presentationlayer;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.House;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.House.HouseResponseModel;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -14,9 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
@@ -31,22 +27,9 @@ class HouseControllerIntegrationTest {
     WebTestClient webClient;
 
     @Autowired
-    RestTemplate restTemplate;
-
-    @Autowired
     HouseRepository houseRepository;
 
-    private MockRestServiceServer mockRestServiceServer;
-
-    private ObjectMapper mapper = new ObjectMapper();
-
     private final String BASE_URI = "/houses";
-
-    @BeforeEach
-    void init() {
-        mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
-        // don't require preloaded data; tests will create what they need
-    }
 
     @Test
     void whenGetAll_thenReturnList() {
