@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -30,6 +31,7 @@ public class LotController {
         if(lotId.length() != UUID_LENGTH){
             throw new InvalidInputException("Invalid lot ID: " + lotId);
         }
+        validateUUID(lotId);
         return ResponseEntity.ok().body(lotService.getLotById(lotId));
     }
 
@@ -44,6 +46,7 @@ public class LotController {
         if(lotId.length() != UUID_LENGTH){
             throw new InvalidInputException("Invalid lot ID: " + lotId);
         }
+        validateUUID(lotId);
         return ResponseEntity.ok().body(lotService.updateLot(lotRequestModel, lotId));
     }
     @DeleteMapping("/{lotId}")
@@ -51,7 +54,16 @@ public class LotController {
         if(lotId.length() != UUID_LENGTH){
             throw new InvalidInputException("Invalid lot ID: " + lotId);
         }
+        validateUUID(lotId);
         lotService.deleteLot(lotId);
         return ResponseEntity.noContent().build();
+    }
+
+    private void validateUUID(String lotId) {
+        try {
+            UUID.fromString(lotId);
+        } catch (IllegalArgumentException e) {
+            throw new InvalidInputException("Invalid UUID format: " + lotId);
+        }
     }
 }

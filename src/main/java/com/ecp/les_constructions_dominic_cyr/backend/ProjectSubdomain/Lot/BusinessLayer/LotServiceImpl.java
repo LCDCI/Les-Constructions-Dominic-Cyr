@@ -5,6 +5,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAc
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.DataAccessLayer.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.PresentationLayer.LotRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Lot.PresentationLayer.LotResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class LotServiceImpl implements LotService{
         lot.setDimensions(lotRequestModel.getDimensions());
         lot.setLotStatus(lotRequestModel.getLotStatus());
         lot.setLotIdentifier(new LotIdentifier());   // always generate
-
+        validateLotRequest(lotRequestModel);
 
         Lot savedLot = lotRepository.save(lot);
         return mapToResponse(savedLot);
@@ -68,6 +69,7 @@ public class LotServiceImpl implements LotService{
         foundLot.setPrice(lotRequestModel.getPrice());
         foundLot.setDimensions(lotRequestModel.getDimensions());
         foundLot.setLotStatus(lotRequestModel.getLotStatus());
+        validateLotRequest(lotRequestModel);
 
         Lot updatedLot = lotRepository.save(foundLot);
 
@@ -93,4 +95,18 @@ public class LotServiceImpl implements LotService{
         return dto;
     }
 
+    private void validateLotRequest(LotRequestModel lotRequestModel) {
+        if (lotRequestModel.getLocation() == null || lotRequestModel.getLocation().isBlank()) {
+            throw new InvalidInputException("Location must not be blank");
+        }
+        if (lotRequestModel.getPrice() == null || lotRequestModel.getPrice() <= 0) {
+            throw new InvalidInputException("Price must be positive");
+        }
+        if (lotRequestModel.getDimensions() == null || lotRequestModel.getDimensions().isBlank()) {
+            throw new InvalidInputException("Dimensions must not be blank");
+        }
+        if (lotRequestModel.getLotStatus() == null) {
+            throw new InvalidInputException("Lot status must not be null");
+        }
+    }
 }
