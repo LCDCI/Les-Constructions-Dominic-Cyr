@@ -64,13 +64,12 @@ public class LotServiceImpl implements LotService{
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
         Lot updatedLot = lotRepository.save(foundLot);
-
+        validateLotRequest(lotRequestModel);
         // Update the existing entity instead of creating a new one (preserve id and embedded lotIdentifier)
         foundLot.setLocation(lotRequestModel.getLocation());
         foundLot.setPrice(lotRequestModel.getPrice());
         foundLot.setDimensions(lotRequestModel.getDimensions());
         foundLot.setLotStatus(lotRequestModel.getLotStatus());
-        validateLotRequest(lotRequestModel);
 
         return mapToResponse(updatedLot);
     }
