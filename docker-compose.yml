@@ -29,6 +29,22 @@ services:
       - app-network
 
   #######################################################################
+  # FRONTEND (Vite built + nginx)
+  #######################################################################
+  frontend:
+    build:
+      context: ./frontend/les_constructions_dominic_cyr
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE=/api/v1/lots
+    container_name: lcdci-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+  #######################################################################
   # POSTGRES (database)
   #######################################################################
   postgres1:
