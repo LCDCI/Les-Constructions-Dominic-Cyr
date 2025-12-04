@@ -1,54 +1,70 @@
-import React from 'react'
-import './LotList.css'
+import React from 'react';
+import './LotList.css';
 
 function formatPrice(p) {
-  if (p === null || p === undefined || p === '') return '—'
-  // If numeric, format as currency (use CAD by default)
-  if (typeof p === 'number') {
+  if (p === null || p === undefined || p === '') return '—';
+  // Try to coerce to a number, then format as currency (use CAD by default)
+  const n = typeof p === 'number' ? p : Number(p);
+  if (!Number.isNaN(n)) {
     try {
-      return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'CAD' }).format(p)
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency: 'CAD',
+      }).format(n);
     } catch (e) {
-      return p.toString()
+      return n.toString();
     }
   }
-  // If string that looks like a number, try to parse and format
-  const n = Number(p)
-  if (!Number.isNaN(n)) {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'CAD' }).format(n)
-  }
-  // Otherwise, return as-is
-  return String(p)
+  return String(p);
 }
 
+// eslint-disable-next-line react/prop-types
 export default function LotList({ lots = [] }) {
-  if (!lots || lots.length === 0) return null
+  if (!lots || lots.length === 0) return null;
 
   return (
-    <table className="lots-table" aria-label="Lots list">
-      <thead>
-        <tr>
-          <th>Location</th>
-          <th>Size</th>
-          <th>Price</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {lots.map((l) => (
-          <tr key={l.lotId || `${l.location}-${l.dimensions}`}>
-            <td className="location" title={l.location}>
-              {l.location || '—'}
-            </td>
-            <td>{l.dimensions || '—'}</td>
-            <td className="price">{formatPrice(l.price)}</td>
-            <td>
-              <span className={`status ${String(l.lotStatus || '').toLowerCase()}`}>
-                {l.lotStatus || 'UNKNOWN'}
-              </span>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )
+    <div className="lots-list" aria-label="Available lots">
+      {lots.map(l => {
+        const imgSrc = l.image
+          ? `/images/lots/${l.image}`
+          : l.lotId
+            ? `/images/lots/lot-${l.lotId}.jpg`
+            : '/images/lots/default.jpg';
+
+        return (
+          <div
+            className="lot-card"
+            key={l.lotId || `${l.location}-${l.dimensions}`}
+          >
+            <div className="thumb">
+              <img
+                src={imgSrc}
+                alt={l.location ? `Photo of ${l.location}` : 'Lot photo'}
+                loading="lazy"
+              />
+            </div>
+            <div className="lot-info">
+              <h3 className="location" title={l.location}>
+                {l.location || '—'}
+              </h3>
+              <div className="meta">
+                <div className="meta-item">
+                  <strong>Size:</strong> <span>{l.dimensions || '—'}</span>
+                </div>
+                <div className="meta-item">
+                  <span className="price">{formatPrice(l.price)}</span>
+                </div>
+                <div className="meta-item">
+                  <span
+                    className={`status ${String(l.lotStatus || '').toLowerCase()}`}
+                    aria-label={l.lotStatus || 'UNKNOWN'}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
 }

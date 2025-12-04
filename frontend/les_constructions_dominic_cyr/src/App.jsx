@@ -1,8 +1,8 @@
-import React from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import AppNavBar from './layouts/AppNavBar'
-import Home from './pages/Home'
-import LotsPage from './pages/LotsPage'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import AppNavBar from './layouts/AppNavBar';
+import Home from './pages/Home';
+import LotsPage from './pages/LotsPage';
 
 export default function App() {
   return (
@@ -16,5 +16,5 @@ export default function App() {
         </Routes>
       </main>
     </BrowserRouter>
-  )
+  );
 }
