@@ -1,0 +1,99 @@
+.lots-table { 
+    width: 100%; 
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+.lots-table th, .lots-table td { 
+    border: 1px solid #e0e0e0; 
+    padding: 10px; 
+    text-align: left; 
+}
+.location { 
+    max-width: 420px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+}
+.status { 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    color: white; 
+    font-weight: 600; 
+    text-transform: capitalize; 
+}
+.status.available { 
+    background: #2e7d32; 
+} /* green */
+.status.sold { 
+    background: #c62828; 
+} /* red */
+.status.pending { 
+    background: #f9a825; 
+    color: #222; 
+} /* yellow */
+/* Price cell: right-align currency values */
+.lots-table td.price {
+    text-align: right;
+    white-space: nowrap;
+}
+
+/* Card layout for lots */
+.lots-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+.lot-card {
+    display: flex;
+    gap: 12px;
+    align-items: center; /* vertically center image and info */
+    justify-content: space-between; /* push info to the right */
+    background: #E5EDF5;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.lot-card .thumb {
+    flex: 0 0 160px;
+    max-width: 160px;
+    overflow: hidden;
+    border-radius: 6px;
+}
+.lot-card .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.lot-info {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* keep centered vertically */
+    align-items: flex-end; /* align text to the right side of the card */
+    text-align: right; /* ensure inline text aligns to the right */
+}
+.lot-info .location {
+    margin: 0 0 6px 0;
+    font-size: 1.05rem;
+}
+.lot-info .meta {
+    display: flex;
+    flex-direction: column; /* stack Size / Price / Status vertically */
+    gap: 6px;
+    align-items: flex-end; /* keep meta values right-aligned */
+}
+.meta-item { color: #444 }
+.meta-item .price { font-weight: 600 }
+.meta-item .status { display: inline-block; }
+.meta-item .status[aria-label]::after { content: attr(aria-label); display: none; }
+
+@media (max-width: 640px) {
+    .lot-card { flex-direction: column; align-items: stretch; }
+    .lot-card .thumb { width: 100%; max-width: none; height: 160px }
+    .lot-card .thumb img { height: 100%; }
+    .lot-info { align-items: flex-start; text-align: left; padding-top: 8px }
+    .lot-info .meta { gap: 10px; align-items: flex-start }
+}
