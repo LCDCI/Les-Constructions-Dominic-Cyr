@@ -34,12 +34,7 @@ func (m *mockStorage) Download(ctx context.Context, key string) ([]byte, error) 
 }
 func (m *mockStorage) Delete(ctx context.Context, key string) error { return m.DeleteFn(ctx, key) }
 
-//
-// ------------------ UPLOAD TESTS ------------------
-//
-
 func TestUpload_Success(t *testing.T) {
-
 	repo := &mockRepo{
 		SaveFn: func(ctx context.Context, f *domain.File) error { return nil },
 	}
@@ -72,7 +67,6 @@ func TestUpload_Success(t *testing.T) {
 }
 
 func TestUpload_ValidationError(t *testing.T) {
-
 	s := service.NewFileService(&mockRepo{}, &mockStorage{})
 
 	_, err := s.Upload(context.Background(), domain.FileUploadInput{
@@ -90,7 +84,6 @@ func TestUpload_ValidationError(t *testing.T) {
 }
 
 func TestUpload_StorageError(t *testing.T) {
-
 	storageErr := errors.New("storage down")
 
 	storage := &mockStorage{
@@ -116,7 +109,6 @@ func TestUpload_StorageError(t *testing.T) {
 }
 
 func TestUpload_SaveError_CleanupSuccess(t *testing.T) {
-
 	expected := errors.New("db error")
 
 	repo := &mockRepo{
@@ -154,7 +146,6 @@ func TestUpload_SaveError_CleanupSuccess(t *testing.T) {
 }
 
 func TestUpload_SaveError_CleanupFails(t *testing.T) {
-
 	saveErr := errors.New("db fail")
 
 	repo := &mockRepo{
@@ -182,12 +173,7 @@ func TestUpload_SaveError_CleanupFails(t *testing.T) {
 	}
 }
 
-//
-// ------------------ GET TESTS ------------------
-//
-
 func TestGet_Success(t *testing.T) {
-
 	repo := &mockRepo{
 		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
 			return &domain.File{ObjectKey: "key", ContentType: "text/plain"}, nil
@@ -211,7 +197,6 @@ func TestGet_Success(t *testing.T) {
 }
 
 func TestGet_NotFound(t *testing.T) {
-
 	repo := &mockRepo{
 		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) { return nil, nil },
 	}
@@ -225,7 +210,6 @@ func TestGet_NotFound(t *testing.T) {
 }
 
 func TestGet_FindError(t *testing.T) {
-
 	findErr := errors.New("db fail")
 
 	repo := &mockRepo{
@@ -241,7 +225,6 @@ func TestGet_FindError(t *testing.T) {
 }
 
 func TestGet_DownloadError(t *testing.T) {
-
 	downloadErr := errors.New("download fail")
 
 	repo := &mockRepo{
@@ -251,9 +234,7 @@ func TestGet_DownloadError(t *testing.T) {
 	}
 
 	storage := &mockStorage{
-		DownloadFn: func(ctx context.Context, key string) ([]byte, error) {
-			return nil, downloadErr
-		},
+		DownloadFn: func(ctx context.Context, key string) ([]byte, error) { return nil, downloadErr },
 	}
 
 	s := service.NewFileService(repo, storage)
@@ -264,12 +245,7 @@ func TestGet_DownloadError(t *testing.T) {
 	}
 }
 
-//
-// ------------------ DELETE TESTS ------------------
-//
-
 func TestDelete_Success(t *testing.T) {
-
 	repo := &mockRepo{
 		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
 			return &domain.File{ObjectKey: "key"}, nil
@@ -290,7 +266,6 @@ func TestDelete_Success(t *testing.T) {
 }
 
 func TestDelete_NotFound(t *testing.T) {
-
 	repo := &mockRepo{
 		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) { return nil, nil },
 	}
@@ -304,7 +279,6 @@ func TestDelete_NotFound(t *testing.T) {
 }
 
 func TestDelete_FindError(t *testing.T) {
-
 	findErr := errors.New("db error")
 
 	repo := &mockRepo{
@@ -320,7 +294,6 @@ func TestDelete_FindError(t *testing.T) {
 }
 
 func TestDelete_StorageError(t *testing.T) {
-
 	storageErr := errors.New("S3 delete error")
 
 	repo := &mockRepo{
@@ -342,7 +315,6 @@ func TestDelete_StorageError(t *testing.T) {
 }
 
 func TestDelete_RepoDeleteError(t *testing.T) {
-
 	repoErr := errors.New("repo delete error")
 
 	repo := &mockRepo{
