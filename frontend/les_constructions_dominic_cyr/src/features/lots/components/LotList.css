@@ -1,0 +1,33 @@
+.lots-table { 
+    width: 100%; 
+    border-collapse: 
+    collapse; margin-top: 12px; 
+}
+.lots-table th, .lots-table td { 
+    border: 1px solid #e0e0e0; 
+    padding: 10px; 
+    text-align: left; 
+}
+.location { 
+    max-width: 420px; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+}
+.status { 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    color: white; 
+    font-weight: 600; 
+    text-transform: capitalize; 
+}
+.status.available { 
+    background: #2e7d32; 
+} /* green */
+.status.sold { 
+    background: #c62828; 
+} /* red */
+.status.pending { 
+    background: #f9a825; 
+    color: #222; 
+} /* yellow */

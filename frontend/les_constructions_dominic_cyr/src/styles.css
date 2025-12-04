@@ -1,0 +1,50 @@
+:root {
+  --bg: #fff;
+  --text: #222;
+  --muted: #555;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+h1 {
+  margin: 0 0 8px 0;
+}
+
+.toolbar {
+  margin-bottom: 12px;
+}
+
+.info {
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.error {
+  margin-top: 12px;
+  color: #b00020;
+  font-weight: 600;
+}
+
+button {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+  cursor: pointer;
+}
+button:hover {
+  background: #eee;
+}
