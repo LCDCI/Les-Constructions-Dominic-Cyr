@@ -43,7 +43,7 @@ const Navbar = () => {
 
     return (
         <>
-            {/* Dark Overlay */}
+            {}
             <div
                 className={`navbar-overlay ${isOpen ? 'active' : ''}`}
                 onClick={closeMenu}
@@ -118,7 +118,7 @@ const Navbar = () => {
                                     onClick={closeMenu}
                                 >
                                     <span className="navbar-icon">📊</span>
-                                    <span className="navbar-text">Dashboard</span>
+                                    <span className="navbar-text">Home</span>
                                 </Link>
                             </li>
                         </ul>
