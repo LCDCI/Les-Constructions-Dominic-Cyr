@@ -6,7 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/api/photos")
+@RequestMapping("/api/v1/photos")
+@CrossOrigin(origins = "http://localhost:3000")
 public class GlobalPhotoController {
 
     private final GlobalPhotoService service;
