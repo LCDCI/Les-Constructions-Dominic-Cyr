@@ -38,3 +38,6 @@ out/
 
 ## ENV ##
 .env
+
+## DATA DIRECTORIES (for persistent local data until deployment)
+data/
