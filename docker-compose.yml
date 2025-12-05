@@ -60,7 +60,7 @@ services:
     ports:
       - "5434:5432"
     volumes:
-      - cdc-db-data:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d cdc-db"]
       interval: 3s
@@ -126,7 +126,7 @@ services:
       - "5433:5432"
     volumes:
       - ./files-service/migrations:/docker-entrypoint-initdb.d
-      - files-db-data:/var/lib/postgresql/data
+      - ./data/files-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${FILES_DB_USER} -d ${FILES_DB_NAME}"]
       interval: 3s
@@ -149,17 +149,13 @@ services:
       - "9000:9000"   # S3 API
       - "9001:9001"   # MinIO dashboard
     volumes:
-      - minio-data:/data
+      - ./data/minio:/data
     networks:
       - app-network
 
 #######################################################################
 # VOLUMES & NETWORK
 #######################################################################
-volumes:
-  files-db-data:
-  minio-data:
-  cdc-db-data:
 
 networks:
   app-network:
