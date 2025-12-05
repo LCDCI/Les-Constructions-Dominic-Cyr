@@ -9,10 +9,10 @@ const Footer = () => {
                         <span className="footer-icon">👤</span>
                         Contact
                     </h3>
-                    <p>Isabelle Misazreck</p>
+                    <p>Isabelle Misiazeck</p>
                     <p>514-123-4567</p>
                     <a href="mailto:isabelle.misazreck@foresta.ca">
-                        isabelle.misazreck@foresta.ca
+                        isabelle.misiazeck@foresta.ca
                     </a>
                 </div>
 
@@ -22,7 +22,7 @@ const Footer = () => {
                         Opening Hours
                     </h3>
                     <p>Monday to Wednesday: 1 p.m to 7 p.m</p>
-                    <p>Friday and Sunday: 11 a.m.  to 5 p.m. </p>
+                    <p>Friday and Sunday: 11 a.m. to 5 p.m. </p>
                 </div>
 
                 <div className="footer-section">
@@ -30,7 +30,7 @@ const Footer = () => {
                         <span className="footer-icon">📍</span>
                         Office
                     </h3>
-                    <p>104 rue du Bohdi</p>
+                    <p>104 rue du Boisé</p>
                     <p>St-Alphonse de Granby</p>
                     <p>Granby, QC J2J 2X4</p>
                 </div>
