@@ -1,3 +1,45 @@
 files:
   service:
     base-url: http://localhost:8082
+
+# Test Spring Profile
+spring:
+
+  application:
+    name: les_constructions_dominic_cyr
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+    password: test
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop  # Auto-create schema from entities for tests
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        auto-quote-keyword: true
+
+  sql:
+    init:
+      platform: postgresql
+      mode: always
+
+  h2:
+    console:
+      enabled: false
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    com.ecp: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
