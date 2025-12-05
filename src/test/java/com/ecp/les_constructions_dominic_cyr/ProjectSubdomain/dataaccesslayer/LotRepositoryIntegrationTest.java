@@ -7,17 +7,17 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Repository integration tests modeled after your MusicCatalogRepositoryIntegrationTest example.
- * Uses @DataJpaTest which configures an in-memory H2 DB for tests by default (ensure H2 is on test classpath).
- */
+@ActiveProfiles("test")
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // USE REAL DATASOURCE (Postgres) FROM application-test.yml
 public class LotRepositoryIntegrationTest {
 
     @Autowired
@@ -26,7 +26,6 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenLotsExist_thenReturnAll")
     public void whenLotsExist_thenReturnAll() {
-        // arrange
         Lot a1 = new Lot();
         a1.setLotIdentifier(new LotIdentifier("id-1"));
         a1.setLocation("L1");
@@ -45,10 +44,8 @@ public class LotRepositoryIntegrationTest {
         lotRepository.save(a2);
         long count = lotRepository.count();
 
-        // act
         List<Lot> list = lotRepository.findAll();
 
-        // assert
         assertNotNull(list);
         assertNotEquals(0, count);
         assertEquals(count, list.size());
@@ -96,20 +93,6 @@ public class LotRepositoryIntegrationTest {
         assertEquals("save-1", saved.getLotIdentifier().getLotId());
     }
 
-    /*
-    @Test
-    @DisplayName("whenSavingInvalidEntity_thenThrowDataIntegrity")
-    public void whenSavingInvalidEntity_thenThrowDataIntegrity() {
-        // Uncomment and adapt if you add @NotNull constraints to Lot fields
-        Lot invalid = new Lot();
-        invalid.setLotIdentifier(new LotIdentifier("bad-id"));
-        // missing required fields
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            lotRepository.saveAndFlush(invalid);
-        });
-    }
-    */
-
     @Test
     @DisplayName("whenEntityUpdated_thenChangesPersist")
     public void whenEntityUpdated_thenChangesPersist() {
@@ -122,7 +105,6 @@ public class LotRepositoryIntegrationTest {
 
         Lot saved = lotRepository.save(entity);
 
-        // update fields
         saved.setLocation("New");
         saved.setDimensions("2x2");
         Lot updated = lotRepository.save(saved);
@@ -184,8 +166,6 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenExistsByLocation_thenReturnTrueFalse")
     public void whenExistsByLocation_thenReturnTrueFalse() {
-        // This repository doesn't define existsByLocation, but JpaRepository supports derived queries if added.
-        // We'll test findAll & count to mimic existence checks.
         Lot e = new Lot();
         e.setLotIdentifier(new LotIdentifier("ex-1"));
         e.setLocation("UniqueLoc");
