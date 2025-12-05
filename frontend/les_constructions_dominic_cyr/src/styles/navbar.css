@@ -1,0 +1,379 @@
+
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.navbar-container {
+    display: flex;
+    align-items: center;
+    padding: 2% 3%;
+    max-width: 100%;
+    margin: 0 auto;
+    min-height: 70px;
+}
+
+
+.navbar-toggle {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    padding: 1% 1.5%;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: auto;
+    min-width: 45px;
+}
+
+.navbar-toggle:hover {
+    background: #f5f5f5;
+}
+
+. hamburger-line {
+    width: 25px;
+    height: 2px;
+    background-color: #666;
+    margin: 5px 0;
+    display: block;
+}
+
+/* Logo - CENTER */
+.navbar-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.navbar-logo-image {
+    height: 50px;
+    width: auto;
+    max-width: 200px;
+}
+
+
+.navbar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1500;
+}
+
+. navbar-overlay.active {
+    display: block;
+}
+
+
+.navbar-sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 20%;
+    min-width: 260px;
+    max-width: 320px;
+    height: 100vh;
+    background-color: #ffffff;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    z-index: 2000;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+}
+
+.navbar-sidebar.open {
+    left: 0;
+}
+
+
+.navbar-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5%;
+    border-bottom: 1px solid #e5e5e5;
+    background-color: #f9f9f9;
+    min-height: 80px;
+}
+
+. navbar-sidebar-logo-image {
+    height: 40px;
+    width: auto;
+    max-width: 80%;
+}
+
+.navbar-sidebar-logo-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4A90A4;
+}
+
+.navbar-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 2%;
+}
+
+.navbar-close:hover {
+    color: #dc2626;
+}
+
+/* Sidebar Navigation */
+.navbar-sidebar-nav {
+    padding: 5% 0;
+}
+
+.navbar-section {
+    margin-bottom: 8%;
+}
+
+.navbar-section-title {
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: #999;
+    text-transform: uppercase;
+    padding: 0 6%;
+    margin-bottom: 3%;
+    letter-spacing: 0.05em;
+}
+
+.navbar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-item {
+    width: 100%;
+}
+
+.navbar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4% 6%;
+    color: #333;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.navbar-link:hover {
+    background-color: #f5f5f5;
+    border-left-color: #4A90A4;
+}
+
+.navbar-link. active {
+    background-color: #e8f4f8;
+    border-left-color: #4A90A4;
+    color: #4A90A4;
+    font-weight: 600;
+}
+
+.navbar-icon {
+    font-size: 1.1rem;
+    min-width: 20px;
+}
+
+.navbar-text {
+    font-size: 0.9rem;
+}
+
+/* Sidebar Footer */
+. navbar-sidebar-footer {
+    padding: 5%;
+    border-top: 1px solid #e5e5e5;
+    background-color: #f9f9f9;
+    margin-top: auto;
+}
+
+.navbar-logout {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 4%;
+    cursor: pointer;
+    color: #333;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.navbar-logout:hover {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+
+body.menu-open {
+    overflow: hidden;
+}
+
+
+/* Large Desktop (1600px+) */
+@media (min-width: 1600px) {
+    .navbar-sidebar {
+        width: 18%;
+        min-width: 280px;
+    }
+}
+
+/* Desktop (1200px - 1599px) */
+@media (max-width: 1599px) and (min-width: 1200px) {
+    .navbar-sidebar {
+        width: 22%;
+        min-width: 260px;
+    }
+}
+
+/* Laptop (992px - 1199px) */
+@media (max-width: 1199px) and (min-width: 992px) {
+    .navbar-sidebar {
+        width: 28%;
+        min-width: 260px;
+        max-width: 300px;
+    }
+
+    .navbar-logo-image {
+        height: 45px;
+        max-width: 180px;
+    }
+}
+
+/* Tablet (768px - 991px) */
+@media (max-width: 991px) and (min-width: 768px) {
+    .navbar-sidebar {
+        width: 35%;
+        min-width: 280px;
+        max-width: 320px;
+    }
+
+    . navbar-container {
+        padding: 2.5% 4%;
+    }
+
+    .navbar-logo-image {
+        height: 42px;
+        max-width: 160px;
+    }
+
+    .navbar-text {
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Landscape (576px - 767px) */
+@media (max-width: 767px) and (min-width: 576px) {
+    .navbar-sidebar {
+        width: 50%;
+        min-width: 260px;
+        max-width: 340px;
+    }
+
+    .navbar-container {
+        padding: 3% 4%;
+        min-height: 60px;
+    }
+
+    .navbar-logo-image {
+        height: 38px;
+        max-width: 140px;
+    }
+
+    .hamburger-line {
+        width: 22px;
+    }
+
+    .navbar-section-title {
+        font-size: 0.65rem;
+    }
+}
+
+
+@media (max-width: 575px) {
+    .navbar-sidebar {
+        width: 75%;
+        min-width: 240px;
+        max-width: 280px;
+    }
+
+    .navbar-container {
+        padding: 3% 5%;
+        min-height: 55px;
+    }
+
+    .navbar-logo {
+        max-width: 50%;
+    }
+
+    . navbar-logo-image {
+        height: 35px;
+        max-width: 120px;
+    }
+
+    .navbar-toggle {
+        padding: 8px 10px;
+        min-width: 40px;
+    }
+
+    .hamburger-line {
+        width: 20px;
+        height: 2px;
+        margin: 4px 0;
+    }
+
+    .navbar-sidebar-header {
+        padding: 6%;
+        min-height: 70px;
+    }
+
+    .navbar-section-title {
+        font-size: 0.6rem;
+        padding: 0 7%;
+    }
+
+    .navbar-link {
+        padding: 5% 7%;
+        gap: 8px;
+    }
+
+    .navbar-icon {
+        font-size: 1rem;
+    }
+
+    .navbar-text {
+        font-size: 0.8rem;
+    }
+
+    .navbar-logout {
+        font-size: 0.8rem;
+        padding: 5%;
+    }
+}
+
+/* Extra Small Mobile (max 375px) */
+@media (max-width: 375px) {
+    .navbar-sidebar {
+        width: 85%;
+        min-width: 220px;
+    }
+
+    .navbar-logo-image {
+        height: 32px;
+        max-width: 100px;
+    }
+
+    .hamburger-line {
+        width: 18px;
+    }
+}
