@@ -13,10 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Repository integration tests modeled after your MusicCatalogRepositoryIntegrationTest example.
- * Uses @DataJpaTest which configures an in-memory H2 DB for tests by default (ensure H2 is on test classpath).
- */
+
 @DataJpaTest
 public class LotRepositoryIntegrationTest {
 

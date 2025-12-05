@@ -2,9 +2,7 @@ files:
   service:
     base-url: http://localhost:8082
 
-# Test Spring Profile
 spring:
-
   application:
     name: les_constructions_dominic_cyr
 
@@ -17,30 +15,16 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop  # Auto-create schema from entities for tests
+      ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate. dialect.PostgreSQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         auto-quote-keyword: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   sql:
     init:
-      platform: postgresql
-      mode: always
-
-  h2:
-    console:
-      enabled: false
-
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-
-server:
-  port: 8080
-  error:
-    include-message: always
+      mode: never
 
 logging:
   level:
