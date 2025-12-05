@@ -1,8 +1,8 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AppNavBar from './layouts/AppNavBar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
+import ProjectsPage from './pages/ProjectsPage';
 import LotsPage from './pages/LotsPage';
+
 import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
 import NavigationSetter from './components/NavigationSetter';
@@ -23,4 +23,7 @@ export default function App() {
       </main>
     </BrowserRouter>
   );
+
 }
+
+export default App;

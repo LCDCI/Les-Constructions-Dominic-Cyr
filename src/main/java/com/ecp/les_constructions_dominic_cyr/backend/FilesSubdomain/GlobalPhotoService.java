@@ -26,12 +26,9 @@ public class GlobalPhotoService {
     public Mono<String> uploadGlobalPhoto(MultipartFile file, String uploadedBy) {
         MultipartBodyBuilder body = new MultipartBodyBuilder();
 
-        MediaType contentType = MediaType.IMAGE_JPEG;
-        if (file.getContentType() != null) {
-            try {
-                contentType = MediaType.parseMediaType(file.getContentType());
-            } catch (Exception ignored) {}
-        }
+        MediaType contentType = file.getContentType() != null
+                ? MediaType.parseMediaType(file.getContentType())
+                : MediaType.IMAGE_JPEG;
 
         body.part("file", file.getResource())
                 .filename(file.getOriginalFilename())
