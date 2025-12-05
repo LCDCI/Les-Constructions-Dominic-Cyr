@@ -1,7 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.config;
 
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
-import com.ecp. les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project. ProjectRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +25,17 @@ public class DataSeeder {
 
     @PostConstruct
     public void init() {
-        log.info("🌱 Running data seeder...");
+        log.info("Running data seeder...");
         seedProjectImages();
     }
 
     private void seedProjectImages() {
         PROJECT_IMAGES.forEach((projectId, imageId) -> {
             projectRepository.findByProjectIdentifier(projectId).ifPresent(project -> {
-                if (project.getImageIdentifier() == null || project.getImageIdentifier(). isEmpty()) {
-                    project. setImageIdentifier(imageId);
+                if (project.getImageIdentifier() == null || project.getImageIdentifier().isEmpty()) {
+                    project.setImageIdentifier(imageId);
                     projectRepository.save(project);
-                    log.info("✅ Linked image to project: {}", projectId);
+                    log.info("Linked image to project: {}", projectId);
                 }
             });
         });

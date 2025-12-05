@@ -1,4 +1,4 @@
-package com. ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import lombok.AllArgsConstructor;

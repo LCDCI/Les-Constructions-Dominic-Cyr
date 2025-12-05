@@ -11,7 +11,7 @@ const Footer = () => {
                     </h3>
                     <p>Isabelle Misiazeck</p>
                     <p>514-123-4567</p>
-                    <a href="mailto:isabelle.misazreck@foresta.ca">
+                    <a href="mailto:isabelle.misiazeck@foresta.ca">
                         isabelle.misiazeck@foresta.ca
                     </a>
                 </div>
@@ -22,7 +22,7 @@ const Footer = () => {
                         Opening Hours
                     </h3>
                     <p>Monday to Wednesday: 1 p.m to 7 p.m</p>
-                    <p>Friday and Sunday: 11 a.m. to 5 p.m. </p>
+                    <p>Saturday and Sunday: 11 a.m. to 5 p.m. </p>
                 </div>
 
                 <div className="footer-section">

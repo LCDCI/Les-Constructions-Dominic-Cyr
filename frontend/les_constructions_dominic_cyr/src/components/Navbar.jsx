@@ -43,7 +43,6 @@ const Navbar = () => {
 
     return (
         <>
-            {}
             <div
                 className={`navbar-overlay ${isOpen ? 'active' : ''}`}
                 onClick={closeMenu}
@@ -83,7 +82,6 @@ const Navbar = () => {
                 </div>
             </nav>
 
-            {/* Slide-out Sidebar */}
             <aside className={`navbar-sidebar ${isOpen ? 'open' : ''}`}>
                 <div className="navbar-sidebar-header">
                     <Link to="/" className="navbar-sidebar-logo" onClick={closeMenu}>
@@ -107,7 +105,6 @@ const Navbar = () => {
                 </div>
 
                 <nav className="navbar-sidebar-nav">
-                    {/* Dashboard Section */}
                     <div className="navbar-section">
                         <h3 className="navbar-section-title">Dashboard</h3>
                         <ul className="navbar-menu">
@@ -118,7 +115,7 @@ const Navbar = () => {
                                     onClick={closeMenu}
                                 >
                                     <span className="navbar-icon">📊</span>
-                                    <span className="navbar-text">Home</span>
+                                    <span className="navbar-text">Dashboard</span>
                                 </Link>
                             </li>
                         </ul>
@@ -170,12 +167,22 @@ const Navbar = () => {
                             </li>
                             <li className="navbar-item">
                                 <Link
+                                    to="/home"
+                                    className={`navbar-link ${isActive('/lots')}`}
+                                    onClick={closeMenu}
+                                >
+                                    <span className="navbar-icon">🏠</span>
+                                    <span className="navbar-text">Home</span>
+                                </Link>
+                            </li>
+                            <li className="navbar-item">
+                                <Link
                                     to="/lots"
                                     className={`navbar-link ${isActive('/lots')}`}
                                     onClick={closeMenu}
                                 >
                                     <span className="navbar-icon">📍</span>
-                                    <span className="navbar-text">Send Message</span>
+                                    <span className="navbar-text">Lots</span>
                                 </Link>
                             </li>
                         </ul>
