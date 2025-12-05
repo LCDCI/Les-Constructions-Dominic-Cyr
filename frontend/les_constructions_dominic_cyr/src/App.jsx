@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppNavBar from './layouts/AppNavBar';
 import AppFooter from './layouts/AppFooter';
+=======
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+>>>>>>> 9cf03c10c020d92107af44a77391ae5ea4b4f06c
 import Home from './pages/Home';
+import ProjectsPage from './pages/ProjectsPage';
 import LotsPage from './pages/LotsPage';
+
 import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
 import NavigationSetter from './components/NavigationSetter';
@@ -28,4 +34,7 @@ export default function App() {
       </div>
     </BrowserRouter>
   );
+
 }
+
+export default App;
