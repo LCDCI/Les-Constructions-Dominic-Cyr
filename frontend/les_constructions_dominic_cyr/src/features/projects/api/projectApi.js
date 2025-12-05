@@ -6,7 +6,7 @@ export const projectApi = {
 
         if (filters.status) params.append('status', filters.status);
         if (filters.startDate) params.append('startDate', filters.startDate);
-        if (filters.endDate) params.append('endDate', filters. endDate);
+        if (filters.endDate) params.append('endDate', filters.endDate);
         if (filters.customerId) params.append('customerId', filters.customerId);
 
         const queryString = params.toString();
@@ -21,7 +21,7 @@ export const projectApi = {
 
     getProjectById: async (projectIdentifier) => {
         const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}`);
-        if (!response. ok) {
+        if (!response.ok) {
             throw new Error('Failed to fetch project');
         }
         return response.json();
@@ -35,10 +35,10 @@ export const projectApi = {
             },
             body: JSON.stringify(projectData),
         });
-        if (! response.ok) {
+        if (!response.ok) {
             throw new Error('Failed to create project');
         }
-        return response. json();
+        return response.json();
     },
 
     updateProject: async (projectIdentifier, projectData) => {
@@ -76,7 +76,7 @@ export const projectApi = {
             body: formData,
         });
 
-        if (!response. ok) {
+        if (!response.ok) {
             throw new Error('Failed to upload image');
         }
         return response.json();
@@ -84,6 +84,6 @@ export const projectApi = {
 
     getImageUrl: (imageIdentifier) => {
         if (!imageIdentifier) return null;
-        return `http://localhost:8082/files/${imageIdentifier}`;
+        return `${FILES_SERVICE_BASE_URL}/files/${imageIdentifier}`;
     },
 };

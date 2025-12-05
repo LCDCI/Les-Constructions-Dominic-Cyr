@@ -4,12 +4,12 @@ INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUE
 INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('15b1d772-c770-4dec-8d26-e27001fffbc5', 'Location C', 200000.0, '70x140', 'PENDING');
 
 INSERT INTO footer_content (section, label, value, display_order) VALUES
-('contact', 'name', 'Isabelle Miszaniec', 1),
+('contact', 'name', 'Isabelle Misiazeck', 1),
 ('contact', 'phone', '514-123-4567', 2),
-('contact', 'email', 'isabelle.miszaniec@foresta.ca', 3),
+('contact', 'email', 'isabelle.misiazeck@foresta.ca', 3),
 ('hours', 'weekday', 'Monday to Wednesday: 1 p.m to 7 p.m', 1),
 ('hours', 'weekend', 'Saturday and Sunday: 11 a.m. to 5 p.m.', 2),
-('office', 'address_line1', '104 rue du Boirolé', 1),
+('office', 'address_line1', '104 rue du Boisé', 1),
 ('office', 'address_line2', 'St-Alphonse de Granby', 2),
 ('office', 'address_line3', 'Granby, QC J2J 2X4', 3);
 

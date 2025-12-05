@@ -1,13 +1,11 @@
-package com.ecp. les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project;
 
-import com.ecp. les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectRequestModel;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project. ProjectResponseModel;
-import com. ecp.les_constructions_dominic_cyr.backend. ProjectSubdomain.BusinessLayer. Project.ProjectService;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Project.ProjectService;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework. http.ResponseEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
