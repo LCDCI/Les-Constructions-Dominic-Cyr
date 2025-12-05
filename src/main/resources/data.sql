@@ -14,3 +14,74 @@ INSERT INTO houses (house_identifier, house_name, location, description, number_
 INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('158e07a1-8c2f-9e4d-3b5a-6c7d8e9f0a1b', 'Starter Home', 'Drummondville, QC', 'Affordable starter home near downtown amenities.', 4, 2, 1, 1978);
 INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('269f18b2-9d3a-0f5e-4c6b-7d8e9f0a1b2c', 'Elegant Family Residence', 'Trois-Rivières, QC', 'Elegant family residence with large kitchen and patio.', 9, 4, 3, 2001);
 INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('37a029c3-0e4b-1f6d-5d7c-8e9f0a1b2c3d', 'Country-Style Bungalow', 'Saint-Hyacinthe, QC', 'Country-style bungalow on a spacious lot with mature trees.', 6, 3, 2, 1990);
+
+INSERT INTO footer_content (section, label, value, display_order) VALUES
+('contact', 'name', 'Isabelle Misiazeck', 1),
+('contact', 'phone', '514-123-4567', 2),
+('contact', 'email', 'isabelle.misiazeck@foresta.ca', 3),
+('hours', 'weekday', 'Monday to Wednesday: 1 p.m to 7 p.m', 1),
+('hours', 'weekend', 'Saturday and Sunday: 11 a.m. to 5 p.m.', 2),
+('office', 'address_line1', '104 rue du Boisé', 1),
+('office', 'address_line2', 'St-Alphonse de Granby', 2),
+('office', 'address_line3', 'Granby, QC J2J 2X4', 3);
+
+INSERT INTO projects (
+    project_identifier,
+    project_name,
+    project_description,
+    status,
+    start_date,
+    end_date,
+    primary_color,
+    tertiary_color,
+    buyer_color,
+    buyer_name,
+    customer_id,
+    lot_identifier,
+    progress_percentage
+) VALUES
+      (
+          'proj-001-foresta',
+          'Foresta',
+          'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
+          'IN_PROGRESS',
+          '2025-01-15',
+          '2025-12-31',
+          '#C8D5B9',
+          '#8FA383',
+          '#6B8E6F',
+          'FORESTA RÉSIDENCES SECONDAIRES',
+          'cust-001',
+          'lot-001',
+          35
+      ),
+      (
+          'proj-002-naturest',
+          'Naturest',
+          'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
+          'IN_PROGRESS',
+          '2025-02-01',
+          '2026-01-31',
+          '#8B7355',
+          '#C19A6B',
+          '#D4AF7A',
+          'NATUREST RÉSIDENCES SECONDAIRES',
+          'cust-002',
+          'lot-002',
+          20
+      ),
+      (
+          'proj-003-otryminc',
+          'Otryminc',
+          'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature.  The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
+          'PLANNED',
+          '2025-03-01',
+          '2026-02-28',
+          '#5A7D8C',
+          '#7B9FAE',
+          '#9CB5C3',
+          'OTRYMINC MAISON DE VUE EN BOIS DE M-B',
+          'cust-003',
+          'lot-003',
+          0
+      );
