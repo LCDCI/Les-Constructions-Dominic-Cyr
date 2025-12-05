@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppNavBar from './layouts/AppNavBar';
 import Home from './pages/Home';
-import LotsPage from './pages/LotsPage';
+import LotsPage from './pages/Lots/LotsPage';
 
 export default function App() {
   return (
