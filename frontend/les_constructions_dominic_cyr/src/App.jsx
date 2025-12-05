@@ -1,20 +1,19 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AppNavBar from './layouts/AppNavBar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
+import ProjectsPage from './pages/ProjectsPage';
 import LotsPage from './pages/LotsPage';
+import './styles/global.css';
 
-export default function App() {
-  return (
-    <BrowserRouter>
-      <AppNavBar />
-      <main style={{ padding: '16px' }}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/lots" element={<LotsPage />} />
-          {/* Remember to add more routes here as App grows */}
-        </Routes>
-      </main>
-    </BrowserRouter>
-  );
+function App() {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/projects" element={<ProjectsPage />} />
+                <Route path="/lots" element={<LotsPage />} />
+            </Routes>
+        </Router>
+    );
 }
+
+export default App;
