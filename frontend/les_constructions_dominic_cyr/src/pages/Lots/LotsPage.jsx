@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { fetchLots } from '../features/lots/api/lots';
-import LotList from '../features/lots/components/LotList';
+import { fetchLots } from '../../features/lots/api/lots';
+import LotList from '../../features/lots/components/LotList';
 
 export default function LotsPage() {
   const [lots, setLots] = useState([]);
