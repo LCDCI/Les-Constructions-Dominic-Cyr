@@ -17,7 +17,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // USE REAL DATASOURCE (Postgres) FROM application-test.yml
+
+//These lines of code must be added to each test class wishing to use a database, or otherwise all tests will fail
+//This occurs because we are no longuer using h2, but rather postgresql via testcontainers and syntax in postgresql differs from h2
+//This prevents syntax errors during tests
+@org.springframework.context.annotation.Import(com.ecp.les_constructions_dominic_cyr.config.TestcontainersPostgresConfig.class)
+@org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase(replace = org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE)
 public class LotRepositoryIntegrationTest {
 
     @Autowired
