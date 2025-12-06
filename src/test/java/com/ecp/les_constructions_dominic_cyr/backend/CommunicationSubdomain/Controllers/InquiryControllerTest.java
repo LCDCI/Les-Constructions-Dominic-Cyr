@@ -69,33 +69,7 @@ class InquiryControllerTest {
     }
 
     @Test
-    void submitInquiry_withMissingName_returnsBadRequest() throws Exception {
-        // Given
-        InquiryRequest request = new InquiryRequest();
-        request.setEmail("john@example.com");
-        request.setMessage("I need a quote.");
 
-        // When & Then
-        mockMvc.perform(post("/api/inquiries")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
-    @Test
-    void whenSubmitInquiry_withMissingName_thenReturnsBadRequest() throws Exception {
-        // Arrange
-        InquiryRequest request = new InquiryRequest();
-        request.setEmail("john@example.com");
-        request.setMessage("I need a quote.");
-
-        // Act & Assert
-        mockMvc.perform(post("/api/inquiries")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void whenSubmitInquiry_withMissingEmail_thenReturnsBadRequest() throws Exception {
         // Arrange
         InquiryRequest request = new InquiryRequest();
@@ -161,3 +135,4 @@ class InquiryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Thank you! Your inquiry has been received."));
     }
+}
