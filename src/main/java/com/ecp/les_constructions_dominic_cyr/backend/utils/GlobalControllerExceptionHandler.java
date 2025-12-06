@@ -65,10 +65,13 @@ public class GlobalControllerExceptionHandler {
         error.put("timestamp", LocalDateTime.now());
         error.put("status", HttpStatus.BAD_REQUEST.value());
         error.put("error", "Bad Request");
-        error.put("message", ex.getBindingResult().getAllErrors().stream()
-                .findFirst()
+        
+        java.util.List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(org.springframework.validation.ObjectError::getDefaultMessage)
-                .orElse("Validation failed"));
+                .collect(java.util.stream.Collectors.toList());
+        error.put("message", errors.size() == 1 ? errors.get(0) : "Validation failed");
+        error.put("errors", errors);
+        
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
