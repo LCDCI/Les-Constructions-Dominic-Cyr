@@ -25,6 +25,10 @@ public class Inquiry {
     @Column(nullable = false)
     private OffsetDateTime createdAt;
 
+    /**
+     * Sets the createdAt timestamp when the entity is first persisted to the database.
+     * Uses a null check to prevent overwriting existing timestamps on entity updates.
+     */
     @PrePersist
     protected void onCreate() {
         if (this.createdAt == null) {
