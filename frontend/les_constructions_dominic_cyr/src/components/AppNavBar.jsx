@@ -52,6 +52,12 @@ export default function AppNavBar() {
           >
             Réalisations
           </NavLink>
+          <NavLink
+            to="/contact"
+            className={({ isActive }) => (isActive ? 'active' : '')}
+          >
+            Contact
+          </NavLink>
         </nav>
 
         {/* Action Buttons */}
