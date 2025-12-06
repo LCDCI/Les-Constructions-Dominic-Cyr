@@ -15,6 +15,7 @@ INSERT INTO houses (house_identifier, house_name, location, description, number_
 INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('269f18b2-9d3a-0f5e-4c6b-7d8e9f0a1b2c', 'Elegant Family Residence', 'Trois-Rivières, QC', 'Elegant family residence with large kitchen and patio.', 9, 4, 3, 2001);
 INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('37a029c3-0e4b-1f6d-5d7c-8e9f0a1b2c3d', 'Country-Style Bungalow', 'Saint-Hyacinthe, QC', 'Country-style bungalow on a spacious lot with mature trees.', 6, 3, 2, 1990);
 
+-- data for footer
 INSERT INTO footer_content (section, label, value, display_order) VALUES
 ('contact', 'name', 'Isabelle Misiazeck', 1),
 ('contact', 'phone', '514-123-4567', 2),
@@ -25,6 +26,7 @@ INSERT INTO footer_content (section, label, value, display_order) VALUES
 ('office', 'address_line2', 'St-Alphonse de Granby', 2),
 ('office', 'address_line3', 'Granby, QC J2J 2X4', 3);
 
+-- data for projects
 INSERT INTO projects (
     project_identifier,
     project_name,
