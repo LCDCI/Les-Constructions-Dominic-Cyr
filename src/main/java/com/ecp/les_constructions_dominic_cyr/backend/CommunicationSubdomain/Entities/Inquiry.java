@@ -27,7 +27,9 @@ public class Inquiry {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = OffsetDateTime.now();
+        if (this.createdAt == null) {
+            this.createdAt = OffsetDateTime.now();
+        }
     }
 
     public Long getId() { return id; }
