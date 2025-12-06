@@ -1,0 +1,18 @@
+{
+  "name": "les-constructions-dominic-cyr",
+  "version": "1.0.0",
+  "description": "Internal development repository for the LCDCI Web Application, built by team FOREJ.\r This repo contains the frontend, backend, documentation, and CI/CD configuration for the project.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^24.10.1"
+  }
+}
