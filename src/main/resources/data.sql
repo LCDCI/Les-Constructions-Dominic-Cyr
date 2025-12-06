@@ -3,6 +3,19 @@ INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUE
 INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('44b2358d-478c-40e1-b85c-de6b917392eb', 'Location B', 150000.0, '60x120', 'SOLD');
 INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('15b1d772-c770-4dec-8d26-e27001fffbc5', 'Location C', 200000.0, '70x140', 'PENDING');
 
+-- data for houses
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('a3f1c0f1-8f2b-4c3d-9d5a-1b2a3c4d5e6f', 'Renovated Bungalow', 'Montreal, QC', 'Charming renovated bungalow close to parks and transit.', 6, 3, 2, 1998);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('b7d2e1a4-2c6f-4b8e-9f3c-7a9b0c1d2e3f', 'Split-Level Family Home', 'Laval, QC', 'Spacious split-level with large backyard and garage.', 8, 4, 3, 2005);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('c9e3f2b5-3d7a-4f9b-8e4d-0a1b2c3d4e5f', 'Historic Stone Residence', 'Quebec City, QC', 'Historic stone house with modern updates and river view.', 10, 5, 3, 1912);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('d1a4b3c6-4e8b-5a0c-9f1d-2c3b4a5d6e7f', 'Cozy Family Home', 'Sherbrooke, QC', 'Cozy family home in a quiet neighborhood near schools.', 5, 3, 1, 1986);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('e2b5c4d7-5f9c-6b1d-0a2e-3d4c5b6a7f8e', 'Modern Townhouse', 'Gatineau, QC', 'Newly built modern townhouse with energy-efficient systems.', 5, 2, 2, 2020);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('f3c6d5e8-6a0d-7c2e-1b3f-4e5d6c7b8a9f', 'Detached Home with Basement', 'Longueuil, QC', 'Well-maintained detached home with finished basement.', 7, 4, 2, 1994);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('04d7e6f9-7b1e-8d3f-2c4a-5f6e7d8c9b0a', 'Open-Concept House', 'Saint-Jean-sur-Richelieu, QC', 'Bright open-concept home with fenced yard and deck.', 6, 3, 2, 2010);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('158e07a1-8c2f-9e4d-3b5a-6c7d8e9f0a1b', 'Starter Home', 'Drummondville, QC', 'Affordable starter home near downtown amenities.', 4, 2, 1, 1978);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('269f18b2-9d3a-0f5e-4c6b-7d8e9f0a1b2c', 'Elegant Family Residence', 'Trois-Rivières, QC', 'Elegant family residence with large kitchen and patio.', 9, 4, 3, 2001);
+INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('37a029c3-0e4b-1f6d-5d7c-8e9f0a1b2c3d', 'Country-Style Bungalow', 'Saint-Hyacinthe, QC', 'Country-style bungalow on a spacious lot with mature trees.', 6, 3, 2, 1990);
+
+-- data for footer
 INSERT INTO footer_content (section, label, value, display_order) VALUES
 ('contact', 'name', 'Isabelle Misiazeck', 1),
 ('contact', 'phone', '514-123-4567', 2),
@@ -13,6 +26,7 @@ INSERT INTO footer_content (section, label, value, display_order) VALUES
 ('office', 'address_line2', 'St-Alphonse de Granby', 2),
 ('office', 'address_line3', 'Granby, QC J2J 2X4', 3);
 
+-- data for projects
 INSERT INTO projects (
     project_identifier,
     project_name,
