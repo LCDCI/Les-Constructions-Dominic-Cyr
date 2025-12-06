@@ -79,6 +79,9 @@ const Navbar = () => {
                         ) : null}
                         <span style={{ display: getLogoUrl() ? 'none' : 'block' }}>DCYR</span>
                     </Link>
+                    <Link to="/contact" className="navbar-contact-link" onClick={closeMenu}>
+                        Contact
+                    </Link>
                 </div>
             </nav>
 
@@ -125,6 +128,16 @@ const Navbar = () => {
                     <div className="navbar-section">
                         <h3 className="navbar-section-title">Management</h3>
                         <ul className="navbar-menu">
+                            <li className="navbar-item">
+                                <Link
+                                    to="/contact"
+                                    className={`navbar-link ${isActive('/contact')}`}
+                                    onClick={closeMenu}
+                                >
+                                    <span className="navbar-icon">✉️</span>
+                                    <span className="navbar-text">Contact</span>
+                                </Link>
+                            </li>
                             <li className="navbar-item">
                                 <Link
                                     to="/inbox"
