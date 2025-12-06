@@ -18,6 +18,21 @@ public class TranslationCacheService {
     private static final String CACHE_DIR_ALT = "translations";
 
     /**
+     * Checks that a provided string is a safe file path component (no separators or parent references).
+     * Throws IllegalArgumentException if unsafe.
+     */
+    private void validatePathComponent(String input, String name) {
+        if (input == null) return;
+        if (input.contains("..") || input.contains("/") || input.contains("\\") || input.startsWith(".")) {
+            throw new IllegalArgumentException("Invalid " + name + ": contains path separator or parent directory reference.");
+        }
+        // Only allow basic safe characters (letters, digits, underscore, dash, dot).
+        if (!input.matches("^[a-zA-Z0-9._-]+$")) {
+            throw new IllegalArgumentException("Invalid " + name + ": contains unsupported characters.");
+        }
+    }
+
+    /**
      * Generates a cache filename based on original filename and target language.
      * Removes existing language suffix (_fr or _en) and adds target language suffix.
      * 
@@ -26,6 +41,10 @@ public class TranslationCacheService {
      * @return the cache filename (e.g., "car_fr.pdf" or "car_en.pdf")
      */
     public String generateCacheFilename(String originalFilename, String targetLanguage) {
+        validatePathComponent(targetLanguage, "targetLanguage");
+        if (originalFilename != null && !originalFilename.isEmpty()) {
+            validatePathComponent(originalFilename, "originalFilename");
+        }
         if (originalFilename == null || originalFilename.isEmpty()) {
             return "translated_" + targetLanguage.toLowerCase() + ".pdf";
         }
