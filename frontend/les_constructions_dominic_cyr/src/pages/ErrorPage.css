@@ -1,0 +1,132 @@
+.error-page {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  margin: 0;
+  position: relative;
+  text-align: center;
+}
+
+.error-page-content {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  padding: 40px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.error-icon {
+  font-size: 120px;
+  font-weight: 700;
+  color: #034f84;
+  line-height: 1;
+  margin-bottom: 24px;
+  opacity: 1;
+  display: block;
+}
+
+.error-page h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #222;
+}
+
+.error-message {
+  font-size: 18px;
+  color: #222;
+  margin: 0 0 12px 0;
+  font-weight: 500;
+}
+
+.error-description {
+  font-size: 16px;
+  color: #555;
+  margin: 0 0 32px 0;
+  line-height: 1.6;
+}
+
+.error-button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #034f84;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.error-button:hover {
+  background: #023a63;
+  color: #fff;
+}
+
+.error-button:active {
+  background: #012a4a;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .error-page {
+    min-height: calc(100vh - 150px);
+    padding: 16px;
+  }
+
+  .error-page-content {
+    padding: 32px 20px;
+  }
+
+  .error-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+  }
+
+  .error-page h1 {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .error-message {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .error-description {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .error-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 480px) {
+  .error-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  .error-page h1 {
+    font-size: 20px;
+  }
+
+  .error-message {
+    font-size: 15px;
+  }
+
+  .error-description {
+    font-size: 13px;
+  }
+}
+
