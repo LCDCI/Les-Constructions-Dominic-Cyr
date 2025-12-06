@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/inquiries")
+@CrossOrigin
 public class InquiryController {
     private final InquiryService service;
 
