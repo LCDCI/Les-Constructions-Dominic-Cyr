@@ -88,27 +88,39 @@ export default function Home() {
 
               <div className="values-grid">
                 <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x1f3d7, 0xfe0f)}</div>
+                  <div className="value-icon">
+                    {String.fromCodePoint(0x1f3d7, 0xfe0f)}
+                  </div>
                   <h4>Passionné et professionnel</h4>
                 </div>
                 <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x2728)}</div>
+                  <div className="value-icon">
+                    {String.fromCodePoint(0x2728)}
+                  </div>
                   <h4>Approche créative</h4>
                 </div>
                 <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x1f50d)}</div>
+                  <div className="value-icon">
+                    {String.fromCodePoint(0x1f50d)}
+                  </div>
                   <h4>Souci du détail</h4>
                 </div>
                 <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x1f331)}</div>
+                  <div className="value-icon">
+                    {String.fromCodePoint(0x1f331)}
+                  </div>
                   <h4>Pratiques écoresponsables</h4>
                 </div>
                 <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x2b50)}</div>
+                  <div className="value-icon">
+                    {String.fromCodePoint(0x2b50)}
+                  </div>
                   <h4>Critère d'excellence</h4>
                 </div>
                 <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x1f91d)}</div>
+                  <div className="value-icon">
+                    {String.fromCodePoint(0x1f91d)}
+                  </div>
                   <h4>Service après-vente</h4>
                 </div>
               </div>
@@ -122,7 +134,9 @@ export default function Home() {
               <div className="gallery-item gallery-logo-box">
                 <div className="logo-box-content">
                   <Link to="/projects/foresta" className="logo-link">
-                    <div className="logo-icon">{String.fromCodePoint(0x1f33f)}</div>
+                    <div className="logo-icon">
+                      {String.fromCodePoint(0x1f33f)}
+                    </div>
                     <h2 className="logo-text">FORESTA</h2>
                     <p className="logo-subtext">PROJET DOMICILIAIRE</p>
                   </Link>
