@@ -1,70 +1,65 @@
-# Getting Started with Create React App
+# Les Constructions Dominic Cyr — Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project uses Vite as the development build tool and React for the UI.
 
 ## Available Scripts
 
-In the project directory, you can run:
+In the project directory you can run the following scripts (defined in `package.json`):
 
-### `npm start`
+### `npm run dev`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Starts the Vite development server (hot module replacement). Open `http://localhost:3000` (or the port shown) to view the app.
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Builds the app for production using Vite. Output is written to the `dist/` directory.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### `npm run preview`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Locally preview the production build. This runs a static server that serves the `dist/` output.
 
-### `npm run eject`
+### `npm run lint`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Runs ESLint across the `src/` directory. Use `npm run lint:fix` to apply auto-fixable changes.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### `npm run format`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Runs Prettier to format source files. Use `npm run format:check` to only check formatting.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### `npm test`
 
-## Learn More
+Runs the test runner (Vitest) configured for the project.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Environment variables
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Vite exposes environment variables under `import.meta.env`. Project-specific variables should be prefixed with `VITE_`.
 
-### Code Splitting
+- `VITE_API_BASE` — base path used by the frontend API clients (example: `/api/v1/lots` or an absolute URL). You can set this in your environment or when building the app.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Example (PowerShell) to run dev with an override:
 
-### Analyzing the Bundle Size
+```powershell
+$env:VITE_API_BASE = '/api/v1/lots'; npm run dev
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Images and public assets
 
-### Making a Progressive Web App
+Put static assets (images, icons) in the `public/` folder. Files in `public/` are served at the app root, for example `public/images/lots/default.jpg` is available at `/images/lots/default.jpg`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Docker / Production notes
 
-### Advanced Configuration
+The repository includes a `Dockerfile` that builds the Vite app and serves it with nginx. If your backend runs behind a gateway and you rely on path rewrites (e.g. mapping `/lots` → `/api/v1/lots`), make sure the server or reverse-proxy is configured accordingly.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Troubleshooting
 
-### Deployment
+- If you get CORS or proxy errors during development, confirm `VITE_API_BASE` points to the correct backend host/port and use Vite's dev server proxy if needed.
+- If an API call fails, check the browser DevTools Network tab to inspect the actual request URL and response.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Learn more
 
-### `npm run build` fails to minify
+- Vite: https://vitejs.dev/
+- React: https://reactjs.org/
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+If you'd like, I can further tailor this README (add Docker build/run examples, CI steps, or local environment tips).

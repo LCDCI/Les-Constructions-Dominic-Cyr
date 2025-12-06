@@ -1,0 +1,64 @@
+/* Home Page Styles */
+
+.home-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color);
+}
+
+.home-content {
+    flex: 1;
+    padding: 5% 0 8%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.home-container {
+    width: 80%;
+    max-width: 1400px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.home-container h1 {
+    font-size: 3rem;
+    color: var(--text-primary);
+    margin-bottom: 2%;
+}
+
+.home-container p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+    .home-container {
+        width: 90%;
+    }
+
+    .home-container h1 {
+        font-size: 2.5rem;
+    }
+
+    .home-container p {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    . home-container {
+        width: 95%;
+    }
+
+    .home-container h1 {
+        font-size: 2rem;
+    }
+
+    . home-container p {
+        font-size: 1rem;
+    }
+}

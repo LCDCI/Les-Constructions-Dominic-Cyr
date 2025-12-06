@@ -1,0 +1,80 @@
+/* Global Styles for Les Constructions Dominic Cyr */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #4A90A4;
+    --secondary-color: #2C3E50;
+    --accent-color: #5A7D8C;
+    --background-color: #F5F7FA;
+    --card-background: #E8EEF2;
+    --text-primary: #2C3E50;
+    --text-secondary: #6B7280;
+    --white: #FFFFFF;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    color: var(--text-primary);
+    background-color: var(--background-color);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+. container {
+    width: 90%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2% 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    margin-bottom: 1%;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    transition: var(--transition);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+}
+
+input, select {
+    font-family: inherit;
+    font-size: 100%;
+    border: 1px solid #D1D5DB;
+    border-radius: var(--border-radius);
+    padding: 2% 3%;
+    transition: var(--transition);
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 90%;
+    }
+}
