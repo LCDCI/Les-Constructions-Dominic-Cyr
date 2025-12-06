@@ -18,7 +18,7 @@ public class InquiryController {
 
     @PostMapping
     public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequest request) {
-        Inquiry saved = service.submitInquiry(request);
+        service.submitInquiry(request);
         return ResponseEntity.ok().body("Thank you! Your inquiry has been received.");
     }
 }
