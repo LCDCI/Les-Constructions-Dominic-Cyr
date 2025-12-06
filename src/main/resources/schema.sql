@@ -26,6 +26,7 @@ CREATE TABLE houses (
                     construction_year INTEGER NOT NULL
 );
 
+-- schema for footer
 DROP TABLE IF EXISTS footer_content CASCADE;
 DROP TABLE IF EXISTS projects CASCADE;
 
@@ -42,6 +43,7 @@ updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 CREATE INDEX idx_footer_section ON footer_content(section);
 CREATE INDEX idx_footer_display_order ON footer_content(display_order);
 
+-- schema for projects
 CREATE TABLE projects (
 project_id BIGSERIAL PRIMARY KEY,
 project_identifier VARCHAR(255) NOT NULL UNIQUE,
