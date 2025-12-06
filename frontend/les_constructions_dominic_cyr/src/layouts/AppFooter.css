@@ -1,6 +1,6 @@
 .app-footer {
-  background: #ffffff;
-  border-top: 1px solid #e6e6e6;
+  background: #2c3e50;
+  border-top: 1px solid #2c3e50;
   padding: 48px 24px;
   margin-top: auto;
 }
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2563eb;
+  color: #ffffff;
   margin-bottom: 16px;
 }
 
@@ -38,7 +38,7 @@
 .footer-title {
   font-size: 18px;
   font-weight: 700;
-  color: #000000;
+  color: #ffffff;
   margin: 0 0 16px 0;
   line-height: 1.4;
 }
@@ -51,22 +51,36 @@
 
 .footer-item {
   font-size: 15px;
-  color: #4a4a4a;
+  color: #ffffff;
   margin: 0;
   line-height: 1.5;
 }
 
 .footer-link {
   font-size: 15px;
-  color: #2563eb;
+  color: #93c5fd;
   text-decoration: none;
   transition: color 0.2s ease;
   line-height: 1.5;
 }
 
 .footer-link:hover {
-  color: #1d4ed8;
+  color: #bfdbfe;
   text-decoration: underline;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 32px;
+  padding-top: 24px;
+  text-align: center;
+}
+
+.footer-copyright {
+  font-size: 14px;
+  color: #ffffff;
+  margin: 0;
+  opacity: 0.9;
 }
 
 /* Tablet Responsive */

@@ -46,6 +46,11 @@ export default function AppFooter() {
           </div>
         </div>
       </div>
+      <div className="footer-bottom">
+        <p className="footer-copyright">
+          © 2025 Les Constructions Dominic Cyr. All rights reserved.
+        </p>
+      </div>
     </footer>
   );
 }
