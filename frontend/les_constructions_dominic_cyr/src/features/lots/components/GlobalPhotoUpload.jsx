@@ -46,7 +46,6 @@ export default function GlobalPhotoUpload({ onUploaded }) {
       setFile(null);
       if (onUploaded) onUploaded(fullUrl);
     } catch (err) {
-      console.error(err);
       setError(err.message || 'Upload failed');
     } finally {
       setUploading(false);
