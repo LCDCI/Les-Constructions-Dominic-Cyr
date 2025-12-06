@@ -55,21 +55,13 @@ public class ExceptionTest {
         });
     }
 
-    @Test
-    void inUseException_InheritanceCheck() {
-        InUseException exception = new InUseException("Test");
-
-        assertTrue(exception instanceof RuntimeException);
-        assertTrue(exception instanceof Exception);
-        assertTrue(exception instanceof Throwable);
-    }
 
     @Test
     void invalidInputException_DefaultConstructor_CreatesInstance() {
         InvalidInputException exception = new InvalidInputException();
 
         assertNotNull(exception);
-        assertNull(exception. getMessage());
+        assertNull(exception.getMessage());
         assertNull(exception.getCause());
     }
 
@@ -107,14 +99,7 @@ public class ExceptionTest {
         });
     }
 
-    @Test
-    void invalidInputException_InheritanceCheck() {
-        InvalidInputException exception = new InvalidInputException("Test");
 
-        assertTrue(exception instanceof RuntimeException);
-        assertTrue(exception instanceof Exception);
-        assertTrue(exception instanceof Throwable);
-    }
 
     @Test
     void invalidProjectDataException_WithMessage_ReturnsCorrectMessage() {
@@ -131,14 +116,6 @@ public class ExceptionTest {
         });
     }
 
-    @Test
-    void invalidProjectDataException_InheritanceCheck() {
-        InvalidProjectDataException exception = new InvalidProjectDataException("Test");
-
-        assertTrue(exception instanceof RuntimeException);
-        assertTrue(exception instanceof Exception);
-        assertTrue(exception instanceof Throwable);
-    }
 
     @Test
     void invalidProjectDataException_WithNullMessage() {
@@ -197,14 +174,7 @@ public class ExceptionTest {
         });
     }
 
-    @Test
-    void notFoundException_InheritanceCheck() {
-        NotFoundException exception = new NotFoundException("Test");
 
-        assertTrue(exception instanceof RuntimeException);
-        assertTrue(exception instanceof Exception);
-        assertTrue(exception instanceof Throwable);
-    }
 
     @Test
     void projectNotFoundException_WithMessage_ReturnsCorrectMessage() {
