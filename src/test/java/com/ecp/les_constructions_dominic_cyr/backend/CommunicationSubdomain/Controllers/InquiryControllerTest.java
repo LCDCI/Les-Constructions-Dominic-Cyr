@@ -69,7 +69,6 @@ class InquiryControllerTest {
     }
 
     @Test
-
     void whenSubmitInquiry_withMissingEmail_thenReturnsBadRequest() throws Exception {
         // Arrange
         InquiryRequest request = new InquiryRequest();
