@@ -9,14 +9,20 @@ import com. ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 import com.ecp.les_constructions_dominic_cyr. backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
 import com.ecp. les_constructions_dominic_cyr.backend.utils.Exception.InvalidProjectDataException;
 import com.ecp.les_constructions_dominic_cyr. backend.utils.Exception.ProjectNotFoundException;
+import jakarta.persistence.criteria.CriteriaQuery;
 import org.junit.jupiter. api.BeforeEach;
 import org.junit. jupiter.api.Test;
 import org. junit.jupiter.api. extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org. mockito.InjectMocks;
 import org.mockito. Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework. data.jpa.domain. Specification;
-
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
+import jakarta. persistence.criteria. Predicate;
+import jakarta.persistence.criteria.Root;
 import java.time.LocalDate;
 import java. util.Arrays;
 import java.util. Collections;
@@ -36,8 +42,26 @@ public class ProjectServiceUnitTest {
     @Mock
     private ProjectMapper projectMapper;
 
+    @Mock
+    private Root<Project> root;
+
+    @Mock
+    private CriteriaQuery<? > criteriaQuery;
+
+    @Mock
+    private CriteriaBuilder criteriaBuilder;
+
+    @Mock
+    private Path<Object> path;
+
+    @Mock
+    private Predicate predicate;
+
     @InjectMocks
     private ProjectServiceImpl projectService;
+
+    @Captor
+    private ArgumentCaptor<Specification<Project>> specificationCaptor;
 
     private Project testProject;
     private ProjectRequestModel testRequestModel;
@@ -282,15 +306,6 @@ public class ProjectServiceUnitTest {
         verify(projectRepository, times(1)).delete(testProject);
     }
 
-    //@Test
-//    void deleteProject_WhenProjectNotFound_ThrowsException() {
-//        when(projectRepository.findByProjectIdentifier("invalid")).thenReturn(Optional.empty());
-//
-//        assertThrows(ProjectNotFoundException.class, () ->
-//                projectService.deleteProject("invalid")
-//        );
-//        verify(projectRepository, never()).delete(any());
-//    }
 
     @Test
     void getProjectsByStatus_ReturnsFilteredProjects() {
@@ -418,5 +433,160 @@ public class ProjectServiceUnitTest {
         );
 
         assertNotNull(result);
+    }
+
+    @Test
+    void deleteProject_LambdaThrowsException_VerifyExceptionMessage() {
+        String projectId = "test-project-id";
+        when(projectRepository.findByProjectIdentifier(projectId))
+                .thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(ProjectNotFoundException.class, () -> {
+            projectService.deleteProject(projectId);
+        });
+
+        assertEquals("Project not found with identifier: " + projectId, exception.getMessage());
+    }
+
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_WithStartDateOnly_BuildsCorrectSpecification() {
+        List<Project> projects = Arrays.asList(testProject);
+        when(projectRepository.findAll(any(Specification.class))).thenReturn(projects);
+        when(projectMapper.entityToResponseModel(testProject)). thenReturn(testResponseModel);
+
+        List<ProjectResponseModel> result = projectService. filterProjects(
+                null, LocalDate.now(), null, null
+        );
+
+        assertNotNull(result);
+        verify(projectRepository).findAll(any(Specification.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_WithEndDateOnly_BuildsCorrectSpecification() {
+        List<Project> projects = Arrays.asList(testProject);
+        when(projectRepository.findAll(any(Specification.class))). thenReturn(projects);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        List<ProjectResponseModel> result = projectService.filterProjects(
+                null, null, LocalDate. now().plusMonths(6), null
+        );
+
+        assertNotNull(result);
+        verify(projectRepository).findAll(any(Specification.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_WithCustomerIdOnly_BuildsCorrectSpecification() {
+        List<Project> projects = Arrays.asList(testProject);
+        when(projectRepository.findAll(any(Specification. class))).thenReturn(projects);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        List<ProjectResponseModel> result = projectService. filterProjects(
+                null, null, null, "cust-001"
+        );
+
+        assertNotNull(result);
+        verify(projectRepository).findAll(any(Specification.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_WithEmptyCustomerId_DoesNotAddPredicate() {
+        List<Project> projects = Arrays.asList(testProject);
+        when(projectRepository.findAll(any(Specification. class))).thenReturn(projects);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        List<ProjectResponseModel> result = projectService. filterProjects(
+                null, null, null, ""
+        );
+
+        assertNotNull(result);
+        verify(projectRepository). findAll(any(Specification.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_WithAllParametersNull_ReturnsAllProjects() {
+        List<Project> projects = Arrays.asList(testProject);
+        when(projectRepository.findAll(any(Specification. class))).thenReturn(projects);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        List<ProjectResponseModel> result = projectService. filterProjects(null, null, null, null);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(projectRepository).findAll(any(Specification. class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_WithAllParameters_BuildsCompleteSpecification() {
+        List<Project> projects = Arrays. asList(testProject);
+        when(projectRepository.findAll(any(Specification.class))).thenReturn(projects);
+        when(projectMapper.entityToResponseModel(testProject)). thenReturn(testResponseModel);
+
+        List<ProjectResponseModel> result = projectService.filterProjects(
+                ProjectStatus. COMPLETED,
+                LocalDate. of(2025, 1, 1),
+                LocalDate.of(2025, 12, 31),
+                "customer-123"
+        );
+
+        assertNotNull(result);
+        verify(projectRepository).findAll(any(Specification.class));
+    }
+
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_WithDifferentStatuses_HandlesCorrectly() {
+        when(projectRepository.findAll(any(Specification.class))). thenReturn(Collections.emptyList());
+
+        for (ProjectStatus status : ProjectStatus.values()) {
+            List<ProjectResponseModel> result = projectService.filterProjects(status, null, null, null);
+            assertNotNull(result);
+        }
+
+        verify(projectRepository, times(ProjectStatus.values().length)).findAll(any(Specification.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_ReturnsEmptyList_WhenNoMatches() {
+        when(projectRepository. findAll(any(Specification.class))).thenReturn(Collections.emptyList());
+
+        List<ProjectResponseModel> result = projectService.filterProjects(
+                ProjectStatus. CANCELLED, null, null, null
+        );
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_WithMultipleProjects_ReturnsAll() {
+        Project project2 = new Project();
+        project2. setProjectIdentifier("proj-002");
+        project2.setProjectName("Project 2");
+
+        ProjectResponseModel response2 = ProjectResponseModel.builder()
+                .projectIdentifier("proj-002")
+                .projectName("Project 2")
+                .build();
+
+        List<Project> projects = Arrays. asList(testProject, project2);
+        when(projectRepository.findAll(any(Specification. class))).thenReturn(projects);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+        when(projectMapper.entityToResponseModel(project2)).thenReturn(response2);
+
+        List<ProjectResponseModel> result = projectService.filterProjects(null, null, null, null);
+
+        assertEquals(2, result. size());
     }
 }
