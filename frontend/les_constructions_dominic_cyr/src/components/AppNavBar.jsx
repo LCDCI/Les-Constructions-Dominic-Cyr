@@ -41,7 +41,7 @@ export default function AppNavBar() {
             Rénovation
           </NavLink>
           <NavLink
-            to="/gestion-de-projet"
+            to="/projectmanagement"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
             Gestion de projet
