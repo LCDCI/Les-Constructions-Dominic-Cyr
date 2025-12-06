@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import './AppNavBar.css';
+import '../styles/AppNavBar.css';
 
 export default function AppNavBar() {
   const [language, setLanguage] = useState('FR');

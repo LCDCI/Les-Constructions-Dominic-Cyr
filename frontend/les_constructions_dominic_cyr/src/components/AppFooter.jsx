@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaUser, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
-import './AppFooter.css';
+import '../styles/AppFooter.css';
 
 export default function AppFooter() {
   return (
