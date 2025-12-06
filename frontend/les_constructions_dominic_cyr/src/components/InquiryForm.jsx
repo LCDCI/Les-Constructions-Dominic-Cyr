@@ -71,7 +71,6 @@ export default function InquiryForm({ onSuccess, className }) {
             placeholder="your.email@example.com"
             disabled={loading}
             required
-            required
           />
         </div>
         <div className="form-group">
