@@ -91,7 +91,7 @@ services:
       files-db:
         condition: service_healthy
       minio:
-        condition: service_started
+        condition: service_healthy
     networks:
       - app-network
 
@@ -134,6 +134,12 @@ services:
       - "9001:9001"   # MinIO dashboard
     volumes:
       - minio-data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - app-network
 
