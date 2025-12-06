@@ -1,6 +1,8 @@
 package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.OffsetDateTime;
 
 @Entity
@@ -22,8 +24,9 @@ public class Inquiry {
     @Column(nullable = false, length = 2000)
     private String message;
 
-    @Column(nullable = false)
-    private OffsetDateTime createdAt = OffsetDateTime.now();
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private OffsetDateTime createdAt;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

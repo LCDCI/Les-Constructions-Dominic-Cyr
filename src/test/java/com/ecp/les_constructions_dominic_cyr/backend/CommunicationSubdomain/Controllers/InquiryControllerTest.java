@@ -12,8 +12,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -134,5 +141,45 @@ class InquiryControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Thank you! Your inquiry has been received."));
+    }
+
+    @Test
+    void whenOwnerRequestsInquiries_thenReturnsOrderedList() throws Exception {
+        // Arrange
+        Inquiry older = new Inquiry();
+        older.setId(10L);
+        older.setName("Old");
+        older.setEmail("old@example.com");
+        older.setMessage("Old msg");
+        older.setCreatedAt(OffsetDateTime.parse("2024-01-01T10:00:00Z"));
+
+        Inquiry newer = new Inquiry();
+        newer.setId(11L);
+        newer.setName("New");
+        newer.setEmail("new@example.com");
+        newer.setMessage("New msg");
+        newer.setCreatedAt(OffsetDateTime.parse("2024-02-01T10:00:00Z"));
+
+        List<Inquiry> inquiries = Arrays.asList(newer, older);
+        when(inquiryService.getInquiries()).thenReturn(inquiries);
+
+        // Act & Assert
+        mockMvc.perform(get("/api/inquiries"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].id", is(11)))
+                .andExpect(jsonPath("$[0].name", is("New")))
+                .andExpect(jsonPath("$[0].email", is("new@example.com")))
+                .andExpect(jsonPath("$[0].message", is("New msg")))
+                .andExpect(jsonPath("$[0].createdAt", notNullValue()))
+                .andExpect(jsonPath("$[1].id", is(10)))
+                .andExpect(jsonPath("$[1].createdAt", notNullValue()));
+    }
+
+    @Test
+    void whenVisitorAttemptsDelete_thenForbidden() throws Exception {
+        mockMvc.perform(delete("/api/inquiries/1"))
+                .andExpect(status().isForbidden())
+                .andExpect(content().string("Inquiries cannot be deleted."));
     }
 }

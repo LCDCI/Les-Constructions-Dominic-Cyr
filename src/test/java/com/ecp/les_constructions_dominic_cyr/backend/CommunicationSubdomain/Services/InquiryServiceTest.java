@@ -14,6 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Service Unit Test for InquiryService
  * Following AAA Pattern (Arrange, Act, Assert)
@@ -46,6 +50,7 @@ class InquiryServiceTest {
         savedInquiry.setEmail(validRequest.getEmail());
         savedInquiry.setPhone(validRequest.getPhone());
         savedInquiry.setMessage(validRequest.getMessage());
+        savedInquiry.setCreatedAt(OffsetDateTime.now());
     }
 
     @Test
@@ -63,6 +68,7 @@ class InquiryServiceTest {
         assertEquals("alice@example.com", result.getEmail());
         assertEquals("555-9876", result.getPhone());
         assertEquals("Looking for custom home design.", result.getMessage());
+        assertNotNull(result.getCreatedAt());
         verify(inquiryRepository, times(1)).save(any(Inquiry.class));
     }
 
@@ -108,6 +114,48 @@ class InquiryServiceTest {
         assertEquals(validRequest.getEmail(), result.getEmail());
         assertEquals(validRequest.getPhone(), result.getPhone());
         assertEquals(validRequest.getMessage(), result.getMessage());
+        assertNotNull(result.getCreatedAt());
         verify(inquiryRepository, times(1)).save(any(Inquiry.class));
+    }
+
+    @Test
+    void whenSubmitInquiry_withoutExistingTimestamp_setsCreatedAt() {
+        // Arrange
+        when(inquiryRepository.save(any(Inquiry.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Act
+        Inquiry result = inquiryService.submitInquiry(validRequest);
+
+        // Assert
+        assertNotNull(result.getCreatedAt());
+    }
+
+    @Test
+    void whenGetInquiries_returnsNewestFirst() {
+        // Arrange
+        Inquiry older = new Inquiry();
+        older.setId(10L);
+        older.setName("Old");
+        older.setEmail("old@example.com");
+        older.setMessage("Old msg");
+        older.setCreatedAt(OffsetDateTime.parse("2024-01-01T10:00:00Z"));
+
+        Inquiry newer = new Inquiry();
+        newer.setId(11L);
+        newer.setName("New");
+        newer.setEmail("new@example.com");
+        newer.setMessage("New msg");
+        newer.setCreatedAt(OffsetDateTime.parse("2024-02-01T10:00:00Z"));
+
+        when(inquiryRepository.findAllByOrderByCreatedAtDesc()).thenReturn(Arrays.asList(newer, older));
+
+        // Act
+        List<Inquiry> result = inquiryService.getInquiries();
+
+        // Assert
+        assertEquals(2, result.size());
+        assertEquals(11L, result.get(0).getId());
+        assertEquals(10L, result.get(1).getId());
+        verify(inquiryRepository, times(1)).findAllByOrderByCreatedAtDesc();
     }
 }

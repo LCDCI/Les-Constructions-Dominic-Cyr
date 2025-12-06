@@ -8,6 +8,7 @@ import LotsPage from './pages/LotsPage';
 import ContactPage from './pages/ContactPage';
 import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
+import InquiriesPage from './pages/InquiriesPage';
 import NavigationSetter from './components/NavigationSetter';
 import './App.css';
 
@@ -23,6 +24,7 @@ export default function App() {
             <Route path="/lots" element={<LotsPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/inquiries" element={<InquiriesPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route path="*" element={<NotFound />} />
             {/* Remember to add more routes here as App grows */}
