@@ -31,5 +31,4 @@ export default function App() {
       </div>
     </BrowserRouter>
   );
-
 }
