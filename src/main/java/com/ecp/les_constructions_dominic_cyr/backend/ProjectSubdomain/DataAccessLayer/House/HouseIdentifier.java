@@ -17,4 +17,11 @@ public class HouseIdentifier {
     public HouseIdentifier(String houseId) {
         this.houseId = houseId;
     }
+
+    @Override
+    public String toString() {
+        return "HouseIdentifier{" +
+                "houseId='" + (houseId == null ? "" : houseId) + '\'' +
+                '}';
+    }
 }
