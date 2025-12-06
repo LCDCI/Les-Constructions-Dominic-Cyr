@@ -4,17 +4,15 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLa
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/houses")
+@RequestMapping("/api/v1/houses")
+@CrossOrigin(origins = "http://localhost:3000")
 public class HouseController {
     private final HouseService houseService;
     private static final int UUID_LENGTH = 36;
