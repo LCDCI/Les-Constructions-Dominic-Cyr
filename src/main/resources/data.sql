@@ -1,7 +1,14 @@
 -- data for lots
-INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('c80a5ba7-2a24-42ad-a989-27bb1cb1bbd6', 'Location A', 100000.0, '50x100', 'AVAILABLE');
-INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('44b2358d-478c-40e1-b85c-de6b917392eb', 'Location B', 150000.0, '60x120', 'SOLD');
-INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('15b1d772-c770-4dec-8d26-e27001fffbc5', 'Location C', 200000.0, '70x140', 'PENDING');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('a12b3c45-d678-4efa-9012-bc3456de789f', 'Montreal, QC', 120000.0, '55x110', 'AVAILABLE');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('b23c4d56-e789-5fab-0123-cd4567ef890a', 'Quebec City, QC', 180000.0, '65x125', 'SOLD');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('c34d5e67-f890-6gcb-1234-de5678fg901b', 'Sherbrooke, QC', 140000.0, '60x115', 'PENDING');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('d45e6f78-g901-7hdb-2345-ef6789gh012c', 'Trois-Rivières, QC', 155000.0, '70x130', 'AVAILABLE');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('e56f7g89-h012-8iec-3456-fg7890hi123d', 'Gatineau, QC', 110000.0, '50x100', 'SOLD');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('f67890ab-i123-9jfd-4567-gh8901ij234e', 'Drummondville, QC', 175000.0, '75x145', 'AVAILABLE');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('g78901bc-j234-0kge-5678-hi9012jk345f', 'Saguenay, QC', 165000.0, '70x140', 'PENDING');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('h89012cd-k345-1lgf-6789-ij0123kl456g', 'Rimouski, QC', 130000.0, '55x120', 'AVAILABLE');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('i90123de-l456-2mhg-7890-jk1234lm567h', 'Chicoutimi, QC', 160000.0, '65x135', 'SOLD');
+INSERT INTO lots (lot_identifier, location, price, dimensions, lot_status) VALUES ('j01234ef-m567-3nih-8901-kl2345mn678i', 'Baie-Comeau, QC', 145000.0, '60x125', 'AVAILABLE');
 
 -- data for houses
 INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('a3f1c0f1-8f2b-4c3d-9d5a-1b2a3c4d5e6f', 'Renovated Bungalow', 'Montreal, QC', 'Modern bungalow featuring sleek finishes, smart home technology, and eco-friendly materials, ideally located near parks and public transit.', 6, 3, 2, 2022);
