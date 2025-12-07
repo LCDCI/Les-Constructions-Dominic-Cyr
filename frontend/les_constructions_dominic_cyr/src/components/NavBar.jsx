@@ -171,7 +171,7 @@ const Navbar = () => {
               <li className="navbar-item">
                 <Link
                   to="/home"
-                  className={`navbar-link ${isActive('/lots')}`}
+                  className={`navbar-link ${isActive('/home')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">🏠</span>

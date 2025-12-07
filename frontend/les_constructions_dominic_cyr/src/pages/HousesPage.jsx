@@ -13,25 +13,25 @@ const HousesPage = () => {
   const apiBaseUrl =
     import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
-  useEffect(() => {
-    fetchHouses();
-  }, []);
 
+
+  useEffect(() => {
+    const fetchHouses = async () => {
+      try {
+        const response = await fetch(`${apiBaseUrl}/houses`);
+        const data = await response.json();
+        setHouses(data);
+        setFilteredHouses(data);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+    fetchHouses();
+  }, [apiBaseUrl]);
   useEffect(() => {
     filterHouses();
   }, [searchTerm, houses]);
-
-  const fetchHouses = async () => {
-    try {
-      const response = await fetch(`${apiBaseUrl}/houses`);
-      const data = await response.json();
-      setHouses(data);
-      setFilteredHouses(data);
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
-  };
 
   const filterHouses = () => {
     if (!searchTerm.trim()) {

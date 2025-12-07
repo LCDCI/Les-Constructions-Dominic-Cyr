@@ -1,6 +1,8 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/v1';
 
+const FILES_SERVICE_BASE_URL =
+  import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 export const projectApi = {
   getAllProjects: async (filters = {}) => {
     const params = new URLSearchParams();
