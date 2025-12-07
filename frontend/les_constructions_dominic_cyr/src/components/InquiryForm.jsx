@@ -90,7 +90,7 @@ export default function InquiryForm({ onSuccess, className }) {
             value={form.message}
             onChange={onChange}
             placeholder="Tell us about your project..."
-            rows="5"
+            rows={5}
             disabled={loading}
             required
             required
