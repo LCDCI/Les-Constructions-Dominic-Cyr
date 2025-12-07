@@ -37,19 +37,15 @@ export default function InquiryForm({ onSuccess, className }) {
         onSuccess && onSuccess(text);
       } else {
         let errorMessage = 'Submission failed.';
+        const text = await res.text();
         try {
-          const data = await res.clone().json();
+          const data = JSON.parse(text);
           if (data && typeof data.message === 'string') {
             errorMessage = data.message;
           }
         } catch {
-          // If not JSON, try to get text
-          try {
-            const text = await res.text();
-            if (text) errorMessage = text;
-          } catch {
-            // ignore, use default errorMessage
-          }
+          // If not JSON, use the text directly
+          if (text) errorMessage = text;
         }
         setStatus({ message: errorMessage, type: 'error' });
       }
