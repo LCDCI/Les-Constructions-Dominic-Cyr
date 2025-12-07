@@ -12,16 +12,20 @@ test.describe('Lots Page', () => {
 
   test('should filter lots when searching', async () => {
     const initialCount = await lotsPage.getLotCount();
-
-    if (initialCount > 0) {
-      await lotsPage.searchInput.fill('nonexistent12345');
-      await lotsPage.page.waitForTimeout(500);
-
-      const filteredCount = await lotsPage.getLotCount();
-      const noResults = await lotsPage.noResultsMessage.isVisible();
-
-      expect(filteredCount === 0 || noResults).toBeTruthy();
+    // perform search regardless of initialCount; assert correct empty state
+    await lotsPage.searchInput.fill('nonexistent12345');
+    // Wait for either the no-results message or for the cards count to update
+    try {
+      await expect(lotsPage.noResultsMessage).toBeVisible({ timeout: 2000 });
+    } catch (e) {
+      // if the no-results message didn't appear, we'll check the count below
     }
+
+    const filteredCount = await lotsPage.getLotCount();
+    const noResults = await lotsPage.noResultsMessage.isVisible();
+
+    // Either the filtered count is 0, or the no-results message is visible
+    expect(filteredCount === 0 || noResults || initialCount === 0).toBeTruthy();
   });
 
   test('should display lot cards with required elements', async () => {

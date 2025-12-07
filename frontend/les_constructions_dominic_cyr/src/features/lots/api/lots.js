@@ -4,7 +4,15 @@ const API_BASE_URL =
 export async function fetchLots() {
   const response = await fetch(`${API_BASE_URL}/lots`);
   if (!response.ok) {
-    throw new Error('Failed to fetch lots');
+    let bodyText;
+    try {
+      bodyText = await response.text();
+    } catch (e) {
+      bodyText = '<unable to read response body>';
+    }
+    throw new Error(
+      `Failed to fetch lots: ${response.status} ${response.statusText} - ${bodyText}`
+    );
   }
   return response.json();
 }
@@ -12,7 +20,15 @@ export async function fetchLots() {
 export async function fetchLotById(id) {
   const response = await fetch(`${API_BASE_URL}/lots/${id}`);
   if (!response.ok) {
-    throw new Error('Failed to fetch lot');
+    let bodyText;
+    try {
+      bodyText = await response.text();
+    } catch (e) {
+      bodyText = '<unable to read response body>';
+    }
+    throw new Error(
+      `Failed to fetch lot ${id}: ${response.status} ${response.statusText} - ${bodyText}`
+    );
   }
   return response.json();
 }
