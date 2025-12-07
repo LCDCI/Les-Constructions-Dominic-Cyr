@@ -21,4 +21,8 @@ public class InquiryService {
         inquiry.setMessage(request.getMessage());
         return repository.save(inquiry);
     }
+
+    public java.util.List<Inquiry> getAllInquiries() {
+        return repository.findAll();
+    }
 }

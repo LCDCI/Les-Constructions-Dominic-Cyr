@@ -3,9 +3,12 @@ package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Con
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DTOs.InquiryRequest;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Services.InquiryService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -16,8 +19,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -32,7 +33,12 @@ public class InquiryController {
     private final InquiryService service;
     private static final int MAX_MESSAGE_LENGTH = 1000;
     private static final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
-    private static final String RECAPTCHA_SECRET = "YOUR_RECAPTCHA_SECRET"; // TODO: Replace with actual secret
+
+    @Value("${recaptcha.secret}")
+    private String recaptchaSecret;
+
+    @Value("${inquiries.owner.key}")
+    private String ownerAccessKey;
 
     public InquiryController(InquiryService service) {
         this.service = service;
@@ -47,7 +53,7 @@ public class InquiryController {
     private boolean verifyRecaptcha(String token) {
         try {
             HttpClient client = HttpClient.newHttpClient();
-            String body = "secret=" + RECAPTCHA_SECRET + "&response=" + token;
+            String body = "secret=" + recaptchaSecret + "&response=" + token;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://www.google.com/recaptcha/api/siteverify"))
                     .header("Content-Type", "application/x-www-form-urlencoded")
@@ -86,5 +92,20 @@ public class InquiryController {
         request.setMessage(HtmlUtils.htmlEscape(request.getMessage()));
         service.submitInquiry(request);
         return ResponseEntity.ok().body("Thank you! Your inquiry has been received.");
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllInquiries(HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        Bucket bucket = resolveBucket(ip);
+        if (!bucket.tryConsume(1)) {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Too many requests. Please try again later.");
+        }
+        // TODO: Replace header-based auth with Spring Security (JWT/OAuth2) for production
+        String providedKey = httpRequest.getHeader("X-OWNER-KEY");
+        if (providedKey == null || !providedKey.equals(ownerAccessKey)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        }
+        return ResponseEntity.ok(service.getAllInquiries());
     }
 }
