@@ -31,7 +31,7 @@
     background: #f5f5f5;
 }
 
-. hamburger-line {
+.hamburger-line {
     width: 25px;
     height: 2px;
     background-color: #666;
@@ -65,7 +65,7 @@
     z-index: 1500;
 }
 
-. navbar-overlay.active {
+.navbar-overlay.active {
     display: block;
 }
 
@@ -100,7 +100,7 @@
     min-height: 80px;
 }
 
-. navbar-sidebar-logo-image {
+.navbar-sidebar-logo-image {
     height: 40px;
     width: auto;
     max-width: 80%;
@@ -170,7 +170,7 @@
     border-left-color: #4A90A4;
 }
 
-.navbar-link. active {
+.navbar-link.active {
     background-color: #e8f4f8;
     border-left-color: #4A90A4;
     color: #4A90A4;
@@ -187,7 +187,7 @@
 }
 
 /* Sidebar Footer */
-. navbar-sidebar-footer {
+.navbar-sidebar-footer {
     padding: 5%;
     border-top: 1px solid #e5e5e5;
     background-color: #f9f9f9;
@@ -258,7 +258,7 @@ body.menu-open {
         max-width: 320px;
     }
 
-    . navbar-container {
+    .navbar-container {
         padding: 2.5% 4%;
     }
 
@@ -316,7 +316,7 @@ body.menu-open {
         max-width: 50%;
     }
 
-    . navbar-logo-image {
+    .navbar-logo-image {
         height: 35px;
         max-width: 120px;
     }
