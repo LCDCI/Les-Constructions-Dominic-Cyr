@@ -1,7 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Controllers;
 
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DTOs.InquiryRequest;
-import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Entities.Inquiry;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Services.InquiryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
