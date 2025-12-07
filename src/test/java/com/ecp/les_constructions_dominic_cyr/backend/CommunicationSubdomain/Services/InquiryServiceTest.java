@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
  * Uses @ExtendWith(MockitoExtension.class) to avoid bringing up full application context
  */
 @ExtendWith(MockitoExtension.class)
-class InquiryServiceTest {
+class InquiryServiceUnitTest {
 
     @Mock
     private InquiryRepository inquiryRepository;
