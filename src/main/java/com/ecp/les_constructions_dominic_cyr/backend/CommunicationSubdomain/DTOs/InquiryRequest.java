@@ -5,20 +5,20 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public class InquiryRequest {
-    @NotBlank
-    @Size(max = 150)
+    @NotBlank(message = "Name is required")
+    @Size(max = 150, message = "Name must not exceed 150 characters")
     private String name;
 
-    @NotBlank
-    @Email
-    @Size(max = 200)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please provide a valid email address")
+    @Size(max = 200, message = "Email must not exceed 200 characters")
     private String email;
 
-    @Size(max = 30)
+    @Size(max = 30, message = "Phone number must not exceed 30 characters")
     private String phone;
 
-    @NotBlank
-    @Size(max = 2000)
+    @NotBlank(message = "Message is required")
+    @Size(max = 2000, message = "Message must not exceed 2000 characters")
     private String message;
 
     public String getName() { return name; }

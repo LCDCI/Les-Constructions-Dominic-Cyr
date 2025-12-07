@@ -5,12 +5,11 @@ import React, { useState } from 'react';
  * Props:
  * - onSuccess(message: string): optional callback when submission succeeds
  * - className: optional wrapper class for layout/styling
- * note: might change this for a new style since theres no figma page for it
  */
 
 export default function InquiryForm({ onSuccess, className }) {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState({ message: '', type: '' });
   const [loading, setLoading] = useState(false);
 
   const onChange = (e) => {
@@ -20,11 +19,11 @@ export default function InquiryForm({ onSuccess, className }) {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
-      setStatus('Please fill out all required fields.');
+      setStatus({ message: 'Please fill out all required fields.', type: 'error' });
       return;
     }
     setLoading(true);
-    setStatus('');
+    setStatus({ message: '', type: '' });
     try {
       const res = await fetch('/api/inquiries', {
         method: 'POST',
@@ -33,15 +32,15 @@ export default function InquiryForm({ onSuccess, className }) {
       });
       if (res.ok) {
         const text = await res.text();
-        setStatus(text);
+        setStatus({ message: text, type: 'success' });
         setForm({ name: '', email: '', phone: '', message: '' });
         onSuccess && onSuccess(text);
       } else {
         const errText = await res.text();
-        setStatus(errText || 'Submission failed.');
+        setStatus({ message: errText || 'Submission failed.', type: 'error' });
       }
     } catch (err) {
-      setStatus('Network error. Please try again later.');
+      setStatus({ message: 'Network error. Please try again later.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -59,6 +58,7 @@ export default function InquiryForm({ onSuccess, className }) {
             onChange={onChange}
             placeholder="Your name"
             disabled={loading}
+            required
           />
         </div>
         <div className="form-group">
@@ -70,6 +70,7 @@ export default function InquiryForm({ onSuccess, className }) {
             onChange={onChange}
             placeholder="your.email@example.com"
             disabled={loading}
+            required
           />
         </div>
         <div className="form-group">
@@ -91,14 +92,16 @@ export default function InquiryForm({ onSuccess, className }) {
             placeholder="Tell us about your project..."
             rows="5"
             disabled={loading}
+            required
+            required
           />
         </div>
         <button type="submit" className="submit-btn" disabled={loading}>
           {loading ? 'Sending...' : 'Submit Inquiry'}
         </button>
-        {status && (
-          <div className={`status-message ${status.includes('Thank you') ? 'success' : 'error'}`}>
-            {status}
+        {status.message && (
+          <div className={`status-message ${status.type}`}>
+            {status.message}
           </div>
         )}
       </form>
