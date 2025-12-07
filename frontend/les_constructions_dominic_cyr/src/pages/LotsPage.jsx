@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { fetchLots } from '../features/lots/api/lots';
 import '../styles/lots.css';
 import Footer from '../components/AppFooter';
@@ -8,17 +8,46 @@ const LotsPage = () => {
   const [filteredLots, setFilteredLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 
-  useEffect(() => {
-    fetchAvailableLots();
+  const fetchAvailableLots = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await fetchLots();
+      const allLots = Array.isArray(data) ? data : [];
+      // Filter to show only AVAILABLE lots
+      const availableLots = allLots.filter(lot => lot.lotStatus === 'AVAILABLE');
+      setLots(availableLots);
+      setFilteredLots(availableLots);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to fetch lots:', err);
+      setError(err && err.message ? err.message : 'Failed to load lots');
+      setLots([]);
+      setFilteredLots([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    filterLots();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchAvailableLots();
+  }, [fetchAvailableLots]);
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredLots(lots);
+      return;
+    }
+
+    const filtered = lots.filter(lot =>
+      lot.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredLots(filtered);
   }, [searchTerm, lots]);
 
   const fetchAvailableLots = async () => {
@@ -36,17 +65,7 @@ const LotsPage = () => {
     }
   };
 
-  const filterLots = () => {
-    if (!searchTerm.trim()) {
-      setFilteredLots(lots);
-      return;
-    }
-
-    const filtered = lots.filter(lot =>
-      lot.location.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredLots(filtered);
-  };
+  // filtering is handled inside the effect above
 
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) {
@@ -76,11 +95,25 @@ const LotsPage = () => {
       <div className="lots-page">
         <div className="lots-content">
           <div className="lots-container">
-            <p
-              style={{ textAlign: 'center', padding: '5%', fontSize: '1.2rem' }}
-            >
-              Loading lots...
-            </p>
+            <p className="lots-loading">Loading lots...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="lots-page">
+        <div className="lots-content">
+          <div className="lots-container">
+            <div className="lots-error">
+              <p>Unable to load lots: {error}</p>
+              <button className="retry-button" onClick={fetchAvailableLots}>
+                Retry
+              </button>
+            </div>
           </div>
         </div>
         <Footer />
@@ -140,7 +173,6 @@ const LotsPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

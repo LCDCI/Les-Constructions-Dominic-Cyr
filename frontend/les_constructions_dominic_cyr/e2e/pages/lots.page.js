@@ -19,14 +19,27 @@ export class LotsPage {
 
   async waitForLotsToLoad() {
     await this.page.waitForLoadState('networkidle');
-    await this.loadingIndicator
-      .waitFor({ state: 'hidden', timeout: 15000 })
-      .catch(() => {});
+    try {
+      await this.loadingIndicator.waitFor({ state: 'hidden', timeout: 15000 });
+    } catch (err) {
+      // Log so CI doesn't silently swallow load problems
+      // eslint-disable-next-line no-console
+      console.error('Waiting for lots loading indicator failed', err);
+    }
   }
 
   async searchLots(searchTerm) {
     await this.searchInput.fill(searchTerm);
-    await this.page.waitForTimeout(500);
+    // Wait for either lot cards or no-results message to be visible after search
+    await Promise.race([
+      this.lotCards
+        .first()
+        .waitFor({ state: 'visible', timeout: 5000 })
+        .catch(() => {}),
+      this.noResultsMessage
+        .waitFor({ state: 'visible', timeout: 5000 })
+        .catch(() => {}),
+    ]);
   }
 
   async clearSearch() {
