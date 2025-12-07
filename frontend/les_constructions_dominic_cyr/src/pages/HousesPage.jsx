@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/houses.css';
 import Footer from '../components/AppFooter';
 
 const HousesPage = () => {
+  const navigate = useNavigate();
   const [houses, setHouses] = useState([]);
   const [filteredHouses, setFilteredHouses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -59,7 +61,7 @@ const HousesPage = () => {
   };
 
   const handleViewHouse = houseId => {
-    window.location.href = `/houses/${houseId}`;
+    navigate(`/houses/${houseId}`);
   };
 
   if (loading) {
