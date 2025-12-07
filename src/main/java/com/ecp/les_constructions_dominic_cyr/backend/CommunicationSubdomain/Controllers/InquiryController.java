@@ -6,8 +6,6 @@ import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Serv
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
-
 @RestController
 @RequestMapping("/api/inquiries")
 @CrossOrigin(origins = "http://localhost:3000")
