@@ -12,7 +12,8 @@ export default function ServerError() {
           We&apos;re sorry, but something went wrong on our end.
         </p>
         <p className="error-description">
-          Our team has been notified and is working to fix the issue. Please try again later or return to the home page.
+          Our team has been notified and is working to fix the issue. Please try
+          again later or return to the home page.
         </p>
         <Link to="/" className="error-button">
           Return to Home Page
@@ -21,4 +22,3 @@ export default function ServerError() {
     </div>
   );
 }
-

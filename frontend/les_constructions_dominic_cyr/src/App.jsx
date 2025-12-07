@@ -4,6 +4,7 @@ import AppNavBar from './components/AppNavBar';
 import AppFooter from './components/AppFooter';
 import Home from './pages/Home';
 import ProjectsPage from './pages/ProjectsPage';
+import HousesPage from './pages/HousesPage';
 import LotsPage from './pages/LotsPage';
 import ContactPage from './pages/ContactPage';
 import ServerError from './pages/ServerError';
@@ -22,6 +23,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/lots" element={<LotsPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/houses" element={<HousesPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route path="*" element={<NotFound />} />
