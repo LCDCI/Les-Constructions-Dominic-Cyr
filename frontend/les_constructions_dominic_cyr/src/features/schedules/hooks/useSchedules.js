@@ -10,8 +10,8 @@ const useSchedules = (fetchAll = false) => {
     try {
       setLoading(true);
       setError(null);
-      const data = fetchAll 
-        ? await scheduleApi.getAllSchedules() 
+      const data = fetchAll
+        ? await scheduleApi.getAllSchedules()
         : await scheduleApi.getCurrentWeekSchedules();
       setSchedules(data);
     } catch (err) {

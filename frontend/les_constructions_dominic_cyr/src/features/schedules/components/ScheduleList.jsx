@@ -1,12 +1,12 @@
 import React from 'react';
 
 const ScheduleList = ({ schedules, loading, error }) => {
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'long', 
-      day: 'numeric', 
-      weekday: 'long' 
+    return date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
     });
   };
 
@@ -36,7 +36,7 @@ const ScheduleList = ({ schedules, loading, error }) => {
 
   return (
     <div className="schedule-list">
-      {schedules.map((schedule) => (
+      {schedules.map(schedule => (
         <div key={schedule.scheduleIdentifier} className="schedule-item">
           <span className="schedule-date">{formatDate(schedule.taskDate)}</span>
           <span className="schedule-separator"> - </span>

@@ -18,6 +18,7 @@ const LotsPage = () => {
 
   useEffect(() => {
     filterLots();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, lots]);
 
   const fetchAvailableLots = async () => {
@@ -29,6 +30,7 @@ const LotsPage = () => {
       setFilteredLots(availableLots);
       setLoading(false);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch lots:', error);
       setLoading(false);
     }
