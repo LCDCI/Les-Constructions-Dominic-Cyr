@@ -18,7 +18,6 @@ const LotsPage = () => {
 
   useEffect(() => {
     filterLots();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm, lots]);
 
   const fetchAvailableLots = async () => {
