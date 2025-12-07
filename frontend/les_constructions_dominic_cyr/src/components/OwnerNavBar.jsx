@@ -8,7 +8,6 @@ import {
   GoGraph,
   GoGear,
   GoHome,
-  GoPersonAdd,
   GoPackage,
   GoFileDiff,
   GoFile,
