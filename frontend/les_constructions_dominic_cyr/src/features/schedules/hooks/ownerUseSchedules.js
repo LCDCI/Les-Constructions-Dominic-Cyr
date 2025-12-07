@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import scheduleApi from '../api/scheduleApi';
+import scheduleApi from '../api/ownerScheduleApi';
 
 const useSchedules = (fetchAll = false) => {
   const [schedules, setSchedules] = useState([]);

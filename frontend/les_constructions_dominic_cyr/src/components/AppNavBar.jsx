@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../styles/AppNavBar.css';
-import Navbar from '../components/OwnerNavBar';
+import OwnerNavBar from '../components/OwnerNavBar';
+import SalespersonNavBar from '../components/SalespersonNavBar';
 
 export default function AppNavBar() {
   const [language, setLanguage] = useState('FR');
@@ -18,7 +19,9 @@ export default function AppNavBar() {
   return (
     <header className="site-nav">
       <div className="site-nav-inner">
-      <Navbar />
+      <SalespersonNavBar />
+      <OwnerNavBar />
+      
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
@@ -26,25 +29,25 @@ export default function AppNavBar() {
             to="/projets-residentiels"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Projets résidentiels
+            Residential Projects
           </NavLink>
           <NavLink
-            to="/renovation"
+            to="/renovations"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Rénovation
+            Renovations
           </NavLink>
           <NavLink
-            to="/projectmanagement"
+            to="/gestion-de-projet"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Gestion de projet
+            Project Management
           </NavLink>
           <NavLink
             to="/realisations"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Réalisations
+            Realizations
           </NavLink>
           <NavLink
             to="/contact"
@@ -56,11 +59,8 @@ export default function AppNavBar() {
 
         {/* Action Buttons */}
         <div className="nav-actions">
-          <button className="btn-signin">
-            Sign in <span className="arrow">→</span>
-          </button>
           <button className="btn-get-started">
-            Get Started
+            Portal Access
           </button>
           <button 
             className="btn-language"
@@ -92,14 +92,14 @@ export default function AppNavBar() {
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          Projets résidentiels
+          Residential Projects
         </NavLink>
         <NavLink
-          to="/renovation"
+          to="/renovations"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          Rénovation
+          Renovations
         </NavLink>
         <NavLink
           to="/gestion-de-projet"
@@ -113,14 +113,11 @@ export default function AppNavBar() {
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          Réalisations
+          Realizations
         </NavLink>
         <div className="mobile-actions">
-          <button className="btn-signin">
-            Sign in <span className="arrow">→</span>
-          </button>
           <button className="btn-get-started">
-            Get Started
+            Portal Access
           </button>
           <button 
             className="btn-language"

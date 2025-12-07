@@ -2,16 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/ownerNavbar.css';
 import { GoInbox } from "react-icons/go";
-import { GoArrowUp } from "react-icons/go";
-import { GoPeople } from "react-icons/go";
-import { GoGraph } from "react-icons/go";
 import { GoGear } from "react-icons/go";
-import { GoHome } from "react-icons/go";
 import { GoPackage } from "react-icons/go";
 import { GoFileDiff } from "react-icons/go";
 import { GoFile } from "react-icons/go";
 import { GoProject } from "react-icons/go";
-import { FaMapLocationDot } from "react-icons/fa6";
 import { CiLogout } from "react-icons/ci";
 import { IoIosNotifications } from "react-icons/io";
 
@@ -68,7 +63,7 @@ const Navbar = () => {
                         aria-label="Toggle navigation menu"
                         aria-expanded={isOpen}
                     >
-                        <span>Owner</span>
+                        <span>Salesperson</span>
                         <span className="hamburger-line"></span>
                         <span className="hamburger-line"></span>
                         <span className="hamburger-line"></span>
@@ -82,22 +77,12 @@ const Navbar = () => {
                         <ul className="navbar-menu">
                             <li className="navbar-item">
                                 <Link
-                                    to="/owner/dashboard"
-                                    className={`navbar-link ${isActive('/owner/dashboard')}`}
+                                    to="/salesperson/dashboard"
+                                    className={`navbar-link ${isActive('/salesperson/dashboard')}`}
                                     onClick={closeMenu}
                                 >
                                     <span className="navbar-icon"><GoProject /></span>
                                     <span className="navbar-text">Dashboard</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/"
-                                    className={`navbar-link ${isActive('/')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoHome /></span>
-                                    <span className="navbar-text">Home</span>
                                 </Link>
                             </li>
                         </ul>
@@ -109,8 +94,8 @@ const Navbar = () => {
                         <ul className="navbar-menu">
                             <li className="navbar-item">
                                 <Link
-                                    to="/inbox"
-                                    className={`navbar-link ${isActive('/inbox')}`}
+                                    to="/salesperson/inbox"
+                                    className={`navbar-link ${isActive('/salesperson/inbox')}`}
                                     onClick={closeMenu}
                                 >
                                     <span className="navbar-icon"><GoInbox /></span>
@@ -129,8 +114,8 @@ const Navbar = () => {
                             </li>
                             <li className="navbar-item">
                                 <Link
-                                    to="/forms"
-                                    className={`navbar-link ${isActive('/forms')}`}
+                                    to="/salesperson/forms"
+                                    className={`navbar-link ${isActive('/salesperson/forms')}`}
                                     onClick={closeMenu}
                                 >
                                     <span className="navbar-icon"><GoFileDiff /></span>
@@ -139,61 +124,17 @@ const Navbar = () => {
                             </li>
                             <li className="navbar-item">
                                 <Link
-                                    to="/uploads"
-                                    className={`navbar-link ${isActive('/uploads')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoArrowUp /></span>
-                                    <span className="navbar-text">Uploads</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/documents"
-                                    className={`navbar-link ${isActive('/documents')}`}
+                                    to="/salesperson/documents"
+                                    className={`navbar-link ${isActive('/salesperson/documents')}`}
                                     onClick={closeMenu}
                                 >
                                     <span className="navbar-icon"><GoFile /></span>
                                     <span className="navbar-text">Documents</span>
                                 </Link>
                             </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/lots"
-                                    className={`navbar-link ${isActive('/lots')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><FaMapLocationDot /></span>
-                                    <span className="navbar-text">Lots</span>
-                                </Link>
-                            </li>
                         </ul>
                     </div>
-                    <div className="navbar-section">
-                        <h3 className="navbar-section-title">Administrative</h3>
-                        <ul className="navbar-menu">
-                            <li className="navbar-item">
-                                <Link
-                                    to="/users"
-                                    className={`navbar-link ${isActive('/users')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoPeople /></span>
-                                    <span className="navbar-text">Users</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/analytics-reports"
-                                    className={`navbar-link ${isActive('/analytics-reports')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoGraph /></span>
-                                    <span className="navbar-text">Analytics & Reports</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                    
                     {/* Settings Section */}
                     <div className="navbar-section">
                         <h3 className="navbar-section-title">Settings</h3>

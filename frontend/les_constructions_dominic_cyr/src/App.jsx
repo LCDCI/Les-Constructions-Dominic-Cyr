@@ -10,6 +10,7 @@ import ContactPage from './pages/ContactPage';
 import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
 import OwnerDashboard from './pages/OwnerDashboard';
+import SalespersonDashboard from './pages/SalespersonDashboard';
 import NavigationSetter from './components/NavigationSetter';
 import './App.css';
 
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/error" element={<ServerError />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
+            <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
             {/* Remember to add more routes here as App grows */}
           </Routes>
         </main>
