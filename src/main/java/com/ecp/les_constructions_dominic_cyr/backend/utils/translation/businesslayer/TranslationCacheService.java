@@ -23,12 +23,13 @@ public class TranslationCacheService {
      */
     private void validatePathComponent(String input, String name) {
         if (input == null) return;
-        if (input.contains("..") || input.contains("/") || input.contains("\\") || input.startsWith(".")) {
-            throw new IllegalArgumentException("Invalid " + name + ": contains path separator or parent directory reference.");
+        // Disallow path separators, parent directory references, and leading/trailing dots or consecutive dots
+        // Only allow alphanumeric, underscore, dash, and at most one dot (for file extension)
+        if (!input.matches("^[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)?$")) {
+            throw new IllegalArgumentException("Invalid " + name + ": must be alphanumeric, may contain one dot (for extension), underscores, or dashes, but no path separators, consecutive dots, or leading/trailing dots.");
         }
-        // Only allow basic safe characters (letters, digits, underscore, dash, dot).
-        if (!input.matches("^[a-zA-Z0-9._-]+$")) {
-            throw new IllegalArgumentException("Invalid " + name + ": contains unsupported characters.");
+        if (input.contains("/") || input.contains("\\") ) {
+            throw new IllegalArgumentException("Invalid " + name + ": contains path separator.");
         }
     }
 
