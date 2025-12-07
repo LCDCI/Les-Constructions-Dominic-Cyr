@@ -36,8 +36,22 @@ export default function InquiryForm({ onSuccess, className }) {
         setForm({ name: '', email: '', phone: '', message: '' });
         onSuccess && onSuccess(text);
       } else {
-        const errText = await res.text();
-        setStatus({ message: errText || 'Submission failed.', type: 'error' });
+        let errorMessage = 'Submission failed.';
+        try {
+          const data = await res.clone().json();
+          if (data && typeof data.message === 'string') {
+            errorMessage = data.message;
+          }
+        } catch {
+          // If not JSON, try to get text
+          try {
+            const text = await res.text();
+            if (text) errorMessage = text;
+          } catch {
+            // ignore, use default errorMessage
+          }
+        }
+        setStatus({ message: errorMessage, type: 'error' });
       }
     } catch (err) {
       setStatus({ message: 'Network error. Please try again later.', type: 'error' });
