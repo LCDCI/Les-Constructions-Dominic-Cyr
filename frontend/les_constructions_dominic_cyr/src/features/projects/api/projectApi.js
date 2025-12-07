@@ -11,7 +11,7 @@ export const projectApi = {
     if (filters.customerId) params.append('customerId', filters.customerId);
 
     const queryString = params.toString();
-    const url = `${API_BASE_URL}/projects${queryString ? `? ${queryString}` : ''}`;
+    const url = `${API_BASE_URL}/projects${queryString ? `?${queryString}` : ''}`;
 
     const response = await fetch(url);
     if (!response.ok) {
