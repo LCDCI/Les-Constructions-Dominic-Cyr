@@ -100,7 +100,7 @@ const ProjectCard = ({ project, onEdit, canEdit }) => {
               fontSize: '14px',
               color: '#6B7280',
               marginBottom: '12px',
-              lineHeight: '1. 5',
+              lineHeight: '1.5',
             }}
           >
             {project.projectDescription}

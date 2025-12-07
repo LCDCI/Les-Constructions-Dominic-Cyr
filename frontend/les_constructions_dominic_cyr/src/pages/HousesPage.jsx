@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/houses.css';
 import Footer from '../components/AppFooter';
 
 const HousesPage = () => {
+  const navigate = useNavigate();
   const [houses, setHouses] = useState([]);
   const [filteredHouses, setFilteredHouses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,38 +15,38 @@ const HousesPage = () => {
   const apiBaseUrl =
     import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
-
-
   useEffect(() => {
-    const fetchHouses = async () => {
-      try {
-        const response = await fetch(`${apiBaseUrl}/houses`);
-        const data = await response.json();
-        setHouses(data);
-        setFilteredHouses(data);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-      }
-    };
     fetchHouses();
-  }, [apiBaseUrl]);
+  }, []);
+
   useEffect(() => {
+    const filterHouses = () => {
+      if (!searchTerm.trim()) {
+        setFilteredHouses(houses);
+        return;
+      }
+
+      const filtered = houses.filter(
+        house =>
+          house.houseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          house.location.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredHouses(filtered);
+    };
+
     filterHouses();
   }, [searchTerm, houses]);
 
-  const filterHouses = () => {
-    if (!searchTerm.trim()) {
-      setFilteredHouses(houses);
-      return;
+  const fetchHouses = async () => {
+    try {
+      const response = await fetch(`${apiBaseUrl}/houses`);
+      const data = await response.json();
+      setHouses(data);
+      setFilteredHouses(data);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
     }
-
-    const filtered = houses.filter(
-      house =>
-        house.houseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        house.location.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredHouses(filtered);
   };
 
   const getImageUrl = imageIdentifier => {
@@ -59,7 +61,7 @@ const HousesPage = () => {
   };
 
   const handleViewHouse = houseId => {
-    window.location.href = `/houses/${houseId}`;
+    navigate(`/houses/${houseId}`);
   };
 
   if (loading) {
