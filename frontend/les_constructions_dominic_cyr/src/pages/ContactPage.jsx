@@ -28,7 +28,7 @@ export default function ContactPage() {
                         </div>
                         <div className="info-item">
                             <strong>Téléphone</strong>
-                            <p><a href="tel:15141234567">514-123-4567</a></p>
+                            <p><a href="tel:+15141234567">514-123-4567</a></p>
                         </div>
                         <div className="info-item">
                             <strong>Courriel</strong>
