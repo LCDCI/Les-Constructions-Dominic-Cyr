@@ -14,7 +14,7 @@ describe('InquiryForm E2E Tests', () => {
     // Given
     fetch.mockResolvedValueOnce({
       ok: true,
-      text: async () => 'Thank you! Your inquiry has been received.'
+      text: async () => 'Thank you! Your inquiry has been received.',
     });
 
     render(<InquiryForm />);
@@ -23,13 +23,20 @@ describe('InquiryForm E2E Tests', () => {
     const nameInput = screen.getByPlaceholderText(/your name/i);
     const emailInput = screen.getByPlaceholderText(/your.email@example.com/i);
     const phoneInput = screen.getByPlaceholderText(/\(555\) 123-4567/i);
-    const messageInput = screen.getByPlaceholderText(/tell us about your project/i);
-    const submitButton = screen.getByRole('button', { name: /submit inquiry/i });
+    const messageInput = screen.getByPlaceholderText(
+      /tell us about your project/i
+    );
+    const submitButton = screen.getByRole('button', {
+      name: /submit inquiry/i,
+    });
 
     await userEvent.type(nameInput, 'Jane Doe');
     await userEvent.type(emailInput, 'jane@example.com');
     await userEvent.type(phoneInput, '555-1234');
-    await userEvent.type(messageInput, 'I am interested in building a custom home.');
+    await userEvent.type(
+      messageInput,
+      'I am interested in building a custom home.'
+    );
 
     fireEvent.click(submitButton);
 
@@ -42,13 +49,15 @@ describe('InquiryForm E2E Tests', () => {
           name: 'Jane Doe',
           email: 'jane@example.com',
           phone: '555-1234',
-          message: 'I am interested in building a custom home.'
-        })
+          message: 'I am interested in building a custom home.',
+        }),
       });
     });
 
     await waitFor(() => {
-      expect(screen.getByText(/thank you! your inquiry has been received/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/thank you! your inquiry has been received/i)
+      ).toBeInTheDocument();
     });
 
     // Form should be cleared
@@ -62,15 +71,24 @@ describe('InquiryForm E2E Tests', () => {
     // Given
     fetch.mockResolvedValueOnce({
       ok: true,
-      text: async () => 'Thank you! Your inquiry has been received.'
+      text: async () => 'Thank you! Your inquiry has been received.',
     });
 
     render(<InquiryForm />);
 
     // When
-    await userEvent.type(screen.getByPlaceholderText(/your name/i), 'John Smith');
-    await userEvent.type(screen.getByPlaceholderText(/your.email@example.com/i), 'john@test.com');
-    await userEvent.type(screen.getByPlaceholderText(/tell us about your project/i), 'Need a renovation quote.');
+    await userEvent.type(
+      screen.getByPlaceholderText(/your name/i),
+      'John Smith'
+    );
+    await userEvent.type(
+      screen.getByPlaceholderText(/your.email@example.com/i),
+      'john@test.com'
+    );
+    await userEvent.type(
+      screen.getByPlaceholderText(/tell us about your project/i),
+      'Need a renovation quote.'
+    );
 
     fireEvent.click(screen.getByRole('button', { name: /submit inquiry/i }));
 
@@ -83,8 +101,8 @@ describe('InquiryForm E2E Tests', () => {
           name: 'John Smith',
           email: 'john@test.com',
           phone: '',
-          message: 'Need a renovation quote.'
-        })
+          message: 'Need a renovation quote.',
+        }),
       });
     });
 
@@ -102,7 +120,9 @@ describe('InquiryForm E2E Tests', () => {
 
     // Then
     await waitFor(() => {
-      expect(screen.getByText(/please fill out all required fields/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/please fill out all required fields/i)
+      ).toBeInTheDocument();
     });
 
     expect(fetch).not.toHaveBeenCalled();
@@ -112,15 +132,21 @@ describe('InquiryForm E2E Tests', () => {
     // Given
     fetch.mockResolvedValueOnce({
       ok: false,
-      text: async () => 'Server error'
+      text: async () => 'Server error',
     });
 
     render(<InquiryForm />);
 
     // When
     await userEvent.type(screen.getByPlaceholderText(/your name/i), 'Alice');
-    await userEvent.type(screen.getByPlaceholderText(/your.email@example.com/i), 'alice@test.com');
-    await userEvent.type(screen.getByPlaceholderText(/tell us about your project/i), 'Test message');
+    await userEvent.type(
+      screen.getByPlaceholderText(/your.email@example.com/i),
+      'alice@test.com'
+    );
+    await userEvent.type(
+      screen.getByPlaceholderText(/tell us about your project/i),
+      'Test message'
+    );
 
     fireEvent.click(screen.getByRole('button', { name: /submit inquiry/i }));
 
@@ -138,8 +164,14 @@ describe('InquiryForm E2E Tests', () => {
 
     // When
     await userEvent.type(screen.getByPlaceholderText(/your name/i), 'Bob');
-    await userEvent.type(screen.getByPlaceholderText(/your.email@example.com/i), 'bob@test.com');
-    await userEvent.type(screen.getByPlaceholderText(/tell us about your project/i), 'Inquiry message');
+    await userEvent.type(
+      screen.getByPlaceholderText(/your.email@example.com/i),
+      'bob@test.com'
+    );
+    await userEvent.type(
+      screen.getByPlaceholderText(/tell us about your project/i),
+      'Inquiry message'
+    );
 
     fireEvent.click(screen.getByRole('button', { name: /submit inquiry/i }));
 
@@ -153,7 +185,7 @@ describe('InquiryForm E2E Tests', () => {
     // Given
     let resolvePromise;
     fetch.mockReturnValueOnce(
-      new Promise((resolve) => {
+      new Promise(resolve => {
         resolvePromise = resolve;
       })
     );
@@ -162,8 +194,14 @@ describe('InquiryForm E2E Tests', () => {
 
     // When
     await userEvent.type(screen.getByPlaceholderText(/your name/i), 'Charlie');
-    await userEvent.type(screen.getByPlaceholderText(/your.email@example.com/i), 'charlie@test.com');
-    await userEvent.type(screen.getByPlaceholderText(/tell us about your project/i), 'Test inquiry');
+    await userEvent.type(
+      screen.getByPlaceholderText(/your.email@example.com/i),
+      'charlie@test.com'
+    );
+    await userEvent.type(
+      screen.getByPlaceholderText(/tell us about your project/i),
+      'Test inquiry'
+    );
 
     fireEvent.click(screen.getByRole('button', { name: /submit inquiry/i }));
 
@@ -175,12 +213,14 @@ describe('InquiryForm E2E Tests', () => {
     // Resolve the promise
     resolvePromise({
       ok: true,
-      text: async () => 'Thank you! Your inquiry has been received.'
+      text: async () => 'Thank you! Your inquiry has been received.',
     });
 
     // Button should return to normal state
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /submit inquiry/i })).not.toBeDisabled();
+      expect(
+        screen.getByRole('button', { name: /submit inquiry/i })
+      ).not.toBeDisabled();
     });
   });
 });
