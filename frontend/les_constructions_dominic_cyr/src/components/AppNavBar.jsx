@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../styles/AppNavBar.css';
+import Navbar from '../components/OwnerNavBar';
 
 export default function AppNavBar() {
   const [language, setLanguage] = useState('FR');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleLanguage = () => {
-    setLanguage(prev => (prev === 'FR' ? 'EN' : 'FR'));
+    setLanguage(prev => prev === 'FR' ? 'EN' : 'FR');
   };
 
   const toggleMobileMenu = () => {
@@ -17,14 +18,7 @@ export default function AppNavBar() {
   return (
     <header className="site-nav">
       <div className="site-nav-inner">
-        {/* Logo */}
-        <div className="brand">
-          <img
-            src="https://via.placeholder.com/120x40?text=DCYR+Logo"
-            alt="DCYR Logo"
-            className="logo-image"
-          />
-        </div>
+      <Navbar />
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
@@ -65,8 +59,10 @@ export default function AppNavBar() {
           <button className="btn-signin">
             Sign in <span className="arrow">→</span>
           </button>
-          <button className="btn-get-started">Get Started</button>
-          <button
+          <button className="btn-get-started">
+            Get Started
+          </button>
+          <button 
             className="btn-language"
             onClick={toggleLanguage}
             aria-label="Toggle language"
@@ -76,7 +72,7 @@ export default function AppNavBar() {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button
+        <button 
           className="mobile-menu-toggle"
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
@@ -123,8 +119,10 @@ export default function AppNavBar() {
           <button className="btn-signin">
             Sign in <span className="arrow">→</span>
           </button>
-          <button className="btn-get-started">Get Started</button>
-          <button
+          <button className="btn-get-started">
+            Get Started
+          </button>
+          <button 
             className="btn-language"
             onClick={toggleLanguage}
             aria-label="Toggle language"
