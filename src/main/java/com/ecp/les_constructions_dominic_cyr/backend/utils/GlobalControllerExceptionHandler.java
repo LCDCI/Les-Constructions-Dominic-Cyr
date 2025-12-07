@@ -13,7 +13,9 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
@@ -65,10 +67,15 @@ public class GlobalControllerExceptionHandler {
         error.put("timestamp", LocalDateTime.now());
         error.put("status", HttpStatus.BAD_REQUEST.value());
         error.put("error", "Bad Request");
-        error.put("message", ex.getBindingResult().getAllErrors().stream()
-                .findFirst()
+        
+        List<String> errors = ex.getBindingResult().getAllErrors().stream()
                 .map(org.springframework.validation.ObjectError::getDefaultMessage)
-                .orElse("Validation failed"));
+                .collect(Collectors.toList());
+        
+        String message = errors.size() == 1 ? errors.get(0) : "Validation failed";
+        error.put("message", message);
+        error.put("errors", errors);
+        
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
