@@ -46,6 +46,7 @@ public class HouseServiceImpl implements HouseService{
         dto.setHouseName(house.getHouseName());
         dto.setLocation(house.getLocation());
         dto.setDescription(house.getDescription());
+        dto.setImageIdentifier(house.getImageIdentifier());
         dto.setNumberOfRooms(house.getNumberOfRooms());
         dto.setNumberOfBedrooms(house.getNumberOfBedrooms());
         dto.setNumberOfBathrooms(house.getNumberOfBathrooms());
