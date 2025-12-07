@@ -18,6 +18,20 @@ const HousesPage = () => {
   }, []);
 
   useEffect(() => {
+    const filterHouses = () => {
+      if (!searchTerm.trim()) {
+        setFilteredHouses(houses);
+        return;
+      }
+
+      const filtered = houses.filter(
+        house =>
+          house.houseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          house.location.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredHouses(filtered);
+    };
+
     filterHouses();
   }, [searchTerm, houses]);
 
@@ -31,20 +45,6 @@ const HousesPage = () => {
     } catch (error) {
       setLoading(false);
     }
-  };
-
-  const filterHouses = () => {
-    if (!searchTerm.trim()) {
-      setFilteredHouses(houses);
-      return;
-    }
-
-    const filtered = houses.filter(
-      house =>
-        house.houseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        house.location.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredHouses(filtered);
   };
 
   const getImageUrl = imageIdentifier => {
