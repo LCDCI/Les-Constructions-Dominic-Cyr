@@ -2,6 +2,8 @@ package com.ecp.les_constructions_dominic_cyr.backend.config;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.House;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -21,6 +23,9 @@ public class DataSeeder {
 
     @Autowired
     private HouseRepository houseRepository;
+
+    @Autowired
+    private LotRepository lotRepository;
 
     private static final Map<String, String> PROJECT_IMAGES = Map.of(
             "proj-001-foresta", "dcada4a5-aa19-4346-934e-1e57bc0f9e1f",
@@ -68,6 +73,32 @@ public class DataSeeder {
                     house.setImageIdentifier(imageId);
                     houseRepository.save(house);
                     log.info("Linked image to house: {}", houseId);
+                }
+            }
+        });
+    }
+
+    private static final Map<String, String> LOTS_IMAGES = Map.of(
+            "a12b3c45-d678-4efa-9012-bc3456de789f", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "b23c4d56-e789-5fab-0123-cd4567ef890a", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "c34d5e67-f890-6gcb-1234-de5678fg901b", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "d45e6f78-g901-7hdb-2345-ef6789gh012c", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "e56f7g89-h012-8iec-3456-fg7890hi123d", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "f67890ab-i123-9jfd-4567-gh8901ij234e", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "g78901bc-j234-0kge-5678-hi9012jk345f", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "h89012cd-k345-1lgf-6789-ij0123kl456g", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "i90123de-l456-2mhg-7890-jk1234lm567h", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
+            "j01234ef-m567-3nih-8901-kl2345mn678i", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c"
+    );
+
+    private void seedLotImages() {
+        HOUSE_IMAGES.forEach((lotId, imageId) -> {
+            Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
+            if (lot != null) {
+                if (lot.getImageIdentifier() == null || lot.getImageIdentifier().isEmpty()) {
+                    lot.setImageIdentifier(imageId);
+                    lotRepository.save(lot);
+                    log.info("Linked image to lot: {}", lotId);
                 }
             }
         });
