@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import '../styles/projects.css';
-import Navbar from '../components/NavBar';
 import Footer from '../components/AppFooter';
 
 const ProjectsPage = () => {
@@ -61,28 +60,8 @@ const ProjectsPage = () => {
     window.location.href = `/projects/${projectIdentifier}`;
   };
 
-  if (loading) {
-    return (
-      <div className="projects-page">
-        <Navbar />
-        <div className="projects-content">
-          <div className="projects-container">
-            <p
-              style={{ textAlign: 'center', padding: '5%', fontSize: '1.2rem' }}
-            >
-              Loading projects...
-            </p>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="projects-page">
-      <Navbar />
-
       <div className="projects-content">
         <div className="projects-container">
           <div className="projects-header">
@@ -133,7 +112,6 @@ const ProjectsPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
