@@ -4,7 +4,7 @@ import { projectApi } from '../api/projectApi';
 const ProjectCard = ({ project, onEdit, canEdit }) => {
   const imageUrl = project.imageIdentifier
     ? projectApi.getImageUrl(project.imageIdentifier)
-    : '/placeholder-project. png';
+    : '/placeholder-project.png';
 
   const getStatusColor = status => {
     switch (status) {

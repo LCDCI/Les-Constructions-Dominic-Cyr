@@ -104,7 +104,6 @@ export default function InquiryForm({ onSuccess, className }) {
             rows="5"
             disabled={loading}
             required
-            required
           />
         </div>
         <button type="submit" className="submit-btn" disabled={loading}>
