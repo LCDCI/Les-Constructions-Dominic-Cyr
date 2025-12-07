@@ -1,7 +1,6 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Controllers;
+package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer;
 
-import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DTOs.InquiryRequest;
-import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Services.InquiryService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.InquiryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +14,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -25,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+
 @RestController
 @RequestMapping("/api/inquiries")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -63,7 +60,7 @@ public class InquiryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequestModel request, HttpServletRequest httpRequest) {
         String ip = httpRequest.getRemoteAddr();
         Bucket bucket = resolveBucket(ip);
         if (!bucket.tryConsume(1)) {
@@ -84,7 +81,8 @@ public class InquiryController {
         request.setName(HtmlUtils.htmlEscape(request.getName()));
         request.setEmail(HtmlUtils.htmlEscape(request.getEmail()));
         request.setMessage(HtmlUtils.htmlEscape(request.getMessage()));
-        service.submitInquiry(request);
+        
+        InquiryResponseModel response = service.submitInquiry(request);
         return ResponseEntity.ok().body("Thank you! Your inquiry has been received.");
     }
 }
