@@ -15,7 +15,10 @@ export default function AppFooter() {
           <div className="footer-content">
             <p className="footer-item">Isabelle Misiazeck</p>
             <p className="footer-item">514-123-4567</p>
-            <a href="mailto:isabelle.misiazeck@foresta.ca" className="footer-link">
+            <a
+              href="mailto:isabelle.misiazeck@foresta.ca"
+              className="footer-link"
+            >
               isabelle.misiazeck@foresta.ca
             </a>
           </div>
@@ -29,7 +32,9 @@ export default function AppFooter() {
           <h3 className="footer-title">Opening Hours</h3>
           <div className="footer-content">
             <p className="footer-item">Monday to Wednesday: 1 p.m to 7 p.m</p>
-            <p className="footer-item">Saturday and Sunday: 11 a.m. to 5 p.m.</p>
+            <p className="footer-item">
+              Saturday and Sunday: 11 a.m. to 5 p.m.
+            </p>
           </div>
         </div>
 
@@ -54,4 +59,3 @@ export default function AppFooter() {
     </footer>
   );
 }
-
