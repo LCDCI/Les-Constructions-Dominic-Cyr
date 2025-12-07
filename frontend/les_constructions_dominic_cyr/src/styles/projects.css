@@ -59,16 +59,6 @@
     box-shadow: 0 4px 12px rgba(74, 144, 164, 0.2);
 }
 
-. search-icon {
-    position: absolute;
-    right: 5%;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-secondary);
-    pointer-events: none;
-    font-size: 1.2rem;
-}
-
 .projects-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -78,7 +68,7 @@
 }
 
 .project-card {
-    background-color: var(--card-background);
+    background-color: #E5EDF5;
     border-radius: var(--border-radius);
     padding: 5%;
     box-shadow: var(--box-shadow);
@@ -132,7 +122,7 @@
 }
 
 .project-button {
-    background-color: var(--primary-color);
+    background-color: #4D85B9;
     color: var(--white);
     padding: 3% 8%;
     border-radius: 25px;
@@ -144,7 +134,7 @@
 }
 
 .project-button:hover {
-    background-color: var(--accent-color);
+    background-color: #1565c0;
     transform: scale(1.05);
 }
 
