@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import '../styles/AppNavBar.css';
+import Navbar from '../components/OwnerNavBar';
 
 export default function AppNavBar() {
   const [language, setLanguage] = useState('FR');
@@ -17,14 +18,7 @@ export default function AppNavBar() {
   return (
     <header className="site-nav">
       <div className="site-nav-inner">
-        {/* Logo */}
-        <div className="brand">
-          <img 
-            src="https://via.placeholder.com/120x40?text=DCYR+Logo" 
-            alt="DCYR Logo" 
-            className="logo-image"
-          />
-        </div>
+      <Navbar />
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
