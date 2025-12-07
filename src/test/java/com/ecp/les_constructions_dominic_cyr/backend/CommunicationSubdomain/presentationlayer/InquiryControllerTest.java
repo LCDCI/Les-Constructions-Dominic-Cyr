@@ -1,8 +1,9 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Controllers;
+package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.presentationlayer;
 
-import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DTOs.InquiryRequest;
-import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Entities.Inquiry;
-import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Services.InquiryService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.InquiryService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryController;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryRequestModel;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryResponseModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.OffsetDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -35,30 +38,31 @@ class InquiryControllerTest {
     @MockBean
     private InquiryService inquiryService;
 
-    private InquiryRequest validRequest;
-    private Inquiry savedInquiry;
+    private InquiryRequestModel validRequest;
+    private InquiryResponseModel savedInquiry;
 
     @BeforeEach
     void setUp() {
         // Arrange - setup test data
-        validRequest = new InquiryRequest();
+        validRequest = new InquiryRequestModel();
         validRequest.setName("John Doe");
         validRequest.setEmail("john@example.com");
         validRequest.setPhone("555-1234");
         validRequest.setMessage("I need a quote for a new home.");
 
-        savedInquiry = new Inquiry();
+        savedInquiry = new InquiryResponseModel();
         savedInquiry.setId(1L);
         savedInquiry.setName(validRequest.getName());
         savedInquiry.setEmail(validRequest.getEmail());
         savedInquiry.setPhone(validRequest.getPhone());
         savedInquiry.setMessage(validRequest.getMessage());
+        savedInquiry.setCreatedAt(OffsetDateTime.now());
     }
 
     @Test
     void whenSubmitInquiry_withValidData_thenReturnsSuccess() throws Exception {
         // Arrange
-        when(inquiryService.submitInquiry(any(InquiryRequest.class))).thenReturn(savedInquiry);
+        when(inquiryService.submitInquiry(any(InquiryRequestModel.class))).thenReturn(savedInquiry);
 
         // Act & Assert
         mockMvc.perform(post("/api/inquiries")
@@ -71,7 +75,7 @@ class InquiryControllerTest {
     @Test
     void whenSubmitInquiry_withMissingEmail_thenReturnsBadRequest() throws Exception {
         // Arrange
-        InquiryRequest request = new InquiryRequest();
+        InquiryRequestModel request = new InquiryRequestModel();
         request.setName("John Doe");
         request.setMessage("I need a quote.");
 
@@ -85,7 +89,7 @@ class InquiryControllerTest {
     @Test
     void whenSubmitInquiry_withInvalidEmail_thenReturnsBadRequest() throws Exception {
         // Arrange
-        InquiryRequest request = new InquiryRequest();
+        InquiryRequestModel request = new InquiryRequestModel();
         request.setName("John Doe");
         request.setEmail("invalid-email");
         request.setMessage("I need a quote.");
@@ -100,7 +104,7 @@ class InquiryControllerTest {
     @Test
     void whenSubmitInquiry_withMissingMessage_thenReturnsBadRequest() throws Exception {
         // Arrange
-        InquiryRequest request = new InquiryRequest();
+        InquiryRequestModel request = new InquiryRequestModel();
         request.setName("John Doe");
         request.setEmail("john@example.com");
 
@@ -114,18 +118,19 @@ class InquiryControllerTest {
     @Test
     void whenSubmitInquiry_withoutPhone_thenReturnsSuccess() throws Exception {
         // Arrange - phone is optional
-        InquiryRequest request = new InquiryRequest();
+        InquiryRequestModel request = new InquiryRequestModel();
         request.setName("Jane Smith");
         request.setEmail("jane@example.com");
         request.setMessage("Interested in renovations.");
 
-        Inquiry savedInquiryNoPhone = new Inquiry();
+        InquiryResponseModel savedInquiryNoPhone = new InquiryResponseModel();
         savedInquiryNoPhone.setId(2L);
         savedInquiryNoPhone.setName(request.getName());
         savedInquiryNoPhone.setEmail(request.getEmail());
         savedInquiryNoPhone.setMessage(request.getMessage());
+        savedInquiryNoPhone.setCreatedAt(OffsetDateTime.now());
 
-        when(inquiryService.submitInquiry(any(InquiryRequest.class))).thenReturn(savedInquiryNoPhone);
+        when(inquiryService.submitInquiry(any(InquiryRequestModel.class))).thenReturn(savedInquiryNoPhone);
 
         // Act & Assert
         mockMvc.perform(post("/api/inquiries")

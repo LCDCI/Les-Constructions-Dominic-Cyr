@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Entities;
+package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer;
 
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
