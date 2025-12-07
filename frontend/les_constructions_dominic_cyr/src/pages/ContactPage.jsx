@@ -46,9 +46,9 @@ export default function ContactPage() {
                         </div>
                     </div>
 
-                    <InquiryForm className="contact-form-wrapper" />
-                </div>
-            </section>
+          <InquiryForm className="contact-form-wrapper" />
         </div>
-    );
+      </section>
+    </div>
+  );
 }

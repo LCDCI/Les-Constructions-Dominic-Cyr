@@ -1,13 +1,13 @@
-/* Projects Page Styles */
+/* Houses Page Styles */
 
-.projects-page {
+.houses-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: var(--background-color);
 }
 
-.projects-content {
+.houses-content {
     flex: 1;
     padding: 3% 0 12%;
     width: 100%;
@@ -15,24 +15,24 @@
     justify-content: center;
 }
 
-.projects-container {
+.houses-container {
     width: 80%;
     max-width: 1400px;
     margin: 0 auto;
 }
 
-.projects-header {
+.houses-header {
     text-align: center;
     margin-bottom: 4%;
 }
 
-.projects-header h1 {
+.houses-header h1 {
     font-size: 2.5rem;
     color: var(--text-primary);
     margin-bottom: 1%;
 }
 
-.projects-filter {
+.houses-filter {
     display: flex;
     justify-content: center;
     margin-bottom: 5%;
@@ -59,7 +59,7 @@
     box-shadow: 0 4px 12px rgba(74, 144, 164, 0.2);
 }
 
-.projects-grid {
+.houses-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 4%;
@@ -67,8 +67,8 @@
     justify-items: center;
 }
 
-.project-card {
-    background-color: #E5EDF5;
+.house-card {
+    background-color: var(--card-background);
     border-radius: var(--border-radius);
     padding: 5%;
     box-shadow: var(--box-shadow);
@@ -81,12 +81,12 @@
     max-width: 350px;
 }
 
-.project-card:hover {
+.house-card:hover {
     transform: translateY(-2%);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-.project-image-container {
+.house-image-container {
     width: 100%;
     aspect-ratio: 16 / 9;
     border-radius: var(--border-radius);
@@ -95,34 +95,59 @@
     background-color: var(--white);
 }
 
-.project-image {
+.house-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: var(--transition);
 }
 
-.project-card:hover .project-image {
+.house-card:hover .house-image {
     transform: scale(1.05);
 }
 
-.project-title {
+.house-title {
     font-size: 1.5rem;
     color: var(--text-primary);
-    margin-bottom: 4%;
+    margin-bottom: 2%;
     font-weight: 600;
 }
 
-.project-description {
+.house-location {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 3%;
+    font-style: italic;
+}
+
+.house-description {
     font-size: 0.95rem;
     color: var(--text-secondary);
     line-height: 1.6;
-    margin-bottom: 5%;
+    margin-bottom: 4%;
     flex-grow: 1;
 }
 
-.project-button {
-    background-color: #4D85B9;
+.house-details {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2%;
+    margin-bottom: 5%;
+    width: 100%;
+}
+
+.house-detail-item {
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    background-color: var(--background-color);
+    padding: 2% 4%;
+    border-radius: 15px;
+    white-space: nowrap;
+}
+
+.house-button {
+    background-color: var(--primary-color);
     color: var(--white);
     padding: 3% 8%;
     border-radius: 25px;
@@ -133,8 +158,8 @@
     max-width: 200px;
 }
 
-.project-button:hover {
-    background-color: #1565c0;
+.house-button:hover {
+    background-color: var(--accent-color);
     transform: scale(1.05);
 }
 
@@ -148,48 +173,57 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-    .projects-container {
+    .houses-container {
         width: 85%;
     }
 
-    .projects-grid {
+    .houses-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .projects-container {
+    .houses-container {
         width: 90%;
     }
 
-    .projects-header h1 {
+    .houses-header h1 {
         font-size: 2rem;
     }
 
-    .projects-grid {
+    .houses-grid {
         grid-template-columns: 1fr;
         gap: 6%;
     }
 
-    .project-title {
+    .house-title {
         font-size: 1.3rem;
     }
 
-    .project-button {
+    .house-button {
         width: 80%;
+    }
+
+    .house-details {
+        gap: 3%;
+    }
+
+    .house-detail-item {
+        font-size: 0.8rem;
+        padding: 2% 3%;
     }
 }
 
 @media (max-width: 480px) {
-    .projects-container {
+    .houses-container {
         width: 95%;
     }
 
-    .projects-content {
+    .houses-content {
         padding: 3% 0 15%;
     }
 
-    .projects-header h1 {
+    .houses-header h1 {
         font-size: 1.8rem;
     }
 
@@ -197,7 +231,16 @@
         padding: 4% 6%;
     }
 
-    .project-button {
+    .house-button {
         width: 90%;
+    }
+
+    .house-details {
+        flex-direction: column;
+        gap: 2%;
+    }
+
+    .house-detail-item {
+        width: 100%;
     }
 }

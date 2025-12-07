@@ -20,6 +20,7 @@ CREATE TABLE houses (
                     house_name VARCHAR(255) NOT NULL,
                     location VARCHAR(255) NOT NULL,
                     description TEXT NOT NULL,
+                    image_identifier VARCHAR(255),
                     number_of_rooms INTEGER NOT NULL,
                     number_of_bedrooms INTEGER NOT NULL,
                     number_of_bathrooms INTEGER NOT NULL,

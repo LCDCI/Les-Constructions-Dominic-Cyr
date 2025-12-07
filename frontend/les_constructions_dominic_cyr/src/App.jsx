@@ -4,10 +4,12 @@ import AppNavBar from './components/AppNavBar';
 import AppFooter from './components/AppFooter';
 import Home from './pages/Home';
 import ProjectsPage from './pages/ProjectsPage';
+import HousesPage from './pages/HousesPage';
 import LotsPage from './pages/LotsPage';
 import ContactPage from './pages/ContactPage';
 import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
+import OwnerDashboard from './pages/OwnerDashboard';
 import NavigationSetter from './components/NavigationSetter';
 import './App.css';
 
@@ -22,9 +24,11 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/lots" element={<LotsPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/houses" element={<HousesPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/owner/dashboard" element={<OwnerDashboard />} />
             {/* Remember to add more routes here as App grows */}
           </Routes>
         </main>
