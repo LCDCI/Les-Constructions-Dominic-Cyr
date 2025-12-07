@@ -80,6 +80,9 @@ public class InquiryController {
         // Input sanitization
         request.setName(HtmlUtils.htmlEscape(request.getName()));
         request.setEmail(HtmlUtils.htmlEscape(request.getEmail()));
+        if (request.getPhone() != null) {
+            request.setPhone(HtmlUtils.htmlEscape(request.getPhone()));
+        }
         request.setMessage(HtmlUtils.htmlEscape(request.getMessage()));
         
         InquiryResponseModel response = service.submitInquiry(request);

@@ -13,7 +13,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -42,7 +44,13 @@ class InquiryControllerTest {
     private InquiryResponseModel savedInquiry;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
+        // Clear rate limiting buckets before each test
+        Field bucketsField = InquiryController.class.getDeclaredField("buckets");
+        bucketsField.setAccessible(true);
+        Map<?, ?> buckets = (Map<?, ?>) bucketsField.get(null);
+        buckets.clear();
+
         // Arrange - setup test data
         validRequest = new InquiryRequestModel();
         validRequest.setName("John Doe");
@@ -69,6 +77,7 @@ class InquiryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest)))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain;charset=UTF-8"))
                 .andExpect(content().string("Thank you! Your inquiry has been received."));
     }
 
@@ -137,6 +146,7 @@ class InquiryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
+                .andExpect(content().contentType("text/plain;charset=UTF-8"))
                 .andExpect(content().string("Thank you! Your inquiry has been received."));
     }
 }
