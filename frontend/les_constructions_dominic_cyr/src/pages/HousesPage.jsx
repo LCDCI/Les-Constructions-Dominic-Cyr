@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import '../styles/houses.css';
-import Navbar from '../components/NavBar';
 import Footer from '../components/AppFooter';
 
 const HousesPage = () => {
@@ -66,7 +65,6 @@ const HousesPage = () => {
   if (loading) {
     return (
       <div className="houses-page">
-        <Navbar />
         <div className="houses-content">
           <div className="houses-container">
             <p
@@ -83,8 +81,6 @@ const HousesPage = () => {
 
   return (
     <div className="houses-page">
-      <Navbar />
-
       <div className="houses-content">
         <div className="houses-container">
           <div className="houses-header">
