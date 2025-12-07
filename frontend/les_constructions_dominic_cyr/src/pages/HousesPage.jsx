@@ -45,6 +45,7 @@ const HousesPage = () => {
       setFilteredHouses(data);
       setLoading(false);
     } catch (error) {
+      console.error('Failed to fetch houses:', error);
       setLoading(false);
     }
   };
@@ -95,6 +96,7 @@ const HousesPage = () => {
                 type="text"
                 className="search-input"
                 placeholder="Search houses by name or location..."
+                aria-label="Search houses by name or location"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
