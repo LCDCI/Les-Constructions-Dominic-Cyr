@@ -44,8 +44,18 @@ export default function InquiryForm({ onSuccess, className }) {
         setForm({ name: '', email: '', phone: '', message: '' });
         onSuccess && onSuccess(text);
       } else {
-        const errText = await res.text();
-        setStatus({ message: errText || 'Submission failed.', type: 'error' });
+        let errorMessage = 'Submission failed.';
+        const text = await res.text();
+        try {
+          const data = JSON.parse(text);
+          if (data && typeof data.message === 'string') {
+            errorMessage = data.message;
+          }
+        } catch {
+          // If not JSON, use the text directly
+          if (text) errorMessage = text;
+        }
+        setStatus({ message: errorMessage, type: 'error' });
       }
     } catch (err) {
       setStatus({
@@ -101,9 +111,8 @@ export default function InquiryForm({ onSuccess, className }) {
             value={form.message}
             onChange={onChange}
             placeholder="Tell us about your project..."
-            rows="5"
+            rows={5}
             disabled={loading}
-            required
             required
           />
         </div>

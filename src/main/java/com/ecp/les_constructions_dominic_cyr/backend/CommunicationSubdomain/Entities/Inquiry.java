@@ -22,18 +22,15 @@ public class Inquiry {
     @Column(nullable = false, length = 2000)
     private String message;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
     /**
      * Sets the createdAt timestamp when the entity is first persisted to the database.
-     * Uses a null check to prevent overwriting existing timestamps on entity updates.
      */
     @PrePersist
     protected void onCreate() {
-        if (this.createdAt == null) {
-            this.createdAt = OffsetDateTime.now();
-        }
+        this.createdAt = OffsetDateTime.now();
     }
 
     public Long getId() { return id; }
