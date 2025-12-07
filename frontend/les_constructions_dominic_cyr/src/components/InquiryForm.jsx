@@ -8,18 +8,26 @@ import React, { useState } from 'react';
  */
 
 export default function InquiryForm({ onSuccess, className }) {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+  });
   const [status, setStatus] = useState({ message: '', type: '' });
   const [loading, setLoading] = useState(false);
 
-  const onChange = (e) => {
+  const onChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const onSubmit = async (e) => {
+  const onSubmit = async e => {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
-      setStatus({ message: 'Please fill out all required fields.', type: 'error' });
+      setStatus({
+        message: 'Please fill out all required fields.',
+        type: 'error',
+      });
       return;
     }
     setLoading(true);
@@ -28,7 +36,7 @@ export default function InquiryForm({ onSuccess, className }) {
       const res = await fetch('/api/inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
       if (res.ok) {
         const text = await res.text();
@@ -40,7 +48,10 @@ export default function InquiryForm({ onSuccess, className }) {
         setStatus({ message: errText || 'Submission failed.', type: 'error' });
       }
     } catch (err) {
-      setStatus({ message: 'Network error. Please try again later.', type: 'error' });
+      setStatus({
+        message: 'Network error. Please try again later.',
+        type: 'error',
+      });
     } finally {
       setLoading(false);
     }

@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.config;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.House;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import jakarta.annotation.PostConstruct;
@@ -61,13 +62,14 @@ public class DataSeeder {
 
     private void seedHouseImages() {
         HOUSE_IMAGES.forEach((houseId, imageId) -> {
-            houseRepository.findHouseByHouseIdentifier_HouseId(houseId).ifPresent(house -> {
+            House house = houseRepository.findHouseByHouseIdentifier_HouseId(houseId);
+            if (house != null) {
                 if (house.getImageIdentifier() == null || house.getImageIdentifier().isEmpty()) {
                     house.setImageIdentifier(imageId);
-                    projectRepository.save(house);
-                    log.info("Linked image to project: {}", houseId);
+                    houseRepository.save(house);
+                    log.info("Linked image to house: {}", houseId);
                 }
-            });
+            }
         });
     }
 }
