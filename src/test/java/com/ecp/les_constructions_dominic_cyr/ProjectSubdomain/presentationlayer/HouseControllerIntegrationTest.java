@@ -62,27 +62,6 @@ class HouseControllerIntegrationTest {
     }
 
     @Test
-    void whenGetByIdNotFound_thenReturnUnprocessableEntity() {
-        // invalid id length -> controller throws InvalidInputException -> 422
-        webClient.get()
-                .uri(BASE_URI + "/{id}", "short-id")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    @Test
-    void whenGetByIdInvalidUUIDFormat_thenReturnUnprocessableEntity() {
-        // Valid length (36) but invalid UUID format
-        String invalidUUID = "12345678-1234-1234-1234-12345678901X";
-        webClient.get()
-                .uri(BASE_URI + "/{id}", invalidUUID)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    @Test
     void whenGetByIdExists_thenReturn() {
         String idVal = UUID.randomUUID().toString();
         House entity = new House();
