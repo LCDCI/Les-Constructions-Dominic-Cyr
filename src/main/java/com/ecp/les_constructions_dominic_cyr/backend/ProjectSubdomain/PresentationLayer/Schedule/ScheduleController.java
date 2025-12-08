@@ -60,21 +60,21 @@ public class ScheduleController {
     }
 
     @GetMapping("/contractors/schedules")
-    public ResponseEntity<List<ScheduleResponseDTO>> getContractorsCurrentWeekSchedules() {
+    public ResponseEntity<List<ScheduleResponseDTO>> getContractorCurrentWeekSchedules() {
         log.info("REST request to get current week schedules");
         List<ScheduleResponseDTO> schedules = scheduleService.getCurrentWeekSchedules();
         return ResponseEntity.ok(schedules);
     }
 
     @GetMapping("/contractors/schedules/all")
-    public ResponseEntity<List<ScheduleResponseDTO>> getContractorsAllSchedules() {
+    public ResponseEntity<List<ScheduleResponseDTO>> getContractorAllSchedules() {
         log.info("REST request to get all schedules");
         List<ScheduleResponseDTO> schedules = scheduleService.getAllSchedules();
         return ResponseEntity.ok(schedules);
     }
 
-    @GetMapping("//schedules/{scheduleIdentifier}")
-    public ResponseEntity<ScheduleResponseDTO> getContractorsScheduleByIdentifier(@PathVariable String scheduleIdentifier) {
+    @GetMapping("/contractors/schedules/{scheduleIdentifier}")
+    public ResponseEntity<ScheduleResponseDTO> getContractorScheduleByIdentifier(@PathVariable String scheduleIdentifier) {
         log.info("REST request to get schedule by identifier: {}", scheduleIdentifier);
         ScheduleResponseDTO schedule = scheduleService.getScheduleByIdentifier(scheduleIdentifier);
         return ResponseEntity.ok(schedule);

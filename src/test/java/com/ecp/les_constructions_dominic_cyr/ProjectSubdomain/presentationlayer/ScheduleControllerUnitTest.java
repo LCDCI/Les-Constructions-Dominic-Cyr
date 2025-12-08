@@ -135,6 +135,89 @@ class ScheduleControllerUnitTest {
     }
 
     @Test
+    void getContractorCurrentWeekSchedules_shouldReturnSchedulesWithOkStatus() {
+        List<ScheduleResponseDTO> schedules = Arrays.asList(responseDTO1, responseDTO2);
+        when(scheduleService.getCurrentWeekSchedules()).thenReturn(schedules);
+
+        ResponseEntity<List<ScheduleResponseDTO>> response = scheduleController.getContractorCurrentWeekSchedules();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        assertEquals("SCH-001", response.getBody().get(0).getScheduleIdentifier());
+
+        verify(scheduleService).getCurrentWeekSchedules();
+    }
+
+    @Test
+    void getContractorCurrentWeekSchedules_shouldReturnEmptyListWithOkStatus() {
+        when(scheduleService.getCurrentWeekSchedules()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<ScheduleResponseDTO>> response = scheduleController.getContractorCurrentWeekSchedules();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isEmpty());
+
+        verify(scheduleService).getCurrentWeekSchedules();
+    }
+
+    @Test
+    void getAllContractorSchedules_shouldReturnAllSchedulesWithOkStatus() {
+        List<ScheduleResponseDTO> schedules = Arrays.asList(responseDTO1, responseDTO2);
+        when(scheduleService.getAllSchedules()).thenReturn(schedules);
+
+        ResponseEntity<List<ScheduleResponseDTO>> response = scheduleController.getContractorAllSchedules();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+
+        verify(scheduleService).getAllSchedules();
+    }
+
+    @Test
+    void getAllContractorSchedules_shouldReturnEmptyListWithOkStatus() {
+        when(scheduleService.getAllSchedules()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<ScheduleResponseDTO>> response = scheduleController.getContractorAllSchedules();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isEmpty());
+
+        verify(scheduleService).getAllSchedules();
+    }
+
+    @Test
+    void getContractorScheduleByIdentifier_shouldReturnScheduleWithOkStatus() {
+        String identifier = "SCH-001";
+        when(scheduleService.getScheduleByIdentifier(identifier)).thenReturn(responseDTO1);
+
+        ResponseEntity<ScheduleResponseDTO> response = scheduleController.getContractorScheduleByIdentifier(identifier);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("SCH-001", response.getBody().getScheduleIdentifier());
+        assertEquals("Begin Excavation", response.getBody().getTaskDescription());
+
+        verify(scheduleService).getScheduleByIdentifier(identifier);
+    }
+
+    @Test
+    void getContractorScheduleByIdentifier_shouldThrowExceptionWhenNotFound() {
+        String identifier = "SCH-999";
+        when(scheduleService.getScheduleByIdentifier(identifier))
+                .thenThrow(new RuntimeException("Schedule not found with identifier: SCH-999"));
+
+        assertThrows(RuntimeException.class, () -> {
+            scheduleController.getContractorScheduleByIdentifier(identifier);
+        });
+
+        verify(scheduleService).getScheduleByIdentifier(identifier);
+    }
+
+    @Test
     void getSalespersonCurrentWeekSchedules_shouldReturnSchedulesWithOkStatus() {
         List<ScheduleResponseDTO> schedules = Arrays.asList(responseDTO1, responseDTO2);
         when(scheduleService.getCurrentWeekSchedules()).thenReturn(schedules);
