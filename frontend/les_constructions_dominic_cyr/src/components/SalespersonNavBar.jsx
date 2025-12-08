@@ -43,12 +43,7 @@ const Navbar = () => {
         return location.pathname === path ?  'active' : '';
     };
 
-    const getLogoUrl = () => {
-    if (logoId) {
-        return `${filesServiceUrl}/files/${logoId}`;
-    }
-        return null;
-    };
+
 
     return (
         <>
