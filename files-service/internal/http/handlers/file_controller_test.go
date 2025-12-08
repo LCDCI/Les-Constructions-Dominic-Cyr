@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/textproto"
+	"strings"
 	"testing"
 
 	"files-service/internal/domain"
@@ -341,13 +342,13 @@ func TestListProjectDocuments_Success(t *testing.T) {
 
 	// Verify response contains only documents
 	body := w.Body.String()
-	if !contains(body, "doc1.pdf") {
+	if !strings.Contains(body, "doc1.pdf") {
 		t.Errorf("expected response to contain doc1.pdf")
 	}
-	if !contains(body, "doc2.docx") {
+	if !strings.Contains(body, "doc2.docx") {
 		t.Errorf("expected response to contain doc2.docx")
 	}
-	if contains(body, "photo1.jpg") {
+	if strings.Contains(body, "photo1.jpg") {
 		t.Errorf("expected response to NOT contain photo1.jpg")
 	}
 }
@@ -389,17 +390,4 @@ func TestListProjectDocuments_InternalError(t *testing.T) {
 	if w.Code != http.StatusInternalServerError {
 		t.Fatalf("expected 500, got %d", w.Code)
 	}
-}
-
-func contains(s, substr string) bool {
-	return len(s) > 0 && len(substr) > 0 && (s == substr || len(s) >= len(substr) && (s[:len(substr)] == substr || s[len(s)-len(substr):] == substr || containsInner(s, substr)))
-}
-
-func containsInner(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
-	}
-	return false
 }
