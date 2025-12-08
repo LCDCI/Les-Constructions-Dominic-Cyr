@@ -10,7 +10,7 @@
 /* Hero Section */
 .hero-section {
     width: 100%;
-    margin-bottom: 4rem;
+    margin-bottom: 2.5%;
 }
 
 .hero-image-container {
@@ -36,7 +36,7 @@
 /* Photo Collage Section */
 .photo-collage-section {
     width: 100%;
-    margin-bottom: 4rem;
+    margin-bottom: 2.5%;
     padding: 0;
 }
 
@@ -140,18 +140,18 @@
 
 /* Accompaniment Section */
 .accompaniment-section {
-    margin-bottom: 5rem;
+    margin-bottom: 3%;
 }
 
 .section-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 2%;
 }
 
 .section-title {
     font-size: 2.5rem;
     color: var(--primary-color);
-    margin-bottom: 1rem;
+    margin-bottom: 0.625%;
     font-weight: 700;
     letter-spacing: 0.05em;
 }
@@ -160,13 +160,13 @@
     font-size: 1.8rem;
     color: var(--text-primary);
     font-weight: 500;
-    margin-top: 0.5rem;
+    margin-top: 0.3125%;
 }
 
 .section-content {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 2%;
 }
 
 .text-content {
@@ -185,8 +185,8 @@
 .values-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin-top: 2rem;
+    gap: 1.25%;
+    margin-top: 1.25%;
 }
 
 .value-item {
@@ -222,15 +222,15 @@
 /* Collaboration Section */
 .collaboration-section {
     background-color: var(--card-background);
-    padding: 4rem 2rem;
+    padding: 2.5% 1.25%;
     border-radius: var(--border-radius);
-    margin-top: 3rem;
+    margin-top: 2%;
 }
 
 .collaboration-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 3rem;
+    gap: 2%;
     align-items: center;
 }
 
@@ -259,7 +259,7 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 1.5rem;
+    gap: 0.9375%;
 }
 
 .collaboration-title {
@@ -279,7 +279,7 @@
 
 /* Photo Gallery Section */
 .photo-gallery-section {
-    margin: 5rem 0;
+    margin: 3% 0;
 }
 
 .gallery-grid {
@@ -429,9 +429,9 @@
 .contact-license-section {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    margin-top: 4rem;
-    padding-top: 3rem;
+    gap: 2%;
+    margin-top: 2.5%;
+    padding-top: 2%;
     border-top: 2px solid var(--card-background);
 }
 
@@ -486,6 +486,14 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
+    .hero-section {
+        margin-bottom: 2%;
+    }
+
+    .photo-collage-section {
+        margin-bottom: 2%;
+    }
+
     .collage-top-row {
         grid-template-columns: 1fr 1fr;
     }
@@ -508,16 +516,40 @@
         font-size: 1.5rem;
     }
     
-    .values-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .accompaniment-section {
+        margin-bottom: 2.5%;
+    }
+
+    .section-header {
+        margin-bottom: 1.75%;
+    }
+
+    .section-content {
+        gap: 1.75%;
     }
     
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5%;
+        margin-top: 1.5%;
+    }
+    
+    .collaboration-section {
+        margin-top: 2%;
+        padding: 2% 1.5%;
+    }
+
     .collaboration-content {
-        gap: 2rem;
+        gap: 1.75%;
+    }
+    
+    .photo-gallery-section {
+        margin: 2.5% 0;
     }
     
     .gallery-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: 1.25%;
     }
     
     .gallery-logo-box {
@@ -547,7 +579,9 @@
     }
     
     .contact-license-section {
-        gap: 2rem;
+        gap: 1.75%;
+        margin-top: 2%;
+        padding-top: 1.75%;
     }
 }
 
@@ -555,9 +589,13 @@
     .hero-image-container {
         height: 350px;
     }
+
+    .hero-section {
+        margin-bottom: 2%;
+    }
     
     .photo-collage-section {
-        margin-bottom: 3rem;
+        margin-bottom: 2%;
     }
     
     .collage-top-row {
@@ -576,8 +614,8 @@
     }
     
     .panoramic-overlay {
-        bottom: 15px;
-        right: 15px;
+        bottom: 1.5%;
+        right: 1.5%;
         padding: 0.75rem 1.25rem;
     }
     
@@ -589,13 +627,27 @@
         width: 95%;
         padding: 1rem 0;
     }
+
+    .accompaniment-section {
+        margin-bottom: 2.5%;
+    }
+    
+    .section-header {
+        margin-bottom: 1.75%;
+    }
     
     .section-title {
         font-size: 2rem;
+        margin-bottom: 0.75%;
     }
     
     .section-subtitle {
         font-size: 1.5rem;
+        margin-top: 0.5%;
+    }
+    
+    .section-content {
+        gap: 1.75%;
     }
     
     .intro-text {
@@ -604,7 +656,8 @@
     
     .values-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
+        gap: 1.5%;
+        margin-top: 1.5%;
     }
     
     .value-item {
@@ -612,12 +665,13 @@
     }
     
     .collaboration-section {
-        padding: 3rem 1.5rem;
+        padding: 2% 1.5%;
+        margin-top: 2%;
     }
     
     .collaboration-content {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.75%;
     }
     
     .collaboration-image {
@@ -627,6 +681,7 @@
     
     .collaboration-text {
         order: 2;
+        gap: 1.25%;
     }
     
     .collaboration-title {
@@ -634,12 +689,12 @@
     }
     
     .photo-gallery-section {
-        margin: 3rem 0;
+        margin: 2% 0;
     }
     
     .gallery-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        gap: 1.25%;
     }
     
     .gallery-logo-box {
@@ -697,9 +752,9 @@
     
     .contact-license-section {
         grid-template-columns: 1fr;
-        gap: 2rem;
-        margin-top: 3rem;
-        padding-top: 2rem;
+        gap: 1.75%;
+        margin-top: 2%;
+        padding-top: 1.75%;
     }
 }
 
@@ -707,9 +762,13 @@
     .hero-image-container {
         height: 250px;
     }
+
+    .hero-section {
+        margin-bottom: 1.75%;
+    }
     
     .photo-collage-section {
-        margin-bottom: 2rem;
+        margin-bottom: 1.75%;
     }
     
     .collage-landscape-left,
@@ -723,21 +782,35 @@
     }
     
     .panoramic-overlay {
-        bottom: 10px;
-        right: 10px;
+        bottom: 1.25%;
+        right: 1.25%;
         padding: 0.5rem 1rem;
     }
     
     .panoramic-text {
         font-size: 1rem;
     }
+
+    .accompaniment-section {
+        margin-bottom: 2%;
+    }
+    
+    .section-header {
+        margin-bottom: 1.5%;
+    }
     
     .section-title {
         font-size: 1.6rem;
+        margin-bottom: 0.625%;
     }
     
     .section-subtitle {
         font-size: 1.2rem;
+        margin-top: 0.4%;
+    }
+
+    .section-content {
+        gap: 1.5%;
     }
     
     .intro-text {
@@ -746,7 +819,8 @@
     
     .values-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 1.25%;
+        margin-top: 1.25%;
     }
     
     .value-item {
@@ -758,7 +832,16 @@
     }
     
     .collaboration-section {
-        padding: 2rem 1rem;
+        padding: 1.5% 1%;
+        margin-top: 1.75%;
+    }
+
+    .collaboration-content {
+        gap: 1.5%;
+    }
+
+    .collaboration-text {
+        gap: 1%;
     }
     
     .collaboration-title {
@@ -770,12 +853,12 @@
     }
     
     .photo-gallery-section {
-        margin: 2rem 0;
+        margin: 1.75% 0;
     }
     
     .gallery-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
+        gap: 1.25%;
     }
     
     .gallery-logo-box,
@@ -828,5 +911,11 @@
     
     .license-item p {
         font-size: 0.85rem;
+    }
+
+    .contact-license-section {
+        gap: 1.5%;
+        margin-top: 1.75%;
+        padding-top: 1.5%;
     }
 }
