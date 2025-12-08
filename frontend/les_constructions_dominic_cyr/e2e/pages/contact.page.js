@@ -33,7 +33,7 @@ export class ContactPage {
   }
 
   async getStatusText() {
-    if (this.statusMessage.count()) {
+    if ((await this.statusMessage.count()) > 0) {
       return (await this.statusMessage.innerText()).trim();
     }
     return '';
