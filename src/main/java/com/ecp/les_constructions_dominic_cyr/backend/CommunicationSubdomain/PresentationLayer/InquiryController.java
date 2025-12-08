@@ -1,7 +1,6 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Controllers;
+package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer;
 
-import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DTOs.InquiryRequest;
-import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Services.InquiryService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.InquiryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,6 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -26,6 +24,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+
 @RestController
 @RequestMapping("/api/inquiries")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -36,9 +35,6 @@ public class InquiryController {
 
     @Value("${recaptcha.secret}")
     private String recaptchaSecret;
-
-    @Value("${inquiries.owner.key}")
-    private String ownerAccessKey;
 
     public InquiryController(InquiryService service) {
         this.service = service;
@@ -69,7 +65,7 @@ public class InquiryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequestModel request, HttpServletRequest httpRequest) {
         String ip = httpRequest.getRemoteAddr();
         Bucket bucket = resolveBucket(ip);
         if (!bucket.tryConsume(1)) {
@@ -89,23 +85,12 @@ public class InquiryController {
         // Input sanitization
         request.setName(HtmlUtils.htmlEscape(request.getName()));
         request.setEmail(HtmlUtils.htmlEscape(request.getEmail()));
+        if (request.getPhone() != null) {
+            request.setPhone(HtmlUtils.htmlEscape(request.getPhone()));
+        }
         request.setMessage(HtmlUtils.htmlEscape(request.getMessage()));
+        
         service.submitInquiry(request);
         return ResponseEntity.ok().body("Thank you! Your inquiry has been received.");
-    }
-
-    @GetMapping
-    public ResponseEntity<?> getAllInquiries(HttpServletRequest httpRequest) {
-        String ip = httpRequest.getRemoteAddr();
-        Bucket bucket = resolveBucket(ip);
-        if (!bucket.tryConsume(1)) {
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Too many requests. Please try again later.");
-        }
-        // TODO: Replace header-based auth with Spring Security (JWT/OAuth2) for production
-        String providedKey = httpRequest.getHeader("X-OWNER-KEY");
-        if (providedKey == null || !providedKey.equals(ownerAccessKey)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
-        return ResponseEntity.ok(service.getAllInquiries());
     }
 }
