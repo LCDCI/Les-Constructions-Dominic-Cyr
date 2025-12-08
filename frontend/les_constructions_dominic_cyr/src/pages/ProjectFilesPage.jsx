@@ -94,9 +94,10 @@ export default function ProjectFilesPage() {
                     <table>
                         <thead>
                             <tr>
-                                <th style={{ width: '45%' }}>Document Name</th>
-                                <th style={{ width: '20%' }}>Type</th>
+                                <th style={{ width: '35%' }}>Document Name</th>
+                                <th style={{ width: '15%' }}>Type</th>
                                 <th style={{ width: '20%' }}>Uploaded By</th>
+                                <th style={{ width: '15%' }}>Upload Date</th>
                                 <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>

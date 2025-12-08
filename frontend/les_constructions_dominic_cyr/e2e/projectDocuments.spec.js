@@ -25,6 +25,7 @@ test.describe('Project Documents Page', () => {
     await expect(table.locator('th:has-text("Document Name")')).toBeVisible();
     await expect(table.locator('th:has-text("Type")')).toBeVisible();
     await expect(table.locator('th:has-text("Uploaded By")')).toBeVisible();
+    await expect(table.locator('th:has-text("Upload Date")')).toBeVisible();
     await expect(table.locator('th:has-text("Actions")')).toBeVisible();
   });
 
@@ -51,6 +52,7 @@ test.describe('Project Documents Page', () => {
       await expect(firstRow.locator('td').nth(0)).toBeVisible(); // Document name
       await expect(firstRow.locator('td').nth(1)).toBeVisible(); // Type
       await expect(firstRow.locator('td').nth(2)).toBeVisible(); // Uploaded by
+      await expect(firstRow.locator('td').nth(3)).toBeVisible(); // Upload date
       
       // Check for action buttons
       const viewButton = firstRow.locator('button:has-text("View")');
