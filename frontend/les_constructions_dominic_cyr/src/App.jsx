@@ -10,6 +10,7 @@ import ContactPage from './pages/ContactPage';
 import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
 import OwnerDashboard from './pages/OwnerDashboard';
+import SalespersonDashboard from './pages/SalespersonDashboard';
 import NavigationSetter from './components/NavigationSetter';
 import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="/error" element={<ServerError />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
+              <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
             <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} /> 
             <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} /> 
             {/* Remember to add more routes here as App grows */}

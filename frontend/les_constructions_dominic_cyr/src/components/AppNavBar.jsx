@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import '../styles/AppNavBar.css';
-import Navbar from '../components/OwnerNavBar';
+import OwnerNavBar from '../components/OwnerNavBar';
+import SalespersonNavBar from '../components/SalespersonNavBar';
 
 export default function AppNavBar() {
   const { i18n, t } = useTranslation();
@@ -23,18 +24,19 @@ export default function AppNavBar() {
   return (
     <header className="site-nav">
       <div className="site-nav-inner">
-        <Navbar />
+          <SalespersonNavBar />
+          <OwnerNavBar />
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
           <NavLink
-            to="/projects"
+            to="/residential-projects"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
             {t('nav.projects', 'Projets résidentiels')}
           </NavLink>
           <NavLink
-            to="/renovation"
+            to="/renovations"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
             {t('nav.renovation', 'Rénovation')}

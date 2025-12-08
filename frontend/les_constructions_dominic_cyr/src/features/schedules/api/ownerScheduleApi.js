@@ -1,6 +1,6 @@
 import axiosInstance from '../../../utils/axios';
 
-export const scheduleApi = {
+export const ownerScheduleApi = {
   getCurrentWeekSchedules: async () => {
     try {
       const response = await axiosInstance.get('/owners/schedules');
@@ -34,4 +34,4 @@ export const scheduleApi = {
   },
 };
 
-export default scheduleApi;
+export default ownerScheduleApi;
