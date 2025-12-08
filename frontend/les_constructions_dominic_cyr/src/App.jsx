@@ -16,6 +16,7 @@ import NavigationSetter from './components/NavigationSetter';
 import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
+import ContractorDashboard from './pages/ContractorDashboard';
 import './App.css';
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
             <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
+            <Route path="/contractor/dashboard" element={<ContractorDashboard />} />
             <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} />
             <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} />
             {/* Remember to add more routes here as App grows */}

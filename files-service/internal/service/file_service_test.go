@@ -12,6 +12,8 @@ type mockRepo struct {
 	SaveFn     func(ctx context.Context, f *domain.File) error
 	FindByIdFn func(ctx context.Context, id string) (*domain.File, error)
 	DeleteFn   func(ctx context.Context, id string) error
+
+	FindByProjectIDFn func(ctx context.Context, projectID string) ([]domain.File, error)
 }
 
 func (m *mockRepo) Save(ctx context.Context, f *domain.File) error { return m.SaveFn(ctx, f) }
@@ -19,6 +21,10 @@ func (m *mockRepo) FindById(ctx context.Context, id string) (*domain.File, error
 	return m.FindByIdFn(ctx, id)
 }
 func (m *mockRepo) Delete(ctx context.Context, id string) error { return m.DeleteFn(ctx, id) }
+
+func (m *mockRepo) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
+	return m.FindByProjectIDFn(ctx, projectID)
+}
 
 type mockStorage struct {
 	UploadFn   func(ctx context.Context, data []byte, key string, contentType string) (string, error)
@@ -170,6 +176,51 @@ func TestUpload_SaveError_CleanupFails(t *testing.T) {
 
 	if !errors.Is(err, saveErr) {
 		t.Fatalf("expected saveErr, got %v", err)
+	}
+}
+
+func TestListByProjectID_Success(t *testing.T) {
+	mockFiles := []domain.File{
+		{ID: "photo-1", FileName: "pic1.jpg", ProjectID: "proj-A"},
+		{ID: "photo-2", FileName: "pic2.jpg", ProjectID: "proj-A"},
+	}
+
+	repo := &mockRepo{
+		FindByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.File, error) {
+			if projectID == "proj-A" {
+				return mockFiles, nil
+			}
+			return nil, nil
+		},
+	}
+	s := service.NewFileService(repo, &mockStorage{})
+
+	metadataList, err := s.ListByProjectID(context.Background(), "proj-A")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(metadataList) != 2 {
+		t.Fatalf("expected 2 files, got %d", len(metadataList))
+	}
+	if metadataList[0].ID != "photo-1" || metadataList[1].FileName != "pic2.jpg" {
+		t.Fatalf("mismatched file data in list")
+	}
+}
+
+func TestListByProjectID_RepoError(t *testing.T) {
+	repoErr := errors.New("database connection failed")
+
+	repo := &mockRepo{
+		FindByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.File, error) {
+			return nil, repoErr
+		},
+	}
+	s := service.NewFileService(repo, &mockStorage{})
+
+	_, err := s.ListByProjectID(context.Background(), "proj-B")
+	if !errors.Is(err, repoErr) {
+		t.Fatalf("expected repository error, got %v", err)
 	}
 }
 
