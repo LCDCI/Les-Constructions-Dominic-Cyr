@@ -13,8 +13,8 @@
     display: flex; 
     align-items: center; 
     justify-content: space-between; 
-    padding: 16px 24px; 
-    gap: 24px;
+    padding: 1% 1.5%; 
+    gap: 1.5%;
 }
 
 .brand {
@@ -211,9 +211,9 @@
 .mobile-actions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-top: 16px;
-    padding-top: 16px;
+    gap: 0.75%;
+    margin-top: 1%;
+    padding-top: 1%;
     border-top: 1px solid #e6e6e6;
 }
 
@@ -226,8 +226,13 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
+    .site-nav-inner {
+        padding: 0.75% 1.25%;
+        gap: 1.25%;
+    }
+
     .desktop-nav {
-        gap: 4px;
+        gap: 0.5%;
     }
     
     .desktop-nav a {
@@ -236,7 +241,7 @@
     }
     
     .nav-actions {
-        gap: 8px;
+        gap: 0.75%;
     }
     
     .btn-signin,
@@ -248,7 +253,8 @@
 
 @media (max-width: 768px) {
     .site-nav-inner {
-        padding: 12px 16px;
+        padding: 0.75% 2%;
+        gap: 1%;
     }
     
     .desktop-nav {
@@ -265,6 +271,13 @@
     
     .mobile-nav {
         display: flex;
+        padding: 1% 2%;
+    }
+    
+    .mobile-actions {
+        margin-top: 1.25%;
+        padding-top: 1.25%;
+        gap: 1%;
     }
     
     .logo-image {
@@ -274,7 +287,18 @@
 
 @media (max-width: 480px) {
     .site-nav-inner {
-        padding: 10px 12px;
+        padding: 0.625% 1.5%;
+        gap: 0.75%;
+    }
+
+    .mobile-nav {
+        padding: 1% 1.5%;
+    }
+
+    .mobile-actions {
+        margin-top: 1.5%;
+        padding-top: 1.5%;
+        gap: 1.25%;
     }
     
     .logo-image {
