@@ -1,25 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useSchedules from '../features/schedules/hooks/useSchedules';
+import ownerUseSchedules from '../features/schedules/hooks/ownerUseSchedules';
 import ScheduleList from '../features/schedules/components/ScheduleList';
 import DashboardCard from '../components/DashboardCard';
 import '../styles/OwnerDashboard.css';
-import {
-  GoInbox,
-  GoArrowUp,
-  GoPeople,
-  GoGraph,
-  GoGear,
-  GoHome,
-  GoPackage,
-  GoFileDiff,
-  GoFile,
-  GoPaperAirplane,
-} from 'react-icons/go';
-import { FaFileInvoiceDollar, FaMapLocationDot } from 'react-icons/fa6';
+import { GoInbox } from "react-icons/go";
+import { GoArrowUp } from "react-icons/go";
+import { GoPeople } from "react-icons/go";
+import { GoGraph } from "react-icons/go";
+import { GoPackage } from "react-icons/go";
+import { GoFileDiff } from "react-icons/go";
+import { GoFile } from "react-icons/go";
+import { FaMapLocationDot } from "react-icons/fa6";
+
 
 const OwnerDashboard = () => {
-  const { schedules, loading, error } = useSchedules(false);
+  const { schedules, loading, error } = ownerUseSchedules(false);
   const navigate = useNavigate();
 
   const handleSeeMore = () => {
@@ -52,12 +48,6 @@ const OwnerDashboard = () => {
       action: () => navigate('/owner/inbox'),
     },
     {
-      icon: <FaFileInvoiceDollar />,
-      title: 'Billing',
-      buttonText: 'View Billing',
-      action: () => navigate('/owner/billing'),
-    },
-    {
       icon: <GoFile />,
       title: 'Documents',
       buttonText: 'View Documents',
@@ -68,24 +58,6 @@ const OwnerDashboard = () => {
       title: 'Users',
       buttonText: 'View Users',
       action: () => navigate('/owner/users'),
-    },
-    {
-      icon: <GoGear />,
-      title: 'Settings',
-      buttonText: 'View Settings',
-      action: () => navigate('/owner/settings'),
-    },
-    {
-      icon: <GoPaperAirplane />,
-      title: 'Send Messages',
-      buttonText: 'Send Message',
-      action: () => navigate('/owner/messages'),
-    },
-    {
-      icon: <GoHome />,
-      title: 'Home Content',
-      buttonText: 'Edit Home',
-      action: () => navigate('/'),
     },
     {
       icon: <GoFileDiff />,

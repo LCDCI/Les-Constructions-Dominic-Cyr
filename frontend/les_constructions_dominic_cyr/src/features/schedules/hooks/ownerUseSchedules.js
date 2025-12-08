@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import scheduleApi from '../api/scheduleApi';
+import ownerScheduleApi from '../api/ownerScheduleApi';
 
-const useSchedules = (fetchAll = false) => {
+const ownerUseSchedules = (fetchAll = false) => {
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,8 +11,8 @@ const useSchedules = (fetchAll = false) => {
       setLoading(true);
       setError(null);
       const data = fetchAll
-        ? await scheduleApi.getAllSchedules()
-        : await scheduleApi.getCurrentWeekSchedules();
+        ? await ownerScheduleApi.getAllSchedules()
+        : await ownerScheduleApi.getCurrentWeekSchedules();
       setSchedules(data);
     } catch (err) {
       setError(err.message || 'Failed to load schedules');
@@ -32,4 +32,4 @@ const useSchedules = (fetchAll = false) => {
   return { schedules, loading, error, refetch };
 };
 
-export default useSchedules;
+export default ownerUseSchedules;
