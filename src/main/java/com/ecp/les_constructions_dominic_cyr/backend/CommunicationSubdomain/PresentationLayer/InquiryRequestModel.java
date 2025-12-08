@@ -1,10 +1,10 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DTOs;
+package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class InquiryRequest {
+public class InquiryRequestModel {
     @NotBlank(message = "Name is required")
     @Size(max = 150, message = "Name must not exceed 150 characters")
     private String name;
