@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import '../styles/AppNavBar.css';
+import Navbar from '../components/OwnerNavBar';
 
 export default function AppNavBar() {
   const { i18n, t } = useTranslation();
@@ -22,14 +23,7 @@ export default function AppNavBar() {
   return (
     <header className="site-nav">
       <div className="site-nav-inner">
-        {/* Logo */}
-        <div className="brand">
-          <img 
-            src="https://via.placeholder.com/120x40?text=DCYR+Logo" 
-            alt="DCYR Logo" 
-            className="logo-image"
-          />
-        </div>
+        <Navbar />
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
@@ -57,6 +51,12 @@ export default function AppNavBar() {
           >
             {t('nav.realisations', 'Réalisations')}
           </NavLink>
+          <NavLink
+            to="/contact"
+            className={({ isActive }) => (isActive ? 'active' : '')}
+          >
+            Contact
+          </NavLink>
         </nav>
 
         {/* Action Buttons */}
@@ -77,7 +77,7 @@ export default function AppNavBar() {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button 
+        <button
           className="mobile-menu-toggle"
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
