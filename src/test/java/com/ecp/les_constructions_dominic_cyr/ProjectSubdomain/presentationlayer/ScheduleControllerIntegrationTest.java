@@ -164,4 +164,48 @@ class ScheduleControllerIntegrationTest {
                 .andExpect(status().isInternalServerError());
     }
 
+    @Test
+    void getContractorCurrentWeekSchedules_shouldReturnSchedulesForCurrentWeek() throws Exception {
+        mockMvc.perform(get("/api/v1/contractors/schedules")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(2))))
+                .andExpect(jsonPath("$[0].scheduleIdentifier", notNullValue()))
+                .andExpect(jsonPath("$[0].taskDate", notNullValue()))
+                .andExpect(jsonPath("$[0].taskDescription", notNullValue()))
+                .andExpect(jsonPath("$[0].lotNumber", notNullValue()))
+                .andExpect(jsonPath("$[0].dayOfWeek", notNullValue()));
+    }
+
+    @Test
+    void getAllContractorSchedules_shouldReturnAllSchedules() throws Exception {
+        mockMvc.perform(get("/api/v1/contractors/schedules/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[*].scheduleIdentifier",
+                        containsInAnyOrder("SCH-TEST-001", "SCH-TEST-002", "SCH-TEST-003")));
+    }
+
+    @Test
+    void getContractorScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
+        mockMvc.perform(get("/api/v1/contractors/schedules/SCH-TEST-001")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.scheduleIdentifier", is("SCH-TEST-001")))
+                .andExpect(jsonPath("$.taskDescription", is("Begin Excavation")))
+                .andExpect(jsonPath("$.lotNumber", is("Lot 53")))
+                .andExpect(jsonPath("$.dayOfWeek", is("Monday")));
+    }
+
+    @Test
+    void getContractorScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
+        mockMvc.perform(get("/api/v1/contractors/schedules/SCH-INVALID")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
 }
