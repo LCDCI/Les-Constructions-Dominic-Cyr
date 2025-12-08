@@ -13,10 +13,8 @@ test.describe('Lots Page', () => {
   test('should filter lots when searching', async () => {
     const initialCount = await lotsPage.getLotCount();
     
-    // Only test search functionality if there are lots to search
-    if (initialCount === 0) {
-      test.skip();
-    }
+    // Skip test if no lots available to search
+    test.skip(initialCount === 0, 'Skipping: no lots available to test search functionality');
 
     // Perform search for non-existent lot
     await lotsPage.searchInput.fill('nonexistent12345');
