@@ -47,7 +47,7 @@ class TranslationRegistryControllerUnitTest {
     void registerFileId_TrimsWhitespace() {
         doNothing().when(registry).registerFileId(anyString(), anyString(), anyString());
         
-        ResponseEntity<String> response = controller.registerFileId("en", "home", "  file-id-123  ");
+        controller.registerFileId("en", "home", "  file-id-123  ");
         
         verify(registry, times(1)).registerFileId("en", "home", "file-id-123");
     }
