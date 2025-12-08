@@ -213,3 +213,73 @@
         font-size: 1rem;
     }
 }
+
+/* --- Print Styles --- */
+@media print {
+    /* Hide elements that shouldn't be printed */
+    .btn-upload,
+    .document-action-buttons,
+    .modal-overlay,
+    nav,
+    footer {
+        display: none !important;
+    }
+
+    /* Reset page styles for printing */
+    .documents-page {
+        padding: 20px;
+        background-color: white;
+        min-height: auto;
+    }
+
+    /* Optimize header for print */
+    .documents-header {
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #000;
+    }
+
+    .documents-header h1 {
+        font-size: 1.5rem;
+        color: #000;
+    }
+
+    /* Optimize table for print */
+    .document-table table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .document-table thead th {
+        background-color: #f0f0f0;
+        color: #000;
+        border: 1px solid #000;
+        padding: 8px;
+    }
+
+    .document-table tbody td {
+        border: 1px solid #000;
+        padding: 6px;
+        color: #000;
+    }
+
+    .document-table tbody tr:hover {
+        background-color: transparent;
+    }
+
+    /* Ensure table doesn't break across pages */
+    .document-table tbody tr {
+        page-break-inside: avoid;
+    }
+
+    /* File icon styling for print */
+    .file-icon {
+        color: #000 !important;
+    }
+
+    /* Remove box shadows and backgrounds */
+    .document-list-container {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+}

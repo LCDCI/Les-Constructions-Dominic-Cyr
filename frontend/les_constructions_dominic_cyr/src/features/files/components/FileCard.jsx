@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 // import { FaFileExport, FaTrashAlt } from 'react-icons/fa';
 import '../../../styles/FilesPage.css';
 
-const BASE_API_URL = 'http://localhost:8080';
+const BASE_API_URL = 'http://localhost:8082';
 
 const getFileIcon = (contentType) => {
     // Unicode Document Icon (U+1F4C4) with color coding
@@ -66,7 +66,7 @@ FileCard.propTypes = {
         contentType: PropTypes.string.isRequired,
         category: PropTypes.string.isRequired,
         uploadedBy: PropTypes.string.isRequired,
-        createdAt: PropTypes.string.isRequired,
+        createdAt: PropTypes.string,
     }).isRequired,
     onDelete: PropTypes.func.isRequired,
 };

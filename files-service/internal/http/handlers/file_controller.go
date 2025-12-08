@@ -37,6 +37,7 @@ func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 	r.POST("/files", fc.upload)
 	r.GET("/files/:id", fc.download)
 	r.DELETE("/files/:id", fc.delete)
+	r.GET("/projects/:projectId/files", fc.listProjectFiles)
 }
 
 func (fc *FileController) upload(c *gin.Context) {
@@ -136,14 +137,14 @@ func (fc *FileController) listProjectFiles(c *gin.Context) {
 		return
 	}
 
-	photos := make([]domain.FileMetadata, 0)
+	documents := make([]domain.FileMetadata, 0)
 	for _, metadata := range metadataList {
-		if metadata.Category == domain.CategoryPhoto {
-			photos = append(photos, metadata)
+		if metadata.Category == domain.CategoryDocument {
+			documents = append(documents, metadata)
 		}
 	}
 
-	c.JSON(http.StatusOK, photos)
+	c.JSON(http.StatusOK, documents)
 }
 
 func (fc *FileController) delete(c *gin.Context) {
