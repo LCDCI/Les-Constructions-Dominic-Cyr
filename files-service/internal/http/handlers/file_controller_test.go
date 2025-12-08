@@ -318,3 +318,88 @@ func TestDelete_InternalError(t *testing.T) {
 		t.Fatalf("expected 500, got %d", w.Code)
 	}
 }
+
+func TestListProjectDocuments_Success(t *testing.T) {
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			return []domain.FileMetadata{
+				{ID: "1", FileName: "doc1.pdf", Category: domain.CategoryDocument},
+				{ID: "2", FileName: "photo1.jpg", Category: domain.CategoryPhoto},
+				{ID: "3", FileName: "doc2.docx", Category: domain.CategoryDocument},
+			}, nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-123/documents", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+
+	// Verify response contains only documents
+	body := w.Body.String()
+	if !contains(body, "doc1.pdf") {
+		t.Errorf("expected response to contain doc1.pdf")
+	}
+	if !contains(body, "doc2.docx") {
+		t.Errorf("expected response to contain doc2.docx")
+	}
+	if contains(body, "photo1.jpg") {
+		t.Errorf("expected response to NOT contain photo1.jpg")
+	}
+}
+
+func TestListProjectDocuments_EmptyResult(t *testing.T) {
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			return []domain.FileMetadata{}, nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-456/documents", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+
+	body := w.Body.String()
+	if body != "[]\n" && body != "[]" {
+		t.Errorf("expected empty array, got %s", body)
+	}
+}
+
+func TestListProjectDocuments_InternalError(t *testing.T) {
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			return nil, errors.New("database error")
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-789/documents", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", w.Code)
+	}
+}
+
+func contains(s, substr string) bool {
+	return len(s) > 0 && len(substr) > 0 && (s == substr || len(s) >= len(substr) && (s[:len(substr)] == substr || s[len(s)-len(substr):] == substr || containsInner(s, substr)))
+}
+
+func containsInner(s, substr string) bool {
+	for i := 0; i <= len(s)-len(substr); i++ {
+		if s[i:i+len(substr)] == substr {
+			return true
+		}
+	}
+	return false
+}
