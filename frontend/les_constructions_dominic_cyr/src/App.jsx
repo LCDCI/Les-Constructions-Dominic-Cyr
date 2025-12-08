@@ -31,7 +31,8 @@ export default function App() {
             <Route path="/error" element={<ServerError />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
-            <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} /> 
+            <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} />
+            <Route path="/project-files" element={<ProjectFilesPage />} /> 
             <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} /> 
             {/* Remember to add more routes here as App grows */}
           </Routes>

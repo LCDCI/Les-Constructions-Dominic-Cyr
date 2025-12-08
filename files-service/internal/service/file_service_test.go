@@ -9,9 +9,10 @@ import (
 )
 
 type mockRepo struct {
-	SaveFn     func(ctx context.Context, f *domain.File) error
-	FindByIdFn func(ctx context.Context, id string) (*domain.File, error)
-	DeleteFn   func(ctx context.Context, id string) error
+	SaveFn            func(ctx context.Context, f *domain.File) error
+	FindByIdFn        func(ctx context.Context, id string) (*domain.File, error)
+	DeleteFn          func(ctx context.Context, id string) error
+	FindByProjectIDFn func(ctx context.Context, projectID string) ([]domain.File, error)
 }
 
 func (m *mockRepo) Save(ctx context.Context, f *domain.File) error { return m.SaveFn(ctx, f) }
@@ -19,6 +20,12 @@ func (m *mockRepo) FindById(ctx context.Context, id string) (*domain.File, error
 	return m.FindByIdFn(ctx, id)
 }
 func (m *mockRepo) Delete(ctx context.Context, id string) error { return m.DeleteFn(ctx, id) }
+func (m *mockRepo) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
+	if m.FindByProjectIDFn != nil {
+		return m.FindByProjectIDFn(ctx, projectID)
+	}
+	return []domain.File{}, nil
+}
 
 type mockStorage struct {
 	UploadFn   func(ctx context.Context, data []byte, key string, contentType string) (string, error)
