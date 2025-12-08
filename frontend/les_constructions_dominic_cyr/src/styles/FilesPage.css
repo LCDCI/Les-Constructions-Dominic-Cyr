@@ -213,22 +213,3 @@
         font-size: 1rem;
     }
 }
-
-.photo-card-error {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 200px; 
-    background-color: #FAFAFA;
-    border: 1px dashed #E5E5E5;
-    transition: none; 
-    transform: none; 
-    box-shadow: none;
-}
-
-.error-placeholder {
-    text-align: center;
-    color: #6B7280;
-    padding: 20px;
-    font-size: 0.9rem;
-}
