@@ -11,6 +11,7 @@ import ContactPage from './pages/ContactPage';
 import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
 import OwnerDashboard from './pages/OwnerDashboard';
+import SalespersonDashboard from './pages/SalespersonDashboard';
 import NavigationSetter from './components/NavigationSetter';
 import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import ProjectFilesPage from './pages/ProjectFilesPage';
@@ -34,7 +35,12 @@ export default function App() {
             <Route path="/inquiries" element={<OwnerInquiriesPage />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
+<<<<<<< HEAD
             <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} />
+=======
+              <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
+            <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} /> 
+>>>>>>> origin/main
             <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} /> 
             {/* Remember to add more routes here as App grows */}
           </Routes>
