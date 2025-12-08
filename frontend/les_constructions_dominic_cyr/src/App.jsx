@@ -14,7 +14,6 @@ import SalespersonDashboard from './pages/SalespersonDashboard';
 import NavigationSetter from './components/NavigationSetter';
 import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
-import ProjectDocumentsPage from './pages/ProjectDocumentsPage';
 import './App.css';
 
 export default function App() {
@@ -36,7 +35,6 @@ export default function App() {
               <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
             <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} /> 
             <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} /> 
-            <Route path="/projects/:projectId/documents" element={<ProjectDocumentsPage />} /> 
             {/* Remember to add more routes here as App grows */}
           </Routes>
         </main>
