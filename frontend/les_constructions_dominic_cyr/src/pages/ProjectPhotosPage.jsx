@@ -25,7 +25,7 @@ export default function ProjectPhotosPage() {
             setIsLoading(true);
             setError(null);
             try {
-                const photos = await fetchProjectFiles(projectId); 
+                const photos = await fetchProjectFiles(projectId, 'photo'); 
                 setAllFiles(photos);
             } catch (err) {
                 console.error("Failed to fetch project files:", err);

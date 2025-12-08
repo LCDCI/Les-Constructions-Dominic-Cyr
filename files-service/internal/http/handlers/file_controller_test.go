@@ -19,9 +19,10 @@ import (
 )
 
 type mockFileService struct {
-	UploadFn func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error)
-	GetFn    func(ctx context.Context, id string) ([]byte, string, error)
-	DeleteFn func(ctx context.Context, id string) error
+	UploadFn         func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error)
+	GetFn            func(ctx context.Context, id string) ([]byte, string, error)
+	DeleteFn         func(ctx context.Context, id string) error
+	ListByProjectIDFn func(ctx context.Context, projectID string) ([]domain.FileMetadata, error)
 }
 
 func (m *mockFileService) Upload(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
@@ -32,6 +33,12 @@ func (m *mockFileService) Get(ctx context.Context, id string) ([]byte, string, e
 }
 func (m *mockFileService) Delete(ctx context.Context, id string) error {
 	return m.DeleteFn(ctx, id)
+}
+func (m *mockFileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+	if m.ListByProjectIDFn != nil {
+		return m.ListByProjectIDFn(ctx, projectID)
+	}
+	return nil, nil
 }
 
 func setupRouter(s domain.FileService) *gin.Engine {
@@ -304,6 +311,83 @@ func TestDelete_InternalError(t *testing.T) {
 
 	router := setupRouter(mock)
 	req := httptest.NewRequest("DELETE", "/files/xxx", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", w.Code)
+	}
+}
+
+func TestListProjectFiles_AllFiles(t *testing.T) {
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			return []domain.FileMetadata{
+				{ID: "1", Category: domain.CategoryDocument, FileName: "doc.pdf"},
+				{ID: "2", Category: domain.CategoryPhoto, FileName: "photo.jpg"},
+			}, nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-123/files", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+}
+
+func TestListProjectFiles_FilterByDocument(t *testing.T) {
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			return []domain.FileMetadata{
+				{ID: "1", Category: domain.CategoryDocument, FileName: "doc.pdf"},
+				{ID: "2", Category: domain.CategoryPhoto, FileName: "photo.jpg"},
+			}, nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-123/files?category=document", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+}
+
+func TestListProjectFiles_FilterByPhoto(t *testing.T) {
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			return []domain.FileMetadata{
+				{ID: "1", Category: domain.CategoryDocument, FileName: "doc.pdf"},
+				{ID: "2", Category: domain.CategoryPhoto, FileName: "photo.jpg"},
+			}, nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-123/files?category=photo", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+}
+
+func TestListProjectFiles_Error(t *testing.T) {
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			return nil, errors.New("db error")
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-123/files", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 

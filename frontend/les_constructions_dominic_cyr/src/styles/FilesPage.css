@@ -213,3 +213,65 @@
         font-size: 1rem;
     }
 }
+
+/* Print Styles for Documents */
+@media print {
+    /* Hide non-printable elements */
+    .btn-upload,
+    .document-action-buttons,
+    .modal-overlay {
+        display: none !important;
+    }
+
+    /* Ensure the page uses full width */
+    .documents-page {
+        padding: 20px;
+        background-color: white;
+    }
+
+    /* Clean header for print */
+    .documents-header {
+        border-bottom: 2px solid #000;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+    }
+
+    .documents-header h1 {
+        font-size: 1.5rem;
+        color: #000;
+    }
+
+    /* Table formatting for print */
+    .document-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .document-table thead th {
+        background-color: #f0f0f0;
+        color: #000;
+        border: 1px solid #000;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .document-table tbody td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        color: #000;
+    }
+
+    .document-table tbody tr {
+        page-break-inside: avoid;
+    }
+
+    /* File name cell formatting */
+    .file-name-cell {
+        font-weight: 500;
+    }
+
+    /* Ensure icons are visible in print */
+    .file-icon {
+        color: #000 !important;
+    }
+}
