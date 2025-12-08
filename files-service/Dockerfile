@@ -5,6 +5,9 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
+RUN go get github.com/gin-contrib/cors
+RUN go mod tidy
+
 COPY . .
 
 RUN go build -o file-service ./cmd
