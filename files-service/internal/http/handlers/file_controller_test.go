@@ -3,6 +3,7 @@ package handlers_test
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"mime/multipart"
@@ -22,6 +23,8 @@ type mockFileService struct {
 	UploadFn func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error)
 	GetFn    func(ctx context.Context, id string) ([]byte, string, error)
 	DeleteFn func(ctx context.Context, id string) error
+
+	ListByProjectIDFn func(ctx context.Context, projectID string) ([]domain.FileMetadata, error)
 }
 
 func (m *mockFileService) Upload(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
@@ -32,6 +35,13 @@ func (m *mockFileService) Get(ctx context.Context, id string) ([]byte, string, e
 }
 func (m *mockFileService) Delete(ctx context.Context, id string) error {
 	return m.DeleteFn(ctx, id)
+}
+
+func (m *mockFileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+	if m.ListByProjectIDFn != nil {
+		return m.ListByProjectIDFn(ctx, projectID)
+	}
+	return []domain.FileMetadata{}, nil
 }
 
 func setupRouter(s domain.FileService) *gin.Engine {
@@ -106,6 +116,23 @@ func TestUpload_Document_Success(t *testing.T) {
 	}
 }
 
+func TestUpload_Photo_WebP_Success(t *testing.T) {
+	mock := &mockFileService{
+		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
+			return domain.FileMetadata{ID: "webp-photo"}, nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := multipartRequest(t, "img.webp", "image/webp", []byte("webpdata"), string(domain.CategoryPhoto), "proj-44")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusCreated {
+		t.Fatalf("expected 201, got %d", w.Code)
+	}
+}
+
 func TestUpload_Photo_Success(t *testing.T) {
 	mock := &mockFileService{
 		UploadFn: func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
@@ -149,6 +176,30 @@ func TestUpload_InvalidCategory(t *testing.T) {
 
 	if w.Code != http.StatusBadRequest {
 		t.Fatalf("expected 400, got %d", w.Code)
+	}
+}
+
+func TestUpload_UnsupportedPhotoType_Failure(t *testing.T) {
+	router := setupRouter(&mockFileService{})
+
+	req := multipartRequest(t, "data.json", "application/json", []byte("{}"), string(domain.CategoryPhoto), "proj-123")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d. Response: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestUpload_UnsupportedDocumentType_Failure(t *testing.T) {
+	router := setupRouter(&mockFileService{})
+
+	req := multipartRequest(t, "image.png", "image/png", []byte("data"), string(domain.CategoryDocument), "proj-123")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d. Response: %s", w.Code, w.Body.String())
 	}
 }
 
@@ -213,6 +264,64 @@ func TestUpload_InternalError(t *testing.T) {
 
 	if w.Code != http.StatusInternalServerError {
 		t.Fatalf("expected 500, got %d", w.Code)
+	}
+}
+
+// 🚀 NEW TEST: Successfully list photos by project ID
+func TestListProjectFiles_Success(t *testing.T) {
+	expectedMetadata := []domain.FileMetadata{
+		{ID: "p1", FileName: "photo1.jpg", Category: domain.CategoryPhoto},
+		{ID: "p2", FileName: "photo2.jpg", Category: domain.CategoryPhoto},
+	}
+
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			if projectID == "proj-A" {
+				return expectedMetadata, nil
+			}
+			return nil, nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-A/files", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d. Body: %s", w.Code, w.Body.String())
+	}
+
+	var actualMetadata []domain.FileMetadata
+	if err := json.Unmarshal(w.Body.Bytes(), &actualMetadata); err != nil {
+		t.Fatalf("failed to unmarshal response: %v", err)
+	}
+
+	if len(actualMetadata) != 2 {
+		t.Fatalf("expected 2 items, got %d", len(actualMetadata))
+	}
+	if actualMetadata[0].ID != "p1" {
+		t.Fatalf("expected ID p1, got %s", actualMetadata[0].ID)
+	}
+}
+
+// ❌ NEW TEST: Listing fails due to internal service error
+func TestListProjectFiles_InternalError(t *testing.T) {
+	internalErr := errors.New("service layer failure")
+
+	mock := &mockFileService{
+		ListByProjectIDFn: func(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+			return nil, internalErr
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/projects/proj-B/files", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d. Body: %s", w.Code, w.Body.String())
 	}
 }
 
