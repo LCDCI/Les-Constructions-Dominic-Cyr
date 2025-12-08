@@ -225,7 +225,6 @@ const Navbar = () => {
                   <span className="navbar-text">Analytics & Reports</span>
                 </Link>
               </li>
-<<<<<<< HEAD
               <li className="navbar-item">
                 <Link
                   to="/"
@@ -238,8 +237,6 @@ const Navbar = () => {
                   <span className="navbar-text">Home</span>
                 </Link>
               </li>
-=======
->>>>>>> origin/main
             </ul>
           </div>
           {/* Settings Section */}
