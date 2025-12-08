@@ -19,9 +19,10 @@ import (
 )
 
 type mockFileService struct {
-	UploadFn func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error)
-	GetFn    func(ctx context.Context, id string) ([]byte, string, error)
-	DeleteFn func(ctx context.Context, id string) error
+	UploadFn        func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error)
+	GetFn           func(ctx context.Context, id string) ([]byte, string, error)
+	DeleteFn        func(ctx context.Context, id string) error
+	ListByProjectIDFn func(ctx context.Context, projectID string) ([]domain.FileMetadata, error)
 }
 
 func (m *mockFileService) Upload(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
@@ -32,6 +33,12 @@ func (m *mockFileService) Get(ctx context.Context, id string) ([]byte, string, e
 }
 func (m *mockFileService) Delete(ctx context.Context, id string) error {
 	return m.DeleteFn(ctx, id)
+}
+func (m *mockFileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+	if m.ListByProjectIDFn != nil {
+		return m.ListByProjectIDFn(ctx, projectID)
+	}
+	return nil, nil
 }
 
 func setupRouter(s domain.FileService) *gin.Engine {
