@@ -3,8 +3,8 @@ import axios from 'axios';
 const BASE_API_URL = 'http://localhost:8082'; 
 
 export async function fetchProjectFiles(projectId) {
-
-    return [];
+    const response = await axios.get(`${BASE_API_URL}/projects/${projectId}/files`); 
+    return response.data;
 }
 
 export async function uploadFile(formData) {

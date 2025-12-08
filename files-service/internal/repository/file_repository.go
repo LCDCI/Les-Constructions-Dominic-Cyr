@@ -12,6 +12,7 @@ type fileRepository struct {
 }
 
 func NewFileRepository(db *sql.DB) domain.FileRepository {
+
 	return &fileRepository{db: db}
 }
 
@@ -42,4 +43,35 @@ func (r *fileRepository) FindById(ctx context.Context, id string) (*domain.File,
 func (r *fileRepository) Delete(ctx context.Context, id string) error {
 	_, err := r.db.ExecContext(ctx, `DELETE FROM files WHERE id=$1`, id)
 	return err
+}
+
+func (r *fileRepository) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by
+		FROM files WHERE project_id=$1 ORDER BY created_at DESC
+	`, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var files []domain.File
+	for rows.Next() {
+		f := domain.File{}
+		err := rows.Scan(
+			&f.ID, &f.FileName, &f.ContentType,
+			&f.Category, &f.Size, &f.ObjectKey, &f.CreatedAt,
+			&f.ProjectID, &f.UploadedBy,
+		)
+		if err != nil {
+			return nil, err
+		}
+		files = append(files, f)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return files, nil
 }
