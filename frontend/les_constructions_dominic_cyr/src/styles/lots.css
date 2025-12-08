@@ -139,37 +139,6 @@
     font-size: 1.2rem;
 }
 
-/* Loading state */
-.lots-loading {
-    text-align: center;
-    padding: 5%;
-    font-size: 1.2rem;
-}
-
-/* Error state */
-.lots-error {
-    text-align: center;
-    padding: 4% 6%;
-    background: #fff4f4;
-    border: 1px solid #ffd2d2;
-    border-radius: 8px;
-    color: #9b2c2c;
-}
-
-.retry-button {
-    margin-top: 12px;
-    padding: 8px 14px;
-    border-radius: 6px;
-    border: none;
-    background-color: var(--primary-color);
-    color: var(--white);
-    cursor: pointer;
-}
-
-.retry-button:hover {
-    opacity: 0.95;
-}
-
 /* Responsive Design */
 @media (max-width: 1200px) {
     .lots-container {
