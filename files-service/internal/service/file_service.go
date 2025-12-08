@@ -120,6 +120,30 @@ func (s *fileService) Get(ctx context.Context, fileID string) ([]byte, string, e
 
 	return data, f.ContentType, nil
 }
+func (s *fileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+	if projectID == "" {
+		return nil, domain.ErrValidation
+	}
+
+	files, err := s.repo.FindByProjectID(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	metadataList := make([]domain.FileMetadata, len(files))
+	for i, f := range files {
+		metadataList[i] = domain.FileMetadata{
+			ID:          f.ID,
+			FileName:    f.FileName,
+			ContentType: f.ContentType,
+			Category:    f.Category,
+			ProjectID:   f.ProjectID,
+			UploadedBy:  f.UploadedBy,
+			Url:         "/files/" + f.ID,
+		}
+	}
+	return metadataList, nil
+}
 
 func (s *fileService) Delete(ctx context.Context, fileID string) error {
 
