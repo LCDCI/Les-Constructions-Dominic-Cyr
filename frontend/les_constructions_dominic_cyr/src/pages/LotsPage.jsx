@@ -133,7 +133,14 @@ const LotsPage = () => {
               ))
             ) : (
               <div className="no-results">
-                <p>No lots found matching &quot;{searchTerm}&quot;</p>
+                <p>
+                  {searchTerm
+                    ? <>No lots found matching &quot;{searchTerm}&quot;</>
+                    : lots.length === 0
+                      ? <>No available lots at the moment</>
+                      : <>No lots found</>
+                  }
+                </p>
               </div>
             )}
           </div>
