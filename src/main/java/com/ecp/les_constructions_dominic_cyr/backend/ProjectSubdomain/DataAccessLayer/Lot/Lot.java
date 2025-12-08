@@ -19,6 +19,8 @@ public class Lot {
     @Embedded
     private LotIdentifier lotIdentifier;
 
+    private String imageIdentifier;
+
     private String location;
 
     private Float price;

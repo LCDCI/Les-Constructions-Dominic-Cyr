@@ -46,3 +46,10 @@ spring.datasource.hikari.initializationFailTimeout: 60000
 files:
   service:
     base-url: http://localhost:8082
+
+# DeepL API Configuration (for PDF translation)
+deepl:
+  api:
+    key: ${DEEPL_API_KEY:}
+    free: true
+    url: https://api-free.deepl.com/v2
