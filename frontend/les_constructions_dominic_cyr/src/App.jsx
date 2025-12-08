@@ -35,13 +35,9 @@ export default function App() {
             <Route path="/inquiries" element={<OwnerInquiriesPage />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
-<<<<<<< HEAD
+            <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
             <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} />
-=======
-              <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
-            <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} /> 
->>>>>>> origin/main
-            <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} /> 
+            <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} />
             {/* Remember to add more routes here as App grows */}
           </Routes>
         </main>
