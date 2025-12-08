@@ -6,6 +6,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Mapp
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryResponseModel;
 import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class InquiryServiceImpl implements InquiryService {
@@ -22,5 +24,13 @@ public class InquiryServiceImpl implements InquiryService {
         Inquiry inquiry = mapper.requestModelToEntity(request);
         Inquiry savedInquiry = repository.save(inquiry);
         return mapper.entityToResponseModel(savedInquiry);
+    }
+
+    @Override
+    public List<InquiryResponseModel> getAllInquiries() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::entityToResponseModel)
+                .collect(Collectors.toList());
     }
 }

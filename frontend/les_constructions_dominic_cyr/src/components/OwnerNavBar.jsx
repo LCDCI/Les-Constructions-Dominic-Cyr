@@ -12,6 +12,7 @@ import { GoPackage } from "react-icons/go";
 import { GoFileDiff } from "react-icons/go";
 import { GoFile } from "react-icons/go";
 import { GoPaperAirplane } from "react-icons/go";
+import { GoCommentDiscussion } from "react-icons/go";
 import { FaFileInvoiceDollar } from "react-icons/fa6";
 import { GoProject } from "react-icons/go";
 import { FaMapLocationDot } from "react-icons/fa6";
@@ -108,6 +109,16 @@ const Navbar = () => {
                                 >
                                     <span className="navbar-icon"><GoInbox /></span>
                                     <span className="navbar-text">Inbox</span>
+                                </Link>
+                            </li>
+                            <li className="navbar-item">
+                                <Link
+                                    to="/inquiries"
+                                    className={`navbar-link ${isActive('/inquiries')}`}
+                                    onClick={closeMenu}
+                                >
+                                    <span className="navbar-icon"><GoCommentDiscussion /></span>
+                                    <span className="navbar-text">Inquiries</span>
                                 </Link>
                             </li>
                             <li className="navbar-item">

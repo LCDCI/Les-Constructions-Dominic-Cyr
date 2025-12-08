@@ -2,7 +2,9 @@ package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Bus
 
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryResponseModel;
+import java.util.List;
 
 public interface InquiryService {
     InquiryResponseModel submitInquiry(InquiryRequestModel request);
+    List<InquiryResponseModel> getAllInquiries();
 }

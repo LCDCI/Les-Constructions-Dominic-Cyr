@@ -24,6 +24,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryResponseModel;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/inquiries")
@@ -31,6 +33,7 @@ import java.util.HashMap;
 public class InquiryController {
     private final InquiryService service;
     private static final int MAX_MESSAGE_LENGTH = 1000;
+    private static final String OWNER_KEY = "dev-owner-key";
     private static final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
     @Value("${recaptcha.secret}")
@@ -92,5 +95,16 @@ public class InquiryController {
         
         service.submitInquiry(request);
         return ResponseEntity.ok().body("Thank you! Your inquiry has been received.");
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllInquiries(@RequestHeader(value = "X-OWNER-KEY", required = false) String ownerKey) {
+        // Validate owner key
+        if (ownerKey == null || !ownerKey.equals(OWNER_KEY)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
+        }
+
+        List<InquiryResponseModel> inquiries = service.getAllInquiries();
+        return ResponseEntity.ok(inquiries);
     }
 }
