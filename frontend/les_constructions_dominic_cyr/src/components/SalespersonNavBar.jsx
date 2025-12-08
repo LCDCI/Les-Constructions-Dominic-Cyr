@@ -9,6 +9,7 @@ import { GoFile } from "react-icons/go";
 import { GoProject } from "react-icons/go";
 import { CiLogout } from "react-icons/ci";
 import { IoIosNotifications } from "react-icons/io";
+import { GoHome } from "react-icons/go";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -84,6 +85,16 @@ const Navbar = () => {
                                     <span className="navbar-icon"><GoProject /></span>
                                     <span className="navbar-text">Dashboard</span>
                                 </Link>
+                            </li>
+                            <li className="navbar-item">
+                                                <Link
+                                                    to="/"
+                                                    className={`navbar-link ${isActive('/')}`}
+                                                    onClick={closeMenu}
+                                                >
+                                                    <span className="navbar-icon"><GoHome /></span>
+                                                    <span className="navbar-text">Home</span>
+                                                </Link>
                             </li>
                         </ul>
                     </div>
