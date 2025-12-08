@@ -37,6 +37,7 @@ func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 	r.POST("/files", fc.upload)
 	r.GET("/files/:id", fc.download)
 	r.DELETE("/files/:id", fc.delete)
+	r.GET("/projects/:projectId/files", fc.listProjectFiles)
 }
 
 func (fc *FileController) upload(c *gin.Context) {
