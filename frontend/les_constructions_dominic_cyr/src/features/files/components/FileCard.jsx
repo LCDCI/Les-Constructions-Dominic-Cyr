@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 // import { FaFileExport, FaTrashAlt } from 'react-icons/fa';
 import '../../../styles/FilesPage.css';
 
-const BASE_API_URL = 'http://localhost:8080';
+const BASE_API_URL = 'http://localhost:8082';
 
 const getFileIcon = (contentType) => {
     // Unicode Document Icon (U+1F4C4) with color coding
@@ -38,6 +38,7 @@ export default function FileCard({ file, onDelete }) {
             </td>
             <td>{formatCategory(file.contentType)}</td>
             <td>{file.uploadedBy}</td>
+            <td>{formatDate(file.createdAt)}</td>
             <td className="document-action-buttons">
                 <a 
                     href={`${BASE_API_URL}/files/${file.id}`} 

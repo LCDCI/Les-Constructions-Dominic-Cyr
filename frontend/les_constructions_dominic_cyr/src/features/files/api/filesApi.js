@@ -2,8 +2,11 @@ import axios from 'axios';
 
 const BASE_API_URL = 'http://localhost:8082'; 
 
-export async function fetchProjectFiles(projectId) {
-    const response = await axios.get(`${BASE_API_URL}/projects/${projectId}/files`); 
+export async function fetchProjectFiles(projectId, category = null) {
+    const url = category 
+        ? `${BASE_API_URL}/projects/${projectId}/files?category=${category}`
+        : `${BASE_API_URL}/projects/${projectId}/files`;
+    const response = await axios.get(url); 
     return response.data;
 }
 

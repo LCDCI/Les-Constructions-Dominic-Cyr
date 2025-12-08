@@ -100,6 +100,7 @@ func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) 
 		ProjectID:   file.ProjectID,
 		UploadedBy:  file.UploadedBy,
 		Url:         "/files/" + id,
+		CreatedAt:   file.CreatedAt,
 	}, nil
 }
 
@@ -140,6 +141,7 @@ func (s *fileService) ListByProjectID(ctx context.Context, projectID string) ([]
 			ProjectID:   f.ProjectID,
 			UploadedBy:  f.UploadedBy,
 			Url:         "/files/" + f.ID,
+			CreatedAt:   f.CreatedAt,
 		}
 	}
 	return metadataList, nil

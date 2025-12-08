@@ -137,14 +137,24 @@ func (fc *FileController) listProjectFiles(c *gin.Context) {
 		return
 	}
 
-	photos := make([]domain.FileMetadata, 0)
+	// Optional category filter via query parameter
+	categoryFilter := c.Query("category")
+	
+	if categoryFilter == "" {
+		// No filter - return all files
+		c.JSON(http.StatusOK, metadataList)
+		return
+	}
+
+	// Filter by category
+	filtered := make([]domain.FileMetadata, 0)
 	for _, metadata := range metadataList {
-		if metadata.Category == domain.CategoryPhoto {
-			photos = append(photos, metadata)
+		if string(metadata.Category) == strings.ToUpper(categoryFilter) {
+			filtered = append(filtered, metadata)
 		}
 	}
 
-	c.JSON(http.StatusOK, photos)
+	c.JSON(http.StatusOK, filtered)
 }
 
 func (fc *FileController) delete(c *gin.Context) {

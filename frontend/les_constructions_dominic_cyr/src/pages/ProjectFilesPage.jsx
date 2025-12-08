@@ -1,26 +1,46 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaFolderOpen, FaFileArrowUp } from 'react-icons/fa6';
+import { useParams, useNavigate } from 'react-router-dom';
 import FileUploadModal from '../components/FileUploadModal';
 import FileCard from '../features/files/components/FileCard';
-import { deleteFile } from '../features/files/api/filesApi';
+import { deleteFile, fetchProjectFiles } from '../features/files/api/filesApi';
 import '../styles/FilesPage.css';
 
-const initialDocuments = [
-    { id: '1', fileName: 'Blueprints_V4.pdf', contentType: 'application/pdf', category: 'DOCUMENT', uploadedBy: 'Mark Dupres', createdAt: '2025-11-20T10:00:00Z' },
-    { id: '2', fileName: 'Site_Photo_Roofing.jpg', contentType: 'image/jpeg', category: 'PHOTO', uploadedBy: 'Contractor A', createdAt: '2025-11-25T14:30:00Z' },
-    { id: '3', fileName: 'Contract_Signed.docx', contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', category: 'DOCUMENT', uploadedBy: 'Owner', createdAt: '2025-12-01T09:15:00Z' },
-];
-
 export default function ProjectFilesPage() {
-    const [allFiles, setAllFiles] = useState(initialDocuments);
+    const { projectId } = useParams();
+    const [allFiles, setAllFiles] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const projectId = 'BILL-223067';
     const uploadedBy = '123-user-id';
+    const navigate = useNavigate();
 
-    // Filter to show only Documents for this ticket
-    const documents = useMemo(() => {
-        return allFiles.filter(file => file.category === 'DOCUMENT');
-    }, [allFiles]);
+    // Data Fetching
+    useEffect(() => {
+        const loadFiles = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const documents = await fetchProjectFiles(projectId, 'document');
+                setAllFiles(documents);
+            } catch (err) {
+                console.error("Failed to fetch project documents:", err);
+                
+                const status = err.response?.status || 'Network Error';
+                const msg = err.response?.data?.error || `Failed to load documents. Status: ${status}.`;
+
+                setError(msg);
+                
+                if (status === 500 || status === 404 || status === 'Network Error') {
+                    alert(`Error (${status}): ${msg} Redirecting to Home.`);
+                    navigate('/');
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadFiles();
+    }, [projectId, navigate]);
 
     const handleUploadSuccess = (newFileMetadata) => {
         const newFile = {
@@ -40,12 +60,25 @@ export default function ProjectFilesPage() {
         try {
             await deleteFile(fileId);
             setAllFiles(prevFiles => prevFiles.filter(file => file.id !== fileId));
-            alert('File deleted successfully.');
         } catch (error) {
             console.error('Error deleting file:', error);
             alert('Failed to delete file. Please try again.');
         }
     };
+
+    if (isLoading) {
+        return <div className="documents-page container" style={{textAlign: 'center', padding: '50px'}}>Loading project documents...</div>;
+    }
+    
+    if (error) {
+        return (
+            <div className="documents-page container">
+                <p className="error-message" style={{color: '#E53935', textAlign: 'center', marginTop: '20px'}}>
+                    Error loading documents: {error}
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="documents-page container">
@@ -61,14 +94,15 @@ export default function ProjectFilesPage() {
                     <table>
                         <thead>
                             <tr>
-                                <th style={{ width: '45%' }}>Document Name</th>
-                                <th style={{ width: '20%' }}>Type</th>
+                                <th style={{ width: '35%' }}>Document Name</th>
+                                <th style={{ width: '15%' }}>Type</th>
                                 <th style={{ width: '20%' }}>Uploaded By</th>
+                                <th style={{ width: '15%' }}>Upload Date</th>
                                 <th style={{ width: '15%' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {documents.map((file) => (
+                            {allFiles.map((file) => (
                                 <FileCard key={file.id} file={file} onDelete={handleDelete} />
                             ))}
                         </tbody>
@@ -76,7 +110,7 @@ export default function ProjectFilesPage() {
                 </div>
             </div>
             
-            {documents.length === 0 && (
+            {allFiles.length === 0 && (
                 <p style={{ marginTop: '20px', textAlign: 'center', color: '#6B7280' }}>
                     No documents found for this project. Upload your first file to get started!
                 </p>

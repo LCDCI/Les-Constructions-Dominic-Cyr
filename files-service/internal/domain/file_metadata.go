@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type FileMetadata struct {
 	ID          string
 	FileName    string
@@ -8,4 +10,5 @@ type FileMetadata struct {
 	ProjectID   string
 	UploadedBy  string
 	Url         string
+	CreatedAt   time.Time
 }
