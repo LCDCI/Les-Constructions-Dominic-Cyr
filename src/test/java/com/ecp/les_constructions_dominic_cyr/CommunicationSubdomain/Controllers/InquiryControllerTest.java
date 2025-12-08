@@ -1,5 +1,6 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Controllers;
+package com.ecp.les_constructions_dominic_cyr.CommunicationSubdomain.Controllers;
 
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Controllers.InquiryController;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DTOs.InquiryRequest;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Entities.Inquiry;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Services.InquiryService;

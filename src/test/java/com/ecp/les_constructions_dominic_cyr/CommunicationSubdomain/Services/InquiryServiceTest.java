@@ -1,8 +1,9 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Services;
+package com.ecp.les_constructions_dominic_cyr.CommunicationSubdomain.Services;
 
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DTOs.InquiryRequest;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Entities.Inquiry;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Repositories.InquiryRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Services.InquiryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -45,14 +45,14 @@ public class ScheduleController {
         return ResponseEntity.ok(schedules);
     }
 
-    @GetMapping("//salesperson/schedules/all")
+    @GetMapping("/salesperson/schedules/all")
     public ResponseEntity<List<ScheduleResponseDTO>> getSalespersonAllSchedules() {
         log.info("REST request to get all schedules");
         List<ScheduleResponseDTO> schedules = scheduleService.getAllSchedules();
         return ResponseEntity.ok(schedules);
     }
 
-    @GetMapping("//salesperson/schedules/{scheduleIdentifier}")
+    @GetMapping("/salesperson/schedules/{scheduleIdentifier}")
     public ResponseEntity<ScheduleResponseDTO> getSalespersonScheduleByIdentifier(@PathVariable String scheduleIdentifier) {
         log.info("REST request to get schedule by identifier: {}", scheduleIdentifier);
         ScheduleResponseDTO schedule = scheduleService.getScheduleByIdentifier(scheduleIdentifier);

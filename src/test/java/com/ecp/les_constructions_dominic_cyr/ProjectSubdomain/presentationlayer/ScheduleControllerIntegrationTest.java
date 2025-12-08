@@ -76,8 +76,55 @@ class ScheduleControllerIntegrationTest {
         scheduleRepository.deleteAll();
     }
 
+
+    //Tests for the Owner Schedule endpoints
     @Test
-    void getCurrentWeekSchedules_shouldReturnSchedulesForCurrentWeek() throws Exception {
+    void getSalespersonCurrentWeekSchedules_shouldReturnSchedulesForCurrentWeek() throws Exception {
+        mockMvc.perform(get("/api/v1/salesperson/schedules")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(2))))
+                .andExpect(jsonPath("$[0].scheduleIdentifier", notNullValue()))
+                .andExpect(jsonPath("$[0].taskDate", notNullValue()))
+                .andExpect(jsonPath("$[0].taskDescription", notNullValue()))
+                .andExpect(jsonPath("$[0].lotNumber", notNullValue()))
+                .andExpect(jsonPath("$[0].dayOfWeek", notNullValue()));
+    }
+
+    @Test
+    void getAllSalespersonSchedules_shouldReturnAllSchedules() throws Exception {
+        mockMvc.perform(get("/api/v1/salesperson/schedules/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[*].scheduleIdentifier",
+                        containsInAnyOrder("SCH-TEST-001", "SCH-TEST-002", "SCH-TEST-003")));
+    }
+
+    @Test
+    void getSalespersonScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
+        mockMvc.perform(get("/api/v1/salesperson/schedules/SCH-TEST-001")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.scheduleIdentifier", is("SCH-TEST-001")))
+                .andExpect(jsonPath("$.taskDescription", is("Begin Excavation")))
+                .andExpect(jsonPath("$.lotNumber", is("Lot 53")))
+                .andExpect(jsonPath("$.dayOfWeek", is("Monday")));
+    }
+
+    @Test
+    void getSalespersonScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
+        mockMvc.perform(get("/api/v1/salesperson/schedules/SCH-INVALID")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+    //Tests for Salesperson Schedule endpoints
+    @Test
+    void getOwnerCurrentWeekSchedules_shouldReturnSchedulesForCurrentWeek() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -91,7 +138,7 @@ class ScheduleControllerIntegrationTest {
     }
 
     @Test
-    void getAllSchedules_shouldReturnAllSchedules() throws Exception {
+    void getAllOwnerSchedules_shouldReturnAllSchedules() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/all")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -102,7 +149,7 @@ class ScheduleControllerIntegrationTest {
     }
 
     @Test
-    void getScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
+    void getOwnerScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/SCH-TEST-001")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -114,7 +161,7 @@ class ScheduleControllerIntegrationTest {
     }
 
     @Test
-    void getScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
+    void getOwnerScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/SCH-INVALID")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
