@@ -11,6 +11,7 @@ import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
 import OwnerDashboard from './pages/OwnerDashboard';
 import NavigationSetter from './components/NavigationSetter';
+import ProjectFilesPage from './pages/ProjectFilesPage';
 import './App.css';
 
 export default function App() {
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/error" element={<ServerError />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
+            <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} /> 
             {/* Remember to add more routes here as App grows */}
           </Routes>
         </main>

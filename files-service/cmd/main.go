@@ -27,9 +27,10 @@ func main() {
 
 	r := gin.Default()
 
-	r.Use(middleware.ErrorHandler)
+	r.Use(middleware.CORSMiddleware())
 
-	r.Use(middleware.InjectFakeUser()) // temporary until full auth implemented
+	r.Use(middleware.ErrorHandler)
+	r.Use(middleware.InjectFakeUser())
 
 	fileController.RegisterRoutes(r)
 
