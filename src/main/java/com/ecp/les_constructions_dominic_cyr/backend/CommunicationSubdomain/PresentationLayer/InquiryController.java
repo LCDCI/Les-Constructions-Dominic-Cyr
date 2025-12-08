@@ -85,7 +85,7 @@ public class InquiryController {
         }
         request.setMessage(HtmlUtils.htmlEscape(request.getMessage()));
         
-        InquiryResponseModel response = service.submitInquiry(request);
+        service.submitInquiry(request);
         return ResponseEntity.ok().body("Thank you! Your inquiry has been received.");
     }
 }
