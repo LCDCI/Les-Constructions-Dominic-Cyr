@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS lots;
 CREATE TABLE lots (
                      id SERIAL PRIMARY KEY,
                      lot_identifier UUID NOT NULL UNIQUE,
+                     image_identifier VARCHAR(255),
                      location VARCHAR(255) NOT NULL,
                      price REAL NOT NULL, -- Use REAL for FLOAT compatibility
                      dimensions VARCHAR(255) NOT NULL,
@@ -20,6 +21,7 @@ CREATE TABLE houses (
                     house_name VARCHAR(255) NOT NULL,
                     location VARCHAR(255) NOT NULL,
                     description TEXT NOT NULL,
+                    image_identifier VARCHAR(255),
                     number_of_rooms INTEGER NOT NULL,
                     number_of_bedrooms INTEGER NOT NULL,
                     number_of_bathrooms INTEGER NOT NULL,

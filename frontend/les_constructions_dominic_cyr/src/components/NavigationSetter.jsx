@@ -15,4 +15,3 @@ export default function NavigationSetter() {
 
   return null; // This component doesn't render anything
 }
-

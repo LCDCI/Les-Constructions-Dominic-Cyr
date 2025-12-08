@@ -21,9 +21,13 @@ export class ProjectsPage {
 
   async waitForProjectsToLoad() {
     await this.page.waitForLoadState('networkidle');
-    await this.loadingIndicator
-      .waitFor({ state: 'hidden', timeout: 15000 })
-      .catch(() => {});
+    try {
+      await this.loadingIndicator.waitFor({ state: 'hidden', timeout: 15000 });
+    } catch (err) {
+      // Log the failure so tests don't silently ignore problems
+      // eslint-disable-next-line no-console
+      console.error('Waiting for projects loading indicator failed', err);
+    }
   }
 
   async searchProjects(searchTerm) {
