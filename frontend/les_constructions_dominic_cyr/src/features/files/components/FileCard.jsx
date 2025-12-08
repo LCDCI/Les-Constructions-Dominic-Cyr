@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FaFileExport, FaTrashAlt } from 'react-icons/fa';
+// import { FaFileExport, FaTrashAlt } from 'react-icons/fa';
 import '../../../styles/FilesPage.css';
 
 const BASE_API_URL = 'http://localhost:8080';
