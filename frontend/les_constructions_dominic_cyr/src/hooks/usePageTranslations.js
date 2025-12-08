@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fetchPageTranslations } from '../utils/translationApi';
-import i18n from '../utils/i18n';
 
 /**
  * Custom hook for page-specific translations.

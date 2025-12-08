@@ -26,15 +26,15 @@ const api = axios.create({
 
 // Response interceptor to handle 500 errors
 api.interceptors.response.use(
-  (response) => {
+  response => {
     // If response is successful, return it as-is
     return response;
   },
-  (error) => {
+  error => {
     // Handle error responses
     if (error.response) {
       const status = error.response.status;
-      
+
       // Redirect to error page on 500 status codes
       if (status >= 500 && status < 600) {
         navigate('/error', { replace: true });
@@ -42,12 +42,10 @@ api.interceptors.response.use(
     } else if (error.request) {
       // Request was made but no response received (network error)
       // You can handle this differently if needed
-      console.error('Network error:', error.request);
     } else {
       // Something else happened
-      console.error('Error:', error.message);
     }
-    
+
     // Reject the promise so components can still handle errors if needed
     return Promise.reject(error);
   }
