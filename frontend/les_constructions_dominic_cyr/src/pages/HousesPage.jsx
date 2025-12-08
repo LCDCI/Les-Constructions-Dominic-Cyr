@@ -110,7 +110,7 @@ const HousesPage = () => {
                   <div className="house-image-container">
                     <img
                       src={getImageUrl(house.imageIdentifier)}
-                      alt={house.houseName}
+                      alt={house.houseName}g
                       className="house-image"
                       onError={handleImageError}
                     />
