@@ -84,5 +84,5 @@ created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_schedule_identifier ON schedules(schedule_identifier);
-CREATE INDEX idx_task_date ON schedules(task_date);
+CREATE INDEX IF NOT EXISTS idx_schedule_identifier ON schedules(schedule_identifier);
+CREATE INDEX IF NOT EXISTS idx_task_date ON schedules(task_date);
