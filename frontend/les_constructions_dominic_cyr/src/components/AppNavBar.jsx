@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import '../styles/AppNavBar.css';
 import OwnerNavBar from '../components/OwnerNavBar';
 import SalespersonNavBar from '../components/SalespersonNavBar';
+import ContractorNavBar from '../components/ContractorNavBar';
 
 export default function AppNavBar() {
   const { i18n, t } = useTranslation();
@@ -26,6 +27,7 @@ export default function AppNavBar() {
       <div className="site-nav-inner">
           <SalespersonNavBar />
           <OwnerNavBar />
+          <ContractorNavBar />  
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
