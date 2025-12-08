@@ -15,7 +15,7 @@ var allowedDocumentTypes = map[string]bool{
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": true,
 	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":       true,
 	"text/plain":               true,
-	"application/json":         true, // For translation files
+	"application/json":         true,
 	"application/octet-stream": true,
 }
 
@@ -125,6 +125,25 @@ func (fc *FileController) download(c *gin.Context) {
 	}
 
 	c.Data(http.StatusOK, contentType, data)
+}
+
+func (fc *FileController) listProjectFiles(c *gin.Context) {
+	projectID := c.Param("projectId")
+
+	metadataList, err := fc.s.ListByProjectID(c.Request.Context(), projectID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	photos := make([]domain.FileMetadata, 0)
+	for _, metadata := range metadataList {
+		if metadata.Category == domain.CategoryPhoto {
+			photos = append(photos, metadata)
+		}
+	}
+
+	c.JSON(http.StatusOK, photos)
 }
 
 func (fc *FileController) delete(c *gin.Context) {
