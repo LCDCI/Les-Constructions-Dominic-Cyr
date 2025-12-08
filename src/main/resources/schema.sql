@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS lots;
 CREATE TABLE lots (
                      id SERIAL PRIMARY KEY,
                      lot_identifier UUID NOT NULL UNIQUE,
+                     image_identifier VARCHAR(255),
                      location VARCHAR(255) NOT NULL,
                      price REAL NOT NULL, -- Use REAL for FLOAT compatibility
                      dimensions VARCHAR(255) NOT NULL,

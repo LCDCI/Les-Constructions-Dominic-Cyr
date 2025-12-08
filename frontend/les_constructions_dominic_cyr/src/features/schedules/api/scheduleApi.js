@@ -21,9 +21,11 @@ export const scheduleApi = {
     }
   },
 
-  getScheduleByIdentifier: async (scheduleIdentifier) => {
+  getScheduleByIdentifier: async scheduleIdentifier => {
     try {
-      const response = await axiosInstance.get(`/owners/schedules/${scheduleIdentifier}`);
+      const response = await axiosInstance.get(
+        `/owners/schedules/${scheduleIdentifier}`
+      );
       return response.data;
     } catch (error) {
       console.error(`Error fetching schedule ${scheduleIdentifier}:`, error);

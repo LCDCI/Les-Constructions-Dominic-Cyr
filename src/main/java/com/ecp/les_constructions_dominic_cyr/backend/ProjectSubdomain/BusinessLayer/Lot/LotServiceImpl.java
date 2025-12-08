@@ -46,7 +46,8 @@ public class LotServiceImpl implements LotService{
     public LotResponseModel addLot(LotRequestModel lotRequestModel) {
         Lot lot = new Lot();
         validateLotRequest(lotRequestModel);
-        
+
+        lot.setImageIdentifier(lotRequestModel.getImageIdentifier());
         lot.setLocation(lotRequestModel.getLocation());
         lot.setPrice(lotRequestModel.getPrice());
         lot.setDimensions(lotRequestModel.getDimensions());
@@ -66,6 +67,7 @@ public class LotServiceImpl implements LotService{
 
         validateLotRequest(lotRequestModel);
         // Update the existing entity instead of creating a new one (preserve id and embedded lotIdentifier)
+        foundLot.setImageIdentifier(lotRequestModel.getImageIdentifier());
         foundLot.setLocation(lotRequestModel.getLocation());
         foundLot.setPrice(lotRequestModel.getPrice());
         foundLot.setDimensions(lotRequestModel.getDimensions());
@@ -86,6 +88,7 @@ public class LotServiceImpl implements LotService{
     private LotResponseModel mapToResponse(Lot lot) {
         LotResponseModel dto = new LotResponseModel();
         dto.setLotId(lot.getLotIdentifier().getLotId());
+        dto.setImageIdentifier(lot.getImageIdentifier());
         dto.setLocation(lot.getLocation());
         dto.setPrice(lot.getPrice());
         dto.setDimensions(lot.getDimensions());
