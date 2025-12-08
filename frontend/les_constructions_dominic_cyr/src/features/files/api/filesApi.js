@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const BASE_API_URL = 'http://localhost:8082';
+const BASE_API_URL = 'http://localhost:8082'; 
+
+export async function fetchProjectFiles(projectId) {
+
+    return [];
+}
 
 export async function uploadFile(formData) {
     const response = await axios.post(`${BASE_API_URL}/files`, formData, {
