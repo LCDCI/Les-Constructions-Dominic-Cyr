@@ -2,21 +2,20 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/ownerNavbar.css';
 import {
+  GoProject,
   GoInbox,
+  GoPackage,
+  GoFileDiff,
   GoArrowUp,
+  GoFile,
   GoPeople,
   GoGraph,
   GoGear,
-  GoHome,
-  GoPackage,
-  GoFileDiff,
-  GoFile,
-  GoPaperAirplane,
-  GoProject,
+  GoHome
 } from 'react-icons/go';
-import { FaFileInvoiceDollar, FaMapLocationDot } from 'react-icons/fa6';
-import { CiLogout } from 'react-icons/ci';
 import { IoIosNotifications } from 'react-icons/io';
+import { CiLogout } from 'react-icons/ci';
+import { FaMapLocationDot } from 'react-icons/fa6';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -94,6 +93,16 @@ const Navbar = () => {
                   <span className="navbar-text">Dashboard</span>
                 </Link>
               </li>
+              <li className="navbar-item">
+                    <Link
+                        to="/"
+                        className={`navbar-link ${isActive('/')}`}
+                        onClick={closeMenu}
+                    >
+                        <span className="navbar-icon"><GoHome /></span>
+                        <span className="navbar-text">Home</span>
+                    </Link>
+              </li>
             </ul>
           </div>
 
@@ -163,31 +172,6 @@ const Navbar = () => {
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/billing"
-                  className={`navbar-link ${isActive('/billing')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <FaFileInvoiceDollar />
-                  </span>
-                  <span className="navbar-text">Billing</span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/messages"
-                  className={`navbar-link ${isActive('/messages')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoPaperAirplane />
-                  </span>
-                  <span className="navbar-text">Messages</span>
-                </Link>
-              </li>
-
-              <li className="navbar-item">
-                <Link
                   to="/lots"
                   className={`navbar-link ${isActive('/lots')}`}
                   onClick={closeMenu}
@@ -225,19 +209,6 @@ const Navbar = () => {
                     <GoGraph />
                   </span>
                   <span className="navbar-text">Analytics & Reports</span>
-                </Link>
-              </li>
-
-              <li className="navbar-item">
-                <Link
-                  to="/"
-                  className={`navbar-link ${isActive('/')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoHome />
-                  </span>
-                  <span className="navbar-text">Home</span>
                 </Link>
               </li>
             </ul>
