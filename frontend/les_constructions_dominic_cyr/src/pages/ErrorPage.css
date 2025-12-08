@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;
+  padding: 2.5% 5%;
   width: 100%;
   box-sizing: border-box;
   background: #fff;
@@ -16,7 +16,7 @@
   max-width: 600px;
   width: 100%;
   text-align: center;
-  padding: 40px 24px;
+  padding: 2.5% 1.5%;
   position: relative;
   z-index: 1;
 }
@@ -26,7 +26,7 @@
   font-weight: 700;
   color: #034f84;
   line-height: 1;
-  margin-bottom: 24px;
+  margin-bottom: 1.5%;
   opacity: 1;
   display: block;
 }
@@ -34,21 +34,21 @@
 .error-page h1 {
   font-size: 32px;
   font-weight: 600;
-  margin: 0 0 16px 0;
+  margin: 0 0 1% 0;
   color: #222;
 }
 
 .error-message {
   font-size: 18px;
   color: #222;
-  margin: 0 0 12px 0;
+  margin: 0 0 0.75% 0;
   font-weight: 500;
 }
 
 .error-description {
   font-size: 16px;
   color: #555;
-  margin: 0 0 32px 0;
+  margin: 0 0 2% 0;
   line-height: 1.6;
 }
 
@@ -76,31 +76,31 @@
 @media (max-width: 768px) {
   .error-page {
     min-height: calc(100vh - 150px);
-    padding: 16px;
+    padding: 1% 4%;
   }
 
   .error-page-content {
-    padding: 32px 20px;
+    padding: 2% 3%;
   }
 
   .error-icon {
     font-size: 80px;
-    margin-bottom: 20px;
+    margin-bottom: 2.5%;
   }
 
   .error-page h1 {
     font-size: 24px;
-    margin-bottom: 12px;
+    margin-bottom: 1.5%;
   }
 
   .error-message {
     font-size: 16px;
-    margin-bottom: 10px;
+    margin-bottom: 1.25%;
   }
 
   .error-description {
     font-size: 14px;
-    margin-bottom: 24px;
+    margin-bottom: 3%;
   }
 
   .error-button {
@@ -112,21 +112,32 @@
 }
 
 @media (max-width: 480px) {
+  .error-page {
+    padding: 1% 3%;
+  }
+
+  .error-page-content {
+    padding: 2% 2.5%;
+  }
+
   .error-icon {
     font-size: 64px;
-    margin-bottom: 16px;
+    margin-bottom: 2%;
   }
 
   .error-page h1 {
     font-size: 20px;
+    margin-bottom: 1.25%;
   }
 
   .error-message {
     font-size: 15px;
+    margin-bottom: 1%;
   }
 
   .error-description {
     font-size: 13px;
+    margin-bottom: 2.5%;
   }
 }
 

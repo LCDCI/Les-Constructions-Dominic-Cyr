@@ -1,277 +1,297 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/ownerNavbar.css';
-import { GoInbox } from "react-icons/go";
-import { GoArrowUp } from "react-icons/go";
-import { GoPeople } from "react-icons/go";
-import { GoGraph } from "react-icons/go";
-import { GoGear } from "react-icons/go";
-import { GoHome } from "react-icons/go";
-import { GoPersonAdd } from "react-icons/go";
-import { GoPackage } from "react-icons/go";
-import { GoFileDiff } from "react-icons/go";
-import { GoFile } from "react-icons/go";
-import { GoPaperAirplane } from "react-icons/go";
-import { GoCommentDiscussion } from "react-icons/go";
-import { FaFileInvoiceDollar } from "react-icons/fa6";
-import { GoProject } from "react-icons/go";
-import { FaMapLocationDot } from "react-icons/fa6";
-import { CiLogout } from "react-icons/ci";
-import { IoIosNotifications } from "react-icons/io";
+import {
+  GoInbox,
+  GoArrowUp,
+  GoPeople,
+  GoGraph,
+  GoGear,
+  GoHome,
+  GoPackage,
+  GoFileDiff,
+  GoFile,
+  GoPaperAirplane,
+  GoProject,
+} from 'react-icons/go';
+import { FaFileInvoiceDollar, FaMapLocationDot } from 'react-icons/fa6';
+import { CiLogout } from 'react-icons/ci';
+import { IoIosNotifications } from 'react-icons/io';
 
 const Navbar = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
-    const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
-    const logoId = import.meta.env. VITE_LOGO_ID;
+  const filesServiceUrl =
+    import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+  const logoId = import.meta.env.VITE_LOGO_ID;
 
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-        if (! isOpen) {
-            document. body.classList.add('menu-open');
-        } else {
-            document.body.classList. remove('menu-open');
-        }
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      document.body.classList.add('menu-open');
+    } else {
+      document.body.classList.remove('menu-open');
+    }
+  };
+
+  const closeMenu = () => {
+    setIsOpen(false);
+    document.body.classList.remove('menu-open');
+  };
+
+  useEffect(() => {
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('menu-open');
     };
+  }, []);
 
-    const closeMenu = () => {
-        setIsOpen(false);
-        document.body.classList.remove('menu-open');
-    };
+  const isActive = path => {
+    return location.pathname === path ? 'active' : '';
+  };
 
-    useEffect(() => {
-        // Cleanup on unmount
-        return () => {
-            document.body.classList.remove('menu-open');
-        };
-    }, []);
+  const getLogoUrl = () => {
+    if (logoId) {
+      return `${filesServiceUrl}/files/${logoId}`;
+    }
+    return null;
+  };
 
-    const isActive = (path) => {
-        return location.pathname === path ?  'active' : '';
-    };
+  return (
+    <>
+      <div
+        className={`navbar-overlay ${isOpen ? 'active' : ''}`}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
 
-    const getLogoUrl = () => {
-        if (logoId) {
-            return `${filesServiceUrl}/files/${logoId}`;
-        }
-        return null;
-    };
+      <button
+        className="navbar-toggle"
+        onClick={toggleMenu}
+        aria-label="Toggle navigation menu"
+        aria-expanded={isOpen}
+      >
+        <span>Owner</span>
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+        <span className="hamburger-line"></span>
+      </button>
+      <aside className={`navbar-sidebar ${isOpen ? 'open' : ''}`}>
+        <nav className="navbar-sidebar-nav">
+          <div className="navbar-section">
+            <h3 className="navbar-section-title">Dashboard</h3>
+            <ul className="navbar-menu">
+              <li className="navbar-item">
+                <Link
+                  to="/owner/dashboard"
+                  className={`navbar-link ${isActive('/owner/dashboard')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoProject />
+                  </span>
+                  <span className="navbar-text">Dashboard</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-    return (
-        <>
-            <div
-                className={`navbar-overlay ${isOpen ? 'active' : ''}`}
-                onClick={closeMenu}
-                aria-hidden="true"
-            />
-                
-                    <button
-                        className="navbar-toggle"
-                        onClick={toggleMenu}
-                        aria-label="Toggle navigation menu"
-                        aria-expanded={isOpen}
-                    >
-                        <span>Owner</span>
-                        <span className="hamburger-line"></span>
-                        <span className="hamburger-line"></span>
-                        <span className="hamburger-line"></span>
-                    </button>
-            <aside className={`navbar-sidebar ${isOpen ? 'open' : ''}`}>
-                
+          {/* Management Section */}
+          <div className="navbar-section">
+            <h3 className="navbar-section-title">Management</h3>
+            <ul className="navbar-menu">
+              <li className="navbar-item">
+                <Link
+                  to="/inbox"
+                  className={`navbar-link ${isActive('/inbox')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoInbox />
+                  </span>
+                  <span className="navbar-text">Inbox</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/projects"
+                  className={`navbar-link ${isActive('/projects')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoPackage />
+                  </span>
+                  <span className="navbar-text">Projects</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/forms"
+                  className={`navbar-link ${isActive('/forms')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoFileDiff />
+                  </span>
+                  <span className="navbar-text">Forms</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/uploads"
+                  className={`navbar-link ${isActive('/uploads')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoArrowUp />
+                  </span>
+                  <span className="navbar-text">Uploads</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/documents"
+                  className={`navbar-link ${isActive('/documents')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoFile />
+                  </span>
+                  <span className="navbar-text">Documents</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/billing"
+                  className={`navbar-link ${isActive('/billing')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <FaFileInvoiceDollar />
+                  </span>
+                  <span className="navbar-text">Billing</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/messages"
+                  className={`navbar-link ${isActive('/messages')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoPaperAirplane />
+                  </span>
+                  <span className="navbar-text">Messages</span>
+                </Link>
+              </li>
 
-                <nav className="navbar-sidebar-nav">
-                    <div className="navbar-section">
-                        <h3 className="navbar-section-title">Dashboard</h3>
-                        <ul className="navbar-menu">
-                            <li className="navbar-item">
-                                <Link
-                                    to="/owner/dashboard"
-                                    className={`navbar-link ${isActive('/owner/dashboard')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoProject /></span>
-                                    <span className="navbar-text">Dashboard</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+              <li className="navbar-item">
+                <Link
+                  to="/lots"
+                  className={`navbar-link ${isActive('/lots')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <FaMapLocationDot />
+                  </span>
+                  <span className="navbar-text">Lots</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <div className="navbar-section">
+            <h3 className="navbar-section-title">Administrative</h3>
+            <ul className="navbar-menu">
+              <li className="navbar-item">
+                <Link
+                  to="/users"
+                  className={`navbar-link ${isActive('/users')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoPeople />
+                  </span>
+                  <span className="navbar-text">Users</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/analytics-reports"
+                  className={`navbar-link ${isActive('/analytics-reports')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoGraph />
+                  </span>
+                  <span className="navbar-text">Analytics & Reports</span>
+                </Link>
+              </li>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/"
+                  className={`navbar-link ${isActive('/')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoHome />
+                  </span>
+                  <span className="navbar-text">Home</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+          {/* Settings Section */}
+          <div className="navbar-section">
+            <h3 className="navbar-section-title">Settings</h3>
+            <ul className="navbar-menu">
+              <li className="navbar-item">
+                <Link
+                  to="/account"
+                  className={`navbar-link ${isActive('/account')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoGear />
+                  </span>
+                  <span className="navbar-text">Account Settings</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/notifications"
+                  className={`navbar-link ${isActive('/notifications')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <IoIosNotifications />
+                  </span>
+                  <span className="navbar-text">Notification Preferences</span>
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-                    {/* Management Section */}
-                    <div className="navbar-section">
-                        <h3 className="navbar-section-title">Management</h3>
-                        <ul className="navbar-menu">
-                            <li className="navbar-item">
-                                <Link
-                                    to="/inbox"
-                                    className={`navbar-link ${isActive('/inbox')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoInbox /></span>
-                                    <span className="navbar-text">Inbox</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/inquiries"
-                                    className={`navbar-link ${isActive('/inquiries')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoCommentDiscussion /></span>
-                                    <span className="navbar-text">Inquiries</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/projects"
-                                    className={`navbar-link ${isActive('/projects')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoPackage /></span>
-                                    <span className="navbar-text">Projects</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/forms"
-                                    className={`navbar-link ${isActive('/forms')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoFileDiff /></span>
-                                    <span className="navbar-text">Forms</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/uploads"
-                                    className={`navbar-link ${isActive('/uploads')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoArrowUp /></span>
-                                    <span className="navbar-text">Uploads</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/documents"
-                                    className={`navbar-link ${isActive('/documents')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoFile /></span>
-                                    <span className="navbar-text">Documents</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/billing"
-                                    className={`navbar-link ${isActive('/billing')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><FaFileInvoiceDollar /></span>
-                                    <span className="navbar-text">Billing</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/messages"
-                                    className={`navbar-link ${isActive('/messages')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoPaperAirplane /></span>
-                                    <span className="navbar-text">Messages</span>
-                                </Link>
-                            </li>
-                            
-                            <li className="navbar-item">
-                                <Link
-                                    to="/lots"
-                                    className={`navbar-link ${isActive('/lots')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><FaMapLocationDot /></span>
-                                    <span className="navbar-text">Lots</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="navbar-section">
-                        <h3 className="navbar-section-title">Administrative</h3>
-                        <ul className="navbar-menu">
-                            <li className="navbar-item">
-                                <Link
-                                    to="/users"
-                                    className={`navbar-link ${isActive('/users')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoPeople /></span>
-                                    <span className="navbar-text">Users</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/analytics-reports"
-                                    className={`navbar-link ${isActive('/analytics-reports')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoGraph /></span>
-                                    <span className="navbar-text">Analytics & Reports</span>
-                                </Link>
-                            </li>
-                           
-                            <li className="navbar-item">
-                                <Link
-                                    to="/"
-                                    className={`navbar-link ${isActive('/')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoHome /></span>
-                                    <span className="navbar-text">Home</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                    {/* Settings Section */}
-                    <div className="navbar-section">
-                        <h3 className="navbar-section-title">Settings</h3>
-                        <ul className="navbar-menu">
-                            <li className="navbar-item">
-                                <Link
-                                    to="/account"
-                                    className={`navbar-link ${isActive('/account')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><GoGear /></span>
-                                    <span className="navbar-text">Account Settings</span>
-                                </Link>
-                            </li>
-                            <li className="navbar-item">
-                                <Link
-                                    to="/notifications"
-                                    className={`navbar-link ${isActive('/notifications')}`}
-                                    onClick={closeMenu}
-                                >
-                                    <span className="navbar-icon"><IoIosNotifications /></span>
-                                    <span className="navbar-text">Notification Preferences</span>
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-
-                {/* Sidebar Footer */}
-                <div className="navbar-sidebar-footer">
-                    <button className="navbar-logout" onClick={() => {
-                        closeMenu();
-                        // Add logout logic here
-                        console.log('Logout clicked');
-                    }}>
-                        <span className="navbar-icon"><CiLogout /></span>
-                        <span className="navbar-text">Logout</span>
-                    </button>
-                </div>
-            </aside>
-        </>
-    );
+        {/* Sidebar Footer */}-sidebar-footer">
+          <button
+            className="navbar-logout"
+            onClick={() => {
+              closeMenu();
+              // Add logout logic here
+              console.log('Logout clicked');
+            }}
+          >
+            <span className="navbar-icon">
+              <CiLogout />
+            </span>
+            <span className="navbar-text">Logout</span>
+          </button>
+        </div>
+      </aside>
+    </>
+  );
 };
 
 export default Navbar;

@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import '../styles/AppNavBar.css';
 import Navbar from '../components/OwnerNavBar';
 
 export default function AppNavBar() {
-  const [language, setLanguage] = useState('FR');
+  const { i18n, t } = useTranslation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const currentLanguage = i18n.language || 'en';
+  const isFrench = currentLanguage === 'fr';
+
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'FR' ? 'EN' : 'FR');
+    const newLang = isFrench ? 'en' : 'fr';
+    i18n.changeLanguage(newLang);
   };
 
   const toggleMobileMenu = () => {
@@ -18,33 +23,33 @@ export default function AppNavBar() {
   return (
     <header className="site-nav">
       <div className="site-nav-inner">
-      <Navbar />
+        <Navbar />
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
           <NavLink
-            to="/projets-residentiels"
+            to="/projects"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Projets résidentiels
+            {t('nav.projects', 'Projets résidentiels')}
           </NavLink>
           <NavLink
             to="/renovation"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Rénovation
+            {t('nav.renovation', 'Rénovation')}
           </NavLink>
           <NavLink
             to="/projectmanagement"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Gestion de projet
+            {t('nav.projectManagement', 'Gestion de projet')}
           </NavLink>
           <NavLink
             to="/realisations"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Réalisations
+            {t('nav.realisations', 'Réalisations')}
           </NavLink>
           <NavLink
             to="/contact"
@@ -57,22 +62,22 @@ export default function AppNavBar() {
         {/* Action Buttons */}
         <div className="nav-actions">
           <button className="btn-signin">
-            Sign in <span className="arrow">→</span>
+            {t('nav.signIn', 'Sign in')} <span className="arrow">→</span>
           </button>
           <button className="btn-get-started">
-            Get Started
+            {t('nav.getStarted', 'Get Started')}
           </button>
           <button 
             className="btn-language"
             onClick={toggleLanguage}
             aria-label="Toggle language"
           >
-            {language}
+            {isFrench ? 'FR' : 'EN'}
           </button>
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button 
+        <button
           className="mobile-menu-toggle"
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
@@ -88,46 +93,46 @@ export default function AppNavBar() {
       {/* Mobile Navigation */}
       <nav className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
         <NavLink
-          to="/projets-residentiels"
+          to="/projects"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          Projets résidentiels
+          {t('nav.projects', 'Projets résidentiels')}
         </NavLink>
         <NavLink
           to="/renovation"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          Rénovation
+          {t('nav.renovation', 'Rénovation')}
         </NavLink>
         <NavLink
-          to="/gestion-de-projet"
+          to="/projectmanagement"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          Gestion de projet
+          {t('nav.projectManagement', 'Gestion de projet')}
         </NavLink>
         <NavLink
           to="/realisations"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          Réalisations
+          {t('nav.realisations', 'Réalisations')}
         </NavLink>
         <div className="mobile-actions">
           <button className="btn-signin">
-            Sign in <span className="arrow">→</span>
+            {t('nav.signIn', 'Sign in')} <span className="arrow">→</span>
           </button>
           <button className="btn-get-started">
-            Get Started
+            {t('nav.getStarted', 'Get Started')}
           </button>
           <button 
             className="btn-language"
             onClick={toggleLanguage}
             aria-label="Toggle language"
           >
-            {language}
+            {isFrench ? 'FR' : 'EN'}
           </button>
         </div>
       </nav>

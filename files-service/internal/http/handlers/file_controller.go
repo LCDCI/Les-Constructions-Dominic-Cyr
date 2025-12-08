@@ -15,6 +15,7 @@ var allowedDocumentTypes = map[string]bool{
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document": true,
 	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":       true,
 	"text/plain":               true,
+	"application/json":         true, // For translation files
 	"application/octet-stream": true,
 }
 
@@ -62,7 +63,7 @@ func (fc *FileController) upload(c *gin.Context) {
 	case domain.CategoryDocument:
 		if !allowedDocumentTypes[contentType] {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Unsupported document type. Allowed: PDF, DOCX, XLSX, TXT",
+				"error": "Unsupported document type. Allowed: PDF, DOCX, XLSX, TXT, JSON",
 			})
 			return
 		}

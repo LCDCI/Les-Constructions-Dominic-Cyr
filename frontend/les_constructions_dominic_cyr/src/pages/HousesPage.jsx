@@ -148,7 +148,6 @@ const HousesPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

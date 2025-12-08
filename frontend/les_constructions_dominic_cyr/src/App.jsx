@@ -12,7 +12,8 @@ import ServerError from './pages/ServerError';
 import NotFound from './pages/NotFound';
 import OwnerDashboard from './pages/OwnerDashboard';
 import NavigationSetter from './components/NavigationSetter';
-import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
+import ProjectFilesPage from './pages/ProjectFilesPage';
+import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import './App.css';
 
 export default function App() {
@@ -28,11 +29,11 @@ export default function App() {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/houses" element={<HousesPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
-            {/* Hidden owner review page for demonstration */}
-            <Route path="/inquiries" element={<OwnerInquiriesPage />} />
             <Route path="*" element={<NotFound />} />
-            <Route path="/owner/dashboard" element={<OwnerDashboard />} />
+            <Route path="/owner/dashboard" element={<OwnerDashboard />} />sPage />} /> 
+            <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} /> 
             {/* Remember to add more routes here as App grows */}
           </Routes>
         </main>
