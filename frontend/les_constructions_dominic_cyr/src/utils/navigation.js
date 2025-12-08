@@ -10,7 +10,7 @@ let navigateRef = null;
  * Should be called from within a component that has access to useNavigate()
  * @param {Function} navigate - The navigate function from useNavigate()
  */
-export const setNavigate = (navigate) => {
+export const setNavigate = navigate => {
   navigateRef = navigate;
 };
 
@@ -28,4 +28,3 @@ export const navigate = (path, options = {}) => {
     window.location.href = path;
   }
 };
-

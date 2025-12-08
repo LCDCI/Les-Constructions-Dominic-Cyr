@@ -23,6 +23,8 @@ public class House {
 
     private String description;
 
+    private String imageIdentifier;
+
     private Integer numberOfRooms;
 
     private Integer numberOfBedrooms;

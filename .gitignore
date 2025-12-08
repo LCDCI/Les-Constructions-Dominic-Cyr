@@ -49,3 +49,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Frontend build artifacts
+frontend/les_constructions_dominic_cyr/dist/

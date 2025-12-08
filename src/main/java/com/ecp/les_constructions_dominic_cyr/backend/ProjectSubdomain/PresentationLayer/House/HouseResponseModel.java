@@ -10,6 +10,7 @@ public class HouseResponseModel {
     private String houseName;
     private String location;
     private String description;
+    private String imageIdentifier;
     private Integer numberOfRooms;
     private Integer numberOfBedrooms;
     private Integer numberOfBathrooms;
