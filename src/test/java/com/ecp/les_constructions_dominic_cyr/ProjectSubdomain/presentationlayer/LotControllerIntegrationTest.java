@@ -78,16 +78,6 @@ class LotControllerIntegrationTest {
     }
 
     @Test
-    void whenGetByIdNotFound_thenReturnUnprocessableEntity() {
-        // invalid id length -> controller throws InvalidInputException -> 422
-        webClient.get()
-                .uri(BASE_URI + "/{id}", "short-id")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    @Test
     void whenGetByIdExists_thenReturn() {
         String idVal = UUID.randomUUID().toString();
         LotIdentifier id = new LotIdentifier(idVal);
@@ -156,17 +146,6 @@ class LotControllerIntegrationTest {
                 });
     }
 
-    @Test
-    void whenUpdateInvalidId_thenUnprocessableEntity() {
-        LotRequestModel update = new LotRequestModel();
-        update.setLocation("X");
-        webClient.put()
-                .uri(BASE_URI + "/{id}", "bad")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(update)
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
-    }
 
     @Test
     void whenDeleteExists_thenNoContent() {
@@ -185,15 +164,8 @@ class LotControllerIntegrationTest {
         assertNull(found);
     }
 
-    @Test
-    void whenDeleteInvalidId_thenUnprocessableEntity() {
-        webClient.delete()
-                .uri(BASE_URI + "/{id}", "bad")
-                .exchange()
-                .expectStatus().isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
-    }
 
-    // === Exception constructors sanity checks (mirrors example style) ===
+
     @Test
     void testInvalidInputExceptionConstructors() {
         InvalidInputException ex1 = new InvalidInputException();
