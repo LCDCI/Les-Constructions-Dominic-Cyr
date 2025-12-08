@@ -1,10 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr. utils;
 
-import com.ecp.les_constructions_dominic_cyr. backend.utils.Exception.InUseException;
-import com. ecp.les_constructions_dominic_cyr.backend.utils.Exception. InvalidInputException;
-import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidProjectDataException;
-import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
-import com. ecp.les_constructions_dominic_cyr.backend.utils.Exception. ProjectNotFoundException;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -356,5 +352,26 @@ public class ExceptionTest {
             } catch (ProjectNotFoundException e) {
             }
         });
+    }
+
+    @Test
+    void badRequestExceptionShouldStoreMessage() {
+        String expectedMessage = "Bad Request occurred";
+        BadRequestException exception = new BadRequestException(expectedMessage);
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    void invalidRequestExceptionShouldStoreMessage() {
+        String expectedMessage = "Invalid Request details";
+        InvalidRequestException exception = new InvalidRequestException(expectedMessage);
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+
+    @Test
+    void forbiddenAccessExceptionShouldStoreMessage() {
+        String expectedMessage = "Access is forbidden";
+        ForbiddenAccessException exception = new ForbiddenAccessException(expectedMessage);
+        assertEquals(expectedMessage, exception.getMessage());
     }
 }
