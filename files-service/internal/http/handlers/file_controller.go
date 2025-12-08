@@ -106,11 +106,13 @@ func (fc *FileController) upload(c *gin.Context) {
 	}
 
 	resp := model.FileUploadResponse{
-		FileId:     metadata.ID,
-		ProjectId:  metadata.ProjectID,
-		FileName:   metadata.FileName,
-		UploadedBy: metadata.UploadedBy,
-		URL:        metadata.Url,
+		FileId:      metadata.ID,
+		ProjectId:   metadata.ProjectID,
+		FileName:    metadata.FileName,
+		ContentType: metadata.ContentType,
+		Category:    string(metadata.Category),
+		UploadedBy:  metadata.UploadedBy,
+		URL:         metadata.Url,
 	}
 
 	c.JSON(http.StatusCreated, resp)
