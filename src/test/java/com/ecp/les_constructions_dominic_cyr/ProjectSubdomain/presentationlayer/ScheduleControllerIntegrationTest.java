@@ -208,4 +208,34 @@ class ScheduleControllerIntegrationTest {
                 .andExpect(status().isInternalServerError());
     }
 
+    @Test
+    void getAllCustomerSchedules_shouldReturnAllSchedules() throws Exception {
+        mockMvc.perform(get("/api/v1/customers/schedules/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[*].scheduleIdentifier",
+                        containsInAnyOrder("SCH-TEST-001", "SCH-TEST-002", "SCH-TEST-003")));
+    }
+
+    @Test
+    void getCustomerScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
+        mockMvc.perform(get("/api/v1/customers/schedules/SCH-TEST-001")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.scheduleIdentifier", is("SCH-TEST-001")))
+                .andExpect(jsonPath("$.taskDescription", is("Begin Excavation")))
+                .andExpect(jsonPath("$.lotNumber", is("Lot 53")))
+                .andExpect(jsonPath("$.dayOfWeek", is("Monday")));
+    }
+
+    @Test
+    void getCustomerScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
+        mockMvc.perform(get("/api/v1/customers/schedules/SCH-INVALID")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
 }
