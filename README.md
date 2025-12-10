@@ -1,59 +1,101 @@
-# Overview
+# Les Constructions Dominic Cyr — Project Documentation
 
-Internal development repository for the LCDCI Web Application, built by team FOREJ.
-This repo contains the frontend, backend, documentation, and CI/CD configuration for the project.
+This repository contains the full source code for the **Les Constructions Dominic Cyr (LCDC) Web Application**, developed internally by **Team FOREJ**. It includes the React.js frontend, backend services, the dedicated **Go-based Files Service**, internal documentation, and CI/CD configuration.
 
-## 1. Project Setup
-Clone the repository
+This document provides all required information for onboarding, development setup, workflow standards, and integration of all project services.
 
-`git clone <https://github.com/LCDCI Les-Constructions-Dominic-Cyr.git>`
+# 1. Repository Overview
 
-`cd Les-Constructions-Dominic-Cyr`
+The project is built as a modern, containerized, multi-service application. It includes:
 
-Add the upstream remote
+- React.js Frontend
+- Backend APIs / Services
+- Files Service (Go) — secure file upload + file hosting
+- Docker Infrastructure
+- CI/CD Pipelines
+- Internal Developer Documentation
 
-`git remote add upstream <https://github.com/LCDCI/Les-Constructions-Dominic-Cyr.git>`
+# 2. Repository Structure
 
-Configure your Git identity
+```
+/
+├── frontend/
+├── files-service/
+├── backend/
+├── docker-compose.yml
+├── .env
+└── README.md
+```
 
-You must be logged into Git in your terminal:
+# 3. Project Setup
 
-`git config --global user.email "<you@example.com>"`
+Clone the repository:
 
-`git config --global user.name "Your Name"`
+```
+git clone https://github.com/LCDCI/Les-Constructions-Dominic-Cyr.git
+cd Les-Constructions-Dominic-Cyr
+```
 
-## 2. Development Workflow
-Before starting any ticket
+Configure Git identity:
 
-Reset your local main to match the remote:
+```
+git config --global user.email "you@example.com"
+git config --global user.name "Your Name"
+```
 
-`git reset --hard origin/main`
+# 4. Development Workflow
 
-Create a new branch
+Create a new branch:
 
-Follow the team naming conventions:
-
-`git switch -c type/CDC-JiraID-short_description`
+```
+git switch -c type/CDC-JiraID-short_description
+```
 
 Example:
 
-`git switch -c feat/CDC-21-login-page`
+```
+git switch -c feat/CDC-21-login-page
+```
 
-## 3. Committing & Pushing
-Ensure you are NOT on main before committing
+# 5. Committing & Pushing
 
-Check your branch:
+Check branch:
 
-`git branch`
+```
+git branch
+```
 
-Stage your changes
+Stage:
 
-`git add .`
+```
+git add .
+```
 
-Commit using required naming format
+Commit:
 
-`git commit -m "feat(CDC-21): implement login form"`
+```
+git commit -m "feat(CDC-21): implement login form"
+```
 
-Push your branch
+Push:
 
-`git push -u origin feat/CDC-21-login-page`
+```
+git push -u origin feat/CDC-21-login-page
+```
+
+# 6. Docker
+
+```
+docker compose up --build
+```
+
+
+# 7. Contribution Standards
+
+- Feature branches only
+- PRs follow naming rules
+- Reviews required
+
+# 12. Summary
+
+This repository contains all components required to develop, deploy, and maintain the LCDCI platform.
