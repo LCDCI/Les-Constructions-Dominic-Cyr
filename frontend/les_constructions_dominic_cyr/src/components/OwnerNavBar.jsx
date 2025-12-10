@@ -11,7 +11,9 @@ import {
   GoPeople,
   GoGraph,
   GoGear,
-  GoHome
+  GoHome,
+  GoPaperAirplane,
+  GoCommentDiscussion
 } from 'react-icons/go';
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
@@ -124,6 +126,18 @@ const Navbar = () => {
               </li>
               <li className="navbar-item">
                 <Link
+                  to="/inquiries"
+                  className={`navbar-link ${isActive('/inquiries')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoCommentDiscussion />
+                  </span>
+                  <span className="navbar-text">Inquiries</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
                   to="/projects"
                   className={`navbar-link ${isActive('/projects')}`}
                   onClick={closeMenu}
@@ -209,6 +223,18 @@ const Navbar = () => {
                     <GoGraph />
                   </span>
                   <span className="navbar-text">Analytics & Reports</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/"
+                  className={`navbar-link ${isActive('/')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoHome />
+                  </span>
+                  <span className="navbar-text">Home</span>
                 </Link>
               </li>
             </ul>
