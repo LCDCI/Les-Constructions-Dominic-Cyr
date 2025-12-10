@@ -62,10 +62,10 @@ INSERT INTO projects (
           'FORESTA RÉSIDENCES SECONDAIRES',
           'cust-001',
           'lot-001',
-          35
+          0
       ),
       (
-          'proj-002-naturest',
+          'proj-002-Panorama',
           'Naturest',
           'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
           'IN_PROGRESS',
@@ -77,21 +77,6 @@ INSERT INTO projects (
           'NATUREST RÉSIDENCES SECONDAIRES',
           'cust-002',
           'lot-002',
-          20
-      ),
-      (
-          'proj-003-otryminc',
-          'Otryminc',
-          'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature.  The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
-          'PLANNED',
-          '2025-03-01',
-          '2026-02-28',
-          '#5A7D8C',
-          '#7B9FAE',
-          '#9CB5C3',
-          'OTRYMINC MAISON DE VUE EN BOIS DE M-B',
-          'cust-003',
-          'lot-003',
           0
       );
 
