@@ -305,5 +305,5 @@ setFiles(files.filter((f) => f.id !== fileId));
 
 P.S: This document has been completed with the assistance of AI (ChatGPT Model GPT-5) for document structure, and orthograph correction.
 
-# YOU MAY KNOW USE THE FILES SERVICE!
+# YOU MAY NOW USE THE FILES SERVICE!
 Author: @erickossovsky
