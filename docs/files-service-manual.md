@@ -1,6 +1,6 @@
 # Files Service – Frontend Integration Guide
 
-This guide explains how to integrate the Files Service into the React.js frontend application. It includes step-by-step instructions, reusable React components, upload/download/delete examples, and a troubleshooting FAQ. This is a document that may have errors, so please do not hesitate to contact @erickossovsky for changes.
+This guide explains how to integrate the Files Service into the React.js frontend application. It includes step-by-step instructions, reusable React components, upload/download/delete examples, and a troubleshooting FAQ. This is a documentation that may have errors, so please do not hesitate to contact @erickossovsky for changes.
 
 ---
 
