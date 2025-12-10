@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -55,17 +54,17 @@ public class GlobalControllerExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleInvalidProjectDataException(InvalidProjectDataException ex) {
         Map<String, Object> error = new HashMap<>();
         error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.BAD_REQUEST.value());
+        error.put("status", BAD_REQUEST.value());
         error.put("error", "Bad Request");
         error.put("message", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, Object> error = new HashMap<>();
         error.put("timestamp", LocalDateTime.now());
-        error.put("status", HttpStatus.BAD_REQUEST.value());
+        error.put("status", BAD_REQUEST.value());
         error.put("error", "Bad Request");
         
         List<String> errors = ex.getBindingResult().getAllErrors().stream()
@@ -76,7 +75,7 @@ public class GlobalControllerExceptionHandler {
         error.put("message", message);
         error.put("errors", errors);
         
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error, BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
@@ -88,6 +87,13 @@ public class GlobalControllerExceptionHandler {
         error.put("message", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler({BadRequestException.class, InvalidRequestException.class})
+    public HttpErrorInfo handleBadRequestExceptions(WebRequest request, Exception ex) {
+        return createHttpErrorInfo(BAD_REQUEST, request, ex);
+    }
+
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, WebRequest request, Exception ex) {
         final String path = request.getDescription(false);
