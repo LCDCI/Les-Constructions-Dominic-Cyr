@@ -59,7 +59,7 @@ export default function FileUpload() {
     formData.append("uploadedBy", uploadedBy);
 
     try {
-      const res = await fetch("http://localhost:8080/files", {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/files`, {
         method: "POST",
         body: formData,
       });
