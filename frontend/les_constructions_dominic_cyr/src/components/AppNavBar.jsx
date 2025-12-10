@@ -5,6 +5,7 @@ import '../styles/AppNavBar.css';
 import OwnerNavBar from '../components/OwnerNavBar';
 import SalespersonNavBar from '../components/SalespersonNavBar';
 import ContractorNavBar from '../components/ContractorNavBar';
+import CustomerNavBar from '../components/CustomerNavBar';
 
 export default function AppNavBar() {
   const { i18n, t } = useTranslation();
@@ -25,9 +26,10 @@ export default function AppNavBar() {
   return (
     <header className="site-nav">
       <div className="site-nav-inner">
-          <SalespersonNavBar />
-          <OwnerNavBar />
-          <ContractorNavBar />  
+        <SalespersonNavBar />
+        <OwnerNavBar />
+        <ContractorNavBar />
+        <CustomerNavBar />
 
         {/* Desktop Navigation */}
         <nav className="desktop-nav">
@@ -71,7 +73,7 @@ export default function AppNavBar() {
           <button className="btn-get-started">
             {t('nav.getStarted', 'Get Started')}
           </button>
-          <button 
+          <button
             className="btn-language"
             onClick={toggleLanguage}
             aria-label="Toggle language"
@@ -131,7 +133,7 @@ export default function AppNavBar() {
           <button className="btn-get-started">
             {t('nav.getStarted', 'Get Started')}
           </button>
-          <button 
+          <button
             className="btn-language"
             onClick={toggleLanguage}
             aria-label="Toggle language"

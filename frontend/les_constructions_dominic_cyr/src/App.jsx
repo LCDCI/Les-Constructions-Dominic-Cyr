@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppNavBar from './components/AppNavBar';
 import AppFooter from './components/AppFooter';
-
+import CustomerDashboard from './pages/CustomerDashboard';
 import Home from './pages/Home';
 import ProjectsPage from './pages/ProjectsPage';
 import HousesPage from './pages/HousesPage';
@@ -36,11 +36,23 @@ export default function App() {
             <Route path="/inquiries" element={<OwnerInquiriesPage />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
-            <Route path="/salesperson/dashboard" element={<SalespersonDashboard />} />
-            <Route path="/contractor/dashboard" element={<ContractorDashboard />} />
-            <Route path="/projects/:projectId/files" element={<ProjectFilesPage />} />
-            <Route path="/projects/:projectId/photos" element={<ProjectPhotosPage />} />
-            {/* Remember to add more routes here as App grows */}
+            <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+            <Route
+              path="/salesperson/dashboard"
+              element={<SalespersonDashboard />}
+            />
+            <Route
+              path="/contractor/dashboard"
+              element={<ContractorDashboard />}
+            />
+            <Route
+              path="/projects/:projectId/files"
+              element={<ProjectFilesPage />}
+            />
+            <Route
+              path="/projects/:projectId/photos"
+              element={<ProjectPhotosPage />}
+            />
           </Routes>
         </main>
         <AppFooter />
