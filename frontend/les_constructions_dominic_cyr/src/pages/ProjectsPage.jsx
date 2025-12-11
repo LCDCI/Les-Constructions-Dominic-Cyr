@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import '../styles/projects.css';
-import Footer from '../components/AppFooter';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Now used for rendering
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
@@ -59,6 +58,14 @@ const ProjectsPage = () => {
   const handleViewProject = projectIdentifier => {
     window.location.href = `/projects/${projectIdentifier}`;
   };
+
+  if (loading) {
+    return (
+      <div className="projects-page loading-state">
+        <p>Loading projects...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="projects-page">

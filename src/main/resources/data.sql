@@ -85,3 +85,85 @@ INSERT INTO schedules (schedule_identifier, task_date, task_description, lot_num
 ('SCH-002', '2025-12-06', 'Plumbing', 'Lot 57', 'Wednesday'),
 ('SCH-003', '2025-12-12', 'Electrical', 'Lot 54', 'Thursday'),
 ('SCH-004', '2025-12-08', 'End of Excavation', 'Lot 53', 'Friday');
+
+
+-- Föresta Project Content
+INSERT INTO project_overview_content (
+    project_identifier,
+    hero_title,
+    hero_subtitle,
+    hero_description,
+    overview_section_title,
+    overview_section_content,
+    features_section_title,
+    location_section_title,
+    location_description,
+    location_address,
+    location_map_embed_url,
+    gallery_section_title
+) VALUES (
+'proj-001-foresta',
+'FÖRESTA',
+'Résidences Secondaires en Harmonie avec la Nature',
+'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
+'About Foresta',
+'Foresta represents a unique opportunity to own a secondary residence in one of Quebec''s most tranquil settings. Each home is designed with sustainability and comfort in mind, featuring modern amenities while preserving the natural beauty of the surrounding forest.',
+'Project Features',
+'Location',
+'Foresta is located in St-Alphonse-de-Granby, offering easy access to nature trails, local amenities, and major highways. The perfect balance between seclusion and convenience.',
+'104 rue du Boisé, St-Alphonse de Granby, Granby, QC J2J 2X4',
+'https://www.google.com/maps/place/104+Rue+du+Boisé,+St-Alphonse+de+Granby,+QC+J2J+2X4',
+'Project Gallery'
+         );
+
+-- Panorama Project Content
+INSERT INTO project_overview_content (
+    project_identifier,
+    hero_title,
+    hero_subtitle,
+    hero_description,
+    overview_section_title,
+    overview_section_content,
+    features_section_title,
+    location_section_title,
+    location_description,
+    location_address,
+    location_map_embed_url,
+    gallery_section_title
+) VALUES (
+'proj-002-Panorama',
+'PANORAMA',
+'Condos Modernes avec Vue Imprenable',
+'Experience elevated living with Panorama condos. Featuring contemporary design and breathtaking views, this project combines urban convenience with natural serenity.',
+'About Panorama',
+'Panorama condos offer a modern lifestyle with spacious layouts, premium finishes, and access to shared amenities. Each unit is designed to maximize natural light and views of the surrounding landscape.',
+'Condo Features',
+'Location',
+'Strategically located to provide both tranquility and easy access to urban centers, Panorama offers the best of both worlds for discerning buyers.',
+'104 rue du Boisé, St-Alphonse de Granby, Granby, QC J2J 2X4',
+'https://www.google.com/maps/place/104+Rue+du+Boisé,+St-Alphonse+de+Granby,+QC+J2J+2X4',
+'Gallery'
+         );
+
+-- Föresta Features
+INSERT INTO project_features (project_identifier, feature_title, feature_description, display_order) VALUES
+('proj-001-foresta', 'Natural Setting', 'Surrounded by pristine forest and nature trails', 1),
+('proj-001-foresta', 'Modern Design', 'Contemporary architecture with traditional charm', 2),
+('proj-001-foresta', 'Eco-Friendly', 'Sustainable materials and energy-efficient systems', 3),
+('proj-001-foresta', 'Easy Access', 'Close to highways and local amenities', 4);
+
+-- Panorama Features
+INSERT INTO project_features (project_identifier, feature_title, feature_description, display_order) VALUES
+('proj-002-Panorama',  'Urban Convenience', 'Minutes from downtown and major services', 1),
+('proj-002-Panorama',  'Panoramic Views', 'Breathtaking vistas from every unit', 2),
+('proj-002-Panorama',  'Premium Finishes', 'High-end materials and modern amenities', 3),
+('proj-002-Panorama',  'Shared Amenities', 'Pool, gym, and common spaces', 4);
+
+-- Gallery Images (using existing image identifiers or placeholders)
+INSERT INTO project_gallery_images (project_identifier, image_identifier, image_caption, display_order) VALUES
+('proj-001-foresta', 'dcada4a5-aa19-4346-934e-1e57bc0f9e1f', 'Exterior View', 1),
+('proj-001-foresta', 'dcada4a5-aa19-4346-934e-1e57bc0f9e1f', 'Interior Living Space', 2),
+('proj-001-foresta', 'dcada4a5-aa19-4346-934e-1e57bc0f9e1f', 'Kitchen', 3),
+('proj-002-Panorama', 'ee576ed6-5d56-4d54-ba25-7157f7b75d0d', 'Building Exterior', 1),
+('proj-002-Panorama', 'ee576ed6-5d56-4d54-ba25-7157f7b75d0d', 'Condo Interior', 2),
+('proj-002-Panorama', 'ee576ed6-5d56-4d54-ba25-7157f7b75d0d', 'Amenities', 3);
