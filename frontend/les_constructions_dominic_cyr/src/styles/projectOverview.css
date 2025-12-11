@@ -1,0 +1,459 @@
+.project-overview-page {
+  min-height: 100vh;
+  background-color: var(--project-background, var(--global-background));
+  color: var(--project-text-primary, var(--global-text-primary));
+}
+
+.project-overview-loading,
+.project-overview-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 5%;
+  text-align: center;
+}
+
+.project-overview-error button {
+  margin-top: 2%;
+  padding: 2% 4%;
+  background-color: var(--project-primary, var(--global-primary));
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.project-overview-error button:hover {
+  background-color: var(--project-accent, var(--global-accent));
+}
+
+.project-hero {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  overflow: hidden;
+}
+
+.hero-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  text-align: center;
+  color: var(--white);
+  max-width: 80%;
+  padding: 0 2%;
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: 2%;
+  letter-spacing: 0.05em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-subtitle {
+  font-size: 1.8rem;
+  font-weight: 400;
+  margin: 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.project-section {
+  padding: 5% 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.project-section:last-of-type {
+  border-bottom: none;
+}
+
+.section-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 5%;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--project-primary, var(--global-primary));
+  margin-bottom: 3%;
+  text-align: center;
+}
+
+.section-content {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--project-text-secondary, var(--global-text-secondary));
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto 2%;
+}
+
+.section-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--project-text-secondary, var(--global-text-secondary));
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.overview-section {
+  background-color: var(--white);
+}
+
+.features-section {
+  background-color: var(--project-background, var(--global-background));
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 3%;
+  margin-top: 3%;
+}
+
+.feature-card {
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: 4%;
+  text-align: center;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px var(--shadow-color);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 3%;
+}
+
+.feature-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--project-text-primary, var(--global-text-primary));
+  margin-bottom: 2%;
+}
+
+.feature-description {
+  font-size: 1rem;
+  color: var(--project-text-secondary, var(--global-text-secondary));
+  line-height: 1.6;
+}
+
+.lots-section {
+  background-color: var(--white);
+}
+
+.lots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3%;
+  margin-top: 3%;
+}
+
+.lot-card {
+  background-color: var(--project-background, var(--global-background));
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.lot-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px var(--shadow-color);
+}
+
+.lot-image-container {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.lot-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.lot-card:hover .lot-image {
+  transform: scale(1.05);
+}
+
+.lot-details {
+  padding: 4%;
+}
+
+.lot-location {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--project-text-primary, var(--global-text-primary));
+  margin-bottom: 2%;
+}
+
+.lot-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2%;
+}
+
+.lot-dimensions {
+  font-size: 1rem;
+  color: var(--project-text-secondary, var(--global-text-secondary));
+}
+
+.lot-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--project-primary, var(--global-primary));
+}
+
+.lot-status {
+  display: inline-block;
+  padding: 1.5% 3%;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.lot-status.status-available {
+  background-color: #4CAF50;
+  color: var(--white);
+}
+
+.lot-status.status-sold {
+  background-color: #F44336;
+  color: var(--white);
+}
+
+.lot-status.status-pending {
+  background-color: #FF9800;
+  color: var(--white);
+}
+
+.location-section {
+  background-color: var(--project-background, var(--global-background));
+}
+
+.location-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4%;
+  margin-top: 3%;
+}
+
+.location-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.location-address {
+  margin-top: 3%;
+  padding: 3%;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.location-address strong {
+  display: block;
+  margin-bottom: 1%;
+  color: var(--project-primary, var(--global-primary));
+  font-size: 1.1rem;
+}
+
+.location-address p {
+  margin: 0;
+  color: var(--project-text-secondary, var(--global-text-secondary));
+}
+
+.location-map {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+.gallery-section {
+  background-color: var(--white);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2%;
+  margin-top: 3%;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover {
+  transform: scale(1.03);
+}
+
+.gallery-image {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.gallery-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--white);
+  padding: 2%;
+  margin: 0;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.back-button-container {
+  padding: 4% 5%;
+  text-align: center;
+}
+
+.back-button {
+  padding: 2% 4%;
+  background-color: var(--project-secondary, var(--global-secondary));
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: var(--project-accent, var(--global-accent));
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1024px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+
+  .features-grid,
+  .lots-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .location-content {
+    grid-template-columns: 1fr;
+  }
+
+  .location-map {
+    margin-top: 3%;
+  }
+}
+
+@media (max-width: 768px) {
+  .project-hero {
+    height: 400px;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .features-grid,
+  .lots-grid,
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .project-section {
+    padding: 4% 0;
+  }
+
+  .section-container {
+    padding: 0 4%;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-hero {
+    height: 300px;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  .section-content,
+  .section-description {
+    font-size: 1rem;
+  }
+
+  .back-button {
+    width: 90%;
+  }
+}

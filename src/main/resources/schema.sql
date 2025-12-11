@@ -4,28 +4,28 @@
 DROP TABLE IF EXISTS lots;
 
 CREATE TABLE lots (
-                     id SERIAL PRIMARY KEY,
-                     lot_identifier UUID NOT NULL UNIQUE,
-                     image_identifier VARCHAR(255),
-                     location VARCHAR(255) NOT NULL,
-                     price REAL NOT NULL, -- Use REAL for FLOAT compatibility
-                     dimensions VARCHAR(255) NOT NULL,
-                     lot_status VARCHAR(50) NOT NULL
+id SERIAL PRIMARY KEY,
+lot_identifier UUID NOT NULL UNIQUE,
+image_identifier VARCHAR(255),
+location VARCHAR(255) NOT NULL,
+price REAL NOT NULL, -- Use REAL for FLOAT compatibility
+dimensions VARCHAR(255) NOT NULL,
+lot_status VARCHAR(50) NOT NULL
 );
 
 -- schema for house
 DROP TABLE IF EXISTS houses;
 CREATE TABLE houses (
-                    id SERIAL PRIMARY KEY,
-                    house_identifier UUID NOT NULL UNIQUE,
-                    house_name VARCHAR(255) NOT NULL,
-                    location VARCHAR(255) NOT NULL,
-                    description TEXT NOT NULL,
-                    image_identifier VARCHAR(255),
-                    number_of_rooms INTEGER NOT NULL,
-                    number_of_bedrooms INTEGER NOT NULL,
-                    number_of_bathrooms INTEGER NOT NULL,
-                    construction_year INTEGER NOT NULL
+id SERIAL PRIMARY KEY,
+house_identifier UUID NOT NULL UNIQUE,
+house_name VARCHAR(255) NOT NULL,
+location VARCHAR(255) NOT NULL,
+description TEXT NOT NULL,
+image_identifier VARCHAR(255),
+number_of_rooms INTEGER NOT NULL,
+number_of_bedrooms INTEGER NOT NULL,
+number_of_bathrooms INTEGER NOT NULL,
+construction_year INTEGER NOT NULL
 );
 
 -- schema for footer
@@ -86,3 +86,52 @@ updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 
 CREATE INDEX IF NOT EXISTS idx_schedule_identifier ON schedules(schedule_identifier);
 CREATE INDEX IF NOT EXISTS idx_task_date ON schedules(task_date);
+
+DROP TABLE IF EXISTS project_overview_content CASCADE;
+DROP TABLE IF EXISTS project_features CASCADE;
+DROP TABLE IF EXISTS project_gallery_images CASCADE;
+
+CREATE TABLE project_overview_content (
+id BIGSERIAL PRIMARY KEY,
+project_identifier VARCHAR(255) NOT NULL UNIQUE,
+hero_title VARCHAR(500) NOT NULL,
+hero_subtitle VARCHAR(1000),
+hero_description TEXT,
+overview_section_title VARCHAR(300),
+overview_section_content TEXT,
+features_section_title VARCHAR(300),
+location_section_title VARCHAR(300),
+location_description TEXT,
+location_address VARCHAR(500),
+location_map_embed_url TEXT,
+gallery_section_title VARCHAR(300),
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (project_identifier) REFERENCES projects(project_identifier) ON DELETE CASCADE
+);
+
+
+CREATE TABLE project_features (
+id BIGSERIAL PRIMARY KEY,
+project_identifier VARCHAR(255) NOT NULL,
+feature_title VARCHAR(200) NOT NULL,
+feature_description TEXT,
+display_order INT NOT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (project_identifier) REFERENCES projects(project_identifier) ON DELETE CASCADE
+);
+
+
+CREATE TABLE project_gallery_images (
+id BIGSERIAL PRIMARY KEY,
+project_identifier VARCHAR(255) NOT NULL,
+image_identifier VARCHAR(255) NOT NULL,
+image_caption VARCHAR(300),
+display_order INT NOT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+FOREIGN KEY (project_identifier) REFERENCES projects(project_identifier) ON DELETE CASCADE
+);
+
+
+CREATE INDEX idx_project_features_identifier ON project_features(project_identifier);
+CREATE INDEX idx_project_gallery_identifier ON project_gallery_images(project_identifier);

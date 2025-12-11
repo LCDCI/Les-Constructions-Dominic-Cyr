@@ -18,6 +18,7 @@ import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
 import './App.css';
+import ProjectOverviewPage from './pages/ProjectOverviewPage';
 
 export default function App() {
   return (
@@ -52,6 +53,10 @@ export default function App() {
             <Route
               path="/projects/:projectId/photos"
               element={<ProjectPhotosPage />}
+            />
+            <Route
+              path="/projects/:projectIdentifier/overview"
+              element={<ProjectOverviewPage />}
             />
           </Routes>
         </main>
