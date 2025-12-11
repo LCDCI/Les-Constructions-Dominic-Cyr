@@ -138,7 +138,6 @@ const LotsPage = () => {
           </div>
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
