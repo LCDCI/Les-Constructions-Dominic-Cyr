@@ -48,14 +48,7 @@ const LotsPage = () => {
   };
 
   const getImageUrl = imageIdentifier => {
-    if (!imageIdentifier) {
-      return '/placeholder-lot.png';
-    }
     return `${filesServiceUrl}/files/${imageIdentifier}`;
-  };
-
-  const handleImageError = e => {
-    e.target.src = '/placeholder-lot.png';
   };
 
   const formatPrice = price => {
@@ -117,7 +110,6 @@ const LotsPage = () => {
                       src={getImageUrl(lot.imageIdentifier)}
                       alt={lot.location}
                       className="lot-image"
-                      onError={handleImageError}
                     />
                   </div>
                   <h2 className="lot-title">{lot.location}</h2>
