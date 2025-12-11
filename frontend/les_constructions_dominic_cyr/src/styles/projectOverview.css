@@ -1,7 +1,7 @@
 .project-overview-page {
+  width: 80%;
   min-height: 100vh;
-  background-color: var(--project-background, var(--global-background));
-  color: var(--project-text-primary, var(--global-text-primary));
+  margin: 0 auto;
 }
 
 .project-overview-loading,
@@ -10,31 +10,37 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
-  padding: 5%;
+  min-height: 60vh;
+  padding: 2rem;
   text-align: center;
 }
 
+.project-overview-loading p,
+.project-overview-error p {
+  font-size: 1.25rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
 .project-overview-error button {
-  margin-top: 2%;
-  padding: 2% 4%;
-  background-color: var(--project-primary, var(--global-primary));
-  color: var(--white);
+  padding: 0.75rem 2rem;
+  background-color: #333;
+  color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
 .project-overview-error button:hover {
-  background-color: var(--project-accent, var(--global-accent));
+  background-color: #555;
 }
 
 .project-hero {
   position: relative;
-  width: 100%;
-  height: 600px;
+  height: 70vh;
+  min-height: 500px;
   overflow: hidden;
 }
 
@@ -48,18 +54,19 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .hero-overlay {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.3) 0%,
-    rgba(0, 0, 0, 0.6) 100%
+    rgba(0, 0, 0, 0.3),
+    rgba(0, 0, 0, 0.6)
   );
   display: flex;
   align-items: center;
@@ -68,340 +75,527 @@
 
 .hero-content {
   text-align: center;
-  color: var(--white);
-  max-width: 80%;
-  padding: 0 2%;
+  color: white;
+  padding: 2rem;
+  max-width: 1200px;
 }
 
 .hero-title {
-  font-size: 4rem;
+  font-size: 5rem;
   font-weight: 700;
-  margin-bottom: 2%;
-  letter-spacing: 0.05em;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
 }
 
 .hero-subtitle {
-  font-size: 1.8rem;
-  font-weight: 400;
-  margin: 0;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  font-size: 1.75rem;
+  font-weight: 300;
+  font-style: italic;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
 }
 
+/* ========================================
+   SECTIONS - COLLAGE LAYOUT
+   ======================================== */
 .project-section {
-  padding: 5% 0;
-  border-bottom: 1px solid var(--border-color);
+  padding: 5rem 2rem;
 }
 
-.project-section:last-of-type {
-  border-bottom: none;
+/* Alternating section backgrounds for collage effect */
+.overview-section {
+  background-color: #f9f9f9;
+}
+
+.features-section {
+  background-color: #fff;
+}
+
+.lots-section {
+  background-color: #f5f5f5;
+}
+
+.location-section {
+  background-color: #fff;
+}
+
+.gallery-section {
+  background-color: #fafafa;
 }
 
 .section-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 5%;
 }
 
 .section-title {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: var(--project-primary, var(--global-primary));
-  margin-bottom: 3%;
-  text-align: center;
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 3rem;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100px;
+  height: 4px;
+  background-color: currentColor;
 }
 
 .section-content {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   line-height: 1.8;
-  color: var(--project-text-secondary, var(--global-text-secondary));
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto 2%;
+  color: #555;
+  margin-bottom: 1.5rem;
 }
 
 .section-description {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: var(--project-text-secondary, var(--global-text-secondary));
-  text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
+  font-size: 1.125rem;
+  line-height: 1.7;
+  color: #666;
 }
 
-.overview-section {
-  background-color: var(--white);
-}
-
-.features-section {
-  background-color: var(--project-background, var(--global-background));
-}
-
+/* ========================================
+   FEATURES GRID - CARD COLLAGE
+   ======================================== */
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 3%;
-  margin-top: 3%;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  margin-top: 3rem;
 }
 
 .feature-card {
-  background-color: var(--white);
-  border-radius: 12px;
-  padding: 4%;
+  background: white;
+  padding: 3rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
-  box-shadow: 0 4px 8px var(--shadow-color);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+  border-top: 4px solid transparent;
 }
 
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px var(--shadow-color);
+  transform: translateY(-8px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-top-color: #3498db;
 }
 
 .feature-icon {
-  font-size: 3rem;
-  margin-bottom: 3%;
+  font-size: 3.5rem;
+  color: #3498db;
+  margin-bottom: 1.5rem;
 }
 
 .feature-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  color: var(--project-text-primary, var(--global-text-primary));
-  margin-bottom: 2%;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .feature-description {
   font-size: 1rem;
-  color: var(--project-text-secondary, var(--global-text-secondary));
   line-height: 1.6;
+  color: #666;
 }
 
-.lots-section {
-  background-color: var(--white);
-}
-
+/* ========================================
+   LOTS GRID - PHOTO COLLAGE
+   ======================================== */
 .lots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 3%;
-  margin-top: 3%;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
 }
 
 .lot-card {
-  background-color: var(--project-background, var(--global-background));
-  border-radius: 12px;
+  background: white;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 8px var(--shadow-color);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .lot-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 16px var(--shadow-color);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .lot-image-container {
   width: 100%;
-  height: 200px;
+  height: 250px;
   overflow: hidden;
+  background-color: #f0f0f0;
 }
 
 .lot-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.5s ease;
 }
 
 .lot-card:hover .lot-image {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .lot-details {
-  padding: 4%;
+  padding: 1.5rem;
 }
 
 .lot-location {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: var(--project-text-primary, var(--global-text-primary));
-  margin-bottom: 2%;
+  color: #2c3e50;
+  margin-bottom: 1rem;
 }
 
 .lot-info {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 2%;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 1rem;
 }
 
 .lot-dimensions {
-  font-size: 1rem;
-  color: var(--project-text-secondary, var(--global-text-secondary));
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
 }
 
 .lot-price {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--project-primary, var(--global-primary));
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #27ae60;
 }
 
 .lot-status {
   display: inline-block;
-  padding: 1.5% 3%;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  text-transform: capitalize;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.lot-status.status-available {
-  background-color: #4CAF50;
-  color: var(--white);
+.status-available {
+  background-color: #d4edda;
+  color: #155724;
 }
 
-.lot-status.status-sold {
-  background-color: #F44336;
-  color: var(--white);
+.status-sold {
+  background-color: #f8d7da;
+  color: #721c24;
 }
 
-.lot-status.status-pending {
-  background-color: #FF9800;
-  color: var(--white);
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
 }
 
-.location-section {
-  background-color: var(--project-background, var(--global-background));
-}
-
+/* ========================================
+   LOCATION SECTION - SPLIT LAYOUT
+   ======================================== */
 .location-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4%;
-  margin-top: 3%;
+  gap: 4rem;
+  margin-top: 3rem;
+  align-items: start;
 }
 
 .location-text {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  gap: 2rem;
 }
 
 .location-address {
-  margin-top: 3%;
-  padding: 3%;
-  background-color: var(--white);
+  background: white;
+  padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px var(--shadow-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid #3498db;
 }
 
 .location-address strong {
   display: block;
-  margin-bottom: 1%;
-  color: var(--project-primary, var(--global-primary));
-  font-size: 1.1rem;
+  font-size: 1.125rem;
+  margin-bottom: 0.75rem;
+  color: #2c3e50;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .location-address p {
-  margin: 0;
-  color: var(--project-text-secondary, var(--global-text-secondary));
+  font-size: 1.125rem;
+  color: #555;
+  line-height: 1.6;
 }
 
 .location-map {
-  border-radius: 12px;
+  height: 450px;
+  width: 100%;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 8px var(--shadow-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border: 3px solid #e0e0e0;
+  position: relative;
 }
 
-.gallery-section {
-  background-color: var(--white);
+/* ========================================
+   MAP STYLES - CRITICAL FOR PROPER RENDERING
+   ======================================== */
+.leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
+/* Ensure map tiles load properly */
+.leaflet-tile-container {
+  position: absolute;
+  z-index: 1;
+}
+
+.leaflet-tile {
+  position: absolute;
+  width: 256px;
+  height: 256px;
+}
+
+/* ========================================
+   GALLERY GRID - MASONRY STYLE
+   ======================================== */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2%;
-  margin-top: 3%;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
 }
 
 .gallery-item {
   position: relative;
-  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 8px var(--shadow-color);
-  transition: transform 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  background: white;
 }
 
 .gallery-item:hover {
-  transform: scale(1.03);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .gallery-image {
   width: 100%;
-  height: 300px;
+  height: 350px;
   object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.gallery-item:hover .gallery-image {
+  transform: scale(1.05);
 }
 
 .gallery-caption {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 0, 0, 0.7);
-  color: var(--white);
-  padding: 2%;
-  margin: 0;
-  font-size: 0.9rem;
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: #666;
   text-align: center;
+  background: white;
 }
 
+/* ========================================
+   MODAL
+   ======================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 2rem;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 2px solid #e0e0e0;
+  background-color: #f9f9f9;
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.modal-body {
+  flex: 1;
+  min-height: 500px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Modal map container needs explicit dimensions */
+.modal-body .leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+  position: absolute !important;
+  top: 0;
+  left: 0;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  border-top: 2px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  background-color: #f9f9f9;
+}
+
+.btn-secondary {
+  padding: 0.75rem 2rem;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+/* ========================================
+   BACK BUTTON
+   ======================================== */
 .back-button-container {
-  padding: 4% 5%;
+  padding: 3rem 2rem;
   text-align: center;
+  background-color: #f5f5f5;
 }
 
 .back-button {
-  padding: 2% 4%;
-  background-color: var(--project-secondary, var(--global-secondary));
-  color: var(--white);
+  padding: 1rem 2.5rem;
+  background-color: #2c3e50;
+  color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 1.125rem;
+  font-weight: 500;
+  transition: all 0.3s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .back-button:hover {
-  background-color: var(--project-accent, var(--global-accent));
+  background-color: #34495e;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
+/* ========================================
+   RESPONSIVE DESIGN - TABLET
+   ======================================== */
 @media (max-width: 1024px) {
   .hero-title {
-    font-size: 3rem;
+    font-size: 4rem;
   }
 
-  .hero-subtitle {
-    font-size: 1.5rem;
+  .section-title {
+    font-size: 2.5rem;
   }
 
-  .features-grid,
-  .lots-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .project-section {
+    padding: 4rem 1.5rem;
   }
 
   .location-content {
-    grid-template-columns: 1fr;
+    gap: 3rem;
   }
 
-  .location-map {
-    margin-top: 3%;
+  .features-grid,
+  .lots-grid,
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
   }
 }
 
+/* ========================================
+   RESPONSIVE DESIGN - MOBILE
+   ======================================== */
 @media (max-width: 768px) {
   .project-hero {
-    height: 400px;
+    height: 50vh;
+    min-height: 400px;
   }
 
   .hero-title {
@@ -409,35 +603,67 @@
   }
 
   .hero-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
 
   .section-title {
     font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-content {
+    font-size: 1.125rem;
+  }
+
+  .project-section {
+    padding: 3rem 1rem;
+  }
+
+  .location-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .location-map {
+    height: 350px;
   }
 
   .features-grid,
   .lots-grid,
   .gallery-grid {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
-  .project-section {
-    padding: 4% 0;
+  .feature-card {
+    padding: 2rem 1.5rem;
   }
 
-  .section-container {
-    padding: 0 4%;
+  .modal-overlay {
+    padding: 1rem;
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: 1rem 1.5rem;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-body {
+    min-height: 400px;
   }
 }
 
+/* ========================================
+   RESPONSIVE DESIGN - SMALL MOBILE
+   ======================================== */
 @media (max-width: 480px) {
-  .project-hero {
-    height: 300px;
-  }
-
   .hero-title {
     font-size: 2rem;
+    letter-spacing: 0.1em;
   }
 
   .hero-subtitle {
@@ -445,15 +671,36 @@
   }
 
   .section-title {
-    font-size: 1.6rem;
+    font-size: 1.75rem;
   }
 
-  .section-content,
-  .section-description {
-    font-size: 1rem;
+  .section-title::after {
+    width: 60px;
+    height: 3px;
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+  }
+
+  .feature-title {
+    font-size: 1.25rem;
+  }
+
+  .lot-image-container {
+    height: 200px;
+  }
+
+  .location-map {
+    height: 300px;
+  }
+
+  .gallery-image {
+    height: 250px;
   }
 
   .back-button {
-    width: 90%;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
   }
 }

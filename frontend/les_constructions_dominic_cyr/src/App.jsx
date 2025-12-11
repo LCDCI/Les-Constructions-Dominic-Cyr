@@ -18,7 +18,8 @@ import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
 import './App.css';
-import ProjectOverviewPage from './pages/ProjectOverviewPage';
+import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
+import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
 
 export default function App() {
   return (
@@ -43,6 +44,10 @@ export default function App() {
               element={<SalespersonDashboard />}
             />
             <Route
+              path="/residential-projects"
+              element={<ResidentialProjectsPage />}
+            />
+            <Route
               path="/contractor/dashboard"
               element={<ContractorDashboard />}
             />
@@ -56,7 +61,7 @@ export default function App() {
             />
             <Route
               path="/projects/:projectIdentifier/overview"
-              element={<ProjectOverviewPage />}
+              element={<ProjectsOverviewPage />}
             />
           </Routes>
         </main>
