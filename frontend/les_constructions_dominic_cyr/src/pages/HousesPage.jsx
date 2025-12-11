@@ -51,14 +51,7 @@ const HousesPage = () => {
   };
 
   const getImageUrl = imageIdentifier => {
-    if (!imageIdentifier) {
-      return '/placeholder-house.png';
-    }
     return `${filesServiceUrl}/files/${imageIdentifier}`;
-  };
-
-  const handleImageError = e => {
-    e.target.src = '/placeholder-house.png';
   };
 
   const handleViewHouse = houseId => {
@@ -112,7 +105,6 @@ const HousesPage = () => {
                       src={getImageUrl(house.imageIdentifier)}
                       alt={house.houseName}
                       className="house-image"
-                      onError={handleImageError}
                     />
                   </div>
                   <h2 className="house-title">{house.houseName}</h2>
