@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import '../styles/projects.css';
+import { useNavigate } from 'react-router-dom';
+import '../styles/residential-projects.css';
 
-const ProjectsPage = () => {
+const ResidentialProjectsPage = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,7 +51,7 @@ const ProjectsPage = () => {
   };
 
   const handleViewProject = projectIdentifier => {
-    window.location.href = `/projects/${projectIdentifier}`;
+    navigate(`/projects/${projectIdentifier}/overview`);
   };
 
   if (loading) {
@@ -65,7 +67,7 @@ const ProjectsPage = () => {
       <div className="projects-content">
         <div className="projects-container">
           <div className="projects-header">
-            <h1>Projects</h1>
+            <h1>Residential Projects</h1>
           </div>
 
           <div className="projects-filter">
@@ -115,4 +117,4 @@ const ProjectsPage = () => {
   );
 };
 
-export default ProjectsPage;
+export default ResidentialProjectsPage;
