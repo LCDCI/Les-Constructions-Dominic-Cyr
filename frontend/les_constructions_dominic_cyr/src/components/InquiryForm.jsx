@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import 'react-phone-number-input/style.css';
+import PhoneInput from 'react-phone-number-input'; 
 /**
  * Reusable InquiryForm component
  * Props:
@@ -17,8 +18,27 @@ export default function InquiryForm({ onSuccess, className }) {
   const [status, setStatus] = useState({ message: '', type: '' });
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (status.type === 'success' && status.message) {
+      const timer = setTimeout(() => {
+        setStatus({ message: '', type: '' });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [status]);
+
   const onChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    // Validate name: no numbers allowed
+    if (name === 'name') {
+      // Remove any digits from the input
+      const filteredValue = value.replace(/\d/g, '');
+      setForm({ ...form, [name]: filteredValue });
+      return;
+    }
+    
+    setForm({ ...form, [name]: value });
   };
 
   const onSubmit = async e => {
@@ -30,6 +50,26 @@ export default function InquiryForm({ onSuccess, className }) {
       });
       return;
     }
+    
+    // Validate name has no numbers
+    if (/\d/.test(form.name)) {
+      setStatus({
+        message: 'Name cannot contain numbers.',
+        type: 'error',
+      });
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setStatus({
+        message: 'Please enter a valid email address.',
+        type: 'error',
+      });
+      return;
+    }
+
     setLoading(true);
     setStatus({ message: '', type: '' });
     try {
@@ -96,11 +136,10 @@ export default function InquiryForm({ onSuccess, className }) {
         </div>
         <div className="form-group">
           <label>Phone</label>
-          <input
-            name="phone"
+          <PhoneInput
+            placeholder="Enter phone number"
             value={form.phone}
-            onChange={onChange}
-            placeholder="(555) 123-4567"
+            onChange={(value) => setForm({ ...form, phone: value })}
             disabled={loading}
           />
         </div>
