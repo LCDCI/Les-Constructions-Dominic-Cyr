@@ -86,3 +86,12 @@ updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 
 CREATE INDEX IF NOT EXISTS idx_schedule_identifier ON schedules(schedule_identifier);
 CREATE INDEX IF NOT EXISTS idx_task_date ON schedules(task_date);
+
+DROP TABLE IF EXISTS renovations;
+CREATE TABLE renovations (
+            id SERIAL PRIMARY KEY,
+            renovation_identifier VARCHAR(255) NOT NULL,
+            before_image_identifier VARCHAR(255),
+            after_image_identifier VARCHAR(255),
+            description TEXT NOT NULL
+);

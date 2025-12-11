@@ -1,0 +1,12 @@
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Renovation;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+public class RenovationRequestModel {
+    private String beforeImageIdentifier;
+    private String afterImageIdentifier;
+    private String description;
+}
