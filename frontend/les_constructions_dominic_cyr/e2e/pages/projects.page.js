@@ -19,22 +19,6 @@ export class ProjectsPage {
     await this.page.goto('/projects');
   }
 
-  async waitForProjectsToLoad() {
-    await this.page.waitForLoadState('networkidle');
-    try {
-      await this.loadingIndicator.waitFor({ state: 'hidden', timeout: 15000 });
-    } catch (err) {
-      // Log the failure so tests don't silently ignore problems
-      // eslint-disable-next-line no-console
-      console.error('Waiting for projects loading indicator failed', err);
-    }
-  }
-
-  async searchProjects(searchTerm) {
-    await this.searchInput.fill(searchTerm);
-    await this.page.waitForTimeout(500);
-  }
-
   async clearSearch() {
     await this.searchInput.clear();
   }
@@ -52,7 +36,6 @@ export class ProjectsPage {
   }
 
   async isLoaded() {
-    await this.waitForProjectsToLoad();
     return await this.pageTitle.isVisible();
   }
 }
