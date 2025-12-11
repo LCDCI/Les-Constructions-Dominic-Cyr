@@ -7,7 +7,7 @@ test.describe('Projects Page', () => {
   test.beforeEach(async ({ page }) => {
     projectsPage = new ProjectsPage(page);
     await projectsPage.goto();
-    await projectsPage.waitForProjectsToLoad();
+    await projectsPage.isLoaded();
   });
 
   test('should filter projects when searching', async () => {
