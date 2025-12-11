@@ -45,14 +45,7 @@ const ProjectsPage = () => {
   };
 
   const getImageUrl = imageIdentifier => {
-    if (!imageIdentifier) {
-      return '/placeholder-project.png';
-    }
     return `${filesServiceUrl}/files/${imageIdentifier}`;
-  };
-
-  const handleImageError = e => {
-    e.target.src = '/placeholder-project.png';
   };
 
   const handleViewProject = projectIdentifier => {
@@ -96,7 +89,6 @@ const ProjectsPage = () => {
                       src={getImageUrl(project.imageIdentifier)}
                       alt={project.projectName}
                       className="project-image"
-                      onError={handleImageError}
                     />
                   </div>
                   <h2 className="project-title">{project.projectName}</h2>
