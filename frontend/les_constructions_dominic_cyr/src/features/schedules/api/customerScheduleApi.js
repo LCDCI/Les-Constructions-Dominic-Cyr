@@ -1,13 +1,13 @@
 import axiosInstance from '../../../utils/axios';
 
-export const ownerScheduleApi = {
+export const customerScheduleApi = {
   getCurrentWeekSchedules: async () => {
-    const response = await axiosInstance.get('/owners/schedules');
+    const response = await axiosInstance.get('/customers/schedules');
     return response.data;
   },
 
   getAllSchedules: async () => {
-    const response = await axiosInstance.get('/owners/schedules/all');
+    const response = await axiosInstance.get('/customers/schedules/all');
     return response.data;
   },
 
@@ -19,4 +19,4 @@ export const ownerScheduleApi = {
   },
 };
 
-export default ownerScheduleApi;
+export default customerScheduleApi;
