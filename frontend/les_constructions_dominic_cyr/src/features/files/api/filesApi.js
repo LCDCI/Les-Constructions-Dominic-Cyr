@@ -7,6 +7,11 @@ export async function fetchProjectFiles(projectId) {
     return response.data;
 }
 
+export async function fetchProjectDocuments(projectId) {
+    const response = await axios.get(`${BASE_API_URL}/projects/${projectId}/documents`); 
+    return response.data;
+}
+
 export async function uploadFile(formData) {
     const response = await axios.post(`${BASE_API_URL}/files`, formData, {
         headers: {

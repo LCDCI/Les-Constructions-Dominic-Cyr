@@ -21,6 +21,12 @@ func (m *mockRepo) FindById(ctx context.Context, id string) (*domain.File, error
 	return m.FindByIdFn(ctx, id)
 }
 func (m *mockRepo) Delete(ctx context.Context, id string) error { return m.DeleteFn(ctx, id) }
+func (m *mockRepo) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
+	if m.FindByProjectIDFn != nil {
+		return m.FindByProjectIDFn(ctx, projectID)
+	}
+	return nil, nil
+}
 
 func (m *mockRepo) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
 	return m.FindByProjectIDFn(ctx, projectID)
