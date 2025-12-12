@@ -17,7 +17,6 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
-import './App.css';
 import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
 import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
 

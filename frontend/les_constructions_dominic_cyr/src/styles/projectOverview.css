@@ -2,6 +2,7 @@
   width: 80%;
   min-height: 100vh;
   margin: 0 auto;
+  background-color: var(--background-color-white, #ffffff);
 }
 
 .project-overview-loading,
@@ -18,14 +19,14 @@
 .project-overview-loading p,
 .project-overview-error p {
   font-size: 1.25rem;
-  color: #666;
+  color: var(--primary-color, #666);
   margin-bottom: 1.5rem;
 }
 
 .project-overview-error button {
-  padding: 0.75rem 2%;
+  padding: 0.75rem 2rem;
   background-color: var(--buyer-color);
-  color: white;
+  color: var(--background-color-white, white);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -75,7 +76,7 @@
 
 .hero-content {
   text-align: center;
-  color: white;
+  color: var(--background-color-white, white);
   padding: 2%;
   max-width: 1200px;
 }
@@ -101,23 +102,23 @@
 }
 
 .overview-section {
-  background-color: var(--background-color-tertiary);
+  background-color: var(--background-color-white, #ffffff);
 }
 
 .features-section {
-  background-color: #fff;
+  background-color: var(--background-color-tertiary, #ffffff);
 }
 
 .lots-section {
-  background-color: var(--background-color-tertiary);
+  background-color: var(--background-color-white, #ffffff);
 }
 
 .location-section {
-  background-color: #fff;
+  background-color: var(--background-color-tertiary, #ffffff);
 }
 
 .gallery-section {
-  background-color: var(--background-color-tertiary);
+  background-color: var(--background-color-white, #ffffff);
 }
 
 .section-container {
@@ -129,7 +130,7 @@
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 3rem;
-  color: var(--buyer-color);
+  color: var(--primary-color);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   position: relative;
@@ -141,7 +142,7 @@
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 100px;
+  width: 10%;
   height: 4px;
   background-color: var(--buyer-color);
 }
@@ -149,36 +150,36 @@
 .section-content {
   font-size: 1.25rem;
   line-height: 1.8;
-  color: #555;
+  color: var(--primary-color, #555);
   margin-bottom: 1.5rem;
 }
 
 .section-description {
   font-size: 1.125rem;
   line-height: 1.7;
-  color: #666;
+  color: var(--primary-color, #666);
 }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2.5rem;
+  gap: 2.5rem; /* Replaced % with fixed size for common CSS gap usage */
   margin-top: 3rem;
 }
 
 .feature-card {
-  background: white;
+  background: var(--background-color-white, white);
   padding: 3rem 2rem;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1); /* Converted % to rem */
   text-align: center;
   transition: all 0.3s ease;
   border-top: 4px solid transparent;
 }
 
 .feature-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-0.8rem); /* Converted % to rem */
+  box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.15); /* Converted % to rem */
   border-top-color: var(--buyer-color);
 }
 
@@ -192,7 +193,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: var(--buyer-color);
+  color: var(--primary-color);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -200,34 +201,34 @@
 .feature-description {
   font-size: 1rem;
   line-height: 1.6;
-  color: #666;
+  color: var(--primary-color, #666);
 }
 
 .lots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2%;
+  gap: 2rem; /* Replaced % with fixed size for common CSS gap usage */
   margin-top: 3rem;
 }
 
 .lot-card {
-  background: white;
+  background: var(--background-color-tertiary, white);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.1); /* Converted % to rem */
   transition: all 0.3s ease;
 }
 
 .lot-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-0.5rem); /* Converted % to rem */
+  box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.15); /* Converted % to rem */
 }
 
 .lot-image-container {
   width: 100%;
   height: 250px;
   overflow: hidden;
-  background-color: var(--background-color-tertiary);
+  background-color: var(--primary-color);
 }
 
 .lot-image {
@@ -257,14 +258,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 0;
-  border-top: 1px solid #e0e0e0;
-  border-bottom: 1px solid #e0e0e0;
+  border-top: 1px solid var(--tertiary-color);
+  border-bottom: 1px solid var(--tertiary-color);
   margin-bottom: 1rem;
 }
 
 .lot-dimensions {
   font-size: 0.95rem;
-  color: #666;
+  color: var(--primary-color, #666);
   font-weight: 500;
 }
 
@@ -285,24 +286,24 @@
 }
 
 .status-available {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: var(--buyer-color);
+  color: var(--background-color-white, white);
 }
 
 .status-sold {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: var(--primary-color);
+  color: var(--background-color-white, white);
 }
 
 .status-pending {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: var(--tertiary-color);
+  color: var(--primary-color);
 }
 
 .location-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  gap: 4rem; /* Replaced % with fixed size for common CSS gap usage */
   margin-top: 3rem;
   align-items: start;
 }
@@ -310,14 +311,14 @@
 .location-text {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 2rem; /* Replaced % with fixed size for common CSS gap usage */
 }
 
 .location-address {
-  background: white;
+  background: var(--background-color-white, white);
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.08); /* Converted % to rem */
   border-left: 5px solid var(--buyer-color);
 }
 
@@ -332,7 +333,7 @@
 
 .location-address p {
   font-size: 1.125rem;
-  color: #555;
+  color: var(--primary-color, #555);
   line-height: 1.6;
 }
 
@@ -341,7 +342,7 @@
   width: 100%;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.15); /* Converted % to rem */
   border: 3px solid var(--buyer-color);
   position: relative;
 }
@@ -369,7 +370,7 @@
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2%;
+  gap: 2rem; /* Replaced % with fixed size for common CSS gap usage */
   margin-top: 3rem;
 }
 
@@ -377,14 +378,14 @@
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.1); /* Converted % to rem */
   transition: all 0.3s ease;
-  background: white;
+  background: var(--background-color-tertiary, white);
 }
 
 .gallery-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-0.5rem); /* Converted % to rem */
+  box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.15); /* Converted % to rem */
 }
 
 .gallery-image {
@@ -403,18 +404,18 @@
   font-size: 1rem;
   padding: 1rem;
   text-align: center;
-  color: var(--buyer-color);
+  color: var(--primary-color);
 }
 
 .back-button-container {
   text-align: center;
-  padding: 3% 0;
+  padding: 3rem 0; /* Converted % to rem */
 }
 
 .back-button {
   padding: 0.75rem 2rem;
   background-color: var(--buyer-color);
-  color: white;
+  color: var(--background-color-white, white);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -444,7 +445,7 @@
   }
   .location-content {
     grid-template-columns: 1fr;
-    gap: 2%;
+    gap: 2rem; /* Replaced % with fixed size for consistency */
   }
   .location-map {
     height: 350px;
@@ -453,7 +454,7 @@
 
 @media (max-width: 768px) {
   .project-section {
-    padding: 3% 1rem;
+    padding: 3rem 1rem;
   }
   .features-grid {
     grid-template-columns: 1fr;
