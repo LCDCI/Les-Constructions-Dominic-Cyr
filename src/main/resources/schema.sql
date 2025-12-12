@@ -107,6 +107,8 @@ location_map_embed_url TEXT,
 gallery_section_title VARCHAR(300),
 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+location_latitude DOUBLE PRECISION,
+location_longitude DOUBLE PRECISION,
 FOREIGN KEY (project_identifier) REFERENCES projects(project_identifier) ON DELETE CASCADE
 );
 

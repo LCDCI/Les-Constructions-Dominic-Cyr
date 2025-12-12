@@ -25,7 +25,7 @@ VALUES
 ('269f18b2-9d3a-0f5e-4c6b-7d8e9f0a1b2c', 'Elegant Family Residence', 'Trois-Rivières, QC', 'Sophisticated family residence featuring gourmet kitchen with quartz countertops, spa-like bathrooms, and expansive outdoor entertainment patio.', 9, 4, 3, 2022),
 ('37a029c3-0e4b-1f6d-5d7c-8e9f0a1b2c3d', 'Country-Style Bungalow', 'Saint-Hyacinthe, QC', 'Charming country bungalow on a generous lot with mature landscaping, modern amenities, and tranquil rural setting.', 6, 3, 2, 2021);
 
--- data for footer
+
 INSERT INTO footer_content (section, label, value, display_order) VALUES
 ('contact', 'name', 'Isabelle Misiazeck', 1),
 ('contact', 'phone', '514-123-4567', 2),
@@ -36,7 +36,6 @@ INSERT INTO footer_content (section, label, value, display_order) VALUES
 ('office', 'address_line2', 'St-Alphonse de Granby', 2),
 ('office', 'address_line3', 'Granby, QC J2J 2X4', 3);
 
--- data for projects
 -- data for projects
 INSERT INTO projects (
     project_identifier,
@@ -49,6 +48,7 @@ INSERT INTO projects (
     tertiary_color,
     buyer_color,
     buyer_name,
+    image_identifier,
     customer_id,
     lot_identifier,
     progress_percentage
@@ -64,6 +64,7 @@ INSERT INTO projects (
           '#DFE1DF',
           '#003663',
           'Marc Tremblay',
+       '473f9e87-3415-491c-98a9-9d017c251911',
           'cust-001',
           'f3c8837d-bd65-4bc5-9f01-cb9082fc657e',
           0
@@ -79,6 +80,7 @@ INSERT INTO projects (
           '#737373',
           '#B29E84',
           'Sylvie Lapointe',
+       '6c8127f5-4529-4118-9ab1-cbcb38c4266a'
           'cust-002',
           '5a82954c-8e2c-466a-8a8f-9983b79ede63',
           0
@@ -91,7 +93,7 @@ INSERT INTO schedules (schedule_identifier, task_date, task_description, lot_num
 ('SCH-004', '2025-12-08', 'End of Excavation', 'Lot 53', 'Friday');
 
 
--- Föresta Project Content
+
 INSERT INTO project_overview_content (
     project_identifier,
     hero_title,
@@ -104,7 +106,9 @@ INSERT INTO project_overview_content (
     location_description,
     location_address,
     location_map_embed_url,
-    gallery_section_title
+    gallery_section_title,
+    location_latitude,
+    location_longitude
 ) VALUES (
 'proj-001-foresta',
 'FÖRESTA',
@@ -117,24 +121,11 @@ INSERT INTO project_overview_content (
 'Foresta is located in St-Alphonse-de-Granby, offering easy access to nature trails, local amenities, and major highways. The perfect balance between seclusion and convenience.',
 '104 rue du Boisé, St-Alphonse de Granby, Granby, QC J2J 2X4',
 'https://www.google.com/maps/place/104+Rue+du+Boisé,+St-Alphonse+de+Granby,+QC+J2J+2X4',
-'Project Gallery'
-         );
-
--- Panorama Project Content
-INSERT INTO project_overview_content (
-    project_identifier,
-    hero_title,
-    hero_subtitle,
-    hero_description,
-    overview_section_title,
-    overview_section_content,
-    features_section_title,
-    location_section_title,
-    location_description,
-    location_address,
-    location_map_embed_url,
-    gallery_section_title
-) VALUES (
+'Project Gallery',
+45.32027369731277,
+-72.79834091605535
+         ),
+      (
 'proj-002-panorama',
 'PANORAMA',
 'Condos Modernes avec Vue Imprenable',
@@ -144,9 +135,11 @@ INSERT INTO project_overview_content (
 'Condo Features',
 'Location',
 'Strategically located to provide both tranquility and easy access to urban centers, Panorama offers the best of both worlds for discerning buyers.',
-'104 rue du Boisé, St-Alphonse de Granby, Granby, QC J2J 2X4',
-'https://www.google.com/maps/place/104+Rue+du+Boisé,+St-Alphonse+de+Granby,+QC+J2J+2X4',
-'Gallery'
+'Sutton, Quebec',
+'https://www.google.com/maps/place/630+Rue+Maple,+Sutton,+QC+J0E+2K0/@45.1053459,-72.5670753,615m/data=!3m2!1e3!4b1!4m15!1m8!3m7!1s0x4cb61e78d1f51225:0x5040cadb2bb4a70!2sSutton,+QC!3b1!8m2!3d45.105894!4d-72.6166646!16s%2Fm%2F047dlz3!3m5!1s0x4cb61eb16f5de517:0x1691c2d8e333b6a!8m2!3d45.1053459!4d-72.5645004!16s%2Fg%2F11y7x5tmlr?entry=ttu&g_ep=EgoyMDI1MTIwOS4wIKXMDSoKLDEwMDc5MjA2N0gBUAM%3D',
+'Gallery',
+45.102386912240014,
+-72.57423759390365
          );
 
 INSERT INTO project_features (project_identifier, feature_title, feature_description, display_order) VALUES

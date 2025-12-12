@@ -33,14 +33,14 @@
     "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "prop-types": "^15.8.1",
-    "react": "^19.0.0-rc.1",
+    "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
     "react-countup": "^6.5.3",
     "react-datepicker": "^7.4.0",
-    "react-dom": "^19.0.0-rc.1",
+    "react-dom": "^18.3.1",
     "react-i18next": "^16.4.0",
     "react-icons": "^5.5.0",
-    "react-leaflet": "^5.0.0-rc.2",
+    "react-leaflet": "^4.2.1",
     "react-router-dom": "6.23.1",
     "web-vitals": "^2.1.4"
   },
@@ -48,7 +48,7 @@
     "@originjs/vite-plugin-federation": "1.3.5",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.4.3",
     "@vitejs/plugin-react": "^5.1.1",
     "@vitejs/plugin-react-swc": "^4.2.2",
@@ -64,4 +64,5 @@
     "vite": "^5.4.8",
     "vitest": "1.6.1"
   }
+  
 }

@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  padding: 2rem;
+  padding: 2%;
   text-align: center;
 }
 
@@ -23,8 +23,8 @@
 }
 
 .project-overview-error button {
-  padding: 0.75rem 2rem;
-  background-color: #333;
+  padding: 0.75rem 2%;
+  background-color: var(--buyer-color);
   color: white;
   border: none;
   border-radius: 4px;
@@ -34,7 +34,7 @@
 }
 
 .project-overview-error button:hover {
-  background-color: #555;
+  background-color: var(--primary-color);
 }
 
 .project-hero {
@@ -76,7 +76,7 @@
 .hero-content {
   text-align: center;
   color: white;
-  padding: 2rem;
+  padding: 2%;
   max-width: 1200px;
 }
 
@@ -96,16 +96,12 @@
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
 }
 
-/* ========================================
-   SECTIONS - COLLAGE LAYOUT
-   ======================================== */
 .project-section {
-  padding: 5rem 2rem;
+  padding: 5% 2%;
 }
 
-/* Alternating section backgrounds for collage effect */
 .overview-section {
-  background-color: #f9f9f9;
+  background-color: var(--background-color-tertiary);
 }
 
 .features-section {
@@ -113,7 +109,7 @@
 }
 
 .lots-section {
-  background-color: #f5f5f5;
+  background-color: var(--background-color-tertiary);
 }
 
 .location-section {
@@ -121,7 +117,7 @@
 }
 
 .gallery-section {
-  background-color: #fafafa;
+  background-color: var(--background-color-tertiary);
 }
 
 .section-container {
@@ -133,7 +129,7 @@
   font-size: 3rem;
   font-weight: 700;
   margin-bottom: 3rem;
-  color: #2c3e50;
+  color: var(--buyer-color);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   position: relative;
@@ -147,7 +143,7 @@
   left: 0;
   width: 100px;
   height: 4px;
-  background-color: currentColor;
+  background-color: var(--buyer-color);
 }
 
 .section-content {
@@ -163,9 +159,6 @@
   color: #666;
 }
 
-/* ========================================
-   FEATURES GRID - CARD COLLAGE
-   ======================================== */
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -186,12 +179,12 @@
 .feature-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  border-top-color: #3498db;
+  border-top-color: var(--buyer-color);
 }
 
 .feature-icon {
   font-size: 3.5rem;
-  color: #3498db;
+  color: var(--buyer-color);
   margin-bottom: 1.5rem;
 }
 
@@ -199,7 +192,7 @@
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #2c3e50;
+  color: var(--buyer-color);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -210,13 +203,10 @@
   color: #666;
 }
 
-/* ========================================
-   LOTS GRID - PHOTO COLLAGE
-   ======================================== */
 .lots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
+  gap: 2%;
   margin-top: 3rem;
 }
 
@@ -237,7 +227,7 @@
   width: 100%;
   height: 250px;
   overflow: hidden;
-  background-color: #f0f0f0;
+  background-color: var(--background-color-tertiary);
 }
 
 .lot-image {
@@ -258,7 +248,7 @@
 .lot-location {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--buyer-color);
   margin-bottom: 1rem;
 }
 
@@ -281,7 +271,7 @@
 .lot-price {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #27ae60;
+  color: var(--buyer-color);
 }
 
 .lot-status {
@@ -309,9 +299,6 @@
   color: #856404;
 }
 
-/* ========================================
-   LOCATION SECTION - SPLIT LAYOUT
-   ======================================== */
 .location-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -331,14 +318,14 @@
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  border-left: 5px solid #3498db;
+  border-left: 5px solid var(--buyer-color);
 }
 
 .location-address strong {
   display: block;
   font-size: 1.125rem;
   margin-bottom: 0.75rem;
-  color: #2c3e50;
+  color: var(--buyer-color);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -355,13 +342,10 @@
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  border: 3px solid #e0e0e0;
+  border: 3px solid var(--buyer-color);
   position: relative;
 }
 
-/* ========================================
-   MAP STYLES - CRITICAL FOR PROPER RENDERING
-   ======================================== */
 .leaflet-container {
   height: 100% !important;
   width: 100% !important;
@@ -371,7 +355,6 @@
   left: 0;
 }
 
-/* Ensure map tiles load properly */
 .leaflet-tile-container {
   position: absolute;
   z-index: 1;
@@ -383,13 +366,10 @@
   height: 256px;
 }
 
-/* ========================================
-   GALLERY GRID - MASONRY STYLE
-   ======================================== */
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem;
+  gap: 2%;
   margin-top: 3rem;
 }
 
@@ -416,291 +396,75 @@
 }
 
 .gallery-item:hover .gallery-image {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 
 .gallery-caption {
+  font-size: 1rem;
   padding: 1rem;
-  font-size: 0.95rem;
-  color: #666;
   text-align: center;
-  background: white;
+  color: var(--buyer-color);
 }
 
-/* ========================================
-   MODAL
-   ======================================== */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  padding: 2rem;
+.back-button-container {
+  text-align: center;
+  padding: 3% 0;
 }
 
-.modal-container {
-  background: white;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 1200px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 2rem;
-  border-bottom: 2px solid #e0e0e0;
-  background-color: #f9f9f9;
-}
-
-.modal-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0;
-}
-
-.modal-close-btn {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: #666;
-  padding: 0;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.modal-close-btn:hover {
-  background-color: #e0e0e0;
-  color: #333;
-}
-
-.modal-body {
-  flex: 1;
-  min-height: 500px;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Modal map container needs explicit dimensions */
-.modal-body .leaflet-container {
-  height: 100% !important;
-  width: 100% !important;
-  position: absolute !important;
-  top: 0;
-  left: 0;
-}
-
-.modal-footer {
-  padding: 1.5rem 2rem;
-  border-top: 2px solid #e0e0e0;
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  background-color: #f9f9f9;
-}
-
-.btn-secondary {
+.back-button {
   padding: 0.75rem 2rem;
-  background-color: #6c757d;
+  background-color: var(--buyer-color);
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
-  font-weight: 500;
   transition: background-color 0.3s;
 }
 
-.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-/* ========================================
-   BACK BUTTON
-   ======================================== */
-.back-button-container {
-  padding: 3rem 2rem;
-  text-align: center;
-  background-color: #f5f5f5;
-}
-
-.back-button {
-  padding: 1rem 2.5rem;
-  background-color: #2c3e50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1.125rem;
-  font-weight: 500;
-  transition: all 0.3s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
 .back-button:hover {
-  background-color: #34495e;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  background-color: var(--primary-color);
 }
 
-/* ========================================
-   RESPONSIVE DESIGN - TABLET
-   ======================================== */
-@media (max-width: 1024px) {
-  .hero-title {
-    font-size: 4rem;
-  }
-
-  .section-title {
-    font-size: 2.5rem;
-  }
-
-  .project-section {
-    padding: 4rem 1.5rem;
-  }
-
-  .location-content {
-    gap: 3rem;
-  }
-
-  .features-grid,
-  .lots-grid,
-  .gallery-grid {
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+@media (max-width: 1200px) {
+  .project-overview-page {
+    width: 90%;
   }
 }
 
-/* ========================================
-   RESPONSIVE DESIGN - MOBILE
-   ======================================== */
-@media (max-width: 768px) {
-  .project-hero {
-    height: 50vh;
-    min-height: 400px;
-  }
-
+@media (max-width: 992px) {
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 3.5rem;
   }
-
   .hero-subtitle {
     font-size: 1.25rem;
   }
-
   .section-title {
-    font-size: 2rem;
-    margin-bottom: 2rem;
+    font-size: 2.5rem;
   }
-
-  .section-content {
-    font-size: 1.125rem;
-  }
-
-  .project-section {
-    padding: 3rem 1rem;
-  }
-
   .location-content {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 2%;
   }
-
   .location-map {
     height: 350px;
   }
-
-  .features-grid,
-  .lots-grid,
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
-
-  .feature-card {
-    padding: 2rem 1.5rem;
-  }
-
-  .modal-overlay {
-    padding: 1rem;
-  }
-
-  .modal-header,
-  .modal-footer {
-    padding: 1rem 1.5rem;
-  }
-
-  .modal-title {
-    font-size: 1.25rem;
-  }
-
-  .modal-body {
-    min-height: 400px;
-  }
 }
 
-/* ========================================
-   RESPONSIVE DESIGN - SMALL MOBILE
-   ======================================== */
-@media (max-width: 480px) {
-  .hero-title {
-    font-size: 2rem;
-    letter-spacing: 0.1em;
+@media (max-width: 768px) {
+  .project-section {
+    padding: 3% 1rem;
   }
-
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-title {
+    font-size: 2.5rem;
+  }
   .hero-subtitle {
     font-size: 1rem;
   }
-
   .section-title {
-    font-size: 1.75rem;
-  }
-
-  .section-title::after {
-    width: 60px;
-    height: 3px;
-  }
-
-  .feature-icon {
-    font-size: 2.5rem;
-  }
-
-  .feature-title {
-    font-size: 1.25rem;
-  }
-
-  .lot-image-container {
-    height: 200px;
-  }
-
-  .location-map {
-    height: 300px;
-  }
-
-  .gallery-image {
-    height: 250px;
-  }
-
-  .back-button {
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
+    font-size: 2rem;
   }
 }
