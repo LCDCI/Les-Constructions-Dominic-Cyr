@@ -13,12 +13,196 @@ import { IoLeafOutline } from 'react-icons/io5';
 import { HiOutlineHomeModern } from 'react-icons/hi2';
 import '../styles/projectOverview.css';
 import '../styles/projectColors.css';
+import '../styles/overviewMap.css';
 
 const DEFAULT_COORDS = [45.31941496688032, -72.79945127353109];
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/v1';
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+
+const LOTS_DATA = [
+  {
+    id: 16,
+    x: 27,
+    y: 39,
+    status: 'Vendu',
+    price: 120000,
+    description: 'Lot 16 - Côté ouest',
+  },
+  {
+    id: 17,
+    x: 37,
+    y: 43,
+    status: 'Disponible',
+    price: 135000,
+    description: 'Lot 17 - Près du ruisseau',
+  },
+  {
+    id: 18,
+    x: 27,
+    y: 46,
+    status: 'Réservé',
+    price: 125000,
+    description: 'Lot 18 - Bonne exposition',
+  },
+  {
+    id: 19,
+    x: 37,
+    y: 50,
+    status: 'Disponible',
+    price: 140000,
+    description: 'Lot 19 - Grand terrain',
+  },
+  {
+    id: 20,
+    x: 27,
+    y: 53,
+    status: 'Vendu',
+    price: 130000,
+    description: 'Lot 20 - Vendu rapidement',
+  },
+  {
+    id: 21,
+    x: 37,
+    y: 57,
+    status: 'Disponible',
+    price: 130000,
+    description: 'Lot 21 - Dernier disponible',
+  },
+  {
+    id: 22,
+    x: 58,
+    y: 69,
+    status: 'Disponible',
+    price: 110000,
+    description: 'Lot 22 - Petit prix',
+  },
+  {
+    id: 23,
+    x: 67,
+    y: 64,
+    status: 'Vendu',
+    price: 115000,
+    description: 'Lot 23 - Vendu',
+  },
+  {
+    id: 24,
+    x: 58,
+    y: 77,
+    status: 'Réservé',
+    price: 120000,
+    description: 'Lot 24 - Réservé',
+  },
+  {
+    id: 25,
+    x: 67,
+    y: 72,
+    status: 'Disponible',
+    price: 125000,
+    description: 'Lot 25 - Belle vue',
+  },
+];
+
+const LotMapInteractive = ({ lotImageSrc, lotsData }) => {
+  const [selectedLot, setSelectedLot] = useState(null);
+
+  const getLotColor = status => {
+    switch (status) {
+      case 'Vendu':
+        return 'var(--color-danger)';
+      case 'Réservé':
+        return 'var(--color-warning)';
+      case 'Disponible':
+        return 'var(--color-success)';
+      default:
+        return 'var(--color-primary)';
+    }
+  };
+
+  const handleClick = lot => {
+    setSelectedLot(lot);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedLot(null);
+  };
+
+  return (
+    <div className="lot-map-container">
+      <div className="lot-map-wrapper">
+        <img
+          src={lotImageSrc}
+          alt="Plan de lotissement"
+          className="lot-map-image"
+        />
+
+        {lotsData.map(lot => (
+          <div
+            key={lot.id}
+            onClick={() => handleClick(lot)}
+            className="lot-marker"
+            style={{
+              left: `${lot.x}%`,
+              top: `${lot.y}%`,
+              backgroundColor: getLotColor(lot.status),
+            }}
+            title={`Lot ${lot.id}: ${lot.status}`}
+            role="button"
+            tabIndex="0"
+          >
+            <span className="lot-marker-label">{lot.id}</span>
+          </div>
+        ))}
+
+        {selectedLot && (
+          <div
+            className="lot-popup"
+            style={{
+              left: `${selectedLot.x + 3}%`,
+              top: `${selectedLot.y - 15}%`,
+            }}
+          >
+            <div className="lot-popup-header">
+              <h4 className="lot-popup-title">Lot #{selectedLot.id}</h4>
+              <button
+                className="lot-popup-close-btn"
+                onClick={handleClosePopup}
+              >
+                ×
+              </button>
+            </div>
+            <p>
+              <strong>Statut:</strong>{' '}
+              <span style={{ color: getLotColor(selectedLot.status) }}>
+                {selectedLot.status}
+              </span>
+            </p>
+            <p>
+              <strong>Prix:</strong>{' '}
+              {selectedLot.price ? `${selectedLot.price}$` : 'N/A'}
+            </p>
+            <p className="lot-popup-description">{selectedLot.description}</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+LotMapInteractive.propTypes = {
+  lotImageSrc: PropTypes.string.isRequired,
+  lotsData: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      x: PropTypes.number.isRequired,
+      y: PropTypes.number.isRequired,
+      status: PropTypes.string.isRequired,
+      price: PropTypes.number,
+      description: PropTypes.string,
+    })
+  ).isRequired,
+};
 
 export const projectOverviewApi = {
   getProjectOverview: async projectIdentifier => {
@@ -299,7 +483,7 @@ const ProjectOverviewPage = () => {
     return (
       <div className="project-overview-error">
         <p>{error}</p>
-        <button onClick={() => navigate('/projects')}>
+        <button onClick={() => navigate('/residential-projects')}>
           Back to Residential Projects
         </button>
       </div>
@@ -310,7 +494,7 @@ const ProjectOverviewPage = () => {
     return (
       <div className="project-overview-error">
         <p>Project not found</p>
-        <button onClick={() => navigate('/projects')}>
+        <button onClick={() => navigate('/residential-projects')}>
           Back to Residential Projects
         </button>
       </div>
@@ -318,6 +502,8 @@ const ProjectOverviewPage = () => {
   }
 
   const themeClass = getProjectThemeClass();
+  const lotissementImage =
+    'frontend\\les_constructions_dominic_cyr\\public\\phase1_transparent.png';
 
   return (
     <div className={`project-overview-page ${themeClass}`}>
@@ -384,6 +570,20 @@ const ProjectOverviewPage = () => {
           </div>
         </section>
       )}
+
+      {/* NOUVELLE SECTION POUR LA CARTE DE LOTISSEMENT */}
+      <section className="project-section lotissement-section">
+        <div className="section-container">
+          <h2 className="section-title">Plan des Lots Disponibles</h2>
+          <div className="lot-map-section">
+            <LotMapInteractive
+              lotImageSrc={lotissementImage}
+              lotsData={LOTS_DATA}
+            />
+          </div>
+        </div>
+      </section>
+      {/* FIN NOUVELLE SECTION */}
 
       {overview.locationDescription && (
         <section className="project-section location-section">
@@ -452,7 +652,10 @@ const ProjectOverviewPage = () => {
       )}
 
       <div className="back-button-container">
-        <button className="back-button" onClick={() => navigate('/projects')}>
+        <button
+          className="back-button"
+          onClick={() => navigate('/residential-projects')}
+        >
           ← Back to All Projects
         </button>
       </div>
