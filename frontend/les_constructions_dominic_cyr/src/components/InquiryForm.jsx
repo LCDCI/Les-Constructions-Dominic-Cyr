@@ -132,6 +132,7 @@ export default function InquiryForm({ onSuccess, className }) {
             value={form.phone}
             onChange={(value) => setForm({ ...form, phone: value })}
             disabled={loading}
+            defaultCountry="US"
           />
         </div>
         <div className="form-group">
