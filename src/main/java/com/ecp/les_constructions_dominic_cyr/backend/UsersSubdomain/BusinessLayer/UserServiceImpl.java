@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -60,4 +62,14 @@ public class UserServiceImpl implements UserService {
 
         return UserMapper.toResponseModel(userEntity, inviteLink);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserResponseModel> getAllUsers() {
+        return usersRepository.findAll()
+                .stream()
+                .map(user -> UserMapper.toResponseModel(user, null))
+                .toList();
+    }
+
 }
