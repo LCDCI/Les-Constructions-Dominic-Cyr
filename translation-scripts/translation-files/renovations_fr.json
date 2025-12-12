@@ -57,5 +57,18 @@
       "message": "Impossible de charger les rénovations. Veuillez réessayer.",
       "retry": "Réessayer"
     }
+  },
+  "renovationCard": {
+    "labels": {
+      "identifier": "Identifiant",
+      "cardType": "Rénovation",
+      "description": "Description",
+      "descriptionFallback": "Aucune description disponible"
+    },
+    "media": {
+      "before": "Avant",
+      "after": "Après",
+      "sectionLabel": "Images de la rénovation"
+    }
   }
 }
