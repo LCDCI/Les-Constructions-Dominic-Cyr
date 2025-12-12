@@ -18,6 +18,8 @@ import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
 import UsersPage from './pages/UsersPage';
+import PortalLogin from './pages/PortalLogin';
+
 
 import './App.css';
 import './styles/users.css';
@@ -56,7 +58,7 @@ export default function App() {
               path="/projects/:projectId/photos"
               element={<ProjectPhotosPage />}
             />
-
+            <Route path="/portal/login" element={<PortalLogin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

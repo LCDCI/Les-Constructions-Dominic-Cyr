@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth0 } from '@auth0/auth0-react';
 import '../styles/AppNavBar.css';
 import OwnerNavBar from '../components/OwnerNavBar';
 import SalespersonNavBar from '../components/SalespersonNavBar';
@@ -10,12 +11,12 @@ import CustomerNavBar from '../components/CustomerNavBar';
 export default function AppNavBar() {
   const { i18n, t } = useTranslation();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth0();
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const currentLanguage = i18n.language || 'en';
   const isFrench = currentLanguage === 'fr';
-
-  const isLoggedIn = Boolean(localStorage.getItem('auth0_access_token'));
 
   const toggleLanguage = () => {
     const newLang = isFrench ? 'en' : 'fr';
@@ -28,7 +29,7 @@ export default function AppNavBar() {
 
   const goToPortal = () => {
     setIsMobileMenuOpen(false);
-    navigate('/users/login');
+    navigate('/portal/login');
   };
 
   return (
@@ -73,7 +74,7 @@ export default function AppNavBar() {
         </nav>
 
         <div className="nav-actions">
-          {!isLoggedIn && (
+          {!isAuthenticated && (
             <button type="button" className="btn-portal" onClick={goToPortal}>
               {t('nav.accessPortal', 'Access Portal')} <span className="arrow">→</span>
             </button>
@@ -145,7 +146,7 @@ export default function AppNavBar() {
         </NavLink>
 
         <div className="mobile-actions">
-          {!isLoggedIn && (
+          {!isAuthenticated && (
             <button type="button" className="btn-portal" onClick={goToPortal}>
               {t('nav.accessPortal', 'Access Portal')} <span className="arrow">→</span>
             </button>
