@@ -47,5 +47,15 @@
   },
   "callToAction": {
     "title": "Entrust your renovation to passionate professionals!"
+  },
+  "states": {
+    "empty": {
+      "title": "No renovations yet",
+      "body": "Check back soon to see our latest renovation projects!"
+    },
+    "error": {
+      "message": "Unable to load renovations. Please try again.",
+      "retry": "Retry"
+    }
   }
 }
