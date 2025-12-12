@@ -83,33 +83,46 @@ const ResidentialProjectsPage = () => {
           </div>
 
           <div className="projects-grid">
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map(project => (
-                <div key={project.projectIdentifier} className="project-card">
-                  <div className="project-image-container">
-                    <img
-                      src={getImageUrl(project.imageIdentifier)}
-                      alt={project.projectName}
-                      className="project-image"
-                    />
-                  </div>
-                  <h2 className="project-title">{project.projectName}</h2>
-                  <p className="project-description">
-                    {project.projectDescription}
-                  </p>
-                  <button
-                    className="project-button"
-                    onClick={() => handleViewProject(project.projectIdentifier)}
-                  >
-                    View this project
-                  </button>
+            <div>
+              {filteredProjects.length > 0 ? (
+                filteredProjects.map((project, index) => {
+                  const isLeftLayout = index % 2 === 0;
+
+                  return (
+                    <section
+                      key={project.projectIdentifier}
+                      className={`project-feature-section ${isLeftLayout ? 'left' : 'right'}`}
+                    >
+                      <div className="project-feature-inner">
+                        <div className="feature-image">
+                          <img
+                            src={getImageUrl(project.imageIdentifier)}
+                            alt={project.projectName}
+                          />
+                        </div>
+                        <div className="feature-content">
+                          <h2>{project.projectName}</h2>
+                          <p>{project.projectDescription}</p>
+
+                          <button
+                            className="feature-btn"
+                            onClick={() =>
+                              handleViewProject(project.projectIdentifier)
+                            }
+                          >
+                            View this project
+                          </button>
+                        </div>
+                      </div>
+                    </section>
+                  );
+                })
+              ) : (
+                <div className="no-results">
+                  <p>No projects found matching “{searchTerm}”</p>
                 </div>
-              ))
-            ) : (
-              <div className="no-results">
-                <p>No projects found matching &quot;{searchTerm}&quot;</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
