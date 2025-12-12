@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "projects": "Projets résidentiels",
+    "renovation": "Rénovation",
+    "projectManagement": "Gestion de projet",
+    "about": "À propos",
+    "contact": "Contact"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois"
+  },
+  "hero": {
+    "eyebrow": "Nous joindre",
+    "title": "Nous collaborons avec vous à la réalisation de vos rêves !",
+    "subtitle": "Votre maison constitue l'un des plus importants investissements que vous ferez dans votre vie. Optez pour une valeur sûre et sans pareil avec Les Constructions Dominic Cyr Inc."
+  },
+  "contactInfo": {
+    "title": "Coordonnées",
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "addressLine1": "155 rue Bourgeois",
+    "addressLine2": "St-Mathieu-de-Beloeil (Québec)",
+    "addressLine3": "J3G 0M9",
+    "directions": "Obtenir l'itinéraire",
+    "phoneLabel": "Téléphone",
+    "phone": "514-123-4567",
+    "emailLabel": "Courriel",
+    "email": "constructions.dcyr@gmail.com",
+    "rbqLabel": "Régie du bâtiment du Québec",
+    "rbqLicense": "No licence : 8356-0169-03",
+    "rbqWebsite": "rbq.gouv.qc.ca",
+    "gcqLabel": "Garantie de construction résidentielle",
+    "gcqAccreditation": "No accréditation : 11084",
+    "gcqWebsite": "garantiegcr.com"
+  },
+  "inquiryForm": {
+    "title": "Envoyez-nous un message",
+    "nameLabel": "Nom",
+    "namePlaceholder": "Votre nom",
+    "emailLabel": "Courriel",
+    "emailPlaceholder": "votre.courriel@exemple.com",
+    "phoneLabel": "Téléphone",
+    "phonePlaceholder": "Entrez votre numéro de téléphone",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Parlez-nous de votre projet...",
+    "submitButton": "Soumettre la demande",
+    "submittingButton": "Envoi en cours...",
+    "requiredFields": "Veuillez remplir tous les champs obligatoires.",
+    "invalidEmail": "Veuillez entrer une adresse courriel valide.",
+    "submitSuccess": "Votre demande a été soumise avec succès !",
+    "submitError": "L'envoi a échoué.",
+    "networkError": "Erreur réseau. Veuillez réessayer plus tard."
+  }
+}
