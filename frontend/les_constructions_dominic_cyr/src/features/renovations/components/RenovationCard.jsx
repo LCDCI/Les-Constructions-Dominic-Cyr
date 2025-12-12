@@ -13,7 +13,7 @@ const RenovationCard = ({
                             description,
                             resolveAssetUrl,
                         }) => {
-    const { t, isLoading } = usePageTranslations('renovationCard');
+    const { t, isLoading } = usePageTranslations('renovations');
 
     const buildImageSrc = (identifier) => (identifier ? resolveAssetUrl(identifier) : '');
 
@@ -21,12 +21,12 @@ const RenovationCard = ({
         {
             slot: 'before',
             src: buildImageSrc(beforeImageIdentifier),
-            label: t('media.before'),
+            label: t('renovationCard.media.before'),
         },
         {
             slot: 'after',
             src: buildImageSrc(afterImageIdentifier),
-            label: t('media.after'),
+            label: t('renovationCard.media.after'),
         },
     ].filter(({ src }) => Boolean(src));
 
@@ -43,30 +43,30 @@ const RenovationCard = ({
             <header className="project-card__header renovation-card__header">
                 <div>
                     <p className="project-card__eyebrow">
-                        {t('labels.identifier')}
+                        {t('renovationCard.labels.identifier')}
                     </p>
                     <h3 className="project-card__title renovation-card__title">
                         {renovationIdentifier}
                     </h3>
                 </div>
                 <span className="project-card__badge renovation-card__badge">
-          {t('labels.cardType')}
+          {t('renovationCard.labels.cardType')}
         </span>
             </header>
 
             <section className="project-card__body">
                 <h4 className="project-card__section-title">
-                    {t('labels.description')}
+                    {t('renovationCard.labels.description')}
                 </h4>
                 <p className="project-card__description renovation-card__description">
-                    {description || t('labels.descriptionFallback')}
+                    {description || t('renovationCard.labels.descriptionFallback')}
                 </p>
             </section>
 
             {mediaItems.length > 0 && (
                 <section
                     className="project-card__media-grid renovation-card__media-grid"
-                    aria-label={t('media.sectionLabel')}
+                    aria-label={t('renovationCard.media.sectionLabel')}
                 >
                     {mediaItems.map(({ slot, src, label }) => (
                         <figure key={slot} className="renovation-card__figure">
