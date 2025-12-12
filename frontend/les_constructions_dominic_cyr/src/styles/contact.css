@@ -9,8 +9,8 @@
 }
 
 .contact-hero {
-    background: linear-gradient(135deg, #628DB5, #628DB5);
-    color: #fff;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color));
+    color: var(--white);
     padding: 80px 24px;
 }
 
@@ -86,6 +86,37 @@
     font-size: 0.95rem;
 }
 
+.info-item a {
+    color: var(--primary-color);
+    text-decoration: underline;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.info-item a:hover {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.info-item .directions-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 8px 16px;
+    background: var(--primary-color);
+    color: var(--white);
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.info-item .directions-link:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow);
+}
+
 .contact-form-wrapper {
     background: var(--white);
     border-radius: var(--border-radius);
@@ -127,6 +158,37 @@
 .form-group textarea:focus {
     border-color: var(--primary-color);
     outline: none;
+}
+
+/* PhoneInput component styles */
+.form-group .PhoneInput {
+    width: 100%;
+}
+
+.form-group .PhoneInputInput {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease;
+}
+
+.form-group .PhoneInputInput:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+.form-group .PhoneInputCountrySelect:focus {
+    outline-color: var(--primary-color);
+}
+
+.form-group .PhoneInputCountryIcon {
+    border: 1px solid #d1d5db;
+}
+
+.form-group .PhoneInputCountrySelectArrow {
+    color: var(--primary-color);
 }
 
 .form-group textarea {

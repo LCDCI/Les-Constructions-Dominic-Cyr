@@ -32,6 +32,10 @@ public class TranslationRegistry {
         // Example (replace with actual file IDs after upload):
         // fileIdMap.put("en.home", "your-english-file-id-here");
         // fileIdMap.put("fr.home", "your-french-file-id-here");
+        
+        // Contact page translations
+        fileIdMap.put("en.contact", "3c4ef848-4b70-4bfa-9596-e2fdc5541386");
+        fileIdMap.put("fr.contact", "7853c9d6-52c2-4b2e-b9c0-fd10f2696fe3");
     }
     
     /**

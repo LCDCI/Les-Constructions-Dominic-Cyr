@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import 'react-phone-number-input/style.css';
-import PhoneInput from 'react-phone-number-input'; 
+import PhoneInput from 'react-phone-number-input';
+import { validate } from 'react-email-validator';
+import { useTranslation } from 'react-i18next'; 
 /**
  * Reusable InquiryForm component
  * Props:
@@ -9,6 +11,7 @@ import PhoneInput from 'react-phone-number-input';
  */
 
 export default function InquiryForm({ onSuccess, className }) {
+  const { t } = useTranslation('contact');
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -29,7 +32,7 @@ export default function InquiryForm({ onSuccess, className }) {
 
   const onChange = e => {
     const { name, value } = e.target;
-    
+
     // Validate name: no numbers allowed
     if (name === 'name') {
       // Remove any digits from the input
@@ -37,7 +40,7 @@ export default function InquiryForm({ onSuccess, className }) {
       setForm({ ...form, [name]: filteredValue });
       return;
     }
-    
+
     setForm({ ...form, [name]: value });
   };
 
@@ -45,17 +48,16 @@ export default function InquiryForm({ onSuccess, className }) {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
       setStatus({
-        message: 'Please fill out all required fields.',
+        message: t('inquiryForm.requiredFields'),
         type: 'error',
       });
       return;
     }
-    
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(form.email)) {
+
+    // Validate email format using react-email-validator
+    if (!validate(form.email)) {
       setStatus({
-        message: 'Please enter a valid email address.',
+        message: t('inquiryForm.invalidEmail'),
         type: 'error',
       });
       return;
@@ -90,7 +92,7 @@ export default function InquiryForm({ onSuccess, className }) {
       }
     } catch (err) {
       setStatus({
-        message: 'Network error. Please try again later.',
+        message: t('inquiryForm.networkError'),
         type: 'error',
       });
     } finally {
@@ -100,54 +102,55 @@ export default function InquiryForm({ onSuccess, className }) {
 
   return (
     <div className={`contact-form ${className || ''}`.trim()}>
-      <h2>Send us a message</h2>
+      <h2>{t('inquiryForm.title')}</h2>
       <form onSubmit={onSubmit}>
         <div className="form-group">
-          <label>Name *</label>
+          <label>{t('inquiryForm.nameLabel')} *</label>
           <input
             name="name"
             value={form.name}
             onChange={onChange}
-            placeholder="Your name"
+            placeholder={t('inquiryForm.namePlaceholder')}
             disabled={loading}
             required
           />
         </div>
         <div className="form-group">
-          <label>Email *</label>
+          <label>{t('inquiryForm.emailLabel')} *</label>
           <input
             name="email"
             type="email"
             value={form.email}
             onChange={onChange}
-            placeholder="your.email@example.com"
+            placeholder={t('inquiryForm.emailPlaceholder')}
             disabled={loading}
             required
           />
         </div>
         <div className="form-group">
-          <label>Phone</label>
+          <label>{t('inquiryForm.phoneLabel')}</label>
           <PhoneInput
-            placeholder="Enter phone number"
+            placeholder={t('inquiryForm.phonePlaceholder')}
             value={form.phone}
             onChange={(value) => setForm({ ...form, phone: value })}
             disabled={loading}
+            defaultCountry="CA"
           />
         </div>
         <div className="form-group">
-          <label>Message *</label>
+          <label>{t('inquiryForm.messageLabel')} *</label>
           <textarea
             name="message"
             value={form.message}
             onChange={onChange}
-            placeholder="Tell us about your project..."
+            placeholder={t('inquiryForm.messagePlaceholder')}
             rows={5}
             disabled={loading}
             required
           />
         </div>
         <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? 'Sending...' : 'Submit Inquiry'}
+          {loading ? t('inquiryForm.submittingButton') : t('inquiryForm.submitButton')}
         </button>
         {status.message && (
           <div className={`status-message ${status.type}`}>
