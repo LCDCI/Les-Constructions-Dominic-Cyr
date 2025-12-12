@@ -24,6 +24,7 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.11.0",
     "axios": "^1.13.2",
     "bad-words": "^4.0.0",
     "bootstrap": "^5.3.3",
