@@ -47,5 +47,15 @@
   },
   "callToAction": {
     "title": "Confiez votre rénovation à des professionnels passionnés !"
+  },
+  "states": {
+    "empty": {
+      "title": "Aucune rénovation pour le moment",
+      "body": "Revenez bientôt pour voir nos derniers projets de rénovation !"
+    },
+    "error": {
+      "message": "Impossible de charger les rénovations. Veuillez réessayer.",
+      "retry": "Réessayer"
+    }
   }
 }
