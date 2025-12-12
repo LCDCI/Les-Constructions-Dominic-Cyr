@@ -4,11 +4,22 @@ import { usePageTranslations } from '../hooks/usePageTranslations';
 import { fetchRenovations } from '../features/renovations/api/renovations';
 import RenovationCard from '../features/renovations/components/RenovationCard';
 
-const defaultResolveAssetUrl = identifier => identifier ?? '';
-
 const RenovationsPage = ({ resolveAssetUrl }) => {
   // Load translations from the root namespace since your JSON is flat
   const { t } = usePageTranslations('renovations');
+
+  const filesServiceUrl =
+    import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+
+  const getImageUrl = identifier => {
+    if (!identifier) return '';
+    // If a custom resolveAssetUrl is provided, use it
+    if (resolveAssetUrl) {
+      return resolveAssetUrl(identifier);
+    }
+    // Otherwise, use the default file service URL
+    return `${filesServiceUrl}/files/${identifier}`;
+  };
 
   const [renovations, setRenovations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -138,7 +149,7 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
                 beforeImageIdentifier={beforeImageIdentifier}
                 afterImageIdentifier={afterImageIdentifier}
                 description={description}
-                resolveAssetUrl={resolveAssetUrl}
+                resolveAssetUrl={getImageUrl}
               />
             )
           )}
@@ -163,7 +174,7 @@ RenovationsPage.propTypes = {
 };
 
 RenovationsPage.defaultProps = {
-  resolveAssetUrl: defaultResolveAssetUrl,
+  resolveAssetUrl: null,
 };
 
 export default RenovationsPage;
