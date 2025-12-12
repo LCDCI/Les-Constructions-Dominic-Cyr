@@ -37,9 +37,11 @@
     "react-bootstrap": "^2.10.4",
     "react-countup": "^6.5.3",
     "react-datepicker": "^7.4.0",
-    "react-dom": "^18.3.1",
+    "react-dom": "^18.2.0",
+    "react-email-validator": "^1.0.2",
     "react-i18next": "^16.4.0",
     "react-icons": "^5.5.0",
+    "react-phone-number-input": "^3.4.14",
     "react-leaflet": "^4.2.1",
     "react-router-dom": "6.23.1",
     "web-vitals": "^2.1.4"
@@ -64,5 +66,4 @@
     "vite": "^5.4.8",
     "vitest": "1.6.1"
   }
-  
 }
