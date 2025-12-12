@@ -51,15 +51,6 @@ export default function InquiryForm({ onSuccess, className }) {
       return;
     }
     
-    // Validate name has no numbers
-    if (/\d/.test(form.name)) {
-      setStatus({
-        message: 'Name cannot contain numbers.',
-        type: 'error',
-      });
-      return;
-    }
-
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(form.email)) {
