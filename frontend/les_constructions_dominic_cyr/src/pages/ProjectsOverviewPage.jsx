@@ -86,7 +86,7 @@ const LocationMap = ({ locationAddress, mapCoords, setShowModal }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#f0f0f0',
+          backgroundColor: 'var(--background-color-tertiary)',
         }}
       >
         Map address not specified.
@@ -150,7 +150,7 @@ const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
             onClick={handleClose}
             aria-label="Close modal"
           >
-            ×
+            &times;
           </button>
         </div>
         <div className="modal-body">
@@ -234,14 +234,47 @@ const ProjectOverviewPage = () => {
     fetchOverview();
   }, [projectIdentifier]);
 
+  useEffect(() => {
+    if (overview) {
+      const colors = {
+        '--buyer-color': overview.buyerColor || '#000000',
+        '--primary-color': overview.primaryColor || '#2c3e50',
+        '--tertiary-color': overview.tertiaryColor || '#3498db',
+
+        '--background-color-white': '#ffffff',
+        '--background-color-tertiary': overview.tertiaryColor || '#ffffff',
+        '--text-primary': overview.primaryColor || '#2c3e50',
+        '--text-secondary': overview.tertiaryColor || '#7f8c8d',
+      };
+
+      Object.keys(colors).forEach(key => {
+        document.documentElement.style.setProperty(key, colors[key]);
+      });
+    }
+
+    return () => {
+      if (overview) {
+        document.documentElement.style.removeProperty('--buyer-color');
+        document.documentElement.style.removeProperty('--primary-color');
+        document.documentElement.style.removeProperty('--tertiary-color');
+        document.documentElement.style.removeProperty(
+          '--background-color-white'
+        );
+        document.documentElement.style.removeProperty(
+          '--background-color-tertiary'
+        );
+        document.documentElement.style.removeProperty('--text-primary');
+        document.documentElement.style.removeProperty('--text-secondary');
+      }
+    };
+  }, [overview]);
+
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) return '/placeholder-project.png';
     return `${filesServiceUrl}/files/${imageIdentifier}`;
   };
 
   const getProjectThemeClass = () => {
-    // This function is no longer needed since we are using inline styles for colors
-    // based on DB data, making the theme class unnecessary for color application.
     return '';
   };
 
@@ -293,20 +326,6 @@ const ProjectOverviewPage = () => {
     );
   }
 
-  // --- START COLOR DYNAMIC INJECTION ---
-  const projectStyles = {
-    // 1. Map buyerColor (Accent) to --buyer-color
-    '--buyer-color': overview.buyerColor || '#000000',
-
-    // 2. Map primaryColor (Secondary Accent/Text) to --primary-color
-    '--primary-color': overview.primaryColor || '#2c3e50',
-
-    // 3. Map tertiaryColor (Light Background/Secondary Accent) to both required variables
-    '--tertiary-color': overview.tertiaryColor || '#3498db',
-    '--background-color-tertiary': overview.tertiaryColor || '#f9f9f9',
-  };
-  // --- END COLOR DYNAMIC INJECTION ---
-
   const finalMapCoords = mapCoords || DEFAULT_COORDS;
 
   const isMapCoordsValid =
@@ -316,10 +335,7 @@ const ProjectOverviewPage = () => {
     !isNaN(finalMapCoords[1]);
 
   return (
-    <div
-      className={`project-overview-page`}
-      style={projectStyles} // Apply dynamic styles here
-    >
+    <div className={`project-overview-page`}>
       <section className="project-hero">
         <div className="hero-image-container">
           <img
@@ -342,7 +358,6 @@ const ProjectOverviewPage = () => {
           </div>
         </div>
       </section>
-
       {overview.overviewSectionContent && (
         <section className="project-section overview-section">
           <div className="section-container">
@@ -356,7 +371,6 @@ const ProjectOverviewPage = () => {
           </div>
         </section>
       )}
-
       {overview.features && overview.features.length > 0 && (
         <section className="project-section features-section">
           <div className="section-container">
@@ -383,8 +397,6 @@ const ProjectOverviewPage = () => {
           </div>
         </section>
       )}
-
-      {/* Lots section (assuming lots exist in the overview data) */}
       {overview.lots && overview.lots.length > 0 && (
         <section className="project-section lots-section">
           <div className="section-container">
@@ -423,7 +435,6 @@ const ProjectOverviewPage = () => {
           </div>
         </section>
       )}
-
       {overview.locationDescription && (
         <section className="project-section location-section">
           <div className="section-container">
@@ -442,7 +453,6 @@ const ProjectOverviewPage = () => {
                   </div>
                 )}
               </div>
-
               {overview.locationAddress && isMapCoordsValid && (
                 <div className="location-map">
                   <LocationMap
@@ -464,8 +474,6 @@ const ProjectOverviewPage = () => {
           locationAddress={overview?.locationAddress}
         />
       )}
-
-      {/* Gallery Section Placeholder (add logic if overview.galleryImages exists) */}
       {overview.galleryImages && overview.galleryImages.length > 0 && (
         <section className="project-section gallery-section">
           <div className="section-container">
@@ -489,13 +497,12 @@ const ProjectOverviewPage = () => {
           </div>
         </section>
       )}
-
       <div className="back-button-container">
         <button
           className="back-button"
           onClick={() => navigate('/residential-projects')}
         >
-          ← Back to All Projects
+          &larr; Back to All Projects
         </button>
       </div>
     </div>
@@ -506,7 +513,6 @@ export default ProjectOverviewPage;
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 
-// Exporting API functions outside the component as they were originally
 export const projectOverviewApiMethods = {
   getProjectOverview: async projectIdentifier => {
     const response = await fetch(
