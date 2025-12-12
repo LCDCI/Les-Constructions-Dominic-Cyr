@@ -1,7 +1,7 @@
 // frontend/les_constructions_dominic_cyr/src/features/renovations/components/RenovationCard.jsx
 import React from 'react';
 import PropTypes from 'prop-types';
-import { usePageTranslations } from '../hooks/usePageTranslations';
+import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import './RenovationCard.css';
 
 const identityAssetResolver = (identifier) => (identifier ? identifier : '');
