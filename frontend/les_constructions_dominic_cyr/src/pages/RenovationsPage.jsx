@@ -127,14 +127,14 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
         <div className="renovations-page__grid">
           {renovations.map(
             ({
-              renovationIdentifier,
+              renovationId,
               beforeImageIdentifier,
               afterImageIdentifier,
               description,
             }) => (
               <RenovationCard
-                key={renovationIdentifier}
-                renovationIdentifier={renovationIdentifier}
+                key={renovationId}
+                renovationIdentifier={renovationId}
                 beforeImageIdentifier={beforeImageIdentifier}
                 afterImageIdentifier={afterImageIdentifier}
                 description={description}
