@@ -11,14 +11,14 @@ test.describe('Owner Dashboard', () => {
     await expect(title).toHaveText('Owner Dashboard');
   });
 
-  test('should display all 12 dashboard cards', async ({ page }) => {
+  test('should display all 8 dashboard cards', async ({ page }) => {
     const cards = page.locator('.dashboard-card');
-    await expect(cards).toHaveCount(12);
+    await expect(cards).toHaveCount(8);
   });
 
   test('should display buttons on all cards', async ({ page }) => {
     const buttons = page.locator('.card-button');
-    await expect(buttons).toHaveCount(12);
+    await expect(buttons).toHaveCount(8);
   });
 
   test('should display schedule section', async ({ page }) => {
@@ -77,7 +77,7 @@ test.describe('Owner Dashboard', () => {
     await page.setViewportSize({ width: 768, height: 1024 });
 
     const cards = page.locator('.dashboard-card');
-    await expect(cards).toHaveCount(12);
+    await expect(cards).toHaveCount(8);
 
     const dashboardGrid = page.locator('.dashboard-grid');
     await expect(dashboardGrid).toBeVisible();

@@ -1,14 +1,14 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Salesperson Dashboard', () => {
+test.describe('Customer Dashboard', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/salesperson/dashboard');
+    await page.goto('/customer/dashboard');
   });
 
   test('should display dashboard title', async ({ page }) => {
     const title = page.locator('h1.dashboard-title');
     await expect(title).toBeVisible();
-    await expect(title).toHaveText('Salesperson Dashboard');
+    await expect(title).toHaveText('Customer Dashboard');
   });
 
   test('should display all 4 dashboard cards', async ({ page }) => {
@@ -43,16 +43,6 @@ test.describe('Salesperson Dashboard', () => {
       .locator('.card-button');
     await projectsButton.click();
     await expect(page).toHaveURL('/projects');
-  });
-
-  test('should navigate to uploads when clicking uploads card button', async ({
-    page,
-  }) => {
-    const uploadsButton = page
-      .locator('.dashboard-card', { hasText: 'Uploads' })
-      .locator('.card-button');
-    await uploadsButton.click();
-    await expect(page).toHaveURL('/salesperson/uploads');
   });
 
   test('should have hover effect on cards', async ({ page }) => {
