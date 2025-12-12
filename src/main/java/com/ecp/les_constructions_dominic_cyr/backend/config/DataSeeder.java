@@ -5,6 +5,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Renovation.Renovation;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Renovation.RenovationRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,9 @@ public class DataSeeder {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
 
+    private record RenovationImages(String beforeImageId, String afterImageId) {
+    }
+
     @Autowired
     private ProjectRepository projectRepository;
 
@@ -26,6 +31,9 @@ public class DataSeeder {
 
     @Autowired
     private LotRepository lotRepository;
+
+    @Autowired
+    private RenovationRepository renovationRepository;
 
     private static final Map<String, String> PROJECT_IMAGES = Map.of(
             "proj-001-foresta", "dcada4a5-aa19-4346-934e-1e57bc0f9e1f",
@@ -39,6 +47,7 @@ public class DataSeeder {
         seedProjectImages();
         seedHouseImages();
         seedLotImages();
+        seedRenovationImages();
     }
 
     private void seedProjectImages() {
@@ -100,6 +109,34 @@ public class DataSeeder {
                     lot.setImageIdentifier(imageId);
                     lotRepository.save(lot);
                     log.info("Linked image to lot: {}", lotId);
+                }
+            }
+        });
+    }
+
+    private static final Map<String, RenovationImages> RENOVATION_IMAGES = Map.ofEntries(
+            Map.entry("78cc74d2-0dae-4be9-be91-d3750311da94",
+                    new RenovationImages("07fad321-c965-467e-8d98-fbb4dc4649b6",
+                            "892c936e-d311-4f06-96a5-4ad7bc974b98"))
+            // add other renovation IDs here
+    );
+
+    private void seedRenovationImages() {
+        RENOVATION_IMAGES.forEach((renovationId, imageIds) -> {
+            Renovation renovation = renovationRepository.findRenovationByRenovationIdentifier_RenovationId(renovationId);
+            if (renovation != null) {
+                boolean updated = false;
+                if (renovation.getBeforeImageIdentifier() == null || renovation.getBeforeImageIdentifier().isEmpty()) {
+                    renovation.setBeforeImageIdentifier(imageIds.beforeImageId);
+                    updated = true;
+                }
+                if (renovation.getAfterImageIdentifier() == null || renovation.getAfterImageIdentifier().isEmpty()) {
+                    renovation.setAfterImageIdentifier(imageIds.afterImageId);
+                    updated = true;
+                }
+                if (updated) {
+                    renovationRepository.save(renovation);
+                    log.info("Linked images to renovation: {}", renovationId);
                 }
             }
         });
