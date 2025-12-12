@@ -57,5 +57,18 @@
       "message": "Unable to load renovations. Please try again.",
       "retry": "Retry"
     }
+  },
+  "renovationCard": {
+    "labels": {
+      "identifier": "Identifier",
+      "cardType": "Renovation",
+      "description": "Description",
+      "descriptionFallback": "No description available"
+    },
+    "media": {
+      "before": "Before",
+      "after": "After",
+      "sectionLabel": "Renovation images"
+    }
   }
 }
