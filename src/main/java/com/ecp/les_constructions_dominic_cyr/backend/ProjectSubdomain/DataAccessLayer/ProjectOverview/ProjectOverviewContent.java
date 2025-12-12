@@ -62,6 +62,12 @@ public class ProjectOverviewContent {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "location_latitude")
+    private Double locationLatitude;
+
+    @Column(name = "location_longitude")
+    private Double locationLongitude;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

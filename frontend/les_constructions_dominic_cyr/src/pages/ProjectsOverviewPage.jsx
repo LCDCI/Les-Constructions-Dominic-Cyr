@@ -12,197 +12,12 @@ import {
 import { IoLeafOutline } from 'react-icons/io5';
 import { HiOutlineHomeModern } from 'react-icons/hi2';
 import '../styles/projectOverview.css';
-import '../styles/projectColors.css';
 import '../styles/overviewMap.css';
 
 const DEFAULT_COORDS = [45.31941496688032, -72.79945127353109];
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/v1';
-const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
-
-const LOTS_DATA = [
-  {
-    id: 16,
-    x: 27,
-    y: 39,
-    status: 'Vendu',
-    price: 120000,
-    description: 'Lot 16 - Côté ouest',
-  },
-  {
-    id: 17,
-    x: 37,
-    y: 43,
-    status: 'Disponible',
-    price: 135000,
-    description: 'Lot 17 - Près du ruisseau',
-  },
-  {
-    id: 18,
-    x: 27,
-    y: 46,
-    status: 'Réservé',
-    price: 125000,
-    description: 'Lot 18 - Bonne exposition',
-  },
-  {
-    id: 19,
-    x: 37,
-    y: 50,
-    status: 'Disponible',
-    price: 140000,
-    description: 'Lot 19 - Grand terrain',
-  },
-  {
-    id: 20,
-    x: 27,
-    y: 53,
-    status: 'Vendu',
-    price: 130000,
-    description: 'Lot 20 - Vendu rapidement',
-  },
-  {
-    id: 21,
-    x: 37,
-    y: 57,
-    status: 'Disponible',
-    price: 130000,
-    description: 'Lot 21 - Dernier disponible',
-  },
-  {
-    id: 22,
-    x: 58,
-    y: 69,
-    status: 'Disponible',
-    price: 110000,
-    description: 'Lot 22 - Petit prix',
-  },
-  {
-    id: 23,
-    x: 67,
-    y: 64,
-    status: 'Vendu',
-    price: 115000,
-    description: 'Lot 23 - Vendu',
-  },
-  {
-    id: 24,
-    x: 58,
-    y: 77,
-    status: 'Réservé',
-    price: 120000,
-    description: 'Lot 24 - Réservé',
-  },
-  {
-    id: 25,
-    x: 67,
-    y: 72,
-    status: 'Disponible',
-    price: 125000,
-    description: 'Lot 25 - Belle vue',
-  },
-];
-
-const LotMapInteractive = ({ lotImageSrc, lotsData }) => {
-  const [selectedLot, setSelectedLot] = useState(null);
-
-  const getLotColor = status => {
-    switch (status) {
-      case 'Vendu':
-        return 'var(--color-danger)';
-      case 'Réservé':
-        return 'var(--color-warning)';
-      case 'Disponible':
-        return 'var(--color-success)';
-      default:
-        return 'var(--color-primary)';
-    }
-  };
-
-  const handleClick = lot => {
-    setSelectedLot(lot);
-  };
-
-  const handleClosePopup = () => {
-    setSelectedLot(null);
-  };
-
-  return (
-    <div className="lot-map-container">
-      <div className="lot-map-wrapper">
-        <img
-          src={lotImageSrc}
-          alt="Plan de lotissement"
-          className="lot-map-image"
-        />
-
-        {lotsData.map(lot => (
-          <div
-            key={lot.id}
-            onClick={() => handleClick(lot)}
-            className="lot-marker"
-            style={{
-              left: `${lot.x}%`,
-              top: `${lot.y}%`,
-              backgroundColor: getLotColor(lot.status),
-            }}
-            title={`Lot ${lot.id}: ${lot.status}`}
-            role="button"
-            tabIndex="0"
-          >
-            <span className="lot-marker-label">{lot.id}</span>
-          </div>
-        ))}
-
-        {selectedLot && (
-          <div
-            className="lot-popup"
-            style={{
-              left: `${selectedLot.x + 3}%`,
-              top: `${selectedLot.y - 15}%`,
-            }}
-          >
-            <div className="lot-popup-header">
-              <h4 className="lot-popup-title">Lot #{selectedLot.id}</h4>
-              <button
-                className="lot-popup-close-btn"
-                onClick={handleClosePopup}
-              >
-                ×
-              </button>
-            </div>
-            <p>
-              <strong>Statut:</strong>{' '}
-              <span style={{ color: getLotColor(selectedLot.status) }}>
-                {selectedLot.status}
-              </span>
-            </p>
-            <p>
-              <strong>Prix:</strong>{' '}
-              {selectedLot.price ? `${selectedLot.price}$` : 'N/A'}
-            </p>
-            <p className="lot-popup-description">{selectedLot.description}</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-LotMapInteractive.propTypes = {
-  lotImageSrc: PropTypes.string.isRequired,
-  lotsData: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
-      status: PropTypes.string.isRequired,
-      price: PropTypes.number,
-      description: PropTypes.string,
-    })
-  ).isRequired,
-};
 
 export const projectOverviewApi = {
   getProjectOverview: async projectIdentifier => {
@@ -213,31 +28,6 @@ export const projectOverviewApi = {
       throw new Error('Failed to fetch project overview');
     }
     return response.json();
-  },
-
-  geocodeAddress: async address => {
-    if (!address) return null;
-
-    const params = new URLSearchParams({
-      q: address,
-      format: 'json',
-      limit: 1,
-    });
-
-    const response = await fetch(`${NOMINATIM_URL}?${params.toString()}`);
-
-    if (!response.ok) {
-      return null;
-    }
-
-    const data = await response.json();
-
-    if (data && data.length > 0) {
-      const { lat, lon } = data[0];
-      return [parseFloat(lat), parseFloat(lon)];
-    }
-
-    return null;
   },
 };
 
@@ -283,7 +73,7 @@ const LocationMap = ({ locationAddress, mapCoords, setShowModal }) => {
   const [mapKey, setMapKey] = useState(0);
 
   useEffect(() => {
-    if (mapCoords) {
+    if (mapCoords && mapCoords !== DEFAULT_COORDS) {
       setMapKey(prev => prev + 1);
     }
   }, [mapCoords]);
@@ -306,7 +96,7 @@ const LocationMap = ({ locationAddress, mapCoords, setShowModal }) => {
 
   const mapUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
   const attribution =
-    '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+    '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
 
   const usingDefault = mapCoords === null;
   const popupText = usingDefault
@@ -328,7 +118,7 @@ const LocationMap = ({ locationAddress, mapCoords, setShowModal }) => {
         setTimeout(() => mapInstance.invalidateSize(), 100);
       }}
     >
-      <MapController mapCoords={mapCoords} />
+      <MapController mapCoords={centerCoords} />
       <MapClickHandler onClick={handleMapClick} />
       <TileLayer attribution={attribution} url={mapUrl} />
       <Marker position={centerCoords}>
@@ -371,9 +161,9 @@ const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
             style={{ height: '100%', width: '100%' }}
             key={`modal-map-${locationAddress}`}
           >
-            <MapController mapCoords={mapCoords} />
+            <MapController mapCoords={centerCoords} />
             <TileLayer
-              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              attribution='© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <Marker position={centerCoords}>
@@ -414,7 +204,7 @@ const ProjectOverviewPage = () => {
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 
   useEffect(() => {
-    const fetchOverviewAndGeocode = async () => {
+    const fetchOverview = async () => {
       try {
         setLoading(true);
         const data =
@@ -422,11 +212,15 @@ const ProjectOverviewPage = () => {
         setOverview(data);
         setError(null);
 
-        if (data.locationAddress) {
-          const coords = await projectOverviewApi.geocodeAddress(
-            data.locationAddress
-          );
-          setMapCoords(coords);
+        if (data.locationLatitude && data.locationLongitude) {
+          const lat = parseFloat(data.locationLatitude);
+          const lng = parseFloat(data.locationLongitude);
+
+          if (!isNaN(lat) && !isNaN(lng)) {
+            setMapCoords([lat, lng]);
+          } else {
+            setMapCoords(null);
+          }
         } else {
           setMapCoords(null);
         }
@@ -437,7 +231,7 @@ const ProjectOverviewPage = () => {
       }
     };
 
-    fetchOverviewAndGeocode();
+    fetchOverview();
   }, [projectIdentifier]);
 
   const getImageUrl = imageIdentifier => {
@@ -446,9 +240,8 @@ const ProjectOverviewPage = () => {
   };
 
   const getProjectThemeClass = () => {
-    const projectName = overview?.projectName?.toLowerCase() || '';
-    if (projectName.includes('foresta')) return 'project-theme-foresta';
-    if (projectName.includes('panorama')) return 'project-theme-panorama';
+    // This function is no longer needed since we are using inline styles for colors
+    // based on DB data, making the theme class unnecessary for color application.
     return '';
   };
 
@@ -456,7 +249,6 @@ const ProjectOverviewPage = () => {
     const title = featureTitle?.toLowerCase() || '';
 
     switch (title) {
-      case 'landscape':
       case 'living environment':
         return IoLeafOutline;
       case 'new houses':
@@ -464,7 +256,7 @@ const ProjectOverviewPage = () => {
         return HiOutlineHomeModern;
       case 'energy efficiency':
         return IoLeafOutline;
-      case 'smart home technology':
+      case 'landscape':
         return IoLeafOutline;
       default:
     }
@@ -501,12 +293,33 @@ const ProjectOverviewPage = () => {
     );
   }
 
-  const themeClass = getProjectThemeClass();
-  const lotissementImage =
-    'frontend\\les_constructions_dominic_cyr\\public\\phase1_transparent.png';
+  // --- START COLOR DYNAMIC INJECTION ---
+  const projectStyles = {
+    // 1. Map buyerColor (Accent) to --buyer-color
+    '--buyer-color': overview.buyerColor || '#000000',
+
+    // 2. Map primaryColor (Secondary Accent/Text) to --primary-color
+    '--primary-color': overview.primaryColor || '#2c3e50',
+
+    // 3. Map tertiaryColor (Light Background/Secondary Accent) to both required variables
+    '--tertiary-color': overview.tertiaryColor || '#3498db',
+    '--background-color-tertiary': overview.tertiaryColor || '#f9f9f9',
+  };
+  // --- END COLOR DYNAMIC INJECTION ---
+
+  const finalMapCoords = mapCoords || DEFAULT_COORDS;
+
+  const isMapCoordsValid =
+    Array.isArray(finalMapCoords) &&
+    finalMapCoords.length === 2 &&
+    !isNaN(finalMapCoords[0]) &&
+    !isNaN(finalMapCoords[1]);
 
   return (
-    <div className={`project-overview-page ${themeClass}`}>
+    <div
+      className={`project-overview-page`}
+      style={projectStyles} // Apply dynamic styles here
+    >
       <section className="project-hero">
         <div className="hero-image-container">
           <img
@@ -571,19 +384,45 @@ const ProjectOverviewPage = () => {
         </section>
       )}
 
-      {/* NOUVELLE SECTION POUR LA CARTE DE LOTISSEMENT */}
-      <section className="project-section lotissement-section">
-        <div className="section-container">
-          <h2 className="section-title">Plan des Lots Disponibles</h2>
-          <div className="lot-map-section">
-            <LotMapInteractive
-              lotImageSrc={lotissementImage}
-              lotsData={LOTS_DATA}
-            />
+      {/* Lots section (assuming lots exist in the overview data) */}
+      {overview.lots && overview.lots.length > 0 && (
+        <section className="project-section lots-section">
+          <div className="section-container">
+            {overview.lotsSectionTitle && (
+              <h2 className="section-title">{overview.lotsSectionTitle}</h2>
+            )}
+            <div className="lots-grid">
+              {overview.lots.map((lot, index) => (
+                <div key={index} className="lot-card">
+                  <div className="lot-image-container">
+                    <img
+                      src={getImageUrl(lot.lotImageIdentifier)}
+                      alt={`Lot ${lot.lotLocation}`}
+                      className="lot-image"
+                    />
+                  </div>
+                  <div className="lot-details">
+                    <h3 className="lot-location">{lot.lotLocation}</h3>
+                    <div className="lot-info">
+                      <span className="lot-dimensions">
+                        {lot.lotDimensions}
+                      </span>
+                      <span className="lot-price">
+                        ${lot.lotPrice.toLocaleString()}
+                      </span>
+                    </div>
+                    <span
+                      className={`lot-status status-${lot.lotStatus.toLowerCase()}`}
+                    >
+                      {lot.lotStatus}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
-      {/* FIN NOUVELLE SECTION */}
+        </section>
+      )}
 
       {overview.locationDescription && (
         <section className="project-section location-section">
@@ -603,11 +442,12 @@ const ProjectOverviewPage = () => {
                   </div>
                 )}
               </div>
-              {overview.locationAddress && (
+
+              {overview.locationAddress && isMapCoordsValid && (
                 <div className="location-map">
                   <LocationMap
                     locationAddress={overview.locationAddress}
-                    mapCoords={mapCoords}
+                    mapCoords={finalMapCoords}
                     setShowModal={handleShowModal}
                   />
                 </div>
@@ -616,14 +456,16 @@ const ProjectOverviewPage = () => {
           </div>
         </section>
       )}
+      {isMapCoordsValid && (
+        <LocationModal
+          show={showModal}
+          handleClose={handleCloseModal}
+          mapCoords={finalMapCoords}
+          locationAddress={overview?.locationAddress}
+        />
+      )}
 
-      <LocationModal
-        show={showModal}
-        handleClose={handleCloseModal}
-        mapCoords={mapCoords}
-        locationAddress={overview?.locationAddress}
-      />
-
+      {/* Gallery Section Placeholder (add logic if overview.galleryImages exists) */}
       {overview.galleryImages && overview.galleryImages.length > 0 && (
         <section className="project-section gallery-section">
           <div className="section-container">
@@ -631,18 +473,15 @@ const ProjectOverviewPage = () => {
               <h2 className="section-title">{overview.gallerySectionTitle}</h2>
             )}
             <div className="gallery-grid">
-              {overview.galleryImages.map((image, index) => (
+              {overview.galleryImages.map((item, index) => (
                 <div key={index} className="gallery-item">
                   <img
-                    src={getImageUrl(image.imageIdentifier)}
-                    alt={image.imageCaption || `Gallery image ${index + 1}`}
+                    src={getImageUrl(item.imageIdentifier)}
+                    alt={item.caption || `Gallery image ${index + 1}`}
                     className="gallery-image"
-                    onError={e => {
-                      e.target.src = '/public/fallback.jpg';
-                    }}
                   />
-                  {image.imageCaption && (
-                    <p className="gallery-caption">{image.imageCaption}</p>
+                  {item.caption && (
+                    <p className="gallery-caption">{item.caption}</p>
                   )}
                 </div>
               ))}
@@ -664,3 +503,43 @@ const ProjectOverviewPage = () => {
 };
 
 export default ProjectOverviewPage;
+
+const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+
+// Exporting API functions outside the component as they were originally
+export const projectOverviewApiMethods = {
+  getProjectOverview: async projectIdentifier => {
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/overview`
+    );
+    if (!response.ok) {
+      throw new Error('Failed to fetch project overview');
+    }
+    return response.json();
+  },
+
+  geocodeAddress: async address => {
+    if (!address) return null;
+
+    const params = new URLSearchParams({
+      q: address,
+      format: 'json',
+      limit: 1,
+    });
+
+    const response = await fetch(`${NOMINATIM_URL}?${params.toString()}`);
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (data && data.length > 0) {
+      const { lat, lon } = data[0];
+      return [parseFloat(lat), parseFloat(lon)];
+    }
+
+    return null;
+  },
+};

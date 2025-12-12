@@ -43,10 +43,6 @@ public class ProjectOverviewServiceImpl implements ProjectOverviewService {
 
         List<ProjectGalleryImage> galleryImages = galleryImageRepository.findByProjectIdentifierOrderByDisplayOrderAsc(projectIdentifier);
 
-        List<Lot> lots = lotRepository.findAll().stream()
-                .filter(lot -> projectIdentifier.equals(project.getProjectIdentifier()))
-                .toList();
-
         ProjectOverviewResponseModel.ProjectOverviewResponseModelBuilder builder = ProjectOverviewResponseModel.builder()
                 .projectIdentifier(project.getProjectIdentifier())
                 .projectName(project.getProjectName())
@@ -56,8 +52,7 @@ public class ProjectOverviewServiceImpl implements ProjectOverviewService {
                 .buyerColor(project.getBuyerColor())
                 .imageIdentifier(project.getImageIdentifier())
                 .features(mapper.featuresToResponseModels(features))
-                .galleryImages(mapper.galleryImagesToResponseModels(galleryImages))
-                .lots(mapper.lotsToSummaryResponseModels(lots));
+                .galleryImages(mapper.galleryImagesToResponseModels(galleryImages));
 
         if (content != null) {
             builder.heroTitle(content.getHeroTitle())
