@@ -7,7 +7,7 @@ test.describe('Houses Page', () => {
   test.beforeEach(async ({ page }) => {
     housesPage = new HousesPage(page);
     await housesPage.goto();
-    await housesPage.waitForHousesToLoad();
+    await housesPage.isLoaded();
   });
 
   test('should filter houses when searching', async () => {
