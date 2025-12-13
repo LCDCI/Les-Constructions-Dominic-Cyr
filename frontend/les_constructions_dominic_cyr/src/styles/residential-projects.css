@@ -29,9 +29,7 @@
 }
 
 
-/* ----------------------------- */
-/* HEADER + SEARCH BAR           */
-/* ----------------------------- */
+
 .projects-header h1 {
     font-size: 2.8rem;
     font-weight: 700;
@@ -39,7 +37,6 @@
     color: var(--gris-fonce);
 }
 
-/* Search bar unchanged */
 .search-input {
     width: 100%;
     padding: 3% 5%;
@@ -54,20 +51,14 @@
     box-shadow: 0 4px 12px rgba(170, 178, 166, 0.25);
 }
 
-
-/* ----------------------------- */
-/* SECTIONED COLLAGE LAYOUT      */
-/* ----------------------------- */
-
-/* Each section has slightly different grid & spacing */
 .section-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
     gap: 3rem;
     margin-bottom: 6rem;
+    
 }
 
-/* Create slight variation between sections */
 .section-grid:nth-child(odd) {
     grid-auto-rows: 420px;
 }
@@ -75,7 +66,7 @@
     grid-auto-rows: 480px;
 }
 
-/* CARD BASE STYLE — LET THEM BE LARGER */
+
 .project-card {
     width: 100%;
     height: 100%;
@@ -88,7 +79,6 @@
     justify-content: space-between;
 }
 
-/* COLLAGE COLOR PATTERN */
 .project-card:nth-child(4n + 1) {
     background-color: var(--gris-pale);
     border-left: 12px solid var(--vert-de-gris);
@@ -157,11 +147,11 @@
 }
 
 .project-section:nth-child(odd) {
-  background: #d9dfd7; /* light sage */
+  background: #d9dfd7; 
 }
 
 .project-section:nth-child(even) {
-  background: #f5f7f4; /* off-white */
+  background: #f5f7f4; /
 }
 
 .project-section-inner {
@@ -172,10 +162,10 @@
   gap: 50px;
   position: relative;
 }
-/* Full-width alternating sections */
+
 .project-feature-section {
   width: 100%;
-  padding: 90px 0;
+  padding:1%
 }
 
 .project-feature-section.left {
@@ -186,48 +176,45 @@
   background: #f4f6f3;
 }
 
-/* Flex container for image/content */
 .project-feature-inner {
-  width: 80%;
+  width: 100%;
   margin: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 60px;
 }
 
-/* Alternate left/right layout */
 .project-feature-section.left .feature-image {
   order: 1;
+  color: var(--gris-fonce);
 }
 
 .project-feature-section.left .feature-content {
   order: 2;
+  color: var(--gris-fonce);
 }
 
 .project-feature-section.right .feature-image {
   order: 2;
+  color: var(--gris-fonce);
 }
 
 .project-feature-section.right .feature-content {
   order: 1;
+  color: var(--gris-fonce);
 }
 
-/* Image */
 .feature-image img {
   width: 100%;
   height: auto;
-  border-radius: 14px;
   object-fit: cover;
   box-shadow: 0 10px 35px rgba(0,0,0,0.15);
 }
 
-/* Text Card */
 .feature-content {
   background: white;
   padding: 5%;
   width: 100%;
-  border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.12);
 }
 
@@ -245,9 +232,8 @@ width:100%;
   margin-bottom: 35px;
 }
 
-/* Button */
 .feature-btn {
-  background: #4a78a8;
+  background: var(--vert-de-gris);
   color: white;
   padding: 14px 26px;
   border: none;
@@ -257,7 +243,7 @@ width:100%;
 }
 
 .feature-btn:hover {
-  background: #365c85;
+  background: var(--gris-fonce);
 }
 
 .section-left .project-section-image {

@@ -28,7 +28,6 @@
   background-color: var(--buyer-color);
   color: var(--background-color-white, white);
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.3s;
@@ -109,16 +108,8 @@
   background-color: var(--background-color-tertiary, #ffffff);
 }
 
-.lots-section {
-  background-color: var(--background-color-white, #ffffff);
-}
-
 .location-section {
   background-color: var(--background-color-tertiary, #ffffff);
-}
-
-.gallery-section {
-  background-color: var(--background-color-white, #ffffff);
 }
 
 .section-container {
@@ -134,7 +125,8 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   position: relative;
-  padding-bottom: 1rem;
+  padding-left: 2%;
+  padding-top: none;
 }
 
 .section-title::after {
@@ -152,34 +144,37 @@
   line-height: 1.8;
   color: var(--primary-color, #555);
   margin-bottom: 1.5rem;
+  margin-left: 2%;
 }
 
 .section-description {
   font-size: 1.125rem;
   line-height: 1.7;
   color: var(--primary-color, #666);
+  margin-left:2%;
 }
 
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2.5rem; /* Replaced % with fixed size for common CSS gap usage */
   margin-top: 3rem;
+  gap: 1.5rem;
 }
 
 .feature-card {
   background: var(--background-color-white, white);
   padding: 3rem 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1); /* Converted % to rem */
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: all 0.3s ease;
   border-top: 4px solid transparent;
+  width: 80%;
+  margin: 0 auto;
 }
 
 .feature-card:hover {
-  transform: translateY(-0.8rem); /* Converted % to rem */
-  box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.15); /* Converted % to rem */
+  transform: translateY(-0.8rem); 
+  box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.15); 
   border-top-color: var(--buyer-color);
 }
 
@@ -204,87 +199,6 @@
   color: var(--primary-color, #666);
 }
 
-.lots-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem; /* Replaced % with fixed size for common CSS gap usage */
-  margin-top: 3rem;
-}
-
-.lot-card {
-  background: var(--background-color-tertiary, white);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.1); /* Converted % to rem */
-  transition: all 0.3s ease;
-}
-
-.lot-card:hover {
-  transform: translateY(-0.5rem); /* Converted % to rem */
-  box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.15); /* Converted % to rem */
-}
-
-.lot-image-container {
-  width: 100%;
-  height: 250px;
-  overflow: hidden;
-  background-color: var(--primary-color);
-}
-
-.lot-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.lot-card:hover .lot-image {
-  transform: scale(1.1);
-}
-
-.lot-details {
-  padding: 1.5rem;
-}
-
-.lot-location {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--buyer-color);
-  margin-bottom: 1rem;
-}
-
-.lot-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
-  border-top: 1px solid var(--tertiary-color);
-  border-bottom: 1px solid var(--tertiary-color);
-  margin-bottom: 1rem;
-}
-
-.lot-dimensions {
-  font-size: 0.95rem;
-  color: var(--primary-color, #666);
-  font-weight: 500;
-}
-
-.lot-price {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--buyer-color);
-}
-
-.lot-status {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
 .status-available {
   background-color: var(--buyer-color);
   color: var(--background-color-white, white);
@@ -303,23 +217,24 @@
 .location-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem; /* Replaced % with fixed size for common CSS gap usage */
+  gap: 4rem; 
   margin-top: 3rem;
   align-items: start;
+  margin-left: 2%;
 }
 
 .location-text {
   display: flex;
   flex-direction: column;
-  gap: 2rem; /* Replaced % with fixed size for common CSS gap usage */
+  gap: 2rem; 
 }
 
 .location-address {
   background: var(--background-color-white, white);
   padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.08); /* Converted % to rem */
+  box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.08); 
   border-left: 5px solid var(--buyer-color);
+  margin-right: none;
 }
 
 .location-address strong {
@@ -340,12 +255,66 @@
 .location-map {
   height: 450px;
   width: 100%;
-  border-radius: 8px;
+  padding: 10%;
   overflow: hidden;
-  box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.15); /* Converted % to rem */
-  border: 3px solid var(--buyer-color);
+  box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.15); 
+  border: 2px solid var(--buyer-color);
   position: relative;
 }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-container {
+  background: white;
+  width: 90%;
+  max-width: 900px;       /* 👈 prevents giant modal */
+  max-height: 90vh;       /* 👈 keeps it on screen */
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-body {
+  flex: 1;              
+  min-height: 300px;
+}
+
+.modal-footer {
+  padding: 1rem;
+  border-top: 1px solid #ddd;
+  text-align: right;
+}
+
 
 .leaflet-container {
   height: 100% !important;
@@ -367,49 +336,9 @@
   height: 256px;
 }
 
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2rem; /* Replaced % with fixed size for common CSS gap usage */
-  margin-top: 3rem;
-}
-
-.gallery-item {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 0.4rem 1.5rem rgba(0, 0, 0, 0.1); /* Converted % to rem */
-  transition: all 0.3s ease;
-  background: var(--background-color-tertiary, white);
-}
-
-.gallery-item:hover {
-  transform: translateY(-0.5rem); /* Converted % to rem */
-  box-shadow: 0 0.8rem 2.5rem rgba(0, 0, 0, 0.15); /* Converted % to rem */
-}
-
-.gallery-image {
-  width: 100%;
-  height: 350px;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s ease;
-}
-
-.gallery-item:hover .gallery-image {
-  transform: scale(1.1);
-}
-
-.gallery-caption {
-  font-size: 1rem;
-  padding: 1rem;
-  text-align: center;
-  color: var(--primary-color);
-}
-
 .back-button-container {
   text-align: center;
-  padding: 3rem 0; /* Converted % to rem */
+  padding: 3rem 0;
 }
 
 .back-button {
@@ -417,7 +346,6 @@
   background-color: var(--buyer-color);
   color: var(--background-color-white, white);
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
   transition: background-color 0.3s;
@@ -445,7 +373,7 @@
   }
   .location-content {
     grid-template-columns: 1fr;
-    gap: 2rem; /* Replaced % with fixed size for consistency */
+    gap: 2rem;
   }
   .location-map {
     height: 350px;
