@@ -26,6 +26,22 @@ spring:
     init:
       mode: never
 
+auth0:
+  domain: test-domain.auth0.com
+  mgmt:
+    client-id: test-client-id
+    client-secret: test-client-secret
+  db-connection: Username-Password-Authentication
+  role:
+    contractor: test-contractor-role-id
+    customer: test-customer-role-id
+    salesperson: test-salesperson-role-id
+    owner: test-owner-role-id
+
+app:
+  invite:
+    result-url: http://localhost:3000/invite-result
+
 logging:
   level:
     root: INFO
