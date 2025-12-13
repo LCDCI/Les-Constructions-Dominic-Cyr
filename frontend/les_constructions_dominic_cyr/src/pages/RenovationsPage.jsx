@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { FiTool, FiHome, FiRefreshCw, FiTrendingUp, FiShield, FiClock } from 'react-icons/fi';
+import { FiTool, FiRefreshCw, FiShield } from 'react-icons/fi';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 import { fetchRenovations } from '../features/renovations/api/renovations';
 import RenovationCard from '../features/renovations/components/RenovationCard';
