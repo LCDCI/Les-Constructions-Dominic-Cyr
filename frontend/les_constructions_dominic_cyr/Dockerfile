@@ -6,7 +6,7 @@ WORKDIR /app
 
 # copy package files for deterministic install
 COPY package*.json ./
-RUN npm ci --silent
+RUN npm ci 
 
 # copy source and build
 COPY . .

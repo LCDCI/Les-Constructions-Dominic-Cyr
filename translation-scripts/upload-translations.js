@@ -5,9 +5,10 @@
  *   node upload-translations.js [pageName]
  * 
  * Examples:
- *   node upload-translations.js home      # Upload home_en.json and home_fr.json
- *   node upload-translations.js projects # Upload projects_en.json and projects_fr.json
- *   node upload-translations.js         # Defaults to 'home'
+ *   node upload-translations.js home        # Upload home_en.json and home_fr.json
+ *   node upload-translations.js projects    # Upload projects_en.json and projects_fr.json
+ *   node upload-translations.js renovations # Upload renovations_en.json and renovations_fr.json
+ *   node upload-translations.js             # Defaults to 'home'
  * 
  * Make sure the file service is running on http://localhost:8082
  */
