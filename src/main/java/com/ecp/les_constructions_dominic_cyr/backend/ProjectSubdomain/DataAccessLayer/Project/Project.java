@@ -1,9 +1,11 @@
-package com.ecp. les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "projects")
@@ -42,16 +44,25 @@ public class Project {
     @Column(nullable = false)
     private String buyerColor;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String buyerName;
 
     private String imageIdentifier;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String customerId;
 
-    @Column(nullable = false)
+    // Legacy column - kept temporarily for database migration compatibility
+    // This field is not used by the application but prevents constraint errors
+    // Hibernate will attempt to make this nullable when ddl-auto: update runs
+    @Column(name = "lot_identifier", nullable = true, insertable = true, updatable = false)
+    @Deprecated
     private String lotIdentifier;
+
+    @ElementCollection
+    @CollectionTable(name = "project_lots", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "lot_identifier", nullable = false)
+    private List<String> lotIdentifiers = new ArrayList<>();
 
     private Integer progressPercentage;
 
@@ -63,7 +74,12 @@ public class Project {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime. now();
+        updatedAt = LocalDateTime.now();
+        // Set legacy lotIdentifier to empty string to satisfy NOT NULL constraint during migration
+        // This will be removed once the column is dropped
+        if (lotIdentifier == null) {
+            lotIdentifier = "";
+        }
     }
 
     @PreUpdate
