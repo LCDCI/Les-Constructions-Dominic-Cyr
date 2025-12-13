@@ -137,3 +137,11 @@ FOREIGN KEY (project_identifier) REFERENCES projects(project_identifier) ON DELE
 
 CREATE INDEX idx_project_features_identifier ON project_features(project_identifier);
 CREATE INDEX idx_project_gallery_identifier ON project_gallery_images(project_identifier);
+DROP TABLE IF EXISTS renovations;
+CREATE TABLE renovations (
+            id SERIAL PRIMARY KEY,
+            renovation_identifier VARCHAR(255) NOT NULL,
+            before_image_identifier VARCHAR(255),
+            after_image_identifier VARCHAR(255),
+            description TEXT NOT NULL
+);

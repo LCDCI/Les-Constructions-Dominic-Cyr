@@ -1,0 +1,194 @@
+:root {
+    --rcd-text-primary: #f1f5f9;
+    --rcd-text-secondary: #cbd5f5;
+    --rcd-accent: linear-gradient(120deg, #facc15, #fbbf24);
+}
+
+.renovation-card {
+    flex-direction: row;
+    gap: 1rem;
+    margin: 1% auto;
+    padding: 1.75rem;
+    border-radius: 24px;
+    margin-left: 1.5rem 8%;
+    background: var(--rcd-card-bg);
+    border: 1px solid var(--rcd-border);
+    box-shadow: var(--rcd-card-shadow);
+    backdrop-filter: blur(18px);
+    color: var(--rcd-text-primary);
+}
+
+.renovation-card__content {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 1.25rem;
+    align-items: center;
+}
+
+.renovation-card__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    color: black;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.renovation-card__header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.renovation-card__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.08);
+    color: black;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.renovation-card__title {
+    margin: 0.35rem 0 0.25rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.renovation-card__subtitle {
+    margin: 0.2rem 0 0;
+    color: var(--rcd-text-secondary);
+    font-size: 0.95rem;
+}
+
+.renovation-card__cta {
+    border: none;
+    cursor: pointer;
+    border-radius: 999px;
+    padding: 0.65rem 1.4rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #0f172a;
+    background: var(--rcd-accent);
+    box-shadow: 0 6px 20px rgba(250, 204, 21, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.renovation-card__cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(250, 204, 21, 0.45);
+}
+
+.renovation-card__media-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(160px, 1fr));
+    gap: 0.85rem;
+}
+
+.renovation-card__figure {
+    position: relative;
+    overflow: hidden;
+    border-radius: 18px;
+    border: 1px solid rgb(252, 252, 252);
+    background: var(--rcd-bg);
+}
+
+.renovation-card__image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+}
+
+.renovation-card__figure:hover .renovation-card__image {
+    transform: scale(1.05);
+}
+
+.renovation-card__caption {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0.85rem;
+    padding: 0.25rem 0.8rem;
+    border-radius: 999px;
+    background: rgb(0, 0, 0);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.renovation-card__description {
+    margin: 0;
+    line-height: 1.6;
+    color: #000000;
+}
+
+.renovation-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.renovation-card__tag {
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    background: rgba(148, 163, 184, 0.16);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.renovation-card__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    margin: 0;
+}
+
+.renovation-card__stat-item {
+    padding: 0.75rem;
+    border-radius: 16px;
+    border: 1px solid var(--rcd-border);
+    background: var(--rcd-bg);
+}
+
+.renovation-card__stat-label {
+    margin: 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+}
+
+.renovation-card__stat-value {
+    margin: 0.3rem 0 0;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+@media (max-width: 640px) {
+    .renovation-card {
+        padding: 1.25rem;
+        border-radius: 18px;
+        gap: 1.25rem;
+    }
+
+    .renovation-card__content {
+        grid-template-columns: 1fr;
+    }
+
+    .renovation-card__image {
+        height: 180px;
+    }
+
+    .renovation-card__media-grid {
+        grid-template-columns: 1fr;
+    }
+}

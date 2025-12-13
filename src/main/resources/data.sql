@@ -26,6 +26,9 @@ VALUES
 ('37a029c3-0e4b-1f6d-5d7c-8e9f0a1b2c3d', 'Country-Style Bungalow', 'Saint-Hyacinthe, QC', 'Charming country bungalow on a generous lot with mature landscaping, modern amenities, and tranquil rural setting.', 6, 3, 2, 2021);
 
 
+-- data for renovations
+INSERT INTO renovations (renovation_identifier, description) VALUES ('78cc74d2-0dae-4be9-be91-d3750311da94', 'This renovation includes a complete kitchen remodel with new cabinets, countertops, and appliances, as well as updated flooring throughout the main living areas.');
+-- data for footer
 INSERT INTO footer_content (section, label, value, display_order) VALUES
 ('contact', 'name', 'Isabelle Misiazeck', 1),
 ('contact', 'phone', '514-123-4567', 2),
