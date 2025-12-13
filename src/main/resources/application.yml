@@ -1,0 +1,55 @@
+# Default Spring Profile
+server:
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    com.ecp: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# for docker
+
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  datasource:
+    url: jdbc:postgresql://postgres1/cdc-db
+    username: ${DB_USERNAME:user}
+    password: ${DB_PASSWORD:pwd}
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update   # use create to allow JPA to auto-generate from Entity classes; use none to use
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        auto-quote-keyword: true
+
+  defer-datasource-initialization: true
+
+  sql:
+    init:
+      platform: psql
+      mode: always
+
+server.port: 8080
+
+spring.datasource.hikari.initializationFailTimeout: 60000
+
+files:
+  service:
+    base-url: http://localhost:8082
+
+# DeepL API Configuration (for PDF translation)
+deepl:
+  api:
+    key: ${DEEPL_API_KEY:}
+    free: true
+    url: https://api-free.deepl.com/v2
