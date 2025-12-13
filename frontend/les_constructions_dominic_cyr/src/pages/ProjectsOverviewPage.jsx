@@ -43,8 +43,7 @@ const MapController = ({ mapCoords }) => {
       setTimeout(() => map.invalidateSize(), 500),
     ];
     if (mapCoords) {
-      const newCenter = mapCoords || DEFAULT_COORDS;
-      map.setView(newCenter, map.getZoom());
+      map.setView(mapCoords, map.getZoom());
     }
 
     return () => timeouts.forEach(clearTimeout);
