@@ -89,6 +89,7 @@ public class ProjectRepositoryIntegrationTest {
         completedProject.setBuyerName("Buyer");
         completedProject.setCustomerId("cust-002");
         completedProject.setLotIdentifier("lot-002");
+        completedProject.setImageIdentifier("image-002");
         projectRepository.save(completedProject);
 
         List<Project> inProgressProjects = projectRepository.findByStatus(ProjectStatus.IN_PROGRESS);
@@ -189,6 +190,7 @@ public class ProjectRepositoryIntegrationTest {
         secondProject.setBuyerName("Buyer");
         secondProject. setCustomerId("cust-002");
         secondProject.setLotIdentifier("lot-002");
+        secondProject.setImageIdentifier("image-002");
         projectRepository.save(secondProject);
 
         List<Project> all = projectRepository. findAll();
