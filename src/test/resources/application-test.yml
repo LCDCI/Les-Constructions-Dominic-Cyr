@@ -6,11 +6,10 @@ spring:
   application:
     name: les_constructions_dominic_cyr
 
-  spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/testdb
-    username: postgres
-    password: postgres
+    username: test
+    password: test
     driver-class-name: org.postgresql.Driver
 
   jpa:
