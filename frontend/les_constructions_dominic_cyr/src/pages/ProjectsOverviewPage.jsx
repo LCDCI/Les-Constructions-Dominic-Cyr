@@ -11,6 +11,7 @@ import {
 } from 'react-leaflet';
 import { IoLeafOutline } from 'react-icons/io5';
 import { HiOutlineHomeModern } from 'react-icons/hi2';
+import { LuMapPinned } from 'react-icons/lu';
 import '../styles/projectOverview.css';
 import '../styles/overviewMap.css';
 
@@ -257,12 +258,6 @@ const ProjectOverviewPage = () => {
         document.documentElement.style.removeProperty('--buyer-color');
         document.documentElement.style.removeProperty('--primary-color');
         document.documentElement.style.removeProperty('--tertiary-color');
-        document.documentElement.style.removeProperty(
-          '--background-color-white'
-        );
-        document.documentElement.style.removeProperty(
-          '--background-color-tertiary'
-        );
         document.documentElement.style.removeProperty('--text-primary');
         document.documentElement.style.removeProperty('--text-secondary');
       }
@@ -274,10 +269,6 @@ const ProjectOverviewPage = () => {
     return `${filesServiceUrl}/files/${imageIdentifier}`;
   };
 
-  const getProjectThemeClass = () => {
-    return '';
-  };
-
   const getFeatureIcon = featureTitle => {
     const title = featureTitle?.toLowerCase() || '';
 
@@ -285,15 +276,27 @@ const ProjectOverviewPage = () => {
       case 'living environment':
         return IoLeafOutline;
       case 'new houses':
-      case 'lots':
         return HiOutlineHomeModern;
-      case 'energy efficiency':
-        return IoLeafOutline;
-      case 'landscape':
-        return IoLeafOutline;
+      case 'lots':
+        return LuMapPinned;
       default:
     }
     return IoLeafOutline;
+  };
+
+  const getFeaturePath = featureTitle => {
+    const title = featureTitle?.toLowerCase() || '';
+
+    switch (title) {
+      case 'living environment':
+        return 'living-environment';
+      case 'new houses':
+        return 'houses';
+      case 'lots':
+        return 'lots';
+      default:
+        return null;
+    }
   };
 
   if (loading) {
@@ -380,9 +383,30 @@ const ProjectOverviewPage = () => {
             <div className="features-grid">
               {overview.features.map((feature, index) => {
                 const IconComponent = getFeatureIcon(feature.featureTitle);
+                const path = getFeaturePath(feature.featureTitle);
+                const isClickable = !!path;
+
+                const handleClick = () => {
+                  if (isClickable) {
+                    //Ideal solution, but we do not have houses or living environment per project for the pages
+                    //navigate(`/${projectIdentifier}/${path}`);
+                    navigate(`/${path}`);
+                  }
+                };
 
                 return (
-                  <div key={index} className="feature-card">
+                  <div
+                    key={index}
+                    className={`feature-card ${isClickable ? 'clickable-card' : ''}`}
+                    onClick={handleClick}
+                    role={isClickable ? 'button' : undefined}
+                    tabIndex={isClickable ? 0 : undefined}
+                    onKeyDown={e => {
+                      if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+                        handleClick();
+                      }
+                    }}
+                  >
                     <IconComponent className="feature-icon" />
                     <h3 className="feature-title">{feature.featureTitle}</h3>
                     {feature.featureDescription && (
@@ -474,35 +498,13 @@ const ProjectOverviewPage = () => {
           locationAddress={overview?.locationAddress}
         />
       )}
-      {overview.galleryImages && overview.galleryImages.length > 0 && (
-        <section className="project-section gallery-section">
-          <div className="section-container">
-            {overview.gallerySectionTitle && (
-              <h2 className="section-title">{overview.gallerySectionTitle}</h2>
-            )}
-            <div className="gallery-grid">
-              {overview.galleryImages.map((item, index) => (
-                <div key={index} className="gallery-item">
-                  <img
-                    src={getImageUrl(item.imageIdentifier)}
-                    alt={item.caption || `Gallery image ${index + 1}`}
-                    className="gallery-image"
-                  />
-                  {item.caption && (
-                    <p className="gallery-caption">{item.caption}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+
       <div className="back-button-container">
         <button
           className="back-button"
           onClick={() => navigate('/residential-projects')}
         >
-          &larr; Back to All Projects
+          &larr; Back to Residential Projects
         </button>
       </div>
     </div>
