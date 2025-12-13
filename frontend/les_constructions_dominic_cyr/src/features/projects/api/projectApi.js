@@ -1,5 +1,6 @@
+// Use relative path to leverage Vite proxy
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/v1';
+  import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 const FILES_SERVICE_BASE_URL =
   import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
@@ -33,17 +34,45 @@ export const projectApi = {
   },
 
   createProject: async projectData => {
-    const response = await fetch(`${API_BASE_URL}/projects`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(projectData),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to create project');
+    try {
+      const response = await fetch(`${API_BASE_URL}/projects`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(projectData),
+      });
+      
+      if (!response.ok) {
+        let errorMessage = `Failed to create project (${response.status})`;
+        // Read response as text first, then try to parse as JSON
+        const errorText = await response.text();
+        if (errorText) {
+          try {
+            const errorData = JSON.parse(errorText);
+            if (errorData.message) {
+              errorMessage = errorData.message;
+            } else if (errorData.error) {
+              errorMessage = errorData.error;
+            } else {
+              errorMessage = errorText;
+            }
+          } catch (e) {
+            // If not valid JSON, use the text as error message
+            errorMessage = errorText;
+          }
+        }
+        const error = new Error(errorMessage);
+        error.status = response.status;
+        throw error;
+      }
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Could not connect to server. Please check if the backend is running.');
+      }
+      throw error;
     }
-    return response.json();
   },
 
   updateProject: async (projectIdentifier, projectData) => {
