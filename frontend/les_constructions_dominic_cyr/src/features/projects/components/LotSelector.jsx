@@ -104,10 +104,29 @@ const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) 
       setNewLotImagePreviewUrl(null);
       return;
     }
-    setCreateError(null);
-    setNewLotImageFile(file);
-    const url = URL.createObjectURL(file);
-    setNewLotImagePreviewUrl(url);
+    // Additional validation: check file is a real image by loading with FileReader and Image
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new window.Image();
+      img.onload = () => {
+        setCreateError(null);
+        setNewLotImageFile(file);
+        const url = URL.createObjectURL(file);
+        setNewLotImagePreviewUrl(url);
+      };
+      img.onerror = () => {
+        setCreateError('Uploaded file is not a valid image.');
+        setNewLotImageFile(null);
+        setNewLotImagePreviewUrl(null);
+      };
+      img.src = e.target.result;
+    };
+    reader.onerror = () => {
+      setCreateError('Failed to read image file.');
+      setNewLotImageFile(null);
+      setNewLotImagePreviewUrl(null);
+    };
+    reader.readAsDataURL(file);
   };
 
   const filteredLots = availableLots.filter(lot =>
