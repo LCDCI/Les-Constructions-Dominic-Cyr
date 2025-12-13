@@ -5,6 +5,9 @@ import ReactDOM from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App';
 import './utils/i18n'; 
+import './styles/global.css';
+import './utils/i18n'; // Initialize i18n
+import './utils/setupImageFallback';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <Auth0Provider
