@@ -5,15 +5,15 @@ import { fetchPageTranslations } from '../utils/translationApi';
 /**
  * Custom hook for page-specific translations.
  * Automatically loads and manages translations for a specific page/namespace.
- * 
+ *
  * @param {string} pageName - The page name (e.g., 'home', 'projects')
  * @returns {Object} Object containing the translation function and loading state
- * 
+ *
  * @example
  * const { t, isLoading } = usePageTranslations('home');
  * return <h1>{t('title')}</h1>;
  */
-export const usePageTranslations = (pageName) => {
+export const usePageTranslations = pageName => {
   const { i18n: i18nInstance } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -28,8 +28,11 @@ export const usePageTranslations = (pageName) => {
     const loadPageTranslations = async () => {
       // Check if translations are already loaded for this namespace
       const namespace = pageName;
-      const hasResources = i18nInstance.hasResourceBundle(currentLanguage, namespace);
-      
+      const hasResources = i18nInstance.hasResourceBundle(
+        currentLanguage,
+        namespace
+      );
+
       if (hasResources) {
         setIsInitialized(true);
         return;
@@ -38,13 +41,24 @@ export const usePageTranslations = (pageName) => {
       setIsLoading(true);
       try {
         // Fetch translations for the current language
-        const translations = await fetchPageTranslations(pageName, currentLanguage);
-        
+        const translations = await fetchPageTranslations(
+          pageName,
+          currentLanguage
+        );
+
         if (translations && Object.keys(translations).length > 0) {
           // Add translations as a new namespace
-          i18nInstance.addResourceBundle(currentLanguage, namespace, translations, true, true);
-          console.log(`[usePageTranslations] Loaded translations for ${pageName} (${currentLanguage})`);
-          
+          i18nInstance.addResourceBundle(
+            currentLanguage,
+            namespace,
+            translations,
+            true,
+            true
+          );
+          console.log(
+            `[usePageTranslations] Loaded translations for ${pageName} (${currentLanguage})`
+          );
+
           // Also add nav and footer to 'translation' namespace so they're globally available
           const globalTranslations = {};
           if (translations.nav) {
@@ -54,16 +68,29 @@ export const usePageTranslations = (pageName) => {
             globalTranslations.footer = translations.footer;
           }
           if (Object.keys(globalTranslations).length > 0) {
-            i18nInstance.addResourceBundle(currentLanguage, 'translation', globalTranslations, true, true);
-            console.log(`[usePageTranslations] Added nav/footer to 'translation' namespace for ${currentLanguage}`);
+            i18nInstance.addResourceBundle(
+              currentLanguage,
+              'translation',
+              globalTranslations,
+              true,
+              true
+            );
+            console.log(
+              `[usePageTranslations] Added nav/footer to 'translation' namespace for ${currentLanguage}`
+            );
           }
         } else {
-          console.warn(`[usePageTranslations] No translations found for ${pageName} (${currentLanguage})`);
+          console.warn(
+            `[usePageTranslations] No translations found for ${pageName} (${currentLanguage})`
+          );
         }
-        
+
         setIsInitialized(true);
       } catch (error) {
-        console.error(`[usePageTranslations] Error loading translations for ${pageName}:`, error);
+        console.error(
+          `[usePageTranslations] Error loading translations for ${pageName}:`,
+          error
+        );
       } finally {
         setIsLoading(false);
       }
@@ -78,10 +105,19 @@ export const usePageTranslations = (pageName) => {
       const loadForNewLanguage = async () => {
         setIsLoading(true);
         try {
-          const translations = await fetchPageTranslations(pageName, currentLanguage);
+          const translations = await fetchPageTranslations(
+            pageName,
+            currentLanguage
+          );
           if (translations && Object.keys(translations).length > 0) {
-            i18nInstance.addResourceBundle(currentLanguage, pageName, translations, true, true);
-            
+            i18nInstance.addResourceBundle(
+              currentLanguage,
+              pageName,
+              translations,
+              true,
+              true
+            );
+
             // Also add nav and footer to 'translation' namespace
             const globalTranslations = {};
             if (translations.nav) {
@@ -91,16 +127,25 @@ export const usePageTranslations = (pageName) => {
               globalTranslations.footer = translations.footer;
             }
             if (Object.keys(globalTranslations).length > 0) {
-              i18nInstance.addResourceBundle(currentLanguage, 'translation', globalTranslations, true, true);
+              i18nInstance.addResourceBundle(
+                currentLanguage,
+                'translation',
+                globalTranslations,
+                true,
+                true
+              );
             }
           }
         } catch (error) {
-          console.error(`[usePageTranslations] Error reloading translations:`, error);
+          console.error(
+            `[usePageTranslations] Error reloading translations:`,
+            error
+          );
         } finally {
           setIsLoading(false);
         }
       };
-      
+
       loadForNewLanguage();
     }
   }, [currentLanguage, pageName, isInitialized, i18nInstance]);
@@ -119,4 +164,3 @@ export const usePageTranslations = (pageName) => {
 };
 
 export default usePageTranslations;
-

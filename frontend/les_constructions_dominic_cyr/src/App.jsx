@@ -17,6 +17,8 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
+import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
+import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
 import RenovationsPage from './pages/RenovationsPage';
 import './App.css';
 
@@ -44,6 +46,10 @@ export default function App() {
               element={<SalespersonDashboard />}
             />
             <Route
+              path="/residential-projects"
+              element={<ResidentialProjectsPage />}
+            />
+            <Route
               path="/contractor/dashboard"
               element={<ContractorDashboard />}
             />
@@ -54,6 +60,10 @@ export default function App() {
             <Route
               path="/projects/:projectId/photos"
               element={<ProjectPhotosPage />}
+            />
+            <Route
+              path="/projects/:projectIdentifier/overview"
+              element={<ProjectsOverviewPage />}
             />
           </Routes>
         </main>
