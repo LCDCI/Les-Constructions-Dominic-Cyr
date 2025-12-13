@@ -1,0 +1,110 @@
+/* Section pour la carte de lotissement */
+.lotissement-section {
+    padding: 40px 0;
+    /* Ajoutez d'autres styles de section si nécessaire */
+}
+
+.lot-map-section {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Conteneur principal - essentiel pour position: relative */
+.lot-map-container {
+    max-width: 900px; /* Adaptez à la largeur de votre image */
+    width: 100%;
+}
+
+.lot-map-wrapper {
+    position: relative; /* Point d'ancrage pour les marqueurs absolus */
+    width: 100%;
+    /* Empêche les marqueurs de déborder si l'image est plus petite que le conteneur */
+    overflow: hidden; 
+}
+
+/* Image du lotissement */
+.lot-map-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Marqueur de lot interactif */
+.lot-marker {
+    position: absolute;
+    width: 24px; /* Taille du point */
+    height: 24px;
+    border-radius: 50%;
+    border: 3px solid white; /* Contour blanc pour la visibilité */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    /* Centrage parfait du marqueur par rapport aux coordonnées (x,y) */
+    transform: translate(-50%, -50%); 
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.lot-marker:hover,
+.lot-marker:focus {
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    z-index: 10; /* Assure que le marqueur survolé est au-dessus */
+}
+
+.lot-marker-label {
+    /* Le numéro du lot peut être stylisé ici si besoin */
+    pointer-events: none; /* Permet de cliquer sur le parent sans interférence */
+}
+
+/* Popup des détails du lot */
+.lot-popup {
+    position: absolute;
+    background-color: white;
+    color: #333;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    width: 200px; /* Largeur de la popup */
+    z-index: 20; /* Toujours au-dessus des marqueurs */
+    font-size: 14px;
+    text-align: left;
+}
+
+.lot-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+
+.lot-popup-title {
+    margin: 0;
+    font-size: 16px;
+}
+
+.lot-popup-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    color: #999;
+}
+
+.lot-popup p {
+    margin: 3px 0;
+}
+
+.lot-popup-description {
+    font-style: italic;
+    font-size: 13px;
+    margin-top: 8px;
+}

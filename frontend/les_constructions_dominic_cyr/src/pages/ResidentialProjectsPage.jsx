@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import '../styles/projects.css';
+import { useNavigate } from 'react-router-dom';
+import '../styles/residential-projects.css';
 
-const ProjectsPage = () => {
+const ResidentialProjectsPage = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,7 +51,7 @@ const ProjectsPage = () => {
   };
 
   const handleViewProject = projectIdentifier => {
-    window.location.href = `/projects/${projectIdentifier}`;
+    navigate(`/projects/${projectIdentifier}/overview`);
   };
 
   if (loading) {
@@ -65,7 +67,7 @@ const ProjectsPage = () => {
       <div className="projects-content">
         <div className="projects-container">
           <div className="projects-header">
-            <h1>Projects</h1>
+            <h1>Residential Projects</h1>
           </div>
 
           <div className="projects-filter">
@@ -81,33 +83,46 @@ const ProjectsPage = () => {
           </div>
 
           <div className="projects-grid">
-            {filteredProjects.length > 0 ? (
-              filteredProjects.map(project => (
-                <div key={project.projectIdentifier} className="project-card">
-                  <div className="project-image-container">
-                    <img
-                      src={getImageUrl(project.imageIdentifier)}
-                      alt={project.projectName}
-                      className="project-image"
-                    />
-                  </div>
-                  <h2 className="project-title">{project.projectName}</h2>
-                  <p className="project-description">
-                    {project.projectDescription}
-                  </p>
-                  <button
-                    className="project-button"
-                    onClick={() => handleViewProject(project.projectIdentifier)}
-                  >
-                    View this project
-                  </button>
+            <div>
+              {filteredProjects.length > 0 ? (
+                filteredProjects.map((project, index) => {
+                  const isLeftLayout = index % 2 === 0;
+
+                  return (
+                    <section
+                      key={project.projectIdentifier}
+                      className={`project-feature-section ${isLeftLayout ? 'left' : 'right'}`}
+                    >
+                      <div className="project-feature-inner">
+                        <div className="feature-image">
+                          <img
+                            src={getImageUrl(project.imageIdentifier)}
+                            alt={project.projectName}
+                          />
+                        </div>
+                        <div className="feature-content">
+                          <h2>{project.projectName}</h2>
+                          <p>{project.projectDescription}</p>
+
+                          <button
+                            className="feature-btn"
+                            onClick={() =>
+                              handleViewProject(project.projectIdentifier)
+                            }
+                          >
+                            View this project
+                          </button>
+                        </div>
+                      </div>
+                    </section>
+                  );
+                })
+              ) : (
+                <div className="no-results">
+                  <p>No projects found matching “{searchTerm}”</p>
                 </div>
-              ))
-            ) : (
-              <div className="no-results">
-                <p>No projects found matching &quot;{searchTerm}&quot;</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -115,4 +130,4 @@ const ProjectsPage = () => {
   );
 };
 
-export default ProjectsPage;
+export default ResidentialProjectsPage;

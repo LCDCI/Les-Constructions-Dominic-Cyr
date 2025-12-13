@@ -36,9 +36,8 @@ public class DataSeeder {
     private RenovationRepository renovationRepository;
 
     private static final Map<String, String> PROJECT_IMAGES = Map.of(
-            "proj-001-foresta", "dcada4a5-aa19-4346-934e-1e57bc0f9e1f",
-            "proj-002-naturest", "ee576ed6-5d56-4d54-ba25-7157f7b75d0d",
-            "proj-003-otryminc", "4215eb96-af4b-492b-870a-6925e78b7fcc"
+            "proj-001-foresta", "473f9e87-3415-491c-98a9-9d017c251911",
+            "proj-002-naturest", "6c8127f5-4529-4118-9ab1-cbcb38c4266a"
     );
 
     @PostConstruct
