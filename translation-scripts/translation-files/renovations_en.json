@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "projects": "Residential Projects",
+    "renovation": "Renovation",
+    "projectManagement": "Project Management",
+    "realisations": "Achievements",
+    "signIn": "Sign in",
+    "getStarted": "Get Started"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois",
+    "city": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
+    "phone": "Phone: 514-123-4567",
+    "email": "Email: constructions.dcyr@gmail.com",
+    "rbq": "Régie du bâtiment du Québec",
+    "rbqLicense": "No license: 8356-0169-03",
+    "rbqWebsite": "rbq.gouv.qc.ca",
+    "gcr": "Residential Construction Guarantee",
+    "gcrAccreditation": "No accreditation: 11084",
+    "gcrWebsite": "garantiegcr.com",
+    "contactTitle": "Contact",
+    "contactName": "Isabelle Misiazeck",
+    "contactPhone": "514-123-4567",
+    "contactEmail": "isabelle.misiazeck@foresta.ca",
+    "hoursTitle": "Opening Hours",
+    "hoursWeekdays": "Monday to Wednesday: 1 p.m. to 7 p.m.",
+    "hoursWeekend": "Saturday and Sunday: 11 a.m. to 5 p.m.",
+    "officeTitle": "Office",
+    "officeAddress1": "104 rue du Boisé",
+    "officeAddress2": "St-Alphonse de Granby",
+    "officeAddress3": "Granby, QC J2J 2X4",
+    "copyright": "© 2025 Les Constructions Dominic Cyr. All rights reserved."
+  },
+  "hero": {
+    "title1": "RENOVATE",
+    "title2": "MODERNIZE",
+    "title3": "TRANSFORM",
+    "subtitle": "Your home deserves the very best."
+  },
+  "intro": {
+    "title": "Transform your home into the living space of your dreams!",
+    "description": "Whether you want to modernize your kitchen, completely redesign your basement, open up new spaces, or increase your property value, our team will execute your project with precision, style, and efficiency."
+  },
+  "services": {
+    "title": "We offer a turnkey service: planning, design, project management, and high-end finishing. Every detail is carefully considered to reflect your personality and enhance your everyday comfort."
+  },
+  "callToAction": {
+    "title": "Entrust your renovation to passionate professionals!"
+  },
+  "states": {
+    "empty": {
+      "title": "No renovations yet",
+      "body": "Check back soon to see our latest renovation projects!"
+    },
+    "error": {
+      "message": "Unable to load renovations. Please try again.",
+      "retry": "Retry"
+    }
+  },
+  "renovationCard": {
+    "labels": {
+      "identifier": "Identifier",
+      "cardType": "Renovation",
+      "description": "Description",
+      "descriptionFallback": "No description available"
+    },
+    "media": {
+      "before": "Before",
+      "after": "After",
+      "sectionLabel": "Renovation images"
+    }
+  }
+}

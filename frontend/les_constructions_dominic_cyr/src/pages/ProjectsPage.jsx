@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import '../styles/projects.css';
-import Footer from '../components/AppFooter';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -46,19 +45,20 @@ const ProjectsPage = () => {
   };
 
   const getImageUrl = imageIdentifier => {
-    if (!imageIdentifier) {
-      return '/placeholder-project.png';
-    }
     return `${filesServiceUrl}/files/${imageIdentifier}`;
-  };
-
-  const handleImageError = e => {
-    e.target.src = '/placeholder-project.png';
   };
 
   const handleViewProject = projectIdentifier => {
     window.location.href = `/projects/${projectIdentifier}`;
   };
+
+  if (loading) {
+    return (
+      <div className="projects-page loading-state">
+        <p>Loading projects...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="projects-page">
@@ -89,7 +89,6 @@ const ProjectsPage = () => {
                       src={getImageUrl(project.imageIdentifier)}
                       alt={project.projectName}
                       className="project-image"
-                      onError={handleImageError}
                     />
                   </div>
                   <h2 className="project-title">{project.projectName}</h2>

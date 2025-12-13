@@ -10,7 +10,13 @@ Node.js script to upload translation JSON files to the file service and automati
 
 **Usage:**
 ```bash
-node scripts/upload-translations.js
+node scripts/upload-translations.js [pageName]
+
+# Examples:
+node scripts/upload-translations.js home        # Upload home translations
+node scripts/upload-translations.js renovations # Upload renovations translations
+node scripts/upload-translations.js projects    # Upload projects translations
+node scripts/upload-translations.js             # Defaults to 'home'
 ```
 
 **What it does:**
