@@ -5,6 +5,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentati
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Component
@@ -25,7 +26,11 @@ public class ProjectMapper {
         project.setBuyerName(requestModel.getBuyerName());
         project.setImageIdentifier(requestModel.getImageIdentifier());
         project.setCustomerId(requestModel.getCustomerId());
-        project.setLotIdentifier(requestModel.getLotIdentifier());
+        if (requestModel.getLotIdentifiers() != null) {
+            project.setLotIdentifiers(new ArrayList<>(requestModel.getLotIdentifiers()));
+        } else {
+            project.setLotIdentifiers(new ArrayList<>());
+        }
         project.setProgressPercentage(requestModel.getProgressPercentage());
         return project;
     }
@@ -45,7 +50,7 @@ public class ProjectMapper {
                 .buyerName(project.getBuyerName())
                 .imageIdentifier(project.getImageIdentifier())
                 .customerId(project.getCustomerId())
-                .lotIdentifier(project.getLotIdentifier())
+                .lotIdentifiers(project.getLotIdentifiers() != null ? new ArrayList<>(project.getLotIdentifiers()) : new ArrayList<>())
                 .progressPercentage(project.getProgressPercentage())
                 .build();
     }
@@ -87,8 +92,8 @@ public class ProjectMapper {
         if (requestModel.getCustomerId() != null) {
             project.setCustomerId(requestModel.getCustomerId());
         }
-        if (requestModel.getLotIdentifier() != null) {
-            project.setLotIdentifier(requestModel.getLotIdentifier());
+        if (requestModel.getLotIdentifiers() != null) {
+            project.setLotIdentifiers(new ArrayList<>(requestModel.getLotIdentifiers()));
         }
         if (requestModel.getProgressPercentage() != null) {
             project.setProgressPercentage(requestModel.getProgressPercentage());

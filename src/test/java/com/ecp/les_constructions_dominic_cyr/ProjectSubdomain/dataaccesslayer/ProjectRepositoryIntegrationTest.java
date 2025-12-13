@@ -42,7 +42,7 @@ public class ProjectRepositoryIntegrationTest {
         testProject. setBuyerColor("#FF0000");
         testProject.setBuyerName("Test Buyer");
         testProject.setCustomerId("cust-001");
-        testProject.setLotIdentifier("lot-001");
+        testProject.setLotIdentifiers(new java.util.ArrayList<>(java.util.List.of("lot-001")));
         testProject.setProgressPercentage(50);
     }
 
@@ -87,7 +87,7 @@ public class ProjectRepositoryIntegrationTest {
         completedProject.setBuyerColor("#F00");
         completedProject.setBuyerName("Buyer");
         completedProject.setCustomerId("cust-002");
-        completedProject.setLotIdentifier("lot-002");
+        completedProject.setLotIdentifiers(new java.util.ArrayList<>(java.util.List.of("lot-002")));
         projectRepository.save(completedProject);
 
         List<Project> inProgressProjects = projectRepository.findByStatus(ProjectStatus.IN_PROGRESS);
@@ -186,8 +186,8 @@ public class ProjectRepositoryIntegrationTest {
         secondProject.setTertiaryColor("#000");
         secondProject. setBuyerColor("#F00");
         secondProject.setBuyerName("Buyer");
-        secondProject. setCustomerId("cust-002");
-        secondProject.setLotIdentifier("lot-002");
+        secondProject.setCustomerId("cust-002");
+        secondProject.setLotIdentifiers(new java.util.ArrayList<>(java.util.List.of("lot-002")));
         projectRepository.save(secondProject);
 
         List<Project> all = projectRepository. findAll();
