@@ -19,6 +19,8 @@ import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
 import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
 import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
+import RenovationsPage from './pages/RenovationsPage';
+import './App.css';
 
 export default function App() {
   return (
@@ -32,6 +34,7 @@ export default function App() {
             <Route path="/lots" element={<LotsPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/houses" element={<HousesPage />} />
+            <Route path="/renovations" element={<RenovationsPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route path="/inquiries" element={<OwnerInquiriesPage />} />
