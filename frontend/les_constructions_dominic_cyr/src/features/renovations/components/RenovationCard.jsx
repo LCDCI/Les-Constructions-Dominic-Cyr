@@ -7,7 +7,7 @@ import './RenovationCard.css';
 const identityAssetResolver = identifier => (identifier ? identifier : '');
 
 const RenovationCard = ({
-  renovationIdentifier,
+  renovationIdentifier: _renovationIdentifier,
   beforeImageIdentifier,
   afterImageIdentifier,
   description,
@@ -33,68 +33,53 @@ const RenovationCard = ({
 
   if (isLoading) {
     return (
-      <article className="project-card renovation-card" aria-busy="true">
+      <div className="renovation-card" aria-busy="true">
         <div className="project-card__skeleton" />
-      </article>
+      </div>
     );
   }
 
   return (
-    <article
-      className="project-card renovation-card"
-      data-testid="renovation-card"
-    >
-      <header className="project-card__header renovation-card__header">
-        <div>
-          <p className="project-card__eyebrow">
-            {t('renovationCard.labels.identifier', 'Identifiant')}
-          </p>
-          <h3 className="project-card__title renovation-card__title">
-            {renovationIdentifier}
+    <div className="renovation-card" data-testid="renovation-card">
+      <div className="renovation-card__content">
+        <div className="project-card__body renovation-card__text">
+          <h3 className="renovation-card__title">
+            {t('renovationCard.labels.cardType', 'Rénovation')}
           </h3>
+          <p className="project-card__description renovation-card__description">
+            {description ||
+              t(
+                'renovationCard.labels.descriptionFallback',
+                'Aucune description disponible'
+              )}
+          </p>
         </div>
-        <span className="project-card__badge renovation-card__badge">
-          {t('renovationCard.labels.cardType', 'Rénovation')}
-        </span>
-      </header>
 
-      <section className="project-card__body">
-        <h4 className="project-card__section-title">
-          {t('renovationCard.labels.description', 'Description')}
-        </h4>
-        <p className="project-card__description renovation-card__description">
-          {description ||
-            t(
-              'renovationCard.labels.descriptionFallback',
-              'Aucune description disponible'
+        {mediaItems.length > 0 && (
+          <div
+            className="project-card__media-grid renovation-card__media-grid"
+            aria-label={t(
+              'renovationCard.media.sectionLabel',
+              'Images de la rénovation'
             )}
-        </p>
-      </section>
-
-      {mediaItems.length > 0 && (
-        <section
-          className="project-card__media-grid renovation-card__media-grid"
-          aria-label={t(
-            'renovationCard.media.sectionLabel',
-            'Images de la rénovation'
-          )}
-        >
-          {mediaItems.map(({ slot, src, label }) => (
-            <figure key={slot} className="renovation-card__figure">
-              <img
-                src={src}
-                alt={`${label} - ${renovationIdentifier}`}
-                loading="lazy"
-                className="renovation-card__image"
-              />
-              <figcaption className="renovation-card__caption">
-                {label}
-              </figcaption>
-            </figure>
-          ))}
-        </section>
-      )}
-    </article>
+          >
+            {mediaItems.map(({ slot, src, label }) => (
+              <figure key={slot} className="renovation-card__figure">
+                <img
+                  src={src}
+                  alt={label}
+                  loading="lazy"
+                  className="renovation-card__image"
+                />
+                <figcaption className="renovation-card__caption">
+                  {label}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { FiTool, FiHome, FiRefreshCw, FiTrendingUp, FiShield, FiClock } from 'react-icons/fi';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 import { fetchRenovations } from '../features/renovations/api/renovations';
 import RenovationCard from '../features/renovations/components/RenovationCard';
+import '../styles/RenovationsPage.css';
 
 const RenovationsPage = ({ resolveAssetUrl }) => {
   // Load translations from the root namespace since your JSON is flat
@@ -51,43 +53,61 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
     <section className="renovations-page" aria-live="polite">
       {/* HERO */}
       <header className="renovations-page__hero">
-        <h1 className="renovations-page__title">
-          {t('hero.title1', 'RÉNOVER')}
-          <br />
-          {t('hero.title2', 'MODERNISER')}
-          <br />
-          {t('hero.title3', 'TRANSFORMER')}
-        </h1>
-        <p className="renovations-page__subtitle">
-          {t('hero.subtitle', "Votre maison mérite ce qu'il y a de mieux")}
-        </p>
+        <div className="renovations-page__hero-grid">
+          <div className="renovations-page__badge" aria-hidden="true">
+            <p>{t('hero.title1', 'RÉNOVER')}</p>
+            <p>{t('hero.title2', 'MODERNISER')}</p>
+            <p>{t('hero.title3', 'TRANSFORMER')}</p>
+            <span>
+              {t('hero.subtitle', "Votre maison mérite ce qu'il y a de mieux")}
+            </span>
+          </div>
+          <div className="renovations-page__hero-copy">
+            <h1 className="renovations-page__title">
+              {t('hero.heading', 'Rénovations sur mesure, livrées avec soin')}
+            </h1>
+            <p className="renovations-page__subtitle">
+              {t(
+                'hero.lede',
+                'Cuisine, sous-sol, aire ouverte ou façade — nous modernisons chaque espace avec rigueur et créativité.'
+              )}
+            </p>
+          </div>
+        </div>
       </header>
 
       {/* INTRO */}
-      <section className="renovations-page__intro">
-        <h2>
-          {t(
-            'intro.title',
-            'Transformez votre maison en un espace de vie dont vous rêvez !'
-          )}
-        </h2>
-        <p>
-          {t(
-            'intro.description',
-            'Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité.'
-          )}
-        </p>
-      </section>
+      <div className="renovations-page__info-grid">
+        <section className="renovations-page__intro">
+          <h2>
+            <FiTool aria-hidden="true" className="renovations-page__icon" />
+            {t(
+              'intro.title',
+              'Transformez votre maison en un espace de vie dont vous rêvez !'
+            )}
+          </h2>
+          <p>
+            {t(
+              'intro.description',
+              'Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité.'
+            )}
+          </p>
+        </section>
 
-      {/* SERVICES */}
-      <section className="renovations-page__services">
-        <p>
-          {t(
-            'services.title',
-            'Nous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien.'
-          )}
-        </p>
-      </section>
+        {/* SERVICES */}
+        <section className="renovations-page__services">
+          <h2>
+            <FiShield aria-hidden="true" />
+            {t('services.heading', 'Service clé en main')}
+          </h2>
+          <p>
+            {t(
+              'services.title',
+              'Nous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien.'
+            )}
+          </p>
+        </section>
+      </div>
 
       {/* ERROR */}
       {isError && (
@@ -101,7 +121,12 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
               'Impossible de charger les rénovations. Veuillez réessayer.'
             )}
           </p>
-          <button type="button" onClick={refetch}>
+          <button
+            type="button"
+            onClick={refetch}
+            className="renovations-page__button"
+          >
+            <FiRefreshCw aria-hidden="true" />
             {t('states.error.retry', 'Réessayer')}
           </button>
         </div>
