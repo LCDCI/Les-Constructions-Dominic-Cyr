@@ -1,0 +1,54 @@
+{
+  "nav": {
+    "projects": "Residential Projects",
+    "renovation": "Renovation",
+    "projectManagement": "Project Management",
+    "about": "About Us",
+    "contact": "Contact"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois"
+  },
+  "hero": {
+    "eyebrow": "Contact Us",
+    "title": "We collaborate with you to realize your dreams!",
+    "subtitle": "Your home is one of the most important investments you will make in your life. Choose a safe and unparalleled value with Les Constructions Dominic Cyr Inc."
+  },
+  "contactInfo": {
+    "title": "Contact Information",
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "addressLine1": "155 rue Bourgeois",
+    "addressLine2": "St-Mathieu-de-Beloeil (Quebec)",
+    "addressLine3": "J3G 0M9",
+    "directions": "Get Directions",
+    "phoneLabel": "Phone",
+    "phone": "514-123-4567",
+    "emailLabel": "Email",
+    "email": "constructions.dcyr@gmail.com",
+    "rbqLabel": "Régie du bâtiment du Québec",
+    "rbqLicense": "License No: 8356-0169-03",
+    "rbqWebsite": "rbq.gouv.qc.ca",
+    "gcqLabel": "Residential Construction Guarantee",
+    "gcqAccreditation": "Accreditation No: 11084",
+    "gcqWebsite": "garantiegcr.com"
+  },
+  "inquiryForm": {
+    "title": "Send us a message",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your.email@example.com",
+    "phoneLabel": "Phone",
+    "phonePlaceholder": "Enter phone number",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Tell us about your project...",
+    "submitButton": "Submit Inquiry",
+    "submittingButton": "Sending...",
+    "requiredFields": "Please fill out all required fields.",
+    "invalidEmail": "Please enter a valid email address.",
+    "submitSuccess": "Your inquiry has been submitted successfully!",
+    "submitError": "Submission failed.",
+    "networkError": "Network error. Please try again later."
+  }
+}
