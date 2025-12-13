@@ -22,6 +22,8 @@ INSERT INTO houses (house_identifier, house_name, location, description, number_
 INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('269f18b2-9d3a-0f5e-4c6b-7d8e9f0a1b2c', 'Elegant Family Residence', 'Trois-Rivières, QC', 'Sophisticated family residence featuring gourmet kitchen with quartz countertops, spa-like bathrooms, and expansive outdoor entertainment patio.', 9, 4, 3, 2022);
 INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year) VALUES ('37a029c3-0e4b-1f6d-5d7c-8e9f0a1b2c3d', 'Country-Style Bungalow', 'Saint-Hyacinthe, QC', 'Charming country bungalow on a generous lot with mature landscaping, modern amenities, and tranquil rural setting.', 6, 3, 2, 2021);
 
+-- data for renovations
+INSERT INTO renovations (renovation_identifier, description) VALUES ('78cc74d2-0dae-4be9-be91-d3750311da94', 'This renovation includes a complete kitchen remodel with new cabinets, countertops, and appliances, as well as updated flooring throughout the main living areas.');
 -- data for footer
 INSERT INTO footer_content (section, label, value, display_order) VALUES
 ('contact', 'name', 'Isabelle Misiazeck', 1),
