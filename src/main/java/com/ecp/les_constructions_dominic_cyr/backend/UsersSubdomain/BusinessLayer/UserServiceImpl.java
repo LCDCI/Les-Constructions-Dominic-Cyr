@@ -31,6 +31,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseModel createUser(UserCreateRequestModel requestModel) {
 
+        // Check if a user with the given primary email already exists
+        if (usersRepository.findByPrimaryEmail(requestModel.getPrimaryEmail()).isPresent()) {
+            throw new IllegalArgumentException("A user with this email already exists.");
+        }
         // 1. Persist Users entity (without auth0UserId)
         Users userEntity = UserMapper.toEntity(requestModel);
         userEntity = usersRepository.save(userEntity);
