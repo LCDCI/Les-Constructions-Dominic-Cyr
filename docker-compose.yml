@@ -19,15 +19,26 @@ services:
       SPRING_DATASOURCE_PASSWORD: "pwd"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
       SPRING_PROFILES_ACTIVE: "docker"
+
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      AUTH0_MGMT_CLIENT_ID: ${AUTH0_MGMT_CLIENT_ID}
+      AUTH0_MGMT_CLIENT_SECRET: ${AUTH0_MGMT_CLIENT_SECRET}
+      AUTH0_DB_CONNECTION: ${AUTH0_DB_CONNECTION}
+      AUTH0_ROLE_CONTRACTOR: ${AUTH0_ROLE_CONTRACTOR}
+      AUTH0_ROLE_CUSTOMER: ${AUTH0_ROLE_CUSTOMER}
+      AUTH0_ROLE_SALESPERSON: ${AUTH0_ROLE_SALESPERSON}
+      AUTH0_ROLE_OWNER: ${AUTH0_ROLE_OWNER}
+      APP_INVITE_RESULT_URL: ${APP_INVITE_RESULT_URL}
+
     depends_on:
-        files-service:
-          condition: service_started
-        postgres1:
-          condition: service_healthy
+      files-service:
+        condition: service_started
+      postgres1:
+        condition: service_healthy
     networks:
       - app-network
 
-  #######################################################################
+    #######################################################################
   # FRONTEND (Vite built + nginx)
   #######################################################################
   frontend:

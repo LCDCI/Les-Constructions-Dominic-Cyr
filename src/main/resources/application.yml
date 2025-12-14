@@ -53,3 +53,20 @@ deepl:
     key: ${DEEPL_API_KEY:}
     free: true
     url: https://api-free.deepl.com/v2
+
+# For Auth0
+auth0:
+  domain: ${AUTH0_DOMAIN:}
+  mgmt:
+    client-id: ${AUTH0_MGMT_CLIENT_ID:}
+    client-secret: ${AUTH0_MGMT_CLIENT_SECRET:}
+  db-connection: ${AUTH0_DB_CONNECTION:}
+  role:
+    contractor: ${AUTH0_ROLE_CONTRACTOR:}
+    customer: ${AUTH0_ROLE_CUSTOMER:}
+    salesperson: ${AUTH0_ROLE_SALESPERSON:}
+    owner: ${AUTH0_ROLE_OWNER:}
+
+app:
+  invite:
+    result-url: ${APP_INVITE_RESULT_URL:}

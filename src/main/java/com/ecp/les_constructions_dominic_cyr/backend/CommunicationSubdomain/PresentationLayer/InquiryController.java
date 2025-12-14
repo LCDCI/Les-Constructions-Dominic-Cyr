@@ -2,9 +2,12 @@ package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Pre
 
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.InquiryService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
@@ -21,6 +24,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryResponseModel;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/inquiries")
@@ -28,8 +33,11 @@ import java.util.HashMap;
 public class InquiryController {
     private final InquiryService service;
     private static final int MAX_MESSAGE_LENGTH = 1000;
+    private static final String OWNER_KEY = "dev-owner-key";
     private static final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
-    private static final String RECAPTCHA_SECRET = "YOUR_RECAPTCHA_SECRET"; // TODO: Replace with actual secret
+
+    @Value("${recaptcha.secret}")
+    private String recaptchaSecret;
 
     public InquiryController(InquiryService service) {
         this.service = service;
@@ -44,7 +52,7 @@ public class InquiryController {
     private boolean verifyRecaptcha(String token) {
         try {
             HttpClient client = HttpClient.newHttpClient();
-            String body = "secret=" + RECAPTCHA_SECRET + "&response=" + token;
+            String body = "secret=" + recaptchaSecret + "&response=" + token;
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://www.google.com/recaptcha/api/siteverify"))
                     .header("Content-Type", "application/x-www-form-urlencoded")
@@ -87,5 +95,16 @@ public class InquiryController {
         
         service.submitInquiry(request);
         return ResponseEntity.ok().body("Thank you! Your inquiry has been received.");
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllInquiries(@RequestHeader(value = "X-OWNER-KEY", required = false) String ownerKey) {
+        // Validate owner key
+        if (ownerKey == null || !ownerKey.equals(OWNER_KEY)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
+        }
+
+        List<InquiryResponseModel> inquiries = service.getAllInquiries();
+        return ResponseEntity.ok(inquiries);
     }
 }
