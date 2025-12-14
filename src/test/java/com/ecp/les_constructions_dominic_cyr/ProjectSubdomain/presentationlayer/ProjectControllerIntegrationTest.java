@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.ProjectSubdomain.presentationlayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Project.FileServiceClient;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
@@ -12,12 +13,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -33,12 +38,18 @@ class ProjectControllerIntegrationTest {
     @Autowired
     private LotRepository lotRepository;
 
+    @MockBean
+    private FileServiceClient fileServiceClient;
+
     private final String BASE_URI = "/api/v1/projects";
 
     @BeforeEach
     void setUp() {
         lotRepository.deleteAll();
         lotRepository.save(new Lot(new LotIdentifier("lot-001"), "Loc", 100f, "10x10", LotStatus.AVAILABLE));
+        
+        // Stub FileServiceClient to return true for any image identifier validation
+        when(fileServiceClient.validateFileExists(anyString())).thenReturn(Mono.just(true));
     }
 
     @Test
