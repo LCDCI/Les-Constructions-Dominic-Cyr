@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.presentationlayer;
+package com.ecp.les_constructions_dominic_cyr.CommunicationSubdomain.presentationlayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.InquiryService;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryController;
@@ -28,11 +28,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * CAPTCHA Verification Unit Tests for InquiryController
- * Tests the verifyRecaptcha method with mocked HTTP client
- * Following AAA Pattern (Arrange, Act, Assert)
- */
 @WebMvcTest(InquiryController.class)
 public class InquiryControllerCaptchaTest {
 

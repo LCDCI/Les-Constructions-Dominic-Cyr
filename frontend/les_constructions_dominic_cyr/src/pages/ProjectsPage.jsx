@@ -1,17 +1,23 @@
 import { useState, useEffect } from 'react';
 import '../styles/projects.css';
-import Footer from '../components/AppFooter';
+import '../styles/create-project.css';
+import CreateProjectForm from '../features/projects/components/CreateProjectForm';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [showConfirmClose, setShowConfirmClose] = useState(false);
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+  // Use relative path to leverage Vite proxy
   const apiBaseUrl =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+    import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
   useEffect(() => {
     fetchProjects();
@@ -23,12 +29,27 @@ const ProjectsPage = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`${apiBaseUrl}/projects`);
+      setError(null);
+      setLoading(true);
+      const url = `${apiBaseUrl}/projects`;
+      console.log('Fetching projects from:', url);
+      const response = await fetch(url);
+      console.log('Response status:', response.status, response.statusText);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
+      }
       const data = await response.json();
-      setProjects(data);
-      setFilteredProjects(data);
+      console.log('Projects data received:', data);
+      setProjects(data || []);
+      setFilteredProjects(data || []);
       setLoading(false);
     } catch (error) {
+      console.error('Error fetching projects:', error);
+      setError(error.message || 'Failed to load projects. Please try again.');
+      setProjects([]);
+      setFilteredProjects([]);
       setLoading(false);
     }
   };
@@ -46,18 +67,52 @@ const ProjectsPage = () => {
   };
 
   const getImageUrl = imageIdentifier => {
-    if (!imageIdentifier) {
-      return '/placeholder-project.png';
-    }
     return `${filesServiceUrl}/files/${imageIdentifier}`;
-  };
-
-  const handleImageError = e => {
-    e.target.src = '/placeholder-project.png';
   };
 
   const handleViewProject = projectIdentifier => {
     window.location.href = `/projects/${projectIdentifier}`;
+  };
+
+  const overlayStyle = {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    padding: '3rem 1rem',
+    zIndex: 1000,
+    overflowY: 'auto',
+  };
+
+  const modalStyle = {
+    width: '100%',
+    maxWidth: '900px',
+    background: '#fff',
+    borderRadius: '8px',
+    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
+    padding: '2rem',
+  };
+
+  const confirmOverlayStyle = {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '1rem',
+    zIndex: 1100,
+  };
+
+  const confirmBoxStyle = {
+    width: '100%',
+    maxWidth: '520px',
+    background: '#fff',
+    borderRadius: '8px',
+    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.25)',
+    padding: '1.5rem',
   };
 
   return (
@@ -66,6 +121,12 @@ const ProjectsPage = () => {
         <div className="projects-container">
           <div className="projects-header">
             <h1>Projects</h1>
+            <button
+              className="create-project-button"
+              onClick={() => setIsCreateOpen(true)}
+            >
+              Create New Project
+            </button>
           </div>
 
           <div className="projects-filter">
@@ -80,8 +141,24 @@ const ProjectsPage = () => {
             </div>
           </div>
 
-          <div className="projects-grid">
-            {filteredProjects.length > 0 ? (
+          {loading && (
+            <div className="projects-loading">
+              <p>Loading projects...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="projects-error">
+              <p>{error}</p>
+              <button onClick={fetchProjects} className="retry-button">
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <div className="projects-grid">
+              {filteredProjects.length > 0 ? (
               filteredProjects.map(project => (
                 <div key={project.projectIdentifier} className="project-card">
                   <div className="project-image-container">
@@ -89,7 +166,6 @@ const ProjectsPage = () => {
                       src={getImageUrl(project.imageIdentifier)}
                       alt={project.projectName}
                       className="project-image"
-                      onError={handleImageError}
                     />
                   </div>
                   <h2 className="project-title">{project.projectName}</h2>
@@ -109,7 +185,76 @@ const ProjectsPage = () => {
                 <p>No projects found matching &quot;{searchTerm}&quot;</p>
               </div>
             )}
-          </div>
+            </div>
+          )}
+
+          {!loading && !error && filteredProjects.length === 0 && searchTerm === '' && (
+            <div className="no-projects">
+              <p>No projects available. Create your first project!</p>
+            </div>
+          )}
+
+          {isCreateOpen && (
+            <div
+              style={overlayStyle}
+              role="dialog"
+              aria-modal="true"
+              onClick={(e) => {
+                if (showConfirmClose) return;
+                if (e.target === e.currentTarget) setShowConfirmClose(true);
+              }}
+            >
+              <div style={modalStyle}>
+                <div className="create-project-header">
+                  <h1>Create New Project</h1>
+                </div>
+                {submitError && (
+                  <div className="error-message">
+                    {submitError}
+                  </div>
+                )}
+                <CreateProjectForm
+                  onCancel={() => setShowConfirmClose(true)}
+                  onSuccess={(projectIdentifier) => {
+                    setIsCreateOpen(false);
+                    fetchProjects();
+                  }}
+                  onError={setSubmitError}
+                />
+              </div>
+            </div>
+          )}
+
+          {isCreateOpen && showConfirmClose && (
+            <div style={confirmOverlayStyle} role="dialog" aria-modal="true">
+              <div style={confirmBoxStyle} onClick={(e) => e.stopPropagation()}>
+                <h2 style={{ marginTop: 0 }}>Leave form?</h2>
+                <p style={{ margin: '0.5rem 0 1rem 0' }}>
+                  If you exit now, any information you’ve entered will be lost.
+                </p>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={() => setShowConfirmClose(false)}
+                  >
+                    Stay on form
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-submit"
+                    onClick={() => {
+                      setShowConfirmClose(false);
+                      setIsCreateOpen(false);
+                      setSubmitError(null);
+                    }}
+                  >
+                    Leave form
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

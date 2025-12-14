@@ -1,0 +1,257 @@
+.page.users-page {
+  width: 80%;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.page.users-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.page.users-page .page-header h1 {
+  margin: 0;
+}
+
+.page.users-page .page-header button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background-color: #1f2937;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.page.users-page .page-header button:hover {
+  background-color: #111827;
+}
+
+.error {
+  color: #b91c1c;
+  margin-top: 12px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  font-size: 0.9rem;
+  vertical-align: top;
+}
+
+.users-table th {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+.users-table tr:last-child td {
+  border-bottom: none;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 24px;
+  width: 640px;
+  max-width: 95%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+.modal p {
+  margin-bottom: 12px;
+  color: #374151;
+}
+
+.modal-form .form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.modal-form label {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.modal-form input,
+.modal-form select {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+.modal-form input:focus,
+.modal-form select:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.modal-actions button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.modal-actions button[type="submit"],
+.modal-actions button:not([type]) {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.modal-actions button[type="submit"]:hover,
+.modal-actions button:not([type]):hover {
+  background-color: #1e40af;
+}
+
+.modal-actions button[type="button"] {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+.modal-actions button[type="button"]:hover {
+  background-color: #d1d5db;
+}
+
+.modal-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.invite-link-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.invite-link-row input {
+  flex: 1;
+  min-width: 220px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 0.85rem;
+}
+
+.invite-link-row button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: none;
+  background-color: #16a34a;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.invite-link-row button:hover {
+  background-color: #15803d;
+}
+
+.copy-status {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #15803d;
+}
+
+.modal.error h2 {
+  color: #b91c1c;
+}
+
+.modal.error p {
+  color: #7f1d1d;
+}
+
+@media (max-width: 900px) {
+  .page.users-page {
+    width: 92%;
+    padding: 16px;
+  }
+
+  .users-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .page.users-page .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page.users-page .page-header button {
+    width: 100%;
+  }
+
+  .modal {
+    padding: 16px;
+  }
+
+  .modal-form label {
+    min-width: 100%;
+  }
+
+  .modal-actions {
+    justify-content: stretch;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+
+  .invite-link-row input {
+    min-width: 100%;
+  }
+
+  .invite-link-row button {
+    width: 100%;
+  }
+}

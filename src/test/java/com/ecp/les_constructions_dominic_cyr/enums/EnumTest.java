@@ -1,7 +1,5 @@
 package com.ecp. les_constructions_dominic_cyr.enums;
 
-import com.ecp.les_constructions_dominic_cyr. backend.BillingSubdomain.DataAccessLayer. BillCategory;
-import com.ecp.les_constructions_dominic_cyr. backend.BillingSubdomain.DataAccessLayer.BillDocumentType;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationType;
 import com.ecp. les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.DocumentType;
 import com.ecp.les_constructions_dominic_cyr. backend.ProjectSubdomain.DataAccessLayer.ImageType;
@@ -86,67 +84,7 @@ public class EnumTest {
         assertEquals(4, ImageType.BLOB.ordinal());
     }
 
-    @Test
-    void billCategory_HasAllExpectedValues() {
-        BillCategory[] values = BillCategory.values();
 
-        assertEquals(4, values.length);
-        assertNotNull(BillCategory. MATERIALS);
-        assertNotNull(BillCategory.LABOR);
-        assertNotNull(BillCategory.PERMIT);
-        assertNotNull(BillCategory.OTHER);
-    }
-
-    @Test
-    void billCategory_ValueOf_ReturnsCorrectEnum() {
-        assertEquals(BillCategory.MATERIALS, BillCategory. valueOf("MATERIALS"));
-        assertEquals(BillCategory.LABOR, BillCategory. valueOf("LABOR"));
-        assertEquals(BillCategory.PERMIT, BillCategory. valueOf("PERMIT"));
-        assertEquals(BillCategory.OTHER, BillCategory.valueOf("OTHER"));
-    }
-
-    @Test
-    void billCategory_Name_ReturnsCorrectString() {
-        assertEquals("MATERIALS", BillCategory.MATERIALS. name());
-        assertEquals("LABOR", BillCategory.LABOR.name());
-        assertEquals("PERMIT", BillCategory. PERMIT.name());
-        assertEquals("OTHER", BillCategory.OTHER.name());
-    }
-
-    @Test
-    void billCategory_Ordinal_ReturnsCorrectIndex() {
-        assertEquals(0, BillCategory.MATERIALS.ordinal());
-        assertEquals(1, BillCategory. LABOR.ordinal());
-        assertEquals(2, BillCategory. PERMIT.ordinal());
-        assertEquals(3, BillCategory.OTHER.ordinal());
-    }
-
-    @Test
-    void billDocumentType_HasAllExpectedValues() {
-        BillDocumentType[] values = BillDocumentType.values();
-
-        assertEquals(2, values.length);
-        assertNotNull(BillDocumentType.PDF);
-        assertNotNull(BillDocumentType.XLSX);
-    }
-
-    @Test
-    void billDocumentType_ValueOf_ReturnsCorrectEnum() {
-        assertEquals(BillDocumentType.PDF, BillDocumentType.valueOf("PDF"));
-        assertEquals(BillDocumentType.XLSX, BillDocumentType. valueOf("XLSX"));
-    }
-
-    @Test
-    void billDocumentType_Name_ReturnsCorrectString() {
-        assertEquals("PDF", BillDocumentType.PDF.name());
-        assertEquals("XLSX", BillDocumentType. XLSX.name());
-    }
-
-    @Test
-    void billDocumentType_Ordinal_ReturnsCorrectIndex() {
-        assertEquals(0, BillDocumentType.PDF. ordinal());
-        assertEquals(1, BillDocumentType. XLSX.ordinal());
-    }
 
     @Test
     void notificationType_HasAllExpectedValues() {
@@ -229,20 +167,6 @@ public class EnumTest {
     }
 
     @Test
-    void billCategory_InvalidValue_ThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            BillCategory.valueOf("INVALID");
-        });
-    }
-
-    @Test
-    void billDocumentType_InvalidValue_ThrowsException() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            BillDocumentType.valueOf("INVALID");
-        });
-    }
-
-    @Test
     void notificationType_InvalidValue_ThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> {
             NotificationType.valueOf("INVALID");
@@ -264,12 +188,6 @@ public class EnumTest {
         for (ImageType type : ImageType.values()) {
             assertNotNull(type. name());
         }
-        for (BillCategory category : BillCategory.values()) {
-            assertNotNull(category.name());
-        }
-        for (BillDocumentType type : BillDocumentType.values()) {
-            assertNotNull(type.name());
-        }
         for (NotificationType type : NotificationType.values()) {
             assertNotNull(type.name());
         }
@@ -282,8 +200,6 @@ public class EnumTest {
     void allEnums_ToStringReturnsName() {
         assertEquals("PDF", DocumentType.PDF.toString());
         assertEquals("PNG", ImageType.PNG.toString());
-        assertEquals("MATERIALS", BillCategory. MATERIALS.toString());
-        assertEquals("PDF", BillDocumentType.PDF.toString());
         assertEquals("EMAIL", NotificationType. EMAIL.toString());
         assertEquals("PLANNED", ProjectStatus. PLANNED.toString());
     }
@@ -292,15 +208,12 @@ public class EnumTest {
     void enums_CompareByOrdinal() {
         assertTrue(DocumentType.PDF.compareTo(DocumentType.DOCX) < 0);
         assertTrue(ImageType. JPEG.compareTo(ImageType.PNG) > 0);
-        assertTrue(BillCategory.MATERIALS.compareTo(BillCategory.MATERIALS) == 0);
     }
 
     @Test
     void enums_Equality() {
         assertEquals(DocumentType.PDF, DocumentType.PDF);
         assertEquals(ImageType.PNG, ImageType.PNG);
-        assertEquals(BillCategory.LABOR, BillCategory. LABOR);
-        assertEquals(BillDocumentType.XLSX, BillDocumentType.XLSX);
         assertEquals(NotificationType.EMAIL, NotificationType.EMAIL);
         assertEquals(ProjectStatus.COMPLETED, ProjectStatus. COMPLETED);
     }
@@ -309,8 +222,6 @@ public class EnumTest {
     void enums_NotEqual() {
         assertNotEquals(DocumentType.PDF, DocumentType.DOCX);
         assertNotEquals(ImageType. PNG, ImageType. JPEG);
-        assertNotEquals(BillCategory.MATERIALS, BillCategory. LABOR);
-        assertNotEquals(BillDocumentType. PDF, BillDocumentType.XLSX);
         assertNotEquals(NotificationType. EMAIL, NotificationType.SYSTEM_ALERT);
         assertNotEquals(ProjectStatus.PLANNED, ProjectStatus. COMPLETED);
     }
@@ -330,18 +241,9 @@ public class EnumTest {
     }
 
     @Test
-    void billCategory_HashCode_IsConsistent() {
-        int hash1 = BillCategory.MATERIALS.hashCode();
-        int hash2 = BillCategory.MATERIALS.hashCode();
-        assertEquals(hash1, hash2);
-    }
-
-    @Test
     void enums_GetDeclaringClass() {
         assertEquals(DocumentType.class, DocumentType.PDF.getDeclaringClass());
         assertEquals(ImageType.class, ImageType.PNG.getDeclaringClass());
-        assertEquals(BillCategory.class, BillCategory. MATERIALS.getDeclaringClass());
-        assertEquals(BillDocumentType.class, BillDocumentType.PDF.getDeclaringClass());
         assertEquals(NotificationType. class, NotificationType.EMAIL.getDeclaringClass());
         assertEquals(ProjectStatus.class, ProjectStatus.PLANNED.getDeclaringClass());
     }
