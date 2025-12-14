@@ -35,7 +35,7 @@
 }
 
 .create-project-button {
-    background-color: #4A90A4;
+    background-color: #4D85B9;
     color: white;
     padding: 12px 24px;
     border: none;
@@ -47,7 +47,7 @@
 }
 
 .create-project-button:hover {
-    background-color: #3a7080;
+    background-color: #1565c0;
 }
 
 .projects-loading {
@@ -71,7 +71,7 @@
 }
 
 .retry-button {
-    background-color: #4A90A4;
+    background-color: #4D85B9;
     color: white;
     padding: 8px 16px;
     border: none;
@@ -83,7 +83,7 @@
 }
 
 .retry-button:hover {
-    background-color: #3a7080;
+    background-color: #1565c0;
 }
 
 .no-projects {
@@ -115,8 +115,8 @@
 }
 
 .search-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(74, 144, 164, 0.2);
+    border-color: #4D85B9;
+    box-shadow: 0 4px 12px rgba(77, 133, 185, 0.2);
 }
 
 .projects-grid {
