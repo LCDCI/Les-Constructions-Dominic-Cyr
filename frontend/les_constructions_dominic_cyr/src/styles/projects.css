@@ -22,14 +22,74 @@
 }
 
 .projects-header {
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 4%;
 }
 
 .projects-header h1 {
     font-size: 2.5rem;
     color: var(--text-primary);
-    margin-bottom: 1%;
+    margin: 0;
+}
+
+.create-project-button {
+    background-color: #4D85B9;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.create-project-button:hover {
+    background-color: #1565c0;
+}
+
+.projects-loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+.projects-error {
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    color: #c33;
+    text-align: center;
+}
+
+.projects-error p {
+    margin: 0 0 1rem 0;
+}
+
+.retry-button {
+    background-color: #4D85B9;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.retry-button:hover {
+    background-color: #1565c0;
+}
+
+.no-projects {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
 }
 
 .projects-filter {
@@ -55,8 +115,8 @@
 }
 
 .search-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(74, 144, 164, 0.2);
+    border-color: #4D85B9;
+    box-shadow: 0 4px 12px rgba(77, 133, 185, 0.2);
 }
 
 .projects-grid {

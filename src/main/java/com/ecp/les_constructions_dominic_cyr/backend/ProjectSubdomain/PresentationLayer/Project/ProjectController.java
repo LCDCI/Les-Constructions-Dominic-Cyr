@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -43,12 +42,6 @@ public class ProjectController {
         return ResponseEntity.ok(project);
     }
 
-    @PostMapping
-    public ResponseEntity<ProjectResponseModel> createProject(@RequestBody ProjectRequestModel requestModel) {
-        ProjectResponseModel createdProject = projectService. createProject(requestModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
-    }
-
     @PutMapping("/{projectIdentifier}")
     public ResponseEntity<ProjectResponseModel> updateProject(
             @PathVariable String projectIdentifier,
@@ -56,6 +49,12 @@ public class ProjectController {
     ) {
         ProjectResponseModel updatedProject = projectService.updateProject(projectIdentifier, requestModel);
         return ResponseEntity.ok(updatedProject);
+    }
+
+    @PostMapping
+    public ResponseEntity<ProjectResponseModel> createProject(@RequestBody ProjectRequestModel requestModel) {
+        ProjectResponseModel createdProject = projectService.createProject(requestModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
     }
 
     @DeleteMapping("/{projectIdentifier}")
