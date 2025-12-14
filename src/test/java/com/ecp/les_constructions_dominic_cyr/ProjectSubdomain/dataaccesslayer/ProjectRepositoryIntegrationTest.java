@@ -86,6 +86,7 @@ public class ProjectRepositoryIntegrationTest {
         completedProject. setPrimaryColor("#FFF");
         completedProject.setTertiaryColor("#000");
         completedProject.setBuyerColor("#F00");
+        completedProject.setImageIdentifier("image-002");
         completedProject.setBuyerName("Buyer");
         completedProject.setCustomerId("cust-002");
         completedProject.setLotIdentifiers(new java.util.ArrayList<>(java.util.List.of("lot-002")));
@@ -186,6 +187,7 @@ public class ProjectRepositoryIntegrationTest {
         secondProject.setPrimaryColor("#FFF");
         secondProject.setTertiaryColor("#000");
         secondProject. setBuyerColor("#F00");
+        secondProject.setImageIdentifier("image-003");
         secondProject.setBuyerName("Buyer");
         secondProject.setCustomerId("cust-002");
         secondProject.setLotIdentifiers(new java.util.ArrayList<>(java.util.List.of("lot-002")));
