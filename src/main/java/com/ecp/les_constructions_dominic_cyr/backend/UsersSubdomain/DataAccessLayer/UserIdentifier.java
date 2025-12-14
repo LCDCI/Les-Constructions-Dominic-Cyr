@@ -25,7 +25,14 @@ public class UserIdentifier implements Serializable {
     }
 
     public static UserIdentifier fromString(String uuidString) {
-        return new UserIdentifier(UUID.fromString(uuidString));
+        if (uuidString == null || uuidString.trim().isEmpty()) {
+            throw new IllegalArgumentException("User ID cannot be null or empty");
+        }
+        try {
+            return new UserIdentifier(UUID.fromString(uuidString.trim()));
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid user ID format: " + uuidString, e);
+        }
     }
 
     public UUID getUserId() {
