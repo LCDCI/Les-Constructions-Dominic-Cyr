@@ -1,17 +1,17 @@
-package com.ecp.les_constructions_dominic_cyr. ProjectSubdomain. dataaccesslayer;
+package com.ecp.les_constructions_dominic_cyr.ProjectSubdomain.dataaccesslayer;
 
-import com. ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer. Project.Project;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project. ProjectRepository;
-import com. ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer. Project.ProjectStatus;
-import org.junit.jupiter. api.BeforeEach;
-import org.junit.jupiter. api.Test;
-import org.springframework. beans.factory.annotation.Autowired;
-import org.springframework.boot.test. autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework. test.context.ActiveProfiles;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util. Optional;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,10 +36,10 @@ public class ProjectRepositoryIntegrationTest {
         testProject.setProjectDescription("Test Description");
         testProject.setStatus(ProjectStatus.IN_PROGRESS);
         testProject.setStartDate(LocalDate.of(2025, 1, 1));
-        testProject. setEndDate(LocalDate.of(2025, 12, 31));
+        testProject.setEndDate(LocalDate.of(2025, 12, 31));
         testProject.setPrimaryColor("#FFFFFF");
-        testProject. setTertiaryColor("#000000");
-        testProject. setBuyerColor("#FF0000");
+        testProject.setTertiaryColor("#000000");
+        testProject.setBuyerColor("#FF0000");
         testProject.setImageIdentifier("image-001");
         testProject.setBuyerName("Test Buyer");
         testProject.setCustomerId("cust-001");
@@ -53,7 +53,7 @@ public class ProjectRepositoryIntegrationTest {
 
         assertNotNull(saved.getProjectId());
         assertEquals("proj-test-001", saved.getProjectIdentifier());
-        assertNotNull(saved. getCreatedAt());
+        assertNotNull(saved.getCreatedAt());
         assertNotNull(saved.getUpdatedAt());
     }
 
@@ -71,7 +71,7 @@ public class ProjectRepositoryIntegrationTest {
     void findByProjectIdentifier_WhenNotExists_ReturnsEmpty() {
         Optional<Project> found = projectRepository.findByProjectIdentifier("non-existent");
 
-        assertTrue(found. isEmpty());
+        assertTrue(found.isEmpty());
     }
 
     @Test
@@ -81,9 +81,9 @@ public class ProjectRepositoryIntegrationTest {
         Project completedProject = new Project();
         completedProject.setProjectIdentifier("proj-test-002");
         completedProject.setProjectName("Completed Project");
-        completedProject.setStatus(ProjectStatus. COMPLETED);
-        completedProject.setStartDate(LocalDate. of(2024, 1, 1));
-        completedProject. setPrimaryColor("#FFF");
+        completedProject.setStatus(ProjectStatus.COMPLETED);
+        completedProject.setStartDate(LocalDate.of(2024, 1, 1));
+        completedProject.setPrimaryColor("#FFF");
         completedProject.setTertiaryColor("#000");
         completedProject.setBuyerColor("#F00");
         completedProject.setImageIdentifier("image-002");
@@ -93,7 +93,7 @@ public class ProjectRepositoryIntegrationTest {
         projectRepository.save(completedProject);
 
         List<Project> inProgressProjects = projectRepository.findByStatus(ProjectStatus.IN_PROGRESS);
-        List<Project> completedProjects = projectRepository.findByStatus(ProjectStatus. COMPLETED);
+        List<Project> completedProjects = projectRepository.findByStatus(ProjectStatus.COMPLETED);
 
         assertEquals(1, inProgressProjects.size());
         assertEquals(1, completedProjects.size());
@@ -107,7 +107,7 @@ public class ProjectRepositoryIntegrationTest {
 
         List<Project> cancelledProjects = projectRepository.findByStatus(ProjectStatus.CANCELLED);
 
-        assertTrue(cancelledProjects. isEmpty());
+        assertTrue(cancelledProjects.isEmpty());
     }
 
     @Test
@@ -116,8 +116,8 @@ public class ProjectRepositoryIntegrationTest {
 
         List<Project> found = projectRepository.findByCustomerId("cust-001");
 
-        assertEquals(1, found. size());
-        assertEquals("Test Project", found.get(0). getProjectName());
+        assertEquals(1, found.size());
+        assertEquals("Test Project", found.get(0).getProjectName());
     }
 
     @Test
@@ -138,7 +138,7 @@ public class ProjectRepositoryIntegrationTest {
                 LocalDate.of(2025, 6, 1)
         );
 
-        assertEquals(1, found. size());
+        assertEquals(1, found.size());
     }
 
     @Test
@@ -162,7 +162,7 @@ public class ProjectRepositoryIntegrationTest {
                 LocalDate.of(2026, 1, 1)
         );
 
-        assertEquals(1, found. size());
+        assertEquals(1, found.size());
     }
 
     @Test
@@ -180,20 +180,20 @@ public class ProjectRepositoryIntegrationTest {
         projectRepository.save(testProject);
 
         Project secondProject = new Project();
-        secondProject. setProjectIdentifier("proj-test-002");
+        secondProject.setProjectIdentifier("proj-test-002");
         secondProject.setProjectName("Second Project");
-        secondProject.setStatus(ProjectStatus. PLANNED);
+        secondProject.setStatus(ProjectStatus.PLANNED);
         secondProject.setStartDate(LocalDate.of(2025, 6, 1));
         secondProject.setPrimaryColor("#FFF");
         secondProject.setTertiaryColor("#000");
-        secondProject. setBuyerColor("#F00");
+        secondProject.setBuyerColor("#F00");
         secondProject.setImageIdentifier("image-003");
         secondProject.setBuyerName("Buyer");
         secondProject.setCustomerId("cust-002");
         secondProject.setLotIdentifiers(new java.util.ArrayList<>(java.util.List.of("lot-002")));
         projectRepository.save(secondProject);
 
-        List<Project> all = projectRepository. findAll();
+        List<Project> all = projectRepository.findAll();
 
         assertEquals(2, all.size());
     }

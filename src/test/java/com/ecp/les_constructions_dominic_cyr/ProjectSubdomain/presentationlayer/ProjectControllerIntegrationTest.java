@@ -7,6 +7,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -34,11 +35,14 @@ class ProjectControllerIntegrationTest {
 
     private final String BASE_URI = "/api/v1/projects";
 
-    @Test
-    void whenValidCreate_thenReturnCreated() {
-        // Ensure referenced lot exists
+    @BeforeEach
+    void setUp() {
         lotRepository.deleteAll();
         lotRepository.save(new Lot(new LotIdentifier("lot-001"), "Loc", 100f, "10x10", LotStatus.AVAILABLE));
+    }
+
+    @Test
+    void whenValidCreate_thenReturnCreated() {
 
         ProjectRequestModel req = new ProjectRequestModel();
         req.setProjectName("Integration Project");
@@ -49,6 +53,7 @@ class ProjectControllerIntegrationTest {
         req.setPrimaryColor("#FFFFFF");
         req.setTertiaryColor("#000000");
         req.setBuyerColor("#FF0000");
+        req.setImageIdentifier("image-integration-001");
         req.setBuyerName("Buyer Name");
         req.setCustomerId("cust-001");
         req.setLotIdentifiers(java.util.List.of("lot-001"));
@@ -79,6 +84,7 @@ class ProjectControllerIntegrationTest {
         req.setPrimaryColor("#FFFFFF");
         req.setTertiaryColor("#000000");
         req.setBuyerColor("#FF0000");
+        req.setImageIdentifier("image-integration-002");
         req.setBuyerName("Buyer Name");
         req.setCustomerId("cust-001");
         req.setLotIdentifiers(java.util.List.of("lot-001"));
