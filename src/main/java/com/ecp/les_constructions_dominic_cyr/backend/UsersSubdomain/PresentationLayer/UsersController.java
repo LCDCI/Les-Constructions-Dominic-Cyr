@@ -26,4 +26,24 @@ public class UsersController {
     public ResponseEntity<List<UserResponseModel>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResponseModel> getUserById(@PathVariable String userId) {
+        UserResponseModel responseModel = userService.getUserById(userId);
+        return ResponseEntity.ok(responseModel);
+    }
+
+    @GetMapping("/auth0/{auth0UserId}")
+    public ResponseEntity<UserResponseModel> getUserByAuth0Id(@PathVariable String auth0UserId) {
+        UserResponseModel responseModel = userService.getUserByAuth0Id(auth0UserId);
+        return ResponseEntity.ok(responseModel);
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<UserResponseModel> updateUser(
+            @PathVariable String userId,
+            @RequestBody UserUpdateRequestModel requestModel) {
+        UserResponseModel responseModel = userService.updateUser(userId, requestModel);
+        return ResponseEntity.ok(responseModel);
+    }
 }
