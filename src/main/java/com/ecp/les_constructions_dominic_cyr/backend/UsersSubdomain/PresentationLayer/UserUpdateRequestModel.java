@@ -1,10 +1,14 @@
 package com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer;
 
+import jakarta.validation.constraints.Email;
+
 public class UserUpdateRequestModel {
 
     private String firstName;
     private String lastName;
     private String phone;
+    
+    @Email(message = "Secondary email must be a valid email address")
     private String secondaryEmail;
 
     public UserUpdateRequestModel() {

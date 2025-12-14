@@ -103,18 +103,18 @@ public class UserServiceImpl implements UserService {
         Users user = usersRepository.findById(userIdentifier)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
-        // Update only the allowed fields
-        if (requestModel.getFirstName() != null) {
-            user.setFirstName(requestModel.getFirstName());
+        // Update only the allowed fields, checking for non-null and non-empty values
+        if (requestModel.getFirstName() != null && !requestModel.getFirstName().trim().isEmpty()) {
+            user.setFirstName(requestModel.getFirstName().trim());
         }
-        if (requestModel.getLastName() != null) {
-            user.setLastName(requestModel.getLastName());
+        if (requestModel.getLastName() != null && !requestModel.getLastName().trim().isEmpty()) {
+            user.setLastName(requestModel.getLastName().trim());
         }
-        if (requestModel.getPhone() != null) {
-            user.setPhone(requestModel.getPhone());
+        if (requestModel.getPhone() != null && !requestModel.getPhone().trim().isEmpty()) {
+            user.setPhone(requestModel.getPhone().trim());
         }
-        if (requestModel.getSecondaryEmail() != null) {
-            user.setSecondaryEmail(requestModel.getSecondaryEmail());
+        if (requestModel.getSecondaryEmail() != null && !requestModel.getSecondaryEmail().trim().isEmpty()) {
+            user.setSecondaryEmail(requestModel.getSecondaryEmail().trim());
         }
 
         user = usersRepository.save(user);

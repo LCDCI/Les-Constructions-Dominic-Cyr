@@ -42,7 +42,7 @@ public class UsersController {
     @PutMapping("/{userId}")
     public ResponseEntity<UserResponseModel> updateUser(
             @PathVariable String userId,
-            @RequestBody UserUpdateRequestModel requestModel) {
+            @RequestBody @jakarta.validation.Valid UserUpdateRequestModel requestModel) {
         UserResponseModel responseModel = userService.updateUser(userId, requestModel);
         return ResponseEntity.ok(responseModel);
     }
