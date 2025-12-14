@@ -17,10 +17,15 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
+import UsersPage from './pages/UsersPage';
+import PortalLogin from './pages/PortalLogin';
+
+
 import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
 import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
 import RenovationsPage from './pages/RenovationsPage';
 import './App.css';
+import './styles/users.css';
 
 export default function App() {
   return (
@@ -38,7 +43,7 @@ export default function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route path="/inquiries" element={<OwnerInquiriesPage />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/users" element={<UsersPage />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
             <Route path="/customer/dashboard" element={<CustomerDashboard />} />
             <Route
@@ -61,6 +66,8 @@ export default function App() {
               path="/projects/:projectId/photos"
               element={<ProjectPhotosPage />}
             />
+            <Route path="/portal/login" element={<PortalLogin />} />
+            <Route path="*" element={<NotFound />} />
             <Route
               path="/projects/:projectIdentifier/overview"
               element={<ProjectsOverviewPage />}
