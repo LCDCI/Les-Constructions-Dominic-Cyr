@@ -70,6 +70,7 @@ public class ProjectControllerUnitTest {
         testRequestModel.setPrimaryColor("#FFFFFF");
         testRequestModel.setTertiaryColor("#000000");
         testRequestModel. setBuyerColor("#FF0000");
+        testRequestModel.setImageIdentifier("image-unit-test-001");
         testRequestModel. setBuyerName("Test Buyer");
         testRequestModel. setCustomerId("cust-001");
         testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001"));

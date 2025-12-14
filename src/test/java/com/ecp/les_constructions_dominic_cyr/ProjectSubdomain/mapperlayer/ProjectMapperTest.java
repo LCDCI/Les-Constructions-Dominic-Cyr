@@ -70,6 +70,7 @@ public class ProjectMapperTest {
         requestModel.setPrimaryColor("#FFF");
         requestModel. setTertiaryColor("#000");
         requestModel.setBuyerColor("#F00");
+        requestModel.setImageIdentifier("img-test");
         requestModel.setBuyerName("Buyer");
         requestModel.setCustomerId("cust");
         requestModel.setLotIdentifiers(java.util.List.of("lot"));

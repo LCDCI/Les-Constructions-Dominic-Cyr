@@ -1,5 +1,3 @@
-// E2E: Create Project (API + UI verification)
-// Runs across desktop and mobile via Playwright projects configured in playwright.config.js
 
 import { test, expect } from '@playwright/test';
 import { ProjectsPage } from './pages/projects.page';
@@ -15,7 +13,7 @@ test.describe('Create Project - E2E', () => {
     const uniqueSuffix = Date.now().toString().slice(-6);
     const projectName = `E2E Project ${uniqueSuffix}`;
 
-    // Create project through backend API
+
     const createResponse = await page.request.post('/api/v1/projects', {
       data: {
         projectName,
@@ -29,7 +27,7 @@ test.describe('Create Project - E2E', () => {
         buyerName: 'E2E Tester',
         customerId: 'cust-e2e',
         progressPercentage: 10,
-        // imageIdentifier omitted; lotIdentifiers omitted intentionally
+
       },
       headers: {
         'Content-Type': 'application/json',
@@ -42,12 +40,12 @@ test.describe('Create Project - E2E', () => {
     expect(created.projectName).toBe(projectName);
     expect(created.status).toBe('IN_PROGRESS');
 
-    // Navigate to Projects page and verify the new project is displayed
+
     const projectsPage = new ProjectsPage(page);
     await projectsPage.goto();
     await expect(projectsPage.pageTitle).toBeVisible();
 
-    // Wait for the grid/cards to be present
+
     await expect(projectsPage.projectGrid).toBeVisible();
 
     const names = await projectsPage.getProjectNames();

@@ -24,7 +24,8 @@ public class ProjectMapper {
         project.setTertiaryColor(requestModel.getTertiaryColor());
         project.setBuyerColor(requestModel.getBuyerColor());
         project.setBuyerName(requestModel.getBuyerName());
-        project.setImageIdentifier(requestModel.getImageIdentifier());
+        // Set default empty string if imageIdentifier is null to satisfy NOT NULL constraint
+        project.setImageIdentifier(requestModel.getImageIdentifier() != null ? requestModel.getImageIdentifier() : "");
         project.setCustomerId(requestModel.getCustomerId());
         if (requestModel.getLotIdentifiers() != null) {
             project.setLotIdentifiers(new ArrayList<>(requestModel.getLotIdentifiers()));
