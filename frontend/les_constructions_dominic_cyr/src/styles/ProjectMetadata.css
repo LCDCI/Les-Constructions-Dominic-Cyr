@@ -1,0 +1,324 @@
+/* ProjectMetadata.css (Updated) */
+
+.project-metadata {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.metadata-hero {
+  position: relative;
+  /* Changed px to rem */
+  padding: 4rem 5%; 
+  color: white;
+  overflow: hidden;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  /* Changed px to % */
+  max-width: 90%; 
+  margin: 0 auto;
+}
+
+.project-title {
+  /* Changed rem to maintain readability */
+  font-size: 3rem; 
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.status-in-progress {
+  background-color: rgba(52, 152, 219, 0.9);
+}
+
+.status-completed {
+  background-color: rgba(46, 204, 113, 0.9);
+}
+
+.status-planned {
+  background-color: rgba(155, 89, 182, 0.9);
+}
+
+.status-delayed {
+  background-color: rgba(231, 76, 60, 0.9);
+}
+
+.status-cancelled {
+  background-color: rgba(149, 165, 166, 0.9);
+}
+
+.hero-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* REMOVED: opacity filter to show image clearly */
+  /* opacity: 0.3; */
+}
+
+.metadata-content {
+  /* Changed px to % */
+  max-width: 90%; 
+  margin: 0 auto;
+  /* Changed px to rem */
+  padding: 2rem 0; 
+}
+
+.metadata-section {
+  background: white;
+  border-radius: 8px;
+  /* Changed px to rem */
+  padding: 2rem; 
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.metadata-section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 3px solid currentColor;
+}
+
+.metadata-grid {
+  display: grid;
+  /* Changed minmax(250px, 1fr) to minmax for relative sizing */
+  grid-template-columns: repeat(auto-fit, minmax(20%, 1fr)); 
+  /* Changed px to rem */
+  gap: 1.5rem; 
+}
+
+.metadata-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metadata-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.metadata-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metadata-value {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.progress-bar {
+  width: 100%;
+  /* Kept px for fixed visual height */
+  height: 40px; 
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  transition: width 0.5s ease;
+}
+
+.project-description {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.project-description p {
+  line-height: 1.8;
+  color: #555;
+  font-size: 1.05rem;
+}
+
+.team-grid {
+  display: grid;
+  /* Changed minmax(280px, 1fr) to relative sizing */
+  grid-template-columns: repeat(auto-fit, minmax(25%, 1fr)); 
+  gap: 1.5rem;
+}
+
+.team-member {
+  padding: 1.5rem;
+  border: 2px solid;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.team-member h3 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.member-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 0.5rem;
+}
+
+.member-contact {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 0.25rem;
+}
+
+.buyer-info {
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.buyer-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0 4rem; 
+    max-width: 90%; 
+    margin: 0 auto;
+}
+
+.back-button {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+}
+
+a{
+  background-color: var(--project-primary);
+  color: white;
+  padding: 0.8%;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+a:hover {
+  background-color: var(--project-buyer);
+  color: white;
+}
+
+a,
+a:link,
+a:visited {
+  color: white;
+}
+
+
+.view-files-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* --- Loader/Error Styles (Small updates to use rem) --- */
+
+.metadata-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+}
+
+.spinner {
+  /* Changed px to rem */
+  width: 3.5rem; 
+  height: 3.5rem;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--project-primary, #3498db);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.metadata-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.metadata-error h2 {
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.metadata-error p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .project-title {
+    font-size: 2rem;
+  }
+
+  .hero-image {
+    display: none;
+  }
+
+  .metadata-content {
+    padding: 1rem;
+  }
+
+  .metadata-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}

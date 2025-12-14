@@ -20,8 +20,7 @@ import ContractorDashboard from './pages/ContractorDashboard';
 import CreateProjectPage from './pages/CreateProjectPage';
 import UsersPage from './pages/UsersPage';
 import PortalLogin from './pages/PortalLogin';
-
-
+import ProjectMetadata from './pages/ProjectMetadata';
 import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
 import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
 import RenovationsPage from './pages/RenovationsPage';
@@ -47,6 +46,10 @@ export default function App() {
             <Route path="/inquiries" element={<OwnerInquiriesPage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/owner/dashboard" element={<OwnerDashboard />} />
+            <Route
+              path="/projects/:projectId/metadata"
+              element={<ProjectMetadata />}
+            />
             <Route path="/customer/dashboard" element={<CustomerDashboard />} />
             <Route
               path="/salesperson/dashboard"

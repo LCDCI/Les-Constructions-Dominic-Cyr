@@ -16,8 +16,7 @@ const ProjectsPage = () => {
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
   // Use relative path to leverage Vite proxy
-  const apiBaseUrl =
-    import.meta.env.VITE_API_BASE_URL || '/api/v1';
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
   useEffect(() => {
     fetchProjects();
@@ -71,7 +70,7 @@ const ProjectsPage = () => {
   };
 
   const handleViewProject = projectIdentifier => {
-    window.location.href = `/projects/${projectIdentifier}`;
+    window.location.href = `/projects/${projectIdentifier}/metadata`;
   };
 
   const overlayStyle = {
@@ -159,47 +158,50 @@ const ProjectsPage = () => {
           {!loading && !error && (
             <div className="projects-grid">
               {filteredProjects.length > 0 ? (
-              filteredProjects.map(project => (
-                <div key={project.projectIdentifier} className="project-card">
-                  <div className="project-image-container">
-                    <img
-                      src={getImageUrl(project.imageIdentifier)}
-                      alt={project.projectName}
-                      className="project-image"
-                    />
+                filteredProjects.map(project => (
+                  <div key={project.projectIdentifier} className="project-card">
+                    <div className="project-image-container">
+                      <img
+                        src={getImageUrl(project.imageIdentifier)}
+                        alt={project.projectName}
+                        className="project-image"
+                      />
+                    </div>
+                    <h2 className="project-title">{project.projectName}</h2>
+                    <p className="project-description">
+                      {project.projectDescription}
+                    </p>
+                    <a
+                      href={`/projects/${project.projectIdentifier}/metadata`}
+                      className="project-button"
+                    >
+                      View this project
+                    </a>
                   </div>
-                  <h2 className="project-title">{project.projectName}</h2>
-                  <p className="project-description">
-                    {project.projectDescription}
-                  </p>
-                  <button
-                    className="project-button"
-                    onClick={() => handleViewProject(project.projectIdentifier)}
-                  >
-                    View this project
-                  </button>
+                ))
+              ) : (
+                <div className="no-results">
+                  <p>No projects found matching &quot;{searchTerm}&quot;</p>
                 </div>
-              ))
-            ) : (
-              <div className="no-results">
-                <p>No projects found matching &quot;{searchTerm}&quot;</p>
-              </div>
-            )}
+              )}
             </div>
           )}
 
-          {!loading && !error && filteredProjects.length === 0 && searchTerm === '' && (
-            <div className="no-projects">
-              <p>No projects available. Create your first project!</p>
-            </div>
-          )}
+          {!loading &&
+            !error &&
+            filteredProjects.length === 0 &&
+            searchTerm === '' && (
+              <div className="no-projects">
+                <p>No projects available. Create your first project!</p>
+              </div>
+            )}
 
           {isCreateOpen && (
             <div
               style={overlayStyle}
               role="dialog"
               aria-modal="true"
-              onClick={(e) => {
+              onClick={e => {
                 if (showConfirmClose) return;
                 if (e.target === e.currentTarget) setShowConfirmClose(true);
               }}
@@ -209,13 +211,11 @@ const ProjectsPage = () => {
                   <h1>Create New Project</h1>
                 </div>
                 {submitError && (
-                  <div className="error-message">
-                    {submitError}
-                  </div>
+                  <div className="error-message">{submitError}</div>
                 )}
                 <CreateProjectForm
                   onCancel={() => setShowConfirmClose(true)}
-                  onSuccess={(projectIdentifier) => {
+                  onSuccess={projectIdentifier => {
                     setIsCreateOpen(false);
                     fetchProjects();
                   }}
@@ -227,12 +227,18 @@ const ProjectsPage = () => {
 
           {isCreateOpen && showConfirmClose && (
             <div style={confirmOverlayStyle} role="dialog" aria-modal="true">
-              <div style={confirmBoxStyle} onClick={(e) => e.stopPropagation()}>
+              <div style={confirmBoxStyle} onClick={e => e.stopPropagation()}>
                 <h2 style={{ marginTop: 0 }}>Leave form?</h2>
                 <p style={{ margin: '0.5rem 0 1rem 0' }}>
                   If you exit now, any information you’ve entered will be lost.
                 </p>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '0.5rem',
+                  }}
+                >
                   <button
                     type="button"
                     className="btn-cancel"
