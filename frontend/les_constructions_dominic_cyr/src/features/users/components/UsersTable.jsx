@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 
-export default function UsersTable({ users }) {
+export default function UsersTable({ users, onEditUser }) {
   if (!users || users.length === 0) {
     return <p>No users found.</p>;
   }
@@ -15,6 +15,7 @@ export default function UsersTable({ users }) {
           <th>Secondary email</th>
           <th>Phone</th>
           <th>Role</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -26,6 +27,14 @@ export default function UsersTable({ users }) {
             <td>{u.secondaryEmail}</td>
             <td>{u.phone}</td>
             <td>{u.userRole}</td>
+            <td>
+              <button
+                onClick={() => onEditUser && onEditUser(u)}
+                className="edit-user-button"
+              >
+                Edit
+              </button>
+            </td>
           </tr>
         ))}
       </tbody>
