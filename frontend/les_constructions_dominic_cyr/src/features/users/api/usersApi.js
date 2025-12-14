@@ -18,3 +18,19 @@ export async function createUser(payload) {
   const response = await axios.post(`${API_BASE}/users`, payload);
   return response.data;
 }
+
+/**
+ * GET a user by ID
+ */
+export async function fetchUserById(userId) {
+  const response = await axios.get(`${API_BASE}/users/${userId}`);
+  return response.data;
+}
+
+/**
+ * UPDATE a user
+ */
+export async function updateUser(userId, payload) {
+  const response = await axios.put(`${API_BASE}/users/${userId}`, payload);
+  return response.data;
+}

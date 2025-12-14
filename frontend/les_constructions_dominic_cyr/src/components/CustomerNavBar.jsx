@@ -164,6 +164,18 @@ const Navbar = () => {
             <ul className="navbar-menu">
               <li className="navbar-item">
                 <Link
+                  to="/profile"
+                  className={`navbar-link ${isActive('/profile')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoGear />
+                  </span>
+                  <span className="navbar-text">My Profile</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
                   to="/account"
                   className={`navbar-link ${isActive('/account')}`}
                   onClick={closeMenu}
