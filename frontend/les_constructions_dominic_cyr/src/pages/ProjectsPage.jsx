@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/projects.css';
 import '../styles/create-project.css';
-import Footer from '../components/AppFooter';
 import CreateProjectForm from '../features/projects/components/CreateProjectForm';
 
 const ProjectsPage = () => {
