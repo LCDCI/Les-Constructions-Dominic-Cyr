@@ -45,6 +45,7 @@ export default defineConfig(async () => {
           target: `http://localhost:${BACKEND_PORT}`,
           changeOrigin: true,
           secure: false,
+          ws: true,
         },
       },
     },

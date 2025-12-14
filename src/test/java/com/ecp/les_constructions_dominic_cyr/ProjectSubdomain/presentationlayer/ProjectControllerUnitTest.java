@@ -27,6 +27,7 @@ import static org. springframework.test.web.servlet.request. MockMvcRequestBuild
 import static org.springframework.test.web. servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProjectController.class)
+@org.springframework.context.annotation.Import(com.ecp.les_constructions_dominic_cyr.backend.utils.GlobalControllerExceptionHandler.class)
 public class ProjectControllerUnitTest {
 
     @Autowired
@@ -56,7 +57,7 @@ public class ProjectControllerUnitTest {
                 . buyerColor("#FF0000")
                 .buyerName("Test Buyer")
                 .customerId("cust-001")
-                . lotIdentifier("lot-001")
+                .lotIdentifiers(java.util.Arrays.asList("lot-001"))
                 .progressPercentage(50)
                 .build();
 
@@ -69,9 +70,10 @@ public class ProjectControllerUnitTest {
         testRequestModel.setPrimaryColor("#FFFFFF");
         testRequestModel.setTertiaryColor("#000000");
         testRequestModel. setBuyerColor("#FF0000");
+        testRequestModel.setImageIdentifier("image-unit-test-001");
         testRequestModel. setBuyerName("Test Buyer");
         testRequestModel. setCustomerId("cust-001");
-        testRequestModel. setLotIdentifier("lot-001");
+        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001"));
         testRequestModel.setProgressPercentage(50);
     }
 
@@ -205,5 +207,19 @@ public class ProjectControllerUnitTest {
                 .andExpect(status(). isNoContent());
 
         verify(projectService, times(1)). deleteProject("proj-001");
+    }
+
+    @Test
+    void createProject_WithInvalidData_ReturnsBadRequest() throws Exception {
+        // Make service throw InvalidProjectDataException to simulate validation failure
+        doThrow(new com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidProjectDataException("Invalid project data"))
+                .when(projectService).createProject(any(ProjectRequestModel.class));
+
+        mockMvc.perform(post("/api/v1/projects")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(testRequestModel)))
+                .andExpect(status().isBadRequest());
+
+        verify(projectService, times(1)).createProject(any(ProjectRequestModel.class));
     }
 }

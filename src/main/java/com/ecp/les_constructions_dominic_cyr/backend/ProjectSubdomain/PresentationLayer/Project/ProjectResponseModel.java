@@ -2,11 +2,12 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import lombok.AllArgsConstructor;
-import lombok. Builder;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -26,6 +27,6 @@ public class ProjectResponseModel {
     private String buyerName;
     private String imageIdentifier;
     private String customerId;
-    private String lotIdentifier;
+    private List<String> lotIdentifiers;
     private Integer progressPercentage;
 }

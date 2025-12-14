@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,6 +24,6 @@ public class ProjectRequestModel {
     private String buyerName;
     private String imageIdentifier;
     private String customerId;
-    private String lotIdentifier;
+    private List<String> lotIdentifiers;
     private Integer progressPercentage;
 }

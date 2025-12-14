@@ -17,6 +17,7 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
+import CreateProjectPage from './pages/CreateProjectPage';
 import UsersPage from './pages/UsersPage';
 import PortalLogin from './pages/PortalLogin';
 
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/lots" element={<LotsPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/projects/create" element={<CreateProjectPage />} />
             <Route path="/houses" element={<HousesPage />} />
             <Route path="/renovations" element={<RenovationsPage />} />
             <Route path="/contact" element={<ContactPage />} />
