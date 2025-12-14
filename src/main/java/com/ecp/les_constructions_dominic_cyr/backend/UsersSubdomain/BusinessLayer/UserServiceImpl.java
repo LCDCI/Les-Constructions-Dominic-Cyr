@@ -1,16 +1,19 @@
 package com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.MapperLayer.UserMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserCreateRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserUpdateRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -74,6 +77,48 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(user -> UserMapper.toResponseModel(user, null))
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponseModel getUserById(String userId) {
+        UserIdentifier userIdentifier = UserIdentifier.fromString(userId);
+        Users user = usersRepository.findById(userIdentifier)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+        return UserMapper.toResponseModel(user, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserResponseModel getUserByAuth0Id(String auth0UserId) {
+        Users user = usersRepository.findByAuth0UserId(auth0UserId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with Auth0 ID: " + auth0UserId));
+        return UserMapper.toResponseModel(user, null);
+    }
+
+    @Override
+    @Transactional
+    public UserResponseModel updateUser(String userId, UserUpdateRequestModel requestModel) {
+        UserIdentifier userIdentifier = UserIdentifier.fromString(userId);
+        Users user = usersRepository.findById(userIdentifier)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        // Update only the allowed fields
+        if (requestModel.getFirstName() != null) {
+            user.setFirstName(requestModel.getFirstName());
+        }
+        if (requestModel.getLastName() != null) {
+            user.setLastName(requestModel.getLastName());
+        }
+        if (requestModel.getPhone() != null) {
+            user.setPhone(requestModel.getPhone());
+        }
+        if (requestModel.getSecondaryEmail() != null) {
+            user.setSecondaryEmail(requestModel.getSecondaryEmail());
+        }
+
+        user = usersRepository.save(user);
+        return UserMapper.toResponseModel(user, null);
     }
 
 }

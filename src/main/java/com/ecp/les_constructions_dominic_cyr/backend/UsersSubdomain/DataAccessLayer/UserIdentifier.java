@@ -24,6 +24,10 @@ public class UserIdentifier implements Serializable {
         return new UserIdentifier(UUID.randomUUID());
     }
 
+    public static UserIdentifier fromString(String uuidString) {
+        return new UserIdentifier(UUID.fromString(uuidString));
+    }
+
     public UUID getUserId() {
         return userId;
     }
