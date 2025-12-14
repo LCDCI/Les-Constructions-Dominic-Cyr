@@ -24,6 +24,7 @@ import ProjectMetadata from './pages/ProjectMetadata';
 import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
 import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
 import RenovationsPage from './pages/RenovationsPage';
+import ProfilePage from './pages/ProfilePage';
 import './App.css';
 import './styles/users.css';
 
@@ -72,6 +73,7 @@ export default function App() {
               element={<ProjectPhotosPage />}
             />
             <Route path="/portal/login" element={<PortalLogin />} />
+            <Route path="/profile" element={<ProfilePage />} />
             <Route path="*" element={<NotFound />} />
             <Route
               path="/projects/:projectIdentifier/overview"
