@@ -18,6 +18,9 @@ import ProjectFilesPage from './pages/ProjectFilesPage';
 import ProjectPhotosPage from './pages/ProjectPhotosPage';
 import ContractorDashboard from './pages/ContractorDashboard';
 import CreateProjectPage from './pages/CreateProjectPage';
+import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
+import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
+import RenovationsPage from './pages/RenovationsPage';
 import './App.css';
 
 export default function App() {
@@ -33,6 +36,7 @@ export default function App() {
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/projects/create" element={<CreateProjectPage />} />
             <Route path="/houses" element={<HousesPage />} />
+            <Route path="/renovations" element={<RenovationsPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route path="/inquiries" element={<OwnerInquiriesPage />} />
@@ -42,6 +46,10 @@ export default function App() {
             <Route
               path="/salesperson/dashboard"
               element={<SalespersonDashboard />}
+            />
+            <Route
+              path="/residential-projects"
+              element={<ResidentialProjectsPage />}
             />
             <Route
               path="/contractor/dashboard"
@@ -54,6 +62,10 @@ export default function App() {
             <Route
               path="/projects/:projectId/photos"
               element={<ProjectPhotosPage />}
+            />
+            <Route
+              path="/projects/:projectIdentifier/overview"
+              element={<ProjectsOverviewPage />}
             />
           </Routes>
         </main>

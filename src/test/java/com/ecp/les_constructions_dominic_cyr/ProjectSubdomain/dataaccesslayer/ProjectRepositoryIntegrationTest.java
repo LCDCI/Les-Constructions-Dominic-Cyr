@@ -40,6 +40,7 @@ public class ProjectRepositoryIntegrationTest {
         testProject.setPrimaryColor("#FFFFFF");
         testProject. setTertiaryColor("#000000");
         testProject. setBuyerColor("#FF0000");
+        testProject.setImageIdentifier("image-001");
         testProject.setBuyerName("Test Buyer");
         testProject.setCustomerId("cust-001");
         testProject.setLotIdentifiers(new java.util.ArrayList<>(java.util.List.of("lot-001")));

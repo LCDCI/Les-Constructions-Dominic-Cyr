@@ -87,9 +87,10 @@ public class ProjectServiceUnitTest {
         testProject.setPrimaryColor("#FFFFFF");
         testProject.setTertiaryColor("#000000");
         testProject.setBuyerColor("#FF0000");
-        testProject. setBuyerName("Test Buyer");
+        testProject.setImageIdentifier("473f9e87-3415-491c-98a9-9d017c251911");
+        testProject.setBuyerName("Test Buyer");
         testProject.setCustomerId("cust-001");
-        testProject. setLotIdentifier("lot-001");
+        testProject.setLotIdentifier("lot-001");
         testProject.setProgressPercentage(50);
 
         testRequestModel = new ProjectRequestModel();
@@ -101,6 +102,7 @@ public class ProjectServiceUnitTest {
         testRequestModel.setPrimaryColor("#FFFFFF");
         testRequestModel.setTertiaryColor("#000000");
         testRequestModel. setBuyerColor("#FF0000");
+        testProject.setImageIdentifier("473f9e87-3415-491c-98a9-9d017c251911");
         testRequestModel. setBuyerName("Test Buyer");
         testRequestModel. setCustomerId("cust-001");
         testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001"));
@@ -116,6 +118,7 @@ public class ProjectServiceUnitTest {
                 .primaryColor("#FFFFFF")
                 .tertiaryColor("#000000")
                 .buyerColor("#FF0000")
+                .imageIdentifier("473f9e87-3415-491c-98a9-9d017c251911")
                 .buyerName("Test Buyer")
                 . customerId("cust-001")
                 .lotIdentifiers(java.util.Arrays.asList("lot-001"))
