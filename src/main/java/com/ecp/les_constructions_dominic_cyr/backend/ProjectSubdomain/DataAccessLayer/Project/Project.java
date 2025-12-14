@@ -47,6 +47,7 @@ public class Project {
     @Column(nullable = true)
     private String buyerName;
 
+    @Column(nullable = false)
     private String imageIdentifier;
 
     @Column(nullable = true)
