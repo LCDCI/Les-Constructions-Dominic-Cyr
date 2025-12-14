@@ -151,37 +151,11 @@ const ProjectCard = ({ project, onEdit, canEdit }) => {
           onClick={() =>
             (window.location.href = `/projects/${project.projectIdentifier}`)
           }
-          style={{
-            padding: '8px 20px',
-            backgroundColor: '#4D85B9',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '500',
-          }}
         >
           View this project
         </button>
 
-        {canEdit && (
-          <button
-            onClick={() => onEdit(project)}
-            style={{
-              padding: '8px 20px',
-              backgroundColor: 'white',
-              color: '#4D85B9',
-              border: '2px solid #4D85B9',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-            }}
-          >
-            Edit
-          </button>
-        )}
+        {canEdit && <button onClick={() => onEdit(project)}>Edit</button>}
       </div>
     </div>
   );

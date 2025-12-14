@@ -4,18 +4,15 @@
     box-sizing: border-box;
 }
 
+
 :root {
-    --primary-color: #4A90A4;
-    --secondary-color: #2C3E50;
+    --primary-color: #4C4D4F;
+    --secondary-color: #E6E7E8;
     --accent-color: #5A7D8C;
-    --card-background: #E8EEF2;
+    --card-background: #AAB2A6;
     --white: #FFFFFF;
     --text-primary: var(--primary-color);
     --background-color: #F5F7FA;
-    /* Removed default mappings for dynamic project colors to prevent interference */
-    /* --buyer-color: var(--accent-color); */
-    /* --tertiary-color: var(--card-background); */
-    /* --background-color-tertiary: var(--card-background); */
     --border-radius: 8px;
     --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
@@ -50,7 +47,6 @@ button {
 
 a {
     text-decoration: none;
-    color: inherit;
     transition: var(--transition);
 }
 
