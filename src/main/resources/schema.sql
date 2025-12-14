@@ -89,23 +89,26 @@ CREATE INDEX IF NOT EXISTS idx_task_date ON schedules(task_date);
 
 DROP TABLE IF EXISTS users CASCADE;
 
-CREATE TABLE users (
-                       user_id UUID PRIMARY KEY,
+CREATE TABLE users
+(
+    user_id         UUID PRIMARY KEY,
 
-                       first_name VARCHAR(255) NOT NULL,
-                       last_name VARCHAR(255) NOT NULL,
+    first_name      VARCHAR(255) NOT NULL,
+    last_name       VARCHAR(255) NOT NULL,
 
-                       email VARCHAR(255) NOT NULL,
-                       secondary_email VARCHAR(255),
+    email           VARCHAR(255) NOT NULL,
+    secondary_email VARCHAR(255),
 
-                       phone VARCHAR(255),
+    phone           VARCHAR(255),
 
-                       user_role VARCHAR(50) NOT NULL,
+    user_role       VARCHAR(50)  NOT NULL,
 
-                       auth0_user_id VARCHAR(255),
+    auth0_user_id   VARCHAR(255),
 
-                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 DROP TABLE IF EXISTS project_overview_content CASCADE;
 DROP TABLE IF EXISTS project_features CASCADE;
 DROP TABLE IF EXISTS project_gallery_images CASCADE;
