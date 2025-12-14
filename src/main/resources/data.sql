@@ -53,6 +53,9 @@ INSERT INTO projects (
     buyer_name,
     image_identifier,
     customer_id,
+    contractor_id,
+    salesperson_id,
+    location,
     lot_identifier,
     progress_percentage
 ) VALUES
@@ -67,10 +70,13 @@ INSERT INTO projects (
           '#DFE1DF',
           '#003663',
           'Marc Tremblay',
-       '473f9e87-3415-491c-98a9-9d017c251911',
-          'cust-001',
+          '473f9e87-3415-491c-98a9-9d017c251911',
+          '44444444-4444-4444-4444-444444444444',
+          '22222222-2222-2222-2222-222222222222',
+          '33333333-3333-3333-3333-333333333333',
+          '104 rue du Boisé, St-Alphonse de Granby, Granby, QC J2J 2X4',
           'f3c8837d-bd65-4bc5-9f01-cb9082fc657e',
-          0
+          90
       ),
       (
           'proj-002-panorama',
@@ -79,14 +85,17 @@ INSERT INTO projects (
           'IN_PROGRESS',
           '2025-02-01',
           '2026-01-31',
-           '#737373',
+          '#737373',
           '#F6F4F1',
           '#545454',
           'Sylvie Lapointe',
-       '6c8127f5-4529-4118-9ab1-cbcb38c4266a',
-          'cust-002',
+          '6c8127f5-4529-4118-9ab1-cbcb38c4266a',
+          '44444444-4444-4444-4444-444444444444',
+          '22222222-2222-2222-2222-222222222222',
+          '33333333-3333-3333-3333-333333333333',
+          'Sutton, Quebec',
           '5a82954c-8e2c-466a-8a8f-9983b79ede63',
-          0
+          80
       );
 
 INSERT INTO schedules (schedule_identifier, task_date, task_description, lot_number, day_of_week) VALUES
@@ -161,3 +170,11 @@ INSERT INTO project_gallery_images (project_identifier, image_identifier, image_
 ('proj-002-panorama', 'ee576ed6-5d56-4d54-ba25-7157f7b75d0d', 'Building Exterior', 1),
 ('proj-002-panorama', 'ee576ed6-5d56-4d54-ba25-7157f7b75d0d', 'Condo Interior', 2),
 ('proj-002-panorama', 'ee576ed6-5d56-4d54-ba25-7157f7b75d0d', 'Amenities', 3);
+
+
+INSERT INTO users (user_id, first_name, last_name, email, secondary_email, phone, user_role, auth0_user_id)
+VALUES
+    ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'auth0|owner123'),
+    ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'auth0|contractor123'),
+    ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'sales@test.com', NULL, '514-333-3333', 'SALESPERSON', 'auth0|sales123'),
+    ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'auth0|customer123');

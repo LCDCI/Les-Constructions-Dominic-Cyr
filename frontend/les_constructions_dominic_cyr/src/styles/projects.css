@@ -35,7 +35,7 @@
 }
 
 .create-project-button {
-    background-color: #4D85B9;
+    background-color: var(--primary-color);
     color: white;
     padding: 12px 24px;
     border: none;
@@ -47,7 +47,7 @@
 }
 
 .create-project-button:hover {
-    background-color: #1565c0;
+    background-color: var(--accent-color);
 }
 
 .projects-loading {
@@ -182,7 +182,7 @@
 }
 
 .project-button {
-    background-color: #4D85B9;
+    background-color: var(--primary-color);
     color: var(--white);
     padding: 3% 8%;
     border-radius: 25px;
@@ -194,8 +194,12 @@
 }
 
 .project-button:hover {
-    background-color: #1565c0;
+    background-color: var(--background-color);
     transform: scale(1.05);
+}
+
+.project-button:visited {
+    color: var(--white);
 }
 
 .no-results {

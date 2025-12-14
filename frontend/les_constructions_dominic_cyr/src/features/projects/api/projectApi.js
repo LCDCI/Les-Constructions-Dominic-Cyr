@@ -1,6 +1,5 @@
 // Use relative path to leverage Vite proxy
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 const FILES_SERVICE_BASE_URL =
   import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
@@ -42,7 +41,7 @@ export const projectApi = {
         },
         body: JSON.stringify(projectData),
       });
-      
+
       if (!response.ok) {
         let errorMessage = `Failed to create project (${response.status})`;
         // Read response as text first, then try to parse as JSON
@@ -69,7 +68,9 @@ export const projectApi = {
       return response.json();
     } catch (error) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error('Network error: Could not connect to server. Please check if the backend is running.');
+        throw new Error(
+          'Network error: Could not connect to server. Please check if the backend is running.'
+        );
       }
       throw error;
     }
