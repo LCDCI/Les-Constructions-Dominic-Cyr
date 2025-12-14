@@ -230,7 +230,8 @@
     text-transform: uppercase;
 }
 
-a{
+
+.project-metadata-back{
   background-color: var(--project-primary);
   color: white;
   padding: 0.8%;
@@ -238,14 +239,8 @@ a{
   text-decoration: none;
 }
 
-a:hover {
+.project-metadata-back:hover {
   background-color: var(--project-buyer);
-  color: white;
-}
-
-a,
-a:link,
-a:visited {
   color: white;
 }
 

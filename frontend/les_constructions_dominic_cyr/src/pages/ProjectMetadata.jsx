@@ -242,7 +242,7 @@ const ProjectMetadata = () => {
       </div>
 
       <div className="button-container">
-        <a href={`/projects`} className="view-files-link">
+        <a href={`/projects`} className="project-metadata-back">
           Back to projects
         </a>
       </div>
