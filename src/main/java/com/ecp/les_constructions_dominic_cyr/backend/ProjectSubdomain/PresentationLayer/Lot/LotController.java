@@ -13,7 +13,14 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/lots")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://localhost",
+        "http://127.0.0.1"
+})
 public class LotController {
     private final LotService lotService;
     private static final int UUID_LENGTH = 36;

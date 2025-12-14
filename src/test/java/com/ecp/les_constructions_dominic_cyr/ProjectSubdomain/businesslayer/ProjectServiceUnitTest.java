@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org. mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@org.mockito.junit.jupiter.MockitoSettings(strictness = org.mockito.quality.Strictness.LENIENT)
 public class ProjectServiceUnitTest {
 
     @Mock
@@ -56,6 +57,12 @@ public class ProjectServiceUnitTest {
 
     @Mock
     private Predicate predicate;
+
+    @Mock
+    private com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository lotRepository;
+
+    @Mock
+    private com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Project.FileServiceClient fileServiceClient;
 
     @InjectMocks
     private ProjectServiceImpl projectService;
@@ -98,7 +105,7 @@ public class ProjectServiceUnitTest {
         testProject.setImageIdentifier("473f9e87-3415-491c-98a9-9d017c251911");
         testRequestModel. setBuyerName("Test Buyer");
         testRequestModel. setCustomerId("cust-001");
-        testRequestModel. setLotIdentifier("lot-001");
+        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001"));
         testRequestModel.setProgressPercentage(50);
 
         testResponseModel = ProjectResponseModel.builder()
@@ -114,11 +121,140 @@ public class ProjectServiceUnitTest {
                 .imageIdentifier("473f9e87-3415-491c-98a9-9d017c251911")
                 .buyerName("Test Buyer")
                 . customerId("cust-001")
-                .lotIdentifier("lot-001")
+                .lotIdentifiers(java.util.Arrays.asList("lot-001"))
                 .progressPercentage(50)
                 .build();
+
+        // Stub lot existence validation to pass
+        when(lotRepository.findByLotIdentifier_LotId(any())).thenReturn(
+                new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot(
+                        new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier("lot-001"),
+                        "Loc", 100f, "10x10",
+                        com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus.AVAILABLE
+                )
+        );
+        // Default file validation to false (won't be used unless imageIdentifier set)
+        when(fileServiceClient.validateFileExists(any())).thenReturn(reactor.core.publisher.Mono.just(true));
     }
 
+    @Test
+    void createProject_WithImageIdentifierExisting_Succeeds() {
+        // Arrange
+        testRequestModel.setImageIdentifier("img-123");
+        when(projectMapper.requestModelToEntity(testRequestModel)).thenReturn(testProject);
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+        when(fileServiceClient.validateFileExists("img-123")).thenReturn(reactor.core.publisher.Mono.just(true));
+
+        // Act
+        ProjectResponseModel result = projectService.createProject(testRequestModel);
+
+        // Assert
+        assertNotNull(result);
+        verify(fileServiceClient, times(1)).validateFileExists("img-123");
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void createProject_WithImageIdentifierMissing_ThrowsInvalidProjectDataException() {
+        // Arrange
+        testRequestModel.setImageIdentifier("missing-img");
+        when(fileServiceClient.validateFileExists("missing-img")).thenReturn(reactor.core.publisher.Mono.just(false));
+
+        // Act & Assert
+        assertThrows(InvalidProjectDataException.class, () -> projectService.createProject(testRequestModel));
+        verify(fileServiceClient, times(1)).validateFileExists("missing-img");
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void createProject_ImageIdentifierNullOrEmpty_DoesNotInvokeValidation() {
+        // Arrange base stubs for happy path
+        when(projectMapper.requestModelToEntity(any())).thenReturn(testProject);
+        when(projectRepository.save(any())).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(any())).thenReturn(testResponseModel);
+
+        // Case: null
+        testRequestModel.setImageIdentifier(null);
+        ProjectResponseModel r1 = projectService.createProject(testRequestModel);
+        assertNotNull(r1);
+        verify(fileServiceClient, never()).validateFileExists(any());
+
+        // Case: empty/blank
+        testRequestModel.setImageIdentifier("   ");
+        ProjectResponseModel r2 = projectService.createProject(testRequestModel);
+        assertNotNull(r2);
+        verify(fileServiceClient, never()).validateFileExists(any());
+
+        // Case: literal "null" (case-insensitive)
+        testRequestModel.setImageIdentifier("NuLl");
+        ProjectResponseModel r3 = projectService.createProject(testRequestModel);
+        assertNotNull(r3);
+        verify(fileServiceClient, never()).validateFileExists(any());
+    }
+
+    @Test
+    void createProject_WithLotIdentifiersContainingNull_ThrowsInvalidProjectDataException() {
+        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001", null));
+        assertThrows(InvalidProjectDataException.class, () -> projectService.createProject(testRequestModel));
+    }
+
+    @Test
+    void createProject_WithMissingLot_ThrowsNotFoundException() {
+        when(lotRepository.findByLotIdentifier_LotId("missing-lot")).thenReturn(null);
+        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("missing-lot"));
+        assertThrows(com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException.class,
+                () -> projectService.createProject(testRequestModel));
+    }
+
+    @Test
+    void updateProject_WithImageIdentifierExisting_Succeeds() {
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        testRequestModel.setImageIdentifier("img-123");
+        when(fileServiceClient.validateFileExists("img-123")).thenReturn(reactor.core.publisher.Mono.just(true));
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(fileServiceClient, times(1)).validateFileExists("img-123");
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithImageIdentifierMissing_ThrowsInvalidProjectDataException() {
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        testRequestModel.setImageIdentifier("missing-img");
+        when(fileServiceClient.validateFileExists("missing-img")).thenReturn(reactor.core.publisher.Mono.just(false));
+
+        assertThrows(InvalidProjectDataException.class, () -> projectService.updateProject("proj-001", testRequestModel));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void filterProjects_SpecificationLambda_AllParams_Executes() {
+        // Arrange
+        LocalDate start = LocalDate.now();
+        LocalDate end = LocalDate.now().plusDays(1);
+        when(projectRepository.findAll(any(Specification.class))).thenReturn(java.util.Collections.emptyList());
+
+        // Act
+        projectService.filterProjects(ProjectStatus.IN_PROGRESS, start, end, "cust-1");
+
+        // Capture and execute lambda
+        org.mockito.ArgumentCaptor<Specification<Project>> captor = org.mockito.ArgumentCaptor.forClass(Specification.class);
+        verify(projectRepository).findAll(captor.capture());
+        Specification<Project> spec = captor.getValue();
+
+        when(criteriaBuilder.equal(any(), any())).thenReturn(predicate);
+        when(criteriaBuilder.greaterThanOrEqualTo(any(), any(LocalDate.class))).thenReturn(predicate);
+        when(criteriaBuilder.lessThanOrEqualTo(any(), any(LocalDate.class))).thenReturn(predicate);
+        when(criteriaBuilder.and(any(jakarta.persistence.criteria.Predicate[].class))).thenReturn(predicate);
+
+        jakarta.persistence.criteria.Predicate built = spec.toPredicate(root, criteriaQuery, criteriaBuilder);
+        assertNotNull(built);
+    }
     @Test
     void getAllProjects_WhenProjectsExist_ReturnsListOfProjects() {
         List<Project> projects = Arrays.asList(testProject);

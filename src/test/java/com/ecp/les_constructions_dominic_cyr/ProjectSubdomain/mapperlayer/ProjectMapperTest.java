@@ -36,7 +36,7 @@ public class ProjectMapperTest {
         requestModel. setBuyerName("Test Buyer");
         requestModel.setImageIdentifier("img-001");
         requestModel.setCustomerId("cust-001");
-        requestModel.setLotIdentifier("lot-001");
+        requestModel.setLotIdentifiers(java.util.List.of("lot-001"));
         requestModel.setProgressPercentage(50);
 
         Project result = projectMapper. requestModelToEntity(requestModel);
@@ -56,7 +56,8 @@ public class ProjectMapperTest {
         assertEquals("Test Buyer", result.getBuyerName());
         assertEquals("img-001", result.getImageIdentifier());
         assertEquals("cust-001", result.getCustomerId());
-        assertEquals("lot-001", result.getLotIdentifier());
+        assertNotNull(result.getLotIdentifiers());
+        assertTrue(result.getLotIdentifiers().contains("lot-001"));
         assertEquals(50, result. getProgressPercentage());
     }
 
@@ -69,9 +70,10 @@ public class ProjectMapperTest {
         requestModel.setPrimaryColor("#FFF");
         requestModel. setTertiaryColor("#000");
         requestModel.setBuyerColor("#F00");
+        requestModel.setImageIdentifier("img-test");
         requestModel.setBuyerName("Buyer");
         requestModel.setCustomerId("cust");
-        requestModel. setLotIdentifier("lot");
+        requestModel.setLotIdentifiers(java.util.List.of("lot"));
 
         Project result1 = projectMapper. requestModelToEntity(requestModel);
         Project result2 = projectMapper.requestModelToEntity(requestModel);
@@ -95,7 +97,7 @@ public class ProjectMapperTest {
         project.setBuyerName("Test Buyer");
         project.setImageIdentifier("img-001");
         project.setCustomerId("cust-001");
-        project. setLotIdentifier("lot-001");
+        project.setLotIdentifiers(java.util.List.of("lot-001"));
         project.setProgressPercentage(100);
 
         ProjectResponseModel result = projectMapper.entityToResponseModel(project);
@@ -114,7 +116,8 @@ public class ProjectMapperTest {
         assertEquals("Test Buyer", result. getBuyerName());
         assertEquals("img-001", result. getImageIdentifier());
         assertEquals("cust-001", result.getCustomerId());
-        assertEquals("lot-001", result. getLotIdentifier());
+        assertNotNull(result.getLotIdentifiers());
+        assertTrue(result.getLotIdentifiers().contains("lot-001"));
         assertEquals(100, result.getProgressPercentage());
     }
 
@@ -130,7 +133,7 @@ public class ProjectMapperTest {
         project. setBuyerColor("#FF0000");
         project.setBuyerName("Test Buyer");
         project.setCustomerId("cust-001");
-        project.setLotIdentifier("lot-001");
+        project.setLotIdentifiers(java.util.List.of("lot-001"));
 
         ProjectResponseModel result = projectMapper.entityToResponseModel(project);
 
@@ -161,8 +164,8 @@ public class ProjectMapperTest {
         requestModel.setBuyerColor("#333333");
         requestModel. setBuyerName("New Buyer");
         requestModel.setImageIdentifier("new-img");
-        requestModel. setCustomerId("new-cust");
-        requestModel.setLotIdentifier("new-lot");
+        requestModel.setCustomerId("new-cust");
+        requestModel.setLotIdentifiers(java.util.List.of("new-lot"));
         requestModel.setProgressPercentage(75);
 
         projectMapper.updateEntityFromRequestModel(requestModel, project);
@@ -179,7 +182,8 @@ public class ProjectMapperTest {
         assertEquals("New Buyer", project.getBuyerName());
         assertEquals("new-img", project.getImageIdentifier());
         assertEquals("new-cust", project.getCustomerId());
-        assertEquals("new-lot", project.getLotIdentifier());
+        assertNotNull(project.getLotIdentifiers());
+        assertTrue(project.getLotIdentifiers().contains("new-lot"));
         assertEquals(75, project.getProgressPercentage());
     }
 
