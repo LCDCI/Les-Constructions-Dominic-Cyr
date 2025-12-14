@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.dataaccesslayer;
+package com.ecp.les_constructions_dominic_cyr.CommunicationSubdomain.dataaccesslayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.Inquiry;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.InquiryRepository;
