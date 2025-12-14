@@ -72,6 +72,15 @@ public class Project {
 
     private LocalDateTime updatedAt;
 
+    @Column(nullable = true)
+    private String contractorId;
+
+    @Column(nullable = true)
+    private String salespersonId;
+
+    @Column(nullable = true)
+    private String location;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
