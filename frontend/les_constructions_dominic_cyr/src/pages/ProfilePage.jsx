@@ -8,6 +8,7 @@ export default function ProfilePage() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -20,11 +21,12 @@ export default function ProfilePage() {
       try {
         setLoading(true);
         setError(null);
-        // For now, we'll get the first user as a placeholder
-        // In a real app, this would use auth context to get the current user
+        // TODO: Replace with authentication context to get the current logged-in user
+        // This is a temporary implementation that loads the first user
+        // In production, this should retrieve the user based on their Auth0 session
         const users = await fetchUsers();
         if (users && users.length > 0) {
-          const currentUser = users[0]; // Placeholder - should get from auth context
+          const currentUser = users[0];
           setUser(currentUser);
           setFormData({
             firstName: currentUser.firstName || '',
@@ -57,12 +59,13 @@ export default function ProfilePage() {
 
     try {
       setIsSaving(true);
+      setSaveError(null);
       const updatedUser = await updateUser(user.userIdentifier, formData);
       setUser(updatedUser);
       setIsEditing(false);
     } catch (err) {
       console.error('Failed to update user:', err);
-      alert('Failed to update profile. Please try again.');
+      setSaveError('Failed to update profile. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -77,6 +80,7 @@ export default function ProfilePage() {
         secondaryEmail: user.secondaryEmail || '',
       });
     }
+    setSaveError(null);
     setIsEditing(false);
   };
 
@@ -116,6 +120,12 @@ export default function ProfilePage() {
       </div>
 
       <div className="profile-content">
+        {saveError && (
+          <div className="save-error-message">
+            {saveError}
+          </div>
+        )}
+        
         <div className="profile-section">
           <h2>Personal Information</h2>
           

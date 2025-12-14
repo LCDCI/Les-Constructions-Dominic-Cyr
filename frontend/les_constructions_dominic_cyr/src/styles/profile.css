@@ -159,3 +159,13 @@
   border-radius: 6px;
   margin-bottom: 16px;
 }
+
+.save-error-message {
+  color: #dc2626;
+  padding: 12px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
