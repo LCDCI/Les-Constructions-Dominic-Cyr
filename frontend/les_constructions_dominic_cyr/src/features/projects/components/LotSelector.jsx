@@ -54,24 +54,53 @@ const lotTranslations = {
   },
 };
 
-const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) => {
+const LotSelector = ({ 
+  currentLanguage, 
+  selectedLots, 
+  onChange, 
+  onLotCreated,
+  // Props to persist lot form state across language switches
+  lotFormData,
+  onLotFormDataChange,
+  lotFormImageFile,
+  onLotFormImageFileChange,
+  lotFormImagePreviewUrl,
+  onLotFormImagePreviewUrlChange,
+  showLotCreateForm,
+  onShowLotCreateFormChange,
+}) => {
   const t = (key) => lotTranslations[currentLanguage]?.[key] || key;
   const [availableLots, setAvailableLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newLotData, setNewLotData] = useState({
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState(null);
+  
+  // Local state fallback (for backward compatibility when props not provided)
+  const [localLotFormData, setLocalLotFormData] = useState({
     location: '',
     dimensions: '',
     price: '',
     lotStatus: 'AVAILABLE',
     imageIdentifier: null,
   });
-  const [isCreating, setIsCreating] = useState(false);
-  const [createError, setCreateError] = useState(null);
-  const [newLotImageFile, setNewLotImageFile] = useState(null);
-  const [newLotImagePreviewUrl, setNewLotImagePreviewUrl] = useState(null);
+  const [localLotImageFile, setLocalLotImageFile] = useState(null);
+  const [localLotImagePreviewUrl, setLocalLotImagePreviewUrl] = useState(null);
+  const [localShowCreateForm, setLocalShowCreateForm] = useState(false);
+  
+  // Use props if provided, otherwise use local state
+  const newLotData = lotFormData !== undefined ? lotFormData : localLotFormData;
+  const setNewLotData = onLotFormDataChange || setLocalLotFormData;
+  
+  const newLotImageFile = lotFormImageFile !== undefined ? lotFormImageFile : localLotImageFile;
+  const setNewLotImageFile = onLotFormImageFileChange || setLocalLotImageFile;
+  
+  const newLotImagePreviewUrl = lotFormImagePreviewUrl !== undefined ? lotFormImagePreviewUrl : localLotImagePreviewUrl;
+  const setNewLotImagePreviewUrl = onLotFormImagePreviewUrlChange || setLocalLotImagePreviewUrl;
+  
+  const showCreateForm = showLotCreateForm !== undefined ? showLotCreateForm : localShowCreateForm;
+  const setShowCreateForm = onShowLotCreateFormChange || setLocalShowCreateForm;
 
   useEffect(() => {
     loadLots();
@@ -93,6 +122,10 @@ const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) 
 
   const handleLotImageChange = (file) => {
     if (!file) {
+      // Revoke object URL before clearing
+      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(newLotImagePreviewUrl);
+      }
       setNewLotImageFile(null);
       setNewLotImagePreviewUrl(null);
       return;
@@ -110,12 +143,20 @@ const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) 
       const img = new window.Image();
       img.onload = () => {
         setCreateError(null);
+        // Revoke previous object URL if it exists
+        if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(newLotImagePreviewUrl);
+        }
         setNewLotImageFile(file);
         const url = URL.createObjectURL(file);
         setNewLotImagePreviewUrl(url);
       };
       img.onerror = () => {
         setCreateError('Uploaded file is not a valid image.');
+        // Revoke object URL if it was created
+        if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(newLotImagePreviewUrl);
+        }
         setNewLotImageFile(null);
         setNewLotImagePreviewUrl(null);
       };
@@ -123,6 +164,10 @@ const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) 
     };
     reader.onerror = () => {
       setCreateError('Failed to read image file.');
+      // Revoke object URL if it was created
+      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(newLotImagePreviewUrl);
+      }
       setNewLotImageFile(null);
       setNewLotImagePreviewUrl(null);
     };
@@ -224,6 +269,10 @@ const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) 
       }
 
       // Reset form and clear search so new lot is visible
+      // Revoke object URL before clearing
+      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(newLotImagePreviewUrl);
+      }
       setNewLotData({
         location: '',
         dimensions: '',
@@ -368,6 +417,10 @@ const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) 
                   type="button"
                   className="btn-cancel"
                   onClick={() => {
+                    // Revoke object URL before clearing
+                    if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+                      URL.revokeObjectURL(newLotImagePreviewUrl);
+                    }
                     setNewLotImageFile(null);
                     setNewLotImagePreviewUrl(null);
                   }}
@@ -397,6 +450,10 @@ const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) 
                 type="button"
                 className="btn-cancel"
                 onClick={() => {
+                  // Revoke object URL before clearing
+                  if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+                    URL.revokeObjectURL(newLotImagePreviewUrl);
+                  }
                   setShowCreateForm(false);
                   setCreateError(null);
                   setNewLotData({
@@ -406,6 +463,8 @@ const LotSelector = ({ currentLanguage, selectedLots, onChange, onLotCreated }) 
                     lotStatus: 'AVAILABLE',
                     imageIdentifier: null,
                   });
+                  setNewLotImageFile(null);
+                  setNewLotImagePreviewUrl(null);
                 }}
                 disabled={isCreating}
               >
@@ -507,6 +566,15 @@ LotSelector.propTypes = {
   selectedLots: PropTypes.arrayOf(PropTypes.string).isRequired,
   onChange: PropTypes.func.isRequired,
   onLotCreated: PropTypes.func,
+  // Optional props for persisting lot form state across language switches
+  lotFormData: PropTypes.object,
+  onLotFormDataChange: PropTypes.func,
+  lotFormImageFile: PropTypes.object,
+  onLotFormImageFileChange: PropTypes.func,
+  lotFormImagePreviewUrl: PropTypes.string,
+  onLotFormImagePreviewUrlChange: PropTypes.func,
+  showLotCreateForm: PropTypes.bool,
+  onShowLotCreateFormChange: PropTypes.func,
 };
 
 export default LotSelector;
