@@ -5,7 +5,6 @@ import '../styles/create-project.css';
 import CreateProjectForm from '../features/projects/components/CreateProjectForm';
 
 const ProjectsPage = () => {
-  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
