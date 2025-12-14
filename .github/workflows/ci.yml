@@ -20,10 +20,17 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
+          --health-cmd "pg_isready -U test -d testdb"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+    env:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+      SPRING_DATASOURCE_USERNAME: test
+      SPRING_DATASOURCE_PASSWORD: test
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,7 +38,7 @@ jobs:
       - name: Wait for Postgres to be ready
         run: |
           for i in {1..20}; do
-            if pg_isready -h localhost -p 5432 -U test; then
+            if pg_isready -h localhost -p 5432 -U test -d testdb; then
               echo "Postgres ready"
               exit 0
             fi
@@ -59,9 +66,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build project (tests use Postgres via test profile)
-        env:
-          SPRING_PROFILES_ACTIVE: test
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
-          SPRING_DATASOURCE_USERNAME: test
-          SPRING_DATASOURCE_PASSWORD: test
         run: ./gradlew clean build --info
