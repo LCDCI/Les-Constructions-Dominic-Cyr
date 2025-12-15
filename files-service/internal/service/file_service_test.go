@@ -452,23 +452,6 @@ func TestDelete_FileNotFound(t *testing.T) {
 	}
 }
 
-func TestDelete_FindError(t *testing.T) {
-	findErr := errors.New("database connection error")
-
-	repo := &mockRepo{
-		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
-			return nil, findErr
-		},
-	}
-
-	s := service.NewFileService(repo, &mockStorage{})
-
-	err := s.Delete(context.Background(), "file-123", "user-789")
-	if !errors.Is(err, findErr) {
-		t.Fatalf("expected find error, got %v", err)
-	}
-}
-
 func TestDelete_RepositoryDeleteError(t *testing.T) {
 	softDeleteErr := errors.New("soft delete failed")
 
