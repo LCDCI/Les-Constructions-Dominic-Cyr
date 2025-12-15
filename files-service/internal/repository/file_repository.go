@@ -45,8 +45,18 @@ func (r *fileRepository) FindById(ctx context.Context, id string) (*domain.File,
 // and records audit information (deleted_at timestamp and deleted_by user). This preserves the record for audit and
 // traceability purposes, ensuring that deleted files can be tracked and reviewed if necessary.
 func (r *fileRepository) Delete(ctx context.Context, id string, deletedBy string) error {
-	_, err := r.db.ExecContext(ctx, `UPDATE files SET is_active = false, deleted_at = NOW(), deleted_by = $2 WHERE id = $1`, id, deletedBy)
-	return err
+	result, err := r.db.ExecContext(ctx, `UPDATE files SET is_active = false, deleted_at = NOW(), deleted_by = $2 WHERE id = $1 AND is_active = true`, id, deletedBy)
+	if err != nil {
+		return err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return sql.ErrNoRows
+	}
+	return nil
 }
 
 func (r *fileRepository) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
