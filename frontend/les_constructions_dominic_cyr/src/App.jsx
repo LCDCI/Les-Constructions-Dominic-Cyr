@@ -24,6 +24,7 @@ import ProjectMetadata from './pages/ProjectMetadata';
 import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
 import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
 import RenovationsPage from './pages/RenovationsPage';
+import ProjectManagementPage from './pages/ProjectManagementPage';
 import './App.css';
 import './styles/users.css';
 
@@ -41,6 +42,7 @@ export default function App() {
             <Route path="/projects/create" element={<CreateProjectPage />} />
             <Route path="/houses" element={<HousesPage />} />
             <Route path="/renovations" element={<RenovationsPage />} />
+            <Route path="/projectmanagement" element={<ProjectManagementPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route path="/inquiries" element={<OwnerInquiriesPage />} />
