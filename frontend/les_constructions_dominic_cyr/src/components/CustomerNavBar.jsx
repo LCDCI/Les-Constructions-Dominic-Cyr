@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
 import '../styles/customerNavbar.css';
 import {
@@ -18,6 +19,7 @@ import { CgProfile } from "react-icons/cg";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { logout, isAuthenticated } = useAuth0();
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
@@ -210,6 +212,9 @@ const Navbar = () => {
             className="navbar-logout"
             onClick={() => {
               closeMenu();
+              if (isAuthenticated) {
+                logout({ logoutParams: { returnTo: window.location.origin } });
+              }
             }}
           >
             <span className="navbar-icon">

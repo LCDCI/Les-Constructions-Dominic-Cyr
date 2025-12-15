@@ -4,7 +4,7 @@ import { fetchUserByAuth0Id, updateUser } from '../features/users/api/usersApi';
 import '../styles/profile.css';
 
 export default function ProfilePage() {
-  const { user: auth0User, isLoading: auth0Loading } = useAuth0();
+  const { user: auth0User, isLoading: auth0Loading, getAccessTokenSilently } = useAuth0();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,7 +42,10 @@ export default function ProfilePage() {
           setLoading(false);
           return;
         }
-        const currentUser = await fetchUserByAuth0Id(auth0UserId);
+        const token = await getAccessTokenSilently({
+          authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
+        });
+        const currentUser = await fetchUserByAuth0Id(auth0UserId, token);
         setUser(currentUser);
         setFormData({
           firstName: currentUser.firstName || '',
@@ -79,7 +82,10 @@ export default function ProfilePage() {
     try {
       setIsSaving(true);
       setSaveError(null);
-      const updatedUser = await updateUser(user.userIdentifier, formData);
+      const token = await getAccessTokenSilently({
+        authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
+      });
+      const updatedUser = await updateUser(user.userIdentifier, formData, token);
       setUser(updatedUser);
       setIsEditing(false);
     } catch (err) {

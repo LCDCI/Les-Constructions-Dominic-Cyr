@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import { getProjectMetadata } from '../features/projects/api/projectMetadataApi';
 import '../styles/ProjectMetadata.css';
 
 const ProjectMetadata = () => {
   const { projectId } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [metadata, setMetadata] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,8 +15,24 @@ const ProjectMetadata = () => {
   useEffect(() => {
     const fetchMetadata = async () => {
       try {
+        // Wait for Auth0 to finish loading before deciding on token
+        if (isLoading) return;
+
         setLoading(true);
-        const data = await getProjectMetadata(projectId);
+        
+        // Get token if authenticated, otherwise fetch without token
+        let token = null;
+        if (isAuthenticated) {
+          try {
+            token = await getAccessTokenSilently({
+              authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
+            });
+          } catch (tokenErr) {
+            console.warn('Could not get token, proceeding without auth');
+          }
+        }
+        
+        const data = await getProjectMetadata(projectId, token);
         setMetadata(data);
 
         document.documentElement.style.setProperty(
@@ -29,9 +48,11 @@ const ProjectMetadata = () => {
           data.buyerColor
         );
       } catch (err) {
-        setError(
-          err.response?.data?.message || 'Failed to load project metadata'
-        );
+        const message = err.response?.data?.message || 'Failed to load project metadata';
+        setError(message);
+        if (err.response?.status === 403) {
+          navigate('/unauthorized', { replace: true });
+        }
       } finally {
         setLoading(false);
       }
@@ -47,7 +68,7 @@ const ProjectMetadata = () => {
       document.documentElement.style.removeProperty('--project-tertiary');
       document.documentElement.style.removeProperty('--project-buyer');
     };
-  }, [projectId]);
+  }, [projectId, isAuthenticated, isLoading, getAccessTokenSilently, navigate]);
 
   if (loading) {
     return (

@@ -27,9 +27,14 @@ public class IndividualProjectMetadataServiceImpl implements IndividualProjectMe
     private final LotRepository lotRepository;
 
     @Override
-    public IndividualProjectResponseModel getProjectMetadata(String projectIdentifier) {
+    public IndividualProjectResponseModel getProjectMetadata(String projectIdentifier, String auth0UserId) {
         Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
+
+        Users requestingUser = usersRepository.findByAuth0UserId(auth0UserId)
+                .orElseThrow(() -> new ForbiddenAccessException("You are not authorized to access this project"));
+
+        validateAccess(project, requestingUser);
 
         String location = determineProjectLocation(project);
         AssignedUsersDTO assignedUsers = buildAssignedUsers(project);

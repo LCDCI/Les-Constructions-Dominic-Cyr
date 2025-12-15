@@ -4,6 +4,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLa
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 @RestController
 @RequestMapping("/api/v1/projects")
@@ -14,9 +16,10 @@ public class IndividualProjectMetadataController {
 
     @GetMapping("/{projectIdentifier}/metadata")
     public ResponseEntity<IndividualProjectResponseModel> getProjectMetadata(
-            @PathVariable String projectIdentifier
+            @PathVariable String projectIdentifier,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        IndividualProjectResponseModel metadata = projectMetadataService.getProjectMetadata(projectIdentifier);
+        IndividualProjectResponseModel metadata = projectMetadataService.getProjectMetadata(projectIdentifier, jwt.getSubject());
         return ResponseEntity.ok(metadata);
     }
 }

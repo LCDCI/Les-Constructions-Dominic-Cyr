@@ -57,6 +57,7 @@ deepl:
 # For Auth0
 auth0:
   domain: ${AUTH0_DOMAIN:}
+  audience: ${AUTH0_AUDIENCE:}
   mgmt:
     client-id: ${AUTH0_MGMT_CLIENT_ID:}
     client-secret: ${AUTH0_MGMT_CLIENT_SECRET:}

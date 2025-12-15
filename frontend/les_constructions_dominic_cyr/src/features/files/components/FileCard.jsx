@@ -21,7 +21,7 @@ const formatCategory = (contentType = '') => {
     return 'Document';
 };
 
-export default function FileCard({ file, onDelete }) {
+export default function FileCard({ file, onDelete, canDelete = false }) {
     if (!file) return null;
     const safeContentType = file.contentType || '';
 
@@ -36,9 +36,11 @@ export default function FileCard({ file, onDelete }) {
                 <a href={`${BASE_API_URL}/files/${file.id}`} target="_blank" rel="noopener noreferrer">
                     <button className="btn-view">View</button>
                 </a>
-                <button className="btn-delete" onClick={() => onDelete(file.id)}>
-                    Delete
-                </button>
+                {canDelete && (
+                    <button className="btn-delete" onClick={() => onDelete(file.id)}>
+                        Delete
+                    </button>
+                )}
             </td>
         </tr>
     );
@@ -54,4 +56,5 @@ FileCard.propTypes = {
         createdAt: PropTypes.string,
     }),
     onDelete: PropTypes.func.isRequired,
+    canDelete: PropTypes.bool,
 };

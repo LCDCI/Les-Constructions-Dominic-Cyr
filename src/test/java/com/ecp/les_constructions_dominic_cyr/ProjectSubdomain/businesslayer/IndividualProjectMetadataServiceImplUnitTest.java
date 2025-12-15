@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -48,13 +49,15 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     private IndividualProjectMetadataServiceImpl individualProjectMetadataService;
 
     private Project testProject;
-    private Users contractorUser;
-    private Users salespersonUser;
-    private Users customerUser;
+        private Users contractorUser;
+        private Users salespersonUser;
+        private Users customerUser;
+        private Users ownerUser;
     private Lot testLot;
-    private UUID contractorUUID;
-    private UUID salespersonUUID;
-    private UUID customerUUID;
+        private UUID contractorUUID;
+        private UUID salespersonUUID;
+        private UUID customerUUID;
+        private static final String OWNER_AUTH0_ID = "auth0|owner-user";
 
     @BeforeEach
     void setUp() {
@@ -106,7 +109,17 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         customerUser.setPhone("555-9012");
         customerUser.setUserRole(UserRole.CUSTOMER);
 
+                ownerUser = new Users();
+                ownerUser.setUserIdentifier(createUserIdentifier(UUID.randomUUID()));
+                ownerUser.setFirstName("Olivia");
+                ownerUser.setLastName("Owner");
+                ownerUser.setPrimaryEmail("owner@example.com");
+                ownerUser.setUserRole(UserRole.OWNER);
+                ownerUser.setAuth0UserId(OWNER_AUTH0_ID);
+
         testLot = new Lot(new LotIdentifier("lot-001"), "Downtown Location", 500000f, "50x100", LotStatus.AVAILABLE);
+
+                lenient().when(usersRepository.findByAuth0UserId(anyString())).thenReturn(Optional.of(ownerUser));
     }
 
     private UserIdentifier createUserIdentifier(UUID uuid) {
@@ -123,6 +136,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         // Arrange
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByAuth0UserId(OWNER_AUTH0_ID)).thenReturn(Optional.of(ownerUser));
         when(usersRepository.findById(any(UserIdentifier.class)))
                 .thenAnswer(invocation -> {
                     UserIdentifier uid = invocation.getArgument(0);
@@ -133,7 +147,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 });
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -170,6 +184,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         assertEquals("Customer", result.getAssignedUsers().getCustomer().getLastName());
 
         verify(projectRepository, times(1)).findByProjectIdentifier(eq("proj-metadata-001"));
+        verify(usersRepository, times(1)).findByAuth0UserId(OWNER_AUTH0_ID);
         verify(usersRepository, times(3)).findById(any(UserIdentifier.class));
     }
 
@@ -182,7 +197,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         // Act & Assert
         ProjectNotFoundException exception = assertThrows(
                 ProjectNotFoundException.class,
-                () -> individualProjectMetadataService.getProjectMetadata("non-existent")
+                () -> individualProjectMetadataService.getProjectMetadata("non-existent", OWNER_AUTH0_ID)
         );
 
         assertEquals("Project not found with identifier: non-existent", exception.getMessage());
@@ -201,9 +216,10 @@ public class IndividualProjectMetadataServiceImplUnitTest {
 
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByAuth0UserId(OWNER_AUTH0_ID)).thenReturn(Optional.of(ownerUser));
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -220,11 +236,12 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         // Arrange
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByAuth0UserId(OWNER_AUTH0_ID)).thenReturn(Optional.of(ownerUser));
         when(usersRepository.findById(any(UserIdentifier.class)))
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -242,11 +259,12 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         testProject.setLocation("Explicit Location");
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByAuth0UserId(OWNER_AUTH0_ID)).thenReturn(Optional.of(ownerUser));
         when(usersRepository.findById(any(UserIdentifier.class)))
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -267,7 +285,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -288,7 +306,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -308,7 +326,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -329,7 +347,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -351,7 +369,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -371,13 +389,33 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
         assertEquals("Location not specified", result.getLocation());
 
         verify(lotRepository, never()).findByLotIdentifier_LotId(any());
+    }
+
+    @Test
+    void getProjectMetadata_WhenUserNotAssignedToProject_ThrowsForbidden() {
+        // Arrange
+        Users unrelatedUser = new Users();
+        unrelatedUser.setUserIdentifier(createUserIdentifier(UUID.randomUUID()));
+        unrelatedUser.setUserRole(UserRole.CONTRACTOR);
+        unrelatedUser.setAuth0UserId("auth0|unrelated");
+
+        when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
+                .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByAuth0UserId("auth0|unrelated"))
+                .thenReturn(Optional.of(unrelatedUser));
+
+        // Act & Assert
+        assertThrows(
+                com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.ForbiddenAccessException.class,
+                () -> individualProjectMetadataService.getProjectMetadata("proj-metadata-001", "auth0|unrelated")
+        );
     }
 
     @Test
@@ -391,7 +429,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.of(contractorUser));
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -413,7 +451,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.of(salespersonUser));
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -435,7 +473,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.of(customerUser));
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -456,7 +494,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.of(testProject));
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -484,7 +522,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 });
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -508,7 +546,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
@@ -526,7 +564,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 .thenReturn(Optional.empty());
 
         // Act
-        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001");
+        IndividualProjectResponseModel result = individualProjectMetadataService.getProjectMetadata("proj-metadata-001", OWNER_AUTH0_ID);
 
         // Assert
         assertNotNull(result);
