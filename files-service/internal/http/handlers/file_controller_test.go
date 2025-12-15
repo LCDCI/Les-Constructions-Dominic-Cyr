@@ -416,7 +416,9 @@ func TestDelete_InternalError(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-	req := httptest.NewRequest("DELETE", "/files/xxx?deletedBy=user-456", nil)
+	body := strings.NewReader(`{"deletedBy":"user-456"}`)
+	req := httptest.NewRequest("DELETE", "/files/xxx", body)
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
