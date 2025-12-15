@@ -1,3 +1,7 @@
+:root{
+  --accent-1:#5A7D8C;
+}
+
 .profile-page {
   max-width: 800px;
   margin: 0 auto;
@@ -21,7 +25,7 @@
 
 .edit-button {
   padding: 10px 20px;
-  background-color: #2563eb;
+  background-color: var(--accent-1);
   color: white;
   border: none;
   border-radius: 6px;
@@ -32,7 +36,7 @@
 }
 
 .edit-button:hover {
-  background-color: #1d4ed8;
+  background-color: #4A90A4;
 }
 
 .profile-content {

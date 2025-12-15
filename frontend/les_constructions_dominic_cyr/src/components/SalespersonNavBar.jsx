@@ -10,6 +10,8 @@ import { GoProject } from "react-icons/go";
 import { CiLogout } from "react-icons/ci";
 import { IoIosNotifications } from "react-icons/io";
 import { GoHome } from "react-icons/go";
+import { CgProfile } from "react-icons/cg";
+
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -151,7 +153,7 @@ const Navbar = () => {
                                     className={`navbar-link ${isActive('/profile')}`}
                                     onClick={closeMenu}
                                 >
-                                    <span className="navbar-icon"><GoGear /></span>
+                                    <span className="navbar-icon"><CgProfile /></span>
                                     <span className="navbar-text">My Profile</span>
                                 </Link>
                             </li>
