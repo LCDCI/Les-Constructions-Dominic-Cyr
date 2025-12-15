@@ -191,5 +191,5 @@ func (fc *FileController) delete(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "File successfully deleted and archived"})
+	c.Status(http.StatusNoContent)
 }
