@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { fetchUsers, updateUser } from '../features/users/api/usersApi';
+import { useAuth0 } from '@auth0/auth0-react';
+import { fetchUserByAuth0Id, updateUser } from '../features/users/api/usersApi';
 import '../styles/profile.css';
 
 export default function ProfilePage() {
+  const { user: auth0User, isLoading: auth0Loading } = useAuth0();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,23 +20,31 @@ export default function ProfilePage() {
 
   useEffect(() => {
     const loadUser = async () => {
+      // Wait for Auth0 to finish loading
+      if (auth0Loading) {
+        return;
+      }
+
+      // Check if user is authenticated
+      if (!auth0User) {
+        setError('You must be logged in to view your profile.');
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
         setError(null);
-        // TODO: Replace with authentication context to get the current logged-in user
-        // This is a temporary implementation that loads the first user
-        // In production, this should retrieve the user based on their Auth0 session
-        const users = await fetchUsers();
-        if (users && users.length > 0) {
-          const currentUser = users[0];
-          setUser(currentUser);
-          setFormData({
-            firstName: currentUser.firstName || '',
-            lastName: currentUser.lastName || '',
-            phone: currentUser.phone || '',
-            secondaryEmail: currentUser.secondaryEmail || '',
-          });
-        }
+        // Fetch user from backend using Auth0 user ID
+        const auth0UserId = auth0User.sub;
+        const currentUser = await fetchUserByAuth0Id(auth0UserId);
+        setUser(currentUser);
+        setFormData({
+          firstName: currentUser.firstName || '',
+          lastName: currentUser.lastName || '',
+          phone: currentUser.phone || '',
+          secondaryEmail: currentUser.secondaryEmail || '',
+        });
       } catch (err) {
         console.error('Failed to load user:', err);
         setError('Failed to load profile information.');
@@ -44,7 +54,7 @@ export default function ProfilePage() {
     };
 
     loadUser();
-  }, []);
+  }, [auth0User, auth0Loading]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

@@ -28,6 +28,14 @@ export async function fetchUserById(userId) {
 }
 
 /**
+ * GET a user by Auth0 ID
+ */
+export async function fetchUserByAuth0Id(auth0UserId) {
+  const response = await axios.get(`${API_BASE}/users/auth0/${auth0UserId}`);
+  return response.data;
+}
+
+/**
  * UPDATE a user
  */
 export async function updateUser(userId, payload) {
