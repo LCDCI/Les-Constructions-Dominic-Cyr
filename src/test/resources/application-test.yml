@@ -28,6 +28,7 @@ spring:
 
 auth0:
   domain: test-domain.auth0.com
+  audience: https://test-audience
   mgmt:
     client-id: test-client-id
     client-secret: test-client-secret

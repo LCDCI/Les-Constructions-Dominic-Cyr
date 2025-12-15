@@ -10,6 +10,7 @@ import com.fasterxml. jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api. BeforeEach;
 import org.junit.jupiter.api. Test;
 import org.springframework.beans. factory.annotation. Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet. WebMvcTest;
 import org.springframework.http.MediaType;
 import org. springframework.test.context.bean.override. mockito.MockitoBean;
@@ -27,6 +28,7 @@ import static org. springframework.test.web.servlet.request. MockMvcRequestBuild
 import static org.springframework.test.web. servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProjectController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @org.springframework.context.annotation.Import(com.ecp.les_constructions_dominic_cyr.backend.utils.GlobalControllerExceptionHandler.class)
 public class ProjectControllerUnitTest {
 

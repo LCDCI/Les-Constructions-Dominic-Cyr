@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import '../styles/projects.css';
 import '../styles/create-project.css';
 import CreateProjectForm from '../features/projects/components/CreateProjectForm';
+import useBackendUser from '../hooks/useBackendUser';
+import { canCreateProjects } from '../utils/permissions';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -12,6 +14,9 @@ const ProjectsPage = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [showConfirmClose, setShowConfirmClose] = useState(false);
+
+  const { role } = useBackendUser();
+  const canCreate = canCreateProjects(role);
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
@@ -120,12 +125,14 @@ const ProjectsPage = () => {
         <div className="projects-container">
           <div className="projects-header">
             <h1>Projects</h1>
-            <button
-              className="create-project-button"
-              onClick={() => setIsCreateOpen(true)}
-            >
-              Create New Project
-            </button>
+            {canCreate && (
+              <button
+                className="create-project-button"
+                onClick={() => setIsCreateOpen(true)}
+              >
+                Create New Project
+              </button>
+            )}
           </div>
 
           <div className="projects-filter">
