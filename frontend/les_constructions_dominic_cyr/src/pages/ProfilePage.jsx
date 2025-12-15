@@ -37,6 +37,11 @@ export default function ProfilePage() {
         setError(null);
         // Fetch user from backend using Auth0 user ID
         const auth0UserId = auth0User.sub;
+        if (!auth0UserId) {
+          setError('Invalid authentication data. Please log in again.');
+          setLoading(false);
+          return;
+        }
         const currentUser = await fetchUserByAuth0Id(auth0UserId);
         setUser(currentUser);
         setFormData({
