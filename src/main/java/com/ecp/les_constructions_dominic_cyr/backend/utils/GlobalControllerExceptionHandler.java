@@ -5,6 +5,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -60,6 +61,16 @@ public class GlobalControllerExceptionHandler {
         return new ResponseEntity<>(error, BAD_REQUEST);
     }
 
+    @ExceptionHandler({AccessDeniedException.class, ForbiddenAccessException.class})
+    public ResponseEntity<Map<String, Object>> handleForbidden(Exception ex) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("timestamp", LocalDateTime.now());
+        error.put("status", HttpStatus.FORBIDDEN.value());
+        error.put("error", "Forbidden");
+        error.put("message", "You are not authorized to access this resource.");
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, Object> error = new HashMap<>();
@@ -89,7 +100,7 @@ public class GlobalControllerExceptionHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler({BadRequestException.class, InvalidRequestException.class})
+    @ExceptionHandler({BadRequestException.class, InvalidRequestException.class, IllegalArgumentException.class})
     public HttpErrorInfo handleBadRequestExceptions(WebRequest request, Exception ex) {
         return createHttpErrorInfo(BAD_REQUEST, request, ex);
     }

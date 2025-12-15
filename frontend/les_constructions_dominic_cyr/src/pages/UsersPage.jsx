@@ -1,8 +1,9 @@
 // src/pages/UsersPage.jsx
 import React, { useEffect, useState } from 'react';
-import { fetchUsers, createUser } from '../features/users/api/usersApi';
+import { fetchUsers, createUser, updateUser } from '../features/users/api/usersApi';
 import UsersTable from '../features/users/components/UsersTable';
 import AddUserModal from '../features/users/components/AddUserModal';
+import EditUserModal from '../features/users/components/EditUserModal';
 import InviteLinkModal from '../features/users/components/InviteLinkModal';
 import ErrorModal from '../features/users/components/ErrorModal';
 
@@ -19,6 +20,10 @@ export default function UsersPage() {
 
   const [errorMessage, setErrorMessage] = useState('');
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
 
   // Load users on mount
   useEffect(() => {
@@ -74,6 +79,40 @@ export default function UsersPage() {
     }
   };
 
+  const handleEditUser = (user) => {
+    setEditingUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateUser = async (formValues) => {
+    try {
+      setIsEditSubmitting(true);
+
+      const updatedUser = await updateUser(editingUser.userIdentifier, formValues);
+
+      // Update user in list
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.userIdentifier === updatedUser.userIdentifier ? updatedUser : u
+        )
+      );
+
+      setIsEditModalOpen(false);
+      setEditingUser(null);
+    } catch (err) {
+      console.error(err);
+
+      let niceMessage = 'Failed to update user. Please try again.';
+      if (err.response && err.response.data && err.response.data.message) {
+        niceMessage = err.response.data.message;
+      }
+
+      openErrorModal(niceMessage);
+    } finally {
+      setIsEditSubmitting(false);
+    }
+  };
+
   return (
     <div className="page users-page">
       <div className="page-header">
@@ -84,13 +123,26 @@ export default function UsersPage() {
       {loading && <p>Loading users...</p>}
       {loadingError && <p className="error">{loadingError}</p>}
 
-      {!loading && !loadingError && <UsersTable users={users} />}
+      {!loading && !loadingError && (
+        <UsersTable users={users} onEditUser={handleEditUser} />
+      )}
 
       <AddUserModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onCreate={handleCreateUser}
         isSubmitting={isSubmitting}
+      />
+
+      <EditUserModal
+        isOpen={isEditModalOpen}
+        user={editingUser}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingUser(null);
+        }}
+        onSave={handleUpdateUser}
+        isSaving={isEditSubmitting}
       />
 
       <InviteLinkModal
@@ -101,7 +153,7 @@ export default function UsersPage() {
 
       <ErrorModal
         isOpen={isErrorModalOpen}
-        title="User Creation Failed"
+        title="User Operation Failed"
         message={errorMessage}
         onClose={() => setIsErrorModalOpen(false)}
       />

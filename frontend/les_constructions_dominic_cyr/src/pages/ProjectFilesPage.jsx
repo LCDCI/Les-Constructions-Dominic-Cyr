@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaFileArrowUp } from 'react-icons/fa6';
 import FileUploadModal from '../components/FileUploadModal';
+import ConfirmationModal from '../components/ConfirmationModal';
 import FileCard from '../features/files/components/FileCard';
 import { deleteFile, fetchProjectFiles } from '../features/files/api/filesApi';
 import '../styles/FilesPage.css';
 import { useParams, useNavigate } from 'react-router-dom';
+import useBackendUser from '../hooks/useBackendUser';
+import { canUploadDocuments, canDeleteDocuments } from '../utils/permissions';
 
 export default function ProjectFilesPage() {
     const { projectId } = useParams();
@@ -12,9 +15,17 @@ export default function ProjectFilesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [fileToDelete, setFileToDelete] = useState(null);
+    const [deleteError, setDeleteError] = useState(null);
 
-    const uploadedBy = '123-user-id';
+    const { profile, role } = useBackendUser();
+    const userId = profile?.userIdentifier || '';
     const navigate = useNavigate();
+
+    // Permission checks based on role
+    const canUpload = canUploadDocuments(role);
+    const canDelete = canDeleteDocuments(role);
 
     // Data Fetching (match the photos page pattern)
     useEffect(() => {
@@ -62,14 +73,30 @@ export default function ProjectFilesPage() {
     };
 
     const handleDelete = async (fileId) => {
-        if (!window.confirm('Are you sure you want to delete this file?')) return;
+        setFileToDelete(fileId);
+        setIsDeleteModalOpen(true);
+    };
 
+    const confirmDelete = async () => {
+        if (!fileToDelete) return;
+
+        setDeleteError(null);
         try {
-            await deleteFile(fileId);
-            setAllFiles((prev) => (prev || []).filter((file) => file?.id !== fileId));
+            await deleteFile(fileToDelete, { deletedBy: userId });
+            setAllFiles((prev) => (prev || []).filter((file) => file?.id !== fileToDelete));
+            setIsDeleteModalOpen(false);
+            setFileToDelete(null);
         } catch (error) {
-            alert('Failed to delete file. Please try again.');
+            console.error('Failed to delete file:', error);
+            const errorMsg = error.response?.data?.error || 'Failed to delete file. Please try again.';
+            setDeleteError(errorMsg);
+            // Keep modal open to show error
         }
+    };
+
+    const cancelDelete = () => {
+        setIsDeleteModalOpen(false);
+        setFileToDelete(null);
     };
 
     if (isLoading) {
@@ -94,9 +121,11 @@ export default function ProjectFilesPage() {
         <div className="documents-page container">
             <div className="documents-header">
                 <h1>Project Documents: {projectId}</h1>
-                <button className="btn-upload" onClick={() => setIsModalOpen(true)}>
-                    <FaFileArrowUp /> Upload Document
-                </button>
+                {canUpload && (
+                    <button className="btn-upload" onClick={() => setIsModalOpen(true)}>
+                        <FaFileArrowUp /> Upload Document
+                    </button>
+                )}
             </div>
 
             <div className="document-list-container">
@@ -112,7 +141,7 @@ export default function ProjectFilesPage() {
                         </thead>
                         <tbody>
                         {documents.map((file) => (
-                            <FileCard key={file.id || file.fileName} file={file} onDelete={handleDelete} />
+                            <FileCard key={file.id || file.fileName} file={file} onDelete={handleDelete} canDelete={canDelete} />
                         ))}
                         </tbody>
                     </table>
@@ -128,11 +157,26 @@ export default function ProjectFilesPage() {
             {isModalOpen && (
                 <FileUploadModal
                     projectId={projectId}
-                    uploadedBy={uploadedBy}
+                    uploadedBy={userId}
                     onClose={() => setIsModalOpen(false)}
                     onUploadSuccess={handleUploadSuccess}
                 />
             )}
+
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                onCancel={cancelDelete}
+                config={{
+                    title: "Delete Document",
+                    message: deleteError 
+                        ? `Error: ${deleteError}` 
+                        : "Are you sure you want to delete this document? This action will archive the file and it will no longer be accessible to users. The file may be recoverable by administrators.",
+                    onConfirm: confirmDelete,
+                    confirmText: deleteError ? "Try Again" : "Delete",
+                    cancelText: "Cancel",
+                    isDestructive: !deleteError,
+                }}
+            />
         </div>
     );
 }

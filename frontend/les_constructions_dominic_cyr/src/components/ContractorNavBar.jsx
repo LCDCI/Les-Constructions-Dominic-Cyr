@@ -13,6 +13,8 @@ import {
 import { MdOutlineRequestQuote } from "react-icons/md";
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
+import { CgProfile } from "react-icons/cg";
+
 
 
 const Navbar = () => {
@@ -175,6 +177,18 @@ const Navbar = () => {
           <div className="navbar-section">
             <h3 className="navbar-section-title">Settings</h3>
             <ul className="navbar-menu">
+              <li className="navbar-item">
+                <Link
+                  to="/profile"
+                  className={`navbar-link ${isActive('/profile')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <CgProfile />
+                  </span>
+                  <span className="navbar-text">My Profile</span>
+                </Link>
+              </li>
               <li className="navbar-item">
                 <Link
                   to="/account"

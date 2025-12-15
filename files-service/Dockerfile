@@ -1,14 +1,16 @@
-FROM golang:1.24-alpine
+FROM golang:1.23-alpine
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
-RUN go mod download
-
-RUN go get github.com/gin-contrib/cors
-RUN go mod tidy
+COPY go.mod ./
+RUN go mod download || true
 
 COPY . .
+
+RUN go mod tidy
+
+# Copy migrations directory for runtime access
+COPY migrations ./migrations
 
 RUN go build -o file-service ./cmd
 

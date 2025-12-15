@@ -120,7 +120,7 @@ public class DataSeeder {
             // add other renovation IDs here
     );
 
-    private void seedRenovationImages() {
+    public void seedRenovationImages() {
         RENOVATION_IMAGES.forEach((renovationId, imageIds) -> {
             Renovation renovation = renovationRepository.findRenovationByRenovationIdentifier_RenovationId(renovationId);
             if (renovation != null) {
