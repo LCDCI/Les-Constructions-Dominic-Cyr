@@ -23,7 +23,7 @@ import (
 type mockFileService struct {
 	UploadFn func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error)
 	GetFn    func(ctx context.Context, id string) ([]byte, string, error)
-	DeleteFn func(ctx context.Context, id string) error
+	DeleteFn func(ctx context.Context, id string, deletedBy string) error
 
 	ListByProjectIDFn func(ctx context.Context, projectID string) ([]domain.FileMetadata, error)
 }
@@ -34,21 +34,14 @@ func (m *mockFileService) Upload(ctx context.Context, in domain.FileUploadInput)
 func (m *mockFileService) Get(ctx context.Context, id string) ([]byte, string, error) {
 	return m.GetFn(ctx, id)
 }
-func (m *mockFileService) Delete(ctx context.Context, id string) error {
-	return m.DeleteFn(ctx, id)
+func (m *mockFileService) Delete(ctx context.Context, id string, deletedBy string) error {
+	return m.DeleteFn(ctx, id, deletedBy)
 }
 func (m *mockFileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
 	if m.ListByProjectIDFn != nil {
 		return m.ListByProjectIDFn(ctx, projectID)
 	}
 	return nil, nil
-}
-
-func (m *mockFileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
-	if m.ListByProjectIDFn != nil {
-		return m.ListByProjectIDFn(ctx, projectID)
-	}
-	return []domain.FileMetadata{}, nil
 }
 
 func setupRouter(s domain.FileService) *gin.Engine {
@@ -385,26 +378,26 @@ func TestDownload_InternalError(t *testing.T) {
 
 func TestDelete_Success(t *testing.T) {
 	mock := &mockFileService{
-		DeleteFn: func(ctx context.Context, id string) error { return nil },
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error { return nil },
 	}
 
 	router := setupRouter(mock)
-	req := httptest.NewRequest("DELETE", "/files/123", nil)
+	req := httptest.NewRequest("DELETE", "/files/123?deletedBy=user-456", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	if w.Code != http.StatusNoContent {
-		t.Fatalf("expected 204, got %d", w.Code)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", w.Code)
 	}
 }
 
 func TestDelete_NotFound(t *testing.T) {
 	mock := &mockFileService{
-		DeleteFn: func(ctx context.Context, id string) error { return domain.ErrNotFound },
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error { return domain.ErrNotFound },
 	}
 
 	router := setupRouter(mock)
-	req := httptest.NewRequest("DELETE", "/files/xxx", nil)
+	req := httptest.NewRequest("DELETE", "/files/xxx?deletedBy=user-456", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
@@ -415,11 +408,11 @@ func TestDelete_NotFound(t *testing.T) {
 
 func TestDelete_InternalError(t *testing.T) {
 	mock := &mockFileService{
-		DeleteFn: func(ctx context.Context, id string) error { return errors.New("fail") },
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error { return errors.New("fail") },
 	}
 
 	router := setupRouter(mock)
-	req := httptest.NewRequest("DELETE", "/files/xxx", nil)
+	req := httptest.NewRequest("DELETE", "/files/xxx?deletedBy=user-456", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
@@ -492,6 +485,103 @@ func TestListProjectDocuments_InternalError(t *testing.T) {
 
 	router := setupRouter(mock)
 	req := httptest.NewRequest("GET", "/projects/proj-789/documents", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", w.Code)
+	}
+}
+
+func TestSoftDelete_Success(t *testing.T) {
+	deleteCalledWithParams := false
+
+	mock := &mockFileService{
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error {
+			deleteCalledWithParams = true
+			if id != "file-123" {
+				t.Errorf("expected id 'file-123', got '%s'", id)
+			}
+			if deletedBy != "user-456" {
+				t.Errorf("expected deletedBy 'user-456', got '%s'", deletedBy)
+			}
+			return nil
+		},
+	}
+
+	router := setupRouter(mock)
+
+	req := httptest.NewRequest("DELETE", "/files/file-123?deletedBy=user-456", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d", w.Code)
+	}
+
+	if !deleteCalledWithParams {
+		t.Fatal("Delete was not called with correct parameters")
+	}
+
+	var response map[string]string
+	json.Unmarshal(w.Body.Bytes(), &response)
+	if response["message"] != "File successfully deleted and archived" {
+		t.Errorf("unexpected response message: %s", response["message"])
+	}
+}
+
+func TestSoftDelete_MissingDeletedBy(t *testing.T) {
+	router := setupRouter(&mockFileService{})
+
+	req := httptest.NewRequest("DELETE", "/files/file-123", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", w.Code)
+	}
+}
+
+func TestSoftDelete_EmptyDeletedBy(t *testing.T) {
+	router := setupRouter(&mockFileService{})
+
+	req := httptest.NewRequest("DELETE", "/files/file-123?deletedBy=", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", w.Code)
+	}
+}
+
+func TestSoftDelete_FileNotFound(t *testing.T) {
+	mock := &mockFileService{
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error {
+			return domain.ErrNotFound
+		},
+	}
+
+	router := setupRouter(mock)
+
+	req := httptest.NewRequest("DELETE", "/files/nonexistent?deletedBy=user-456", nil)
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d", w.Code)
+	}
+}
+
+func TestSoftDelete_InternalError(t *testing.T) {
+	mock := &mockFileService{
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error {
+			return errors.New("database error")
+		},
+	}
+
+	router := setupRouter(mock)
+
+	req := httptest.NewRequest("DELETE", "/files/file-123?deletedBy=user-456", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 

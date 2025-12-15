@@ -169,12 +169,32 @@ func (fc *FileController) listProjectDocuments(c *gin.Context) {
 
 func (fc *FileController) delete(c *gin.Context) {
 	id := c.Param("id")
+	
+	var request struct {
+		DeletedBy string `json:"deletedBy"`
+	}
+	
+	// Try to bind JSON from request body
+	if err := c.ShouldBindJSON(&request); err != nil {
+		// If no JSON body, try query parameter (for backward compatibility)
+		request.DeletedBy = c.Query("deletedBy")
+		
+		// If still empty, check form data
+		if request.DeletedBy == "" {
+			request.DeletedBy = c.PostForm("deletedBy")
+		}
+	}
+	
+	if request.DeletedBy == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "deletedBy field is required"})
+		return
+	}
 
-	err := fc.s.Delete(c.Request.Context(), id)
+	err := fc.s.Delete(c.Request.Context(), id, request.DeletedBy)
 	if err != nil {
 		c.Error(err)
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	c.JSON(http.StatusOK, gin.H{"message": "File successfully deleted and archived"})
 }
