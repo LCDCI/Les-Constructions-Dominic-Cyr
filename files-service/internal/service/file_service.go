@@ -169,6 +169,11 @@ func (s *fileService) Delete(ctx context.Context, fileID string, deletedBy strin
 		return err
 	}
 
+	// Also delete the file from storage to prevent storage bloat
+	if err := s.storage.Delete(ctx, f.ID); err != nil {
+		log.Printf("[ERROR] Failed to delete file %s from storage: %v", f.ID, err)
+		// Continue; file is soft-deleted in DB, but storage cleanup failed
+	}
 	// Log deletion for audit trail
 	log.Printf("[AUDIT] File deleted (archived): ID=%s, FileName=%s, ProjectID=%s, Category=%s, DeletedBy=%s",
 		fileID, f.FileName, f.ProjectID, f.Category, deletedBy)
