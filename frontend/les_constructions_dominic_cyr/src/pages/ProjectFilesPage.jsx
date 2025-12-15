@@ -15,9 +15,10 @@ export default function ProjectFilesPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [fileToDelete, setFileToDelete] = useState(null);
+    const [deleteError, setDeleteError] = useState(null);
 
-    // TODO: Replace with actual current user ID from authentication context
-    const currentUserId = '123-user-id';
+    // TODO: Replace PLACEHOLDER_USER_ID with actual current user ID from authentication context before production
+    const PLACEHOLDER_USER_ID = '123-user-id';
     const navigate = useNavigate();
 
     // Data Fetching (match the photos page pattern)
@@ -73,16 +74,17 @@ export default function ProjectFilesPage() {
     const confirmDelete = async () => {
         if (!fileToDelete) return;
 
+        setDeleteError(null);
         try {
-            await deleteFile(fileToDelete, { deletedBy: currentUserId });
+            await deleteFile(fileToDelete, { deletedBy: PLACEHOLDER_USER_ID });
             setAllFiles((prev) => (prev || []).filter((file) => file?.id !== fileToDelete));
             setIsDeleteModalOpen(false);
             setFileToDelete(null);
         } catch (error) {
             console.error('Failed to delete file:', error);
-            alert('Failed to delete file. Please try again.');
-            setIsDeleteModalOpen(false);
-            setFileToDelete(null);
+            const errorMsg = error.response?.data?.error || 'Failed to delete file. Please try again.';
+            setDeleteError(errorMsg);
+            // Keep modal open to show error
         }
     };
 
@@ -147,7 +149,7 @@ export default function ProjectFilesPage() {
             {isModalOpen && (
                 <FileUploadModal
                     projectId={projectId}
-                    uploadedBy={currentUserId}
+                    uploadedBy={PLACEHOLDER_USER_ID}
                     onClose={() => setIsModalOpen(false)}
                     onUploadSuccess={handleUploadSuccess}
                 />
@@ -158,11 +160,13 @@ export default function ProjectFilesPage() {
                 onCancel={cancelDelete}
                 config={{
                     title: "Delete Document",
-                    message: "Are you sure you want to delete this document? This action will archive the file and it will no longer be accessible to users. The file may be recoverable by administrators.",
+                    message: deleteError 
+                        ? `Error: ${deleteError}` 
+                        : "Are you sure you want to delete this document? This action will archive the file and it will no longer be accessible to users. The file may be recoverable by administrators.",
                     onConfirm: confirmDelete,
-                    confirmText: "Delete",
+                    confirmText: deleteError ? "Try Again" : "Delete",
                     cancelText: "Cancel",
-                    isDestructive: true,
+                    isDestructive: !deleteError,
                 }}
             />
         </div>
