@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import { validate } from 'react-email-validator';
-import { useTranslation } from 'react-i18next'; 
+import { useTranslation } from 'react-i18next';
 /**
  * Reusable InquiryForm component
  * Props:
@@ -11,7 +11,45 @@ import { useTranslation } from 'react-i18next';
  */
 
 export default function InquiryForm({ onSuccess, className }) {
-  const { t } = useTranslation('contact');
+  const { t, i18n } = useTranslation('contact');
+  const currentLanguage = i18n.language || 'fr';
+
+  const fallback = {
+    fr: {
+      title: 'Envoyez-nous un message',
+      nameLabel: 'Nom',
+      namePlaceholder: 'Votre nom',
+      emailLabel: 'Courriel',
+      emailPlaceholder: 'votre.courriel@exemple.com',
+      phoneLabel: 'Téléphone',
+      phonePlaceholder: 'Entrez votre numéro de téléphone',
+      messageLabel: 'Message',
+      messagePlaceholder: 'Parlez-nous de votre projet...',
+      submitButton: 'Soumettre la demande',
+      submittingButton: 'Envoi en cours...',
+      requiredFields: 'Veuillez remplir tous les champs obligatoires.',
+      invalidEmail: 'Veuillez entrer une adresse courriel valide.',
+      networkError: 'Erreur réseau. Veuillez réessayer plus tard.',
+    },
+    en: {
+      title: 'Send us a message',
+      nameLabel: 'Name',
+      namePlaceholder: 'Your name',
+      emailLabel: 'Email',
+      emailPlaceholder: 'your.email@example.com',
+      phoneLabel: 'Phone',
+      phonePlaceholder: 'Enter phone number',
+      messageLabel: 'Message',
+      messagePlaceholder: 'Tell us about your project...',
+      submitButton: 'Submit Inquiry',
+      submittingButton: 'Sending...',
+      requiredFields: 'Please fill out all required fields.',
+      invalidEmail: 'Please enter a valid email address.',
+      networkError: 'Network error. Please try again later.',
+    },
+  };
+
+  const f = fallback[currentLanguage] || fallback.fr;
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -48,7 +86,7 @@ export default function InquiryForm({ onSuccess, className }) {
     e.preventDefault();
     if (!form.name || !form.email || !form.message) {
       setStatus({
-        message: t('inquiryForm.requiredFields'),
+        message: t('inquiryForm.requiredFields', f.requiredFields),
         type: 'error',
       });
       return;
@@ -57,7 +95,7 @@ export default function InquiryForm({ onSuccess, className }) {
     // Validate email format using react-email-validator
     if (!validate(form.email)) {
       setStatus({
-        message: t('inquiryForm.invalidEmail'),
+        message: t('inquiryForm.invalidEmail', f.invalidEmail),
         type: 'error',
       });
       return;
@@ -92,7 +130,7 @@ export default function InquiryForm({ onSuccess, className }) {
       }
     } catch (err) {
       setStatus({
-        message: t('inquiryForm.networkError'),
+        message: t('inquiryForm.networkError', f.networkError),
         type: 'error',
       });
     } finally {
@@ -102,35 +140,35 @@ export default function InquiryForm({ onSuccess, className }) {
 
   return (
     <div className={`contact-form ${className || ''}`.trim()}>
-      <h2>{t('inquiryForm.title')}</h2>
+      <h2>{t('inquiryForm.title', f.title)}</h2>
       <form onSubmit={onSubmit}>
         <div className="form-group">
-          <label>{t('inquiryForm.nameLabel')} *</label>
+          <label>{t('inquiryForm.nameLabel', f.nameLabel)} *</label>
           <input
             name="name"
             value={form.name}
             onChange={onChange}
-            placeholder={t('inquiryForm.namePlaceholder')}
+            placeholder={t('inquiryForm.namePlaceholder', f.namePlaceholder)}
             disabled={loading}
             required
           />
         </div>
         <div className="form-group">
-          <label>{t('inquiryForm.emailLabel')} *</label>
+          <label>{t('inquiryForm.emailLabel', f.emailLabel)} *</label>
           <input
             name="email"
             type="email"
             value={form.email}
             onChange={onChange}
-            placeholder={t('inquiryForm.emailPlaceholder')}
+            placeholder={t('inquiryForm.emailPlaceholder', f.emailPlaceholder)}
             disabled={loading}
             required
           />
         </div>
         <div className="form-group">
-          <label>{t('inquiryForm.phoneLabel')}</label>
+          <label>{t('inquiryForm.phoneLabel', f.phoneLabel)}</label>
           <PhoneInput
-            placeholder={t('inquiryForm.phonePlaceholder')}
+            placeholder={t('inquiryForm.phonePlaceholder', f.phonePlaceholder)}
             value={form.phone}
             onChange={(value) => setForm({ ...form, phone: value })}
             disabled={loading}
@@ -138,19 +176,21 @@ export default function InquiryForm({ onSuccess, className }) {
           />
         </div>
         <div className="form-group">
-          <label>{t('inquiryForm.messageLabel')} *</label>
+          <label>{t('inquiryForm.messageLabel', f.messageLabel)} *</label>
           <textarea
             name="message"
             value={form.message}
             onChange={onChange}
-            placeholder={t('inquiryForm.messagePlaceholder')}
+            placeholder={t('inquiryForm.messagePlaceholder', f.messagePlaceholder)}
             rows={5}
             disabled={loading}
             required
           />
         </div>
         <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? t('inquiryForm.submittingButton') : t('inquiryForm.submitButton')}
+          {loading
+            ? t('inquiryForm.submittingButton', f.submittingButton)
+            : t('inquiryForm.submitButton', f.submitButton)}
         </button>
         {status.message && (
           <div className={`status-message ${status.type}`}>
