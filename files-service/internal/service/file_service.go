@@ -155,7 +155,7 @@ func (s *fileService) Delete(ctx context.Context, fileID string, deletedBy strin
 	// Find the file to ensure it exists and is active
 	f, err := s.repo.FindById(ctx, fileID)
 	if err != nil {
-		log.Printf("[ERROR] Failed to find file %s for deletion: internal error occurred", fileID)
+		log.Printf("[ERROR] Failed to find file %s for deletion: %v", fileID, err)
 		return err
 	}
 	if f == nil {
