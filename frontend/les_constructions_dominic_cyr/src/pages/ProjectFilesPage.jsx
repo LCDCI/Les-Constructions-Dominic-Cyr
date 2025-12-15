@@ -16,8 +16,8 @@ export default function ProjectFilesPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [fileToDelete, setFileToDelete] = useState(null);
 
-    // TODO: Replace with actual current user ID from authentication context
-    const currentUserId = '123-user-id';
+    // TODO: Replace PLACEHOLDER_USER_ID with actual current user ID from authentication context before production
+    const PLACEHOLDER_USER_ID = '123-user-id';
     const navigate = useNavigate();
 
     // Data Fetching (match the photos page pattern)
