@@ -47,7 +47,11 @@ export default function ProfilePage() {
         });
       } catch (err) {
         console.error('Failed to load user:', err);
-        setError('Failed to load profile information.');
+        if (err.response?.status === 404) {
+          setError('Your user profile was not found. Please contact support.');
+        } else {
+          setError('Failed to load profile information. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
