@@ -34,7 +34,8 @@ export async function fetchUserByAuth0Id(auth0UserId) {
   if (!auth0UserId) {
     throw new Error('Auth0 user ID is required');
   }
-  const response = await axios.get(`${API_BASE}/users/auth0/${auth0UserId}`);
+  const encodedAuth0UserId = encodeURIComponent(auth0UserId);
+  const response = await axios.get(`${API_BASE}/users/auth0/${encodedAuth0UserId}`);
   return response.data;
 }
 
