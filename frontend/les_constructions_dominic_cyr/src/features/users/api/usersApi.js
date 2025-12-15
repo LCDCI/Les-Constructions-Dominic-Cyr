@@ -31,6 +31,9 @@ export async function fetchUserById(userId) {
  * GET a user by Auth0 ID
  */
 export async function fetchUserByAuth0Id(auth0UserId) {
+  if (!auth0UserId) {
+    throw new Error('Auth0 user ID is required');
+  }
   const response = await axios.get(`${API_BASE}/users/auth0/${auth0UserId}`);
   return response.data;
 }
