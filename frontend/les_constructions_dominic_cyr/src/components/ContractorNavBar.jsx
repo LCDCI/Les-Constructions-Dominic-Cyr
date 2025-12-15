@@ -13,6 +13,8 @@ import {
 import { MdOutlineRequestQuote } from "react-icons/md";
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
+import { CgProfile } from "react-icons/cg";
+
 
 
 const Navbar = () => {
@@ -182,7 +184,7 @@ const Navbar = () => {
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">
-                    <GoGear />
+                    <CgProfile />
                   </span>
                   <span className="navbar-text">My Profile</span>
                 </Link>

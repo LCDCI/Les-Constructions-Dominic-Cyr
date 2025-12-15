@@ -17,6 +17,7 @@ import {
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
 import { FaMapLocationDot } from 'react-icons/fa6';
+import { CgProfile } from "react-icons/cg";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -252,7 +253,7 @@ const Navbar = () => {
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">
-                    <GoGear />
+                    <CgProfile />
                   </span>
                   <span className="navbar-text">My Profile</span>
                 </Link>
