@@ -148,7 +148,12 @@ func (s *fileService) ListByProjectID(ctx context.Context, projectID string) ([]
 
 func (s *fileService) Delete(ctx context.Context, fileID string, deletedBy string) error {
 	// Validate deletedBy field
-	if strings.TrimSpace(deletedBy) == "" {
+	deletedBy = strings.TrimSpace(deletedBy)
+	if deletedBy == "" {
+		return domain.ErrValidation
+	}
+	// Ensure deletedBy is a valid UUID
+	if _, err := uuid.Parse(deletedBy); err != nil {
 		return domain.ErrValidation
 	}
 
