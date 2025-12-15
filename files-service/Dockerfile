@@ -10,6 +10,9 @@ RUN go mod tidy
 
 COPY . .
 
+# Copy migrations directory for runtime access
+COPY migrations ./migrations
+
 RUN go build -o file-service ./cmd
 
 EXPOSE 8080

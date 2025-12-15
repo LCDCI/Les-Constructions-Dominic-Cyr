@@ -11,7 +11,7 @@ import (
 type mockRepo struct {
 	SaveFn     func(ctx context.Context, f *domain.File) error
 	FindByIdFn func(ctx context.Context, id string) (*domain.File, error)
-	DeleteFn   func(ctx context.Context, id string) error
+	DeleteFn   func(ctx context.Context, id string, deletedBy string) error
 
 	FindByProjectIDFn func(ctx context.Context, projectID string) ([]domain.File, error)
 }
@@ -20,16 +20,14 @@ func (m *mockRepo) Save(ctx context.Context, f *domain.File) error { return m.Sa
 func (m *mockRepo) FindById(ctx context.Context, id string) (*domain.File, error) {
 	return m.FindByIdFn(ctx, id)
 }
-func (m *mockRepo) Delete(ctx context.Context, id string) error { return m.DeleteFn(ctx, id) }
+func (m *mockRepo) Delete(ctx context.Context, id string, deletedBy string) error { 
+	return m.DeleteFn(ctx, id, deletedBy) 
+}
 func (m *mockRepo) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
 	if m.FindByProjectIDFn != nil {
 		return m.FindByProjectIDFn(ctx, projectID)
 	}
 	return nil, nil
-}
-
-func (m *mockRepo) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
-	return m.FindByProjectIDFn(ctx, projectID)
 }
 
 type mockStorage struct {
@@ -305,18 +303,14 @@ func TestGet_DownloadError(t *testing.T) {
 func TestDelete_Success(t *testing.T) {
 	repo := &mockRepo{
 		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
-			return &domain.File{ObjectKey: "key"}, nil
+			return &domain.File{ID: id, FileName: "test.pdf", ProjectID: "proj-1", Category: domain.CategoryDocument}, nil
 		},
-		DeleteFn: func(ctx context.Context, id string) error { return nil },
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error { return nil },
 	}
 
-	storage := &mockStorage{
-		DeleteFn: func(ctx context.Context, key string) error { return nil },
-	}
+	s := service.NewFileService(repo, &mockStorage{})
 
-	s := service.NewFileService(repo, storage)
-
-	err := s.Delete(context.Background(), "123")
+	err := s.Delete(context.Background(), "123", "user-456")
 	if err != nil {
 		t.Fatalf("unexpected error")
 	}
@@ -329,14 +323,14 @@ func TestDelete_NotFound(t *testing.T) {
 
 	s := service.NewFileService(repo, &mockStorage{})
 
-	err := s.Delete(context.Background(), "123")
+	err := s.Delete(context.Background(), "nonexistent", "user-789")
 	if err != domain.ErrNotFound {
 		t.Fatalf("expected ErrNotFound")
 	}
 }
 
 func TestDelete_FindError(t *testing.T) {
-	findErr := errors.New("db error")
+	findErr := errors.New("database connection error")
 
 	repo := &mockRepo{
 		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) { return nil, findErr },
@@ -344,7 +338,7 @@ func TestDelete_FindError(t *testing.T) {
 
 	s := service.NewFileService(repo, &mockStorage{})
 
-	err := s.Delete(context.Background(), "123")
+	err := s.Delete(context.Background(), "file-123", "user-789")
 	if !errors.Is(err, findErr) {
 		t.Fatalf("expected find error")
 	}
@@ -365,7 +359,7 @@ func TestDelete_StorageError(t *testing.T) {
 
 	s := service.NewFileService(repo, storage)
 
-	err := s.Delete(context.Background(), "123")
+	err := s.Delete(context.Background(), "123", "user-id")
 	if !errors.Is(err, storageErr) {
 		t.Fatalf("expected storage delete error")
 	}
@@ -378,7 +372,7 @@ func TestDelete_RepoDeleteError(t *testing.T) {
 		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
 			return &domain.File{ObjectKey: "key"}, nil
 		},
-		DeleteFn: func(ctx context.Context, id string) error { return repoErr },
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error { return repoErr },
 	}
 
 	storage := &mockStorage{
@@ -387,8 +381,93 @@ func TestDelete_RepoDeleteError(t *testing.T) {
 
 	s := service.NewFileService(repo, storage)
 
-	err := s.Delete(context.Background(), "123")
+	err := s.Delete(context.Background(), "123", "user-789")
 	if !errors.Is(err, repoErr) {
 		t.Fatalf("expected repo delete error")
+	}
+}
+
+func TestDelete_WithAuditTrail(t *testing.T) {
+	deleteCalledWithParams := false
+
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return &domain.File{
+				ID:        id,
+				FileName:  "test.pdf",
+				ProjectID: "proj-1",
+				Category:  domain.CategoryDocument,
+			}, nil
+		},
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error {
+			deleteCalledWithParams = true
+			if id != "file-123" {
+				t.Errorf("expected id 'file-123', got '%s'", id)
+			}
+			if deletedBy != "user-456" {
+				t.Errorf("expected deletedBy 'user-456', got '%s'", deletedBy)
+			}
+			return nil
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	err := s.Delete(context.Background(), "file-123", "user-456")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+
+	if !deleteCalledWithParams {
+		t.Fatal("Delete was not called on repository with correct parameters")
+	}
+}
+
+func TestDelete_EmptyDeletedBy(t *testing.T) {
+	s := service.NewFileService(&mockRepo{}, &mockStorage{})
+
+	err := s.Delete(context.Background(), "file-123", "")
+	if err != domain.ErrValidation {
+		t.Fatalf("expected validation error for empty deletedBy, got %v", err)
+	}
+
+	err = s.Delete(context.Background(), "file-123", "   ")
+	if err != domain.ErrValidation {
+		t.Fatalf("expected validation error for whitespace deletedBy, got %v", err)
+	}
+}
+
+func TestDelete_FileNotFound(t *testing.T) {
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return nil, nil
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	err := s.Delete(context.Background(), "nonexistent", "user-789")
+	if err != domain.ErrNotFound {
+		t.Fatalf("expected not found error, got %v", err)
+	}
+}
+
+func TestDelete_RepositoryDeleteError(t *testing.T) {
+	softDeleteErr := errors.New("soft delete failed")
+
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return &domain.File{ID: id, FileName: "test.pdf"}, nil
+		},
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error {
+			return softDeleteErr
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	err := s.Delete(context.Background(), "file-123", "user-789")
+	if !errors.Is(err, softDeleteErr) {
+		t.Fatalf("expected soft delete error, got %v", err)
 	}
 }

@@ -21,6 +21,19 @@ export async function uploadFile(formData) {
     return response.data;
 }
 
-export async function deleteFile(fileId) {
-    await axios.delete(`${BASE_API_URL}/files/${fileId}`);
+export async function deleteFile(fileId, { deletedBy }) {
+    // Simple validation - deletedBy should be a string
+    const deletedByValue = String(deletedBy);
+    
+    const response = await axios({
+        method: 'DELETE',
+        url: `${BASE_API_URL}/files/${fileId}`,
+        data: {
+            deletedBy: deletedByValue
+        },
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    return response.data;
 }
