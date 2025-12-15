@@ -22,19 +22,9 @@ export async function uploadFile(formData) {
 }
 
 export async function deleteFile(fileId, { deletedBy }) {
-    // Ensure deletedBy is a string (extract id, email, or name if it's an object)
-    let deletedByValue = deletedBy;
-    if (typeof deletedBy === 'object' && deletedBy !== null) {
-        if ('id' in deletedBy) {
-            deletedByValue = deletedBy.id;
-        } else if ('email' in deletedBy) {
-            deletedByValue = deletedBy.email;
-        } else if ('name' in deletedBy) {
-            deletedByValue = deletedBy.name;
-        } else {
-            deletedByValue = JSON.stringify(deletedBy);
-        }
-    }
+    // Simple validation - deletedBy should be a string
+    const deletedByValue = String(deletedBy);
+    
     const response = await axios({
         method: 'DELETE',
         url: `${BASE_API_URL}/files/${fileId}`,

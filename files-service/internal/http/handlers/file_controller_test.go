@@ -382,7 +382,9 @@ func TestDelete_Success(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-	req := httptest.NewRequest("DELETE", "/files/123?deletedBy=user-456", nil)
+	body := strings.NewReader(`{"deletedBy":"user-456"}`)
+	req := httptest.NewRequest("DELETE", "/files/123", body)
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
@@ -397,7 +399,9 @@ func TestDelete_NotFound(t *testing.T) {
 	}
 
 	router := setupRouter(mock)
-	req := httptest.NewRequest("DELETE", "/files/xxx?deletedBy=user-456", nil)
+	body := strings.NewReader(`{"deletedBy":"user-456"}`)
+	req := httptest.NewRequest("DELETE", "/files/xxx", body)
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
@@ -511,7 +515,9 @@ func TestSoftDelete_Success(t *testing.T) {
 
 	router := setupRouter(mock)
 
-	req := httptest.NewRequest("DELETE", "/files/file-123?deletedBy=user-456", nil)
+	body := strings.NewReader(`{"deletedBy":"user-456"}`)
+	req := httptest.NewRequest("DELETE", "/files/file-123", body)
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
@@ -563,7 +569,9 @@ func TestSoftDelete_FileNotFound(t *testing.T) {
 
 	router := setupRouter(mock)
 
-	req := httptest.NewRequest("DELETE", "/files/nonexistent?deletedBy=user-456", nil)
+	body := strings.NewReader(`{"deletedBy":"user-456"}`)
+	req := httptest.NewRequest("DELETE", "/files/nonexistent", body)
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
@@ -581,7 +589,9 @@ func TestSoftDelete_InternalError(t *testing.T) {
 
 	router := setupRouter(mock)
 
-	req := httptest.NewRequest("DELETE", "/files/file-123?deletedBy=user-456", nil)
+	body := strings.NewReader(`{"deletedBy":"user-456"}`)
+	req := httptest.NewRequest("DELETE", "/files/file-123", body)
+	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 

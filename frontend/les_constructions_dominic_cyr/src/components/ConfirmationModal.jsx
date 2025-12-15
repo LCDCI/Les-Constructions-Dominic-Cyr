@@ -28,12 +28,19 @@ export default function ConfirmationModal({ isOpen, onCancel, config = {} }) {
 
     return (
         <div className="confirmation-modal-overlay" onClick={onCancel}>
-            <div className="confirmation-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div 
+                className="confirmation-modal-content" 
+                onClick={(e) => e.stopPropagation()}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+            >
                 <div className="confirmation-modal-header">
-                    <h2>{title}</h2>
+                    <h2 id="modal-title">{title}</h2>
                 </div>
                 <div className="confirmation-modal-body">
-                    <p>{message}</p>
+                    <p id="modal-description">{message}</p>
                 </div>
                 <div className="confirmation-modal-footer">
                     <button className="btn-cancel" onClick={onCancel}>

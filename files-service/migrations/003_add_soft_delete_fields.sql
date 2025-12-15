@@ -3,13 +3,14 @@ ALTER TABLE files ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 ALTER TABLE files ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMP;
 ALTER TABLE files ADD COLUMN IF NOT EXISTS deleted_by VARCHAR(36);
 
--- Add a CHECK constraint to ensure deleted_by is a valid UUID if not null
+-- Add a CHECK constraint to ensure deleted_by is a valid identifier if not null
 ALTER TABLE files
     ADD CONSTRAINT IF NOT EXISTS chk_files_deleted_by_uuid
     CHECK (
         deleted_by IS NULL OR
-        deleted_by ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+        deleted_by ~ '^[a-zA-Z0-9_-]{1,36}$'
     );
+
 -- Update existing records to ensure is_active is TRUE
 UPDATE files SET is_active = TRUE WHERE is_active IS NULL;
 
