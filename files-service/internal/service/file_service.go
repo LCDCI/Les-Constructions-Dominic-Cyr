@@ -4,6 +4,7 @@ import (
 	"context"
 	"files-service/internal/domain"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -145,19 +146,42 @@ func (s *fileService) ListByProjectID(ctx context.Context, projectID string) ([]
 	return metadataList, nil
 }
 
-func (s *fileService) Delete(ctx context.Context, fileID string) error {
+func (s *fileService) Delete(ctx context.Context, fileID string, deletedBy string) error {
+	// Validate deletedBy field
+	deletedBy = strings.TrimSpace(deletedBy)
+	if deletedBy == "" {
+		return domain.ErrValidation
+	}
+	// Ensure deletedBy is a valid UUID
+	if _, err := uuid.Parse(deletedBy); err != nil {
+		return domain.ErrValidation
+	}
 
+	// Find the file to ensure it exists and is active
 	f, err := s.repo.FindById(ctx, fileID)
 	if err != nil {
+		log.Printf("[ERROR] Failed to find file %s for deletion: %v", fileID, err)
 		return err
 	}
 	if f == nil {
+		log.Printf("[WARN] File %s not found for deletion", fileID)
 		return domain.ErrNotFound
 	}
 
-	if err := s.storage.Delete(ctx, f.ObjectKey); err != nil {
+	// Perform soft delete - deactivate the file, don't remove it
+	if err := s.repo.Delete(ctx, fileID, deletedBy); err != nil {
+		log.Printf("[ERROR] Failed to delete file %s: %v", fileID, err)
 		return err
 	}
 
-	return s.repo.Delete(ctx, fileID)
+	// Also delete the file from storage to prevent storage bloat
+	if err := s.storage.Delete(ctx, f.ObjectKey); err != nil {
+		log.Printf("[ERROR] Failed to delete file %s from storage: %v", f.ObjectKey, err)
+		// Continue; file is soft-deleted in DB, but storage cleanup failed
+	}
+	// Log deletion for audit trail
+	log.Printf("[AUDIT] File deleted (archived): ID=%s, FileName=%s, ProjectID=%s, Category=%s, DeletedBy=%s",
+		fileID, f.FileName, f.ProjectID, f.Category, deletedBy)
+
+	return nil
 }

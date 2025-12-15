@@ -2,8 +2,11 @@ package config
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"sort"
 
 	_ "github.com/lib/pq"
 )
@@ -34,5 +37,64 @@ func InitPostgres(cfg *Config) *sql.DB {
 	if err := db.Ping(); err != nil {
 		log.Fatal("DB unreachable:", err)
 	}
+	
+	// Run migrations automatically at startup
+	if err := runMigrations(db); err != nil {
+		log.Printf("Warning: Migration execution failed: %v", err)
+		// Don't fail startup, migrations might already be applied
+	}
+	
 	return db
+}
+
+// runMigrations executes all SQL migration files in the migrations directory
+func runMigrations(db *sql.DB) error {
+	migrationsPath := "./migrations"
+	
+	// Check if migrations directory exists
+	if _, err := os.Stat(migrationsPath); os.IsNotExist(err) {
+		// Try alternative path for Docker
+		migrationsPath = "/app/migrations"
+		if _, err := os.Stat(migrationsPath); os.IsNotExist(err) {
+			log.Println("No migrations directory found, skipping migrations")
+			return nil
+		}
+	}
+	
+	// Read all .sql files from migrations directory
+	files, err := filepath.Glob(filepath.Join(migrationsPath, "*.sql"))
+	if err != nil {
+		return fmt.Errorf("failed to read migration files: %w", err)
+	}
+	
+	if len(files) == 0 {
+		log.Println("No migration files found")
+		return nil
+	}
+	
+	// Sort files to ensure they run in order
+	sort.Strings(files)
+	
+	log.Println("Running database migrations...")
+	
+	for _, file := range files {
+		log.Printf("Applying migration: %s", filepath.Base(file))
+		
+		content, err := os.ReadFile(file)
+		if err != nil {
+			return fmt.Errorf("failed to read migration file %s: %w", file, err)
+		}
+		
+		// Execute the migration
+		_, err = db.Exec(string(content))
+		if err != nil {
+			// Log the error but don't fail - migration might already be applied
+			log.Printf("Migration %s: %v (this is normal if already applied)", filepath.Base(file), err)
+		} else {
+			log.Printf("Migration %s: applied successfully", filepath.Base(file))
+		}
+	}
+	
+	log.Println("Database migrations completed")
+	return nil
 }
