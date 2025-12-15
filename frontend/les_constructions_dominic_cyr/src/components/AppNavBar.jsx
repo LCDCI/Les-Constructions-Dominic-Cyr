@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
+import useBackendUser from '../hooks/useBackendUser';
 
 import '../styles/AppNavBar.css';
 import OwnerNavBar from '../components/OwnerNavBar';
@@ -43,6 +44,7 @@ export default function AppNavBar() {
   const { i18n, t } = useTranslation();
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth0();
+  const { role, loading: roleLoading } = useBackendUser();
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -77,12 +79,19 @@ export default function AppNavBar() {
   return (
       <header className="site-nav">
         <div className="site-nav-inner">
-          <SalespersonNavBar />
-          <OwnerNavBar />
-          <ContractorNavBar />
-          <CustomerNavBar />
+          {!roleLoading && role === 'OWNER' && <OwnerNavBar />}
+          {!roleLoading && role === 'SALESPERSON' && <SalespersonNavBar />}
+          {!roleLoading && role === 'CONTRACTOR' && <ContractorNavBar />}
+          {!roleLoading && role === 'CUSTOMER' && <CustomerNavBar />}
 
           <nav className="desktop-nav">
+            <NavLink
+                to="/"
+                className={({ isActive }) => (isActive ? 'active' : '')}
+            >
+              {t('nav.home', 'Accueil')}
+            </NavLink>
+
             <NavLink
                 to="/residential-projects"
                 className={({ isActive }) => (isActive ? 'active' : '')}
@@ -157,6 +166,14 @@ export default function AppNavBar() {
         </div>
 
         <nav className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
+          <NavLink
+              to="/"
+              className={({ isActive }) => (isActive ? 'active' : '')}
+              onClick={() => setIsMobileMenuOpen(false)}
+          >
+            {t('nav.home', 'Accueil')}
+          </NavLink>
+
           <NavLink
               to="/residential-projects"
               className={({ isActive }) => (isActive ? 'active' : '')}

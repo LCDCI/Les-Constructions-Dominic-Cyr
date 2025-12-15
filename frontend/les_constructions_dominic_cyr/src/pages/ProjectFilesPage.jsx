@@ -6,6 +6,8 @@ import FileCard from '../features/files/components/FileCard';
 import { deleteFile, fetchProjectFiles } from '../features/files/api/filesApi';
 import '../styles/FilesPage.css';
 import { useParams, useNavigate } from 'react-router-dom';
+import useBackendUser from '../hooks/useBackendUser';
+import { canUploadDocuments, canDeleteDocuments } from '../utils/permissions';
 
 export default function ProjectFilesPage() {
     const { projectId } = useParams();
@@ -17,9 +19,13 @@ export default function ProjectFilesPage() {
     const [fileToDelete, setFileToDelete] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
 
-    // TODO: Replace PLACEHOLDER_USER_ID with actual current user ID from authentication context before production
-    const PLACEHOLDER_USER_ID = '123-user-id';
+    const { profile, role } = useBackendUser();
+    const userId = profile?.userIdentifier || '';
     const navigate = useNavigate();
+
+    // Permission checks based on role
+    const canUpload = canUploadDocuments(role);
+    const canDelete = canDeleteDocuments(role);
 
     // Data Fetching (match the photos page pattern)
     useEffect(() => {
@@ -76,7 +82,7 @@ export default function ProjectFilesPage() {
 
         setDeleteError(null);
         try {
-            await deleteFile(fileToDelete, { deletedBy: PLACEHOLDER_USER_ID });
+            await deleteFile(fileToDelete, { deletedBy: userId });
             setAllFiles((prev) => (prev || []).filter((file) => file?.id !== fileToDelete));
             setIsDeleteModalOpen(false);
             setFileToDelete(null);
@@ -115,9 +121,11 @@ export default function ProjectFilesPage() {
         <div className="documents-page container">
             <div className="documents-header">
                 <h1>Project Documents: {projectId}</h1>
-                <button className="btn-upload" onClick={() => setIsModalOpen(true)}>
-                    <FaFileArrowUp /> Upload Document
-                </button>
+                {canUpload && (
+                    <button className="btn-upload" onClick={() => setIsModalOpen(true)}>
+                        <FaFileArrowUp /> Upload Document
+                    </button>
+                )}
             </div>
 
             <div className="document-list-container">
@@ -133,7 +141,7 @@ export default function ProjectFilesPage() {
                         </thead>
                         <tbody>
                         {documents.map((file) => (
-                            <FileCard key={file.id || file.fileName} file={file} onDelete={handleDelete} />
+                            <FileCard key={file.id || file.fileName} file={file} onDelete={handleDelete} canDelete={canDelete} />
                         ))}
                         </tbody>
                     </table>
@@ -149,7 +157,7 @@ export default function ProjectFilesPage() {
             {isModalOpen && (
                 <FileUploadModal
                     projectId={projectId}
-                    uploadedBy={PLACEHOLDER_USER_ID}
+                    uploadedBy={userId}
                     onClose={() => setIsModalOpen(false)}
                     onUploadSuccess={handleUploadSuccess}
                 />
