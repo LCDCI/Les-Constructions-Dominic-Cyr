@@ -1,9 +1,11 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useLocation } from 'react-router-dom';
 import '../styles/portal.css';
 
 export default function PortalLogin() {
   const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
+  const location = useLocation();
 
   if (isLoading) {
     return <div className="portal-page">Loading...</div>;
@@ -22,7 +24,7 @@ export default function PortalLogin() {
       <div className="portal-card">
         <h1>Access Portal</h1>
         <p>Sign in to access your dashboard</p>
-        <button onClick={() => loginWithRedirect()}>
+        <button onClick={() => loginWithRedirect({ appState: { returnTo: (location.state && location.state.returnTo) || '/' } })}>
           Continue to Login →
         </button>
       </div>

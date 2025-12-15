@@ -1,13 +1,12 @@
 import apiClient from '../../../api/apiClient';
 
-export const getProjectMetadata = async (projectIdentifier, userId) => {
-  const response = await apiClient.get(
-    `/projects/${projectIdentifier}/metadata`,
-    {
-      headers: {
-        'X-User-Id': userId,
-      },
-    }
-  );
+export const getProjectMetadata = async (projectIdentifier, token = null) => {
+  const headers = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  const response = await apiClient.get(`/projects/${projectIdentifier}/metadata`, {
+    headers,
+  });
   return response.data;
 };
