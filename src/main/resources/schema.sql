@@ -171,3 +171,15 @@ CREATE TABLE renovations (
             after_image_identifier VARCHAR(255),
             description TEXT NOT NULL
 );
+
+-- schema for project management page content
+DROP TABLE IF EXISTS project_management_page_content CASCADE;
+CREATE TABLE project_management_page_content (
+    id BIGSERIAL PRIMARY KEY,
+    language VARCHAR(10) NOT NULL UNIQUE,
+    content_json TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_pm_content_language ON project_management_page_content(language);

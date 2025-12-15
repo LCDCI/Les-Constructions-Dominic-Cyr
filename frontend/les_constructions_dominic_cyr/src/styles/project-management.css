@@ -1,20 +1,9 @@
-/* Project Management Page Styles - Light Theme */
-
-:root {
-  --pm-light-bg: var(--background-color, #F5F7FA);
-  --pm-text-primary: var(--text-primary, #4C4D4F);
-  --pm-text-secondary: var(--text-secondary, #6B7280);
-  --pm-accent-blue: #4A90A4;
-  --pm-accent-blue-dark: #5A7D8C;
-  --pm-accent-dark: #2C3E50;
-  --pm-border-color: #D1D5DB;
-  --pm-card-bg: var(--white, #FFFFFF);
-}
+/* Project Management Page Styles - Uses Global CSS Variables */
 
 .project-management-page {
   min-height: 100vh;
-  background-color: var(--pm-light-bg);
-  color: var(--pm-text-primary);
+  background-color: var(--background-color);
+  color: var(--text-primary);
   width: 100%;
 }
 
@@ -23,14 +12,14 @@
   align-items: center;
   justify-content: center;
   min-height: 60vh;
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   font-size: 1.25rem;
 }
 
 /* Hero Banner Section */
 .pm-hero-banner {
   width: 100%;
-  background: linear-gradient(135deg, var(--primary-color, #4C4D4F), var(--pm-accent-blue-dark));
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   padding: 80px 24px;
   display: flex;
   align-items: center;
@@ -46,7 +35,7 @@
 .pm-hero-title {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 400;
-  color: var(--white, #FFFFFF);
+  color: var(--white);
   line-height: 1.2;
   letter-spacing: 0.02em;
   margin: 0;
@@ -56,7 +45,7 @@
 /* Introduction Section */
 .pm-intro-section {
   width: 100%;
-  background-color: var(--pm-light-bg);
+  background-color: var(--background-color);
   padding: 60px 24px;
 }
 
@@ -85,14 +74,14 @@
   line-height: 1.2;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   margin: 0 0 16px 0;
 }
 
 .pm-tagline {
   font-size: clamp(1.2rem, 2vw, 1.5rem);
   font-weight: 400;
-  color: var(--pm-accent-blue);
+  color: var(--accent-color);
   margin: 0;
   font-style: italic;
 }
@@ -114,7 +103,7 @@
   max-width: 400px;
   flex: 1;
   position: relative;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0.3s ease;
+  transition: transform var(--transition), box-shadow var(--transition), z-index var(--transition);
   z-index: 1;
 }
 
@@ -143,18 +132,18 @@
   aspect-ratio: 4 / 3;
   border-radius: 12px;
   overflow: hidden;
-  background-color: var(--pm-card-bg);
-  border: 2px dashed var(--pm-border-color);
+  background-color: var(--white);
+  border: 2px dashed var(--secondary-color);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
+  transition: box-shadow var(--transition);
 }
 
 .pm-image-card:hover .pm-image-container {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  border-color: var(--pm-accent-blue);
+  border-color: var(--accent-color);
 }
 
 .pm-image {
@@ -175,14 +164,14 @@
 .pm-intro-paragraph p {
   font-size: clamp(1rem, 1.5vw, 1.2rem);
   line-height: 1.8;
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   margin: 0;
 }
 
 /* Advantages Section */
 .pm-advantages-section {
   width: 100%;
-  background-color: var(--pm-card-bg);
+  background-color: var(--white);
   padding: 60px 24px;
 }
 
@@ -195,14 +184,14 @@
 .pm-intro-text {
   font-size: clamp(1rem, 1.5vw, 1.2rem);
   line-height: 1.7;
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   margin: 0 0 32px 0;
 }
 
 .pm-advantages-heading {
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   font-weight: 600;
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   margin: 0 0 24px 0;
   line-height: 1.4;
 }
@@ -219,7 +208,7 @@
 .pm-advantages-list li {
   font-size: clamp(1rem, 1.5vw, 1.1rem);
   line-height: 1.6;
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   padding-left: 24px;
   position: relative;
 }
@@ -229,7 +218,7 @@
   position: absolute;
   left: 0;
   font-size: 1.5rem;
-  color: var(--pm-accent-blue);
+  color: var(--accent-color);
   line-height: 1.2;
   font-weight: bold;
 }
@@ -245,14 +234,14 @@
 .pm-separator-line {
   width: 100%;
   height: 1px;
-  background-color: var(--pm-border-color);
+  background-color: var(--secondary-color);
 }
 
 /* Pricing Text */
 .pm-pricing-text {
   font-size: clamp(1rem, 1.5vw, 1.2rem);
   line-height: 1.7;
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   margin: 0 0 32px 0;
 }
 
@@ -266,19 +255,19 @@
 .pm-contact-link {
   display: inline-block;
   padding: 14px 32px;
-  background-color: var(--pm-accent-blue);
-  color: var(--white, #FFFFFF);
+  background-color: var(--accent-color);
+  color: var(--white);
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   font-size: 1.1rem;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .pm-contact-link:hover {
-  background-color: var(--pm-accent-blue-dark);
+  background-color: var(--accent-color);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(74, 144, 164, 0.3);
 }
@@ -286,7 +275,7 @@
 /* Gallery Section */
 .pm-gallery-section {
   width: 100%;
-  background-color: var(--pm-light-bg);
+  background-color: var(--background-color);
   padding: 60px 24px 80px;
 }
 
@@ -299,7 +288,7 @@
 .pm-gallery-heading {
   font-size: clamp(1.5rem, 2.5vw, 2rem);
   font-weight: 600;
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   margin: 0 0 40px 0;
   text-align: center;
   line-height: 1.4;
@@ -316,7 +305,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  transition: transform 0.3s ease;
+  transition: transform var(--transition);
 }
 
 .pm-gallery-card:hover {
@@ -328,18 +317,18 @@
   aspect-ratio: 4 / 3;
   border-radius: 12px;
   overflow: hidden;
-  background-color: var(--pm-card-bg);
-  border: 2px dashed var(--pm-border-color);
+  background-color: var(--white);
+  border: 2px dashed var(--secondary-color);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: box-shadow var(--transition), border-color var(--transition);
 }
 
 .pm-gallery-card:hover .pm-gallery-image-container {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  border-color: var(--pm-accent-blue);
+  border-color: var(--accent-color);
 }
 
 .pm-gallery-image {
@@ -351,7 +340,7 @@
 
 .pm-gallery-caption {
   font-size: clamp(1rem, 1.5vw, 1.1rem);
-  color: var(--pm-text-primary);
+  color: var(--text-primary);
   text-align: center;
   margin: 0;
   font-weight: 500;
@@ -514,6 +503,6 @@
 
   .pm-image-container,
   .pm-gallery-image-container {
-    border-radius: 8px;
+    border-radius: var(--border-radius);
   }
 }
