@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.backend.config;
+package com.ecp.les_constructions_dominic_cyr.config;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.House;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
@@ -7,6 +7,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Renovation.Renovation;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Renovation.RenovationRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.config.DataSeeder;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 @Component
-public class DataSeeder {
+public class DataSeederTest {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
 
@@ -120,7 +121,7 @@ public class DataSeeder {
             // add other renovation IDs here
     );
 
-    public void seedRenovationImages() {
+    private void seedRenovationImages() {
         RENOVATION_IMAGES.forEach((renovationId, imageIds) -> {
             Renovation renovation = renovationRepository.findRenovationByRenovationIdentifier_RenovationId(renovationId);
             if (renovation != null) {
