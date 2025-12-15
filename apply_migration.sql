@@ -1,1 +1,2 @@
-
+-- This file is a placeholder for future migration scripts.
+-- If not needed, it can be safely removed.
