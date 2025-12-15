@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.businesslayer;
+package com.ecp.les_constructions_dominic_cyr.CommunicationSubdomain.businesslayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.InquiryServiceImpl;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.Inquiry;
