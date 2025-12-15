@@ -174,15 +174,10 @@ func (fc *FileController) delete(c *gin.Context) {
 		DeletedBy string `json:"deletedBy"`
 	}
 	
-	// Try to bind JSON from request body
+	// Bind JSON from request body
 	if err := c.ShouldBindJSON(&request); err != nil {
-		// If no JSON body, try query parameter (for backward compatibility)
-		request.DeletedBy = c.Query("deletedBy")
-		
-		// If still empty, check form data
-		if request.DeletedBy == "" {
-			request.DeletedBy = c.PostForm("deletedBy")
-		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body or missing deletedBy field"})
+		return
 	}
 	
 	if request.DeletedBy == "" {
