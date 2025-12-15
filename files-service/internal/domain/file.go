@@ -12,4 +12,7 @@ type File struct {
 	Size        int64
 	ObjectKey   string
 	CreatedAt   time.Time
+	IsActive    bool
+	DeletedAt   *time.Time
+	DeletedBy   string
 }
