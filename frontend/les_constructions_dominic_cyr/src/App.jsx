@@ -24,6 +24,7 @@ import ProjectMetadata from './pages/ProjectMetadata';
 import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
 import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
 import RenovationsPage from './pages/RenovationsPage';
+import ProjectManagementPage from './pages/ProjectManagementPage';
 import ProfilePage from './pages/ProfilePage';
 import Unauthorized from './pages/Unauthorized';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -65,6 +66,7 @@ export default function App() {
             />
             <Route path="/houses" element={<HousesPage />} />
             <Route path="/renovations" element={<RenovationsPage />} />
+            <Route path="/projectmanagement" element={<ProjectManagementPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route
