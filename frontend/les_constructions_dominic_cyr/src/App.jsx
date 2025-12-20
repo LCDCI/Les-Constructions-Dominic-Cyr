@@ -1,35 +1,33 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import AppNavBar from './components/AppNavBar';
-import AppFooter from './components/AppFooter';
-import CustomerDashboard from './pages/CustomerDashboard';
-import Home from './pages/Home';
-import ProjectsPage from './pages/ProjectsPage';
-import HousesPage from './pages/HousesPage';
+import AppNavBar from './components/NavBars/AppNavBar';
+import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/LotsPage';
-import ContactPage from './pages/ContactPage';
-import ServerError from './pages/ServerError';
-import NotFound from './pages/NotFound';
-import OwnerDashboard from './pages/OwnerDashboard';
-import SalespersonDashboard from './pages/SalespersonDashboard';
-import NavigationSetter from './components/NavigationSetter';
+import ProjectsPage from './pages/Project/ProjectsPage';
+import CreateProjectPage from './pages/Project/CreateProjectPage';
+import HousesPage from './pages/Public_Facing/HousesPage';
+import RenovationsPage from './pages/Public_Facing/RenovationsPage';
+import ProjectManagementPage from './pages/Project/ProjectManagementPage';
+import ContactPage from './pages/Public_Facing/ContactPage';
+import ServerError from './pages/Errors/ServerError';
 import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
-import ProjectFilesPage from './pages/ProjectFilesPage';
-import ProjectPhotosPage from './pages/ProjectPhotosPage';
-import ContractorDashboard from './pages/ContractorDashboard';
-import CreateProjectPage from './pages/CreateProjectPage';
 import UsersPage from './pages/UsersPage';
+import OwnerDashboard from './pages/Dashboards/OwnerDashboard';
+import ProjectMetadata from './pages/Project/ProjectMetadata';
+import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
+import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
+import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPage';
+import ContractorDashboard from './pages/Dashboards/ContractorDashboard';
+import ProjectFilesPage from './pages/Project/ProjectFilesPage';
+import ProjectPhotosPage from './pages/Project/ProjectPhotosPage';
 import PortalLogin from './pages/PortalLogin';
-import ProjectMetadata from './pages/ProjectMetadata';
-import ProjectsOverviewPage from './pages/ProjectsOverviewPage';
-import ResidentialProjectsPage from './pages/ResidentialProjectsPage';
-import RenovationsPage from './pages/RenovationsPage';
-import ProjectManagementPage from './pages/ProjectManagementPage';
 import ProfilePage from './pages/ProfilePage';
-import Unauthorized from './pages/Unauthorized';
+import Unauthorized from './pages/Errors/Unauthorized';
+import NotFound from './pages/Errors/NotFound';
+import ProjectsOverviewPage from './pages/Project/ProjectsOverviewPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import './App.css';
-import './styles/users.css';
+import HomeFooter from './components/Footers/HomeFooter';
+import NavigationSetter from './components/NavigationSetter';
 
 export default function App() {
   return (
@@ -142,7 +140,7 @@ export default function App() {
             />
           </Routes>
         </main>
-        <AppFooter />
+        <HomeFooter />
       </div>
     </BrowserRouter>
   );

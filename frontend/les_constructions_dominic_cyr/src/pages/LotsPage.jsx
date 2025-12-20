@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchLots } from '../features/lots/api/lots';
 import '../styles/lots.css';
-import Footer from '../components/AppFooter';
+import Footer from '../components/Footers/ProjectsFooter';
 
 const LotsPage = () => {
   const [lots, setLots] = useState([]);

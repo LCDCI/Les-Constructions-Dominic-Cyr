@@ -4,7 +4,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import LotSelector from './LotSelector';
 import { projectApi } from '../api/projectApi';
 import { uploadFile } from '../../files/api/filesApi';
-import '../../../styles/create-project.css';
+import '../../../styles/Project/create-project.css';
 
 // Hardcoded translations
 const translations = {
