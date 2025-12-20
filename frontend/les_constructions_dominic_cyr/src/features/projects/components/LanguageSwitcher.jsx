@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import '../../../styles/create-project.css';
+import '../../../styles/Project/create-project.css';
 
 const LanguageSwitcher = ({ currentLanguage }) => {
   return (

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { fetchLots, createLot } from '../../lots/api/lots';
 import { uploadFile } from '../../files/api/filesApi';
 import PropTypes from 'prop-types';
-import '../../../styles/create-project.css';
+import '../../../styles/Project/create-project.css';
 
 // Hardcoded translations for LotSelector
 const lotTranslations = {
