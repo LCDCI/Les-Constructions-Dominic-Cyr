@@ -139,12 +139,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
             <Route
               path="/projects/:projectIdentifier/overview"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
-                  element={<ProjectsOverviewPage />}
-                />
-              }
+              element={<ProjectsOverviewPage />}
             />
           </Routes>
         </main>
