@@ -12,6 +12,7 @@ export const ROLES = {
   SALESPERSON: 'SALESPERSON',
   CONTRACTOR: 'CONTRACTOR',
   CUSTOMER: 'CUSTOMER',
+  VISITOR: 'VISITOR',
 };
 
 /**
@@ -34,6 +35,7 @@ const permissions = {
     viewAssigned: [ROLES.OWNER, ROLES.SALESPERSON, ROLES.CONTRACTOR, ROLES.CUSTOMER],
     update: [ROLES.OWNER],
     delete: [ROLES.OWNER],
+    viewPublic: [ROLES.OWNER, ROLES.SALESPERSON, ROLES.CONTRACTOR, ROLES.CUSTOMER, ROLES.VISITOR],
   },
 
   // Documents/Files
@@ -83,7 +85,9 @@ const permissions = {
  * @returns {boolean}
  */
 export function hasPermission(role, feature, action) {
-  if (!role) return false;
+  if (!role){
+      role = ROLES.VISITOR;
+  };
   
   const featurePermissions = permissions[feature];
   if (!featurePermissions) return false;
@@ -173,6 +177,10 @@ export function canViewAllProjects(role) {
  */
 export function canModifySchedules(role) {
   return hasPermission(role, 'schedules', 'update');
+}
+
+export function canViewProjectOverview(role) {
+    return hasPermission(role, 'projects', 'viewPublic');
 }
 
 export default permissions;
