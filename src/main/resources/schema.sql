@@ -183,3 +183,25 @@ CREATE TABLE project_management_page_content (
 );
 
 CREATE INDEX idx_pm_content_language ON project_management_page_content(language);
+
+DROP TABLE IF EXISTS app_theme;
+
+CREATE TABLE app_theme (
+                           id SERIAL PRIMARY KEY,
+                           theme_name VARCHAR(50) UNIQUE NOT NULL,
+
+                           primary_color VARCHAR(7) NOT NULL,
+                           secondary_color VARCHAR(7) NOT NULL,
+                           accent_color VARCHAR(7) NOT NULL,
+                           card_background VARCHAR(7) NOT NULL,
+                           background_color VARCHAR(7) NOT NULL,
+                           text_primary VARCHAR(7) NOT NULL,
+                           white VARCHAR(7) NOT NULL,
+
+                           border_radius VARCHAR(20) DEFAULT '8px',
+                           box_shadow TEXT DEFAULT '0 2px 8px rgba(0,0,0,0.1)',
+                           transition TEXT DEFAULT 'all 0.3s ease',
+
+                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

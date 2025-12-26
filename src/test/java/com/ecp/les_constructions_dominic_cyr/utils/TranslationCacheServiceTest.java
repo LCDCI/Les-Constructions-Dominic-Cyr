@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TranslationCacheServiceTest {

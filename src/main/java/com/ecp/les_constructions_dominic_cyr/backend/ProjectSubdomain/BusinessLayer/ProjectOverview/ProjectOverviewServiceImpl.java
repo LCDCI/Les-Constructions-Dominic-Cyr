@@ -8,8 +8,6 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectOverview.ProjectFeatureRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectOverview.ProjectGalleryImage;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectOverview.ProjectGalleryImageRepository;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ProjectOverviewMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.ProjectOverview.ProjectOverviewResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
@@ -28,7 +26,6 @@ public class ProjectOverviewServiceImpl implements ProjectOverviewService {
     private final ProjectOverviewContentRepository overviewContentRepository;
     private final ProjectFeatureRepository featureRepository;
     private final ProjectGalleryImageRepository galleryImageRepository;
-    private final LotRepository lotRepository;
     private final ProjectOverviewMapper mapper;
 
     @Override
