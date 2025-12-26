@@ -6,13 +6,13 @@
 
 
 :root {
-    --primary-color: #4C4D4F;
-    --secondary-color: #E6E7E8;
-    --accent-color: #5A7D8C;
-    --card-background: #AAB2A6;
-    --white: #FFFFFF;
+   --primary-color: #000000;
+    --secondary-color: #000000;
+    --accent-color: #000000;
+    --card-background: #000000;
+    --background-color: #ffffff;
+    --white: #ffffff;
     --text-primary: var(--primary-color);
-    --background-color: #F5F7FA;
     --border-radius: 8px;
     --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
@@ -29,8 +29,8 @@ body {
 .container {
     width: 90%;
     max-width: 1400px;
-    margin: 0 auto;
     padding: 2% 0;
+    margin: 80% auto;
 }
 
 h1, h2, h3, h4, h5, h6 {

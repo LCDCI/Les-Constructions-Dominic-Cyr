@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
@@ -28,8 +28,16 @@ import ProjectsOverviewPage from './pages/Project/ProjectsOverviewPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomeFooter from './components/Footers/HomeFooter';
 import NavigationSetter from './components/NavigationSetter';
+import { loadTheme } from './utils/themeLoader';
+
 
 export default function App() {
+
+  useEffect(() => {
+  loadTheme();
+}, []);
+
+
   return (
     <BrowserRouter>
       <NavigationSetter />

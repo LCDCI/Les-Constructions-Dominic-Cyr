@@ -186,3 +186,24 @@ INSERT INTO project_management_page_content (language, content_json) VALUES
 -- data for project management page content (French)
 INSERT INTO project_management_page_content (language, content_json) VALUES
     ('fr', '{"hero":{"line1":"LA GESTION DE PROJET,","line2":"POUR UNE TRANQUILLITÉ D''ESPRIT"},"intro":{"heading":{"line1":"PLANIFICATION","line2":"ORGANISATION","line3":"SUIVI DES TRAVAUX"},"tagline":"On s''en occupe !","paragraph":"Vous êtes propriétaire d''un terrain et vous souhaitez confier la gestion de projet à un entrepreneur qualifié? Les Constructions Dominic Cyr Inc. est là pour vous, que ce soit pour certaines étapes spécifiques de la construction ou pour un projet clé en main.","image1":{"alt":"Professionnels collaborant sur un projet"},"image2":{"alt":"Rendu de plan d''étage 3D"},"image3":{"alt":"Outils et matériaux de construction"}},"advantages":{"heading":"Il y a de nombreux avantages à nous confier la gestion de votre projet :","item1":"Service conseil","item2":"Conformité avec les règles du bâtiment","item3":"Planification avec tous les intervenants","item4":"Établissement de l''échéancier des travaux","item5":"Contrôle des coûts","item6":"Suivi rigoureux","item7":"Assurance conformité","pricing":"Selon l''ampleur et la complexité du projet, la tarification pourrait être à coût fixe ou à prix majoré. Contactez-nous pour en discuter.","contactLink":"Contactez-nous"},"gallery":{"heading":"Quelques réalisations en gestion de projet par Les Constructions Dominic Cyr Inc.","caption":"Résidence","image1":{"alt":"Résidence"},"image2":{"alt":"Résidence"},"image3":{"alt":"Résidence"}}}');
+
+
+INSERT INTO app_theme (
+    theme_name,
+    primary_color,
+    secondary_color,
+    accent_color,
+    card_background,
+    background_color,
+    text_primary,
+    white
+) VALUES (
+             'default',
+             '#4C4D4F',
+             '#E6E7E8',
+             '#5A7D8C',
+             '#AAB2A6',
+             '#F5F7FA',
+             '#4C4D4F',
+             '#FFFFFF'
+         );

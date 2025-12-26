@@ -1,6 +1,5 @@
 package com.ecp.les_constructions_dominic_cyr.backend.config;
 
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
@@ -10,9 +9,6 @@ import org.springframework.security.oauth2.jwt.JwtValidators;
 
 import java.util.List;
 
-/**
- * Validates that a JWT was issued by the configured issuer and contains the expected audience.
- */
 public class AudienceValidator implements OAuth2TokenValidator<Jwt> {
 
     private final OAuth2TokenValidator<Jwt> defaultValidator;
