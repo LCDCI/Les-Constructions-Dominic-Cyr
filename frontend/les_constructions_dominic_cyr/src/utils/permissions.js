@@ -1,6 +1,6 @@
 /**
  * Role-Based Access Control (RBAC) Permissions Utility
- * 
+ *
  * OWNER: Full system access - can do everything
  * SALESPERSON: Project visibility + client interaction, upload/view documents for assigned projects
  * CONTRACTOR: Task execution - upload documents/photos, view project docs, cannot manage users
@@ -12,7 +12,6 @@ export const ROLES = {
   SALESPERSON: 'SALESPERSON',
   CONTRACTOR: 'CONTRACTOR',
   CUSTOMER: 'CUSTOMER',
-  VISITOR: 'VISITOR',
 };
 
 /**
@@ -32,10 +31,20 @@ const permissions = {
   projects: {
     create: [ROLES.OWNER],
     viewAll: [ROLES.OWNER],
-    viewAssigned: [ROLES.OWNER, ROLES.SALESPERSON, ROLES.CONTRACTOR, ROLES.CUSTOMER],
+    viewAssigned: [
+      ROLES.OWNER,
+      ROLES.SALESPERSON,
+      ROLES.CONTRACTOR,
+      ROLES.CUSTOMER,
+    ],
     update: [ROLES.OWNER],
     delete: [ROLES.OWNER],
-    viewPublic: [ROLES.OWNER, ROLES.SALESPERSON, ROLES.CONTRACTOR, ROLES.CUSTOMER, ROLES.VISITOR],
+    viewPublic: [
+      ROLES.OWNER,
+      ROLES.SALESPERSON,
+      ROLES.CONTRACTOR,
+      ROLES.CUSTOMER,
+    ],
   },
 
   // Documents/Files
@@ -85,22 +94,20 @@ const permissions = {
  * @returns {boolean}
  */
 export function hasPermission(role, feature, action) {
-  if (!role){
-      role = ROLES.VISITOR;
-  };
-  
+  if (!role) return false;
+
   const featurePermissions = permissions[feature];
   if (!featurePermissions) return false;
-  
+
   const allowedRoles = featurePermissions[action];
   if (!allowedRoles) return false;
-  
+
   return allowedRoles.includes(role);
 }
 
 /**
  * Check if user can upload documents
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canUploadDocuments(role) {
@@ -109,7 +116,7 @@ export function canUploadDocuments(role) {
 
 /**
  * Check if user can delete documents
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canDeleteDocuments(role) {
@@ -118,7 +125,7 @@ export function canDeleteDocuments(role) {
 
 /**
  * Check if user can upload photos
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canUploadPhotos(role) {
@@ -127,7 +134,7 @@ export function canUploadPhotos(role) {
 
 /**
  * Check if user can delete photos
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canDeletePhotos(role) {
@@ -136,7 +143,7 @@ export function canDeletePhotos(role) {
 
 /**
  * Check if user can manage users
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canManageUsers(role) {
@@ -145,7 +152,7 @@ export function canManageUsers(role) {
 
 /**
  * Check if user can access admin features
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canAccessAdmin(role) {
@@ -154,7 +161,7 @@ export function canAccessAdmin(role) {
 
 /**
  * Check if user can create projects
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canCreateProjects(role) {
@@ -163,7 +170,7 @@ export function canCreateProjects(role) {
 
 /**
  * Check if user can view all projects (not just assigned)
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canViewAllProjects(role) {
@@ -172,15 +179,11 @@ export function canViewAllProjects(role) {
 
 /**
  * Check if user can modify schedules
- * @param {string} role 
+ * @param {string} role
  * @returns {boolean}
  */
 export function canModifySchedules(role) {
   return hasPermission(role, 'schedules', 'update');
-}
-
-export function canViewProjectOverview(role) {
-    return hasPermission(role, 'projects', 'viewPublic');
 }
 
 export default permissions;

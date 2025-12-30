@@ -14,7 +14,6 @@ import { HiOutlineHomeModern } from 'react-icons/hi2';
 import { LuMapPinned } from 'react-icons/lu';
 import '../../styles/Project/projectOverview.css';
 import '../../styles/Public_Facing/overviewMap.css';
-import {canViewProjectOverview} from "@/utils/permissions";
 
 const DEFAULT_COORDS = [45.31941496688032, -72.79945127353109];
 
@@ -208,15 +207,8 @@ const ProjectOverviewPage = () => {
     const fetchOverview = async () => {
       try {
         setLoading(true);
-          const currentRole = localStorage.getItem('userRole');
-
-          if (!canViewProjectOverview(currentRole)) {
-              setError('You do not have permission to view this project.');
-              setLoading(false);
-              return;
-          }
-
-        const data = await projectOverviewApi.getProjectOverview(projectIdentifier);
+        const data =
+          await projectOverviewApi.getProjectOverview(projectIdentifier);
         setOverview(data);
         setError(null);
 
