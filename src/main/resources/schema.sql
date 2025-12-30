@@ -107,7 +107,7 @@ CREATE TABLE users
 
     user_role       VARCHAR(50)  NOT NULL,
 
-    auth0_user_id   VARCHAR(255),
+    auth0user_id   VARCHAR(255),
 
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
