@@ -3,6 +3,8 @@ package com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.Presentatio
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -27,6 +29,13 @@ public class UsersController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseModel> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
+        String auth0UserId = jwt.getSubject();
+        UserResponseModel responseModel = userService.getUserByAuth0Id(auth0UserId);
+        return ResponseEntity.ok(responseModel);
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponseModel> getUserById(@PathVariable String userId) {
         UserResponseModel responseModel = userService.getUserById(userId);
@@ -44,6 +53,16 @@ public class UsersController {
             @PathVariable String userId,
             @RequestBody @jakarta.validation.Valid UserUpdateRequestModel requestModel) {
         UserResponseModel responseModel = userService.updateUser(userId, requestModel);
+        return ResponseEntity.ok(responseModel);
+    }
+
+    @PutMapping("/{userId}/owner")
+    public ResponseEntity<UserResponseModel> updateUserAsAdmin(
+            @PathVariable String userId,
+            @RequestBody @jakarta.validation.Valid UserUpdateRequestModel requestModel,
+            @AuthenticationPrincipal Jwt jwt) {
+        String requestingAuth0UserId = jwt. getSubject();
+        UserResponseModel responseModel = userService.updateUserAsOwner(userId, requestModel, requestingAuth0UserId);
         return ResponseEntity.ok(responseModel);
     }
 }
