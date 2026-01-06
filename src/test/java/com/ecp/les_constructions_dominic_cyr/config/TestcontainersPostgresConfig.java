@@ -11,27 +11,14 @@ import javax.sql.DataSource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 @TestConfiguration
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestcontainersPostgresConfig {
 
-    private static final PostgreSQLContainer<?> POSTGRES =
-            new PostgreSQLContainer<>(DockerImageName.parse("postgres:15-alpine"))
-                    .withDatabaseName("testdb")
-                    .withUsername("test")
-                    .withPassword("test");
-
-    static {
-        POSTGRES.start();
-    }
-
     @Bean
-    @Primary
-    public DataSource dataSource() {
-        DriverManagerDataSource ds = new DriverManagerDataSource();
-        ds.setDriverClassName("org.postgresql.Driver");
-        ds.setUrl(POSTGRES.getJdbcUrl());
-        ds.setUsername(POSTGRES.getUsername());
-        ds.setPassword(POSTGRES.getPassword());
-        return ds;
+    @org.springframework.boot.testcontainers.service.connection.ServiceConnection
+    public PostgreSQLContainer<?> postgresContainer() {
+        return new PostgreSQLContainer<>(DockerImageName.parse("postgres:15-alpine"))
+                .withDatabaseName("testdb")
+                .withUsername("test")
+                .withPassword("test");
     }
 }
