@@ -3,6 +3,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.presentat
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.DayOfWeek;
@@ -18,6 +22,9 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -25,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @org.springframework.context.annotation.Import(TestcontainersPostgresConfig.class)
-@org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase(replace = org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE)
 class ScheduleControllerIntegrationTest {
 
     @Autowired
@@ -37,6 +43,17 @@ class ScheduleControllerIntegrationTest {
     private Schedule schedule1;
     private Schedule schedule2;
     private Schedule schedule3;
+
+    @MockitoBean
+    private Auth0ManagementService auth0ManagementService;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
+    @MockitoBean
+    private org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter jwtAuthenticationConverter;
+
+    private final SimpleGrantedAuthority OWNER_ROLE = new SimpleGrantedAuthority("ROLE_OWNER");
 
     @BeforeEach
     void setUp() {
@@ -72,6 +89,12 @@ class ScheduleControllerIntegrationTest {
         scheduleRepository.save(schedule1);
         scheduleRepository.save(schedule2);
         scheduleRepository.save(schedule3);
+
+        org.springframework.security.oauth2.jwt.Jwt mockJwtToken = org.springframework.security.oauth2.jwt.Jwt.withTokenValue("token")
+                .header("alg", "none")
+                .claim("sub", "test-owner")
+                .build();
+        when(jwtDecoder.decode(anyString())).thenReturn(mockJwtToken);
     }
 
     @AfterEach
@@ -82,7 +105,8 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getOwnerCurrentWeekSchedules_shouldReturnSchedulesForCurrentWeek() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules")
-                        .contentType(MediaType.APPLICATION_JSON))
+                .with(jwt().authorities(OWNER_ROLE))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(2))))
@@ -96,6 +120,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getOwnerAllSchedules_shouldReturnAllSchedules() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/all")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -107,6 +132,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getOwnerScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/SCH-TEST-001")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -119,6 +145,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getOwnerScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/SCH-INVALID")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
     }
@@ -126,6 +153,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getSalespersonCurrentWeekSchedules_shouldReturnSchedulesForCurrentWeek() throws Exception {
         mockMvc.perform(get("/api/v1/salesperson/schedules")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -140,6 +168,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getAllSalespersonSchedules_shouldReturnAllSchedules() throws Exception {
         mockMvc.perform(get("/api/v1/salesperson/schedules/all")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -151,6 +180,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getSalespersonScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
         mockMvc.perform(get("/api/v1/salesperson/schedules/SCH-TEST-001")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -163,6 +193,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getSalespersonScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/salesperson/schedules/SCH-INVALID")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
     }
@@ -170,6 +201,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getContractorCurrentWeekSchedules_shouldReturnSchedulesForCurrentWeek() throws Exception {
         mockMvc.perform(get("/api/v1/contractors/schedules")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -184,6 +216,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getAllContractorSchedules_shouldReturnAllSchedules() throws Exception {
         mockMvc.perform(get("/api/v1/contractors/schedules/all")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -195,6 +228,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getContractorScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
         mockMvc.perform(get("/api/v1/contractors/schedules/SCH-TEST-001")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -207,6 +241,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getContractorScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/contractors/schedules/SCH-INVALID")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
     }
@@ -214,6 +249,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getAllCustomerSchedules_shouldReturnAllSchedules() throws Exception {
         mockMvc.perform(get("/api/v1/customers/schedules/all")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -225,6 +261,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getCustomerScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
         mockMvc.perform(get("/api/v1/customers/schedules/SCH-TEST-001")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -237,6 +274,7 @@ class ScheduleControllerIntegrationTest {
     @Test
     void getCustomerScheduleByIdentifier_shouldReturn500WhenNotFound() throws Exception {
         mockMvc.perform(get("/api/v1/customers/schedules/SCH-INVALID")
+                        .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
     }

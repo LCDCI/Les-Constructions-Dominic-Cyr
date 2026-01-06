@@ -5,19 +5,27 @@ import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Data
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryController;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -33,6 +41,15 @@ class InquiryControllerIntegrationTest {
     @Autowired
     private InquiryRepository inquiryRepository;
 
+    @MockitoBean
+    private Auth0ManagementService auth0ManagementService;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
+    @MockitoBean
+    private org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter jwtAuthenticationConverter;
+
     private final String BASE_URI = "/api/inquiries";
 
     @BeforeEach
@@ -44,6 +61,16 @@ class InquiryControllerIntegrationTest {
         buckets.clear();
 
         inquiryRepository.deleteAll();
+
+        Jwt mockJwtToken = Jwt.withTokenValue("token")
+                .header("alg", "none")
+                .claim("sub", "test-user")
+                .claim("https://construction-api.loca/roles", Collections.singletonList("CUSTOMER"))
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plusSeconds(3600))
+                .build();
+
+        when(jwtDecoder.decode(anyString())).thenReturn(mockJwtToken);
     }
 
     @Test

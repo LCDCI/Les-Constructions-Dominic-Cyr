@@ -1,12 +1,14 @@
 package com.ecp.les_constructions_dominic_cyr.backend.FilesSubdomain;
 
 import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web. servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @org.springframework.context.annotation.Import(TestcontainersPostgresConfig.class)
-@org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase(replace = org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE)
 public class GlobalPhotoControllerIntegrationTest {
 
     @Autowired
@@ -30,11 +31,19 @@ public class GlobalPhotoControllerIntegrationTest {
     @MockitoBean
     private GlobalPhotoService globalPhotoService;
 
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
+    @MockitoBean
+    private Auth0ManagementService auth0ManagementService;
+
+    @MockitoBean
+    private org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter jwtAuthenticationConverter;
 
     @Test
     void uploadGlobal_WithPngFile_ReturnsOk() throws Exception {
         when(globalPhotoService.uploadGlobalPhoto(any(MultipartFile.class), any(String.class)))
-                .thenReturn(Mono. just("{\"type\":\"png\"}"));
+                .thenReturn(Mono.just("{\"type\":\"png\"}"));
 
         MockMultipartFile file = new MockMultipartFile(
                 "file",
