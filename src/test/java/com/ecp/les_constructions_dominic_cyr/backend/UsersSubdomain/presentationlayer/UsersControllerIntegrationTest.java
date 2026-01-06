@@ -14,17 +14,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @AutoConfigureWebTestClient
@@ -33,23 +35,29 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class UsersControllerIntegrationTest {
 
     @Autowired
-    WebTestClient webClient;
+    private WebTestClient webClient;
 
     @Autowired
     private UsersRepository usersRepository;
 
-    @MockBean
+    @MockitoBean
     private Auth0ManagementService auth0ManagementService;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
+    @MockitoBean
+    private org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter jwtAuthenticationConverter;
 
     private final String BASE_URI = "/api/v1/users";
     private Users existingUser;
     private String existingUserId;
+    private final SimpleGrantedAuthority ADMIN_ROLE = new SimpleGrantedAuthority("ROLE_OWNER");
 
     @BeforeEach
     void setUp() {
         usersRepository.deleteAll();
 
-        // Create a test user
         UserIdentifier identifier = UserIdentifier.newId();
         existingUserId = identifier.getUserId().toString();
         existingUser = new Users(
@@ -64,7 +72,6 @@ class UsersControllerIntegrationTest {
         );
         usersRepository.save(existingUser);
 
-        // Mock Auth0 service
         when(auth0ManagementService.createAuth0User(anyString(), anyString(), anyString(), anyString(), anyString(), anyString()))
                 .thenReturn("auth0|newuser");
         doNothing().when(auth0ManagementService).assignRoleToUser(anyString(), anyString());
@@ -72,11 +79,8 @@ class UsersControllerIntegrationTest {
                 .thenReturn("https://auth0.com/invite/testlink");
     }
 
-    // ========================== POSITIVE INTEGRATION TESTS ==========================
-
     @Test
     void getAllUsers_ReturnsAllUsers() {
-        // Add more users
         usersRepository.save(new Users(
                 UserIdentifier.newId(),
                 "Second",
@@ -88,7 +92,9 @@ class UsersControllerIntegrationTest {
                 "auth0|second"
         ));
 
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI)
                 .exchange()
                 .expectStatus().isOk()
@@ -104,7 +110,9 @@ class UsersControllerIntegrationTest {
     void getAllUsers_ReturnsEmptyList_WhenNoUsers() {
         usersRepository.deleteAll();
 
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI)
                 .exchange()
                 .expectStatus().isOk()
@@ -114,7 +122,9 @@ class UsersControllerIntegrationTest {
 
     @Test
     void getUserById_ReturnsUser_WhenExists() {
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI + "/" + existingUserId)
                 .exchange()
                 .expectStatus().isOk()
@@ -132,7 +142,9 @@ class UsersControllerIntegrationTest {
     void getUserByAuth0Id_ReturnsUser_WhenExists() {
         String auth0Id = "auth0|existing123";
 
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI + "/auth0/" + auth0Id)
                 .exchange()
                 .expectStatus().isOk()
@@ -153,7 +165,9 @@ class UsersControllerIntegrationTest {
         request.setPhone("514-555-9999");
         request.setUserRole(UserRole.CUSTOMER);
 
-        webClient.post()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .post()
                 .uri(BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
@@ -169,7 +183,6 @@ class UsersControllerIntegrationTest {
                     assertNotNull(user.getInviteLink());
                 });
 
-        // Verify user was persisted
         assertEquals(2, usersRepository.count());
     }
 
@@ -177,14 +190,16 @@ class UsersControllerIntegrationTest {
     void createUser_WithAllRoles_Works() {
         for (UserRole role : UserRole.values()) {
             String email = role.name().toLowerCase() + "@example.com";
-            
+
             UserCreateRequestModel request = new UserCreateRequestModel();
             request.setFirstName(role.name());
             request.setLastName("User");
             request.setPrimaryEmail(email);
             request.setUserRole(role);
 
-            webClient.post()
+            webClient
+                    .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                    .post()
                     .uri(BASE_URI)
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(request)
@@ -203,7 +218,9 @@ class UsersControllerIntegrationTest {
         updateRequest.setPhone("514-555-8888");
         updateRequest.setSecondaryEmail("updated.secondary@example.com");
 
-        webClient.put()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .put()
                 .uri(BASE_URI + "/" + existingUserId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updateRequest)
@@ -216,12 +233,10 @@ class UsersControllerIntegrationTest {
                     assertEquals("Name", user.getLastName());
                     assertEquals("514-555-8888", user.getPhone());
                     assertEquals("updated.secondary@example.com", user.getSecondaryEmail());
-                    // Primary email and role should remain unchanged
                     assertEquals("existing.user@example.com", user.getPrimaryEmail());
                     assertEquals(UserRole.CUSTOMER, user.getUserRole());
                 });
 
-        // Verify changes were persisted
         Users updatedUser = usersRepository.findById(UserIdentifier.fromString(existingUserId)).orElseThrow();
         assertEquals("Updated", updatedUser.getFirstName());
     }
@@ -231,7 +246,9 @@ class UsersControllerIntegrationTest {
         UserUpdateRequestModel partialUpdate = new UserUpdateRequestModel();
         partialUpdate.setFirstName("OnlyFirstName");
 
-        webClient.put()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .put()
                 .uri(BASE_URI + "/" + existingUserId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(partialUpdate)
@@ -240,18 +257,18 @@ class UsersControllerIntegrationTest {
                 .expectBody(UserResponseModel.class)
                 .value(user -> {
                     assertEquals("OnlyFirstName", user.getFirstName());
-                    assertEquals("User", user.getLastName()); // Unchanged
-                    assertEquals("514-555-0000", user.getPhone()); // Unchanged
+                    assertEquals("User", user.getLastName());
+                    assertEquals("514-555-0000", user.getPhone());
                 });
     }
-
-    // ========================== NEGATIVE INTEGRATION TESTS ==========================
 
     @Test
     void getUserById_ReturnsBadRequest_WhenUserNotFound() {
         String nonExistentId = UUID.randomUUID().toString();
 
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI + "/" + nonExistentId)
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -259,7 +276,9 @@ class UsersControllerIntegrationTest {
 
     @Test
     void getUserById_ReturnsBadRequest_WhenInvalidUUID() {
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI + "/not-a-valid-uuid")
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -267,7 +286,9 @@ class UsersControllerIntegrationTest {
 
     @Test
     void getUserByAuth0Id_ReturnsBadRequest_WhenNotFound() {
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI + "/auth0/auth0|nonexistent")
                 .exchange()
                 .expectStatus().isBadRequest();
@@ -278,17 +299,18 @@ class UsersControllerIntegrationTest {
         UserCreateRequestModel request = new UserCreateRequestModel();
         request.setFirstName("Duplicate");
         request.setLastName("Email");
-        request.setPrimaryEmail("existing.user@example.com"); // Same as existing user
+        request.setPrimaryEmail("existing.user@example.com");
         request.setUserRole(UserRole.CUSTOMER);
 
-        webClient.post()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .post()
                 .uri(BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .exchange()
                 .expectStatus().isBadRequest();
 
-        // Verify no new user was created
         assertEquals(1, usersRepository.count());
     }
 
@@ -299,7 +321,9 @@ class UsersControllerIntegrationTest {
         UserUpdateRequestModel updateRequest = new UserUpdateRequestModel();
         updateRequest.setFirstName("Updated");
 
-        webClient.put()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .put()
                 .uri(BASE_URI + "/" + nonExistentId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updateRequest)
@@ -312,7 +336,9 @@ class UsersControllerIntegrationTest {
         UserUpdateRequestModel updateRequest = new UserUpdateRequestModel();
         updateRequest.setFirstName("Updated");
 
-        webClient.put()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .put()
                 .uri(BASE_URI + "/invalid-uuid")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updateRequest)
@@ -325,15 +351,15 @@ class UsersControllerIntegrationTest {
         UserUpdateRequestModel updateRequest = new UserUpdateRequestModel();
         updateRequest.setSecondaryEmail("not-an-email");
 
-        webClient.put()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .put()
                 .uri(BASE_URI + "/" + existingUserId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updateRequest)
                 .exchange()
                 .expectStatus().isBadRequest();
     }
-
-    // ========================== DATA PERSISTENCE TESTS ==========================
 
     @Test
     void createThenGet_DataIsPersisted() {
@@ -344,8 +370,9 @@ class UsersControllerIntegrationTest {
         request.setPhone("514-555-7777");
         request.setUserRole(UserRole.SALESPERSON);
 
-        // Create user
-        String newUserId = webClient.post()
+        String newUserId = webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .post()
                 .uri(BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
@@ -356,8 +383,9 @@ class UsersControllerIntegrationTest {
                 .getResponseBody()
                 .getUserIdentifier();
 
-        // Get user
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI + "/" + newUserId)
                 .exchange()
                 .expectStatus().isOk()
@@ -372,20 +400,22 @@ class UsersControllerIntegrationTest {
 
     @Test
     void updateThenGet_ChangesArePersisted() {
-        // Update user
         UserUpdateRequestModel updateRequest = new UserUpdateRequestModel();
         updateRequest.setFirstName("Persisted");
         updateRequest.setLastName("Update");
 
-        webClient.put()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .put()
                 .uri(BASE_URI + "/" + existingUserId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(updateRequest)
                 .exchange()
                 .expectStatus().isOk();
 
-        // Verify through GET
-        webClient.get()
+        webClient
+                .mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI + "/" + existingUserId)
                 .exchange()
                 .expectStatus().isOk()
