@@ -121,8 +121,8 @@ export default function UsersPage() {
     } catch (err) {
       console.error(err);
 
-      let niceMessage = 'Failed to update user.  Please try again.';
-      if (err.response?. data?.message) {
+      let niceMessage = 'Failed to update user. Please try again.';
+      if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
 

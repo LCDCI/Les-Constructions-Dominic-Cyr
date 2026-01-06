@@ -28,14 +28,14 @@ export async function fetchUserByAuth0Id(auth0UserId, token) {
     throw new Error('Auth0 user ID is required');
   }
 
-  const response = await axios. get(`${API_BASE}/users/auth0/${auth0UserId}`, {
+  const response = await axios.get(`${API_BASE}/users/auth0/${auth0UserId}`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
   return response.data;
 }
 
 export async function updateUser(userId, payload, token) {
-  const response = await axios. put(`${API_BASE}/users/${userId}`, payload, {
+  const response = await axios.put(`${API_BASE}/users/${userId}`, payload, {
     headers: token ? { Authorization:  `Bearer ${token}` } : undefined,
   });
   return response.data;
