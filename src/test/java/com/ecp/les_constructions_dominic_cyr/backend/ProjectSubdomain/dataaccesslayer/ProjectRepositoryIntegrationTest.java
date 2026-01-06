@@ -3,7 +3,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.dataacces
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
-import com.ecp.les_constructions_dominic_cyr.backend.TestcontainersPostgresConfig;
+import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

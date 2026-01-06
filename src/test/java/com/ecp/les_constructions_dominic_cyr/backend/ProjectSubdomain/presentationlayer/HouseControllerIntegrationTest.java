@@ -5,7 +5,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.House.HouseResponseModel;
-import com.ecp.les_constructions_dominic_cyr.backend.TestcontainersPostgresConfig;
+import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;

@@ -4,7 +4,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Data
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.InquiryRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryController;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer.InquiryRequestModel;
-import com.ecp.les_constructions_dominic_cyr.backend.TestcontainersPostgresConfig;
+import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
