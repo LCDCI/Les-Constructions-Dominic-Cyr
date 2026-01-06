@@ -148,10 +148,10 @@ public class UserServiceImpl implements UserService {
         nameChanged = true;
     }
     if (requestModel.getPhone() != null && !requestModel.getPhone().trim().isEmpty()) {
-        user.setPhone(requestModel. getPhone().trim());
+        user.setPhone(requestModel.getPhone().trim());
     }
-    if (requestModel. getPrimaryEmail() != null && !requestModel.getPrimaryEmail().trim().isEmpty()) {
-        if (usersRepository.findByPrimaryEmail(requestModel. getPrimaryEmail().trim()).isPresent() 
+    if (requestModel.getPrimaryEmail() != null && !requestModel.getPrimaryEmail().trim().isEmpty()) {
+        if (usersRepository.findByPrimaryEmail(requestModel.getPrimaryEmail().trim()).isPresent()
             && !user.getPrimaryEmail().equals(requestModel.getPrimaryEmail().trim())) {
             throw new IllegalArgumentException("A user with this primary email already exists.");
         }

@@ -46,7 +46,6 @@ export default function EditUserModal({ isOpen, user, onClose, onSave, isSaving 
               required
             />
           </div>
-
           <div className="form-group">
             <label>Last Name</label>
             <input
