@@ -77,7 +77,15 @@ class UsersControllerIntegrationTest {
         doNothing().when(auth0ManagementService).assignRoleToUser(anyString(), anyString());
         when(auth0ManagementService.createPasswordChangeTicket(anyString(), anyString()))
                 .thenReturn("https://auth0.com/invite/testlink");
-    }
+
+        org.springframework.security.oauth2.jwt.Jwt mockJwtToken = org.springframework.security.oauth2.jwt.Jwt.withTokenValue("token")
+                .header("alg", "none")
+                .claim("sub", "auth0|existing123")
+                .claim("https://construction-api.loca/roles", java.util.Collections.singletonList("OWNER"))
+                .build();
+
+        when(jwtDecoder.decode(anyString())).thenReturn(mockJwtToken);
+            }
 
     @Test
     void getAllUsers_ReturnsAllUsers() {
