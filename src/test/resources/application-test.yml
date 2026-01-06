@@ -5,6 +5,8 @@ files:
 spring:
   application:
     name: les_constructions_dominic_cyr
+    main:
+      web-application-type: servlet
 
   jpa:
     show-sql: true
