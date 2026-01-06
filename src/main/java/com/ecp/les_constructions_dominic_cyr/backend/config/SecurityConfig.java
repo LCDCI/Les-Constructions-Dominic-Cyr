@@ -59,15 +59,18 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/api/v1/contact/**").permitAll()
 
                     // 2. Role-Specific Endpoints
-                    // Only protect project actions that AREN'T the list or overview
-                    .requestMatchers("/api/v1/projects/**").hasAnyAuthority("ROLE_CONTRACTOR", "ROLE_SALESPERSON", "ROLE_OWNER", "ROLE_CUSTOMER")
 
+                    //To allow all logged in users to access their own user info with restrictions
+                    .requestMatchers("/api/v1/users/me").authenticated()
+                    .requestMatchers("/api/v1/users/auth0/**").authenticated()
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").authenticated()
+                    .requestMatchers("/api/v1/projects/**").hasAnyAuthority("ROLE_CONTRACTOR", "ROLE_SALESPERSON", "ROLE_OWNER", "ROLE_CUSTOMER")
                     .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
                     .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_OWNER")
                     .requestMatchers("/api/v1/contractors/**").hasAuthority("ROLE_CONTRACTOR")
                     .requestMatchers("/api/v1/salesperson/**").hasAuthority("ROLE_SALESPERSON")
                     .requestMatchers("/api/v1/customers/**").hasAuthority("ROLE_CUSTOMER")
-
+                    
                     // 3. Catch-all
                     .anyRequest().authenticated()
             )

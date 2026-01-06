@@ -2,6 +2,7 @@
   width: 80%;
   margin: 0 auto;
   padding: 24px;
+  padding-bottom: 10%;
 }
 
 .page.users-page .page-header {
@@ -208,6 +209,70 @@
   color: #7f1d1d;
 }
 
+.owner-edit-modal {
+  max-width: 700px;
+}
+
+.user-info-section {
+  margin-top: 20px;
+  padding: 16px;
+  background-color:  #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.user-info-section h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: #6b7280;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.info-value.role-badge {
+  padding: 4px 12px;
+  border-radius:  12px;
+  font-size:  0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.info-value.role-badge {
+  background-color: #ffd700;
+  color: #333333;
+}
+
+
 @media (max-width: 900px) {
   .page.users-page {
     width: 92%;
@@ -253,5 +318,14 @@
 
   .invite-link-row button {
     width: 100%;
+  }
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .info-value {
+    text-align: left;
   }
 }
