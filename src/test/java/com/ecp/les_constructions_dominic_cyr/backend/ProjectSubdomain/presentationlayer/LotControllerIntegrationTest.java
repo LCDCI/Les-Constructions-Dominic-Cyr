@@ -3,6 +3,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.presentat
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
@@ -18,20 +19,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockJwt;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @AutoConfigureWebTestClient
 @ActiveProfiles("test")
 @org.springframework.context.annotation.Import(TestcontainersPostgresConfig.class)
-@org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase(replace = org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE)
 class LotControllerIntegrationTest {
 
     @Autowired
@@ -42,6 +48,18 @@ class LotControllerIntegrationTest {
 
     @Autowired
     LotRepository lotRepository;
+
+    @MockitoBean
+    private Auth0ManagementService auth0ManagementService;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
+    @MockitoBean
+    private org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter jwtAuthenticationConverter;
+
+    private final SimpleGrantedAuthority ADMIN_ROLE = new SimpleGrantedAuthority("ROLE_OWNER");
+
 
     private MockRestServiceServer mockRestServiceServer;
 
@@ -55,7 +73,12 @@ class LotControllerIntegrationTest {
     @BeforeEach
     void init() {
         mockRestServiceServer = MockRestServiceServer.createServer(restTemplate);
-        // don't require preloaded data; tests will create what they need
+
+        org.springframework.security.oauth2.jwt.Jwt mockJwtToken = org.springframework.security.oauth2.jwt.Jwt.withTokenValue("token")
+                .header("alg", "none")
+                .claim("sub", "test-admin")
+                .build();
+        when(jwtDecoder.decode(anyString())).thenReturn(mockJwtToken);
     }
 
     @Test
@@ -66,7 +89,8 @@ class LotControllerIntegrationTest {
         lotRepository.save(entity);
 
         // Act & Assert
-        webClient.get()
+        webClient.mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -85,7 +109,8 @@ class LotControllerIntegrationTest {
         Lot entity = new Lot(id, "ById Loc", 111f, "11x11", LotStatus.AVAILABLE);
         lotRepository.save(entity);
 
-        webClient.get()
+        webClient.mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .get()
                 .uri(BASE_URI + "/{id}", idVal)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
@@ -106,7 +131,8 @@ class LotControllerIntegrationTest {
         req.setDimensions("5x5");
         req.setLotStatus(LotStatus.AVAILABLE);
 
-        webClient.post()
+        webClient.mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .post()
                 .uri(BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(req)
@@ -133,7 +159,8 @@ class LotControllerIntegrationTest {
         update.setDimensions("6x6");
         update.setLotStatus(LotStatus.SOLD);
 
-        webClient.put()
+        webClient.mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .put()
                 .uri(BASE_URI + "/{id}", idVal)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(update)
@@ -155,7 +182,8 @@ class LotControllerIntegrationTest {
         Lot entity = new Lot(id, "ToDelete", 11f, "11x11", LotStatus.AVAILABLE);
         lotRepository.save(entity);
 
-        webClient.delete()
+        webClient.mutateWith(mockJwt().authorities(ADMIN_ROLE))
+                .delete()
                 .uri(BASE_URI + "/{id}", idVal)
                 .exchange()
                 .expectStatus().isNoContent();
