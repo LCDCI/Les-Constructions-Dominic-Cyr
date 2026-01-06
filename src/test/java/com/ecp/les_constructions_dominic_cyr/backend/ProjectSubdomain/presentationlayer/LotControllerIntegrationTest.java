@@ -2,7 +2,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.presentat
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.ecp.les_constructions_dominic_cyr.backend.TestcontainersPostgresConfig;
+import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
