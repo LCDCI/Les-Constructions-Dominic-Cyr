@@ -41,6 +41,7 @@ out/
 
 ## DATA DIRECTORIES (for persistent local data until deployment)
 data/
+minio-data/
 
 # Playwright
 node_modules/
