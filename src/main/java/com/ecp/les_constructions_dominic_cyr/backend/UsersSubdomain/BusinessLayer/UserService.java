@@ -13,4 +13,5 @@ public interface UserService {
     UserResponseModel getUserById(String userId);
     UserResponseModel getUserByAuth0Id(String auth0UserId);
     UserResponseModel updateUser(String userId, UserUpdateRequestModel requestModel);
+    UserResponseModel updateUserAsOwner(String userId, UserUpdateRequestModel requestModel, String requestingAuth0UserId);
 }

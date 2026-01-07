@@ -1,14 +1,18 @@
-// src/pages/UsersPage.jsx
 import React, { useEffect, useState } from 'react';
-import { fetchUsers, createUser, updateUser } from '../features/users/api/usersApi';
+import { useAuth0 } from '@auth0/auth0-react';
+import { fetchUsers, createUser, updateUser, updateUserAsOwner, getCurrentUser} from '../features/users/api/usersApi';
 import UsersTable from '../features/users/components/UsersTable';
 import AddUserModal from '../features/users/components/AddUserModal';
 import EditUserModal from '../features/users/components/EditUserModal';
+import OwnerEditUserModal from '../features/users/components/OwnerEditUserModal.jsx';
 import InviteLinkModal from '../features/users/components/InviteLinkModal';
 import ErrorModal from '../features/users/components/ErrorModal';
+import '../styles/users.css';
 
 export default function UsersPage() {
+  const { getAccessTokenSilently } = useAuth0();
   const [users, setUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
 
@@ -22,17 +26,25 @@ export default function UsersPage() {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isOwnerEditModalOpen, setIsOwnerEditModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [isEditSubmitting, setIsEditSubmitting] = useState(false);
 
-  // Load users on mount
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
         setLoadingError(null);
-        const data = await fetchUsers();
-        setUsers(data);
+        
+        const token = await getAccessTokenSilently();
+        
+        const [usersData, currentUserData] = await Promise.all([
+          fetchUsers(token),
+          getCurrentUser(token)
+        ]);
+        
+        setUsers(usersData);
+        setCurrentUser(currentUserData);
       } catch (err) {
         console.error(err);
         setLoadingError('Failed to load users.');
@@ -42,7 +54,7 @@ export default function UsersPage() {
     };
 
     load();
-  }, []);
+  }, [getAccessTokenSilently]);
 
   const openErrorModal = (message) => {
     setErrorMessage(message);
@@ -52,13 +64,11 @@ export default function UsersPage() {
   const handleCreateUser = async (formValues) => {
     try {
       setIsSubmitting(true);
+      const token = await getAccessTokenSilently();
+      const createdUser = await createUser(formValues, token);
 
-      const createdUser = await createUser(formValues);
-
-      // Add new user to list
       setUsers((prev) => [...prev, createdUser]);
 
-      // Show invite link modal
       if (createdUser.inviteLink) {
         setInviteLink(createdUser.inviteLink);
         setIsInviteModalOpen(true);
@@ -67,12 +77,10 @@ export default function UsersPage() {
       setIsAddModalOpen(false);
     } catch (err) {
       console.error(err);
-
       let niceMessage = 'Failed to create user. Please try again.';
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
-
       openErrorModal(niceMessage);
     } finally {
       setIsSubmitting(false);
@@ -81,16 +89,26 @@ export default function UsersPage() {
 
   const handleEditUser = (user) => {
     setEditingUser(user);
-    setIsEditModalOpen(true);
+    if (currentUser?.userRole === 'OWNER') {
+      setIsOwnerEditModalOpen(true);
+    } else {
+      setIsEditModalOpen(true);
+    }
   };
 
   const handleUpdateUser = async (formValues) => {
     try {
       setIsEditSubmitting(true);
+      const token = await getAccessTokenSilently();
 
-      const updatedUser = await updateUser(editingUser.userIdentifier, formValues);
+      let updatedUser;
+      
+      if (currentUser?.userRole === 'OWNER') {
+        updatedUser = await updateUserAsOwner(editingUser.userIdentifier, formValues, token);
+      } else {
+        updatedUser = await updateUser(editingUser.userIdentifier, formValues, token);
+      }
 
-      // Update user in list
       setUsers((prev) =>
         prev.map((u) =>
           u.userIdentifier === updatedUser.userIdentifier ? updatedUser : u
@@ -98,12 +116,13 @@ export default function UsersPage() {
       );
 
       setIsEditModalOpen(false);
+      setIsOwnerEditModalOpen(false);
       setEditingUser(null);
     } catch (err) {
       console.error(err);
 
       let niceMessage = 'Failed to update user. Please try again.';
-      if (err.response && err.response.data && err.response.data.message) {
+      if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
 
@@ -111,6 +130,12 @@ export default function UsersPage() {
     } finally {
       setIsEditSubmitting(false);
     }
+  };
+
+  const handleCloseEditModals = () => {
+    setIsEditModalOpen(false);
+    setIsOwnerEditModalOpen(false);
+    setEditingUser(null);
   };
 
   return (
@@ -137,10 +162,15 @@ export default function UsersPage() {
       <EditUserModal
         isOpen={isEditModalOpen}
         user={editingUser}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setEditingUser(null);
-        }}
+        onClose={handleCloseEditModals}
+        onSave={handleUpdateUser}
+        isSaving={isEditSubmitting}
+      />
+
+      <OwnerEditUserModal
+        isOpen={isOwnerEditModalOpen}
+        user={editingUser}
+        onClose={handleCloseEditModals}
         onSave={handleUpdateUser}
         isSaving={isEditSubmitting}
       />
