@@ -5,12 +5,13 @@ files:
 spring:
   application:
     name: les_constructions_dominic_cyr
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/testdb
-    username: test
-    password: test
-    driver-class-name: org.postgresql.Driver
+    main:
+      web-application-type: servlet
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-test.auth0.com/
 
   jpa:
     show-sql: true
@@ -49,3 +50,15 @@ logging:
     com.ecp: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+deepl:
+  api:
+    key: mock-deepl-key
+
+google:
+  recaptcha:
+    secret:
+      key: mock-recaptcha-key
+
+file:
+  upload-dir: ./test-uploads

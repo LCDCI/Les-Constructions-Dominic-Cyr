@@ -5,6 +5,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -167,4 +168,31 @@ public class Auth0ManagementService {
 
         return ticket.toString();
     }
+
+public void updateAuth0UserEmailAndName(String auth0UserId, String newEmail, String firstName, String lastName) {
+        String accessToken = getManagementToken();
+    String url = String.format("https://%s/api/v2/users/%s", domain, auth0UserId);
+
+    Map<String, Object> updateData = new HashMap<>();
+    updateData.put("name", firstName + " " + lastName);
+    updateData.put("given_name", firstName);
+    updateData.put("family_name", lastName);
+    
+    if (newEmail != null && !newEmail.trim().isEmpty()) {
+        updateData.put("email", newEmail);
+        updateData.put("email_verified", false);
+    }
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setBearerAuth(accessToken);
+
+    HttpEntity<Map<String, Object>> request = new HttpEntity<>(updateData, headers);
+
+    try {
+        restTemplate.exchange(url, HttpMethod.PATCH, request, String.class);
+    } catch (Exception e) {
+        throw new RuntimeException("Failed to update user in Auth0: " + e.getMessage(), e);
+    }
+}
 }
