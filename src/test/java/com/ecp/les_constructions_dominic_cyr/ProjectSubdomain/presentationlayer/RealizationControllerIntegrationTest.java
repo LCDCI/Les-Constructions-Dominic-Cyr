@@ -1,10 +1,10 @@
 package com.ecp.les_constructions_dominic_cyr.ProjectSubdomain.presentationlayer;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.House;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseIdentifier;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.House.HouseResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization.Realization;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization.RealizationIdentifier;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization.RealizationRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Realization.RealizationResponseModel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -23,29 +23,29 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles("test")
 @org.springframework.context.annotation.Import(com.ecp.les_constructions_dominic_cyr.config.TestcontainersPostgresConfig.class)
 @org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase(replace = org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE)
-class HouseControllerIntegrationTest {
+class RealizationControllerIntegrationTest {
 
     @Autowired
     WebTestClient webClient;
 
     @Autowired
-    HouseRepository houseRepository;
+    RealizationRepository realizationRepository;
 
-    private final String BASE_URI = "/api/v1/houses";
+    private final String BASE_URI = "/api/v1/realizations";
 
     @Test
     void whenGetAll_thenReturnList() {
         // Arrange - ensure at least one entity exists
-        House entity = new House();
-        entity.setHouseIdentifier(new HouseIdentifier(UUID.randomUUID().toString()));
-        entity.setHouseName("Integration House");
+        Realization entity = new Realization();
+        entity.setRealizationIdentifier(new RealizationIdentifier(UUID.randomUUID().toString()));
+        entity.setRealizationName("Integration Realization");
         entity.setLocation("Integration Loc");
         entity.setDescription("Integration Desc");
         entity.setNumberOfRooms(5);
         entity.setNumberOfBedrooms(3);
         entity.setNumberOfBathrooms(2);
         entity.setConstructionYear(2020);
-        houseRepository.save(entity);
+        realizationRepository.save(entity);
 
         // Act & Assert
         webClient.get()
@@ -53,7 +53,7 @@ class HouseControllerIntegrationTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(HouseResponseModel.class)
+                .expectBodyList(RealizationResponseModel.class)
                 .value(list -> {
                     assertNotNull(list);
                     assertTrue(list.size() >= 1);
@@ -63,27 +63,27 @@ class HouseControllerIntegrationTest {
     @Test
     void whenGetByIdExists_thenReturn() {
         String idVal = UUID.randomUUID().toString();
-        House entity = new House();
-        entity.setHouseIdentifier(new HouseIdentifier(idVal));
-        entity.setHouseName("ById House");
+        Realization entity = new Realization();
+        entity.setRealizationIdentifier(new RealizationIdentifier(idVal));
+        entity.setRealizationName("ById Realization");
         entity.setLocation("ById Loc");
         entity.setDescription("ById Desc");
         entity.setNumberOfRooms(4);
         entity.setNumberOfBedrooms(2);
         entity.setNumberOfBathrooms(1);
         entity.setConstructionYear(2019);
-        houseRepository.save(entity);
+        realizationRepository.save(entity);
 
         webClient.get()
                 .uri(BASE_URI + "/{id}", idVal)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(HouseResponseModel.class)
+                .expectBody(RealizationResponseModel.class)
                 .value(resp -> {
                     assertNotNull(resp);
-                    assertEquals(idVal, resp.getHouseId());
-                    assertEquals("ById House", resp.getHouseName());
+                    assertEquals(idVal, resp.getRealizationId());
+                    assertEquals("ById Realization", resp.getRealizationName());
                     assertEquals("ById Loc", resp.getLocation());
                     assertEquals("ById Desc", resp.getDescription());
                     assertEquals(4, resp.getNumberOfRooms());

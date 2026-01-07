@@ -5,7 +5,7 @@ import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/LotsPage';
 import ProjectsPage from './pages/Project/ProjectsPage';
 import CreateProjectPage from './pages/Project/CreateProjectPage';
-import HousesPage from './pages/Public_Facing/HousesPage';
+import RealizationsPage from './pages/Public_Facing/RealizationsPage';
 import RenovationsPage from './pages/Public_Facing/RenovationsPage';
 import ProjectManagementPage from './pages/Project/ProjectManagementPage';
 import ContactPage from './pages/Public_Facing/ContactPage';
@@ -70,7 +70,7 @@ export default function App() {
                 />
               }
             />
-            <Route path="/houses" element={<HousesPage />} />
+            <Route path="/realizations" element={<RealizationsPage />} />
             <Route path="/renovations" element={<RenovationsPage />} />
             <Route path="/projectmanagement" element={<ProjectManagementPage />} />
             <Route path="/contact" element={<ContactPage />} />
