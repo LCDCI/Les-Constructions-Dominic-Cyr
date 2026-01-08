@@ -42,6 +42,10 @@ test.describe('Edit Project Form - Positive Tests', () => {
       
       expect(nameValue).toBeTruthy();
       expect(nameValue.length).toBeGreaterThan(0);
+      // Ensure the form shows the original project name
+      if (originalName) {
+        expect(nameValue.trim()).toBe(originalName.trim());
+      }
     }
   });
 
