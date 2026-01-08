@@ -29,14 +29,22 @@ import ProtectedRoute from './components/ProtectedRoute';
 import HomeFooter from './components/Footers/HomeFooter';
 import NavigationSetter from './components/NavigationSetter';
 import { loadTheme } from './utils/themeLoader';
+import { useAuth0 } from '@auth0/auth0-react';
+import { setupAxiosInterceptors } from './utils/axios';
 
 
 export default function App() {
+    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   useEffect(() => {
   loadTheme();
 }, []);
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            setupAxiosInterceptors(getAccessTokenSilently);
+        }
+    }, [isAuthenticated, getAccessTokenSilently]);
 
   return (
     <BrowserRouter>
