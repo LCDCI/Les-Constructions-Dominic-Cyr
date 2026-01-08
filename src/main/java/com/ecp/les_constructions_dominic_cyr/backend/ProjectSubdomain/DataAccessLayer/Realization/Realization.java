@@ -1,23 +1,23 @@
-package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "houses")
+@Table(name = "realizations")
 @Data
 @NoArgsConstructor
-public class House {
+public class Realization {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Embedded
-    private HouseIdentifier houseIdentifier;
+    private RealizationIdentifier realizationIdentifier;
 
-    private String houseName;
+    private String realizationName;
 
     private String location;
 
