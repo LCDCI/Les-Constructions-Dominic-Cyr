@@ -32,13 +32,17 @@ export const projectApi = {
     return response.json();
   },
 
-  createProject: async projectData => {
+  createProject: async (projectData, token) => {
     try {
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
       const response = await fetch(`${API_BASE_URL}/projects`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(projectData),
       });
 
@@ -76,14 +80,18 @@ export const projectApi = {
     }
   },
 
-  updateProject: async (projectIdentifier, projectData) => {
+  updateProject: async (projectIdentifier, projectData, token) => {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
     const response = await fetch(
       `${API_BASE_URL}/projects/${projectIdentifier}`,
       {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(projectData),
       }
     );
@@ -93,11 +101,16 @@ export const projectApi = {
     return response.json();
   },
 
-  deleteProject: async projectIdentifier => {
+  deleteProject: async (projectIdentifier, token) => {
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
     const response = await fetch(
       `${API_BASE_URL}/projects/${projectIdentifier}`,
       {
         method: 'DELETE',
+        headers,
       }
     );
     if (!response.ok) {

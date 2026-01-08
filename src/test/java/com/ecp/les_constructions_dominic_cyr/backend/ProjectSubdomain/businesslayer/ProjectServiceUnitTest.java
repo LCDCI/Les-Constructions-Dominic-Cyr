@@ -437,12 +437,108 @@ public class ProjectServiceUnitTest {
     }
 
     @Test
+    void updateProject_WithValidLocation_Succeeds() {
+        testRequestModel.setLocation("123 Main St, City, State 12345");
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectMapper, times(1)).updateEntityFromRequestModel(testRequestModel, testProject);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithEmptyLocation_ThrowsInvalidProjectDataException() {
+        testRequestModel.setLocation("   ");
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.updateProject("proj-001", testRequestModel)
+        );
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void updateProject_WithLocationExceedingMaxLength_ThrowsInvalidProjectDataException() {
+        String longLocation = "a".repeat(257);
+        testRequestModel.setLocation(longLocation);
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.updateProject("proj-001", testRequestModel)
+        );
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void updateProject_WithNullLocation_Succeeds() {
+        testRequestModel.setLocation(null);
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+    }
+
+    @Test
     void deleteProject_WhenProjectExists_DeletesSuccessfully() {
         when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
 
         projectService.deleteProject("proj-001");
 
         verify(projectRepository, times(1)).delete(testProject);
+    }
+
+    @Test
+    void createProject_WithValidLocation_Succeeds() {
+        testRequestModel.setLocation("123 Main St, City, State 12345");
+        when(projectMapper.requestModelToEntity(testRequestModel)).thenReturn(testProject);
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.createProject(testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void createProject_WithEmptyLocation_ThrowsInvalidProjectDataException() {
+        testRequestModel.setLocation("   ");
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.createProject(testRequestModel)
+        );
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void createProject_WithLocationExceedingMaxLength_ThrowsInvalidProjectDataException() {
+        String longLocation = "a".repeat(257);
+        testRequestModel.setLocation(longLocation);
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.createProject(testRequestModel)
+        );
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void createProject_WithNullLocation_Succeeds() {
+        testRequestModel.setLocation(null);
+        when(projectMapper.requestModelToEntity(testRequestModel)).thenReturn(testProject);
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.createProject(testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
     }
 
 
