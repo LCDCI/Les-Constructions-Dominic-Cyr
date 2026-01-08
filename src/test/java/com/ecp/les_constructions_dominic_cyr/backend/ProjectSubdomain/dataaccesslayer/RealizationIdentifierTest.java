@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.ProjectSubdomain.dataaccesslayer;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.dataaccesslayer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
