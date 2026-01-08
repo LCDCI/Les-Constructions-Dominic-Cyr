@@ -57,7 +57,7 @@ const OwnerDashboard = () => {
       icon: <GoPeople />,
       title: 'Users',
       buttonText: 'View Users',
-      action: () => navigate('/owner/users'),
+      action: () => navigate('/users'),
     },
     {
       icon: <GoFileDiff />,

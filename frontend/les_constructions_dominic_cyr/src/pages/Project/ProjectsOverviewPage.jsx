@@ -14,6 +14,19 @@ import { HiOutlineHomeModern } from 'react-icons/hi2';
 import { LuMapPinned } from 'react-icons/lu';
 import '../../styles/Project/projectOverview.css';
 import '../../styles/Public_Facing/overviewMap.css';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    iconRetinaUrl: iconRetina,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const DEFAULT_COORDS = [45.31941496688032, -72.79945127353109];
 
@@ -345,8 +358,9 @@ const ProjectOverviewPage = () => {
             alt={overview.projectName}
             className="hero-image"
             onError={e => {
-              e.target.src = '/public/fallback.jpg';
-            }}
+             e.target.onerror = null; 
+             e.target.src = '/fallback.jpg'; 
+  }}
           />
           <div className="hero-overlay">
             <div className="hero-content">
