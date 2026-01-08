@@ -57,7 +57,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/api/v1/residential-projects/**").permitAll()
                     .requestMatchers("/api/v1/renovations/**").permitAll()
                     .requestMatchers("/api/v1/project-management/**").permitAll()
-                    .requestMatchers("/api/v1/realisations/**").permitAll()
+                    .requestMatchers("/api/v1/realizations/**").permitAll()
                     .requestMatchers("/api/v1/contact/**").permitAll()
 
                     // 2. Role-Specific Endpoints
