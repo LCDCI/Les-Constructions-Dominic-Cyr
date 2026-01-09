@@ -6,17 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ScheduleResponseDTO {
-    String scheduleId;
-    Date updatedOn;
-    Date completionDate;
-    Boolean workStatus;
-    Date workDate;
-    String estimatedTime;
-    Date workCompletionDate;
-    String totalTime;
+    private String scheduleIdentifier;
+    private LocalDate taskDate;
+    private String taskDescription;
+    private String lotNumber;
+    private String dayOfWeek;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

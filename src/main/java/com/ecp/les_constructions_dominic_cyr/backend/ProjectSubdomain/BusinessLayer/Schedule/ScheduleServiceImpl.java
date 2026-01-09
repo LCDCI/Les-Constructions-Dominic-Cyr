@@ -3,7 +3,11 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ScheduleMapper;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,8 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +30,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final ScheduleMapper scheduleMapper;
+
+    private static final int MAX_TASK_IDS = 50;
+    private static final int MAX_TOP_PRIORITY_TASKS = 5;
 
     @Override
     public List<ScheduleResponseDTO> getCurrentWeekSchedules() {
@@ -46,7 +57,164 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponseDTO getScheduleByIdentifier(String scheduleIdentifier) {
         log.info("Fetching schedule with identifier: {}", scheduleIdentifier);
         Schedule schedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
-                .orElseThrow(() -> new RuntimeException("Schedule not found with identifier: " + scheduleIdentifier));
+                .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
         return scheduleMapper.entityToResponseDTO(schedule);
+    }
+
+    @Override
+    @Transactional
+    public ScheduleResponseDTO addSchedule(ScheduleRequestDTO scheduleRequestDTO) {
+        log.info("Adding new schedule");
+        validateScheduleRequest(scheduleRequestDTO);
+
+        Schedule schedule = scheduleMapper.requestDTOToEntity(scheduleRequestDTO);
+        Schedule savedSchedule = scheduleRepository.save(schedule);
+
+        log.info("Schedule created with identifier: {}", savedSchedule.getScheduleIdentifier());
+        return scheduleMapper.entityToResponseDTO(savedSchedule);
+    }
+
+    @Override
+    @Transactional
+    public ScheduleResponseDTO updateSchedule(String scheduleIdentifier, ScheduleRequestDTO scheduleRequestDTO) {
+        log.info("Updating schedule with identifier: {}", scheduleIdentifier);
+        validateScheduleRequest(scheduleRequestDTO);
+
+        Schedule existingSchedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
+                .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
+
+        scheduleMapper.updateEntityFromRequestDTO(existingSchedule, scheduleRequestDTO);
+        Schedule updatedSchedule = scheduleRepository.save(existingSchedule);
+
+        log.info("Schedule updated: {}", scheduleIdentifier);
+        return scheduleMapper.entityToResponseDTO(updatedSchedule);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSchedule(String scheduleIdentifier) {
+        log.info("Deleting schedule with identifier: {}", scheduleIdentifier);
+        Schedule schedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
+                .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
+
+        scheduleRepository.delete(schedule);
+        log.info("Schedule deleted: {}", scheduleIdentifier);
+    }
+
+    @Override
+    public TaskResponseDTO getTaskSummaryForContractor(String contractorId, String scheduleId, 
+                                                        LocalDate periodStart, LocalDate periodEnd) {
+        log.info("Generating task summary for contractor: {}, schedule: {}, period: {} to {}", 
+                 contractorId, scheduleId, periodStart, periodEnd);
+
+        List<Schedule> schedules = scheduleRepository.findByTaskDateBetween(periodStart, periodEnd);
+        
+        return buildTaskSummary(contractorId, scheduleId, periodStart, periodEnd, schedules);
+    }
+
+    @Override
+    public TaskResponseDTO getCurrentWeekTaskSummary(String contractorId) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        log.info("Generating current week task summary for contractor: {}", contractorId);
+
+        List<Schedule> schedules = scheduleRepository.findCurrentWeekSchedules(startOfWeek, endOfWeek);
+        
+        return buildTaskSummary(contractorId, null, startOfWeek, endOfWeek, schedules);
+    }
+
+    private TaskResponseDTO buildTaskSummary(String contractorId, String scheduleId, 
+                                              LocalDate periodStart, LocalDate periodEnd,
+                                              List<Schedule> schedules) {
+        LocalDate today = LocalDate.now();
+        int totalTasks = schedules.size();
+        
+        // Calculate counts based on task dates (simplified logic)
+        // In a real implementation, these would come from task status fields
+        int completedCount = (int) schedules.stream()
+                .filter(s -> s.getTaskDate().isBefore(today))
+                .count();
+        int openCount = totalTasks - completedCount;
+        int overdueCount = (int) schedules.stream()
+                .filter(s -> s.getTaskDate().isBefore(today))
+                .count();
+
+        // Calculate estimated hours (using a default estimate per task for now)
+        double defaultEstimatePerTask = 4.0;
+        double totalEstimatedHours = totalTasks * defaultEstimatePerTask;
+        double completedHours = completedCount * defaultEstimatePerTask;
+        double totalRemainingHours = totalEstimatedHours - completedHours;
+
+        // Find next due task
+        TaskResponseDTO.TaskPreviewDTO nextDueTaskPreview = schedules.stream()
+                .filter(s -> !s.getTaskDate().isBefore(today))
+                .min(Comparator.comparing(Schedule::getTaskDate))
+                .map(s -> TaskResponseDTO.TaskPreviewDTO.builder()
+                        .id(s.getScheduleIdentifier())
+                        .title(s.getTaskDescription())
+                        .dueDate(s.getTaskDate())
+                        .estimateHours(defaultEstimatePerTask)
+                        .status("OPEN")
+                        .assignedTo(contractorId)
+                        .build())
+                .orElse(null);
+
+        // Get top priority tasks (first N upcoming tasks)
+        List<TaskResponseDTO.TopPriorityTaskDTO> topPriorityTasks = schedules.stream()
+                .filter(s -> !s.getTaskDate().isBefore(today))
+                .sorted(Comparator.comparing(Schedule::getTaskDate))
+                .limit(MAX_TOP_PRIORITY_TASKS)
+                .map(s -> TaskResponseDTO.TopPriorityTaskDTO.builder()
+                        .id(s.getScheduleIdentifier())
+                        .title(s.getTaskDescription())
+                        .priority("HIGH")
+                        .dueDate(s.getTaskDate())
+                        .build())
+                .collect(Collectors.toList());
+
+        // Get task IDs (limited)
+        List<String> taskIds = schedules.stream()
+                .limit(MAX_TASK_IDS)
+                .map(Schedule::getScheduleIdentifier)
+                .collect(Collectors.toList());
+
+        // Check for milestones (simplified - could be based on specific task types)
+        boolean milestonesPresent = !schedules.isEmpty();
+
+        return TaskResponseDTO.builder()
+                .contractorId(contractorId)
+                .scheduleId(scheduleId)
+                .periodStart(periodStart)
+                .periodEnd(periodEnd)
+                .totalTasks(totalTasks)
+                .openTasksCount(openCount)
+                .completedTasksCount(completedCount)
+                .overdueTasksCount(overdueCount)
+                .totalEstimatedHours(totalEstimatedHours)
+                .totalRemainingHours(totalRemainingHours)
+                .nextDueTaskPreview(nextDueTaskPreview)
+                .topPriorityTasks(topPriorityTasks)
+                .blockedTasksCount(0) // No blocked tasks in current simple model
+                .milestonesPresent(milestonesPresent)
+                .taskIds(taskIds)
+                .generatedAt(LocalDateTime.now())
+                .build();
+    }
+
+    private void validateScheduleRequest(ScheduleRequestDTO scheduleRequestDTO) {
+        if (scheduleRequestDTO.getTaskDate() == null) {
+            throw new InvalidInputException("Task date must not be null");
+        }
+        if (scheduleRequestDTO.getTaskDescription() == null || scheduleRequestDTO.getTaskDescription().isBlank()) {
+            throw new InvalidInputException("Task description must not be blank");
+        }
+        if (scheduleRequestDTO.getLotNumber() == null || scheduleRequestDTO.getLotNumber().isBlank()) {
+            throw new InvalidInputException("Lot number must not be blank");
+        }
+        if (scheduleRequestDTO.getDayOfWeek() == null || scheduleRequestDTO.getDayOfWeek().isBlank()) {
+            throw new InvalidInputException("Day of week must not be blank");
+        }
     }
 }

@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "schedules")
@@ -20,22 +20,52 @@ public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Embedded
-    private ScheduleIdentifier scheduleIdentifier;
+    @Column(name = "schedule_identifier", unique = true, nullable = false)
+    private String scheduleIdentifier;
 
-    private Date updatedOn;
+    @Column(name = "task_date", nullable = false)
+    private LocalDate taskDate;
 
-    private Date completionDate;
+    @Column(name = "task_description", nullable = false, length = 500)
+    private String taskDescription;
 
-    @Embedded
-    private UpcomingWork upcomingWork;
+    @Column(name = "lot_number", nullable = false, length = 50)
+    private String lotNumber;
 
-    public Schedule(@NotNull Date updatedOn, @NotNull Date completionDate, @NotNull UpcomingWork upcomingWork) {
-        this.scheduleIdentifier = new ScheduleIdentifier();
-        this.updatedOn = updatedOn;
-        this.completionDate = completionDate;
-        this.upcomingWork = upcomingWork;
+    @Column(name = "day_of_week", nullable = false, length = 20)
+    private String dayOfWeek;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate taskDate, 
+                    @NotNull String taskDescription, @NotNull String lotNumber, @NotNull String dayOfWeek) {
+        this.scheduleIdentifier = scheduleIdentifier;
+        this.taskDate = taskDate;
+        this.taskDescription = taskDescription;
+        this.lotNumber = lotNumber;
+        this.dayOfWeek = dayOfWeek;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (updatedAt == null) {
+            updatedAt = LocalDateTime.now();
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
