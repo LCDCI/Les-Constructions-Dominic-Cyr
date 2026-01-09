@@ -169,6 +169,15 @@ export function canCreateProjects(role) {
 }
 
 /**
+ * Check if user can edit projects
+ * @param {string} role
+ * @returns {boolean}
+ */
+export function canEditProjects(role) {
+  return hasPermission(role, 'projects', 'update');
+}
+
+/**
  * Check if user can view all projects (not just assigned)
  * @param {string} role
  * @returns {boolean}
