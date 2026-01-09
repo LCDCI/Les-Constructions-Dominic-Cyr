@@ -137,9 +137,10 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .filter(s -> s.getTaskDate().isBefore(today))
                 .count();
         int openCount = totalTasks - completedCount;
-        int overdueCount = (int) schedules.stream()
-                .filter(s -> s.getTaskDate().isBefore(today))
-                .count();
+        // Overdue tasks: tasks with past due dates that are not completed
+        // Since we don't have status, we assume tasks before today are potentially overdue
+        // In a real implementation, this would check status != COMPLETED && dueDate < today
+        int overdueCount = completedCount; // Using same count as approximation since past dates could be overdue
 
         // Calculate estimated hours (using a default estimate per task for now)
         double defaultEstimatePerTask = 4.0;
