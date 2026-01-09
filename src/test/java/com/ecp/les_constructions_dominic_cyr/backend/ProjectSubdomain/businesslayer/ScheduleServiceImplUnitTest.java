@@ -4,7 +4,11 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLa
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ScheduleMapper;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -184,5 +188,210 @@ class ScheduleServiceImplUnitTest {
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
         verify(scheduleMapper, never()).entityToResponseDTO(any());
+    }
+
+    // Tests for addSchedule
+    @Test
+    void addSchedule_shouldCreateScheduleSuccessfully() {
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .taskDate(LocalDate.now())
+                .taskDescription("New Task")
+                .lotNumber("Lot 100")
+                .dayOfWeek("Wednesday")
+                .build();
+
+        Schedule newSchedule = Schedule.builder()
+                .scheduleIdentifier("SCH-NEW")
+                .taskDate(LocalDate.now())
+                .taskDescription("New Task")
+                .lotNumber("Lot 100")
+                .dayOfWeek("Wednesday")
+                .build();
+
+        ScheduleResponseDTO responseDTO = ScheduleResponseDTO.builder()
+                .scheduleIdentifier("SCH-NEW")
+                .taskDate(LocalDate.now())
+                .taskDescription("New Task")
+                .lotNumber("Lot 100")
+                .dayOfWeek("Wednesday")
+                .build();
+
+        when(scheduleMapper.requestDTOToEntity(requestDTO)).thenReturn(newSchedule);
+        when(scheduleRepository.save(newSchedule)).thenReturn(newSchedule);
+        when(scheduleMapper.entityToResponseDTO(newSchedule)).thenReturn(responseDTO);
+
+        ScheduleResponseDTO result = scheduleService.addSchedule(requestDTO);
+
+        assertNotNull(result);
+        assertEquals("SCH-NEW", result.getScheduleIdentifier());
+        assertEquals("New Task", result.getTaskDescription());
+
+        verify(scheduleMapper).requestDTOToEntity(requestDTO);
+        verify(scheduleRepository).save(newSchedule);
+        verify(scheduleMapper).entityToResponseDTO(newSchedule);
+    }
+
+    @Test
+    void addSchedule_shouldThrowExceptionWhenTaskDateIsNull() {
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .taskDate(null)
+                .taskDescription("New Task")
+                .lotNumber("Lot 100")
+                .dayOfWeek("Wednesday")
+                .build();
+
+        assertThrows(InvalidInputException.class, () -> {
+            scheduleService.addSchedule(requestDTO);
+        });
+    }
+
+    @Test
+    void addSchedule_shouldThrowExceptionWhenTaskDescriptionIsBlank() {
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .taskDate(LocalDate.now())
+                .taskDescription("")
+                .lotNumber("Lot 100")
+                .dayOfWeek("Wednesday")
+                .build();
+
+        assertThrows(InvalidInputException.class, () -> {
+            scheduleService.addSchedule(requestDTO);
+        });
+    }
+
+    // Tests for updateSchedule
+    @Test
+    void updateSchedule_shouldUpdateScheduleSuccessfully() {
+        String identifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .taskDate(LocalDate.now().plusDays(5))
+                .taskDescription("Updated Task")
+                .lotNumber("Lot 101")
+                .dayOfWeek("Friday")
+                .build();
+
+        ScheduleResponseDTO updatedResponseDTO = ScheduleResponseDTO.builder()
+                .scheduleIdentifier("SCH-001")
+                .taskDate(LocalDate.now().plusDays(5))
+                .taskDescription("Updated Task")
+                .lotNumber("Lot 101")
+                .dayOfWeek("Friday")
+                .build();
+
+        when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.of(schedule1));
+        when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
+        when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
+
+        ScheduleResponseDTO result = scheduleService.updateSchedule(identifier, requestDTO);
+
+        assertNotNull(result);
+        assertEquals("SCH-001", result.getScheduleIdentifier());
+        assertEquals("Updated Task", result.getTaskDescription());
+
+        verify(scheduleRepository).findByScheduleIdentifier(identifier);
+        verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
+        verify(scheduleRepository).save(schedule1);
+    }
+
+    @Test
+    void updateSchedule_shouldThrowNotFoundExceptionWhenScheduleNotFound() {
+        String identifier = "SCH-999";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .taskDate(LocalDate.now())
+                .taskDescription("Updated Task")
+                .lotNumber("Lot 100")
+                .dayOfWeek("Wednesday")
+                .build();
+
+        when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.updateSchedule(identifier, requestDTO);
+        });
+    }
+
+    // Tests for deleteSchedule
+    @Test
+    void deleteSchedule_shouldDeleteScheduleSuccessfully() {
+        String identifier = "SCH-001";
+
+        when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.of(schedule1));
+
+        scheduleService.deleteSchedule(identifier);
+
+        verify(scheduleRepository).findByScheduleIdentifier(identifier);
+        verify(scheduleRepository).delete(schedule1);
+    }
+
+    @Test
+    void deleteSchedule_shouldThrowNotFoundExceptionWhenScheduleNotFound() {
+        String identifier = "SCH-999";
+
+        when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.deleteSchedule(identifier);
+        });
+
+        verify(scheduleRepository).findByScheduleIdentifier(identifier);
+        verify(scheduleRepository, never()).delete(any());
+    }
+
+    // Tests for Task summary methods
+    @Test
+    void getCurrentWeekTaskSummary_shouldReturnTaskSummary() {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        List<Schedule> schedules = Arrays.asList(schedule1, schedule2);
+
+        when(scheduleRepository.findCurrentWeekSchedules(startOfWeek, endOfWeek)).thenReturn(schedules);
+
+        TaskResponseDTO result = scheduleService.getCurrentWeekTaskSummary("contractor-123");
+
+        assertNotNull(result);
+        assertEquals("contractor-123", result.getContractorId());
+        assertEquals(startOfWeek, result.getPeriodStart());
+        assertEquals(endOfWeek, result.getPeriodEnd());
+        assertEquals(2, result.getTotalTasks());
+        assertNotNull(result.getGeneratedAt());
+        assertTrue(result.getMilestonesPresent());
+    }
+
+    @Test
+    void getTaskSummaryForContractor_shouldReturnTaskSummaryForPeriod() {
+        LocalDate periodStart = LocalDate.now();
+        LocalDate periodEnd = LocalDate.now().plusDays(7);
+        List<Schedule> schedules = Arrays.asList(schedule1, schedule2);
+
+        when(scheduleRepository.findByTaskDateBetween(periodStart, periodEnd)).thenReturn(schedules);
+
+        TaskResponseDTO result = scheduleService.getTaskSummaryForContractor(
+                "contractor-456", "schedule-789", periodStart, periodEnd);
+
+        assertNotNull(result);
+        assertEquals("contractor-456", result.getContractorId());
+        assertEquals("schedule-789", result.getScheduleId());
+        assertEquals(periodStart, result.getPeriodStart());
+        assertEquals(periodEnd, result.getPeriodEnd());
+        assertEquals(2, result.getTotalTasks());
+    }
+
+    @Test
+    void getTaskSummaryForContractor_shouldReturnEmptyTaskSummaryWhenNoSchedules() {
+        LocalDate periodStart = LocalDate.now();
+        LocalDate periodEnd = LocalDate.now().plusDays(7);
+
+        when(scheduleRepository.findByTaskDateBetween(periodStart, periodEnd)).thenReturn(Collections.emptyList());
+
+        TaskResponseDTO result = scheduleService.getTaskSummaryForContractor(
+                "contractor-456", "schedule-789", periodStart, periodEnd);
+
+        assertNotNull(result);
+        assertEquals(0, result.getTotalTasks());
+        assertEquals(0, result.getOpenTasksCount());
+        assertEquals(0, result.getCompletedTasksCount());
+        assertFalse(result.getMilestonesPresent());
     }
 }
