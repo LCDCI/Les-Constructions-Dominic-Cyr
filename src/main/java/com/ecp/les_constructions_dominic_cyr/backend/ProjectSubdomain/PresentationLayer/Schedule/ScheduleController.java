@@ -86,13 +86,13 @@ public class ScheduleController {
      * Get task summary for owners - can view all contractor tasks.
      */
     @GetMapping("/owners/tasks/summary")
-    public ResponseEntity<TaskResponseDTO> getOwnerCurrentWeekTaskSummary(
+    public ResponseEntity<?> getOwnerCurrentWeekTaskSummary(
             @RequestParam(required = false) String contractorId) {
         try {
             TaskResponseDTO taskSummary = scheduleService.getCurrentWeekTaskSummary(contractorId);
             return ResponseEntity.ok(taskSummary);
         } catch (Exception ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -100,7 +100,7 @@ public class ScheduleController {
      * Get task summary for owners with custom date range.
      */
     @GetMapping("/owners/tasks/summary/{scheduleId}")
-    public ResponseEntity<TaskResponseDTO> getOwnerTaskSummaryForPeriod(
+    public ResponseEntity<?> getOwnerTaskSummaryForPeriod(
             @PathVariable String scheduleId,
             @RequestParam(required = false) String contractorId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodStart,
@@ -110,7 +110,7 @@ public class ScheduleController {
                     contractorId, scheduleId, periodStart, periodEnd);
             return ResponseEntity.ok(taskSummary);
         } catch (Exception ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -169,13 +169,13 @@ public class ScheduleController {
      * Tasks are viewable by contractors and owners.
      */
     @GetMapping("/contractors/tasks/summary")
-    public ResponseEntity<TaskResponseDTO> getContractorCurrentWeekTaskSummary(
+    public ResponseEntity<?> getContractorCurrentWeekTaskSummary(
             @RequestParam String contractorId) {
         try {
             TaskResponseDTO taskSummary = scheduleService.getCurrentWeekTaskSummary(contractorId);
             return ResponseEntity.ok(taskSummary);
         } catch (Exception ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -183,7 +183,7 @@ public class ScheduleController {
      * Get task summary for a specific schedule and period for the contractor.
      */
     @GetMapping("/contractors/tasks/summary/{scheduleId}")
-    public ResponseEntity<TaskResponseDTO> getContractorTaskSummaryForPeriod(
+    public ResponseEntity<?> getContractorTaskSummaryForPeriod(
             @PathVariable String scheduleId,
             @RequestParam String contractorId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodStart,
@@ -193,7 +193,7 @@ public class ScheduleController {
                     contractorId, scheduleId, periodStart, periodEnd);
             return ResponseEntity.ok(taskSummary);
         } catch (Exception ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
