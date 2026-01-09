@@ -1,12 +1,14 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "schedules")
@@ -18,20 +20,22 @@ public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    @Column(name = "schedule_identifier", unique = true, nullable = false)
-    private String scheduleIdentifier;
+    @Embedded
+    private ScheduleIdentifier scheduleIdentifier;
 
-    @Column(nullable = false)
-    private LocalDate taskDate;
+    private Date updatedOn;
 
-    @Column(nullable = false)
-    private String taskDescription;
+    private Date completionDate;
 
-    @Column(nullable = false)
-    private String lotNumber;
+    @Embedded
+    private UpcomingWork upcomingWork;
 
-    @Column(nullable = false)
-    private String dayOfWeek;
+    public Schedule(@NotNull Date updatedOn, @NotNull Date completionDate, @NotNull UpcomingWork upcomingWork) {
+        this.scheduleIdentifier = new ScheduleIdentifier();
+        this.updatedOn = updatedOn;
+        this.completionDate = completionDate;
+        this.upcomingWork = upcomingWork;
+    }
 }
