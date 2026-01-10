@@ -1,15 +1,20 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule;
 
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Embeddable
 @Getter
 public class UpcomingWork {
+    @ElementCollection
+    @CollectionTable(name = "schedule_task_refs", joinColumns = @JoinColumn(name = "schedule_id"))
+    @Column(name = "task_ref")
+    private List<String> taskRefs;
     private WorkStatus workStatus;
     private Date workDate;
     private String estimatedTime;
