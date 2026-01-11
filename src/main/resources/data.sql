@@ -172,12 +172,13 @@ INSERT INTO project_gallery_images (project_identifier, image_identifier, image_
                                                                                                             ('proj-002-panorama', 'ee576ed6-5d56-4d54-ba25-7157f7b75d0d', 'Amenities', 3);
 
 
-INSERT INTO users (user_id, first_name, last_name, email, secondary_email, phone, user_role, auth0user_id)
+INSERT INTO users (user_id, first_name, last_name, email, secondary_email, phone, user_role, user_status, auth0user_id)
 VALUES
-    ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'auth0|69542f38c08232af729f3d41'),
-    ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'auth0|693faa68bf9e92b3d445c4ab'),
-    ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'sales@test.com', NULL, '514-333-3333', 'SALESPERSON', 'auth0|693faa7d743287e135a703e1'),
-    ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'auth0|693faa95743287e135a703e8');
+    ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'ACTIVE', 'auth0|69542f38c08232af729f3d41'),
+    ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'ACTIVE', 'auth0|693faa68bf9e92b3d445c4ab'),
+    ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'sales@test.com', NULL, '514-333-3333', 'SALESPERSON', 'ACTIVE', 'auth0|693faa7d743287e135a703e1'),
+    ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'ACTIVE', 'auth0|693faa95743287e135a703e8');
+
 
 -- data for project management page content (English)
 INSERT INTO project_management_page_content (language, content_json) VALUES
