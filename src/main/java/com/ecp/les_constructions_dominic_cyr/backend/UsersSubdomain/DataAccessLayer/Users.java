@@ -28,10 +28,11 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    /**
-     * Link to the Auth0 user (sub: auth0|...)
-     */
     private String auth0UserId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_status")
+    private UserStatus userStatus;
 
     public Users() {
     }
@@ -43,7 +44,8 @@ public class Users {
                  String secondaryEmail,
                  String phone,
                  UserRole userRole,
-                 String auth0UserId) {
+                 String auth0UserId,
+                 UserStatus userStatus) {
         this.userIdentifier = userIdentifier;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -52,6 +54,7 @@ public class Users {
         this.phone = phone;
         this.userRole = userRole;
         this.auth0UserId = auth0UserId;
+        this.userStatus = userStatus;
     }
 
     public UserIdentifier getUserIdentifier() {
@@ -116,5 +119,13 @@ public class Users {
 
     public void setAuth0UserId(String auth0UserId) {
         this.auth0UserId = auth0UserId;
+    }
+
+    public UserStatus getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 }
