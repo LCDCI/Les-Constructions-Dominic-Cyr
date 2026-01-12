@@ -49,4 +49,40 @@ public interface ScheduleService {
      * @return List of ScheduleResponseDTO for the project
      */
     List<ScheduleResponseDTO> getSchedulesByProjectIdentifier(String projectIdentifier);
+
+    /**
+     * Get a specific schedule by project identifier and schedule identifier.
+     *
+     * @param projectIdentifier The project identifier
+     * @param scheduleIdentifier The schedule identifier
+     * @return ScheduleResponseDTO for the schedule
+     */
+    ScheduleResponseDTO getScheduleByProjectAndScheduleIdentifier(String projectIdentifier, String scheduleIdentifier);
+
+    /**
+     * Add a new schedule to a specific project.
+     *
+     * @param projectIdentifier The project identifier
+     * @param scheduleRequestDTO The schedule data
+     * @return ScheduleResponseDTO for the created schedule
+     */
+    ScheduleResponseDTO addScheduleToProject(String projectIdentifier, ScheduleRequestDTO scheduleRequestDTO);
+
+    /**
+     * Update a schedule for a specific project.
+     *
+     * @param projectIdentifier The project identifier
+     * @param scheduleIdentifier The schedule identifier
+     * @param scheduleRequestDTO The schedule data to update
+     * @return ScheduleResponseDTO for the updated schedule
+     */
+    ScheduleResponseDTO updateScheduleForProject(String projectIdentifier, String scheduleIdentifier, ScheduleRequestDTO scheduleRequestDTO);
+
+    /**
+     * Delete a schedule from a specific project.
+     *
+     * @param projectIdentifier The project identifier
+     * @param scheduleIdentifier The schedule identifier
+     */
+    void deleteScheduleFromProject(String projectIdentifier, String scheduleIdentifier);
 }

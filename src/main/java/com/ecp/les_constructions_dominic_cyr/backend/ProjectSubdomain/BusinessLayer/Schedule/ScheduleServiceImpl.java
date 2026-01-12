@@ -1,5 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ScheduleMapper;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
+    private final ProjectRepository projectRepository;
     private final ScheduleMapper scheduleMapper;
 
     private static final int MAX_TASK_IDS = 50;
@@ -224,5 +227,87 @@ public class ScheduleServiceImpl implements ScheduleService {
         log.info("Fetching schedules for project: {}", projectIdentifier);
         List<Schedule> schedules = scheduleRepository.findByProjectIdentifier(projectIdentifier);
         return scheduleMapper.entitiesToResponseDTOs(schedules);
+    }
+
+    @Override
+    public ScheduleResponseDTO getScheduleByProjectAndScheduleIdentifier(String projectIdentifier, String scheduleIdentifier) {
+        log.info("Fetching schedule {} for project {}", scheduleIdentifier, projectIdentifier);
+        
+        // Verify project exists
+        projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        Schedule schedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
+                .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
+        
+        // Verify schedule belongs to the project
+        if (schedule.getProject() == null || !projectIdentifier.equals(schedule.getProject().getProjectIdentifier())) {
+            throw new NotFoundException("Schedule " + scheduleIdentifier + " does not belong to project " + projectIdentifier);
+        }
+        
+        return scheduleMapper.entityToResponseDTO(schedule);
+    }
+
+    @Override
+    @Transactional
+    public ScheduleResponseDTO addScheduleToProject(String projectIdentifier, ScheduleRequestDTO scheduleRequestDTO) {
+        log.info("Adding new schedule to project: {}", projectIdentifier);
+        validateScheduleRequest(scheduleRequestDTO);
+        
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        Schedule schedule = scheduleMapper.requestDTOToEntity(scheduleRequestDTO);
+        schedule.setProject(project);
+        Schedule savedSchedule = scheduleRepository.save(schedule);
+        
+        log.info("Schedule created with identifier: {} for project: {}", savedSchedule.getScheduleIdentifier(), projectIdentifier);
+        return scheduleMapper.entityToResponseDTO(savedSchedule);
+    }
+
+    @Override
+    @Transactional
+    public ScheduleResponseDTO updateScheduleForProject(String projectIdentifier, String scheduleIdentifier, ScheduleRequestDTO scheduleRequestDTO) {
+        log.info("Updating schedule {} for project {}", scheduleIdentifier, projectIdentifier);
+        validateScheduleRequest(scheduleRequestDTO);
+        
+        // Verify project exists
+        projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        Schedule existingSchedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
+                .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
+        
+        // Verify schedule belongs to the project
+        if (existingSchedule.getProject() == null || !projectIdentifier.equals(existingSchedule.getProject().getProjectIdentifier())) {
+            throw new NotFoundException("Schedule " + scheduleIdentifier + " does not belong to project " + projectIdentifier);
+        }
+        
+        scheduleMapper.updateEntityFromRequestDTO(existingSchedule, scheduleRequestDTO);
+        Schedule updatedSchedule = scheduleRepository.save(existingSchedule);
+        
+        log.info("Schedule {} updated for project {}", scheduleIdentifier, projectIdentifier);
+        return scheduleMapper.entityToResponseDTO(updatedSchedule);
+    }
+
+    @Override
+    @Transactional
+    public void deleteScheduleFromProject(String projectIdentifier, String scheduleIdentifier) {
+        log.info("Deleting schedule {} from project {}", scheduleIdentifier, projectIdentifier);
+        
+        // Verify project exists
+        projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        Schedule schedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
+                .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
+        
+        // Verify schedule belongs to the project
+        if (schedule.getProject() == null || !projectIdentifier.equals(schedule.getProject().getProjectIdentifier())) {
+            throw new NotFoundException("Schedule " + scheduleIdentifier + " does not belong to project " + projectIdentifier);
+        }
+        
+        scheduleRepository.delete(schedule);
+        log.info("Schedule {} deleted from project {}", scheduleIdentifier, projectIdentifier);
     }
 }
