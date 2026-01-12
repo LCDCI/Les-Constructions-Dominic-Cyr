@@ -18,4 +18,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("SELECT s FROM Schedule s WHERE s.taskDate >= :startDate AND s.taskDate <= :endDate ORDER BY s.taskDate ASC")
     List<Schedule> findCurrentWeekSchedules(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT s FROM Schedule s WHERE s.project.projectId = :projectId ORDER BY s.taskDate ASC")
+    List<Schedule> findByProjectId(@Param("projectId") Long projectId);
+
+    @Query("SELECT s FROM Schedule s WHERE s.project.projectIdentifier = :projectIdentifier ORDER BY s.taskDate ASC")
+    List<Schedule> findByProjectIdentifier(@Param("projectIdentifier") String projectIdentifier);
 }

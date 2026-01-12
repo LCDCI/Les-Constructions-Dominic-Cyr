@@ -20,6 +20,7 @@ import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPa
 import ContractorDashboard from './pages/Dashboards/ContractorDashboard';
 import ProjectFilesPage from './pages/Project/ProjectFilesPage';
 import ProjectPhotosPage from './pages/Project/ProjectPhotosPage';
+import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
 import PortalLogin from './pages/PortalLogin';
 import ProfilePage from './pages/ProfilePage';
 import Unauthorized from './pages/Errors/Unauthorized';
@@ -130,6 +131,15 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
                   element={<ProjectPhotosPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/schedule"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  element={<ProjectSchedulePage />}
                 />
               }
             />

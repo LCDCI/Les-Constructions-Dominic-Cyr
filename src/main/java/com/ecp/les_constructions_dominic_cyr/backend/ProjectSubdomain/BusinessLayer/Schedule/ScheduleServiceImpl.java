@@ -218,4 +218,12 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new InvalidInputException("Day of week must not be blank");
         }
     }
+
+    @Override
+    public List<ScheduleResponseDTO> getSchedulesByProjectIdentifier(String projectIdentifier) {
+        log.info("Fetching schedules for project: {}", projectIdentifier);
+        List<Schedule> schedules = scheduleRepository.findByProjectIdentifier(projectIdentifier);
+        return scheduleMapper.entitiesToResponseDTOs(schedules);
+    }
+}
 }

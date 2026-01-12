@@ -222,4 +222,15 @@ public class ScheduleController {
         }
     }
 
+    // Get schedules by project identifier - accessible by all authenticated users
+    @GetMapping("/projects/{projectIdentifier}/schedules")
+    public ResponseEntity<List<ScheduleResponseDTO>> getProjectSchedules(@PathVariable String projectIdentifier) {
+        try {
+            List<ScheduleResponseDTO> schedules = scheduleService.getSchedulesByProjectIdentifier(projectIdentifier);
+            return ResponseEntity.ok(schedules);
+        } catch (Exception ex) {
+            return new ResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
