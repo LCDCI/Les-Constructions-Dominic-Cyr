@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Integer> {
@@ -14,7 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     List<Task> findByAssignedTo(Users user);
 
-    List<Task> findByAssignedTo_UserIdentifier_UserId(String userId);
+    List<Task> findByAssignedTo_UserIdentifier_UserId(UUID userId);
 
     void deleteByTaskIdentifier_TaskId(String taskId);
 }
