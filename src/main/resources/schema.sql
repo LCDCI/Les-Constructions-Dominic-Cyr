@@ -113,6 +113,28 @@ CREATE TABLE users
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+DROP TABLE IF EXISTS tasks CASCADE;
+
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,
+    task_identifier VARCHAR(255) UNIQUE NOT NULL,
+    task_status VARCHAR(50) NOT NULL,
+    task_title VARCHAR(255) NOT NULL,
+    period_start DATE,
+    period_end DATE,
+    task_description TEXT,
+    task_priority VARCHAR(50),
+    estimated_hours NUMERIC(10, 2),
+    hours_spent NUMERIC(10, 2),
+    task_progress NUMERIC(5, 2),
+    assigned_user_id UUID,
+    FOREIGN KEY (assigned_user_id) REFERENCES users(user_id) ON DELETE SET NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_task_identifier ON tasks(task_identifier);
+CREATE INDEX IF NOT EXISTS idx_task_status ON tasks(task_status);
+CREATE INDEX IF NOT EXISTS idx_assigned_user_id ON tasks(assigned_user_id);
+
 DROP TABLE IF EXISTS project_overview_content CASCADE;
 DROP TABLE IF EXISTS project_features CASCADE;
 DROP TABLE IF EXISTS project_gallery_images CASCADE;

@@ -29,6 +29,18 @@ public class Schedule {
     @Column(name = "completion_date", nullable = false)
     private LocalDate completionDate;
 
+    @Column(name = "task_date", nullable = false)
+    private LocalDate taskDate;
+
+    @Column(name = "task_description", nullable = false, length = 500)
+    private String taskDescription;
+
+    @Column(name = "lot_number", nullable = false, length = 50)
+    private String lotNumber;
+
+    @Column(name = "day_of_week", nullable = false, length = 20)
+    private String dayOfWeek;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
