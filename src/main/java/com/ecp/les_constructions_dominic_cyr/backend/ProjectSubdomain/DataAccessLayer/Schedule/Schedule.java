@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -48,6 +49,10 @@ public class Schedule {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     private List<Task> tasks;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate taskDate, @NotNull String taskDescription, @NotNull String lotNumber, @NotNull String dayOfWeek) {
         this.scheduleIdentifier = scheduleIdentifier;
