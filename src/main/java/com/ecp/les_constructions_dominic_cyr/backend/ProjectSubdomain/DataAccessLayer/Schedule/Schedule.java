@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,9 +26,6 @@ public class Schedule {
 
     @Column(name = "schedule_identifier", unique = true, nullable = false)
     private String scheduleIdentifier;
-
-    @Column(name = "completion_date", nullable = false)
-    private LocalDate completionDate;
 
     @Column(name = "task_date", nullable = false)
     private LocalDate taskDate;
@@ -47,18 +45,19 @@ public class Schedule {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Embedded
-    private UpcomingWork upcomingWork;
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id")
     private List<Task> tasks;
 
-    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate completionDate, @NotNull UpcomingWork upcomingWork) {
+    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate taskDate, @NotNull String taskDescription, @NotNull String lotNumber, @NotNull String dayOfWeek) {
         this.scheduleIdentifier = scheduleIdentifier;
-        this.completionDate = completionDate;
+        this.taskDate = taskDate;
+        this.taskDescription = taskDescription;
+        this.lotNumber = lotNumber;
+        this.dayOfWeek = dayOfWeek;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.tasks = new ArrayList<>();
     }
 
     @PrePersist
@@ -68,6 +67,9 @@ public class Schedule {
         }
         if (updatedAt == null) {
             updatedAt = LocalDateTime.now();
+        }
+        if (tasks == null) {
+            tasks = new ArrayList<>();
         }
     }
 
