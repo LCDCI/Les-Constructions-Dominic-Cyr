@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -20,4 +21,5 @@ public class ScheduleResponseDTO {
     private String dayOfWeek;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private List<TaskDetailResponseDTO> tasks;
 }

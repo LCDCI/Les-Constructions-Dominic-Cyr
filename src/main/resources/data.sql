@@ -207,3 +207,14 @@ INSERT INTO app_theme (
              '#4C4D4F',
              '#FFFFFF'
          );
+
+
+-- Insert test data for tasks
+INSERT INTO tasks (task_identifier, task_status, task_title, period_start, period_end, task_description, task_priority, estimated_hours, hours_spent, task_progress, assigned_user_id, schedule_id)
+VALUES
+    ('TASK-001', 'TO_DO', 'Install Foundation', '2025-12-05', '2025-12-08', 'Pour concrete foundation for Lot 53', 'HIGH', 16.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 1),
+    ('TASK-002', 'IN_PROGRESS', 'Framing Work', '2025-12-09', '2025-12-15', 'Complete structural framing for Lot 53', 'VERY_HIGH', 40.0, 15.0, 37.5, '22222222-2222-2222-2222-222222222222', 1),
+    ('TASK-003', 'TO_DO', 'Electrical Rough-In', '2025-12-12', '2025-12-14', 'Install electrical wiring for Lot 54', 'MEDIUM', 20.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 3),
+    ('TASK-004', 'COMPLETED', 'Site Preparation', '2025-11-28', '2025-11-30', 'Clear and level site for Lot 57', 'HIGH', 12.0, 12.0, 100.0, '22222222-2222-2222-2222-222222222222', 2),
+    ('TASK-005', 'TO_DO', 'Plumbing Installation', '2025-12-16', '2025-12-20', 'Install main plumbing lines for Lot 57', 'HIGH', 24.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 2);
+

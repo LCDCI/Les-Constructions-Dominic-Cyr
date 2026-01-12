@@ -3,14 +3,19 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLay
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ScheduleMapper {
+
+    private final TaskMapper taskMapper;
 
     public ScheduleResponseDTO entityToResponseDTO(Schedule schedule) {
         return ScheduleResponseDTO.builder()
@@ -21,6 +26,7 @@ public class ScheduleMapper {
                 .dayOfWeek(schedule.getDayOfWeek())
                 .createdAt(schedule.getCreatedAt())
                 .updatedAt(schedule.getUpdatedAt())
+                .tasks(schedule.getTasks() != null ? taskMapper.entitiesToResponseDTOs(schedule.getTasks()) : new ArrayList<>())
                 .build();
     }
 
@@ -37,6 +43,7 @@ public class ScheduleMapper {
                 .taskDescription(requestDTO.getTaskDescription())
                 .lotNumber(requestDTO.getLotNumber())
                 .dayOfWeek(requestDTO.getDayOfWeek())
+                .tasks(new ArrayList<>())
                 .build();
     }
 
