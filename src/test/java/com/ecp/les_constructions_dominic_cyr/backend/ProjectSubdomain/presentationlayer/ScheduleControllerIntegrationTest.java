@@ -82,7 +82,7 @@ class ScheduleControllerIntegrationTest {
         scheduleRepository.deleteAll();
     }
 
-    //@Test
+    @Test
     void getOwnerAllSchedules_shouldReturnAllSchedules() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/all")
                         .with(jwt().authorities(OWNER_ROLE))
@@ -93,7 +93,7 @@ class ScheduleControllerIntegrationTest {
                         containsInAnyOrder("SCH-TEST-001", "SCH-TEST-002", "SCH-TEST-003")));
     }
 
-    //@Test
+    @Test
     void getOwnerScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/SCH-TEST-001")
                         .with(jwt().authorities(OWNER_ROLE))
