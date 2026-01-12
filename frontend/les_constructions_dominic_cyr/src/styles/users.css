@@ -2,7 +2,10 @@
   width: 80%;
   margin: 0 auto;
   padding: 24px;
-  padding-bottom:  10%;
+  padding-bottom: 10%;
+  /* Ensures the page doesn't cause body-level overflow */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .page.users-page .page-header {
@@ -11,33 +14,42 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
-  flex-wrap: wrap;
+  /* Keep everything on one line to match screenshot 2 */
+  flex-wrap: nowrap; 
+  /* Enable horizontal scroll for the header items if they collide */
+  overflow-x: auto;
+  padding-bottom: 8px;
 }
 
 .page.users-page .page-header h1 {
-  margin:  0;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: 16px;
+  /* Prevent the actions group from shrinking */
+  flex-shrink: 0;
 }
 
 .filter-container {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 .filter-container label {
   font-weight: 600;
   color: #333;
+  white-space: nowrap;
 }
 
 .status-filter-select {
   padding: 8px 12px;
-  border:  1px solid #dee2e6;
+  border: 1px solid #dee2e6;
   border-radius: 6px;
   font-size: 0.95rem;
   background-color: white;
@@ -56,12 +68,13 @@
 }
 
 .page.users-page .page-header button {
-  padding:  8px 14px;
+  padding: 8px 14px;
   border-radius: 6px;
   border: none;
   background-color: #1f2937;
   color: #ffffff;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .page.users-page .page-header button:hover {
@@ -70,16 +83,19 @@
 
 .error {
   color: #b91c1c;
-  margin-top:  12px;
+  margin-top: 12px;
 }
 
 .users-table {
-  width:  100%;
+  width: 100%;
   border-collapse: collapse;
   margin-top: 16px;
   background-color: #ffffff;
   border-radius: 8px;
-  overflow: hidden;
+  /* Applied globally to ensure horizontal scrollbar is always available below full screen */
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .users-table th,
@@ -104,10 +120,10 @@
   background-color: #2563eb;
   color: white;
   padding: 6px 12px;
-  border:  none;
-  border-radius:  4px;
-  cursor:  pointer;
-  font-size:  0.9rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
   transition: background-color 0.2s ease;
 }
 
@@ -120,7 +136,7 @@
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 0.85rem;
-  font-weight:  600;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -179,10 +195,10 @@
 
 .modal {
   background-color: #ffffff;
-  border-radius:  10px;
+  border-radius: 10px;
   padding: 24px;
   width: 640px;
-  max-width:  95%;
+  max-width: 95%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 
@@ -190,7 +206,7 @@
   background-color: #ffffff;
   border-radius: 10px;
   width: 640px;
-  max-width:  95%;
+  max-width: 95%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
   max-height: 90vh;
   overflow-y: auto;
@@ -200,7 +216,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding:  20px 24px;
+  padding: 20px 24px;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -235,7 +251,7 @@
 }
 
 .modal h2 {
-  margin-top:  0;
+  margin-top: 0;
   margin-bottom: 12px;
 }
 
@@ -247,7 +263,7 @@
 .modal-form .form-row {
   display: flex;
   gap: 16px;
-  margin-bottom:  14px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
@@ -285,8 +301,8 @@
 
 .modal-actions button {
   padding: 8px 14px;
-  border-radius:  6px;
-  border:  none;
+  border-radius: 6px;
+  border: none;
   cursor: pointer;
   font-size: 0.85rem;
 }
@@ -299,16 +315,16 @@
 
 .modal-actions button[type="submit"]:hover,
 .modal-actions button:not([type]):hover {
-  background-color:  #1e40af;
+  background-color: #1e40af;
 }
 
 .modal-actions button[type="button"] {
-  background-color:  #e5e7eb;
+  background-color: #e5e7eb;
   color: #111827;
 }
 
 .modal-actions button[type="button"]:hover {
-  background-color:  #d1d5db;
+  background-color: #d1d5db;
 }
 
 .modal-actions button:disabled {
@@ -327,7 +343,7 @@
 .btn-secondary {
   padding: 10px 20px;
   background-color: #6c757d;
-  color:  white;
+  color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -354,7 +370,7 @@
   cursor: pointer;
   font-size: 0.95rem;
   font-weight: 500;
-  transition:  background-color 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .btn-primary:hover {
@@ -384,10 +400,10 @@
 
 .invite-link-row button {
   padding: 8px 12px;
-  border-radius:  6px;
-  border:  none;
+  border-radius: 6px;
+  border: none;
   background-color: #16a34a;
-  color:  #ffffff;
+  color: #ffffff;
   cursor: pointer;
   font-size: 0.85rem;
 }
@@ -398,7 +414,7 @@
 
 .copy-status {
   margin-top: 8px;
-  font-size:  0.8rem;
+  font-size: 0.8rem;
   color: #15803d;
 }
 
@@ -417,13 +433,13 @@
 .user-info-section {
   margin-top: 20px;
   padding: 16px;
-  background-color:  #f9fafb;
+  background-color: #f9fafb;
   border-radius: 8px;
   border: 1px solid #e5e7eb;
 }
 
 .user-info-section h3 {
-  margin-top:  0;
+  margin-top: 0;
   margin-bottom: 12px;
   font-size: 0.95rem;
   color: #374151;
@@ -462,9 +478,9 @@
 
 .info-value.role-badge {
   padding: 4px 12px;
-  border-radius:  12px;
-  font-size:  0.8rem;
-  font-weight:  500;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
   text-transform: uppercase;
   background-color: #ffd700;
   color: #333333;
@@ -473,7 +489,7 @@
 .user-status-info {
   background-color: #f8f9fa;
   padding: 16px;
-  border-radius:  8px;
+  border-radius: 8px;
   margin-bottom: 24px;
 }
 
@@ -490,7 +506,7 @@
   font-weight: 600;
   margin-bottom: 16px;
   color: #333;
-  font-size: 1. 05rem;
+  font-size: 1.05rem;
 }
 
 .action-buttons {
@@ -502,7 +518,7 @@
 
 .action-btn {
   padding: 14px 20px;
-  border:  2px solid #dee2e6;
+  border: 2px solid #dee2e6;
   background-color: white;
   border-radius: 8px;
   cursor: pointer;
@@ -520,8 +536,8 @@
   content: '';
   width: 20px;
   height: 20px;
-  border:  2px solid #dee2e6;
-  border-radius:  50%;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
   transition: all 0.3s ease;
 }
 
@@ -548,7 +564,7 @@
 }
 
 .action-btn.danger:hover {
-  border-color:  #dc3545;
+  border-color: #dc3545;
   background-color: #fff5f5;
 }
 
@@ -586,7 +602,7 @@
 .action-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform:none;
+  transform: none;
 }
 
 .action-description {
@@ -594,14 +610,14 @@
   border-left: 4px solid #007bff;
   padding: 16px 20px;
   border-radius: 6px;
-  margin-top:  16px;
+  margin-top: 16px;
   animation: slideIn 0.3s ease;
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform:  translateY(-10px);
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
@@ -623,81 +639,55 @@
   padding: 16px;
 }
 
+/* --- Responsive Adjustments --- */
+
 @media (max-width: 900px) {
   .page.users-page {
     width: 92%;
     padding: 16px;
   }
-
-  .users-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  .header-actions {
-    flex-direction: column;
-    width: 100%;
-    gap:  8px;
-  }
-
-  .filter-container {
-    width: 100%;
-  }
-
-  .status-filter-select {
-    flex:  1;
-  }
 }
 
 @media (max-width: 520px) {
   .page.users-page .page-header {
-    flex-direction: column;
-    align-items: stretch;
+    /* Maintained horizontal layout but allowed scroll */
+    justify-content: flex-start;
   }
 
   .page.users-page .page-header button {
-    width: 100%;
+    width: auto;
   }
 
+  /* Keep table scroll logic consistent */
+  .users-table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* Modal-specific mobile styling remains intact */
   .modal {
     padding: 16px;
   }
-
   .modal-form label {
     min-width: 100%;
   }
-
   .modal-actions {
     justify-content: stretch;
   }
-
-  .modal-actions button {
+  .modal-actions button, .modal-footer button {
     width: 100%;
   }
-
   .modal-footer {
     flex-direction: column;
   }
-
-  .modal-footer button {
-    width:  100%;
-  }
-
-  .invite-link-row input {
-    min-width: 100%;
-  }
-
-  .invite-link-row button {
+  .invite-link-row input, .invite-link-row button {
     width: 100%;
   }
-
   .info-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
-
   .info-value {
     text-align: left;
   }

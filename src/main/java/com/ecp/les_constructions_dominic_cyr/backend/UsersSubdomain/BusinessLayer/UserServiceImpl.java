@@ -252,6 +252,7 @@ public class UserServiceImpl implements UserService {
             try {
                 auth0ManagementService.blockAuth0User(user.getAuth0UserId(), false);
             } catch (Exception e) {
+                //we should eventually add an exception for failure to block auth0 user, but auth0 already does it in the dashboard...
             }
         }
 

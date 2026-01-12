@@ -189,7 +189,7 @@ public class Auth0ManagementService {
             userData.put("family_name", lastName);
 
             if (newEmail != null && !newEmail.trim().isEmpty()) {
-                userData. put("email", newEmail);
+                userData.put("email", newEmail);
                 userData.put("email_verified", false);
             }
 
@@ -206,10 +206,6 @@ public class Auth0ManagementService {
     }
 
     public void blockAuth0User(String auth0UserId, boolean blocked) {
-        System.out.println("=== BLOCKING USER IN AUTH0 ===");
-        System.out.println("Auth0 User ID: " + auth0UserId);
-        System.out.println("Blocked status: " + blocked);
-
         String managementToken = getManagementToken();
         String url = String.format("https://%s/api/v2/users/%s", domain, auth0UserId);
 
@@ -229,9 +225,6 @@ public class Auth0ManagementService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-
-            System.out.println("Auth0 Block Response: " + response);
-            System.out.println("=== USER BLOCKING SUCCESSFUL ===");
         } catch (Exception e) {
             System.err.println("=== FAILED TO BLOCK USER ===");
             System.err. println("Error: " + e. getMessage());

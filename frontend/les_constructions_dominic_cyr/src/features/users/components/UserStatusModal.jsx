@@ -80,7 +80,7 @@ export default function UserStatusModal({ isOpen, user, onClose, onConfirm, isSu
                 )}
                 {canReactivate && (
                   <button
-                    className={`action-btn success ${action === 'reactivate' ? 'selected' :  ''}`}
+                    className={`action-btn success ${action === 'reactivate' ? 'selected' : ''}`}
                     onClick={() => setAction('reactivate')}
                     disabled={isSubmitting}
                   >
