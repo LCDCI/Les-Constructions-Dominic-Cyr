@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 
 	_ "github.com/lib/pq"
 )
@@ -19,6 +20,10 @@ type Config struct {
 	MinioBucket    string
 	MinioUseSSL    bool
 	MinioRegion    string
+	RateLimitRPS   float64
+	RateLimitBurst int
+	UploadRPS      float64
+	UploadBurst    int
 }
 
 func Load() *Config {
@@ -39,7 +44,35 @@ func Load() *Config {
 		MinioBucket:    bucket,
 		MinioUseSSL:    useSSL,
 		MinioRegion:    os.Getenv("MINIO_REGION"),
+		RateLimitRPS:   parseFloatEnv("RATE_LIMIT_RPS", 10),
+		RateLimitBurst: parseIntEnv("RATE_LIMIT_BURST", 20),
+		UploadRPS:      parseFloatEnv("RATE_LIMIT_UPLOAD_RPS", 3),
+		UploadBurst:    parseIntEnv("RATE_LIMIT_UPLOAD_BURST", 6),
 	}
+}
+
+// parseFloatEnv returns the parsed float64 value or the fallback on error/empty.
+func parseFloatEnv(key string, fallback float64) float64 {
+	v := os.Getenv(key)
+	if v == "" {
+		return fallback
+	}
+	if f, err := strconv.ParseFloat(v, 64); err == nil {
+		return f
+	}
+	return fallback
+}
+
+// parseIntEnv returns the parsed int value or the fallback on error/empty.
+func parseIntEnv(key string, fallback int) int {
+	v := os.Getenv(key)
+	if v == "" {
+		return fallback
+	}
+	if i, err := strconv.Atoi(v); err == nil {
+		return i
+	}
+	return fallback
 }
 
 func InitPostgres(cfg *Config) *sql.DB {
