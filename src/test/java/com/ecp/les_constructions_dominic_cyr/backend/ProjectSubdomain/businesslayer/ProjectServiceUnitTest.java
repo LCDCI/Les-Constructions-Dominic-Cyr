@@ -1,4 +1,4 @@
-package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain. businesslayer;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.businesslayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Project.ProjectServiceImpl;
 import com.ecp.les_constructions_dominic_cyr. backend.ProjectSubdomain.DataAccessLayer.Project.Project;
@@ -102,7 +102,7 @@ public class ProjectServiceUnitTest {
         testRequestModel.setPrimaryColor("#FFFFFF");
         testRequestModel.setTertiaryColor("#000000");
         testRequestModel. setBuyerColor("#FF0000");
-        testProject.setImageIdentifier("473f9e87-3415-491c-98a9-9d017c251911");
+        testRequestModel.setImageIdentifier("473f9e87-3415-491c-98a9-9d017c251911");
         testRequestModel. setBuyerName("Test Buyer");
         testRequestModel. setCustomerId("cust-001");
         testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001"));
@@ -437,12 +437,108 @@ public class ProjectServiceUnitTest {
     }
 
     @Test
+    void updateProject_WithValidLocation_Succeeds() {
+        testRequestModel.setLocation("123 Main St, City, State 12345");
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectMapper, times(1)).updateEntityFromRequestModel(testRequestModel, testProject);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithEmptyLocation_ThrowsInvalidProjectDataException() {
+        testRequestModel.setLocation("   ");
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.updateProject("proj-001", testRequestModel)
+        );
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void updateProject_WithLocationExceedingMaxLength_ThrowsInvalidProjectDataException() {
+        String longLocation = "a".repeat(257);
+        testRequestModel.setLocation(longLocation);
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.updateProject("proj-001", testRequestModel)
+        );
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void updateProject_WithNullLocation_Succeeds() {
+        testRequestModel.setLocation(null);
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+    }
+
+    @Test
     void deleteProject_WhenProjectExists_DeletesSuccessfully() {
         when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(Optional.of(testProject));
 
         projectService.deleteProject("proj-001");
 
         verify(projectRepository, times(1)).delete(testProject);
+    }
+
+    @Test
+    void createProject_WithValidLocation_Succeeds() {
+        testRequestModel.setLocation("123 Main St, City, State 12345");
+        when(projectMapper.requestModelToEntity(testRequestModel)).thenReturn(testProject);
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.createProject(testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void createProject_WithEmptyLocation_ThrowsInvalidProjectDataException() {
+        testRequestModel.setLocation("   ");
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.createProject(testRequestModel)
+        );
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void createProject_WithLocationExceedingMaxLength_ThrowsInvalidProjectDataException() {
+        String longLocation = "a".repeat(257);
+        testRequestModel.setLocation(longLocation);
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.createProject(testRequestModel)
+        );
+        verify(projectRepository, never()).save(any());
+    }
+
+    @Test
+    void createProject_WithNullLocation_Succeeds() {
+        testRequestModel.setLocation(null);
+        when(projectMapper.requestModelToEntity(testRequestModel)).thenReturn(testProject);
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.createProject(testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
     }
 
 
@@ -727,5 +823,174 @@ public class ProjectServiceUnitTest {
         List<ProjectResponseModel> result = projectService.filterProjects(null, null, null, null);
 
         assertEquals(2, result. size());
+    }
+
+    // ========== UPDATE PROJECT INTEGRATION TESTS ==========
+
+    @Test
+    void updateProject_WithAllValidFieldsUpdated_PersistsAllChanges() {
+        // Positive test: update all project fields with valid data
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        testRequestModel.setProjectName("Updated Project Name");
+        testRequestModel.setProjectDescription("Updated Description");
+        testRequestModel.setStatus(ProjectStatus.COMPLETED);
+        testRequestModel.setStartDate(LocalDate.of(2024, 1, 1));
+        testRequestModel.setEndDate(LocalDate.of(2024, 12, 31));
+        testRequestModel.setCompletionDate(LocalDate.of(2024, 12, 25));
+        testRequestModel.setLocation("123 Main St, Montreal, QC");
+        testRequestModel.setPrimaryColor("#AABBCC");
+        testRequestModel.setTertiaryColor("#DDEEFF");
+        testRequestModel.setBuyerColor("#112233");
+        testRequestModel.setBuyerName("Updated Buyer");
+        testRequestModel.setProgressPercentage(100);
+        
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).findByProjectIdentifier("proj-001");
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithOnlyLocationUpdate_Succeeds() {
+        // Positive test: update only location field
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        testRequestModel.setProjectName(testProject.getProjectName());
+        testRequestModel.setStartDate(testProject.getStartDate());
+        testRequestModel.setLocation("456 Oak Ave, Toronto, ON");
+        
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithLocationAtMaxLength_Succeeds() {
+        // Positive test: location at exactly 255 characters
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        String maxLengthLocation = "a".repeat(255);
+        testRequestModel.setLocation(maxLengthLocation);
+        
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithProgressPercentageUpdate_Succeeds() {
+        // Positive test: update progress percentage
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        testRequestModel.setProjectName(testProject.getProjectName());
+        testRequestModel.setStartDate(testProject.getStartDate());
+        testRequestModel.setProgressPercentage(75);
+        
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithInvalidProjectIdentifier_ThrowsNotFoundException() {
+        // Negative test: project not found
+        when(projectRepository.findByProjectIdentifier("invalid-id")).thenReturn(java.util.Optional.empty());
+
+        assertThrows(com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.ProjectNotFoundException.class,
+                () -> projectService.updateProject("invalid-id", testRequestModel));
+    }
+
+    @Test
+    void updateProject_WithLocationExceedingMaxLength_ThrowsException() {
+        // Negative test: location exceeds 255 characters
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        String tooLongLocation = "a".repeat(256);
+        testRequestModel.setLocation(tooLongLocation);
+
+        assertThrows(InvalidProjectDataException.class,
+                () -> projectService.updateProject("proj-001", testRequestModel));
+    }
+
+    @Test
+    void updateProject_WithWhitespaceOnlyLocation_ThrowsException() {
+        // Negative test: location with only whitespace
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        testRequestModel.setLocation("   ");
+
+        assertThrows(InvalidProjectDataException.class,
+                () -> projectService.updateProject("proj-001", testRequestModel));
+    }
+
+    @Test
+    void updateProject_WithInvalidStatusTransition_Succeeds() {
+        // Positive test: status transitions are allowed (no business rule prevents it)
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        testRequestModel.setProjectName(testProject.getProjectName());
+        testRequestModel.setStartDate(testProject.getStartDate());
+        testRequestModel.setStatus(ProjectStatus.CANCELLED);
+        
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithProgressPercentageGreaterThan100_Succeeds() {
+        // Positive test: backend accepts values > 100 (client-side validation exists)
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        testRequestModel.setProjectName(testProject.getProjectName());
+        testRequestModel.setStartDate(testProject.getStartDate());
+        testRequestModel.setProgressPercentage(150);
+        
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
+    }
+
+    @Test
+    void updateProject_WithNullEndDate_Succeeds() {
+        // Positive test: end date can be null
+        when(projectRepository.findByProjectIdentifier("proj-001")).thenReturn(java.util.Optional.ofNullable(testProject));
+        
+        testRequestModel.setProjectName(testProject.getProjectName());
+        testRequestModel.setStartDate(testProject.getStartDate());
+        testRequestModel.setEndDate(null);
+        
+        when(projectRepository.save(testProject)).thenReturn(testProject);
+        when(projectMapper.entityToResponseModel(testProject)).thenReturn(testResponseModel);
+
+        ProjectResponseModel result = projectService.updateProject("proj-001", testRequestModel);
+
+        assertNotNull(result);
+        verify(projectRepository, times(1)).save(testProject);
     }
 }

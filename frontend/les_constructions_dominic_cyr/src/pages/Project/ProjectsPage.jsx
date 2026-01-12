@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import '../../styles/Project/projects.css';
 import '../../styles/Project/create-project.css';
+import '../../styles/Project/edit-project.css';
 import CreateProjectForm from '../../features/projects/components/CreateProjectForm';
+import EditProjectForm from '../../features/projects/components/EditProjectForm';
 import useBackendUser from '../../hooks/useBackendUser';
-import { canCreateProjects } from '../../utils/permissions';
+import { canCreateProjects, canEditProjects } from '../../utils/permissions';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -12,11 +14,14 @@ const ProjectsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [projectToEdit, setProjectToEdit] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [showConfirmClose, setShowConfirmClose] = useState(false);
 
   const { role } = useBackendUser();
   const canCreate = canCreateProjects(role);
+  const canEdit = canEditProjects(role);
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
@@ -76,6 +81,24 @@ const ProjectsPage = () => {
 
   const handleViewProject = projectIdentifier => {
     window.location.href = `/projects/${projectIdentifier}/metadata`;
+  };
+
+  const handleEditProject = (project) => {
+    setProjectToEdit(project);
+    setIsEditOpen(true);
+    setSubmitError(null);
+  };
+
+  const handleEditSuccess = () => {
+    setIsEditOpen(false);
+    setProjectToEdit(null);
+    fetchProjects();
+  };
+
+  const handleEditCancel = () => {
+    setIsEditOpen(false);
+    setProjectToEdit(null);
+    setSubmitError(null);
   };
 
   const overlayStyle = {
@@ -178,12 +201,22 @@ const ProjectsPage = () => {
                     <p className="project-description">
                       {project.projectDescription}
                     </p>
-                    <a
-                      href={`/projects/${project.projectIdentifier}/metadata`}
-                      className="project-button"
-                    >
-                      View this project
-                    </a>
+                    <div className="project-actions">
+                      <a
+                        href={`/projects/${project.projectIdentifier}/metadata`}
+                        className="project-button"
+                      >
+                        View this project
+                      </a>
+                      {canEdit && (
+                        <button
+                          onClick={() => handleEditProject(project)}
+                          className="project-button edit-button"
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </div>
                   </div>
                 ))
               ) : (
@@ -265,6 +298,29 @@ const ProjectsPage = () => {
                     Leave form
                   </button>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {isEditOpen && projectToEdit && (
+            <div
+              style={overlayStyle}
+              role="dialog"
+              aria-modal="true"
+              onClick={e => {
+                if (e.target === e.currentTarget) handleEditCancel();
+              }}
+            >
+              <div style={modalStyle}>
+                {submitError && (
+                  <div className="error-message">{submitError}</div>
+                )}
+                <EditProjectForm
+                  project={projectToEdit}
+                  onCancel={handleEditCancel}
+                  onSuccess={handleEditSuccess}
+                  onError={setSubmitError}
+                />
               </div>
             </div>
           )}

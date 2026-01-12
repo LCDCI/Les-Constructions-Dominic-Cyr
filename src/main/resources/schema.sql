@@ -13,12 +13,12 @@ CREATE TABLE lots (
                       lot_status VARCHAR(50) NOT NULL
 );
 
--- schema for house
-DROP TABLE IF EXISTS houses;
-CREATE TABLE houses (
+-- schema for realization
+DROP TABLE IF EXISTS realizations;
+CREATE TABLE realizations (
                         id SERIAL PRIMARY KEY,
-                        house_identifier UUID NOT NULL UNIQUE,
-                        house_name VARCHAR(255) NOT NULL,
+                        realization_identifier UUID NOT NULL UNIQUE,
+                        realization_name VARCHAR(255) NOT NULL,
                         location VARCHAR(255) NOT NULL,
                         description TEXT NOT NULL,
                         image_identifier VARCHAR(255),
