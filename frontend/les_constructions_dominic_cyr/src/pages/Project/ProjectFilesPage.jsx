@@ -3,7 +3,7 @@ import { FaFileArrowUp } from 'react-icons/fa6';
 import FileUploadModal from '../../components/Modals/FileUploadModal';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import FileCard from '../../features/files/components/FileCard';
-import { deleteFile, fetchProjectFiles } from '../../features/files/api/filesApi';
+import { deleteFile, fetchProjectDocuments } from '../../features/files/api/filesApi';
 import '../../styles/FilesPage.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import useBackendUser from '../../hooks/useBackendUser';
@@ -27,13 +27,13 @@ export default function ProjectFilesPage() {
     const canUpload = canUploadDocuments(role);
     const canDelete = canDeleteDocuments(role);
 
-    // Data Fetching (match the photos page pattern)
+    // Data Fetching - use fetchProjectDocuments for documents endpoint
     useEffect(() => {
         const loadFiles = async () => {
             setIsLoading(true);
             setError(null);
             try {
-                const files = await fetchProjectFiles(projectId);
+                const files = await fetchProjectDocuments(projectId);
                 setAllFiles(files || []);
             } catch (err) {
                 console.error('Failed to fetch project files:', err);
@@ -55,10 +55,8 @@ export default function ProjectFilesPage() {
         loadFiles();
     }, [projectId, navigate]);
 
-    // Only show DOCUMENT files; ignore bad entries
-    const documents = (allFiles || []).filter(
-        (file) => file && (file.category || 'DOCUMENT') === 'DOCUMENT'
-    );
+    // The documents endpoint already returns only DOCUMENT category files
+    const documents = allFiles || [];
 
     const handleUploadSuccess = (newFileMetadata) => {
         const newFile = {

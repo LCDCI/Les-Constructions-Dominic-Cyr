@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_API_URL = 'http://localhost:8082'; 
+const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 
 export async function fetchProjectFiles(projectId) {
     const response = await axios.get(`${BASE_API_URL}/projects/${projectId}/files`); 

@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import '../../../styles/FilesPage.css';
 
-// Match the photos page: files service runs on 8082
-const BASE_API_URL = 'http://localhost:8082';
+const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 
 const getFileIcon = (contentType = '') => {
     if (contentType.includes('pdf')) return <span className="file-icon" style={{ color: '#E53935' }}>&#128441;</span>;
