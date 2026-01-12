@@ -226,9 +226,12 @@ public class ScheduleController {
     @GetMapping("/projects/{projectIdentifier}/schedules")
     public ResponseEntity<List<ScheduleResponseDTO>> getProjectSchedules(@PathVariable String projectIdentifier) {
         try {
+            log.info("Fetching schedules for project identifier: {}", projectIdentifier);
             List<ScheduleResponseDTO> schedules = scheduleService.getSchedulesByProjectIdentifier(projectIdentifier);
+            log.info("Successfully fetched {} schedules for project: {}", schedules.size(), projectIdentifier);
             return ResponseEntity.ok(schedules);
         } catch (Exception ex) {
+            log.error("Error fetching schedules for project {}: {}", projectIdentifier, ex.getMessage(), ex);
             return new ResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
