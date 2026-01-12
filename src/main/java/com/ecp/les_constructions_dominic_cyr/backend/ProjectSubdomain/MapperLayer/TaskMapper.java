@@ -7,6 +7,9 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentati
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +21,8 @@ public class TaskMapper {
                 .taskId(task.getTaskIdentifier() != null ? task.getTaskIdentifier().getTaskId() : null)
                 .taskStatus(task.getTaskStatus())
                 .taskTitle(task.getTaskTitle())
-                .periodStart(task.getPeriod_start())
-                .periodEnd(task.getPeriod_end())
+                .periodStart(localDateToDate(task.getPeriodStart()))
+                .periodEnd(localDateToDate(task.getPeriodEnd()))
                 .taskDescription(task.getTaskDescription())
                 .taskPriority(task.getTaskPriority())
                 .estimatedHours(task.getEstimatedHours())
@@ -43,13 +46,13 @@ public class TaskMapper {
                 .taskIdentifier(new TaskIdentifier())
                 .taskStatus(requestDTO.getTaskStatus())
                 .taskTitle(requestDTO.getTaskTitle())
-                .period_start(requestDTO.getPeriodStart())
-                .period_end(requestDTO.getPeriodEnd())
+                .periodStart(dateToLocalDate(requestDTO.getPeriodStart()))
+                .periodEnd(dateToLocalDate(requestDTO.getPeriodEnd()))
                 .taskDescription(requestDTO.getTaskDescription())
                 .taskPriority(requestDTO.getTaskPriority())
-                .estimatedHours(requestDTO.getEstimatedHours())
-                .hoursSpent(requestDTO.getHoursSpent())
-                .taskProgress(requestDTO.getTaskProgress())
+                .estimatedHours(requestDTO.getEstimatedHours() != null ? requestDTO.getEstimatedHours().doubleValue() : null)
+                .hoursSpent(requestDTO.getHoursSpent() != null ? requestDTO.getHoursSpent().doubleValue() : null)
+                .taskProgress(requestDTO.getTaskProgress() != null ? requestDTO.getTaskProgress().doubleValue() : null)
                 .assignedTo(assignedUser)
                 .build();
     }
@@ -57,13 +60,27 @@ public class TaskMapper {
     public void updateEntityFromRequestDTO(Task task, TaskRequestDTO requestDTO, Users assignedUser) {
         task.setTaskStatus(requestDTO.getTaskStatus());
         task.setTaskTitle(requestDTO.getTaskTitle());
-        task.setPeriod_start(requestDTO.getPeriodStart());
-        task.setPeriod_end(requestDTO.getPeriodEnd());
+        task.setPeriodStart(dateToLocalDate(requestDTO.getPeriodStart()));
+        task.setPeriodEnd(dateToLocalDate(requestDTO.getPeriodEnd()));
         task.setTaskDescription(requestDTO.getTaskDescription());
         task.setTaskPriority(requestDTO.getTaskPriority());
-        task.setEstimatedHours(requestDTO.getEstimatedHours());
-        task.setHoursSpent(requestDTO.getHoursSpent());
-        task.setTaskProgress(requestDTO.getTaskProgress());
+        task.setEstimatedHours(requestDTO.getEstimatedHours() != null ? requestDTO.getEstimatedHours().doubleValue() : null);
+        task.setHoursSpent(requestDTO.getHoursSpent() != null ? requestDTO.getHoursSpent().doubleValue() : null);
+        task.setTaskProgress(requestDTO.getTaskProgress() != null ? requestDTO.getTaskProgress().doubleValue() : null);
         task.setAssignedTo(assignedUser);
+    }
+
+    private LocalDate dateToLocalDate(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    private Date localDateToDate(LocalDate localDate) {
+        if (localDate == null) {
+            return null;
+        }
+        return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 }
