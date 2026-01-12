@@ -1,7 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.config;
 
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.House;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization.Realization;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization.RealizationRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
@@ -27,7 +27,7 @@ public class DataSeeder {
     private ProjectRepository projectRepository;
 
     @Autowired
-    private HouseRepository houseRepository;
+    private RealizationRepository realizationRepository;
 
     @Autowired
     private LotRepository lotRepository;
@@ -44,7 +44,7 @@ public class DataSeeder {
     public void init() {
         log.info("Running data seeder...");
         seedProjectImages();
-        seedHouseImages();
+        seedRealizationImages();
         seedLotImages();
         seedRenovationImages();
     }
@@ -61,7 +61,7 @@ public class DataSeeder {
         });
     }
 
-    private static final Map<String, String> HOUSE_IMAGES = Map.of(
+    private static final Map<String, String> REALIZATION_IMAGES = Map.of(
             "a3f1c0f1-8f2b-4c3d-9d5a-1b2a3c4d5e6f", "c15dc19e-bab3-478c-b0f7-4696acccb69d",
             "b7d2e1a4-2c6f-4b8e-9f3c-7a9b0c1d2e3f", "b4cbbd58-722a-4117-89bd-57c0bbb94970",
             "c9e3f2b5-3d7a-4f9b-8e4d-0a1b2c3d4e5f", "9fbe99e4-4ecd-423b-9414-4bc828c09ba5",
@@ -74,14 +74,14 @@ public class DataSeeder {
             "37a029c3-0e4b-1f6d-5d7c-8e9f0a1b2c3d", "dbb884ce-8b9e-4d40-89ea-f85af12af0b8"
     );
 
-    private void seedHouseImages() {
-        HOUSE_IMAGES.forEach((houseId, imageId) -> {
-            House house = houseRepository.findHouseByHouseIdentifier_HouseId(houseId);
-            if (house != null) {
-                if (house.getImageIdentifier() == null || house.getImageIdentifier().isEmpty()) {
-                    house.setImageIdentifier(imageId);
-                    houseRepository.save(house);
-                    log.info("Linked image to house: {}", houseId);
+    private void seedRealizationImages() {
+        REALIZATION_IMAGES.forEach((realizationId, imageId) -> {
+            Realization realization = realizationRepository.findRealizationByRealizationIdentifier_RealizationId(realizationId);
+            if (realization != null) {
+                if (realization.getImageIdentifier() == null || realization.getImageIdentifier().isEmpty()) {
+                    realization.setImageIdentifier(imageId);
+                    realizationRepository.save(realization);
+                    log.info("Linked image to realization: {}", realizationId);
                 }
             }
         });

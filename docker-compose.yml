@@ -161,8 +161,8 @@ services:
       - "9000:9000"   # S3 API
       - "9001:9001"   # MinIO dashboard
     volumes:
-      #- ./data/minio:/data
-      - "${ONEDRIVE_MINIO_PATH}:/data"
+      - ./data/minio:/data
+      #- "${ONEDRIVE_MINIO_PATH}:/data"
     networks:
       - app-network
 
