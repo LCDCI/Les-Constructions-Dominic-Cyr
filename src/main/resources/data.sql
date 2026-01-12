@@ -98,11 +98,22 @@ INSERT INTO projects (
           80
       );
 
-INSERT INTO schedules (schedule_identifier, task_date, task_description, lot_number, day_of_week) VALUES
-                                                                                                      ('SCH-001', '2025-12-05', 'Begin Excavation', 'Lot 53', 'Wednesday'),
-                                                                                                      ('SCH-002', '2025-12-06', 'Plumbing', 'Lot 57', 'Wednesday'),
-                                                                                                      ('SCH-003', '2025-12-12', 'Electrical', 'Lot 54', 'Thursday'),
-                                                                                                      ('SCH-004', '2025-12-08', 'End of Excavation', 'Lot 53', 'Friday');
+INSERT INTO schedules (schedule_identifier, task_date, task_description, lot_number, day_of_week, project_id) VALUES
+    ('SCH-001', '2026-01-20', 'Foundation Work - Pour Concrete', 'Lot 53', 'Monday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-002', '2026-01-22', 'Framing - Install Floor Joists', 'Lot 53', 'Wednesday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-003', '2026-01-25', 'Framing - Wall Installation', 'Lot 53', 'Saturday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-004', '2026-01-28', 'Roofing - Sheathing', 'Lot 53', 'Tuesday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-005', '2026-02-01', 'Roofing - Shingles Installation', 'Lot 53', 'Saturday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-006', '2026-02-05', 'Plumbing - Rough-In', 'Lot 53', 'Wednesday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-007', '2026-02-08', 'Electrical - Rough Wiring', 'Lot 53', 'Saturday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-008', '2026-02-12', 'HVAC Installation', 'Lot 53', 'Wednesday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-009', '2026-01-23', 'Site Preparation - Excavation', 'Lot 57', 'Thursday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-010', '2026-01-27', 'Foundation - Footings', 'Lot 57', 'Monday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-011', '2026-01-30', 'Foundation - Pour Concrete', 'Lot 57', 'Thursday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-012', '2026-02-03', 'Framing - Install Floor System', 'Lot 57', 'Monday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-013', '2026-02-06', 'Framing - Wall Framing', 'Lot 57', 'Thursday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-014', '2026-02-10', 'Framing - Roof Trusses', 'Lot 57', 'Monday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-015', '2026-02-13', 'Exterior - Window Installation', 'Lot 57', 'Thursday', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama'));
 
 
 

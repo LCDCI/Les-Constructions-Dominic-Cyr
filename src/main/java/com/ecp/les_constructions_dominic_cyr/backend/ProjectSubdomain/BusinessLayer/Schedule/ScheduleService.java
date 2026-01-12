@@ -41,4 +41,12 @@ public interface ScheduleService {
      * @return TaskResponseDTO containing the task summary for current week
      */
     TaskResponseDTO getCurrentWeekTaskSummary(String contractorId);
+
+    /**
+     * Get all schedules for a specific project by project identifier.
+     *
+     * @param projectIdentifier The project identifier
+     * @return List of ScheduleResponseDTO for the project
+     */
+    List<ScheduleResponseDTO> getSchedulesByProjectIdentifier(String projectIdentifier);
 }

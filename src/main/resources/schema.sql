@@ -84,12 +84,15 @@ CREATE TABLE IF NOT EXISTS schedules (
     task_description VARCHAR(500) NOT NULL,
     lot_number VARCHAR(50) NOT NULL,
     day_of_week VARCHAR(20) NOT NULL,
+    project_id BIGINT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE
     );
 
 CREATE INDEX IF NOT EXISTS idx_schedule_identifier ON schedules(schedule_identifier);
 CREATE INDEX IF NOT EXISTS idx_task_date ON schedules(task_date);
+CREATE INDEX IF NOT EXISTS idx_schedule_project_id ON schedules(project_id);
 
 DROP TABLE IF EXISTS users CASCADE;
 
