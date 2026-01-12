@@ -9,9 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "tasks")
@@ -25,36 +22,46 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Embedded
     private TaskIdentifier taskIdentifier;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "task_status")
     private TaskStatus taskStatus;
 
     private String taskTitle;
 
-    private Date period_start;
+    @Column(name = "period_start")
+    private LocalDate periodStart;
 
-    private Date period_end;
+    @Column(name = "period_end")
+    private LocalDate periodEnd;
 
     private String taskDescription;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "task_priority")
     private TaskPriority taskPriority;
 
-    private Number estimatedHours;
+    @Column(name = "estimated_hours")
+    private Double estimatedHours;
 
-    private Number hoursSpent;
+    @Column(name = "hours_spent")
+    private Double hoursSpent;
 
-    private Number taskProgress;
+    @Column(name = "task_progress")
+    private Double taskProgress;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_user_id")
     private Users assignedTo;
 
-    public Task(@NotNull TaskIdentifier taskIdentifier,@NotNull TaskStatus taskStatus,@NotNull String taskTitle,@NotNull Date period_start,@NotNull Date period_end,@NotNull String taskDescription,@NotNull TaskPriority taskPriority,@NotNull Number estimatedHours,@NotNull Number hoursSpent,@NotNull Number taskProgress,@NotNull Users assignedTo) {
+    public Task(@NotNull TaskIdentifier taskIdentifier, @NotNull TaskStatus taskStatus, @NotNull String taskTitle, @NotNull LocalDate periodStart, @NotNull LocalDate periodEnd, @NotNull String taskDescription, @NotNull TaskPriority taskPriority, @NotNull Double estimatedHours, @NotNull Double hoursSpent, @NotNull Double taskProgress, @NotNull Users assignedTo) {
         this.taskIdentifier = taskIdentifier;
         this.taskStatus = taskStatus;
         this.taskTitle = taskTitle;
-        this.period_start = period_start;
-        this.period_end = period_end;
+        this.periodStart = periodStart;
+        this.periodEnd = periodEnd;
         this.taskDescription = taskDescription;
         this.taskPriority = taskPriority;
         this.estimatedHours = estimatedHours;
