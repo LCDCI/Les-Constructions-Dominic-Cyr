@@ -226,4 +226,3 @@ public class ScheduleServiceImpl implements ScheduleService {
         return scheduleMapper.entitiesToResponseDTOs(schedules);
     }
 }
-}
