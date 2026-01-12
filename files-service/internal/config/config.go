@@ -17,15 +17,28 @@ type Config struct {
 	MinioAccessKey string
 	MinioSecretKey string
 	MinioBucket    string
+	MinioUseSSL    bool
+	MinioRegion    string
 }
 
 func Load() *Config {
+	// Check for MINIO_USE_SSL environment variable (default: false for local MinIO, true for Spaces)
+	useSSL := os.Getenv("MINIO_USE_SSL") == "true"
+
+	// Get bucket name from env, fallback to "project-files" for backwards compatibility
+	bucket := os.Getenv("MINIO_BUCKET")
+	if bucket == "" {
+		bucket = "project-files"
+	}
+
 	return &Config{
 		DBUrl:          os.Getenv("DB_URL"),
 		MinioEndpoint:  os.Getenv("MINIO_ENDPOINT"),
 		MinioAccessKey: os.Getenv("MINIO_ACCESS_KEY"),
 		MinioSecretKey: os.Getenv("MINIO_SECRET_KEY"),
-		MinioBucket:    "project-files",
+		MinioBucket:    bucket,
+		MinioUseSSL:    useSSL,
+		MinioRegion:    os.Getenv("MINIO_REGION"),
 	}
 }
 
@@ -37,20 +50,20 @@ func InitPostgres(cfg *Config) *sql.DB {
 	if err := db.Ping(); err != nil {
 		log.Fatal("DB unreachable:", err)
 	}
-	
+
 	// Run migrations automatically at startup
 	if err := runMigrations(db); err != nil {
 		log.Printf("Warning: Migration execution failed: %v", err)
 		// Don't fail startup, migrations might already be applied
 	}
-	
+
 	return db
 }
 
 // runMigrations executes all SQL migration files in the migrations directory
 func runMigrations(db *sql.DB) error {
 	migrationsPath := "./migrations"
-	
+
 	// Check if migrations directory exists
 	if _, err := os.Stat(migrationsPath); os.IsNotExist(err) {
 		// Try alternative path for Docker
@@ -60,31 +73,31 @@ func runMigrations(db *sql.DB) error {
 			return nil
 		}
 	}
-	
+
 	// Read all .sql files from migrations directory
 	files, err := filepath.Glob(filepath.Join(migrationsPath, "*.sql"))
 	if err != nil {
 		return fmt.Errorf("failed to read migration files: %w", err)
 	}
-	
+
 	if len(files) == 0 {
 		log.Println("No migration files found")
 		return nil
 	}
-	
+
 	// Sort files to ensure they run in order
 	sort.Strings(files)
-	
+
 	log.Println("Running database migrations...")
-	
+
 	for _, file := range files {
 		log.Printf("Applying migration: %s", filepath.Base(file))
-		
+
 		content, err := os.ReadFile(file)
 		if err != nil {
 			return fmt.Errorf("failed to read migration file %s: %w", file, err)
 		}
-		
+
 		// Execute the migration
 		_, err = db.Exec(string(content))
 		if err != nil {
@@ -94,7 +107,7 @@ func runMigrations(db *sql.DB) error {
 			log.Printf("Migration %s: applied successfully", filepath.Base(file))
 		}
 	}
-	
+
 	log.Println("Database migrations completed")
 	return nil
 }

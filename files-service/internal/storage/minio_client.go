@@ -17,9 +17,13 @@ type MinioStorage struct {
 }
 
 func NewMinioClient(cfg *config.Config) *MinioStorage {
+	log.Printf("Connecting to S3-compatible storage at %s (SSL: %v, Region: %s, Bucket: %s)",
+		cfg.MinioEndpoint, cfg.MinioUseSSL, cfg.MinioRegion, cfg.MinioBucket)
+
 	c, err := minio.New(cfg.MinioEndpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(cfg.MinioAccessKey, cfg.MinioSecretKey, ""),
-		Secure: false, // Set to true if using HTTPS
+		Secure: cfg.MinioUseSSL, // true for DigitalOcean Spaces (HTTPS), false for local MinIO
+		Region: cfg.MinioRegion, // Required for DigitalOcean Spaces (e.g., "tor1")
 	})
 	if err != nil {
 		log.Fatal(err)
