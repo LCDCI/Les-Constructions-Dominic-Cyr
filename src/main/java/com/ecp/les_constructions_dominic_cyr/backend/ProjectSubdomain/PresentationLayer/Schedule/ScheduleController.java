@@ -236,4 +236,83 @@ public class ScheduleController {
         }
     }
 
+    // Get a specific schedule by project identifier and schedule identifier
+    @GetMapping("/projects/{projectIdentifier}/schedules/{scheduleIdentifier}")
+    public ResponseEntity<?> getProjectScheduleByIdentifier(
+            @PathVariable String projectIdentifier,
+            @PathVariable String scheduleIdentifier) {
+        try {
+            log.info("Fetching schedule {} for project {}", scheduleIdentifier, projectIdentifier);
+            ScheduleResponseDTO schedule = scheduleService.getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier);
+            return ResponseEntity.ok(schedule);
+        } catch (NotFoundException ex) {
+            log.error("Schedule not found: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            log.error("Error fetching schedule {} for project {}: {}", scheduleIdentifier, projectIdentifier, ex.getMessage(), ex);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Create a new schedule for a specific project
+    @PostMapping("/projects/{projectIdentifier}/schedules")
+    public ResponseEntity<?> createProjectSchedule(
+            @PathVariable String projectIdentifier,
+            @RequestBody ScheduleRequestDTO scheduleRequestDTO) {
+        try {
+            log.info("Creating schedule for project: {}", projectIdentifier);
+            ScheduleResponseDTO schedule = scheduleService.addScheduleToProject(projectIdentifier, scheduleRequestDTO);
+            return new ResponseEntity<>(schedule, HttpStatus.CREATED);
+        } catch (NotFoundException ex) {
+            log.error("Project not found: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidInputException ex) {
+            log.error("Invalid input: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            log.error("Error creating schedule for project {}: {}", projectIdentifier, ex.getMessage(), ex);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Update a schedule for a specific project
+    @PutMapping("/projects/{projectIdentifier}/schedules/{scheduleIdentifier}")
+    public ResponseEntity<?> updateProjectSchedule(
+            @PathVariable String projectIdentifier,
+            @PathVariable String scheduleIdentifier,
+            @RequestBody ScheduleRequestDTO scheduleRequestDTO) {
+        try {
+            log.info("Updating schedule {} for project {}", scheduleIdentifier, projectIdentifier);
+            ScheduleResponseDTO schedule = scheduleService.updateScheduleForProject(projectIdentifier, scheduleIdentifier, scheduleRequestDTO);
+            return ResponseEntity.ok(schedule);
+        } catch (NotFoundException ex) {
+            log.error("Not found: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidInputException ex) {
+            log.error("Invalid input: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            log.error("Error updating schedule {} for project {}: {}", scheduleIdentifier, projectIdentifier, ex.getMessage(), ex);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Delete a schedule from a specific project
+    @DeleteMapping("/projects/{projectIdentifier}/schedules/{scheduleIdentifier}")
+    public ResponseEntity<?> deleteProjectSchedule(
+            @PathVariable String projectIdentifier,
+            @PathVariable String scheduleIdentifier) {
+        try {
+            log.info("Deleting schedule {} from project {}", scheduleIdentifier, projectIdentifier);
+            scheduleService.deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException ex) {
+            log.error("Not found: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            log.error("Error deleting schedule {} from project {}: {}", scheduleIdentifier, projectIdentifier, ex.getMessage(), ex);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
