@@ -53,7 +53,7 @@ class LotControllerIntegrationTest {
         lotRepository.deleteAll();
     }
 
-    //@Test
+    @Test
     void whenGetAll_thenReturnList() throws Exception {
         LotIdentifier id = new LotIdentifier(UUID.randomUUID().toString());
         Lot entity = new Lot(id, "Integration Loc", 777f, "77x77", LotStatus.AVAILABLE);
@@ -66,7 +66,7 @@ class LotControllerIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(org.hamcrest.Matchers.greaterThanOrEqualTo(1)));
     }
 
-    //@Test
+    @Test
     void whenGetByIdExists_thenReturn() throws Exception {
         String idVal = UUID.randomUUID().toString();
         lotRepository.save(new Lot(new LotIdentifier(idVal), "ById Loc", 111f, "11x11", LotStatus.AVAILABLE));
@@ -80,7 +80,7 @@ class LotControllerIntegrationTest {
     }
 
 
-    //@Test
+    @Test
     void whenDeleteExists_thenNoContent() throws Exception {
         String idVal = UUID.randomUUID().toString();
         lotRepository.save(new Lot(new LotIdentifier(idVal), "ToDelete", 11f, "11x11", LotStatus.AVAILABLE));

@@ -157,6 +157,12 @@ public class ProjectServiceImpl implements ProjectService {
         if (requestModel.getStatus() == null) {
             throw new InvalidProjectDataException("Project status cannot be null");
         }
+        if (requestModel.getLocation() != null && requestModel.getLocation().trim().isEmpty()) {
+            throw new InvalidProjectDataException("Location cannot be empty if provided");
+        }
+        if (requestModel.getLocation() != null && requestModel.getLocation().length() > 255) {
+            throw new InvalidProjectDataException("Location cannot exceed 255 characters");
+        }
     }
 
     private void validateProjectRequestForUpdate(ProjectRequestModel requestModel) {
@@ -166,6 +172,12 @@ public class ProjectServiceImpl implements ProjectService {
         if (requestModel.getStartDate() != null && requestModel.getEndDate() != null
                 && requestModel.getStartDate().isAfter(requestModel.getEndDate())) {
             throw new InvalidProjectDataException("Start date cannot be after end date");
+        }
+        if (requestModel.getLocation() != null && requestModel.getLocation().trim().isEmpty()) {
+            throw new InvalidProjectDataException("Location cannot be empty if provided");
+        }
+        if (requestModel.getLocation() != null && requestModel.getLocation().length() > 255) {
+            throw new InvalidProjectDataException("Location cannot exceed 255 characters");
         }
     }
 

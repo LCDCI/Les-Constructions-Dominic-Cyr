@@ -47,7 +47,7 @@ class RenovationControllerIntegrationTest {
         renovationRepository.deleteAll();
     }
 
-    //@Test
+    @Test
     void whenGetByIdExists_thenReturn() throws Exception {
         String idVal = UUID.randomUUID().toString();
         Renovation entity = new Renovation();
@@ -65,7 +65,7 @@ class RenovationControllerIntegrationTest {
                 .andExpect(jsonPath("$.description").value("ById Desc"));
     }
 
-    //@Test
+    @Test
     void whenGetByIdInvalidUUID_thenReturnBadRequest() throws Exception {
         mockMvc.perform(get(BASE_URI + "/not-a-uuid")
                         .with(jwt().authorities(ADMIN_ROLE)))

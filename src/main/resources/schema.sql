@@ -13,12 +13,12 @@ CREATE TABLE lots (
                       lot_status VARCHAR(50) NOT NULL
 );
 
--- schema for house
-DROP TABLE IF EXISTS houses;
-CREATE TABLE houses (
+-- schema for realization
+DROP TABLE IF EXISTS realizations;
+CREATE TABLE realizations (
                         id SERIAL PRIMARY KEY,
-                        house_identifier UUID NOT NULL UNIQUE,
-                        house_name VARCHAR(255) NOT NULL,
+                        realization_identifier UUID NOT NULL UNIQUE,
+                        realization_name VARCHAR(255) NOT NULL,
                         location VARCHAR(255) NOT NULL,
                         description TEXT NOT NULL,
                         image_identifier VARCHAR(255),
@@ -96,23 +96,19 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users
 (
     user_id         UUID PRIMARY KEY,
-
     first_name      VARCHAR(255) NOT NULL,
     last_name       VARCHAR(255) NOT NULL,
-
     email           VARCHAR(255) NOT NULL,
     secondary_email VARCHAR(255),
-
     phone           VARCHAR(255),
-
     user_role       VARCHAR(50)  NOT NULL,
-
+    user_status     VARCHAR(50)  NOT NULL DEFAULT 'ACTIVE',
     auth0user_id   VARCHAR(255),
-
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE INDEX idx_user_status ON users(user_status);
 DROP TABLE IF EXISTS project_overview_content CASCADE;
 DROP TABLE IF EXISTS project_features CASCADE;
 DROP TABLE IF EXISTS project_gallery_images CASCADE;
