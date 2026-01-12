@@ -104,6 +104,13 @@ INSERT INTO schedules (schedule_identifier, task_date, task_description, lot_num
                                                                                                       ('SCH-003', '2025-12-12', 'Electrical', 'Lot 54', 'Thursday'),
                                                                                                       ('SCH-004', '2025-12-08', 'End of Excavation', 'Lot 53', 'Friday');
 
+INSERT INTO tasks (task_identifier, task_date, task_description, lot_number, day_of_week, assigned_to) VALUES
+                                                                                                           ('TASK-001', '2025-12-05', 'Foundation Work', 'Lot 53', 'Wednesday', '22222222-2222-2222-2222-222222222222'),
+                                                                                                           ('TASK-002', '2025-12-06', 'Framing', 'Lot 57', 'Wednesday', '22222222-2222-2222-2222-222222222222'),
+                                                                                                           ('TASK-003', '2025-12-12', 'Roofing', 'Lot 54', 'Thursday', '22222222-2222-2222-2222-222222222222'),
+                                                                                                           ('TASK-004', '2025-12-08', 'Drywall Installation', 'Lot 53', 'Friday', NULL);
+
+
 
 
 INSERT INTO project_overview_content (
