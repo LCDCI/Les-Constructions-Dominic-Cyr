@@ -2,6 +2,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Task.TaskService;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.BadRequestException;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidRequestException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import jakarta.validation.Valid;
@@ -52,7 +53,7 @@ public class TaskController {
         try {
             TaskResponseDTO task = taskService.createTask(taskRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(task);
-        } catch (BadRequestException | InvalidRequestException ex) {
+        } catch (BadRequestException | InvalidRequestException | InvalidInputException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -66,7 +67,7 @@ public class TaskController {
             return ResponseEntity.ok(task);
         } catch (NotFoundException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (BadRequestException | InvalidRequestException ex) {
+        } catch (BadRequestException | InvalidRequestException | InvalidInputException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
