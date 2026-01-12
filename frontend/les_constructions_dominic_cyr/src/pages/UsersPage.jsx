@@ -62,7 +62,6 @@ export default function UsersPage() {
         setUsers(usersData);
         setCurrentUser(currentUserData);
       } catch (err) {
-        console.error(err);
         setLoadingError('Failed to load users.');
       } finally {
         setLoading(false);
@@ -80,18 +79,18 @@ export default function UsersPage() {
     }
   }, [users, statusFilter]);
 
-  const openErrorModal = (message) => {
+  const openErrorModal = message => {
     setErrorMessage(message);
     setIsErrorModalOpen(true);
   };
 
-  const handleCreateUser = async (formValues) => {
+  const handleCreateUser = async formValues => {
     try {
       setIsSubmitting(true);
       const token = await getAccessTokenSilently();
       const createdUser = await createUser(formValues, token);
 
-      setUsers((prev) => [...prev, createdUser]);
+      setUsers(prev => [...prev, createdUser]);
 
       if (createdUser.inviteLink) {
         setInviteLink(createdUser.inviteLink);
@@ -100,7 +99,6 @@ export default function UsersPage() {
 
       setIsAddModalOpen(false);
     } catch (err) {
-      console.error(err);
       let niceMessage = 'Failed to create user.  Please try again.';
       if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
@@ -111,16 +109,16 @@ export default function UsersPage() {
     }
   };
 
-  const handleEditUser = (user) => {
+  const handleEditUser = user => {
     setEditingUser(user);
-    if (currentUser?. userRole === 'OWNER') {
+    if (currentUser?.userRole === 'OWNER') {
       setIsOwnerEditModalOpen(true);
     } else {
       setIsEditModalOpen(true);
     }
   };
 
-  const handleUpdateUser = async (formValues) => {
+  const handleUpdateUser = async formValues => {
     try {
       setIsEditSubmitting(true);
       const token = await getAccessTokenSilently();
@@ -128,23 +126,31 @@ export default function UsersPage() {
       let updatedUser;
 
       if (currentUser?.userRole === 'OWNER') {
-        updatedUser = await updateUserAsOwner(editingUser.userIdentifier, formValues, token);
+        updatedUser = await updateUserAsOwner(
+          editingUser.userIdentifier,
+          formValues,
+          token
+        );
       } else {
-        updatedUser = await updateUser(editingUser.userIdentifier, formValues, token);
+        updatedUser = await updateUser(
+          editingUser.userIdentifier,
+          formValues,
+          token
+        );
       }
 
-      setUsers((prev) =>
-        prev.map((u) => (u.userIdentifier === updatedUser.userIdentifier ? updatedUser : u))
+      setUsers(prev =>
+        prev.map(u =>
+          u.userIdentifier === updatedUser.userIdentifier ? updatedUser : u
+        )
       );
 
       setIsEditModalOpen(false);
       setIsOwnerEditModalOpen(false);
       setEditingUser(null);
     } catch (err) {
-      console.error(err);
-
       let niceMessage = 'Failed to update user. Please try again.';
-      if (err. response?.data?.message) {
+      if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
 
@@ -160,12 +166,12 @@ export default function UsersPage() {
     setEditingUser(null);
   };
 
-  const handleManageStatus = (user) => {
+  const handleManageStatus = user => {
     setManagingUser(user);
     setIsStatusModalOpen(true);
   };
 
-  const handleConfirmStatusChange = async (action) => {
+  const handleConfirmStatusChange = async action => {
     try {
       setIsStatusSubmitting(true);
       const token = await getAccessTokenSilently();
@@ -174,24 +180,28 @@ export default function UsersPage() {
 
       if (action === 'deactivate') {
         updatedUser = await deactivateUser(managingUser.userIdentifier, token);
-        setUsers((prev) => prev.filter(u => u.userIdentifier !== managingUser.userIdentifier));
+        setUsers(prev =>
+          prev.filter(u => u.userIdentifier !== managingUser.userIdentifier)
+        );
       } else if (action === 'inactive') {
         updatedUser = await setUserInactive(managingUser.userIdentifier, token);
-        setUsers((prev) =>
-          prev.map((u) => (u.userIdentifier === updatedUser.userIdentifier ? updatedUser : u))
+        setUsers(prev =>
+          prev.map(u =>
+            u.userIdentifier === updatedUser.userIdentifier ? updatedUser : u
+          )
         );
       } else if (action === 'reactivate') {
         updatedUser = await reactivateUser(managingUser.userIdentifier, token);
-        setUsers((prev) =>
-          prev.map((u) => (u.userIdentifier === updatedUser.userIdentifier ?  updatedUser : u))
+        setUsers(prev =>
+          prev.map(u =>
+            u.userIdentifier === updatedUser.userIdentifier ? updatedUser : u
+          )
         );
       }
 
       setIsStatusModalOpen(false);
       setManagingUser(null);
     } catch (err) {
-      console.error(err);
-
       let niceMessage = 'Failed to update user status. Please try again.';
       if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
@@ -218,7 +228,7 @@ export default function UsersPage() {
             <select
               id="status-filter"
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={e => setStatusFilter(e.target.value)}
               className="status-filter-select"
             >
               <option value="ACTIVE">Active</option>
