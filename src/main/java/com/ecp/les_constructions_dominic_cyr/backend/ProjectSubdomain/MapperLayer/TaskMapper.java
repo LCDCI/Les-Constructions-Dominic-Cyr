@@ -50,9 +50,9 @@ public class TaskMapper {
                 .periodEnd(dateToLocalDate(requestDTO.getPeriodEnd()))
                 .taskDescription(requestDTO.getTaskDescription())
                 .taskPriority(requestDTO.getTaskPriority())
-                .estimatedHours(requestDTO.getEstimatedHours() != null ? requestDTO.getEstimatedHours().doubleValue() : null)
-                .hoursSpent(requestDTO.getHoursSpent() != null ? requestDTO.getHoursSpent().doubleValue() : null)
-                .taskProgress(requestDTO.getTaskProgress() != null ? requestDTO.getTaskProgress().doubleValue() : null)
+                .estimatedHours(toDouble(requestDTO.getEstimatedHours()))
+                .hoursSpent(toDouble(requestDTO.getHoursSpent()))
+                .taskProgress(toDouble(requestDTO.getTaskProgress()))
                 .assignedTo(assignedUser)
                 .build();
     }
@@ -64,10 +64,14 @@ public class TaskMapper {
         task.setPeriodEnd(dateToLocalDate(requestDTO.getPeriodEnd()));
         task.setTaskDescription(requestDTO.getTaskDescription());
         task.setTaskPriority(requestDTO.getTaskPriority());
-        task.setEstimatedHours(requestDTO.getEstimatedHours() != null ? requestDTO.getEstimatedHours().doubleValue() : null);
-        task.setHoursSpent(requestDTO.getHoursSpent() != null ? requestDTO.getHoursSpent().doubleValue() : null);
-        task.setTaskProgress(requestDTO.getTaskProgress() != null ? requestDTO.getTaskProgress().doubleValue() : null);
+        task.setEstimatedHours(toDouble(requestDTO.getEstimatedHours()));
+        task.setHoursSpent(toDouble(requestDTO.getHoursSpent()));
+        task.setTaskProgress(toDouble(requestDTO.getTaskProgress()));
         task.setAssignedTo(assignedUser);
+    }
+
+    private Double toDouble(Number number) {
+        return number != null ? number.doubleValue() : null;
     }
 
     private LocalDate dateToLocalDate(Date date) {
