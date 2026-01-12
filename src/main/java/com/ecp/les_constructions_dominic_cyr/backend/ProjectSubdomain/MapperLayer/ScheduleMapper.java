@@ -27,6 +27,9 @@ public class ScheduleMapper {
                 .createdAt(schedule.getCreatedAt())
                 .updatedAt(schedule.getUpdatedAt())
                 .tasks(schedule.getTasks() != null ? taskMapper.entitiesToResponseDTOs(schedule.getTasks()) : new ArrayList<>())
+                .projectId(schedule.getProject() != null ? schedule.getProject().getProjectId() : null)
+                .projectIdentifier(schedule.getProject() != null ? schedule.getProject().getProjectIdentifier() : null)
+                .projectName(schedule.getProject() != null ? schedule.getProject().getProjectName() : null)
                 .build();
     }
 
