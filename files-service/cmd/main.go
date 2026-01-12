@@ -27,6 +27,7 @@ func main() {
 
 	r := gin.Default()
 
+	r.Use(middleware.RateLimiter(cfg))
 	r.Use(middleware.CORSMiddleware())
 
 	r.Use(middleware.ErrorHandler)
