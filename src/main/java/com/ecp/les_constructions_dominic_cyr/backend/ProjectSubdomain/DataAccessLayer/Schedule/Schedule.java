@@ -50,11 +50,9 @@ public class Schedule {
     @Embedded
     private UpcomingWork upcomingWork;
 
-    /*@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "schedule_id") // places FK on Task table
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id")
     private List<Task> tasks;
-
-     */
 
     public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate completionDate, @NotNull UpcomingWork upcomingWork) {
         this.scheduleIdentifier = scheduleIdentifier;

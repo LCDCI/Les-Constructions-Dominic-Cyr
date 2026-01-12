@@ -2,11 +2,13 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.mapperlay
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ScheduleMapper;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.TaskMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -16,29 +18,33 @@ import static org.junit.jupiter.api.Assertions.*;
 class ScheduleMapperUnitTest {
 
     private ScheduleMapper scheduleMapper;
+    private TaskMapper taskMapper;
     private Schedule schedule1;
     private Schedule schedule2;
 
     @BeforeEach
     void setUp() {
-        scheduleMapper = new ScheduleMapper();
+        taskMapper = new TaskMapper();
+        scheduleMapper = new ScheduleMapper(taskMapper);
 
         schedule1 = Schedule.builder()
-                .id(1L)
+                .id(1)
                 .scheduleIdentifier("SCH-001")
                 .taskDate(LocalDate.of(2024, 11, 26))
                 .taskDescription("Begin Excavation")
                 .lotNumber("Lot 53")
                 .dayOfWeek("Wednesday")
+                .tasks(new ArrayList<>())
                 .build();
 
         schedule2 = Schedule.builder()
-                .id(2L)
+                .id(2)
                 .scheduleIdentifier("SCH-002")
                 .taskDate(LocalDate.of(2024, 11, 27))
                 .taskDescription("Plumbing")
                 .lotNumber("Lot 57")
                 .dayOfWeek("Thursday")
+                .tasks(new ArrayList<>())
                 .build();
     }
 
@@ -57,12 +63,13 @@ class ScheduleMapperUnitTest {
     @Test
     void entityToResponseDTO_shouldHandleAllScheduleFields() {
         Schedule completeSchedule = Schedule.builder()
-                .id(3L)
+                .id(3)
                 .scheduleIdentifier("SCH-003")
                 .taskDate(LocalDate.of(2024, 12, 1))
                 .taskDescription("Electrical Work")
                 .lotNumber("Lot 100")
                 .dayOfWeek("Friday")
+                .tasks(new ArrayList<>())
                 .build();
 
         ScheduleResponseDTO result = scheduleMapper.entityToResponseDTO(completeSchedule);
