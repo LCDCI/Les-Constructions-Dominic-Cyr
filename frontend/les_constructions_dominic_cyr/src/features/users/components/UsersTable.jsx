@@ -5,7 +5,7 @@ export default function UsersTable({ users, onEditUser, onManageStatus, currentU
   const isOwner = currentUser?.userRole === 'OWNER';
 
   const getStatusBadge = (status) => {
-    const statusClass = status ?  status.toLowerCase() : 'active';
+    const statusClass = status ? status.toLowerCase() : 'active';
     const statusText = status || 'ACTIVE';
     return <span className={`status-badge status-${statusClass}`}>{statusText}</span>;
   };

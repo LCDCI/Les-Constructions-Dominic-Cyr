@@ -1,9 +1,9 @@
 package com.ecp.les_constructions_dominic_cyr.backend.utils;
 
 import org.junit.jupiter.api.BeforeEach;
-import org. junit.jupiter.api.Test;
-import org.junit.jupiter. api.extension.ExtendWith;
-import org.mockito. Mock;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.*;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -36,21 +36,16 @@ class Auth0ManagementServiceUnitTest {
     void setUp() {
         auth0ManagementService = new Auth0ManagementService();
 
-        // Inject mock RestTemplate
         ReflectionTestUtils.setField(auth0ManagementService, "restTemplate", restTemplate);
-
-        // Inject configuration values
-        ReflectionTestUtils. setField(auth0ManagementService, "domain", TEST_DOMAIN);
+        ReflectionTestUtils.setField(auth0ManagementService, "domain", TEST_DOMAIN);
         ReflectionTestUtils.setField(auth0ManagementService, "clientId", TEST_CLIENT_ID);
         ReflectionTestUtils.setField(auth0ManagementService, "clientSecret", TEST_CLIENT_SECRET);
         ReflectionTestUtils.setField(auth0ManagementService, "dbConnection", TEST_DB_CONNECTION);
-        ReflectionTestUtils. setField(auth0ManagementService, "contractorRoleId", TEST_CONTRACTOR_ROLE_ID);
+        ReflectionTestUtils.setField(auth0ManagementService, "contractorRoleId", TEST_CONTRACTOR_ROLE_ID);
         ReflectionTestUtils.setField(auth0ManagementService, "customerRoleId", TEST_CUSTOMER_ROLE_ID);
         ReflectionTestUtils.setField(auth0ManagementService, "salespersonRoleId", TEST_SALESPERSON_ROLE_ID);
         ReflectionTestUtils.setField(auth0ManagementService, "ownerRoleId", TEST_OWNER_ROLE_ID);
     }
-
-    // ========================== getManagementToken TESTS ==========================
 
     @Test
     void getManagementToken_ReturnsToken_WhenSuccessful() {
@@ -60,7 +55,7 @@ class Auth0ManagementServiceUnitTest {
         when(restTemplate.postForEntity(anyString(), any(), eq(Map.class)))
                 .thenReturn(responseEntity);
 
-        String token = (String) ReflectionTestUtils. invokeMethod(auth0ManagementService, "getManagementToken");
+        String token = (String) ReflectionTestUtils.invokeMethod(auth0ManagementService, "getManagementToken");
 
         assertEquals("test-token-123", token);
         verify(restTemplate, times(1)).postForEntity(anyString(), any(), eq(Map.class));
@@ -85,7 +80,7 @@ class Auth0ManagementServiceUnitTest {
         Map<String, Object> tokenResponse = Map.of("something_else", "value");
         ResponseEntity<Map> responseEntity = new ResponseEntity<>(tokenResponse, HttpStatus.OK);
 
-        when(restTemplate. postForEntity(anyString(), any(), eq(Map.class)))
+        when(restTemplate.postForEntity(anyString(), any(), eq(Map.class)))
                 .thenReturn(responseEntity);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
@@ -194,7 +189,6 @@ class Auth0ManagementServiceUnitTest {
         assertTrue(exception.getMessage().contains("Failed to assign role"));
     }
 
-    // ========================== createPasswordChangeTicket TESTS ==========================
 
     @Test
     void createPasswordChangeTicket_CreatesTicket_Successfully() {
@@ -226,7 +220,7 @@ class Auth0ManagementServiceUnitTest {
                 auth0ManagementService.createPasswordChangeTicket("auth0|user123", "https://example.com/result")
         );
 
-        assertTrue(exception. getMessage().contains("Failed to create Auth0 password-change ticket"));
+        assertTrue(exception.getMessage().contains("Failed to create Auth0 password-change ticket"));
     }
 
     @Test
@@ -245,8 +239,6 @@ class Auth0ManagementServiceUnitTest {
         assertTrue(exception.getMessage().contains("Auth0 ticket response missing ticket URL"));
     }
 
-    // ========================== updateAuth0UserEmailAndName TESTS ==========================
-
     @Test
     void updateAuth0UserEmailAndName_UpdatesUser_Successfully() {
         Map<String, Object> tokenResponse = Map.of("access_token", "test-token");
@@ -256,7 +248,7 @@ class Auth0ManagementServiceUnitTest {
                 "name", "Old Name"
         );
 
-        when(restTemplate. postForEntity(anyString(), any(), eq(Map.class)))
+        when(restTemplate.postForEntity(anyString(), any(), eq(Map.class)))
                 .thenReturn(new ResponseEntity<>(tokenResponse, HttpStatus.OK));
 
         when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(Map.class)))
@@ -309,7 +301,7 @@ class Auth0ManagementServiceUnitTest {
         when(restTemplate.postForEntity(anyString(), any(), eq(Map.class)))
                 .thenReturn(new ResponseEntity<>(tokenResponse, HttpStatus.OK));
 
-        when(restTemplate. exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(Map.class)))
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(Map.class)))
                 .thenReturn(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
         RuntimeException exception = assertThrows(RuntimeException.class, () ->
@@ -324,8 +316,6 @@ class Auth0ManagementServiceUnitTest {
         assertTrue(exception.getMessage().contains("Failed to update user in Auth0"));
     }
 
-    // ========================== blockAuth0User TESTS ==========================
-
     @Test
     void blockAuth0User_GetsToken_Successfully() {
         Map<String, Object> tokenResponse = Map.of("access_token", "test-token");
@@ -333,13 +323,9 @@ class Auth0ManagementServiceUnitTest {
         when(restTemplate.postForEntity(anyString(), any(), eq(Map.class)))
                 .thenReturn(new ResponseEntity<>(tokenResponse, HttpStatus.OK));
 
-        // This test verifies token retrieval works
-        // WebClient calls will fail in unit test without proper mocking, which is expected
         try {
             auth0ManagementService.blockAuth0User("auth0|user123", true);
         } catch (Exception e) {
-            // WebClient construction/execution will fail in unit test - that's OK
-            // We're just verifying the token call happens
         }
 
         verify(restTemplate, times(1)).postForEntity(anyString(), any(), eq(Map.class));

@@ -82,8 +82,6 @@ public class UserServiceImplUnitTest {
         updateRequest.setSecondaryEmail("jane.secondary@example.com");
     }
 
-    // ========================== POSITIVE TESTS ==========================
-
     @Test
     void getAllUsers_ReturnsListOfUsers() {
         when(usersRepository.findAll()).thenReturn(Arrays.asList(testUser));
@@ -171,7 +169,7 @@ public class UserServiceImplUnitTest {
         assertEquals(inviteLink, result.getInviteLink());
 
         verify(usersRepository, times(1)).findByPrimaryEmail("john.doe@example.com");
-        verify(usersRepository, times(2)).save(any(Users.class)); // First save, then update with auth0UserId
+        verify(usersRepository, times(2)).save(any(Users.class));
         verify(auth0ManagementService, times(1)).createAuth0User(
                 eq("john.doe@example.com"), eq("john.secondary@example.com"),
                 eq("John"), eq("Doe"), eq("CUSTOMER"), anyString()
