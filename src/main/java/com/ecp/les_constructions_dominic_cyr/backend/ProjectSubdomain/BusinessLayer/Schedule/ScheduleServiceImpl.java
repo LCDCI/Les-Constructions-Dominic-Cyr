@@ -240,10 +240,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
                 .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
         
-        // Verify schedule belongs to the project
-        if (schedule.getProject() == null || !projectIdentifier.equals(schedule.getProject().getProjectIdentifier())) {
-            throw new NotFoundException("Schedule " + scheduleIdentifier + " does not belong to project " + projectIdentifier);
-        }
+        validateScheduleBelongsToProject(schedule, projectIdentifier);
         
         return scheduleMapper.entityToResponseDTO(schedule);
     }
@@ -278,10 +275,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule existingSchedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
                 .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
         
-        // Verify schedule belongs to the project
-        if (existingSchedule.getProject() == null || !projectIdentifier.equals(existingSchedule.getProject().getProjectIdentifier())) {
-            throw new NotFoundException("Schedule " + scheduleIdentifier + " does not belong to project " + projectIdentifier);
-        }
+        validateScheduleBelongsToProject(existingSchedule, projectIdentifier);
         
         scheduleMapper.updateEntityFromRequestDTO(existingSchedule, scheduleRequestDTO);
         Schedule updatedSchedule = scheduleRepository.save(existingSchedule);
@@ -302,12 +296,15 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
                 .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
         
-        // Verify schedule belongs to the project
-        if (schedule.getProject() == null || !projectIdentifier.equals(schedule.getProject().getProjectIdentifier())) {
-            throw new NotFoundException("Schedule " + scheduleIdentifier + " does not belong to project " + projectIdentifier);
-        }
+        validateScheduleBelongsToProject(schedule, projectIdentifier);
         
         scheduleRepository.delete(schedule);
         log.info("Schedule {} deleted from project {}", scheduleIdentifier, projectIdentifier);
+    }
+
+    private void validateScheduleBelongsToProject(Schedule schedule, String projectIdentifier) {
+        if (schedule.getProject() == null || !projectIdentifier.equals(schedule.getProject().getProjectIdentifier())) {
+            throw new NotFoundException("Schedule " + schedule.getScheduleIdentifier() + " does not belong to project " + projectIdentifier);
+        }
     }
 }
