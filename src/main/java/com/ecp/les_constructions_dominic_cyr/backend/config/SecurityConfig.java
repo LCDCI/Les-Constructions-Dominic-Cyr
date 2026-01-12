@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
@@ -57,7 +56,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/api/v1/residential-projects/**").permitAll()
                     .requestMatchers("/api/v1/renovations/**").permitAll()
                     .requestMatchers("/api/v1/project-management/**").permitAll()
-                    .requestMatchers("/api/v1/realisations/**").permitAll()
+                    .requestMatchers("/api/v1/realizations/**").permitAll()
                     .requestMatchers("/api/v1/contact/**").permitAll()
 
                     // 2. Role-Specific Endpoints
@@ -66,6 +65,9 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/api/v1/users/me").authenticated()
                     .requestMatchers("/api/v1/users/auth0/**").authenticated()
                     .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").authenticated()
+                    .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/deactivate").hasAuthority("ROLE_OWNER")
+                    .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/inactive").hasAuthority("ROLE_OWNER")
+                    .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/reactivate").hasAuthority("ROLE_OWNER")
                     .requestMatchers("/api/v1/projects/**").hasAnyAuthority("ROLE_CONTRACTOR", "ROLE_SALESPERSON", "ROLE_OWNER", "ROLE_CUSTOMER")
                     .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
                     .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_OWNER")

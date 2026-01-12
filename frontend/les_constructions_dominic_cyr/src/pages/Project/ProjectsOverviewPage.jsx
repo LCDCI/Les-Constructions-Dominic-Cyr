@@ -287,7 +287,7 @@ const ProjectOverviewPage = () => {
     switch (title) {
       case 'living environment':
         return IoLeafOutline;
-      case 'new houses':
+      case 'new realizations':
         return HiOutlineHomeModern;
       case 'lots':
         return LuMapPinned;
@@ -302,8 +302,8 @@ const ProjectOverviewPage = () => {
     switch (title) {
       case 'living environment':
         return 'living-environment';
-      case 'new houses':
-        return 'houses';
+      case 'new realizations':
+        return 'realizations';
       case 'lots':
         return 'lots';
       default:
@@ -401,7 +401,7 @@ const ProjectOverviewPage = () => {
 
                 const handleClick = () => {
                   if (isClickable) {
-                    //Ideal solution, but we do not have houses or living environment per project for the pages
+                    //Ideal solution, but we do not have realizations or living environment per project for the pages
                     //navigate(`/${projectIdentifier}/${path}`);
                     navigate(`/${path}`);
                   }

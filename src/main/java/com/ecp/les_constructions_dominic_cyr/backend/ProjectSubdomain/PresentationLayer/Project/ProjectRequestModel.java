@@ -26,4 +26,5 @@ public class ProjectRequestModel {
     private String customerId;
     private List<String> lotIdentifiers;
     private Integer progressPercentage;
+    private String location;
 }
