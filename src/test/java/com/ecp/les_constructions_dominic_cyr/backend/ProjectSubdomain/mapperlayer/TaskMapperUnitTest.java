@@ -13,10 +13,10 @@ import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLa
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -47,8 +47,8 @@ class TaskMapperUnitTest {
                 .taskIdentifier(new TaskIdentifier("TASK-001"))
                 .taskStatus(TaskStatus.TO_DO)
                 .taskTitle("Install Foundation")
-                .period_start(new Date())
-                .period_end(new Date())
+                .periodStart(LocalDate.now())
+                .periodEnd(LocalDate.now().plusDays(3))
                 .taskDescription("Pour concrete foundation")
                 .taskPriority(TaskPriority.HIGH)
                 .estimatedHours(16.0)
@@ -62,8 +62,8 @@ class TaskMapperUnitTest {
                 .taskIdentifier(new TaskIdentifier("TASK-002"))
                 .taskStatus(TaskStatus.IN_PROGRESS)
                 .taskTitle("Framing Work")
-                .period_start(new Date())
-                .period_end(new Date())
+                .periodStart(LocalDate.now())
+                .periodEnd(LocalDate.now().plusDays(6))
                 .taskDescription("Complete structural framing")
                 .taskPriority(TaskPriority.VERY_HIGH)
                 .estimatedHours(40.0)
