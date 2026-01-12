@@ -21,7 +21,7 @@ public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "schedule_identifier", unique = true, nullable = false)
     private String scheduleIdentifier;
@@ -38,9 +38,11 @@ public class Schedule {
     @Embedded
     private UpcomingWork upcomingWork;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    /*@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "schedule_id") // places FK on Task table
     private List<Task> tasks;
+
+     */
 
     public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate completionDate, @NotNull UpcomingWork upcomingWork) {
         this.scheduleIdentifier = scheduleIdentifier;
