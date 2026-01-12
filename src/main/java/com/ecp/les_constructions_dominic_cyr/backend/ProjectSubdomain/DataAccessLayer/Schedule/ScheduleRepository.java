@@ -22,6 +22,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s WHERE s.project.projectId = :projectId ORDER BY s.taskDate ASC")
     List<Schedule> findByProjectId(@Param("projectId") Long projectId);
 
-    @Query("SELECT s FROM Schedule s WHERE s.project.projectIdentifier = :projectIdentifier ORDER BY s.taskDate ASC")
+    @Query("SELECT s FROM Schedule s LEFT JOIN FETCH s.project WHERE s.project.projectIdentifier = :projectIdentifier ORDER BY s.taskDate ASC")
     List<Schedule> findByProjectIdentifier(@Param("projectIdentifier") String projectIdentifier);
 }
