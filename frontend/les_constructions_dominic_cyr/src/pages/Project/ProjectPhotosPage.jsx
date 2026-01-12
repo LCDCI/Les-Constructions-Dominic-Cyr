@@ -16,7 +16,13 @@ export default function ProjectPhotosPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     
     const { profile, role } = useBackendUser();
-    const uploadedBy = profile?.userIdentifier || '';
+    const uploadedBy =
+        (profile?.fullName && profile.fullName.trim()) ||
+        [profile?.firstName, profile?.lastName].filter(Boolean).join(' ').trim() ||
+        profile?.name ||
+        profile?.email ||
+        profile?.userIdentifier ||
+        '';
     const navigate = useNavigate();
 
     // Permission checks based on role

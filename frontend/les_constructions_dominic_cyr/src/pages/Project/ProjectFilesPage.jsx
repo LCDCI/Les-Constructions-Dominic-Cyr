@@ -21,6 +21,12 @@ export default function ProjectFilesPage() {
 
     const { profile, role } = useBackendUser();
     const userId = profile?.userIdentifier || '';
+    const uploaderName =
+        (profile?.fullName && profile.fullName.trim()) ||
+        [profile?.firstName, profile?.lastName].filter(Boolean).join(' ').trim() ||
+        profile?.name ||
+        profile?.email ||
+        'Unknown';
     const navigate = useNavigate();
 
     // Permission checks based on role
@@ -155,7 +161,7 @@ export default function ProjectFilesPage() {
             {isModalOpen && (
                 <FileUploadModal
                     projectId={projectId}
-                    uploadedBy={userId}
+                    uploadedBy={uploaderName}
                     onClose={() => setIsModalOpen(false)}
                     onUploadSuccess={handleUploadSuccess}
                 />
