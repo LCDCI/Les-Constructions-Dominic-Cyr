@@ -199,6 +199,7 @@
 .button-container {
     display: flex;
     justify-content: center;
+    gap: 1rem;
     padding: 2rem 0 4rem; 
     max-width: 90%; 
     margin: 0 auto;
@@ -227,6 +228,20 @@
 
 .project-metadata-back:hover {
   background-color: var(--project-buyer);
+  color: white;
+}
+
+.project-metadata-schedule {
+  background-color: #27ae60;
+  color: white;
+  padding: 0.8%;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.project-metadata-schedule:hover {
+  background-color: #229954;
   color: white;
 }
 
