@@ -22,4 +22,7 @@ public class ScheduleResponseDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<TaskDetailResponseDTO> tasks;
+    private Long projectId;
+    private String projectIdentifier;
+    private String projectName;
 }
