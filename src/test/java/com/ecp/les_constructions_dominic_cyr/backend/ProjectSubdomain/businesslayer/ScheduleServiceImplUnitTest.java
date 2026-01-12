@@ -48,7 +48,7 @@ class ScheduleServiceImplUnitTest {
     @BeforeEach
     void setUp() {
         schedule1 = Schedule.builder()
-                .id(1L)
+                .id(1)
                 .scheduleIdentifier("SCH-001")
                 .taskDate(LocalDate.now())
                 .taskDescription("Begin Excavation")
@@ -57,7 +57,7 @@ class ScheduleServiceImplUnitTest {
                 .build();
 
         schedule2 = Schedule.builder()
-                .id(2L)
+                .id(2)
                 .scheduleIdentifier("SCH-002")
                 .taskDate(LocalDate.now().plusDays(1))
                 .taskDescription("Plumbing")
