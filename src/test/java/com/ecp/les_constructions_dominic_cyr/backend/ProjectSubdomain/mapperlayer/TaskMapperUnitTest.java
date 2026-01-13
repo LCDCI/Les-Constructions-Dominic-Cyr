@@ -9,6 +9,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentati
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,16 +32,19 @@ class TaskMapperUnitTest {
     void setUp() {
         taskMapper = new TaskMapper();
 
-        testContractor = new Users(
-                UserIdentifier.newId(),
-                "John",
-                "Contractor",
-                "john@contractor.com",
-                null,
-                "555-1234",
-                UserRole.CONTRACTOR,
-                "auth0|test"
-        );
+        // java
+// Replace the existing Users construction in the test setup with this
+        testContractor = new Users();
+        testContractor.setUserIdentifier(UserIdentifier.fromString("22222222-2222-2222-2222-222222222222"));
+        testContractor.setFirstName("Jane");
+        testContractor.setLastName("Contractor");
+        testContractor.setPrimaryEmail("contractor@test.com");
+        testContractor.setSecondaryEmail(null);
+        testContractor.setPhone("514-222-2222");
+        testContractor.setUserRole(UserRole.CONTRACTOR);
+        testContractor.setAuth0UserId("auth0|693faa68bf9e92b3d445c4ab");
+        testContractor.setUserStatus(UserStatus.ACTIVE);
+
 
         task1 = Task.builder()
                 .id(1)
