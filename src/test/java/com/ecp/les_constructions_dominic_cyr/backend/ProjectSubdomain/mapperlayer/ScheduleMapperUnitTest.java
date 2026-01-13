@@ -30,20 +30,20 @@ class ScheduleMapperUnitTest {
         schedule1 = Schedule.builder()
                 .id(1)
                 .scheduleIdentifier("SCH-001")
-                .taskDate(LocalDate.of(2024, 11, 26))
-                .taskDescription("Begin Excavation")
+                .scheduleStartDate(LocalDate.of(2024, 11, 26))
+                .scheduleEndDate(LocalDate.of(2024, 11, 26))
+                .scheduleDescription("Begin Excavation")
                 .lotNumber("Lot 53")
-                .dayOfWeek("Wednesday")
                 .tasks(new ArrayList<>())
                 .build();
 
         schedule2 = Schedule.builder()
                 .id(2)
                 .scheduleIdentifier("SCH-002")
-                .taskDate(LocalDate.of(2024, 11, 27))
-                .taskDescription("Plumbing")
+                .scheduleStartDate(LocalDate.of(2024, 11, 27))
+                .scheduleEndDate(LocalDate.of(2024, 11, 27))
+                .scheduleDescription("Plumbing")
                 .lotNumber("Lot 57")
-                .dayOfWeek("Thursday")
                 .tasks(new ArrayList<>())
                 .build();
     }
@@ -54,10 +54,10 @@ class ScheduleMapperUnitTest {
 
         assertNotNull(result);
         assertEquals("SCH-001", result.getScheduleIdentifier());
-        assertEquals(LocalDate.of(2024, 11, 26), result.getTaskDate());
-        assertEquals("Begin Excavation", result.getTaskDescription());
+        assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleStartDate());
+        assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleEndDate());
+        assertEquals("Begin Excavation", result.getScheduleDescription());
         assertEquals("Lot 53", result.getLotNumber());
-        assertEquals("Wednesday", result.getDayOfWeek());
     }
 
     @Test
@@ -65,10 +65,10 @@ class ScheduleMapperUnitTest {
         Schedule completeSchedule = Schedule.builder()
                 .id(3)
                 .scheduleIdentifier("SCH-003")
-                .taskDate(LocalDate.of(2024, 12, 1))
-                .taskDescription("Electrical Work")
+                .scheduleStartDate(LocalDate.of(2024, 12, 1))
+                .scheduleEndDate(LocalDate.of(2024, 12, 1))
+                .scheduleDescription("Electrical Work")
                 .lotNumber("Lot 100")
-                .dayOfWeek("Friday")
                 .tasks(new ArrayList<>())
                 .build();
 
@@ -76,10 +76,10 @@ class ScheduleMapperUnitTest {
 
         assertNotNull(result);
         assertEquals("SCH-003", result.getScheduleIdentifier());
-        assertEquals(LocalDate.of(2024, 12, 1), result.getTaskDate());
-        assertEquals("Electrical Work", result.getTaskDescription());
+        assertEquals(LocalDate.of(2024, 12, 1), result.getScheduleStartDate());
+        assertEquals(LocalDate.of(2024, 12, 1), result.getScheduleEndDate());
+        assertEquals("Electrical Work", result.getScheduleDescription());
         assertEquals("Lot 100", result.getLotNumber());
-        assertEquals("Friday", result.getDayOfWeek());
     }
 
     @Test
@@ -92,11 +92,11 @@ class ScheduleMapperUnitTest {
         assertEquals(2, result.size());
 
         assertEquals("SCH-001", result.get(0).getScheduleIdentifier());
-        assertEquals("Begin Excavation", result.get(0).getTaskDescription());
+        assertEquals("Begin Excavation", result.get(0).getScheduleDescription());
         assertEquals("Lot 53", result.get(0).getLotNumber());
 
         assertEquals("SCH-002", result.get(1).getScheduleIdentifier());
-        assertEquals("Plumbing", result.get(1).getTaskDescription());
+        assertEquals("Plumbing", result.get(1).getScheduleDescription());
         assertEquals("Lot 57", result.get(1).getLotNumber());
     }
 
