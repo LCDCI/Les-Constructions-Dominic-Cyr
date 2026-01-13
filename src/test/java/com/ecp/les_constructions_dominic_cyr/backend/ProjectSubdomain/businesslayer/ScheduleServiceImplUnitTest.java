@@ -50,35 +50,35 @@ class ScheduleServiceImplUnitTest {
         schedule1 = Schedule.builder()
                 .id(1)
                 .scheduleIdentifier("SCH-001")
-                .taskDate(LocalDate.now())
-                .taskDescription("Begin Excavation")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Begin Excavation")
                 .lotNumber("Lot 53")
-                .dayOfWeek("Monday")
                 .build();
 
         schedule2 = Schedule.builder()
                 .id(2)
                 .scheduleIdentifier("SCH-002")
-                .taskDate(LocalDate.now().plusDays(1))
-                .taskDescription("Plumbing")
+                .scheduleStartDate(LocalDate.now().plusDays(1))
+                .scheduleEndDate(LocalDate.now().plusDays(1))
+                .scheduleDescription("Plumbing")
                 .lotNumber("Lot 57")
-                .dayOfWeek("Tuesday")
                 .build();
 
         responseDTO1 = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-001")
-                .taskDate(LocalDate.now())
-                .taskDescription("Begin Excavation")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Begin Excavation")
                 .lotNumber("Lot 53")
-                .dayOfWeek("Monday")
                 .build();
 
         responseDTO2 = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-002")
-                .taskDate(LocalDate.now().plusDays(1))
-                .taskDescription("Plumbing")
+                .scheduleStartDate(LocalDate.now().plusDays(1))
+                .scheduleEndDate(LocalDate.now().plusDays(1))
+                .scheduleDescription("Plumbing")
                 .lotNumber("Lot 57")
-                .dayOfWeek("Tuesday")
                 .build();
     }
 
@@ -167,7 +167,7 @@ class ScheduleServiceImplUnitTest {
 
         assertNotNull(result);
         assertEquals("SCH-001", result.getScheduleIdentifier());
-        assertEquals("Begin Excavation", result.getTaskDescription());
+        assertEquals("Begin Excavation", result.getScheduleDescription());
         assertEquals("Lot 53", result.getLotNumber());
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
@@ -194,26 +194,26 @@ class ScheduleServiceImplUnitTest {
     @Test
     void addSchedule_shouldCreateScheduleSuccessfully() {
         ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
-                .taskDate(LocalDate.now())
-                .taskDescription("New Task")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("New Task")
                 .lotNumber("Lot 100")
-                .dayOfWeek("Wednesday")
                 .build();
 
         Schedule newSchedule = Schedule.builder()
                 .scheduleIdentifier("SCH-NEW")
-                .taskDate(LocalDate.now())
-                .taskDescription("New Task")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("New Task")
                 .lotNumber("Lot 100")
-                .dayOfWeek("Wednesday")
                 .build();
 
         ScheduleResponseDTO responseDTO = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-NEW")
-                .taskDate(LocalDate.now())
-                .taskDescription("New Task")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("New Task")
                 .lotNumber("Lot 100")
-                .dayOfWeek("Wednesday")
                 .build();
 
         when(scheduleMapper.requestDTOToEntity(requestDTO)).thenReturn(newSchedule);
@@ -224,7 +224,7 @@ class ScheduleServiceImplUnitTest {
 
         assertNotNull(result);
         assertEquals("SCH-NEW", result.getScheduleIdentifier());
-        assertEquals("New Task", result.getTaskDescription());
+        assertEquals("New Task", result.getScheduleDescription());
 
         verify(scheduleMapper).requestDTOToEntity(requestDTO);
         verify(scheduleRepository).save(newSchedule);
@@ -232,12 +232,12 @@ class ScheduleServiceImplUnitTest {
     }
 
     @Test
-    void addSchedule_shouldThrowExceptionWhenTaskDateIsNull() {
+    void addSchedule_shouldThrowExceptionWhenScheduleStartDateIsNull() {
         ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
-                .taskDate(null)
-                .taskDescription("New Task")
+                .scheduleStartDate(null)
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("New Task")
                 .lotNumber("Lot 100")
-                .dayOfWeek("Wednesday")
                 .build();
 
         assertThrows(InvalidInputException.class, () -> {
@@ -246,12 +246,12 @@ class ScheduleServiceImplUnitTest {
     }
 
     @Test
-    void addSchedule_shouldThrowExceptionWhenTaskDescriptionIsBlank() {
+    void addSchedule_shouldThrowExceptionWhenScheduleDescriptionIsBlank() {
         ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
-                .taskDate(LocalDate.now())
-                .taskDescription("")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("")
                 .lotNumber("Lot 100")
-                .dayOfWeek("Wednesday")
                 .build();
 
         assertThrows(InvalidInputException.class, () -> {
@@ -264,18 +264,18 @@ class ScheduleServiceImplUnitTest {
     void updateSchedule_shouldUpdateScheduleSuccessfully() {
         String identifier = "SCH-001";
         ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
-                .taskDate(LocalDate.now().plusDays(5))
-                .taskDescription("Updated Task")
+                .scheduleStartDate(LocalDate.now().plusDays(5))
+                .scheduleEndDate(LocalDate.now().plusDays(5))
+                .scheduleDescription("Updated Task")
                 .lotNumber("Lot 101")
-                .dayOfWeek("Friday")
                 .build();
 
         ScheduleResponseDTO updatedResponseDTO = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-001")
-                .taskDate(LocalDate.now().plusDays(5))
-                .taskDescription("Updated Task")
+                .scheduleStartDate(LocalDate.now().plusDays(5))
+                .scheduleEndDate(LocalDate.now().plusDays(5))
+                .scheduleDescription("Updated Task")
                 .lotNumber("Lot 101")
-                .dayOfWeek("Friday")
                 .build();
 
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.of(schedule1));
@@ -286,7 +286,7 @@ class ScheduleServiceImplUnitTest {
 
         assertNotNull(result);
         assertEquals("SCH-001", result.getScheduleIdentifier());
-        assertEquals("Updated Task", result.getTaskDescription());
+        assertEquals("Updated Task", result.getScheduleDescription());
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
         verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
@@ -297,10 +297,10 @@ class ScheduleServiceImplUnitTest {
     void updateSchedule_shouldThrowNotFoundExceptionWhenScheduleNotFound() {
         String identifier = "SCH-999";
         ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
-                .taskDate(LocalDate.now())
-                .taskDescription("Updated Task")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Updated Task")
                 .lotNumber("Lot 100")
-                .dayOfWeek("Wednesday")
                 .build();
 
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.empty());
@@ -365,7 +365,7 @@ class ScheduleServiceImplUnitTest {
         LocalDate periodEnd = LocalDate.now().plusDays(7);
         List<Schedule> schedules = Arrays.asList(schedule1, schedule2);
 
-        when(scheduleRepository.findByTaskDateBetween(periodStart, periodEnd)).thenReturn(schedules);
+        when(scheduleRepository.findByScheduleStartDateBetween(periodStart, periodEnd)).thenReturn(schedules);
 
         TaskResponseDTO result = scheduleService.getTaskSummaryForContractor(
                 "contractor-456", "schedule-789", periodStart, periodEnd);
@@ -383,7 +383,7 @@ class ScheduleServiceImplUnitTest {
         LocalDate periodStart = LocalDate.now();
         LocalDate periodEnd = LocalDate.now().plusDays(7);
 
-        when(scheduleRepository.findByTaskDateBetween(periodStart, periodEnd)).thenReturn(Collections.emptyList());
+        when(scheduleRepository.findByScheduleStartDateBetween(periodStart, periodEnd)).thenReturn(Collections.emptyList());
 
         TaskResponseDTO result = scheduleService.getTaskSummaryForContractor(
                 "contractor-456", "schedule-789", periodStart, periodEnd);
