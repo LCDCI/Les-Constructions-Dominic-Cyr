@@ -46,6 +46,16 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
+/* Spinning animation for sync icon */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+}
+
 /* --- Document List/Table Styles --- */
 .document-list-container {
     background-color: var(--white);

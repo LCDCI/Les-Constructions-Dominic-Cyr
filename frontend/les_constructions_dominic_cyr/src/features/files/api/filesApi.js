@@ -37,3 +37,8 @@ export async function deleteFile(fileId, { deletedBy }) {
     });
     return response.data;
 }
+
+export async function reconcileProject(projectId) {
+    const response = await axios.post(`${BASE_API_URL}/admin/reconcile/${projectId}`);
+    return response.data;
+}
