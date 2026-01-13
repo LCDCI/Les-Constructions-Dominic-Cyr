@@ -18,4 +18,6 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findByAssignedTo_UserIdentifier_UserId(UUID userId);
 
     void deleteByTaskIdentifier_TaskId(String taskId);
+
+    List<Task> findByScheduleId(String scheduleId);
 }
