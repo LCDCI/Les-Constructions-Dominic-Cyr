@@ -77,7 +77,8 @@ services:
     networks:
       - app-network
   #######################################################################
-  # FILES-SERVICE (Go + Gin + Postgres + MinIO)
+  # FILES-SERVICE (Go + Gin + Postgres + S3-compatible storage)
+  # Supports both local MinIO and DigitalOcean Spaces
   #######################################################################
   files-service:
     build:
@@ -88,20 +89,19 @@ services:
       - "8082:8080"   # external 8082 -> internal 8080
     environment:
       DB_URL: "${FILES_DB_URL}"
-      MINIO_ENDPOINT: "minio:9000"
-      MINIO_ACCESS_KEY: "${MINIO_ROOT_USER}"
-      MINIO_SECRET_KEY: "${MINIO_ROOT_PASSWORD}"
+      # S3-compatible storage configuration (works with MinIO or DigitalOcean Spaces)
+      MINIO_ENDPOINT: "${SPACES_ENDPOINT:-minio:9000}"
+      MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY:-${MINIO_ROOT_USER}}"
+      MINIO_SECRET_KEY: "${SPACES_SECRET_KEY:-${MINIO_ROOT_PASSWORD}}"
+      MINIO_BUCKET: "${SPACES_BUCKET:-project-files}"
+      MINIO_USE_SSL: "${MINIO_USE_SSL:-false}"
+      MINIO_REGION: "${SPACES_REGION:-us-east-1}"
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/health || exit 1" ]
       interval: 5s
       timeout: 3s
       retries: 5
       start_period: 10s
-    depends_on:
-      files-db:
-        condition: service_healthy
-      minio:
-        condition: service_started
     networks:
       - app-network
 
@@ -109,6 +109,8 @@ services:
   # POSTGRES (files database)
   #######################################################################
   files-db:
+    profiles:
+      - local-db
     image: postgres:16
     container_name: files-db
     restart: always
@@ -120,7 +122,7 @@ services:
       - "5433:5432"
     volumes:
       - ./files-service/migrations:/docker-entrypoint-initdb.d
-      - files-db-data:/var/lib/postgresql/data
+      - ./data/files-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${FILES_DB_USER} -d ${FILES_DB_NAME}"]
       interval: 5s
@@ -131,9 +133,13 @@ services:
       - app-network
 
   #######################################################################
-  # MINIO (S3-compatible object storage)
+  # MINIO (S3-compatible object storage) - LOCAL DEVELOPMENT ONLY
+  # Use 'docker compose --profile local-minio up' to start with MinIO
+  # For production, use DigitalOcean Spaces with SPACES_* env vars
   #######################################################################
   minio:
+    profiles:
+      - local-minio
     image: minio/minio:latest
     container_name: minio
     environment:
@@ -145,6 +151,7 @@ services:
       - "9001:9001"   # MinIO dashboard
     volumes:
       - ./data/minio:/data
+      #- "${ONEDRIVE_MINIO_PATH}:/data"
     networks:
       - app-network
 
@@ -152,9 +159,9 @@ services:
 # VOLUMES & NETWORK
 #######################################################################
 volumes:
+  cdc-db-data:
   files-db-data:
   minio-data:
-  cdc-db-data:
 
 networks:
   app-network:
