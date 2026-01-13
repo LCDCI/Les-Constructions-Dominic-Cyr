@@ -153,15 +153,17 @@ body {
 .scroll-down {
   position: absolute;
   bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   opacity: 0;
   animation: fadeInUp 1s ease-out 0.8s forwards;
   cursor: pointer;
+  margin: 0 auto;
 }
 
 .scroll-down p {
@@ -619,6 +621,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid transparent;
 }
 
 .feature-card.animated {
@@ -634,12 +637,8 @@ body {
 .feature-card:nth-child(6) { animation-delay: 0.35s; }
 
 .feature-card:hover {
-  background: var(--color-secondary);
+  border-color: var(--color-secondary);
   transform: translateY(-5px);
-}
-
-.feature-card:hover .feature-title {
-  color: var(--color-white);
 }
 
 .feature-title {
