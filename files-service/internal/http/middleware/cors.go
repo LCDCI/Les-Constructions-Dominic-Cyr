@@ -12,8 +12,8 @@ func CORSMiddleware() gin.HandlerFunc {
 		// TEMPORARILY set to "*" to ensure the middleware works regardless of hostname
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "Range"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Range", "Accept-Ranges"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	})

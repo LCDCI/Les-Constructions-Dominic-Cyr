@@ -143,7 +143,6 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${FILES_DB_USER} -d ${FILES_DB_NAME}"]
       interval: 5s
-      interval: 5s
       timeout: 5s
       retries: 10
       start_period: 25s
