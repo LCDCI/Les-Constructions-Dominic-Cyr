@@ -119,9 +119,6 @@ services:
       timeout: 3s
       retries: 5
       start_period: 10s
-    depends_on:
-      files-db:
-        condition: service_healthy
     networks:
       - app-network
 
@@ -129,6 +126,8 @@ services:
   # POSTGRES (files database)
   #######################################################################
   files-db:
+    profiles:
+      - local-db
     image: postgres:16
     container_name: files-db
     restart: always
