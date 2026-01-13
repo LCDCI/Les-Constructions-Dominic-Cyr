@@ -38,9 +38,9 @@ const ScheduleList = ({ schedules, loading, error }) => {
     <div className="schedule-list">
       {schedules.map(schedule => (
         <div key={schedule.scheduleIdentifier} className="schedule-item">
-          <span className="schedule-date">{formatDate(schedule.taskDate)}</span>
+          <span className="schedule-date">{formatDate(schedule.scheduleStartDate)}</span>
           <span className="schedule-separator"> - </span>
-          <span className="schedule-task">{schedule.taskDescription}</span>
+          <span className="schedule-task">{schedule.scheduleDescription}</span>
           <span className="schedule-separator">, </span>
           <span className="schedule-lot">{schedule.lotNumber}</span>
         </div>

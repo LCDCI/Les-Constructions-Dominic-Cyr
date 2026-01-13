@@ -110,7 +110,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         log.info("Generating task summary for contractor: {}, schedule: {}, period: {} to {}", 
                  contractorId, scheduleId, periodStart, periodEnd);
 
-        List<Schedule> schedules = scheduleRepository.findByTaskDateBetween(periodStart, periodEnd);
+        List<Schedule> schedules = scheduleRepository.findByScheduleStartDateBetween(periodStart, periodEnd);
         
         return buildTaskSummary(contractorId, scheduleId, periodStart, periodEnd, schedules);
     }
@@ -134,10 +134,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         LocalDate today = LocalDate.now();
         int totalTasks = schedules.size();
         
-        // Calculate counts based on task dates (simplified logic)
+        // Calculate counts based on schedule start dates (simplified logic)
         // In a real implementation, these would come from task status fields
         int completedCount = (int) schedules.stream()
-                .filter(s -> s.getTaskDate().isBefore(today))
+                .filter(s -> s.getScheduleStartDate().isBefore(today))
                 .count();
         int openCount = totalTasks - completedCount;
         // Overdue tasks: tasks with past due dates that are not completed
@@ -153,12 +153,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         // Find next due task
         TaskResponseDTO.TaskPreviewDTO nextDueTaskPreview = schedules.stream()
-                .filter(s -> !s.getTaskDate().isBefore(today))
-                .min(Comparator.comparing(Schedule::getTaskDate))
+                .filter(s -> !s.getScheduleStartDate().isBefore(today))
+                .min(Comparator.comparing(Schedule::getScheduleStartDate))
                 .map(s -> TaskResponseDTO.TaskPreviewDTO.builder()
                         .id(s.getScheduleIdentifier())
-                        .title(s.getTaskDescription())
-                        .dueDate(s.getTaskDate())
+                        .title(s.getScheduleDescription())
+                        .dueDate(s.getScheduleStartDate())
                         .estimateHours(defaultEstimatePerTask)
                         .status("OPEN")
                         .assignedTo(contractorId)
@@ -167,14 +167,14 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         // Get top priority tasks (first N upcoming tasks)
         List<TaskResponseDTO.TopPriorityTaskDTO> topPriorityTasks = schedules.stream()
-                .filter(s -> !s.getTaskDate().isBefore(today))
-                .sorted(Comparator.comparing(Schedule::getTaskDate))
+                .filter(s -> !s.getScheduleStartDate().isBefore(today))
+                .sorted(Comparator.comparing(Schedule::getScheduleStartDate))
                 .limit(MAX_TOP_PRIORITY_TASKS)
                 .map(s -> TaskResponseDTO.TopPriorityTaskDTO.builder()
                         .id(s.getScheduleIdentifier())
-                        .title(s.getTaskDescription())
+                        .title(s.getScheduleDescription())
                         .priority("HIGH")
-                        .dueDate(s.getTaskDate())
+                        .dueDate(s.getScheduleStartDate())
                         .build())
                 .collect(Collectors.toList());
 
@@ -208,17 +208,17 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     private void validateScheduleRequest(ScheduleRequestDTO scheduleRequestDTO) {
-        if (scheduleRequestDTO.getTaskDate() == null) {
-            throw new InvalidInputException("Task date must not be null");
+        if (scheduleRequestDTO.getScheduleStartDate() == null) {
+            throw new InvalidInputException("Schedule start date must not be null");
         }
-        if (scheduleRequestDTO.getTaskDescription() == null || scheduleRequestDTO.getTaskDescription().isBlank()) {
-            throw new InvalidInputException("Task description must not be blank");
+        if (scheduleRequestDTO.getScheduleEndDate() == null) {
+            throw new InvalidInputException("Schedule end date must not be null");
+        }
+        if (scheduleRequestDTO.getScheduleDescription() == null || scheduleRequestDTO.getScheduleDescription().isBlank()) {
+            throw new InvalidInputException("Schedule description must not be blank");
         }
         if (scheduleRequestDTO.getLotNumber() == null || scheduleRequestDTO.getLotNumber().isBlank()) {
             throw new InvalidInputException("Lot number must not be blank");
-        }
-        if (scheduleRequestDTO.getDayOfWeek() == null || scheduleRequestDTO.getDayOfWeek().isBlank()) {
-            throw new InvalidInputException("Day of week must not be blank");
         }
     }
 

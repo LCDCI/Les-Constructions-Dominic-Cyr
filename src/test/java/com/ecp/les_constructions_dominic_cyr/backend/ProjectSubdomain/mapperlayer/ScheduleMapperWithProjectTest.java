@@ -35,10 +35,10 @@ class ScheduleMapperWithProjectTest {
         Schedule schedule = Schedule.builder()
                 .id(1)
                 .scheduleIdentifier("SCH-001")
-                .taskDate(LocalDate.of(2024, 11, 26))
-                .taskDescription("Begin Excavation")
+                .scheduleStartDate(LocalDate.of(2024, 11, 26))
+                .scheduleEndDate(LocalDate.of(2024, 11, 26))
+                .scheduleDescription("Begin Excavation")
                 .lotNumber("Lot 53")
-                .dayOfWeek("Wednesday")
                 .tasks(new ArrayList<>())
                 .project(project)
                 .build();
@@ -49,10 +49,10 @@ class ScheduleMapperWithProjectTest {
         // Assert
         assertNotNull(result);
         assertEquals("SCH-001", result.getScheduleIdentifier());
-        assertEquals(LocalDate.of(2024, 11, 26), result.getTaskDate());
-        assertEquals("Begin Excavation", result.getTaskDescription());
+        assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleStartDate());
+        assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleEndDate());
+        assertEquals("Begin Excavation", result.getScheduleDescription());
         assertEquals("Lot 53", result.getLotNumber());
-        assertEquals("Wednesday", result.getDayOfWeek());
         
         // Verify project fields
         assertEquals(1L, result.getProjectId());
@@ -66,10 +66,10 @@ class ScheduleMapperWithProjectTest {
         Schedule schedule = Schedule.builder()
                 .id(1)
                 .scheduleIdentifier("SCH-001")
-                .taskDate(LocalDate.of(2024, 11, 26))
-                .taskDescription("Begin Excavation")
+                .scheduleStartDate(LocalDate.of(2024, 11, 26))
+                .scheduleEndDate(LocalDate.of(2024, 11, 26))
+                .scheduleDescription("Begin Excavation")
                 .lotNumber("Lot 53")
-                .dayOfWeek("Wednesday")
                 .tasks(new ArrayList<>())
                 .project(null)
                 .build();
