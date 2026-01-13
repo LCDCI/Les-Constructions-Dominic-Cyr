@@ -120,7 +120,7 @@ class ScheduleControllerUnitTest{
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("SCH-001", response.getBody().getScheduleIdentifier());
-        assertEquals("Begin Excavation", response.getBody().getTaskDescription());
+        assertEquals("Begin Excavation", response.getBody().getScheduleDescription());
 
         verify(scheduleService).getScheduleByIdentifier(identifier);
     }
