@@ -72,4 +72,23 @@ public class Task {
         this.taskProgress = taskProgress;
         this.assignedTo = assignedTo;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", taskIdentifier=" + taskIdentifier +
+                ", taskStatus=" + taskStatus +
+                ", taskTitle='" + taskTitle + '\'' +
+                ", periodStart=" + periodStart +
+                ", periodEnd=" + periodEnd +
+                ", taskDescription='" + taskDescription + '\'' +
+                ", taskPriority=" + taskPriority +
+                ", estimatedHours=" + estimatedHours +
+                ", hoursSpent=" + hoursSpent +
+                ", taskProgress=" + taskProgress +
+                ", assignedTo=" + (assignedTo != null ? "[Users instance]" : null) +
+                ", scheduleId='" + scheduleId + '\'' +
+                '}';
+    }
 }
