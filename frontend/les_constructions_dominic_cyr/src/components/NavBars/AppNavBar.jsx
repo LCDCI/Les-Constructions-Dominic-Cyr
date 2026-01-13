@@ -114,10 +114,10 @@ export default function AppNavBar() {
             </NavLink>
 
             <NavLink
-                to="/realisations"
+                to="/realizations"
                 className={({ isActive }) => (isActive ? 'active' : '')}
             >
-              {t('nav.realisations', 'Réalisations')}
+              {t('nav.realizations', 'Réalisations')}
             </NavLink>
 
             <NavLink

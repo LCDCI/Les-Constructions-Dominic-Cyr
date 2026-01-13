@@ -1,8 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer;
 
-import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier;
-import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
-import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.*;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.MapperLayer.UserMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserCreateRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
@@ -29,6 +27,7 @@ public class UserServiceImpl implements UserService {
         this.auth0ManagementService = auth0ManagementService;
     }
 
+    
     @Override
     @Transactional
     public UserResponseModel createUser(UserCreateRequestModel requestModel) {
@@ -74,6 +73,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseModel> getAllUsers() {
         return usersRepository.findAll()
                 .stream()
+                .filter(user -> user.getUserStatus() != UserStatus.DEACTIVATED)
                 .map(user -> UserMapper.toResponseModel(user, null))
                 .toList();
     }
@@ -120,4 +120,143 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toResponseModel(user, null);
     }
 
+    @Override
+    @Transactional
+    public UserResponseModel updateUserAsOwner(String userId, UserUpdateRequestModel requestModel, String requestingAuth0UserId) {
+        Users requestingUser = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+            .orElseThrow(() -> new IllegalArgumentException("Requesting user not found"));
+
+    if (requestingUser.getUserRole() != UserRole.OWNER) {
+        throw new SecurityException("Only OWNER users can update other user accounts");
+    }
+
+    UserIdentifier userIdentifier = UserIdentifier.fromString(userId);
+    Users user = usersRepository.findById(userIdentifier)
+            .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+    boolean nameChanged = false;
+    boolean emailChanged = false;
+
+    if (requestModel.getFirstName() != null && !requestModel.getFirstName().trim().isEmpty()) {
+        user.setFirstName(requestModel.getFirstName().trim());
+        nameChanged = true;
+    }
+    if (requestModel.getLastName() != null && !requestModel.getLastName().trim().isEmpty()) {
+        user.setLastName(requestModel.getLastName().trim());
+        nameChanged = true;
+    }
+    if (requestModel.getPhone() != null && !requestModel.getPhone().trim().isEmpty()) {
+        user.setPhone(requestModel.getPhone().trim());
+    }
+    if (requestModel.getPrimaryEmail() != null && !requestModel.getPrimaryEmail().trim().isEmpty()) {
+        if (usersRepository.findByPrimaryEmail(requestModel.getPrimaryEmail().trim()).isPresent()
+            && !user.getPrimaryEmail().equals(requestModel.getPrimaryEmail().trim())) {
+            throw new IllegalArgumentException("A user with this primary email already exists.");
+        }
+        user.setPrimaryEmail(requestModel.getPrimaryEmail().trim());
+        emailChanged = true;
+    }
+    if (requestModel.getSecondaryEmail() != null && !requestModel.getSecondaryEmail().trim().isEmpty()) {
+        user.setSecondaryEmail(requestModel.getSecondaryEmail().trim());
+    }
+
+    if (user.getAuth0UserId() != null) {
+        try {
+            if (nameChanged || emailChanged) {
+                auth0ManagementService.updateAuth0UserEmailAndName(
+                    user.getAuth0UserId(),
+                    emailChanged ? user.getPrimaryEmail() : null,
+                    user.getFirstName(),
+                    user.getLastName()
+                );
+            }
+        } catch (Exception e) {
+        }
+    }
+
+    user = usersRepository.save(user);
+    return UserMapper.toResponseModel(user, null);
+}
+
+    @Override
+    @Transactional
+    public UserResponseModel deactivateUser(String userId, String requestingAuth0UserId) {
+        Users requestingUser = usersRepository. findByAuth0UserId(requestingAuth0UserId)
+                .orElseThrow(() -> new IllegalArgumentException("Requesting user not found"));
+
+        if (requestingUser.getUserRole() != UserRole.OWNER) {
+            throw new SecurityException("Only OWNER users can deactivate accounts");
+        }
+
+        UserIdentifier userIdentifier = UserIdentifier.fromString(userId);
+        Users user = usersRepository.findById(userIdentifier)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        if (user.getUserRole() == UserRole.OWNER) {
+            throw new IllegalArgumentException("Cannot deactivate OWNER accounts");
+        }
+
+        user. setUserStatus(UserStatus. DEACTIVATED);
+
+        if (user.getAuth0UserId() != null) {
+            try {
+                auth0ManagementService.blockAuth0User(user.getAuth0UserId(), true);
+            } catch (Exception e) {
+            }
+        }
+
+        user = usersRepository.save(user);
+        return UserMapper.toResponseModel(user, null);
+    }
+
+    @Override
+    @Transactional
+    public UserResponseModel setUserInactive(String userId, String requestingAuth0UserId) {
+        Users requestingUser = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+                .orElseThrow(() -> new IllegalArgumentException("Requesting user not found"));
+
+        if (requestingUser.getUserRole() != UserRole.OWNER) {
+            throw new SecurityException("Only OWNER users can set accounts as inactive");
+        }
+
+        UserIdentifier userIdentifier = UserIdentifier.fromString(userId);
+        Users user = usersRepository. findById(userIdentifier)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        if (user.getUserRole() == UserRole.OWNER) {
+            throw new IllegalArgumentException("Cannot set OWNER accounts as inactive");
+        }
+
+        user. setUserStatus(UserStatus. INACTIVE);
+        user = usersRepository.save(user);
+        return UserMapper.toResponseModel(user, null);
+    }
+
+    @Override
+    @Transactional
+    public UserResponseModel reactivateUser(String userId, String requestingAuth0UserId) {
+        Users requestingUser = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+                .orElseThrow(() -> new IllegalArgumentException("Requesting user not found"));
+
+        if (requestingUser.getUserRole() != UserRole.OWNER) {
+            throw new SecurityException("Only OWNER users can reactivate accounts");
+        }
+
+        UserIdentifier userIdentifier = UserIdentifier. fromString(userId);
+        Users user = usersRepository.findById(userIdentifier)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+
+        user.setUserStatus(UserStatus. ACTIVE);
+
+        if (user.getAuth0UserId() != null) {
+            try {
+                auth0ManagementService.blockAuth0User(user.getAuth0UserId(), false);
+            } catch (Exception e) {
+                //we should eventually add an exception for failure to block auth0 user, but auth0 already does it in the dashboard...
+            }
+        }
+
+        user = usersRepository.save(user);
+        return UserMapper.toResponseModel(user, null);
+    }
 }

@@ -1,147 +1,82 @@
 export class UsersPage {
   constructor(page) {
     this.page = page;
-    this.pageHeader = page.locator('.page-header');
-    this.pageTitle = page.locator('.page-header h1');
-    this.addUserButton = page.locator('.page-header button');
-    this.usersTable = page.locator('.users-table');
-    this.tableRows = page.locator('.users-table tbody tr');
-    this.tableHeaders = page.locator('.users-table thead th');
-    this.editButtons = page.locator('.edit-user-button');
-    this.noUsersMessage = page.locator('text=No users found.');
-    this.loadingMessage = page.locator('text=Loading users...');
-    this.errorMessage = page.locator('.error');
-    
-    // Add User Modal
-    this.addUserModal = page.locator('.modal-backdrop');
-    this.addUserModalTitle = page.locator('.modal h2');
-    this.firstNameInput = page.locator('input[type="text"]').first();
-    this.lastNameInput = page.locator('input[type="text"]').nth(1);
-    this.primaryEmailInput = page.locator('input[type="email"]').first();
-    this.secondaryEmailInput = page.locator('input[type="email"]').nth(1);
-    this.phoneInput = page.locator('input[type="tel"]');
-    this.roleSelect = page.locator('select');
-    this.cancelButton = page.locator('.modal-actions button[type="button"]');
-    this.submitButton = page.locator('.modal-actions button[type="submit"]');
-    
-    // Edit User Modal
+    this.loadingMessage = page.getByText('Loading users...');
+    this.tableRows = page.locator('tbody tr');
+
     this.editUserModal = page.locator('.modal-overlay');
-    this.editUserModalTitle = page.locator('.modal-content h2');
-    this.editFirstNameInput = page.locator('.modal-content input[name="firstName"]');
-    this.editLastNameInput = page.locator('.modal-content input[name="lastName"]');
-    this.editPhoneInput = page.locator('.modal-content input[name="phone"]');
-    this.editSecondaryEmailInput = page.locator('.modal-content input[name="secondaryEmail"]');
-    this.editDisabledEmailInput = page.locator('.modal-content .disabled-input').first();
-    this.editDisabledRoleInput = page.locator('.modal-content .disabled-input').nth(1);
-    this.editSaveButton = page.locator('.modal-content .btn-primary');
-    this.editCancelButton = page.locator('.modal-content .btn-secondary');
-    
-    // Invite Link Modal
-    this.inviteModal = page.locator('.modal-backdrop:has-text("User Invite Link")');
-    this.inviteLinkInput = page.locator('.invite-link-row input');
-    this.copyButton = page.locator('.invite-link-row button');
-    this.copyStatus = page.locator('.copy-status');
-    
-    // Error Modal
-    this.errorModal = page.locator('.modal-backdrop:has-text("User Operation Failed")');
-    this.errorModalMessage = page.locator('.modal p');
-    this.errorModalCloseButton = page.locator('.modal-actions button:has-text("Close")');
+    this.ownerEditModal = page.locator('.modal-overlay');
+    this.statusModal = page.locator('.modal-overlay');
+
+    this.editFirstNameInput = page.locator('input[name="firstName"]');
+    this.editPhoneInput = page.locator('input[name="phone"]');
+    this.saveButton = page.getByRole('button', { name: /Save Changes/i });
+
+    this.deactivateOption = page.getByText('Deactivate User');
+    this.setInactiveOption = page.getByText('Set as Inactive');
+    this.reactivateOption = page.getByText('Reactivate User');
+    this.confirmButton = page.getByRole('button', { name: 'Confirm' });
   }
 
   async goto() {
-    await this.page.goto('/users');
-  }
+    const currentUrl = this.page.url();
 
-  async isLoaded() {
-    return await this.pageTitle.isVisible();
-  }
+    if (!currentUrl.includes('/users')) {
+      await this.page.goto('/users');
+      await this.page.waitForLoadState('domcontentloaded');
 
-  async isLoading() {
-    return await this.loadingMessage.isVisible();
-  }
+      await this.page.waitForTimeout(1000);
 
-  async getUserCount() {
-    return await this.tableRows.count();
-  }
+      const newUrl = this.page.url();
 
-  async clickAddUser() {
-    await this.addUserButton.click();
-  }
-
-  async clickEditUser(index = 0) {
-    await this.editButtons.nth(index).click();
-  }
-
-  async fillAddUserForm({ firstName, lastName, primaryEmail, secondaryEmail, phone, role }) {
-    if (firstName) await this.firstNameInput.fill(firstName);
-    if (lastName) await this.lastNameInput.fill(lastName);
-    if (primaryEmail) await this.primaryEmailInput.fill(primaryEmail);
-    if (secondaryEmail) await this.secondaryEmailInput.fill(secondaryEmail);
-    if (phone) await this.phoneInput.fill(phone);
-    if (role) await this.roleSelect.selectOption(role);
-  }
-
-  async fillEditUserForm({ firstName, lastName, phone, secondaryEmail }) {
-    if (firstName) {
-      await this.editFirstNameInput.clear();
-      await this.editFirstNameInput.fill(firstName);
+      if (!newUrl.includes('/users')) {
+        throw new Error(
+          `Failed to navigate to users page. Current URL: ${newUrl}`
+        );
+      }
     }
-    if (lastName) {
-      await this.editLastNameInput.clear();
-      await this.editLastNameInput.fill(lastName);
+
+    await this.page.getByRole('heading', { name: 'Users' }).waitFor({
+      state: 'visible',
+      timeout: 10000,
+    });
+
+    const isLoading = await this.loadingMessage.isVisible().catch(() => false);
+    if (isLoading) {
+      await this.loadingMessage.waitFor({ state: 'hidden', timeout: 15000 });
     }
-    if (phone) {
-      await this.editPhoneInput.clear();
-      await this.editPhoneInput.fill(phone);
-    }
-    if (secondaryEmail) {
-      await this.editSecondaryEmailInput.clear();
-      await this.editSecondaryEmailInput.fill(secondaryEmail);
-    }
+
+    await this.page.waitForSelector('tbody tr', {
+      state: 'visible',
+      timeout: 10000,
+    });
   }
 
-  async submitAddUserForm() {
-    await this.submitButton.click();
+  getRowByEmail(email) {
+    return this.page.locator('tr', { hasText: email });
   }
 
-  async submitEditUserForm() {
-    await this.editSaveButton.click();
+  async openEditModal(email) {
+    const row = this.getRowByEmail(email);
+    await row.waitFor({ state: 'visible', timeout: 5000 });
+
+    const editButton = row.getByRole('button', { name: 'Edit' });
+    await editButton.waitFor({ state: 'visible', timeout: 5000 });
+    await editButton.click();
+
+    // Wait a bit for modal animation
+    await this.page.waitForTimeout(500);
   }
 
-  async cancelAddUserForm() {
-    await this.cancelButton.click();
-  }
+  async openStatusModal(email) {
+    const row = this.getRowByEmail(email);
+    await row.waitFor({ state: 'visible', timeout: 5000 });
 
-  async cancelEditUserForm() {
-    await this.editCancelButton.click();
-  }
+    const statusButton = row.getByRole('button', { name: 'Manage Status' });
+    await statusButton.waitFor({ state: 'visible', timeout: 5000 });
+    await statusButton.click();
 
-  async closeInviteModal() {
-    await this.inviteModal.locator('button:has-text("Close")').click();
-  }
-
-  async closeErrorModal() {
-    await this.errorModalCloseButton.click();
-  }
-
-  async getTableHeaderTexts() {
-    return await this.tableHeaders.allTextContents();
-  }
-
-  async getUserDataFromRow(index = 0) {
-    const row = this.tableRows.nth(index);
-    const cells = row.locator('td');
-    return {
-      firstName: await cells.nth(0).textContent(),
-      lastName: await cells.nth(1).textContent(),
-      primaryEmail: await cells.nth(2).textContent(),
-      secondaryEmail: await cells.nth(3).textContent(),
-      phone: await cells.nth(4).textContent(),
-      role: await cells.nth(5).textContent(),
-    };
-  }
-
-  async copyInviteLink() {
-    await this.copyButton.click();
+    // Wait a bit for modal animation
+    await this.page.waitForTimeout(500);
   }
 }

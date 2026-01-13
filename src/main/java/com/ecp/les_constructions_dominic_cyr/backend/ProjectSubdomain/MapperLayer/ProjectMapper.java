@@ -33,6 +33,7 @@ public class ProjectMapper {
             project.setLotIdentifiers(new ArrayList<>());
         }
         project.setProgressPercentage(requestModel.getProgressPercentage());
+        project.setLocation(requestModel.getLocation());
         return project;
     }
 
@@ -53,6 +54,7 @@ public class ProjectMapper {
                 .customerId(project.getCustomerId())
                 .lotIdentifiers(project.getLotIdentifiers() != null ? new ArrayList<>(project.getLotIdentifiers()) : new ArrayList<>())
                 .progressPercentage(project.getProgressPercentage())
+                .location(project.getLocation())
                 .build();
     }
 
@@ -98,6 +100,9 @@ public class ProjectMapper {
         }
         if (requestModel.getProgressPercentage() != null) {
             project.setProgressPercentage(requestModel.getProgressPercentage());
+        }
+        if (requestModel.getLocation() != null) {
+            project.setLocation(requestModel.getLocation());
         }
     }
 }

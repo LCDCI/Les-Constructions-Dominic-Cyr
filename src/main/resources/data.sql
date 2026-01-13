@@ -11,8 +11,8 @@ INSERT INTO lots (lot_identifier, image_identifier, location, price, dimensions,
                                                                                                  ('db43c148-68de-4882-818a-d15dc8d5fcdb', NULL, 'Chicoutimi, QC', 160000.0, '65x135', 'SOLD'),
                                                                                                  ('adb6f5b7-e036-49cf-899e-a39dcaecd91f', NULL, 'Baie-Comeau, QC', 145000.0, '60x125', 'AVAILABLE');
 
--- data for houses
-INSERT INTO houses (house_identifier, house_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year)
+-- data for realizations
+INSERT INTO realizations (realization_identifier, realization_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year)
 VALUES
     ('a3f1c0f1-8f2b-4c3d-9d5a-1b2a3c4d5e6f', 'Renovated Bungalow', 'Montreal, QC', 'Modern bungalow featuring sleek finishes, smart home technology, and eco-friendly materials, ideally located near parks and public transit.', 6, 3, 2, 2022),
     ('b7d2e1a4-2c6f-4b8e-9f3c-7a9b0c1d2e3f', 'Split-Level Family Home', 'Laval, QC', 'Contemporary split-level design with open living spaces, premium appliances, expansive backyard, and oversized garage with workshop area.', 8, 4, 3, 2023),
@@ -62,7 +62,7 @@ INSERT INTO projects (
       (
           'proj-001-foresta',
           'Föresta',
-          'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
+          'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant realizations.',
           'IN_PROGRESS',
           '2025-01-15',
           '2025-12-31',
@@ -81,7 +81,7 @@ INSERT INTO projects (
       (
           'proj-002-panorama',
           'Panorama',
-          'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
+          'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant realizations.',
           'IN_PROGRESS',
           '2025-02-01',
           '2026-01-31',
@@ -98,11 +98,22 @@ INSERT INTO projects (
           80
       );
 
-INSERT INTO schedules (schedule_identifier, task_date, task_description, lot_number, day_of_week) VALUES
-                                                                                                      ('SCH-001', '2025-12-05', 'Begin Excavation', 'Lot 53', 'Wednesday'),
-                                                                                                      ('SCH-002', '2025-12-06', 'Plumbing', 'Lot 57', 'Wednesday'),
-                                                                                                      ('SCH-003', '2025-12-12', 'Electrical', 'Lot 54', 'Thursday'),
-                                                                                                      ('SCH-004', '2025-12-08', 'End of Excavation', 'Lot 53', 'Friday');
+INSERT INTO schedules (schedule_identifier, schedule_start_date, schedule_end_date, schedule_description, lot_number, project_id) VALUES
+    ('SCH-001', '2026-01-20', '2026-01-20', 'Foundation Work - Pour Concrete', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-002', '2026-01-22', '2026-01-22', 'Framing - Install Floor Joists', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-003', '2026-01-25', '2026-01-25', 'Framing - Wall Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-004', '2026-01-28', '2026-01-28', 'Roofing - Sheathing', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-005', '2026-02-01', '2026-02-01', 'Roofing - Shingles Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-006', '2026-02-05', '2026-02-05', 'Plumbing - Rough-In', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-007', '2026-02-08', '2026-02-08', 'Electrical - Rough Wiring', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-008', '2026-02-12', '2026-02-12', 'HVAC Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-009', '2026-01-23', '2026-01-23', 'Site Preparation - Excavation', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-010', '2026-01-27', '2026-01-27', 'Foundation - Footings', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-011', '2026-01-30', '2026-01-30', 'Foundation - Pour Concrete', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-012', '2026-02-03', '2026-02-03', 'Framing - Install Floor System', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-013', '2026-02-06', '2026-02-06', 'Framing - Wall Framing', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-014', '2026-02-10', '2026-02-10', 'Framing - Roof Trusses', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-015', '2026-02-13', '2026-02-13', 'Exterior - Window Installation', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama'));
 
 
 
@@ -125,7 +136,7 @@ INSERT INTO project_overview_content (
              'proj-001-foresta',
              'FÖRESTA',
              'Résidences Secondaires en Harmonie avec la Nature',
-             'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant houses.',
+             'Nestled in the serene woodlands of St-Alphonse-de-Granby, Foresta offers an inviting escape surrounded by nature. The most recent project in our collection, Foresta began in 2025 and joins Les Construction Dominic Cyrs catalogue of modern and elegant realizations.',
              'About Foresta',
              'Foresta represents a unique opportunity to own a secondary residence in one of Quebec''s most tranquil settings. Each home is designed with sustainability and comfort in mind, featuring modern amenities while preserving the natural beauty of the surrounding forest.',
              'Project Features',
@@ -155,10 +166,10 @@ INSERT INTO project_overview_content (
          );
 
 INSERT INTO project_features (project_identifier, feature_title, feature_description, display_order) VALUES
-                                                                                                         ('proj-001-foresta', 'New Houses', 'Contemporary architecture with traditional charm', 1),
+                                                                                                         ('proj-001-foresta', 'New Realizations', 'Contemporary architecture with traditional charm', 1),
                                                                                                          ('proj-001-foresta', 'Living Environment', 'Surrounded by pristine forest and nature trails', 2),
                                                                                                          ('proj-001-foresta', 'Lots', 'A variety of lots available for all', 3),
-                                                                                                         ('proj-002-panorama','New Houses', 'Contemporary architecture with traditional charm', 1),
+                                                                                                         ('proj-002-panorama','New Realizations', 'Contemporary architecture with traditional charm', 1),
                                                                                                          ('proj-002-panorama','Living Environment', 'Surrounded by pristine forest and nature trails', 2),
                                                                                                          ('proj-002-panorama','Lots', 'A variety of lots available for all', 3);
 
@@ -172,12 +183,13 @@ INSERT INTO project_gallery_images (project_identifier, image_identifier, image_
                                                                                                             ('proj-002-panorama', 'ee576ed6-5d56-4d54-ba25-7157f7b75d0d', 'Amenities', 3);
 
 
-INSERT INTO users (user_id, first_name, last_name, email, secondary_email, phone, user_role, auth0user_id)
+INSERT INTO users (user_id, first_name, last_name, email, secondary_email, phone, user_role, user_status, auth0user_id)
 VALUES
-    ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'auth0|69542f38c08232af729f3d41'),
-    ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'auth0|693faa68bf9e92b3d445c4ab'),
-    ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'sales@test.com', NULL, '514-333-3333', 'SALESPERSON', 'auth0|693faa7d743287e135a703e1'),
-    ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'auth0|693faa95743287e135a703e8');
+    ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'ACTIVE', 'auth0|69542f38c08232af729f3d41'),
+    ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'ACTIVE', 'auth0|693faa68bf9e92b3d445c4ab'),
+    ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'sales@test.com', NULL, '514-333-3333', 'SALESPERSON', 'ACTIVE', 'auth0|693faa7d743287e135a703e1'),
+    ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'ACTIVE', 'auth0|693faa95743287e135a703e8');
+
 
 -- data for project management page content (English)
 INSERT INTO project_management_page_content (language, content_json) VALUES
@@ -207,3 +219,14 @@ INSERT INTO app_theme (
              '#4C4D4F',
              '#FFFFFF'
          );
+
+
+-- Insert test data for tasks
+INSERT INTO tasks (task_identifier, task_status, task_title, period_start, period_end, task_description, task_priority, estimated_hours, hours_spent, task_progress, assigned_user_id, schedule_id)
+VALUES
+    ('TASK-001', 'TO_DO', 'Install Foundation', '2025-12-05', '2025-12-08', 'Pour concrete foundation for Lot 53', 'HIGH', 16.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
+    ('TASK-002', 'IN_PROGRESS', 'Framing Work', '2025-12-09', '2025-12-15', 'Complete structural framing for Lot 53', 'VERY_HIGH', 40.0, 15.0, 37.5, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
+    ('TASK-003', 'TO_DO', 'Electrical Rough-In', '2025-12-12', '2025-12-14', 'Install electrical wiring for Lot 54', 'MEDIUM', 20.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
+    ('TASK-004', 'COMPLETED', 'Site Preparation', '2025-11-28', '2025-11-30', 'Clear and level site for Lot 57', 'HIGH', 12.0, 12.0, 100.0, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
+    ('TASK-005', 'TO_DO', 'Plumbing Installation', '2025-12-16', '2025-12-20', 'Install main plumbing lines for Lot 57', 'HIGH', 24.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 'SCH-001');
+

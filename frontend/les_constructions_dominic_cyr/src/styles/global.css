@@ -29,8 +29,8 @@ body {
 .container {
     width: 90%;
     max-width: 1400px;
-    padding: 2% 0;
-    margin: 80% auto;
+    padding: 24px 0;
+    margin: 0 auto;
 }
 
 h1, h2, h3, h4, h5, h6 {
