@@ -71,7 +71,13 @@ func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) 
 		}
 	}
 
-	_, err := s.storage.Upload(ctx, input.Data, objectKey, input.ContentType)
+	// Store metadata in Spaces for future reconciliation
+	metadata := map[string]string{
+		"uploadedby": input.UploadedBy,
+		"filename":   input.FileName,
+	}
+
+	_, err := s.storage.Upload(ctx, input.Data, objectKey, input.ContentType, metadata)
 	if err != nil {
 		return domain.FileMetadata{}, domain.ErrStorageFailed
 	}
@@ -182,6 +188,162 @@ func (s *fileService) Delete(ctx context.Context, fileID string, deletedBy strin
 	// Log deletion for audit trail
 	log.Printf("[AUDIT] File deleted (archived): ID=%s, FileName=%s, ProjectID=%s, Category=%s, DeletedBy=%s",
 		fileID, f.FileName, f.ProjectID, f.Category, deletedBy)
+
+	return nil
+}
+
+// ReconcileStorageWithDatabase scans Spaces for files and creates DB records for any that are missing.
+// This is useful for syncing files that were uploaded directly to Spaces without going through the API.
+func (s *fileService) ReconcileStorageWithDatabase(ctx context.Context, projectID string) (int, error) {
+	if projectID == "" {
+		return 0, domain.ErrValidation
+	}
+
+	// List all files in Spaces under documents and photos for this project
+	objects, err := s.storage.ListObjects(ctx, "documents/"+projectID)
+	if err != nil {
+		return 0, err
+	}
+
+	photoObjects, err := s.storage.ListObjects(ctx, "photos/projects/"+projectID)
+	if err != nil {
+		return 0, err
+	}
+	objects = append(objects, photoObjects...)
+
+	var synced int
+	now := time.Now()
+
+	for _, obj := range objects {
+		// Check if file already exists in DB
+		existing, err := s.repo.FindByObjectKey(ctx, obj.Key)
+		if err != nil {
+			log.Printf("[WARN] Error checking file %s: %v", obj.Key, err)
+			continue
+		}
+		if existing != nil {
+			continue // Already in DB
+		}
+
+		// Extract category from path
+		var category domain.FileCategory
+		if strings.Contains(obj.Key, "documents/") {
+			category = domain.CategoryDocument
+		} else if strings.Contains(obj.Key, "photos/") {
+			category = domain.CategoryPhoto
+		} else {
+			category = domain.CategoryOther
+		}
+
+		// Extract filename from metadata or object key
+		fileName := obj.Metadata["Filename"]
+		if fileName == "" {
+			// Fallback to extracting from object key (last part after /)
+			fileName = obj.Key
+			if idx := strings.LastIndex(obj.Key, "/"); idx >= 0 {
+				fileName = obj.Key[idx+1:]
+			}
+		}
+
+		// Get uploader from metadata
+		uploadedBy := obj.Metadata["Uploadedby"]
+		if uploadedBy == "" {
+			uploadedBy = "Unknown uploader" // Fallback for old files without metadata
+		}
+
+		// Get content type from object info or use default
+		contentType := obj.ContentType
+		if contentType == "" {
+			contentType = "application/octet-stream"
+		}
+
+		// Create a new File record with metadata from Spaces
+		f := &domain.File{
+			ID:          uuid.New().String(),
+			ProjectID:   projectID,
+			FileName:    fileName,
+			ObjectKey:   obj.Key,
+			Category:    category,
+			Size:        obj.Size,
+			ContentType: contentType,
+			CreatedAt:   now,
+			UploadedBy:  uploadedBy,
+			IsActive:    true,
+		}
+
+		if err := s.repo.Save(ctx, f); err != nil {
+			log.Printf("[ERROR] Failed to save reconciled file %s: %v", obj.Key, err)
+			continue
+		}
+
+		synced++
+		log.Printf("[AUDIT] Reconciled file: ID=%s, ObjectKey=%s, ProjectID=%s", f.ID, f.ObjectKey, f.ProjectID)
+	}
+
+	log.Printf("[INFO] Reconciliation complete for project %s: %d files synced", projectID, synced)
+	return synced, nil
+}
+
+// AutoReconcileAllProjects scans Spaces for all projects and syncs any missing files to the database.
+// This is called automatically on startup to handle files uploaded directly to Spaces without DB records.
+func (s *fileService) AutoReconcileAllProjects(ctx context.Context) error {
+	// List all documents and photos prefixes to find unique projects
+	docObjects, err := s.storage.ListObjects(ctx, "documents/")
+	if err != nil {
+		log.Printf("[WARN] Failed to list documents: %v", err)
+		// Don't fail startup if listing fails
+	}
+
+	photoObjects, err := s.storage.ListObjects(ctx, "photos/projects/")
+	if err != nil {
+		log.Printf("[WARN] Failed to list photos: %v", err)
+		// Don't fail startup if listing fails
+	}
+
+	// Extract unique project IDs from object keys
+	projectIDs := make(map[string]bool)
+
+	// Parse documents/projectID/* paths
+	for _, obj := range docObjects {
+		parts := strings.Split(obj.Key, "/")
+		if len(parts) >= 2 {
+			projectID := parts[1]
+			if projectID != "" {
+				projectIDs[projectID] = true
+			}
+		}
+	}
+
+	// Parse photos/projects/projectID/* paths
+	for _, obj := range photoObjects {
+		parts := strings.Split(obj.Key, "/")
+		if len(parts) >= 3 {
+			projectID := parts[2]
+			if projectID != "" {
+				projectIDs[projectID] = true
+			}
+		}
+	}
+
+	// Reconcile each project
+	totalSynced := 0
+	for projectID := range projectIDs {
+		synced, err := s.ReconcileStorageWithDatabase(ctx, projectID)
+		if err != nil {
+			log.Printf("[WARN] Reconciliation failed for project %s: %v", projectID, err)
+			continue
+		}
+		totalSynced += synced
+		if synced > 0 {
+			log.Printf("[INFO] Auto-reconciled %d files for project %s", synced, projectID)
+		}
+	}
+
+	if totalSynced > 0 {
+		log.Printf("[INFO] Auto-reconciliation complete: %d files synced across all projects", totalSynced)
+	} else {
+		log.Println("[INFO] Auto-reconciliation: no missing files found")
+	}
 
 	return nil
 }

@@ -9,6 +9,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.Presentation
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserUpdateRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,8 +62,10 @@ public class UserServiceImplUnitTest {
                 "john.secondary@example.com",
                 "514-555-1234",
                 UserRole.CUSTOMER,
-                "auth0|123456789"
+                "auth0|123456789",
+                UserStatus.ACTIVE
         );
+
 
         createRequest = new UserCreateRequestModel();
         createRequest.setFirstName("John");
@@ -78,8 +81,6 @@ public class UserServiceImplUnitTest {
         updateRequest.setPhone("514-555-9999");
         updateRequest.setSecondaryEmail("jane.secondary@example.com");
     }
-
-    // ========================== POSITIVE TESTS ==========================
 
     @Test
     void getAllUsers_ReturnsListOfUsers() {
@@ -168,7 +169,7 @@ public class UserServiceImplUnitTest {
         assertEquals(inviteLink, result.getInviteLink());
 
         verify(usersRepository, times(1)).findByPrimaryEmail("john.doe@example.com");
-        verify(usersRepository, times(2)).save(any(Users.class)); // First save, then update with auth0UserId
+        verify(usersRepository, times(2)).save(any(Users.class));
         verify(auth0ManagementService, times(1)).createAuth0User(
                 eq("john.doe@example.com"), eq("john.secondary@example.com"),
                 eq("John"), eq("Doe"), eq("CUSTOMER"), anyString()
@@ -384,11 +385,11 @@ public class UserServiceImplUnitTest {
     @Test
     void getAllUsers_ReturnsCorrectData_WithMultipleUsers() {
         Users user1 = new Users(UserIdentifier.newId(), "Alice", "Wonder", "alice@example.com",
-                null, "111-111-1111", UserRole.OWNER, "auth0|alice");
+                null, "111-111-1111", UserRole.OWNER, "auth0|alice",UserStatus.ACTIVE);
         Users user2 = new Users(UserIdentifier.newId(), "Bob", "Builder", "bob@example.com",
-                null, "222-222-2222", UserRole.CONTRACTOR, "auth0|bob");
+                null, "222-222-2222", UserRole.CONTRACTOR, "auth0|bob",UserStatus.ACTIVE);
         Users user3 = new Users(UserIdentifier.newId(), "Charlie", "Chaplin", "charlie@example.com",
-                null, "333-333-3333", UserRole.SALESPERSON, "auth0|charlie");
+                null, "333-333-3333", UserRole.SALESPERSON, "auth0|charlie",UserStatus.ACTIVE);
 
         when(usersRepository.findAll()).thenReturn(Arrays.asList(user1, user2, user3));
 
@@ -401,5 +402,171 @@ public class UserServiceImplUnitTest {
         assertEquals(UserRole.CONTRACTOR, result.get(1).getUserRole());
         assertEquals("Charlie", result.get(2).getFirstName());
         assertEquals(UserRole.SALESPERSON, result.get(2).getUserRole());
+    }
+    @Test
+    void deactivateUser_DeactivatesUser_Successfully() {
+        Users ownerUser = new Users(UserIdentifier.newId(), "Owner", "User", "owner@example.com",
+                null, null, UserRole.OWNER, "auth0|owner", UserStatus.ACTIVE);
+
+        when(usersRepository.findByAuth0UserId("auth0|owner")).thenReturn(Optional.of(ownerUser));
+        when(usersRepository.findById(any(UserIdentifier.class))).thenReturn(Optional.of(testUser));
+        when(usersRepository.save(any(Users.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        doNothing().when(auth0ManagementService).blockAuth0User(anyString(), eq(true));
+
+        UserResponseModel result = userService.deactivateUser(userIdString, "auth0|owner");
+
+        assertNotNull(result);
+        assertEquals(UserStatus.DEACTIVATED, result.getUserStatus());
+        verify(auth0ManagementService, times(1)).blockAuth0User("auth0|123456789", true);
+        verify(usersRepository, times(1)).save(any(Users.class));
+    }
+
+    @Test
+    void deactivateUser_ThrowsException_WhenNotOwner() {
+        Users nonOwnerUser = new Users(UserIdentifier.newId(), "Regular", "User", "regular@example.com",
+                null, null, UserRole.CUSTOMER, "auth0|regular", UserStatus.ACTIVE);
+
+        when(usersRepository.findByAuth0UserId("auth0|regular")).thenReturn(Optional.of(nonOwnerUser));
+
+        SecurityException exception = assertThrows(SecurityException.class, () ->
+                userService.deactivateUser(userIdString, "auth0|regular")
+        );
+
+        assertTrue(exception.getMessage().contains("Only OWNER users can deactivate accounts"));
+        verify(auth0ManagementService, never()).blockAuth0User(anyString(), anyBoolean());
+    }
+
+    @Test
+    void deactivateUser_ThrowsException_WhenTryingToDeactivateOwner() {
+        Users ownerUser = new Users(UserIdentifier.newId(), "Owner", "User", "owner@example.com",
+                null, null, UserRole.OWNER, "auth0|owner", UserStatus.ACTIVE);
+        Users targetOwner = new Users(UserIdentifier. newId(), "Another", "Owner", "another@example.com",
+                null, null, UserRole.OWNER, "auth0|target", UserStatus.ACTIVE);
+
+        when(usersRepository.findByAuth0UserId("auth0|owner")).thenReturn(Optional.of(ownerUser));
+        when(usersRepository.findById(any(UserIdentifier.class))).thenReturn(Optional. of(targetOwner));
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.deactivateUser(targetOwner.getUserIdentifier().getUserId().toString(), "auth0|owner")
+        );
+
+        assertTrue(exception.getMessage().contains("Cannot deactivate OWNER accounts"));
+        verify(auth0ManagementService, never()).blockAuth0User(anyString(), anyBoolean());
+    }
+
+    @Test
+    void deactivateUser_ThrowsException_WhenRequestingUserNotFound() {
+        when(usersRepository.findByAuth0UserId("auth0|notfound")).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.deactivateUser(userIdString, "auth0|notfound")
+        );
+
+        assertTrue(exception.getMessage().contains("Requesting user not found"));
+    }
+
+    @Test
+    void deactivateUser_ThrowsException_WhenTargetUserNotFound() {
+        Users ownerUser = new Users(UserIdentifier.newId(), "Owner", "User", "owner@example. com",
+                null, null, UserRole.OWNER, "auth0|owner", UserStatus. ACTIVE);
+
+        when(usersRepository.findByAuth0UserId("auth0|owner")).thenReturn(Optional.of(ownerUser));
+        when(usersRepository.findById(any(UserIdentifier. class))).thenReturn(Optional.empty());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                userService.deactivateUser(userIdString, "auth0|owner")
+        );
+
+        assertTrue(exception.getMessage().contains("User not found with ID: "));
+    }
+
+    @Test
+    void reactivateUser_ReactivatesUser_Successfully() {
+        Users ownerUser = new Users(UserIdentifier.newId(), "Owner", "User", "owner@example.com",
+                null, null, UserRole.OWNER, "auth0|owner", UserStatus.ACTIVE);
+        testUser.setUserStatus(UserStatus.DEACTIVATED);
+
+        when(usersRepository.findByAuth0UserId("auth0|owner")).thenReturn(Optional.of(ownerUser));
+        when(usersRepository.findById(any(UserIdentifier.class))).thenReturn(Optional.of(testUser));
+        when(usersRepository.save(any(Users.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        doNothing().when(auth0ManagementService).blockAuth0User(anyString(), eq(false));
+
+        UserResponseModel result = userService.reactivateUser(userIdString, "auth0|owner");
+
+        assertNotNull(result);
+        assertEquals(UserStatus.ACTIVE, result.getUserStatus());
+        verify(auth0ManagementService, times(1)).blockAuth0User("auth0|123456789", false);
+        verify(usersRepository, times(1)).save(any(Users.class));
+    }
+
+    @Test
+    void reactivateUser_ThrowsException_WhenNotOwner() {
+        Users nonOwnerUser = new Users(UserIdentifier.newId(), "Regular", "User", "regular@example.com",
+                null, null, UserRole.CUSTOMER, "auth0|regular", UserStatus.ACTIVE);
+
+        when(usersRepository.findByAuth0UserId("auth0|regular")).thenReturn(Optional.of(nonOwnerUser));
+
+        SecurityException exception = assertThrows(SecurityException.class, () ->
+                userService.reactivateUser(userIdString, "auth0|regular")
+        );
+
+        assertTrue(exception.getMessage().contains("Only OWNER users can reactivate accounts"));
+    }
+
+    @Test
+    void setUserInactive_SetsUserInactive_Successfully() {
+        Users ownerUser = new Users(UserIdentifier.newId(), "Owner", "User", "owner@example.com",
+                null, null, UserRole. OWNER, "auth0|owner", UserStatus.ACTIVE);
+
+        when(usersRepository.findByAuth0UserId("auth0|owner")).thenReturn(Optional. of(ownerUser));
+        when(usersRepository.findById(any(UserIdentifier.class))).thenReturn(Optional. of(testUser));
+        when(usersRepository.save(any(Users.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserResponseModel result = userService.setUserInactive(userIdString, "auth0|owner");
+
+        assertNotNull(result);
+        assertEquals(UserStatus.INACTIVE, result.getUserStatus());
+        verify(usersRepository, times(1)).save(any(Users.class));
+        verify(auth0ManagementService, never()).blockAuth0User(anyString(), anyBoolean());
+    }
+
+    // ========================== updateUserAsOwner TESTS ==========================
+
+    @Test
+    void updateUserAsOwner_UpdatesAllFields_Successfully() {
+        Users ownerUser = new Users(UserIdentifier.newId(), "Owner", "User", "owner@example. com",
+                null, null, UserRole.OWNER, "auth0|owner", UserStatus. ACTIVE);
+
+        when(usersRepository.findByAuth0UserId("auth0|owner")).thenReturn(Optional.of(ownerUser));
+        when(usersRepository.findById(any(UserIdentifier.class))).thenReturn(Optional.of(testUser));
+        when(usersRepository.save(any(Users.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        doNothing().when(auth0ManagementService).updateAuth0UserEmailAndName(anyString(), anyString(), anyString(), anyString());
+
+        UserUpdateRequestModel ownerUpdate = new UserUpdateRequestModel();
+        ownerUpdate.setFirstName("Jane");
+        ownerUpdate.setLastName("Smith");
+        ownerUpdate.setPrimaryEmail("jane.smith@example.com");
+        ownerUpdate.setSecondaryEmail("jane.secondary@example.com");
+        ownerUpdate.setPhone("514-555-9999");
+
+        UserResponseModel result = userService.updateUserAsOwner(userIdString, ownerUpdate, "auth0|owner");
+
+        assertNotNull(result);
+        assertEquals("Jane", result.getFirstName());
+        assertEquals("Smith", result.getLastName());
+        assertEquals("jane.smith@example.com", result.getPrimaryEmail());
+        assertEquals("jane.secondary@example.com", result.getSecondaryEmail());
+        assertEquals("514-555-9999", result.getPhone());
+
+        verify(auth0ManagementService, times(1)).updateAuth0UserEmailAndName(
+                eq("auth0|123456789"),
+                eq("jane.smith@example.com"),
+                eq("Jane"),
+                eq("Smith")
+        );
+        verify(usersRepository, times(1)).save(any(Users.class));
     }
 }

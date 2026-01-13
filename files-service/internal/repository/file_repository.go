@@ -89,3 +89,20 @@ func (r *fileRepository) FindByProjectID(ctx context.Context, projectID string) 
 
 	return files, nil
 }
+
+// FindByObjectKey retrieves a file by its storage object key
+func (r *fileRepository) FindByObjectKey(ctx context.Context, objectKey string) (*domain.File, error) {
+	f := domain.File{}
+	err := r.db.QueryRowContext(ctx, `
+		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, is_active
+		FROM files WHERE object_key=$1 AND is_active=true
+	`, objectKey).Scan(
+		&f.ID, &f.FileName, &f.ContentType,
+		&f.Category, &f.Size, &f.ObjectKey, &f.CreatedAt,
+		&f.ProjectID, &f.UploadedBy, &f.IsActive,
+	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	return &f, err
+}

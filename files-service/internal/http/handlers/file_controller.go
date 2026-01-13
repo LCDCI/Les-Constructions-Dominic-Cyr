@@ -25,6 +25,8 @@ var allowedImageTypes = map[string]bool{
 	"image/webp": true,
 }
 
+const maxUploadBytes = 25 * 1024 * 1024 // 25 MiB hard cap per upload
+
 type FileController struct {
 	s domain.FileService
 }
@@ -39,12 +41,18 @@ func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 	r.DELETE("/files/:id", fc.delete)
 	r.GET("/projects/:projectId/files", fc.listProjectFiles)
 	r.GET("/projects/:projectId/documents", fc.listProjectDocuments)
+	r.POST("/admin/reconcile/:projectId", fc.reconcile)
 }
 
 func (fc *FileController) upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "file not provided or invalid form-data"})
+		return
+	}
+
+	if file.Size > maxUploadBytes {
+		c.JSON(http.StatusRequestEntityTooLarge, gin.H{"error": "file too large (max 25MB)"})
 		return
 	}
 
@@ -169,17 +177,17 @@ func (fc *FileController) listProjectDocuments(c *gin.Context) {
 
 func (fc *FileController) delete(c *gin.Context) {
 	id := c.Param("id")
-	
+
 	var request struct {
 		DeletedBy string `json:"deletedBy"`
 	}
-	
+
 	// Bind JSON from request body
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body or missing deletedBy field"})
 		return
 	}
-	
+
 	if request.DeletedBy == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "deletedBy field is required"})
 		return
@@ -192,4 +200,24 @@ func (fc *FileController) delete(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+func (fc *FileController) reconcile(c *gin.Context) {
+	projectID := c.Param("projectId")
+	if projectID == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "projectId is required"})
+		return
+	}
+
+	synced, err := fc.s.ReconcileStorageWithDatabase(c.Request.Context(), projectID)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":         "reconciliation complete",
+		"filesReconciled": synced,
+		"projectId":       projectID,
+	})
 }
