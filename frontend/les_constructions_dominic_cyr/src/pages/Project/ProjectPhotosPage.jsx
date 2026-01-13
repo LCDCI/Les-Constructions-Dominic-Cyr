@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { FaCamera, FaCloudUploadAlt } from 'react-icons/fa';
+import { FaCamera, FaCloudUploadAlt, FaSync } from 'react-icons/fa';
 import PhotoUploadModal from '../../components/Modals/PhotoUploadModal';
-import { deleteFile, fetchProjectFiles } from '../../features/files/api/filesApi'; 
+import { deleteFile, fetchProjectFiles, reconcileProject } from '../../features/files/api/filesApi'; 
 import PhotoCard from '../../features/files/components/PhotoCard'; 
 import '../../styles/PhotosPage.css';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -14,9 +14,16 @@ export default function ProjectPhotosPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null); 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     
     const { profile, role } = useBackendUser();
-    const uploadedBy = profile?.userIdentifier || '';
+    const uploadedBy =
+        (profile?.fullName && profile.fullName.trim()) ||
+        [profile?.firstName, profile?.lastName].filter(Boolean).join(' ').trim() ||
+        profile?.name ||
+        profile?.email ||
+        profile?.userIdentifier ||
+        '';
     const navigate = useNavigate();
 
     // Permission checks based on role
@@ -75,6 +82,20 @@ export default function ProjectPhotosPage() {
         }
     };
 
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            await reconcileProject(projectId);
+            const photos = await fetchProjectFiles(projectId);
+            setAllFiles(photos);
+        } catch (err) {
+            console.error('Failed to refresh:', err);
+            alert('Failed to refresh photos. Please try again.');
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
     if (isLoading) {
         return <div className="photos-page container" style={{textAlign: 'center', padding: '50px'}}>Loading project photos...</div>;
     }
@@ -93,11 +114,21 @@ export default function ProjectPhotosPage() {
         <div className="photos-page container">
             <div className="photos-header">
                 <h1><FaCamera style={{ marginRight: '10px' }} /> Project Photos: {projectId}</h1>
-                {canUpload && (
-                    <button className="btn-upload" onClick={() => setIsModalOpen(true)}>
-                        <FaCloudUploadAlt /> Upload Photo
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button 
+                        className="btn-refresh" 
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        style={{ background: '#6366F1', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: isRefreshing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                        <FaSync className={isRefreshing ? 'spinning' : ''} /> {isRefreshing ? 'Syncing...' : 'Sync Photos'}
                     </button>
-                )}
+                    {canUpload && (
+                        <button className="btn-upload" onClick={() => setIsModalOpen(true)}>
+                            <FaCloudUploadAlt /> Upload Photo
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="photo-grid-container">
