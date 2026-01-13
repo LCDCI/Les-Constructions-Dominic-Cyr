@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Scheduler, SchedulerData, ViewType } from 'react-big-schedule';
 import 'react-big-schedule/dist/css/style.css';
 import { projectScheduleApi } from '../../features/schedules/api/projectScheduleApi';
@@ -8,6 +9,7 @@ import '../../styles/Project/ProjectSchedule.css';
 const ProjectSchedulePage = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
   const [schedulerData, setSchedulerData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,8 +18,24 @@ const ProjectSchedulePage = () => {
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
+        // Wait for Auth0 to finish loading before deciding on token
+        if (isLoading) return;
+
         setLoading(true);
-        const schedules = await projectScheduleApi.getProjectSchedules(projectId);
+        
+        // Get token if authenticated
+        let token = null;
+        if (isAuthenticated) {
+          try {
+            token = await getAccessTokenSilently({
+              authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
+            });
+          } catch (tokenErr) {
+            console.warn('Could not get token, proceeding without auth');
+          }
+        }
+        
+        const schedules = await projectScheduleApi.getProjectSchedules(projectId, token);
         
         if (!schedules || schedules.length === 0) {
           setError('No schedules found for this project.');
@@ -94,7 +112,7 @@ const ProjectSchedulePage = () => {
     if (projectId) {
       fetchSchedules();
     }
-  }, [projectId]);
+  }, [projectId, isAuthenticated, isLoading, getAccessTokenSilently]);
 
   const prevClick = schedulerData => {
     schedulerData.prev();
