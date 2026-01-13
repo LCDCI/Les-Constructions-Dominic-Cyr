@@ -39,18 +39,18 @@ class ScheduleControllerUnitTest{
     void setUp() {
         responseDTO1 = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-001")
-                .taskDate(LocalDate.now())
-                .taskDescription("Begin Excavation")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Begin Excavation")
                 .lotNumber("Lot 53")
-                .dayOfWeek("Monday")
                 .build();
 
         responseDTO2 = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-002")
-                .taskDate(LocalDate.now().plusDays(1))
-                .taskDescription("Plumbing")
+                .scheduleStartDate(LocalDate.now().plusDays(1))
+                .scheduleEndDate(LocalDate.now().plusDays(1))
+                .scheduleDescription("Plumbing")
                 .lotNumber("Lot 57")
-                .dayOfWeek("Tuesday")
                 .build();
     }
 
@@ -120,7 +120,7 @@ class ScheduleControllerUnitTest{
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("SCH-001", response.getBody().getScheduleIdentifier());
-        assertEquals("Begin Excavation", response.getBody().getTaskDescription());
+        assertEquals("Begin Excavation", response.getBody().getScheduleDescription());
 
         verify(scheduleService).getScheduleByIdentifier(identifier);
     }
@@ -460,5 +460,66 @@ class ScheduleControllerUnitTest{
         assertEquals(errorMessage, response.getBody());
 
         verify(scheduleService).getScheduleByIdentifier(identifier);
+    }
+
+    // Project Schedule CRUD Endpoints Tests
+    @Test
+    void getProjectSchedules_shouldReturnSchedulesWithOkStatus() {
+        String projectIdentifier = "proj-001";
+        List<ScheduleResponseDTO> schedules = Arrays.asList(responseDTO1, responseDTO2);
+        when(scheduleService.getSchedulesByProjectIdentifier(projectIdentifier)).thenReturn(schedules);
+
+        ResponseEntity<List<ScheduleResponseDTO>> response = scheduleController.getProjectSchedules(projectIdentifier);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+
+        verify(scheduleService).getSchedulesByProjectIdentifier(projectIdentifier);
+    }
+
+    @Test
+    void getProjectSchedules_shouldReturnEmptyListWithOkStatus() {
+        String projectIdentifier = "proj-001";
+        when(scheduleService.getSchedulesByProjectIdentifier(projectIdentifier)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<ScheduleResponseDTO>> response = scheduleController.getProjectSchedules(projectIdentifier);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isEmpty());
+
+        verify(scheduleService).getSchedulesByProjectIdentifier(projectIdentifier);
+    }
+
+    @Test
+    void getProjectScheduleByIdentifier_shouldReturnScheduleWithOkStatus() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+        when(scheduleService.getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier))
+                .thenReturn(responseDTO1);
+
+        ResponseEntity<?> response = scheduleController.getProjectScheduleByIdentifier(projectIdentifier, scheduleIdentifier);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDTO1, response.getBody());
+
+        verify(scheduleService).getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier);
+    }
+
+    @Test
+    void getProjectScheduleByIdentifier_shouldReturnNotFoundWhenNotFoundExceptionThrown() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-999";
+        String errorMessage = "Schedule not found";
+        when(scheduleService.getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier))
+                .thenThrow(new NotFoundException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.getProjectScheduleByIdentifier(projectIdentifier, scheduleIdentifier);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier);
     }
 }
