@@ -47,7 +47,7 @@ public class Schedule {
     private LocalDateTime updatedAt;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "schedule_id")
+    @JoinColumn(name = "schedule_id", referencedColumnName = "schedule_identifier")
     private List<Task> tasks;
 
     @ManyToOne(fetch = FetchType.LAZY)
