@@ -89,11 +89,10 @@ const ProjectSchedulePage = () => {
 
         const mappedEvents = scheduleWithIds.map(schedule => ({
           id: schedule.id,
-          title: schedule.taskDescription,
-          start: toDate(schedule.taskDate, 8),
-          end: toDate(schedule.taskDate, 17),
+          title: schedule.scheduleDescription,
+          start: toDate(schedule.scheduleStartDate, 8),
+          end: toDate(schedule.scheduleEndDate, 17),
           lot: schedule.lotNumber,
-          dayOfWeek: schedule.dayOfWeek,
           projectName: schedule.projectName,
         }));
 
@@ -217,18 +216,17 @@ const ProjectSchedulePage = () => {
           <div className="schedule-list-items">
             {schedules.map(item => (
               <div
-                key={item.id ?? `${item.taskDate}-${item.taskDescription}`}
+                key={item.id ?? `${item.scheduleStartDate}-${item.scheduleDescription}`}
                 className="schedule-card"
               >
                 <div className="schedule-card-date">
-                  <span className="schedule-card-day">{item.dayOfWeek}</span>
                   <span className="schedule-card-date-text">
-                    {item.taskDate}
+                    {item.scheduleStartDate}
                   </span>
                 </div>
                 <div className="schedule-card-body">
                   <div className="schedule-card-title">
-                    {item.taskDescription}
+                    {item.scheduleDescription}
                   </div>
                   <div className="schedule-card-meta">
                     Lot: {item.lotNumber}
