@@ -32,11 +32,10 @@ class TaskMapperUnitTest {
     void setUp() {
         taskMapper = new TaskMapper();
 
-        // java
-// Replace the existing Users construction in the test setup with this
         testContractor = new Users();
+        // set first name to "John" to match the expected "John Contractor" in assertions
         testContractor.setUserIdentifier(UserIdentifier.fromString("22222222-2222-2222-2222-222222222222"));
-        testContractor.setFirstName("Jane");
+        testContractor.setFirstName("John");
         testContractor.setLastName("Contractor");
         testContractor.setPrimaryEmail("contractor@test.com");
         testContractor.setSecondaryEmail(null);
@@ -44,7 +43,6 @@ class TaskMapperUnitTest {
         testContractor.setUserRole(UserRole.CONTRACTOR);
         testContractor.setAuth0UserId("auth0|693faa68bf9e92b3d445c4ab");
         testContractor.setUserStatus(UserStatus.ACTIVE);
-
 
         task1 = Task.builder()
                 .id(1)
