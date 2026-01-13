@@ -98,11 +98,22 @@ INSERT INTO projects (
           80
       );
 
-INSERT INTO schedules (schedule_identifier, task_date, task_description, lot_number, day_of_week) VALUES
-                                                                                                      ('SCH-001', '2025-12-05', 'Begin Excavation', 'Lot 53', 'Wednesday'),
-                                                                                                      ('SCH-002', '2025-12-06', 'Plumbing', 'Lot 57', 'Wednesday'),
-                                                                                                      ('SCH-003', '2025-12-12', 'Electrical', 'Lot 54', 'Thursday'),
-                                                                                                      ('SCH-004', '2025-12-08', 'End of Excavation', 'Lot 53', 'Friday');
+INSERT INTO schedules (schedule_identifier, schedule_start_date, schedule_end_date, schedule_description, lot_number, project_id) VALUES
+    ('SCH-001', '2026-01-20', '2026-01-20', 'Foundation Work - Pour Concrete', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-002', '2026-01-22', '2026-01-22', 'Framing - Install Floor Joists', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-003', '2026-01-25', '2026-01-25', 'Framing - Wall Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-004', '2026-01-28', '2026-01-28', 'Roofing - Sheathing', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-005', '2026-02-01', '2026-02-01', 'Roofing - Shingles Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-006', '2026-02-05', '2026-02-05', 'Plumbing - Rough-In', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-007', '2026-02-08', '2026-02-08', 'Electrical - Rough Wiring', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-008', '2026-02-12', '2026-02-12', 'HVAC Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
+    ('SCH-009', '2026-01-23', '2026-01-23', 'Site Preparation - Excavation', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-010', '2026-01-27', '2026-01-27', 'Foundation - Footings', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-011', '2026-01-30', '2026-01-30', 'Foundation - Pour Concrete', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-012', '2026-02-03', '2026-02-03', 'Framing - Install Floor System', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-013', '2026-02-06', '2026-02-06', 'Framing - Wall Framing', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-014', '2026-02-10', '2026-02-10', 'Framing - Roof Trusses', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
+    ('SCH-015', '2026-02-13', '2026-02-13', 'Exterior - Window Installation', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama'));
 
 
 
@@ -208,3 +219,14 @@ INSERT INTO app_theme (
              '#4C4D4F',
              '#FFFFFF'
          );
+
+
+-- Insert test data for tasks
+INSERT INTO tasks (task_identifier, task_status, task_title, period_start, period_end, task_description, task_priority, estimated_hours, hours_spent, task_progress, assigned_user_id, schedule_id)
+VALUES
+    ('TASK-001', 'TO_DO', 'Install Foundation', '2025-12-05', '2025-12-08', 'Pour concrete foundation for Lot 53', 'HIGH', 16.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
+    ('TASK-002', 'IN_PROGRESS', 'Framing Work', '2025-12-09', '2025-12-15', 'Complete structural framing for Lot 53', 'VERY_HIGH', 40.0, 15.0, 37.5, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
+    ('TASK-003', 'TO_DO', 'Electrical Rough-In', '2025-12-12', '2025-12-14', 'Install electrical wiring for Lot 54', 'MEDIUM', 20.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
+    ('TASK-004', 'COMPLETED', 'Site Preparation', '2025-11-28', '2025-11-30', 'Clear and level site for Lot 57', 'HIGH', 12.0, 12.0, 100.0, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
+    ('TASK-005', 'TO_DO', 'Plumbing Installation', '2025-12-16', '2025-12-20', 'Install main plumbing lines for Lot 57', 'HIGH', 24.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 'SCH-001');
+
