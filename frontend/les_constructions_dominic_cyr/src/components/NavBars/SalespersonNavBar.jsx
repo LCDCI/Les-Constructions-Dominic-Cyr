@@ -61,7 +61,6 @@ const Navbar = () => {
                 aria-label="Toggle navigation menu"
                 aria-expanded={isOpen}
             >
-                <span>Salesperson</span>
                 <span className="hamburger-line"></span>
                 <span className="hamburger-line"></span>
                 <span className="hamburger-line"></span>

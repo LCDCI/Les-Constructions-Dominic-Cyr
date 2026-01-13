@@ -1,11 +1,11 @@
 package domain
 
 type FileMetadata struct {
-	ID          string
-	FileName    string
-	ContentType string
-	Category    FileCategory
-	ProjectID   string
-	UploadedBy  string
-	Url         string
+	ID          string       `json:"id"`
+	FileName    string       `json:"fileName"`
+	ContentType string       `json:"contentType"`
+	Category    FileCategory `json:"category"`
+	ProjectID   string       `json:"projectId"`
+	UploadedBy  string       `json:"uploadedBy"`
+	Url         string       `json:"url"`
 }

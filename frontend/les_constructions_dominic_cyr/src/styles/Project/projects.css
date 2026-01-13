@@ -181,6 +181,14 @@
     flex-grow: 1;
 }
 
+.project-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+}
+
 .project-button {
     background-color: var(--primary-color);
     color: var(--white);
@@ -191,6 +199,23 @@
     transition: var(--transition);
     width: 70%;
     max-width: 200px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.project-button.edit-button {
+    background-color: #10B981;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 3% 8%;
+}
+
+.project-button.edit-button:hover {
+    background-color: #059669;
 }
 
 .project-button:hover {

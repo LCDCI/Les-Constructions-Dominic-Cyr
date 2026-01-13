@@ -5,7 +5,7 @@ import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/LotsPage';
 import ProjectsPage from './pages/Project/ProjectsPage';
 import CreateProjectPage from './pages/Project/CreateProjectPage';
-import HousesPage from './pages/Public_Facing/HousesPage';
+import RealizationsPage from './pages/Public_Facing/RealizationsPage';
 import RenovationsPage from './pages/Public_Facing/RenovationsPage';
 import ProjectManagementPage from './pages/Project/ProjectManagementPage';
 import ContactPage from './pages/Public_Facing/ContactPage';
@@ -20,6 +20,7 @@ import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPa
 import ContractorDashboard from './pages/Dashboards/ContractorDashboard';
 import ProjectFilesPage from './pages/Project/ProjectFilesPage';
 import ProjectPhotosPage from './pages/Project/ProjectPhotosPage';
+import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
 import PortalLogin from './pages/PortalLogin';
 import ProfilePage from './pages/ProfilePage';
 import Unauthorized from './pages/Errors/Unauthorized';
@@ -29,14 +30,22 @@ import ProtectedRoute from './components/ProtectedRoute';
 import HomeFooter from './components/Footers/HomeFooter';
 import NavigationSetter from './components/NavigationSetter';
 import { loadTheme } from './utils/themeLoader';
+import { useAuth0 } from '@auth0/auth0-react';
+import { setupAxiosInterceptors } from './utils/axios';
 
 
 export default function App() {
+    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   useEffect(() => {
   loadTheme();
 }, []);
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            setupAxiosInterceptors(getAccessTokenSilently);
+        }
+    }, [isAuthenticated, getAccessTokenSilently]);
 
   return (
     <BrowserRouter>
@@ -70,7 +79,7 @@ export default function App() {
                 />
               }
             />
-            <Route path="/houses" element={<HousesPage />} />
+            <Route path="/realizations" element={<RealizationsPage />} />
             <Route path="/renovations" element={<RenovationsPage />} />
             <Route path="/projectmanagement" element={<ProjectManagementPage />} />
             <Route path="/contact" element={<ContactPage />} />
@@ -122,6 +131,15 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
                   element={<ProjectPhotosPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/schedule"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  element={<ProjectSchedulePage />}
                 />
               }
             />
