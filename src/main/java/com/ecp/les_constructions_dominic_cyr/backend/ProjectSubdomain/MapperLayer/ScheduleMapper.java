@@ -20,10 +20,10 @@ public class ScheduleMapper {
     public ScheduleResponseDTO entityToResponseDTO(Schedule schedule) {
         return ScheduleResponseDTO.builder()
                 .scheduleIdentifier(schedule.getScheduleIdentifier())
-                .taskDate(schedule.getTaskDate())
-                .taskDescription(schedule.getTaskDescription())
+                .scheduleStartDate(schedule.getScheduleStartDate())
+                .scheduleEndDate(schedule.getScheduleEndDate())
+                .scheduleDescription(schedule.getScheduleDescription())
                 .lotNumber(schedule.getLotNumber())
-                .dayOfWeek(schedule.getDayOfWeek())
                 .createdAt(schedule.getCreatedAt())
                 .updatedAt(schedule.getUpdatedAt())
                 .tasks(schedule.getTasks() != null ? taskMapper.entitiesToResponseDTOs(schedule.getTasks()) : new ArrayList<>())
@@ -42,18 +42,18 @@ public class ScheduleMapper {
     public Schedule requestDTOToEntity(ScheduleRequestDTO requestDTO) {
         return Schedule.builder()
                 .scheduleIdentifier(UUID.randomUUID().toString())
-                .taskDate(requestDTO.getTaskDate())
-                .taskDescription(requestDTO.getTaskDescription())
+                .scheduleStartDate(requestDTO.getScheduleStartDate())
+                .scheduleEndDate(requestDTO.getScheduleEndDate())
+                .scheduleDescription(requestDTO.getScheduleDescription())
                 .lotNumber(requestDTO.getLotNumber())
-                .dayOfWeek(requestDTO.getDayOfWeek())
                 .tasks(new ArrayList<>())
                 .build();
     }
 
     public void updateEntityFromRequestDTO(Schedule schedule, ScheduleRequestDTO requestDTO) {
-        schedule.setTaskDate(requestDTO.getTaskDate());
-        schedule.setTaskDescription(requestDTO.getTaskDescription());
+        schedule.setScheduleStartDate(requestDTO.getScheduleStartDate());
+        schedule.setScheduleEndDate(requestDTO.getScheduleEndDate());
+        schedule.setScheduleDescription(requestDTO.getScheduleDescription());
         schedule.setLotNumber(requestDTO.getLotNumber());
-        schedule.setDayOfWeek(requestDTO.getDayOfWeek());
     }
 }

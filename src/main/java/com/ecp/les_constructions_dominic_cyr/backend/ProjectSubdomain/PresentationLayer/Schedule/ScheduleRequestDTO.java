@@ -12,8 +12,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class ScheduleRequestDTO {
-    private LocalDate taskDate;
-    private String taskDescription;
+    private LocalDate scheduleStartDate;
+    private LocalDate scheduleEndDate;
+    private String scheduleDescription;
     private String lotNumber;
-    private String dayOfWeek;
 }

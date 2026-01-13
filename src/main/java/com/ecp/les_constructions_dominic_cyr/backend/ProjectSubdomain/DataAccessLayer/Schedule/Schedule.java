@@ -28,17 +28,17 @@ public class Schedule {
     @Column(name = "schedule_identifier", unique = true, nullable = false)
     private String scheduleIdentifier;
 
-    @Column(name = "task_date", nullable = false)
-    private LocalDate taskDate;
+    @Column(name = "schedule_start_date", nullable = false)
+    private LocalDate scheduleStartDate;
 
-    @Column(name = "task_description", nullable = false, length = 500)
-    private String taskDescription;
+    @Column(name = "schedule_end_date", nullable = false)
+    private LocalDate scheduleEndDate;
+
+    @Column(name = "schedule_description", nullable = false, length = 500)
+    private String scheduleDescription;
 
     @Column(name = "lot_number", nullable = false, length = 50)
     private String lotNumber;
-
-    @Column(name = "day_of_week", nullable = false, length = 20)
-    private String dayOfWeek;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -54,12 +54,12 @@ public class Schedule {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate taskDate, @NotNull String taskDescription, @NotNull String lotNumber, @NotNull String dayOfWeek) {
+    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate scheduleStartDate, @NotNull LocalDate scheduleEndDate, @NotNull String scheduleDescription, @NotNull String lotNumber) {
         this.scheduleIdentifier = scheduleIdentifier;
-        this.taskDate = taskDate;
-        this.taskDescription = taskDescription;
+        this.scheduleStartDate = scheduleStartDate;
+        this.scheduleEndDate = scheduleEndDate;
+        this.scheduleDescription = scheduleDescription;
         this.lotNumber = lotNumber;
-        this.dayOfWeek = dayOfWeek;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.tasks = new ArrayList<>();
