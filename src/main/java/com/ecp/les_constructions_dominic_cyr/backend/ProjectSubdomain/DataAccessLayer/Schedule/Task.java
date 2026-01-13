@@ -56,6 +56,9 @@ public class Task {
     @JoinColumn(name = "assigned_user_id")
     private Users assignedTo;
 
+    @Column(name = "schedule_id", nullable = false)
+    private String scheduleId;
+
     public Task(@NotNull TaskIdentifier taskIdentifier, @NotNull TaskStatus taskStatus, @NotNull String taskTitle, @NotNull LocalDate periodStart, @NotNull LocalDate periodEnd, @NotNull String taskDescription, @NotNull TaskPriority taskPriority, @NotNull Double estimatedHours, @NotNull Double hoursSpent, @NotNull Double taskProgress, @NotNull Users assignedTo) {
         this.taskIdentifier = taskIdentifier;
         this.taskStatus = taskStatus;

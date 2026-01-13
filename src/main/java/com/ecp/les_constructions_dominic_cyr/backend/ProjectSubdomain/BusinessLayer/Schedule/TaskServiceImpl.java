@@ -108,6 +108,11 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.entitiesToResponseDTOs(tasks);
     }
 
+    @Override
+    public List<Task> getTasksForSchedule(String scheduleIdentifier) {
+        return List.of();
+    }
+
     private void validateTaskRequest(TaskRequestDTO taskRequestDTO) {
         if (taskRequestDTO.getTaskTitle() == null || taskRequestDTO.getTaskTitle().isBlank()) {
             throw new InvalidInputException("Task title must not be blank");

@@ -131,9 +131,9 @@ CREATE TABLE tasks (
     hours_spent NUMERIC(10, 2),
     task_progress NUMERIC(5, 2),
     assigned_user_id UUID,
-    schedule_id BIGINT,
+    schedule_id VARCHAR(255) NOT NULL,
     FOREIGN KEY (assigned_user_id) REFERENCES users(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (schedule_id) REFERENCES schedules(id) ON DELETE CASCADE
+    FOREIGN KEY (schedule_id) REFERENCES schedules(schedule_identifier) ON DELETE CASCADE
 );
 
 CREATE INDEX IF NOT EXISTS idx_task_identifier ON tasks(task_identifier);

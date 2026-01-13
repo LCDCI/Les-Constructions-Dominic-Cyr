@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
 
@@ -36,4 +37,6 @@ public interface TaskService {
      * Get tasks assigned to a specific contractor
      */
     List<TaskDetailResponseDTO> getTasksForContractor(String contractorId);
+
+    List<Task> getTasksForSchedule(String scheduleIdentifier);
 }
