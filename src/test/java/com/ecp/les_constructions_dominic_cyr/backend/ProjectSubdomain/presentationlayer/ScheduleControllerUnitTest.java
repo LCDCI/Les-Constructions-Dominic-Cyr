@@ -39,18 +39,18 @@ class ScheduleControllerUnitTest{
     void setUp() {
         responseDTO1 = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-001")
-                .taskDate(LocalDate.now())
-                .taskDescription("Begin Excavation")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Begin Excavation")
                 .lotNumber("Lot 53")
-                .dayOfWeek("Monday")
                 .build();
 
         responseDTO2 = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-002")
-                .taskDate(LocalDate.now().plusDays(1))
-                .taskDescription("Plumbing")
+                .scheduleStartDate(LocalDate.now().plusDays(1))
+                .scheduleEndDate(LocalDate.now().plusDays(1))
+                .scheduleDescription("Plumbing")
                 .lotNumber("Lot 57")
-                .dayOfWeek("Tuesday")
                 .build();
     }
 

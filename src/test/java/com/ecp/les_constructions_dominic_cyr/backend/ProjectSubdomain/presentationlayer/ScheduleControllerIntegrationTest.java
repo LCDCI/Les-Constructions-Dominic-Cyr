@@ -100,6 +100,6 @@ class ScheduleControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.scheduleIdentifier", is("SCH-TEST-001")))
-                .andExpect(jsonPath("$.taskDescription", is("Begin Excavation")));
+                .andExpect(jsonPath("$.scheduleDescription", is("Begin Excavation")));
     }
 }
