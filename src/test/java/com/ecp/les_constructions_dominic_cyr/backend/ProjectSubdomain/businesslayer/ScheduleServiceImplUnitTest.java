@@ -167,7 +167,7 @@ class ScheduleServiceImplUnitTest {
 
         assertNotNull(result);
         assertEquals("SCH-001", result.getScheduleIdentifier());
-        assertEquals("Begin Excavation", result.getTaskDescription());
+        assertEquals("Begin Excavation", result.getScheduleDescription());
         assertEquals("Lot 53", result.getLotNumber());
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
@@ -224,7 +224,7 @@ class ScheduleServiceImplUnitTest {
 
         assertNotNull(result);
         assertEquals("SCH-NEW", result.getScheduleIdentifier());
-        assertEquals("New Task", result.getTaskDescription());
+        assertEquals("New Task", result.getScheduleDescription());
 
         verify(scheduleMapper).requestDTOToEntity(requestDTO);
         verify(scheduleRepository).save(newSchedule);
@@ -365,7 +365,7 @@ class ScheduleServiceImplUnitTest {
         LocalDate periodEnd = LocalDate.now().plusDays(7);
         List<Schedule> schedules = Arrays.asList(schedule1, schedule2);
 
-        when(scheduleRepository.findByTaskDateBetween(periodStart, periodEnd)).thenReturn(schedules);
+        when(scheduleRepository.findByScheduleStartDateBetween(periodStart, periodEnd)).thenReturn(schedules);
 
         TaskResponseDTO result = scheduleService.getTaskSummaryForContractor(
                 "contractor-456", "schedule-789", periodStart, periodEnd);
@@ -383,7 +383,7 @@ class ScheduleServiceImplUnitTest {
         LocalDate periodStart = LocalDate.now();
         LocalDate periodEnd = LocalDate.now().plusDays(7);
 
-        when(scheduleRepository.findByTaskDateBetween(periodStart, periodEnd)).thenReturn(Collections.emptyList());
+        when(scheduleRepository.findByScheduleStartDateBetween(periodStart, periodEnd)).thenReturn(Collections.emptyList());
 
         TaskResponseDTO result = scheduleService.getTaskSummaryForContractor(
                 "contractor-456", "schedule-789", periodStart, periodEnd);
