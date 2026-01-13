@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { FaSync } from 'react-icons/fa';
 import { FaFileArrowUp } from 'react-icons/fa6';
 import FileUploadModal from '../../components/Modals/FileUploadModal';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import FileCard from '../../features/files/components/FileCard';
-import { deleteFile, fetchProjectFiles } from '../../features/files/api/filesApi';
+import { deleteFile, fetchProjectDocuments, reconcileProject } from '../../features/files/api/filesApi';
 import '../../styles/FilesPage.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import useBackendUser from '../../hooks/useBackendUser';
@@ -18,22 +19,29 @@ export default function ProjectFilesPage() {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [fileToDelete, setFileToDelete] = useState(null);
     const [deleteError, setDeleteError] = useState(null);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     const { profile, role } = useBackendUser();
     const userId = profile?.userIdentifier || '';
+    const uploaderName =
+        (profile?.fullName && profile.fullName.trim()) ||
+        [profile?.firstName, profile?.lastName].filter(Boolean).join(' ').trim() ||
+        profile?.name ||
+        profile?.email ||
+        'Unknown';
     const navigate = useNavigate();
 
     // Permission checks based on role
     const canUpload = canUploadDocuments(role);
     const canDelete = canDeleteDocuments(role);
 
-    // Data Fetching (match the photos page pattern)
+    // Data Fetching - use fetchProjectDocuments for documents endpoint
     useEffect(() => {
         const loadFiles = async () => {
             setIsLoading(true);
             setError(null);
             try {
-                const files = await fetchProjectFiles(projectId);
+                const files = await fetchProjectDocuments(projectId);
                 setAllFiles(files || []);
             } catch (err) {
                 console.error('Failed to fetch project files:', err);
@@ -55,10 +63,8 @@ export default function ProjectFilesPage() {
         loadFiles();
     }, [projectId, navigate]);
 
-    // Only show DOCUMENT files; ignore bad entries
-    const documents = (allFiles || []).filter(
-        (file) => file && (file.category || 'DOCUMENT') === 'DOCUMENT'
-    );
+    // The documents endpoint already returns only DOCUMENT category files
+    const documents = allFiles || [];
 
     const handleUploadSuccess = (newFileMetadata) => {
         const newFile = {
@@ -99,6 +105,20 @@ export default function ProjectFilesPage() {
         setFileToDelete(null);
     };
 
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        try {
+            await reconcileProject(projectId);
+            const files = await fetchProjectDocuments(projectId);
+            setAllFiles(files || []);
+        } catch (err) {
+            console.error('Failed to refresh:', err);
+            alert('Failed to refresh files. Please try again.');
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="documents-page container" style={{ textAlign: 'center', padding: '50px' }}>
@@ -121,11 +141,21 @@ export default function ProjectFilesPage() {
         <div className="documents-page container">
             <div className="documents-header">
                 <h1>Project Documents: {projectId}</h1>
-                {canUpload && (
-                    <button className="btn-upload" onClick={() => setIsModalOpen(true)}>
-                        <FaFileArrowUp /> Upload Document
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button 
+                        className="btn-refresh" 
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        style={{ background: '#6366F1', color: 'white', padding: '10px 20px', border: 'none', borderRadius: '8px', cursor: isRefreshing ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                        <FaSync className={isRefreshing ? 'spinning' : ''} /> {isRefreshing ? 'Syncing...' : 'Sync Files'}
                     </button>
-                )}
+                    {canUpload && (
+                        <button className="btn-upload" onClick={() => setIsModalOpen(true)}>
+                            <FaFileArrowUp /> Upload Document
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="document-list-container">
@@ -157,7 +187,7 @@ export default function ProjectFilesPage() {
             {isModalOpen && (
                 <FileUploadModal
                     projectId={projectId}
-                    uploadedBy={userId}
+                    uploadedBy={uploaderName}
                     onClose={() => setIsModalOpen(false)}
                     onUploadSuccess={handleUploadSuccess}
                 />

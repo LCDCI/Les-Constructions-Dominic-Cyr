@@ -2,6 +2,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.mapperlayer
 
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.MapperLayer.UserMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserCreateRequestModel;
@@ -99,7 +100,8 @@ public class UserMapperUnitTest {
                 "jane.secondary@example.com",
                 "514-666-7890",
                 UserRole.SALESPERSON,
-                "auth0|abc123"
+                "auth0|abc123",
+                UserStatus.ACTIVE
         );
 
         UserResponseModel result = UserMapper.toResponseModel(user, null);
@@ -126,7 +128,8 @@ public class UserMapperUnitTest {
                 null,
                 null,
                 UserRole.CUSTOMER,
-                "auth0|newuser"
+                "auth0|newuser",
+                UserStatus.ACTIVE
         );
         String inviteLink = "https://auth0.com/invite/xyz789";
 
@@ -147,7 +150,8 @@ public class UserMapperUnitTest {
                 null, // no secondary email
                 null, // no phone
                 UserRole.CONTRACTOR,
-                null  // no auth0 id yet
+                null,// no auth0 id yet
+                UserStatus.ACTIVE
         );
 
         UserResponseModel result = UserMapper.toResponseModel(user, null);
@@ -171,7 +175,8 @@ public class UserMapperUnitTest {
                     null,
                     null,
                     role,
-                    "auth0|test"
+                    "auth0|test",
+                    UserStatus.ACTIVE
             );
 
             UserResponseModel result = UserMapper.toResponseModel(user, null);
@@ -190,7 +195,8 @@ public class UserMapperUnitTest {
                 null,
                 null,
                 UserRole.CUSTOMER,
-                "auth0|noid"
+                "auth0|noid",
+                UserStatus.ACTIVE
         );
 
         UserResponseModel result = UserMapper.toResponseModel(user, null);
@@ -264,7 +270,8 @@ public class UserMapperUnitTest {
                 null,
                 "+41 79 123 45 67",
                 UserRole.CUSTOMER,
-                "auth0|special"
+                "auth0|special",
+                UserStatus.ACTIVE
         );
 
         UserResponseModel result = UserMapper.toResponseModel(user, null);

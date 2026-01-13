@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"files-service/internal/config"
@@ -25,8 +26,16 @@ func main() {
 	fileService := service.NewFileService(repo, minioClient)
 	fileController := handlers.NewFileController(fileService)
 
+	// Auto-reconcile Spaces with database on startup
+	log.Println("Starting automatic reconciliation of Spaces with database...")
+	if err := fileService.AutoReconcileAllProjects(context.Background()); err != nil {
+		log.Printf("[WARN] Auto-reconciliation failed: %v (continuing startup)", err)
+	}
+
 	r := gin.Default()
 
+	r.Use(middleware.SecurityHeaders())
+	r.Use(middleware.RateLimiter(cfg))
 	r.Use(middleware.CORSMiddleware())
 
 	r.Use(middleware.ErrorHandler)

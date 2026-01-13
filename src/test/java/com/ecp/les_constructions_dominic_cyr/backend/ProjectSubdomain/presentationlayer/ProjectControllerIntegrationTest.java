@@ -63,7 +63,7 @@ class ProjectControllerIntegrationTest {
         when(fileServiceClient.validateFileExists(anyString())).thenReturn(Mono.just(true));
     }
 
-    //@Test
+    @Test
     void whenValidCreate_thenReturnCreated() throws Exception {
         ProjectRequestModel req = new ProjectRequestModel();
         req.setProjectName("Integration Project");

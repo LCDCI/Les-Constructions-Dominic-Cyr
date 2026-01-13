@@ -14,4 +14,7 @@ public interface UserService {
     UserResponseModel getUserByAuth0Id(String auth0UserId);
     UserResponseModel updateUser(String userId, UserUpdateRequestModel requestModel);
     UserResponseModel updateUserAsOwner(String userId, UserUpdateRequestModel requestModel, String requestingAuth0UserId);
+    UserResponseModel deactivateUser(String userId, String requestingAuth0UserId);
+    UserResponseModel setUserInactive(String userId, String requestingAuth0UserId);
+    UserResponseModel reactivateUser(String userId, String requestingAuth0UserId);
 }

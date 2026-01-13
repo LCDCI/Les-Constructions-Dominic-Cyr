@@ -41,7 +41,7 @@ public class GlobalPhotoControllerIntegrationTest {
     @MockitoBean
     private Auth0ManagementService auth0ManagementService;
 
-    //@Test
+    @Test
     void uploadGlobal_WithPngFile_ReturnsOk() throws Exception {
         when(globalPhotoService.uploadGlobalPhoto(any(MultipartFile.class), any(String.class)))
                 .thenReturn(Mono.just("{\"type\":\"png\"}"));
