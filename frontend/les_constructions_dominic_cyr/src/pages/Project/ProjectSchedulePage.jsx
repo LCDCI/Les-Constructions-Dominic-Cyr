@@ -42,15 +42,20 @@ const ProjectSchedulePage = () => {
     []
   );
 
+  const toDate = (dateStr, hour = 8) => {
+    if (!dateStr) return new Date();
+    const base = parseISO(dateStr);
+    const withHour = setMinutes(setHours(base, hour), 0);
+    return withHour;
+  };
+
   useEffect(() => {
     const fetchSchedules = async () => {
       try {
-        // Wait for Auth0 to finish loading before deciding on token
         if (isLoading) return;
 
         setLoading(true);
 
-        // Get token if authenticated
         let token = null;
         if (isAuthenticated) {
           try {
@@ -75,17 +80,19 @@ const ProjectSchedulePage = () => {
           return;
         }
 
-        const scheduleWithIds = scheduleResponse.map((schedule, index) => ({
-          ...schedule,
-          id: index + 1,
-        }));
+        const scheduleWithIds = scheduleResponse.map((schedule, index) => {
+          const tasks = Array.isArray(schedule.scheduleTasks)
+            ? schedule.scheduleTasks
+            : Array.isArray(schedule.tasks)
+              ? schedule.tasks
+              : [];
 
-        const toDate = (dateStr, hour = 8) => {
-          if (!dateStr) return new Date();
-          const base = parseISO(dateStr);
-          const withHour = setMinutes(setHours(base, hour), 0);
-          return withHour;
-        };
+          return {
+            ...schedule,
+            id: index + 1,
+            tasks,
+          };
+        });
 
         const mappedEvents = scheduleWithIds.map(schedule => ({
           id: schedule.id,
@@ -94,6 +101,7 @@ const ProjectSchedulePage = () => {
           end: toDate(schedule.scheduleEndDate, 17),
           lot: schedule.lotNumber,
           projectName: schedule.projectName,
+          tasks: schedule.tasks,
         }));
 
         const firstDate = mappedEvents[0]?.start ?? new Date();
@@ -114,7 +122,7 @@ const ProjectSchedulePage = () => {
     if (projectId) {
       fetchSchedules();
     }
-  }, [projectId]);
+  }, [projectId, isLoading, isAuthenticated, getAccessTokenSilently]);
 
   const onEventClick = event => {
     setSelectedEvent(event);
@@ -127,13 +135,14 @@ const ProjectSchedulePage = () => {
       description: `Selected ${slotInfo.start.toDateString()}`,
       start: slotInfo.start,
       end: slotInfo.end,
+      tasks: [],
     });
   };
 
-  const eventStyleGetter = event => {
+  const eventStyleGetter = () => {
     return {
       style: {
-        backgroundColor: '#3174ad',
+        backgroundColor: 'var(--accent-color, #5A7D8C)',
         borderRadius: '6px',
         color: '#fff',
         border: 'none',
@@ -212,30 +221,7 @@ const ProjectSchedulePage = () => {
         </div>
 
         <div className="schedule-side">
-          <h2>All Tasks</h2>
-          <div className="schedule-list-items">
-            {schedules.map(item => (
-              <div
-                key={item.id ?? `${item.scheduleStartDate}-${item.scheduleDescription}`}
-                className="schedule-card"
-              >
-                <div className="schedule-card-date">
-                  <span className="schedule-card-date-text">
-                    {item.scheduleStartDate}
-                  </span>
-                </div>
-                <div className="schedule-card-body">
-                  <div className="schedule-card-title">
-                    {item.scheduleDescription}
-                  </div>
-                  <div className="schedule-card-meta">
-                    Lot: {item.lotNumber}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
+          <h2>Schedules</h2>
           {selectedEvent && (
             <div className="schedule-selected">
               <h3>Selected</h3>
@@ -253,8 +239,76 @@ const ProjectSchedulePage = () => {
                   {formatDisplayRange(selectedEvent.start, selectedEvent.end)}
                 </span>
               </div>
+              {Array.isArray(selectedEvent.tasks) && (
+                <div className="schedule-selected-tasks">
+                  <h4>Tasks</h4>
+                  {selectedEvent.tasks.length === 0 ? (
+                    <div className="schedule-selected-meta">
+                      No tasks linked
+                    </div>
+                  ) : (
+                    <ul>
+                      {selectedEvent.tasks.map((task, idx) => {
+                        const taskId =
+                          task.taskId ??
+                          task.id ??
+                          task.identifier ??
+                          `task-${idx + 1}`;
+                        const label =
+                          task.taskDescription ??
+                          task.description ??
+                          task.name ??
+                          JSON.stringify(task);
+                        return (
+                          <li key={taskId}>
+                            <strong>{taskId}:</strong> {label}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+                </div>
+              )}
             </div>
           )}
+
+          <div className="schedule-list-items">
+            {schedules.map(item => (
+              <div
+                key={
+                  item.id ??
+                  `${item.scheduleStartDate}-${item.scheduleDescription}`
+                }
+                className="schedule-card"
+              >
+                <div className="schedule-card-date">
+                  <span className="schedule-card-date-text">
+                    {item.scheduleStartDate}
+                  </span>
+                </div>
+                <div className="schedule-card-body">
+                  <div className="schedule-card-title">
+                    {item.scheduleDescription}
+                  </div>
+                  <div className="schedule-card-meta">
+                    Lot: {item.lotNumber}
+                  </div>
+                  {Array.isArray(item.tasks) ||
+                  Array.isArray(item.scheduleTasks) ? (
+                    <div className="schedule-card-meta">
+                      Tasks:{' '}
+                      {(Array.isArray(item.scheduleTasks)
+                        ? item.scheduleTasks
+                        : Array.isArray(item.tasks)
+                          ? item.tasks
+                          : []
+                      ).length || 0}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
