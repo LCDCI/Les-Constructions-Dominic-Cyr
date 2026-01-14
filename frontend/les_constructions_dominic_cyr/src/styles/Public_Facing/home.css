@@ -913,8 +913,8 @@ body {
     aspect-ratio: 4 / 3;
   }
   .card-content {
-    padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) 0;
-    padding-left: 0 !important;
+    padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) 0.75rem;
+    padding-left: 0.75rem !important;
   }
   .card-title {
     font-size: 0.6rem !important;
@@ -1000,8 +1000,8 @@ body {
     aspect-ratio: 4 / 3;
   }
   .card-content {
-    padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) 0;
-    padding-left: 0 !important;
+    padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) 0.75rem;
+    padding-left: 0.75rem !important;
   }
   .card-title {
     font-size: 0.6rem !important;
