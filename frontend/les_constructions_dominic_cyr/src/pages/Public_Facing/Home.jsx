@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import '../../styles/Public_Facing/home.css';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
@@ -6,6 +6,7 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
 export default function Home() {
   const { t } = usePageTranslations('home');
   const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   const photos = useMemo(
     () => ({
@@ -54,6 +55,11 @@ export default function Home() {
 
   return (
     <div className="home">
+      {!videoLoaded && (
+        <div className="page-loader">
+          <div className="loader-spinner"></div>
+        </div>
+      )}
       {/* HERO SECTION */}
       <section className="hero">
         <div className="hero-background">
@@ -65,6 +71,8 @@ export default function Home() {
             loop
             playsInline
             preload="auto"
+            onCanPlay={() => setVideoLoaded(true)}
+            onLoadStart={() => setVideoLoaded(false)}
           />
           <div className="hero-overlay" />
         </div>
@@ -74,7 +82,7 @@ export default function Home() {
             <h1 className="hero-heading">Crafting Your Dream Space</h1>
             <p className="hero-description">Quality construction, timeless design, since 1990</p>
             <div className="hero-buttons">
-              <Link to="/realisation" className="btn btn-primary">Discover</Link>
+              <Link to="/realizations" className="btn btn-primary">Discover</Link>
               <Link to="/contact" className="btn btn-secondary">Get In Touch</Link>
             </div>
           </div>
@@ -103,7 +111,7 @@ export default function Home() {
             <p className="section-subtitle">
               Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.
             </p>
-            <Link to="/realisation" className="link-arrow">
+            <Link to="/realizations" className="link-arrow">
               Discover
             </Link>
           </div>
@@ -120,8 +128,8 @@ export default function Home() {
             <p className="section-subtitle">
               Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.
             </p>
-            <Link to="/a-propos" className="link-arrow">
-              Discover Our Team
+            <Link to="/contact" className="link-arrow">
+              Contact Us
             </Link>
           </div>
         </div>
@@ -153,7 +161,7 @@ export default function Home() {
             <p className="section-subtitle">
               Your home is one of the most important investments of your life. Choose reliability and lasting quality.
             </p>
-            <Link to="/projects/foresta" className="link-arrow">
+            <Link to="/residential-projects" className="link-arrow">
               Explore Projects
             </Link>
           </div>
@@ -168,7 +176,7 @@ export default function Home() {
             <h2 className="section-title">Projects & Achievements</h2>
           </div>
           <div className="portfolio-grid">
-            <Link to="/projects/foresta" className="portfolio-card" data-animate>
+            <Link to="/projects/proj-001-foresta/overview" className="portfolio-card" data-animate>
               <img
                 src={`${filesServiceUrl}/files/${photos.collage1}`}
                 alt="Foresta Project"
@@ -182,7 +190,7 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link to="/realisation" className="portfolio-card" data-animate>
+            <Link to="/projects/proj-002-panorama/overview" className="portfolio-card" data-animate>
               <img
                 src={`${filesServiceUrl}/files/${photos.collage2}`}
                 alt="Panorama Project"
@@ -196,7 +204,7 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link to="/realisation" className="portfolio-card" data-animate>
+            <Link to="/projectmanagement" className="portfolio-card" data-animate>
               <img
                 src={`${filesServiceUrl}/files/${photos.collage3}`}
                 alt="Project Management"
@@ -210,7 +218,7 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link to="/realisation" className="portfolio-card" data-animate>
+            <Link to="/realizations" className="portfolio-card" data-animate>
               <img
                 src={`${filesServiceUrl}/files/${photos.project2}`}
                 alt="Our Achievements"
