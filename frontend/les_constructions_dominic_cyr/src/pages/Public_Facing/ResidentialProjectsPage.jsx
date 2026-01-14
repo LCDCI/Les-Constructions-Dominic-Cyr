@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/residential-projects.css';
 
 const ResidentialProjectsPage = () => {
+    const { t } = usePageTranslations('residentialProjects');
     const navigate = useNavigate();
     const [projects, setProjects] = useState([]);
     const [filteredProjects, setFilteredProjects] = useState([]);
@@ -93,10 +95,10 @@ const ResidentialProjectsPage = () => {
             {/* HEADER SECTION */}
             <section className="projects-hero">
                 <div className="projects-hero-content">
-                    <span className="section-kicker">Our Work</span>
-                    <h1 className="projects-title">Residential Projects</h1>
+                    <span className="section-kicker">{t('hero.kicker', 'Our Work')}</span>
+                    <h1 className="projects-title">{t('hero.title', 'Residential Projects')}</h1>
                     <p className="projects-subtitle">
-                        Explore our portfolio of residential projects showcasing quality construction and innovative design.
+                        {t('hero.subtitle', 'Explore our portfolio of residential projects showcasing quality construction and innovative design.')}
                     </p>
                 </div>
             </section>
@@ -108,7 +110,7 @@ const ResidentialProjectsPage = () => {
                         <input
                             type="text"
                             className="search-input"
-                            placeholder="Search projects by name..."
+                            placeholder={t('search.placeholder', 'Search projects by name...')}
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
@@ -141,7 +143,7 @@ const ResidentialProjectsPage = () => {
                         </div>
                     ) : (
                         <div className="no-results">
-                            <p>No projects found matching "{searchTerm}"</p>
+                            <p>{t('noResults', `No projects found matching "${searchTerm}"`)}</p>
                         </div>
                     )}
 
@@ -152,7 +154,7 @@ const ResidentialProjectsPage = () => {
                                 onClick={() => handlePageChange(currentPage - 1)}
                                 disabled={currentPage === 1}
                             >
-                                Prev
+                                {t('pagination.prev', 'Prev')}
                             </button>
                             {Array.from({ length: totalPages }, (_, idx) => {
                                 const page = idx + 1;
@@ -171,7 +173,7 @@ const ResidentialProjectsPage = () => {
                                 onClick={() => handlePageChange(currentPage + 1)}
                                 disabled={currentPage === totalPages}
                             >
-                                Next
+                                {t('pagination.next', 'Next')}
                             </button>
                         </div>
                     )}

@@ -3,6 +3,7 @@
 :root {
   --color-primary: #4C4D4F;
   --color-secondary: #AAB2A6;
+  --color-tertiary: #D9E6F2; /* light blue (not white/grey) */
   --color-light: #E6E7E8;
   --color-white: #ffffff;
   --color-accent: #628DB5;
@@ -119,7 +120,7 @@ body {
   font-weight: 600;
   letter-spacing: 0.3em;
   text-transform: uppercase;
-  color: var(--color-secondary);
+  color: var(--color-white);
   margin-bottom: var(--spacing-md);
 }
 
@@ -310,6 +311,33 @@ body {
   gap: var(--spacing-xl);
   margin-bottom: var(--spacing-xxl) !important;
   margin-top: 0 !important;
+}
+
+/* Alternate (lighter color) featured card */
+.featured-section.alt {
+  background: var(--color-white);
+}
+
+.featured-section.alt .section-title,
+.featured-section.alt .section-subtitle {
+  color: var(--color-primary);
+}
+
+.featured-section.alt .link-arrow {
+  color: var(--color-accent);
+}
+
+.featured-section.alt .link-arrow:hover {
+  color: var(--color-primary);
+}
+
+/* Offset variants to stagger entire card left/right */
+.featured-section.offset-left {
+  transform: translateX(-6%);
+}
+
+.featured-section.offset-right {
+  transform: translateX(6%);
 }
 
 .featured-section:first-of-type {
@@ -679,6 +707,9 @@ body {
   letter-spacing: 0.02em;
   line-height: 1.4;
   transition: color 0.4s var(--easing);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 /* ========== CONTACT SECTION ========== */
@@ -808,6 +839,16 @@ body {
   :root {
     --content-width: 90%;
   }
+
+  .hero {
+    min-height: 600px;
+    height: auto;
+    padding: var(--spacing-section) 0;
+  }
+
+  .hero-heading {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+  }
 }
 
 @media (max-width: 1024px) {
@@ -815,6 +856,15 @@ body {
     --content-width: 90%;
     --spacing-section: 5rem;
     --spacing-xxl: 4rem;
+  }
+
+  .hero {
+    min-height: 550px;
+    min-height: 60vh;
+  }
+
+  .hero-heading {
+    font-size: clamp(1.8rem, 5vw, 3rem);
   }
 
   .content-section {
@@ -830,7 +880,9 @@ body {
   .section-text-wrapper {
     margin-left: 0;
     margin-right: 0;
-    margin-top: -60px;
+    margin-top: 0; /* prevent overlap on tablet */
+  }
+
   .section-text-wrapper {
     order: 2;
   }
@@ -856,51 +908,221 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
 
+  /* Portfolio cards: give more vertical room and smaller text */
+  .portfolio-card {
+    aspect-ratio: 4 / 3;
+  }
+  .card-content {
+    padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) 0;
+    padding-left: 0 !important;
+  }
+  .card-title {
+    font-size: 0.6rem !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0 !important;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+  .card-subtitle {
+    font-size: 0.65rem;
+  }
+
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Disable card offsets on tablet to avoid clipping */
+  .featured-section.offset-left,
+  .featured-section.offset-right {
+    transform: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --content-width: 90%;
+    --spacing-section: 5rem;
+    --spacing-xxl: 4rem;
+  }
+
+  .hero {
+    min-height: 550px;
+    padding: var(--spacing-section) 0;
+  }
+
+  .hero-heading {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+  }
+
+  .content-section {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  .content-section.reverse {
+    grid-template-columns: 1fr;
+    direction: ltr;
+  }
+
+  .section-text-wrapper {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0; /* prevent overlap on tablet */
+  }
+
+  .section-text-wrapper {
+    order: 2;
+  }
+
+  .section-image-container {
+    min-height: 400px;
+    order: 1;
+  }
+
+  .section-image {
+    min-height: 400px;
+  }
+
+  .contact-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-image {
+    min-height: 300px;
+  }
+
+  .portfolio-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Portfolio cards: give more vertical room and smaller text (duplicate block) */
+  .portfolio-card {
+    aspect-ratio: 4 / 3;
+  }
+  .card-content {
+    padding: var(--spacing-sm) var(--spacing-xs) var(--spacing-sm) 0;
+    padding-left: 0 !important;
+  }
+  .card-title {
+    font-size: 0.6rem !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0 !important;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+  .card-subtitle {
+    font-size: clamp(0.8rem, 2.4vw, 0.95rem);
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Disable card offsets on tablet to avoid clipping */
+  .featured-section.offset-left,
+  .featured-section.offset-right {
+    transform: none;
   }
 }
 
 @media (max-width: 768px) {
   :root {
     --content-width: 92%;
-    --spacing-section: 4rem;
-    --spacing-xxl: 3rem;
+    --spacing-section: 3rem;
+    --spacing-xxl: 2.5rem;
+    --spacing-lg: 2rem;
   }
 
   .hero {
-    min-height: 100vh;
+    min-height: 500px;
+    height: auto;
+    padding: var(--spacing-lg) 0;
+    margin-bottom: var(--spacing-lg);
+  }
+
+  /* Ensure video is fully visible on mobile */
+  .hero-image {
+    transform: none;
+    object-fit: cover;
+    object-position: center;
   }
 
   .hero-container {
     padding: var(--spacing-lg) 0;
+    max-width: 100%;
+  }
+  /* Replace video with white background on mobile */
+  .hero-background {
+    background: var(--color-white);
+  }
+  .hero-overlay {
+    background: transparent;
+  }
+  .hero-image {
+    display: none;
   }
 
-  .title-word {
-    font-size: clamp(2.5rem, 12vw, 4rem);
+  /* Adapt text for white background */
+  .hero-label {
+    color: var(--color-secondary);
+  }
+  .hero-heading {
+    color: var(--color-primary);
+  }
+  .hero-description {
+    color: var(--color-text-muted);
+  }
+
+  /* Adapt hero buttons for light background */
+  .hero-buttons .btn {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: transparent;
+  }
+  .hero-buttons .btn:hover {
+    background: rgba(76, 77, 79, 0.08);
+    color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+
+  .hero-heading {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .hero-label {
+    font-size: 0.7rem;
+    margin-bottom: var(--spacing-sm);
   }
 
   .hero-description {
     font-size: 1rem;
+    margin-bottom: var(--spacing-md);
   }
 
-  .hero-actions {
+  .hero-buttons {
     flex-direction: column;
-    gap: var(--spacing-sm);
-  }
-
-  .hero-actions .btn {
+    gap: 0.5rem;
     width: 100%;
-    text-align: center;
   }
 
-  .btn {
-    padding: 0.9rem 2rem;
-    font-size: 0.8rem;
+  .hero-buttons .btn {
+    width: 100%;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.85rem;
+  }
+
+  .scroll-down {
+    display: none;
+  }
+
+  /* Lighten overlay so video remains visible on mobile */
+  .hero-overlay {
+    background: rgba(0, 0, 0, 0.25);
   }
 
   .section-title {
-    font-size: 1.5rem;
+    font-size: clamp(1.5rem, 3vw, 2rem);
   }
 
   .section-subtitle {
@@ -917,40 +1139,128 @@ body {
     gap: var(--spacing-md);
   }
 
+  /* Projects & Achievements mobile tweaks */
+  .section-header.center {
+    margin-bottom: var(--spacing-lg);
+  }
+  .section-header.center .section-title {
+    font-size: clamp(1.3rem, 4.5vw, 1.8rem);
+  }
+  .section-header.center .section-kicker {
+    letter-spacing: 0.15em;
+  }
+  .card-title {
+    font-size: 0.55rem !important;
+    letter-spacing: 0 !important;
+  }
+  .card-subtitle {
+    font-size: 0.65rem;
+  }
+
   .features-grid {
     grid-template-columns: 1fr;
   }
 
   .feature-card {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
+    min-height: auto; /* let content define height to prevent overlap */
   }
 
   .contact-content {
     padding: var(--spacing-lg);
+  }
+
+  .contact-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+  }
+
+  .contact-description {
+    font-size: 0.95rem;
+  }
+
+  /* Feature title sizing for mobile to avoid overflow */
+  .feature-title {
+    font-size: clamp(0.95rem, 3.8vw, 1.1rem) !important;
+    line-height: 1.35;
+  }
+
+  /* Remove offsets on mobile for clean stacking */
+  .featured-section.offset-left,
+  .featured-section.offset-right {
+    transform: none;
   }
 }
 
 @media (max-width: 480px) {
   :root {
     --content-width: 94%;
-    --spacing-section: 3rem;
-    --spacing-xxl: 2rem;
+    --spacing-section: 2rem;
+    --spacing-xxl: 1.5rem;
+    --spacing-lg: 1.5rem;
+    --spacing-md: 1rem;
   }
 
-  .hero-scroll {
-    display: none;
+  .hero {
+    min-height: 55vh;
+    padding: var(--spacing-md) 0;
+    margin-bottom: var(--spacing-md);
   }
 
-  .tagline-line {
-    width: 30px;
+  /* Keep video visible and centered on small phones */
+  .hero-image {
+    transform: none;
+  }
+  .hero-overlay {
+    background: rgba(0, 0, 0, 0.2);
   }
 
-  .tagline-text {
-    font-size: 0.7rem;
+  .hero-container {
+    padding: var(--spacing-md) 0;
   }
 
-  .title-word {
-    font-size: 2.5rem;
+  .hero-heading {
+    font-size: clamp(1.25rem, 5vw, 2rem);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .hero-label {
+    font-size: 0.65rem;
+    margin-bottom: var(--spacing-xs);
+  }
+
+  .hero-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: var(--spacing-md);
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+    padding: 0.7rem 1.25rem;
+    font-size: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.75rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.25rem, 3vw, 1.8rem);
+  }
+
+  .section-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .section-kicker {
+    font-size: 0.65rem;
   }
 
   .section-image-container,
@@ -958,8 +1268,47 @@ body {
     min-height: 250px;
   }
 
+  .portfolio-card {
+    aspect-ratio: 1;
+  }
+
+  .card-title {
+    font-size: 1rem !important;
+    letter-spacing: 0.02em !important;
+  }
+
+  .feature-card {
+    padding: var(--spacing-md);
+    min-height: auto;
+  }
+
+  .feature-title {
+    font-size: clamp(0.9rem, 4.5vw, 1rem);
+    line-height: 1.35;
+  }
+
+  .contact-wrapper {
+    min-height: auto;
+  }
+
   .contact-image {
     min-height: 200px;
+  }
+
+  .contact-content {
+    padding: var(--spacing-md);
+  }
+
+  .contact-title {
+    font-size: clamp(1.25rem, 3vw, 1.8rem);
+  }
+
+  .contact-description {
+    font-size: 0.9rem;
+  }
+
+  .featured-section {
+    padding: var(--spacing-md);
   }
 }
 

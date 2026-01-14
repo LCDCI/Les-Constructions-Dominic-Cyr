@@ -10,17 +10,20 @@
 /* Hero Banner Section */
 .real-hero-banner {
   width: 100%;
-  background: linear-gradient(145deg, var(--color-secondary), var(--color-primary));
-  padding: calc(var(--spacing-xxl) * 1.1) var(--spacing-lg);
+  background: linear-gradient(145deg, #AAB2A6, #8A9287);
+  height: auto;
+  min-height: auto;
+  padding: var(--spacing-section) var(--spacing-lg);
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
+  margin-bottom: var(--spacing-xl);
 }
 
 .real-hero-content {
   width: var(--content-width);
-  max-width: var(--content-max-width);
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,7 +32,7 @@
 
 .real-hero-title {
   font-family: var(--font-heading);
-  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 400;
   color: var(--color-white);
   line-height: 1.2;
@@ -159,9 +162,55 @@
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .real-hero-banner {
+    padding: var(--spacing-lg) var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .real-hero-content {
+    max-width: 100%;
+  }
+
+  .real-hero-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+
+  .realizations-intro {
+    padding: var(--spacing-lg) var(--spacing-lg);
+  }
+
+  .realizations-gallery-section {
+    padding: var(--spacing-lg) 0;
+  }
+
+  .realizations-gallery-container {
+    padding: 0 var(--spacing-md);
+    gap: var(--spacing-md);
+  }
+
+  .gallery-image-item {
+    width: 80vw;
+    height: 55vh;
+  }
+}
+
 @media (max-width: 768px) {
   .real-hero-banner {
-    padding: var(--spacing-xl) var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .real-hero-title {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  }
+
+  .realizations-intro {
+    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  .realizations-intro-text {
+    font-size: 1rem;
   }
 
   .realizations-gallery-section {
@@ -186,15 +235,25 @@
 
 @media (max-width: 480px) {
   .real-hero-banner {
-    padding: var(--spacing-lg) var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-md);
+    margin-bottom: var(--spacing-md);
   }
 
   .real-hero-title {
-    font-size: 1.8rem;
+    font-size: clamp(1.25rem, 5vw, 2rem);
+  }
+
+  .realizations-intro {
+    padding: var(--spacing-md) var(--spacing-sm);
+  }
+
+  .realizations-intro-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
   }
 
   .realizations-gallery-section {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-md) 0;
   }
 
   .realizations-gallery-container {
