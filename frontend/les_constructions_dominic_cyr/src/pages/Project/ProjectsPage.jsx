@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import '../../styles/Project/projects.css';
 import '../../styles/Project/create-project.css';
 import '../../styles/Project/edit-project.css';
+import '../../styles/Modals/ConfirmationModal.css';
 import CreateProjectForm from '../../features/projects/components/CreateProjectForm';
 import EditProjectForm from '../../features/projects/components/EditProjectForm';
 import useBackendUser from '../../hooks/useBackendUser';
@@ -21,6 +22,8 @@ const ProjectsPage = () => {
   const [projectToEdit, setProjectToEdit] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [showConfirmClose, setShowConfirmClose] = useState(false);
+  const [isArchiveOpen, setIsArchiveOpen] = useState(false);
+  const [projectToArchive, setProjectToArchive] = useState(null);
 
   const { role } = useBackendUser();
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
@@ -97,8 +100,9 @@ const ProjectsPage = () => {
           throw new Error(`Failed to fetch archived: ${archivedResp.status} - ${errorText}`);
         }
 
-        const available = await availableResp.json();
+        const availableAll = await availableResp.json();
         const archived = await archivedResp.json();
+        const available = (availableAll || []).filter(p => p.status !== 'ARCHIVED');
 
         // Merge, keeping order: available first, then archived; de-duplicate by identifier
         const seen = new Set();
@@ -115,17 +119,27 @@ const ProjectsPage = () => {
         setFilteredProjects(merged);
       } else {
         // AVAILABLE (default) or ARCHIVED only
-        const url =
-          statusFilter === 'ARCHIVED' ? `${baseUrl}?status=ARCHIVED` : baseUrl;
-
-        const response = await fetch(url, { headers });
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
+        if (statusFilter === 'ARCHIVED') {
+          const response = await fetch(`${baseUrl}?status=ARCHIVED`, { headers });
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
+          }
+          const data = await response.json();
+          setProjects(data || []);
+          setFilteredProjects(data || []);
+        } else {
+          // AVAILABLE: explicitly filter out archived in case backend returns both for owners
+          const response = await fetch(baseUrl, { headers });
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
+          }
+          const data = await response.json();
+          const nonArchived = (data || []).filter(p => p.status !== 'ARCHIVED');
+          setProjects(nonArchived);
+          setFilteredProjects(nonArchived);
         }
-        const data = await response.json();
-        setProjects(data || []);
-        setFilteredProjects(data || []);
       }
 
       setLoading(false);
@@ -201,6 +215,16 @@ const ProjectsPage = () => {
     setIsEditOpen(false);
     setProjectToEdit(null);
     setSubmitError(null);
+  };
+
+  const openArchiveModal = (project) => {
+    setProjectToArchive(project);
+    setIsArchiveOpen(true);
+  };
+
+  const closeArchiveModal = () => {
+    setIsArchiveOpen(false);
+    setProjectToArchive(null);
   };
 
   const overlayStyle = {
@@ -396,7 +420,7 @@ const ProjectsPage = () => {
                       )}
                       {canEdit && project.status !== 'ARCHIVED' && (
                         <button
-                          onClick={() => handleArchiveProject(project)}
+                          onClick={() => openArchiveModal(project)}
                           className="project-button archive-button"
                         >
                           Archive
@@ -507,6 +531,64 @@ const ProjectsPage = () => {
                   onSuccess={handleEditSuccess}
                   onError={setSubmitError}
                 />
+              </div>
+            </div>
+          )}
+
+          {isArchiveOpen && projectToArchive && (
+            <div className="confirmation-modal-overlay" role="dialog" aria-modal="true">
+              <div className="confirmation-modal-content" onClick={e => e.stopPropagation()}>
+                <div className="confirmation-modal-header">
+                  <h2>Archive project</h2>
+                </div>
+                <div className="confirmation-modal-body">
+                  <p>
+                    Are you sure you want to archive “{projectToArchive.projectName}”?
+                    You can still view archived projects by switching the filter.
+                  </p>
+                </div>
+                <div className="confirmation-modal-footer">
+                  <button type="button" className="btn-cancel" onClick={closeArchiveModal}>
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-confirm-destructive"
+                    onClick={async () => {
+                      try {
+                        const token = isAuthenticated
+                          ? await getAccessTokenSilently({
+                              authorizationParams: {
+                                audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://construction-api.loca',
+                              },
+                            }).catch(() => null)
+                          : null;
+
+                        await (await import('../../features/projects/api/projectApi')).projectApi.updateProject(
+                          projectToArchive.projectIdentifier,
+                          { status: 'ARCHIVED' },
+                          token || null
+                        );
+
+                        // Optimistic update: if viewing Available, remove it immediately
+                        if (statusFilter === 'AVAILABLE') {
+                          setProjects(prev => prev.filter(p => p.projectIdentifier !== projectToArchive.projectIdentifier));
+                          setFilteredProjects(prev => prev.filter(p => p.projectIdentifier !== projectToArchive.projectIdentifier));
+                        }
+
+                        closeArchiveModal();
+                        // Refresh list to reflect backend state for all filters
+                        await fetchProjects();
+                      } catch (e) {
+                        console.error('Failed to archive project:', e);
+                        setError(e.message || 'Failed to archive project.');
+                        closeArchiveModal();
+                      }
+                    }}
+                  >
+                    Archive
+                  </button>
+                </div>
               </div>
             </div>
           )}
