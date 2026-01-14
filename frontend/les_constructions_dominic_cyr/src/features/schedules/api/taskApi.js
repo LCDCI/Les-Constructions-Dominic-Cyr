@@ -1,0 +1,28 @@
+import axiosInstance from '../../../utils/axios';
+
+export const taskApi = {
+  createTask: async (taskData, token = null) => {
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await axiosInstance.post('/owners/tasks', taskData, { headers });
+    return response.data;
+  },
+
+  getTasksForSchedule: async (scheduleIdentifier, token = null) => {
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await axiosInstance.get(
+      `/schedules/${scheduleIdentifier}/tasks`,
+      { headers }
+    );
+    return response.data;
+  },
+};
+
+export default taskApi;
