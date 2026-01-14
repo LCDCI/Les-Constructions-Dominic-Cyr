@@ -235,7 +235,7 @@ class TranslationCacheServiceTest {
         byte[] result = cacheService.getCachedTranslation("nonexistent.pdf", "fr");
         // If file doesn't exist, should return null
         // If file exists, should return content
-        assertTrue(result == null || result.length >= 0);
+        assertTrue(result == null || result.length > 0);
     }
 
     @Test
@@ -245,7 +245,7 @@ class TranslationCacheServiceTest {
         assertDoesNotThrow(() -> {
             byte[] result = cacheService.getCachedTranslation(null, "fr");
             // Result can be null or actual file content if file exists
-            assertTrue(result == null || result.length >= 0);
+            assertTrue(result == null || result.length > 0);
         });
     }
 
