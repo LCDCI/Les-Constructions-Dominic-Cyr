@@ -24,6 +24,8 @@ public class ProjectRequestModel {
     private String buyerName;
     private String imageIdentifier;
     private String customerId;
+    private String contractorId;
+    private String salespersonId;
     private List<String> lotIdentifiers;
     private Integer progressPercentage;
     private String location;

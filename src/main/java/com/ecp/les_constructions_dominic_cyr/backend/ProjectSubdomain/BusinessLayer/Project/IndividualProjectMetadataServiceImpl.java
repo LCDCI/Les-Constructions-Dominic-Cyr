@@ -15,6 +15,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.ProjectNotF
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -22,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class IndividualProjectMetadataServiceImpl implements IndividualProjectMetadataService{
+    private static final Logger log = LoggerFactory.getLogger(IndividualProjectMetadataServiceImpl.class);
     private final ProjectRepository projectRepository;
     private final UsersRepository usersRepository;
     private final LotRepository lotRepository;
@@ -124,28 +127,28 @@ public class IndividualProjectMetadataServiceImpl implements IndividualProjectMe
               return null;
         }
 
-        return usersRepository.findById(parseUserIdentifier(userId))
-                .map(user -> UserSummaryDTO.builder()
-                        .userIdentifier(user.getUserIdentifier().getUserId().toString())
-                        .firstName(user.getFirstName())
-                        .lastName(user.getLastName())
-                        .primaryEmail(user.getPrimaryEmail())
-                        .phone(user.getPhone())
-                        .role(user.getUserRole().name())
-                        .build())
-                .orElse(null);
+        try {
+            return usersRepository.findById(userIdentifier)
+                    .map(user -> UserSummaryDTO.builder()
+                            .userIdentifier(user.getUserIdentifier().getUserId().toString())
+                            .firstName(user.getFirstName())
+                            .lastName(user.getLastName())
+                            .primaryEmail(user.getPrimaryEmail())
+                            .phone(user.getPhone())
+                            .role(user.getUserRole().name())
+                            .build())
+                    .orElse(null);
+        } catch (Exception e) {
+            log.error("Error fetching user with ID {}", userId, e);
+            return null;
+        }
     }
 
     private com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier parseUserIdentifier(String userId) {
         try {
-            java.util.UUID uuid = java.util.UUID.fromString(userId);
-            return new com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier() {
-                @Override
-                public java.util.UUID getUserId() {
-                    return uuid;
-                }
-            };
+            return UserIdentifier.fromString(userId);
         } catch (IllegalArgumentException e) {
+            log.warn("Could not parse UUID from userId: {}", userId, e);
             return null;
         }
     }

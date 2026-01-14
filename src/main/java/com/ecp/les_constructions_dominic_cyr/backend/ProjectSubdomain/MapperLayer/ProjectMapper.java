@@ -27,6 +27,8 @@ public class ProjectMapper {
         // Set default empty string if imageIdentifier is null to satisfy NOT NULL constraint
         project.setImageIdentifier(requestModel.getImageIdentifier() != null ? requestModel.getImageIdentifier() : "");
         project.setCustomerId(requestModel.getCustomerId());
+        project.setContractorId(requestModel.getContractorId());
+        project.setSalespersonId(requestModel.getSalespersonId());
         if (requestModel.getLotIdentifiers() != null) {
             project.setLotIdentifiers(new ArrayList<>(requestModel.getLotIdentifiers()));
         } else {
@@ -52,6 +54,8 @@ public class ProjectMapper {
                 .buyerName(project.getBuyerName())
                 .imageIdentifier(project.getImageIdentifier())
                 .customerId(project.getCustomerId())
+                .contractorId(project.getContractorId())
+                .salespersonId(project.getSalespersonId())
                 .lotIdentifiers(project.getLotIdentifiers() != null ? new ArrayList<>(project.getLotIdentifiers()) : new ArrayList<>())
                 .progressPercentage(project.getProgressPercentage())
                 .location(project.getLocation())
@@ -94,6 +98,12 @@ public class ProjectMapper {
         }
         if (requestModel.getCustomerId() != null) {
             project.setCustomerId(requestModel.getCustomerId());
+        }
+        if (requestModel.getContractorId() != null) {
+            project.setContractorId(requestModel.getContractorId());
+        }
+        if (requestModel.getSalespersonId() != null) {
+            project.setSalespersonId(requestModel.getSalespersonId());
         }
         if (requestModel.getLotIdentifiers() != null) {
             project.setLotIdentifiers(new ArrayList<>(requestModel.getLotIdentifiers()));

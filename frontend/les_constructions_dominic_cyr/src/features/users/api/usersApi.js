@@ -65,7 +65,19 @@ export async function deactivateUser(userId, token) {
   );
   return response.data;
 }
+export async function fetchActiveContractors(token) {
+  const response = await axios.get(`${API_BASE}/users/contractors/active`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return response.data;
+}
 
+export async function fetchActiveSalespersons(token) {
+  const response = await axios.get(`${API_BASE}/users/salespersons/active`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return response.data;
+}
 export async function setUserInactive(userId, token) {
   const response = await axios.patch(
     `${API_BASE}/users/${userId}/inactive`,

@@ -1,0 +1,104 @@
+.project-team-modal {
+  max-width: 500px;
+}
+
+.project-team-modal .modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.project-team-modal .modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.project-team-modal .modal-body {
+  padding: 1.5rem;
+}
+
+.project-team-modal .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.project-team-modal .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.project-team-modal .contractor-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+}
+
+.project-team-modal .contractor-select:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+}
+
+.project-team-modal .hint-text {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.project-team-modal .no-contractors {
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  color: #666;
+  text-align: center;
+}
+
+.project-team-modal .contractor-preview {
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.project-team-modal .contractor-preview p {
+  margin: 0.5rem 0;
+  color: #333;
+}
+
+.project-team-modal .contractor-preview p:first-child {
+  font-weight: 600;
+  color: #0066cc;
+}
+
+.project-team-modal .contractor-preview .email {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.project-team-modal .contractor-preview .phone {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.project-team-modal .modal-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.project-team-modal .error-message {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: #fee;
+  border: 1px solid #fcc;
+  border-radius: 4px;
+  color: #c33;
+}
