@@ -20,6 +20,32 @@
   margin: 0;
 }
 
+.schedule-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.create-schedule-button {
+  padding: 10px 18px;
+  background: var(--accent-color, #5A7D8C);
+  color: var(--white, #ffffff);
+  border: none;
+  border-radius: var(--border-radius, 6px);
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: var(--box-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.create-schedule-button:hover {
+  background: var(--primary-color, #3174ad);
+}
+
+.create-schedule-button:active {
+  transform: translateY(1px);
+}
+
 .back-button-small {
   padding: 10px 20px;
   background-color: var(--primary-color, #3174ad);
@@ -37,22 +63,94 @@
 
 .schedule-layout {
   display: grid;
-  grid-template-columns: 4fr 2fr;
+  grid-template-columns: 5fr 2fr;
   gap: 20px;
   align-items: start;
 }
 
 .schedule-panel {
-  background: var (--white, #ffffff);
+  background: var(--white, #ffffff);
   border-radius: var(--border-radius, 8px);
   box-shadow: var(--box-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
   padding: 12px;
-  overflow: auto;
+  overflow: hidden;
   min-width: 0;
+}
+
+.rbc-time-view {
+  min-width: 0;
+  width: 100%;
 }
 
 .rbc-calendar {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Remove empty all-day strip to tighten header-to-hours gap */
+.rbc-time-view .rbc-allday-cell,
+.rbc-time-view .rbc-allday-events,
+.rbc-time-view .rbc-time-header .rbc-row.rbc-allday-cell,
+.rbc-time-view .rbc-time-header .rbc-label.rbc-header {
+  display: none;
+}
+
+.rbc-time-view .rbc-time-header-content {
+  border-bottom: 1px solid var(--card-border, #e0e0e0);
+}
+
+.schedule-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.toolbar-left,
+.toolbar-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.toolbar-select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  background: var(--white, #ffffff);
+  font-size: 14px;
+  color: var(--text-primary, #2c3e50);
+}
+
+.toolbar-button {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  background: var(--white, #ffffff);
+  cursor: pointer;
+  color: var(--text-primary, #2c3e50);
+  transition: all 0.2s ease;
+}
+
+.toolbar-button:hover {
+  border-color: var(--primary-color, #3174ad);
+  color: var(--primary-color, #3174ad);
+}
+
+.toolbar-button-active {
+  border-color: var(--primary-color, #3174ad);
+  background: rgba(49, 116, 173, 0.1);
+  color: var(--primary-color, #3174ad);
+}
+
+.today-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(49, 116, 173, 0.1);
+  color: var(--primary-color, #3174ad);
+  font-weight: 600;
+  font-size: 13px;
 }
 
 .rbc-toolbar {
@@ -68,7 +166,10 @@
   background: var(--accent-color, #5A7D8C);
   margin-left: 6px !important;
   margin-right: 6px !important;
+  height: 80%;
   width: calc(100% - 12px) !important; /* keep full width minus gutters */
+  display: flex;
+  align-items: center;
 }
 
 /* Fill the full slot in week/day time grid views */
@@ -95,6 +196,15 @@
 .rbc-event-content {
   padding-left: 2px;
   padding-right: 2px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.rbc-today,
+.rbc-day-today-strong {
+  background-color: rgba(49, 116, 173, 0.08) !important;
+  box-shadow: inset 3px 0 0 var(--primary-color, #3174ad);
 }
 
 .rbc-month-view {
@@ -115,6 +225,15 @@
   margin: 0 0 12px;
   font-size: 18px;
   color: var(--text-primary, #2c3e50);
+}
+
+.schedule-empty-state {
+  padding: 12px 14px;
+  border: 1px dashed var(--card-border, #d7e1ec);
+  border-radius: var(--border-radius, 8px);
+  color: var(--text-secondary, #6b7a90);
+  background: var(--background-color, #f8fafc);
+  margin-bottom: 12px;
 }
 
 .schedule-list-items {
@@ -189,6 +308,7 @@
 
 .schedule-selected {
   margin-top: 16px;
+  margin-bottom: 16px;
   padding: 12px;
   border: 1px solid var(--card-border, #d8e2ef);
   border-radius: var(--border-radius, 8px);
@@ -358,4 +478,295 @@
     font-size: 11px;
     line-height: 1.2;
   }
+}
+
+/* Modal for event details */
+.schedule-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.schedule-modal {
+  width: min(540px, 90%);
+  background: var(--white, #ffffff);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.schedule-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.schedule-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary, #2c3e50);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-secondary, #6b7a90);
+}
+
+.schedule-modal-section {
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: var(--text-primary, #2c3e50);
+}
+
+.schedule-modal-section h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: var(--text-secondary, #6b7a90);
+  font-weight: 600;
+}
+
+.schedule-modal-tasks ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.schedule-modal-tasks li {
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.create-schedule-modal {
+  width: min(640px, 95%);
+}
+
+.tasks-modal {
+  width: min(760px, 95%);
+}
+
+.create-schedule-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-row-note {
+  background: rgba(49, 116, 173, 0.05);
+  border: 1px solid var(--card-border, #d7e1ec);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.form-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-primary, #2c3e50);
+  font-weight: 600;
+}
+
+.form-row input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  background: var(--white, #ffffff);
+  color: var(--text-primary, #2c3e50);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.tasks-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tasks-title {
+  font-weight: 700;
+  color: var(--text-primary, #2c3e50);
+}
+
+.tasks-subtitle {
+  color: var(--text-secondary, #6b7a90);
+  font-size: 13px;
+}
+
+.task-add-button {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--accent-color, #5A7D8C);
+  background: rgba(90, 125, 140, 0.1);
+  color: var(--accent-color, #5A7D8C);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.task-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 12px 0;
+}
+
+.task-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  border-radius: 12px;
+  padding: 12px;
+  background: #f7fbff;
+}
+
+.task-row input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  background: var(--white, #ffffff);
+  color: var(--text-primary, #2c3e50);
+}
+
+.task-remove-button {
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px solid var(--card-border, #d7e1ec);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-secondary, #6b7a90);
+}
+
+.task-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-row-title {
+  font-weight: 700;
+  color: var(--text-primary, #2c3e50);
+}
+
+.task-row-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.task-row-grid label,
+.task-row-full {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary, #6b7a90);
+}
+
+.task-row select,
+.task-row textarea,
+.task-row input {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  padding: 10px 12px;
+  background: var(--white, #ffffff);
+  color: var(--text-primary, #2c3e50);
+}
+
+.task-row textarea {
+  min-height: 64px;
+  resize: vertical;
+}
+
+.task-row-numbers input {
+  padding-right: 6px;
+}
+
+.task-dto-preview {
+  margin-top: 14px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  border-radius: 12px;
+  background: #fdfefe;
+}
+
+.task-dto-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.task-dto-count {
+  font-weight: 600;
+  color: var(--accent-color, #5A7D8C);
+  background: rgba(90, 125, 140, 0.1);
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.task-dto-preview-body {
+  padding: 12px;
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  font-size: 12px;
+  background: #0f172a;
+  color: #e2e8f0;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.form-error {
+  color: var(--accent-color, #e74c3c);
+  background: rgba(231, 76, 60, 0.1);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(231, 76, 60, 0.25);
+  font-weight: 600;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-primary {
+  padding: 10px 16px;
+  background: var(--accent-color, #5A7D8C);
+  color: var(--white, #ffffff);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.modal-secondary {
+  padding: 10px 16px;
+  background: var(--white, #ffffff);
+  color: var(--text-primary, #2c3e50);
+  border: 1px solid var(--card-border, #d7e1ec);
+  border-radius: 8px;
+  cursor: pointer;
 }

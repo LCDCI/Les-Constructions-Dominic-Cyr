@@ -24,6 +24,7 @@ public class ScheduleMapper {
                 .scheduleEndDate(schedule.getScheduleEndDate())
                 .scheduleDescription(schedule.getScheduleDescription())
                 .lotNumber(schedule.getLotNumber())
+                .lotId(schedule.getLotNumber())
                 .createdAt(schedule.getCreatedAt())
                 .updatedAt(schedule.getUpdatedAt())
                 .tasks(schedule.getTasks() != null ? taskMapper.entitiesToResponseDTOs(schedule.getTasks()) : new ArrayList<>())
@@ -45,7 +46,7 @@ public class ScheduleMapper {
                 .scheduleStartDate(requestDTO.getScheduleStartDate())
                 .scheduleEndDate(requestDTO.getScheduleEndDate())
                 .scheduleDescription(requestDTO.getScheduleDescription())
-                .lotNumber(requestDTO.getLotNumber())
+                .lotNumber(requestDTO.getLotId())
                 .tasks(new ArrayList<>())
                 .build();
     }
@@ -54,6 +55,6 @@ public class ScheduleMapper {
         schedule.setScheduleStartDate(requestDTO.getScheduleStartDate());
         schedule.setScheduleEndDate(requestDTO.getScheduleEndDate());
         schedule.setScheduleDescription(requestDTO.getScheduleDescription());
-        schedule.setLotNumber(requestDTO.getLotNumber());
+        schedule.setLotNumber(requestDTO.getLotId());
     }
 }
