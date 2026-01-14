@@ -22,12 +22,17 @@ export const projectApi = {
     return response.json();
   },
 
-  getProjectById: async projectIdentifier => {
+  getProjectById: async (projectIdentifier, token) => {
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
     const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}`
+      `${API_BASE_URL}/projects/${projectIdentifier}`,
+      { headers }
     );
     if (!response.ok) {
-      throw new Error('Failed to fetch project');
+      throw new Error(`Failed to fetch project (${response.status})`);
     }
     return response.json();
   },
@@ -139,5 +144,92 @@ export const projectApi = {
   getImageUrl: imageIdentifier => {
     if (!imageIdentifier) return null;
     return `${FILES_SERVICE_BASE_URL}/files/${imageIdentifier}`;
+  },
+
+  assignContractorToProject: async (projectIdentifier, contractorId, token) => {
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/contractor?contractorId=${contractorId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to assign contractor to project');
+    }
+    return response.json();
+  },
+
+  removeContractorFromProject: async (projectIdentifier, token) => {
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/contractor`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to remove contractor from project');
+    }
+    return response.json();
+  },
+
+  assignSalespersonToProject: async (projectIdentifier, salespersonId, token) => {
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/salesperson?salespersonId=${salespersonId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to assign salesperson to project');
+    }
+    return response.json();
+  },
+
+  removeSalespersonFromProject: async (projectIdentifier, token) => {
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/salesperson`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to remove salesperson from project');
+    }
+    return response.json();
+  },
+
+  getProjectActivityLog: async (projectIdentifier, token) => {
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/activity-log`,
+      { headers }
+    );
+    if (!response.ok) {
+      throw new Error(`Failed to fetch activity log (${response.status})`);
+    }
+    return response.json();
   },
 };

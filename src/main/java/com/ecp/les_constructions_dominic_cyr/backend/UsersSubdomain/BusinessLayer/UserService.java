@@ -17,4 +17,6 @@ public interface UserService {
     UserResponseModel deactivateUser(String userId, String requestingAuth0UserId);
     UserResponseModel setUserInactive(String userId, String requestingAuth0UserId);
     UserResponseModel reactivateUser(String userId, String requestingAuth0UserId);
+    List<UserResponseModel> getActiveContractors();
+    List<UserResponseModel> getActiveSalespersons();
 }

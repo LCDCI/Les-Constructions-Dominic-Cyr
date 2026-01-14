@@ -4,6 +4,7 @@ import '../../styles/Project/create-project.css';
 import '../../styles/Project/edit-project.css';
 import CreateProjectForm from '../../features/projects/components/CreateProjectForm';
 import EditProjectForm from '../../features/projects/components/EditProjectForm';
+import ProjectTeamModal from '../../features/projects/components/ProjectTeamModal';
 import useBackendUser from '../../hooks/useBackendUser';
 import { canCreateProjects, canEditProjects } from '../../utils/permissions';
 
@@ -15,6 +16,8 @@ const ProjectsPage = () => {
   const [error, setError] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [selectedProjectForTeam, setSelectedProjectForTeam] = useState(null);
   const [projectToEdit, setProjectToEdit] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [showConfirmClose, setShowConfirmClose] = useState(false);
@@ -99,6 +102,20 @@ const ProjectsPage = () => {
     setIsEditOpen(false);
     setProjectToEdit(null);
     setSubmitError(null);
+  };
+
+  const handleOpenTeamModal = (project) => {
+    setSelectedProjectForTeam(project);
+    setIsTeamModalOpen(true);
+  };
+
+  const handleCloseTeamModal = () => {
+    setIsTeamModalOpen(false);
+    setSelectedProjectForTeam(null);
+  };
+
+  const handleTeamModalSave = () => {
+    fetchProjects();
   };
 
   const overlayStyle = {
@@ -209,12 +226,21 @@ const ProjectsPage = () => {
                         View this project
                       </a>
                       {canEdit && (
-                        <button
-                          onClick={() => handleEditProject(project)}
-                          className="project-button edit-button"
-                        >
-                          Edit
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleEditProject(project)}
+                            className="project-button edit-button"
+                          >
+                            Edit
+                          </button>
+                          <a
+                            href={`/projects/${project.projectIdentifier}/team-management`}
+                            className="project-button team-button"
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                          >
+                            Manage Team
+                          </a>
+                        </>
                       )}
                     </div>
                   </div>
@@ -323,6 +349,16 @@ const ProjectsPage = () => {
                 />
               </div>
             </div>
+          )}
+
+          {isTeamModalOpen && selectedProjectForTeam && (
+            <ProjectTeamModal
+              isOpen={isTeamModalOpen}
+              projectIdentifier={selectedProjectForTeam.projectIdentifier}
+              currentContractorId={selectedProjectForTeam.contractorId}
+              onClose={handleCloseTeamModal}
+              onSave={handleTeamModalSave}
+            />
           )}
         </div>
       </div>

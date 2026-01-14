@@ -1,0 +1,411 @@
+/* Project Team Management Page Styles */
+
+:root {
+  /* Primary Theme Colors */
+  --primary-color: #4C4D4F;
+  --secondary-color: #E6E7E8;
+  --accent-color: #5A7D8C;
+  --card-background: #AAB2A6;
+  --background-color: #F5F7FA;
+  --text-primary: #4C4D4F;
+  --white: #FFFFFF;
+  
+  /* Status Badge Colors */
+  --status-active-bg: #E8F5E9;
+  --status-active-color: #2E7D32;
+  --status-active-border: #C8E6C9;
+  --status-inactive-bg: #FFF3E0;
+  --status-inactive-color: #E65100;
+  --status-inactive-border: #FFE0B2;
+  --status-deactivated-bg: #EEEEEE;
+  --status-deactivated-color: #424242;
+  --status-deactivated-border: #BDBDBD;
+}
+
+.team-management-page {
+  background-color: var(--background-color);
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.team-management-container {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Header */
+.team-management-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 40px;
+  text-align: center;
+}
+
+.team-management-header h1 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.team-management-header .project-id {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* Content */
+.team-management-content {
+  padding: 40px;
+}
+
+/* Alert Messages */
+.alert {
+  padding: 16px;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.alert-error {
+  background: #fee;
+  color: #c33;
+  border-left: 4px solid #c33;
+}
+
+.alert-success {
+  background: #efe;
+  color: #3c3;
+  border-left: 4px solid #3c3;
+}
+
+/* Section Styles */
+.info-section,
+.team-assignment-section,
+.activity-section,
+.details-section {
+  margin-bottom: 40px;
+  padding: 24px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--primary-color);
+  flex: 1;
+}
+
+.section-icon {
+  font-size: 24px;
+  color: var(--primary-color);
+}
+
+/* Project Info */
+.project-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.project-info-list li {
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border-left: 3px solid var(--primary-color);
+}
+
+.project-info-list strong {
+  color: var(--primary-color);
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Team Assignment */
+.assignment-group {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: white;
+  border-radius: 6px;
+}
+
+.assignment-group h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.select-wrapper {
+  margin-bottom: 12px;
+}
+
+.assignment-select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  background: white;
+  transition: border-color 0.3s;
+}
+
+.assignment-select:hover:not(:disabled) {
+  border-color: var(--primary-color);
+}
+
+.assignment-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(76, 77, 79, 0.1);
+}
+
+.assignment-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.selected-person-list {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.selected-person {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background: rgba(165, 179, 166, 0.15);
+  border-radius: 4px;
+}
+
+.selected-person input[type='checkbox'] {
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.selected-person span {
+  font-size: 14px;
+  color: var(--primary-color);
+}
+
+/* Contractors List */
+.contractors-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.contractor-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.contractor-checkbox input[type='checkbox'] {
+  margin-right: 8px;
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.contractor-checkbox label {
+  margin: 0;
+  cursor: pointer;
+  font-size: 14px;
+  flex: 1;
+  color: #333;
+}
+
+.contractor-checkbox:hover {
+  background: #E5EDF5;
+  border-color: #333;
+}
+
+.contractor-checkbox input[type='checkbox']:checked {
+  accent-color: #333;
+}
+
+.contractor-checkbox input[type='checkbox']:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Buttons */
+.add-button,
+.save-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.add-button {
+  background: #E5EDF5;
+  color: #333;
+  border: 1px solid #333;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.add-button:hover:not(:disabled) {
+  background: #333;
+  color: white;
+}
+
+.add-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.save-button {
+  background-color: #333;
+  color: white;
+  width: 100%;
+  margin-top: 20px;
+  padding: 14px;
+  font-size: 16px;
+}
+
+.save-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.save-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Activity Section */
+.activity-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-list li {
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #555;
+  border-left: 3px solid #333;
+}
+
+.activity-list li:last-child {
+  margin-bottom: 0;
+}
+
+.activity-list .changed-by {
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.no-activity {
+  color: #999;
+  font-style: italic;
+}
+
+/* Details Section */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.detail-value {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .team-management-container {
+    border-radius: 0;
+  }
+
+  .team-management-content {
+    padding: 24px;
+  }
+
+  .team-management-header {
+    padding: 24px 16px;
+  }
+
+  .team-management-header h1 {
+    font-size: 24px;
+  }
+
+  .project-info-list {
+    grid-template-columns: 1fr;
+  }
+
+  .contractors-list {
+    grid-template-columns: 1fr;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-section,
+  .team-assignment-section,
+  .activity-section,
+  .details-section {
+    margin-bottom: 24px;
+  }
+}

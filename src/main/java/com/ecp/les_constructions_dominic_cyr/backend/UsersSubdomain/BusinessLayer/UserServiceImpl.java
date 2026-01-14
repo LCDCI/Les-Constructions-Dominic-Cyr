@@ -259,4 +259,20 @@ public class UserServiceImpl implements UserService {
         user = usersRepository.save(user);
         return UserMapper.toResponseModel(user, null);
     }
+
+    @Override
+    public List<UserResponseModel> getActiveContractors() {
+        return usersRepository.findByUserStatus(UserStatus.ACTIVE).stream()
+                .filter(user -> user.getUserRole() == UserRole.CONTRACTOR)
+                .map(user -> UserMapper.toResponseModel(user, null))
+                .toList();
+    }
+
+    @Override
+    public List<UserResponseModel> getActiveSalespersons() {
+        return usersRepository.findByUserStatus(UserStatus.ACTIVE).stream()
+                .filter(user -> user.getUserRole() == UserRole.SALESPERSON)
+                .map(user -> UserMapper.toResponseModel(user, null))
+                .toList();
+    }
 }

@@ -14,6 +14,7 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import UsersPage from './pages/UsersPage';
 import OwnerDashboard from './pages/Dashboards/OwnerDashboard';
 import ProjectMetadata from './pages/Project/ProjectMetadata';
+import ProjectTeamManagementPage from './pages/Project/ProjectTeamManagementPage';
 import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
 import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPage';
@@ -98,6 +99,10 @@ export default function App() {
             <Route
               path="/projects/:projectId/metadata"
               element={<ProjectMetadata />}
+            />
+            <Route
+              path="/projects/:projectId/team-management"
+              element={<ProtectedRoute allowedRoles={['OWNER']} element={<ProjectTeamManagementPage />} />}
             />
             <Route
               path="/customer/dashboard"

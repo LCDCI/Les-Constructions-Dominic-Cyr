@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
+import { FiUsers } from 'react-icons/fi';
 import '../../styles/Project/ProjectMetadata.css';
 
 const ProjectMetadata = () => {
@@ -60,10 +61,20 @@ const ProjectMetadata = () => {
 
     fetchMetadata();
 
+    // Refresh data every 30 seconds
     const interval = setInterval(fetchMetadata, 30000);
+
+    // Refresh when page becomes visible (tab focus)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchMetadata();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       document.documentElement.style.removeProperty('--project-primary');
       document.documentElement.style.removeProperty('--project-tertiary');
       document.documentElement.style.removeProperty('--project-buyer');
@@ -120,7 +131,7 @@ const ProjectMetadata = () => {
         {metadata.imageIdentifier && (
           <div className="hero-image">
             <img
-              src={`http://localhost:8082/files/${metadata.imageIdentifier}`}
+              src={`${import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082'}/files/${metadata.imageIdentifier}`}
               alt={metadata.projectName}
             />
           </div>
@@ -181,7 +192,70 @@ const ProjectMetadata = () => {
 
         {metadata.assignedUsers && (
           <section className="metadata-section">
-            <h2 style={{ color: metadata.primaryColor }}>Assigned Team</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+              <h2 style={{ color: metadata.primaryColor, margin: 0 }}>Assigned Team</h2>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {!metadata.assignedUsers.contractor && (
+                  <a
+                    href="/users"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 14px',
+                      backgroundColor: metadata.primaryColor,
+                      color: 'white',
+                      textDecoration: 'none',
+                      borderRadius: '4px',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    + Contractor
+                  </a>
+                )}
+                {!metadata.assignedUsers.salesperson && (
+                  <a
+                    href="/users"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      padding: '8px 14px',
+                      backgroundColor: metadata.primaryColor,
+                      color: 'white',
+                      textDecoration: 'none',
+                      borderRadius: '4px',
+                      fontSize: '13px',
+                      fontWeight: '500',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    + Salesperson
+                  </a>
+                )}
+                <a
+                  href={`/projects/${projectId}/team-management`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 16px',
+                    backgroundColor: metadata.primaryColor,
+                    color: 'white',
+                    textDecoration: 'none',
+                    borderRadius: '4px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <FiUsers size={18} />
+                  Manage Team
+                </a>
+              </div>
+            </div>
             <div className="team-grid">
               {metadata.assignedUsers.contractor && (
                 <div
@@ -243,6 +317,56 @@ const ProjectMetadata = () => {
                       {metadata.assignedUsers.customer.phone}
                     </p>
                   )}
+                </div>
+              )}
+
+              {!metadata.assignedUsers.contractor && !metadata.assignedUsers.salesperson && !metadata.assignedUsers.customer && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 20px' }}>
+                  <p style={{ color: '#999', marginBottom: '20px', fontSize: '14px' }}>
+                    No team members assigned yet.
+                  </p>
+                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    {!metadata.assignedUsers.contractor && (
+                      <a
+                        href="/users"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '10px 16px',
+                          backgroundColor: metadata.primaryColor,
+                          color: 'white',
+                          textDecoration: 'none',
+                          borderRadius: '4px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        + Add Contractor
+                      </a>
+                    )}
+                    {!metadata.assignedUsers.salesperson && (
+                      <a
+                        href="/users"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '10px 16px',
+                          backgroundColor: metadata.primaryColor,
+                          color: 'white',
+                          textDecoration: 'none',
+                          borderRadius: '4px',
+                          fontSize: '13px',
+                          fontWeight: '500',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        + Add Salesperson
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
