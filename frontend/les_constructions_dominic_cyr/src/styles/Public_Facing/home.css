@@ -397,7 +397,7 @@ body {
   font-weight: 500;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--color-secondary);
+  color: var(--color-text);
   margin-bottom: var(--spacing-sm);
 }
 
@@ -777,6 +777,7 @@ body {
 
 .contact-content .section-kicker {
   margin-bottom: var(--spacing-md);
+  color: #000000;
 }
 
 .contact-title {
@@ -798,6 +799,13 @@ body {
 
 .contact-content .btn {
   align-self: flex-start;
+  color: #000000;
+  border-color: #000000;
+}
+
+.contact-content .btn:hover {
+  color: #ffffff;
+  border-color: #000000;
 }
 
 /* ========== ANIMATIONS ========== */
