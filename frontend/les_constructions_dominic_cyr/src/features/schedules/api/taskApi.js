@@ -23,6 +23,18 @@ export const taskApi = {
     );
     return response.data;
   },
+
+  getTaskById: async (taskId, token = null) => {
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await axiosInstance.get(`/owners/tasks/${taskId}`, {
+      headers,
+    });
+    return response.data;
+  },
 };
 
 export default taskApi;
