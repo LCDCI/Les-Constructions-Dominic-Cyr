@@ -33,7 +33,7 @@ class ScheduleMapperUnitTest {
                 .scheduleStartDate(LocalDate.of(2024, 11, 26))
                 .scheduleEndDate(LocalDate.of(2024, 11, 26))
                 .scheduleDescription("Begin Excavation")
-                .lotNumber("Lot 53")
+                .lotId("Lot 53")
                 .tasks(new ArrayList<>())
                 .build();
 
@@ -43,7 +43,7 @@ class ScheduleMapperUnitTest {
                 .scheduleStartDate(LocalDate.of(2024, 11, 27))
                 .scheduleEndDate(LocalDate.of(2024, 11, 27))
                 .scheduleDescription("Plumbing")
-                .lotNumber("Lot 57")
+                .lotId("Lot 57")
                 .tasks(new ArrayList<>())
                 .build();
     }
@@ -57,7 +57,7 @@ class ScheduleMapperUnitTest {
         assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleStartDate());
         assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleEndDate());
         assertEquals("Begin Excavation", result.getScheduleDescription());
-        assertEquals("Lot 53", result.getLotNumber());
+        assertEquals("Lot 53", result.getLotId());
     }
 
     @Test
@@ -68,7 +68,7 @@ class ScheduleMapperUnitTest {
                 .scheduleStartDate(LocalDate.of(2024, 12, 1))
                 .scheduleEndDate(LocalDate.of(2024, 12, 1))
                 .scheduleDescription("Electrical Work")
-                .lotNumber("Lot 100")
+                .lotId("Lot 100")
                 .tasks(new ArrayList<>())
                 .build();
 
@@ -79,7 +79,7 @@ class ScheduleMapperUnitTest {
         assertEquals(LocalDate.of(2024, 12, 1), result.getScheduleStartDate());
         assertEquals(LocalDate.of(2024, 12, 1), result.getScheduleEndDate());
         assertEquals("Electrical Work", result.getScheduleDescription());
-        assertEquals("Lot 100", result.getLotNumber());
+        assertEquals("Lot 100", result.getLotId());
     }
 
     @Test
@@ -93,11 +93,11 @@ class ScheduleMapperUnitTest {
 
         assertEquals("SCH-001", result.get(0).getScheduleIdentifier());
         assertEquals("Begin Excavation", result.get(0).getScheduleDescription());
-        assertEquals("Lot 53", result.get(0).getLotNumber());
+        assertEquals("Lot 53", result.get(0).getLotId());
 
         assertEquals("SCH-002", result.get(1).getScheduleIdentifier());
         assertEquals("Plumbing", result.get(1).getScheduleDescription());
-        assertEquals("Lot 57", result.get(1).getLotNumber());
+        assertEquals("Lot 57", result.get(1).getLotId());
     }
 
     @Test
