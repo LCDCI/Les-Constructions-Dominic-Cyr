@@ -149,24 +149,6 @@ class ScheduleEntityTest {
     }
 
     @Test
-
-    @Test
-
-    @Test
-
-    @Test
-
-        // onUpdate() is protected and called by JPA
-
-        // createdAt should remain the same
-        assertEquals(originalCreatedAt, schedule.getCreatedAt());
-        
-        // updatedAt should be updated
-        assertNotNull(schedule.getUpdatedAt());
-        assertTrue(schedule.getUpdatedAt().isAfter(originalUpdatedAt));
-    }
-
-    @Test
     void testScheduleWithProject() {
         Project project = new Project();
         project.setProjectId(1L);

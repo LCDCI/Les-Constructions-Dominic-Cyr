@@ -342,6 +342,12 @@ class ScheduleServiceImplUnitTest {
                 .lotId("Lot 100")
                 .build();
 
+        LotIdentifier lotId100 = new LotIdentifier("Lot 100");
+        Lot lot100 = new Lot();
+        lot100.setId(2);
+        lot100.setLotIdentifier(lotId100);
+
+        when(lotRepository.findByLotIdentifier_LotId("Lot 100")).thenReturn(lot100);
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> {
