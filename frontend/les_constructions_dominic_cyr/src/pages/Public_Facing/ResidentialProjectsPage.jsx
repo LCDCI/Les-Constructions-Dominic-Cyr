@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../../styles/Public_Facing/residential-projects.css';
 
 const ResidentialProjectsPage = () => {
@@ -8,6 +8,9 @@ const ResidentialProjectsPage = () => {
     const [filteredProjects, setFilteredProjects] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const pageSize = 6; // two rows of three cards or three rows of two cards
 
     const filesServiceUrl =
         import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
@@ -32,6 +35,7 @@ const ResidentialProjectsPage = () => {
             setFilteredProjects(data);
             setLoading(false);
         } catch (error) {
+            console.error('Error fetching projects:', error);
             setLoading(false);
         }
     };
@@ -39,6 +43,7 @@ const ResidentialProjectsPage = () => {
     const filterProjects = () => {
         if (!searchTerm.trim()) {
             setFilteredProjects(projects);
+            setCurrentPage(1);
             return;
         }
 
@@ -46,6 +51,7 @@ const ResidentialProjectsPage = () => {
             project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
         );
         setFilteredProjects(filtered);
+        setCurrentPage(1);
     };
 
     const getImageUrl = imageIdentifier => {
@@ -65,76 +71,122 @@ const ResidentialProjectsPage = () => {
     if (loading) {
         return (
             <div className="projects-page loading-state">
-                <p>Loading projects...</p>
+                <div className="page-loader">
+                    <div className="loader-spinner"></div>
+                </div>
             </div>
         );
     }
 
+    const totalPages = Math.ceil(filteredProjects.length / pageSize) || 1;
+    const startIndex = (currentPage - 1) * pageSize;
+    const paginatedProjects = filteredProjects.slice(startIndex, startIndex + pageSize);
+
+    const handlePageChange = (page) => {
+        if (page < 1 || page > totalPages) return;
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
     return (
         <div className="projects-page">
-            <div className="projects-content">
-                <div className="projects-container">
-                    <div className="projects-header">
-                        <h1>Residential Projects</h1>
-                    </div>
+            {/* HEADER SECTION */}
+            <section className="projects-hero">
+                <div className="projects-hero-content">
+                    <span className="section-kicker">Our Work</span>
+                    <h1 className="projects-title">Residential Projects</h1>
+                    <p className="projects-subtitle">
+                        Explore our portfolio of residential projects showcasing quality construction and innovative design.
+                    </p>
+                </div>
+            </section>
 
-                    <div className="projects-filter">
-                        <div className="search-container">
-                            <input
-                                type="text"
-                                className="search-input"
-                                placeholder="Search projects by name..."
-                                value={searchTerm}
-                                onChange={e => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="projects-grid">
-                        <div>
-                            {filteredProjects.length > 0 ? (
-                                filteredProjects.map((project, index) => {
-                                    const isLeftLayout = index % 2 === 0;
-
-                                    return (
-                                        <section
-                                            key={project.projectIdentifier}
-                                            className={`project-feature-section ${isLeftLayout ? 'left' : 'right'}`}
-                                        >
-                                            <div className="project-feature-inner">
-                                                <div className="feature-image">
-                                                    <img
-                                                        src={getImageUrl(project.imageIdentifier)}
-                                                        alt={project.projectName}
-                                                        onError={handleImageError}
-                                                    />
-                                                </div>
-                                                <div className="feature-content">
-                                                    <h2>{project.projectName}</h2>
-                                                    <p>{project.projectDescription}</p>
-
-                                                    <button
-                                                        className="feature-btn"
-                                                        onClick={() =>
-                                                            handleViewProject(project.projectIdentifier)
-                                                        }
-                                                    >
-                                                        View this project
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </section>
-                                    );
-                                })
-                            ) : (
-                                <div className="no-results">
-                                    <p>No projects found matching “{searchTerm}”</p>
-                                </div>
-                            )}
-                        </div>
+            {/* SEARCH SECTION */}
+            <div className="projects-search-container">
+                <div className="container">
+                    <div className="search-box">
+                        <input
+                            type="text"
+                            className="search-input"
+                            placeholder="Search projects by name..."
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                        />
                     </div>
                 </div>
             </div>
+
+            {/* PORTFOLIO GRID */}
+            <section className="portfolio-section">
+                <div className="container">
+                    <div className="section-header center" data-animate>
+                        <span className="section-kicker">Our Work</span>
+                        <h2 className="section-title">Projects & Achievements</h2>
+                    </div>
+                    {filteredProjects.length > 0 ? (
+                        <div className="portfolio-grid">
+                            {paginatedProjects.map((project) => (
+                                <Link
+                                    key={project.projectIdentifier}
+                                    to={`/projects/${project.projectIdentifier}/overview`}
+                                    className="portfolio-card"
+                                    data-animate
+                                >
+                                    <img
+                                        src={getImageUrl(project.imageIdentifier)}
+                                        alt={project.projectName}
+                                        loading="lazy"
+                                        onError={handleImageError}
+                                        className="card-image-bg"
+                                    />
+                                    <div className="card-overlay" />
+                                    <div className="card-content">
+                                        <h3 className="card-title">{project.projectName}</h3>
+                                        <p className="card-subtitle">
+                                            {project.projectDescription || 'Residential Project'}
+                                        </p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="no-results">
+                            <p>No projects found matching "{searchTerm}"</p>
+                        </div>
+                    )}
+
+                    {filteredProjects.length > 0 && totalPages > 1 && (
+                        <div className="projects-pagination">
+                            <button
+                                className="page-btn"
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                            >
+                                Prev
+                            </button>
+                            {Array.from({ length: totalPages }, (_, idx) => {
+                                const page = idx + 1;
+                                return (
+                                    <button
+                                        key={page}
+                                        className={`page-btn ${currentPage === page ? 'active' : ''}`}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </button>
+                                );
+                            })}
+                            <button
+                                className="page-btn"
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                            >
+                                Next
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </section>
         </div>
     );
 };
