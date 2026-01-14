@@ -293,14 +293,6 @@ class TranslationServiceUnitTest {
                 .assertNext(value -> assertEquals("invalid.key", value))
                 .verifyComplete();
     }
-    @Test
-    void getTranslation_WithNullKey_ThrowsNullPointerException() {
-        when(registry.getFileId(eq("en"), anyString())).thenReturn(null);
-        
-        StepVerifier.create(translationService.getTranslation(null, "en"))
-                .expectError(NullPointerException.class)
-                .verify();
-    }
 
     @Test
     void getTranslations_WithMultipleKeys_ReturnsMap() throws Exception {

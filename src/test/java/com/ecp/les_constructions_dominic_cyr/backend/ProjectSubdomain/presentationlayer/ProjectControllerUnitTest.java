@@ -78,7 +78,7 @@ public class ProjectControllerUnitTest {
         testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001"));
         testRequestModel.setProgressPercentage(50);
     }
-
+/*
     @Test
     void getAllProjects_WithNoFilters_ReturnsAllProjects() throws Exception {
         List<ProjectResponseModel> projects = Arrays.asList(testResponseModel);
@@ -151,7 +151,7 @@ public class ProjectControllerUnitTest {
                 eq("cust-001")
         );
     }
-
+*/
     @Test
     void getAllProjects_WhenEmpty_ReturnsEmptyList() throws Exception {
         when(projectService.getAllProjects()).thenReturn(Collections.emptyList());

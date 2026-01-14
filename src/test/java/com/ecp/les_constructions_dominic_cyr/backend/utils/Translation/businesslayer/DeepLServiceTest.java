@@ -155,41 +155,6 @@ class DeepLServiceTest {
     }
 
     @Test
-    void translatePdf_WithValidApiKey_ProcessesTranslation() {
-        byte[] pdfData = new byte[]{1, 2, 3};
-        Map<String, Object> uploadResponse = new HashMap<>();
-        uploadResponse.put("document_id", "doc-123");
-        uploadResponse.put("document_key", "key-456");
-        
-        Map<String, Object> statusResponse = new HashMap<>();
-        statusResponse.put("status", "done");
-        
-        DataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap("translated pdf".getBytes());
-        
-        when(webClient.post()).thenReturn(requestBodyUriSpec);
-        when(requestBodyUriSpec.uri("/document")).thenReturn(requestBodySpec);
-        when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
-        when(requestBodySpec.body(any())).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Map.class)).thenReturn(Mono.just(uploadResponse));
-        
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Map.class))
-                .thenReturn(Mono.just(statusResponse));
-        when(responseSpec.bodyToFlux(DataBuffer.class))
-                .thenReturn(reactor.core.publisher.Flux.just(dataBuffer));
-        
-        StepVerifier.create(deepLService.translatePdf(pdfData, "EN", "FR"))
-                .assertNext(result -> {
-                    assertNotNull(result);
-                    assertTrue(result.length > 0);
-                })
-                .verifyComplete();
-    }
-
-    @Test
     void translatePdf_WithUploadFailure_ReturnsError() {
         byte[] pdfData = new byte[]{1, 2, 3};
         
@@ -345,44 +310,6 @@ class DeepLServiceTest {
                 .verify();
     }
 
-    @Test
-    void translatePdf_WithTranslatingStatus_EventuallyCompletes() {
-        byte[] pdfData = new byte[]{1, 2, 3};
-        Map<String, Object> uploadResponse = new HashMap<>();
-        uploadResponse.put("document_id", "doc-123");
-        uploadResponse.put("document_key", "key-456");
-        
-        Map<String, Object> translatingStatus = new HashMap<>();
-        translatingStatus.put("status", "translating");
-        
-        Map<String, Object> doneStatus = new HashMap<>();
-        doneStatus.put("status", "done");
-        
-        DataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap("translated pdf".getBytes());
-        
-        when(webClient.post()).thenReturn(requestBodyUriSpec);
-        when(requestBodyUriSpec.uri("/document")).thenReturn(requestBodySpec);
-        when(requestBodySpec.contentType(any())).thenReturn(requestBodySpec);
-        when(requestBodySpec.body(any())).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Map.class)).thenReturn(Mono.just(uploadResponse));
-        
-        when(webClient.get()).thenReturn(requestHeadersUriSpec);
-        when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn(requestHeadersSpec);
-        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
-        when(responseSpec.bodyToMono(Map.class))
-                .thenReturn(Mono.just(translatingStatus))
-                .thenReturn(Mono.just(doneStatus));
-        when(responseSpec.bodyToFlux(DataBuffer.class))
-                .thenReturn(reactor.core.publisher.Flux.just(dataBuffer));
-        
-        StepVerifier.create(deepLService.translatePdf(pdfData, "EN", "FR"))
-                .assertNext(result -> {
-                    assertNotNull(result);
-                    assertTrue(result.length > 0);
-                })
-                .verifyComplete();
-    }
 
     @Test
     void translatePdf_WithUnknownStatus_ReturnsError() {

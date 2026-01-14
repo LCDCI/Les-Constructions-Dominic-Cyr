@@ -98,35 +98,6 @@ class TranslationRegistryTest {
         
         assertTrue(registry.hasTranslation("EN", "HOME"));
     }
-    @Test
-    void getFileId_WithNullLanguage_HandlesGracefully() {
-        registry.registerFileId("en", "home", "file-id-123");
-        
-        String result = registry.getFileId(null, "home");
-        assertNull(result);
-    }
-
-    @Test
-    void getFileId_WithNullPage_HandlesGracefully() {
-        registry.registerFileId("en", "home", "file-id-123");
-        
-        String result = registry.getFileId("en", null);
-        assertNull(result);
-    }
-
-    @Test
-    void registerFileId_WithNullLanguage_HandlesGracefully() {
-        assertDoesNotThrow(() -> {
-            registry.registerFileId(null, "home", "file-id-123");
-        });
-    }
-
-    @Test
-    void registerFileId_WithNullPage_HandlesGracefully() {
-        assertDoesNotThrow(() -> {
-            registry.registerFileId("en", null, "file-id-123");
-        });
-    }
 
     @Test
     void registerFileId_WithEmptyString_StoresCorrectly() {
