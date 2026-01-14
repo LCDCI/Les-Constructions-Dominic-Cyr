@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import '../../styles/Project/projects.css';
 import '../../styles/Project/create-project.css';
 import '../../styles/Project/edit-project.css';
@@ -11,6 +12,7 @@ const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showArchivedOnly, setShowArchivedOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -20,6 +22,7 @@ const ProjectsPage = () => {
   const [showConfirmClose, setShowConfirmClose] = useState(false);
 
   const { role } = useBackendUser();
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   const canCreate = canCreateProjects(role);
   const canEdit = canEditProjects(role);
 
@@ -30,7 +33,7 @@ const ProjectsPage = () => {
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [isAuthenticated, showArchivedOnly]);
 
   useEffect(() => {
     filterProjects();
@@ -40,9 +43,33 @@ const ProjectsPage = () => {
     try {
       setError(null);
       setLoading(true);
-      const url = `${apiBaseUrl}/projects`;
+      
+      // Build URL with status filter if showing archived only
+      let url = `${apiBaseUrl}/projects`;
+      if (showArchivedOnly) {
+        url += '?status=ARCHIVED';
+      }
+      
       console.log('Fetching projects from:', url);
-      const response = await fetch(url);
+      
+      const headers = {};
+      // Include auth token if user is authenticated
+      if (isAuthenticated) {
+        try {
+          const token = await getAccessTokenSilently({
+            authorizationParams: {
+              audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://construction-api.loca',
+            },
+          });
+          headers.Authorization = `Bearer ${token}`;
+        } catch (tokenError) {
+          console.warn('Could not get access token, proceeding without authentication:', tokenError);
+        }
+      }
+      
+      const response = await fetch(url, {
+        headers,
+      });
       console.log('Response status:', response.status, response.statusText);
       if (!response.ok) {
         const errorText = await response.text();
@@ -168,6 +195,45 @@ const ProjectsPage = () => {
                 onChange={e => setSearchTerm(e.target.value)}
               />
             </div>
+            {role === 'OWNER' && (
+              <div className="archived-filter-container" style={{ 
+                marginTop: '20px', 
+                display: 'flex', 
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                marginLeft: '20px'
+              }}>
+                <label style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '10px', 
+                  cursor: 'pointer',
+                  margin: 0,
+                  padding: 0
+                }}>
+                  <input
+                    type="checkbox"
+                    checked={showArchivedOnly}
+                    onChange={e => {
+                      setShowArchivedOnly(e.target.checked);
+                      setSearchTerm(''); // Clear search when toggling archived filter
+                    }}
+                    style={{ 
+                      cursor: 'pointer',
+                      margin: 0,
+                      width: '18px',
+                      height: '18px',
+                      flexShrink: 0
+                    }}
+                  />
+                  <span style={{ 
+                    fontSize: '14px',
+                    lineHeight: '1.5',
+                    userSelect: 'none'
+                  }}>Show archived projects only</span>
+                </label>
+              </div>
+            )}
           </div>
 
           {loading && (
@@ -189,7 +255,13 @@ const ProjectsPage = () => {
             <div className="projects-grid">
               {filteredProjects.length > 0 ? (
                 filteredProjects.map(project => (
-                  <div key={project.projectIdentifier} className="project-card">
+                  <div 
+                    key={project.projectIdentifier} 
+                    className={`project-card ${project.status === 'ARCHIVED' ? 'project-card-archived' : ''}`}
+                  >
+                    {project.status === 'ARCHIVED' && (
+                      <div className="archived-badge">ARCHIVED</div>
+                    )}
                     <div className="project-image-container">
                       <img
                         src={getImageUrl(project.imageIdentifier)}
