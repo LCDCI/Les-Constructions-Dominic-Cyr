@@ -387,6 +387,9 @@ const ProjectMetadata = () => {
       </div>
 
       <div className="button-container">
+        <a href={`/projects/${projectId}/schedule`} className="project-metadata-schedule">
+          View Project Schedule
+        </a>
         <a href={`/projects`} className="project-metadata-back">
           Back to projects
         </a>

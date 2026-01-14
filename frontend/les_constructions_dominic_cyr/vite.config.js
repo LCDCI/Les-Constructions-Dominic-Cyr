@@ -57,6 +57,8 @@ export default defineConfig(async () => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
       },
+      // Ensure every package (including react-big-schedule) reuses the same React instance
+      dedupe: ['react', 'react-dom'],
     },
     build: {
       modulePreload: false,
