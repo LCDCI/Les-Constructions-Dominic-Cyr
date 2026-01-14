@@ -61,16 +61,14 @@ class ScheduleServiceImplUnitTest {
     @BeforeEach
     void setUp() {
         LotIdentifier lotIdentifier = new LotIdentifier("Lot 53");
-        lot = Lot.builder()
-                .id(1)
-                .lotIdentifier(lotIdentifier)
-                .build();
+        lot = new Lot();
+        lot.setId(1);
+        lot.setLotIdentifier(lotIdentifier);
 
-        project = Project.builder()
-                .id(1L)
-                .projectIdentifier("proj-001")
-                .projectName("Test Project")
-                .build();
+        project = new Project();
+        project.setProjectId(1L);
+        project.setProjectIdentifier("proj-001");
+        project.setProjectName("Test Project");
 
         schedule1 = Schedule.builder()
                 .id(1)
@@ -195,7 +193,7 @@ class ScheduleServiceImplUnitTest {
         assertNotNull(result);
         assertEquals("SCH-001", result.getScheduleIdentifier());
         assertEquals("Begin Excavation", result.getScheduleDescription());
-        assertEquals("Lot 53", result.getLotNumber());
+        assertEquals("Lot 53", result.getLotId());
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
         verify(scheduleMapper).entityToResponseDTO(schedule1);
@@ -228,10 +226,9 @@ class ScheduleServiceImplUnitTest {
                 .build();
 
         LotIdentifier lotId100 = new LotIdentifier("Lot 100");
-        Lot lot100 = Lot.builder()
-                .id(2)
-                .lotIdentifier(lotId100)
-                .build();
+        Lot lot100 = new Lot();
+        lot100.setId(2);
+        lot100.setLotIdentifier(lotId100);
 
         Schedule newSchedule = Schedule.builder()
                 .scheduleIdentifier("SCH-NEW")
@@ -305,6 +302,11 @@ class ScheduleServiceImplUnitTest {
                 .lotId("Lot 101")
                 .build();
 
+        LotIdentifier lotId101 = new LotIdentifier("Lot 101");
+        Lot lot101 = new Lot();
+        lot101.setId(3);
+        lot101.setLotIdentifier(lotId101);
+
         ScheduleResponseDTO updatedResponseDTO = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-001")
                 .scheduleStartDate(LocalDate.now().plusDays(5))
@@ -314,6 +316,7 @@ class ScheduleServiceImplUnitTest {
                 .build();
 
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.of(schedule1));
+        when(lotRepository.findByLotIdentifier_LotId("Lot 101")).thenReturn(lot101);
         when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
         when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
 
@@ -324,6 +327,7 @@ class ScheduleServiceImplUnitTest {
         assertEquals("Updated Task", result.getScheduleDescription());
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
+        verify(lotRepository).findByLotIdentifier_LotId("Lot 101");
         verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
         verify(scheduleRepository).save(schedule1);
     }
@@ -488,10 +492,9 @@ class ScheduleServiceImplUnitTest {
                 .build();
 
         LotIdentifier lotId101 = new LotIdentifier("Lot 101");
-        Lot lot101 = Lot.builder()
-                .id(3)
-                .lotIdentifier(lotId101)
-                .build();
+        Lot lot101 = new Lot();
+        lot101.setId(3);
+        lot101.setLotIdentifier(lotId101);
 
         ScheduleResponseDTO updatedResponseDTO = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-001")
@@ -609,11 +612,10 @@ class ScheduleServiceImplUnitTest {
         String projectIdentifier = "proj-002";
         String scheduleIdentifier = "SCH-001";
 
-        Project otherProject = Project.builder()
-                .id(2L)
-                .projectIdentifier("proj-002")
-                .projectName("Other Project")
-                .build();
+        Project otherProject = new Project();
+        otherProject.setProjectId(2L);
+        otherProject.setProjectIdentifier("proj-002");
+        otherProject.setProjectName("Other Project");
 
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(otherProject));
         when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.of(schedule1));
@@ -637,10 +639,9 @@ class ScheduleServiceImplUnitTest {
                 .build();
 
         LotIdentifier lotId100 = new LotIdentifier("Lot 100");
-        Lot lot100 = Lot.builder()
-                .id(2)
-                .lotIdentifier(lotId100)
-                .build();
+        Lot lot100 = new Lot();
+        lot100.setId(2);
+        lot100.setLotIdentifier(lotId100);
 
         Schedule newSchedule = Schedule.builder()
                 .scheduleIdentifier("SCH-NEW")
@@ -709,10 +710,9 @@ class ScheduleServiceImplUnitTest {
                 .build();
 
         LotIdentifier lotId101 = new LotIdentifier("Lot 101");
-        Lot lot101 = Lot.builder()
-                .id(3)
-                .lotIdentifier(lotId101)
-                .build();
+        Lot lot101 = new Lot();
+        lot101.setId(3);
+        lot101.setLotIdentifier(lotId101);
 
         ScheduleResponseDTO updatedResponseDTO = ScheduleResponseDTO.builder()
                 .scheduleIdentifier("SCH-001")

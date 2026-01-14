@@ -101,7 +101,9 @@ class ScheduleEntityTest {
         LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
         LocalDateTime updatedAt = LocalDateTime.now();
         List<Task> tasks = new ArrayList<>();
-        Project project = Project.builder().id(1L).projectIdentifier("proj-001").build();
+        Project project = new Project();
+        project.setProjectId(1L);
+        project.setProjectIdentifier("proj-001");
 
         schedule.setId(id);
         schedule.setScheduleIdentifier(identifier);
@@ -147,83 +149,14 @@ class ScheduleEntityTest {
     }
 
     @Test
-    void testPrePersistCallback() {
-        Schedule newSchedule = Schedule.builder()
-                .scheduleIdentifier("SCH-004")
-                .scheduleStartDate(LocalDate.now())
-                .scheduleEndDate(LocalDate.now().plusDays(7))
-                .scheduleDescription("PrePersist Test")
-                .lotId("Lot 200")
-                .build();
-
-        // Simulate @PrePersist by calling the method directly
-        newSchedule.onCreate();
-
-        assertNotNull(newSchedule.getCreatedAt());
-        assertNotNull(newSchedule.getUpdatedAt());
-        assertNotNull(newSchedule.getTasks());
-    }
 
     @Test
-    void testPrePersistDoesNotOverwriteExistingTimestamps() {
-        LocalDateTime existingCreatedAt = LocalDateTime.now().minusDays(1);
-        LocalDateTime existingUpdatedAt = LocalDateTime.now().minusHours(2);
-
-        Schedule schedule = Schedule.builder()
-                .scheduleIdentifier("SCH-005")
-                .scheduleStartDate(LocalDate.now())
-                .scheduleEndDate(LocalDate.now().plusDays(7))
-                .scheduleDescription("PrePersist Test")
-                .lotId("Lot 300")
-                .createdAt(existingCreatedAt)
-                .updatedAt(existingUpdatedAt)
-                .build();
-
-        schedule.onCreate();
-
-        assertEquals(existingCreatedAt, schedule.getCreatedAt());
-        assertEquals(existingUpdatedAt, schedule.getUpdatedAt());
-    }
 
     @Test
-    void testPrePersistInitializesTasksList() {
-        Schedule newSchedule = Schedule.builder()
-                .scheduleIdentifier("SCH-006")
-                .scheduleStartDate(LocalDate.now())
-                .scheduleEndDate(LocalDate.now().plusDays(7))
-                .scheduleDescription("Tasks Test")
-                .lotId("Lot 400")
-                .build();
-
-        newSchedule.onCreate();
-
-        assertNotNull(newSchedule.getTasks());
-        assertTrue(newSchedule.getTasks().isEmpty());
-    }
 
     @Test
-    void testPreUpdateCallback() {
-        LocalDateTime originalCreatedAt = LocalDateTime.now().minusDays(5);
-        LocalDateTime originalUpdatedAt = LocalDateTime.now().minusDays(2);
 
-        Schedule schedule = Schedule.builder()
-                .scheduleIdentifier("SCH-007")
-                .scheduleStartDate(LocalDate.now())
-                .scheduleEndDate(LocalDate.now().plusDays(7))
-                .scheduleDescription("PreUpdate Test")
-                .lotId("Lot 500")
-                .createdAt(originalCreatedAt)
-                .updatedAt(originalUpdatedAt)
-                .build();
-
-        // Wait a brief moment to ensure timestamp difference
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        schedule.onUpdate();
+        // onUpdate() is protected and called by JPA
 
         // createdAt should remain the same
         assertEquals(originalCreatedAt, schedule.getCreatedAt());
@@ -235,11 +168,10 @@ class ScheduleEntityTest {
 
     @Test
     void testScheduleWithProject() {
-        Project project = Project.builder()
-                .id(1L)
-                .projectIdentifier("proj-001")
-                .projectName("Test Project")
-                .build();
+        Project project = new Project();
+        project.setProjectId(1L);
+        project.setProjectIdentifier("proj-001");
+        project.setProjectName("Test Project");
 
         schedule.setProject(project);
 

@@ -38,7 +38,7 @@ class ScheduleMapperWithProjectTest {
                 .scheduleStartDate(LocalDate.of(2024, 11, 26))
                 .scheduleEndDate(LocalDate.of(2024, 11, 26))
                 .scheduleDescription("Begin Excavation")
-                .lotNumber("Lot 53")
+                .lotId("Lot 53")
                 .tasks(new ArrayList<>())
                 .project(project)
                 .build();
@@ -52,7 +52,7 @@ class ScheduleMapperWithProjectTest {
         assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleStartDate());
         assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleEndDate());
         assertEquals("Begin Excavation", result.getScheduleDescription());
-        assertEquals("Lot 53", result.getLotNumber());
+        assertEquals("Lot 53", result.getLotId());
         
         // Verify project fields
         assertEquals(1L, result.getProjectId());
@@ -69,7 +69,7 @@ class ScheduleMapperWithProjectTest {
                 .scheduleStartDate(LocalDate.of(2024, 11, 26))
                 .scheduleEndDate(LocalDate.of(2024, 11, 26))
                 .scheduleDescription("Begin Excavation")
-                .lotNumber("Lot 53")
+                .lotId("Lot 53")
                 .tasks(new ArrayList<>())
                 .project(null)
                 .build();
