@@ -94,7 +94,7 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
         </div>
         <div className="hero-container">
           <div className="hero-content" data-animate>
-            <p className="hero-label">RENOVATIONS</p>
+            <p className="hero-label">{t('hero.label', 'RENOVATIONS')}</p>
             <h1 className="hero-heading">{t('hero.heading', 'Custom renovations, delivered with care')}</h1>
             <p className="hero-description">{t('hero.lede', 'Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity.')}</p>
             <div className="hero-buttons">

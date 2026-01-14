@@ -98,7 +98,7 @@ body {
 .projects-hero {
     width: 100%;
     padding: var(--spacing-section) 0;
-    background: var(--color-light);
+    background: linear-gradient(145deg, #AAB2A6, #8A9287);
     text-align: center;
 }
 
@@ -114,15 +114,16 @@ body {
     font-weight: 500;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--color-secondary);
+    color: var(--color-white);
     margin-bottom: var(--spacing-sm);
+    opacity: 0.9;
 }
 
 .projects-title {
     font-family: var(--font-heading);
     font-size: clamp(2.5rem, 5vw, 3.5rem);
     font-weight: 400;
-    color: var(--color-primary);
+    color: var(--color-white);
     margin-bottom: var(--spacing-md);
     letter-spacing: -0.01em;
     line-height: 1.2;
@@ -131,10 +132,11 @@ body {
 .projects-subtitle {
     font-size: 1.1rem;
     font-weight: 300;
-    color: var(--color-text-muted);
+    color: var(--color-white);
     line-height: 1.7;
     max-width: 700px;
     margin: 0 auto;
+    opacity: 0.95;
 }
 
 /* ========== SEARCH SECTION ========== */

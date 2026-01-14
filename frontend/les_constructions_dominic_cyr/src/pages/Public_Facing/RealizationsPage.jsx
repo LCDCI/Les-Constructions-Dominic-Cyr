@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/realizations.css';
 import Footer from '../../components/Footers/ProjectsFooter';
 
 const RealizationsPage = () => {
+  const { t } = usePageTranslations('realizations');
   const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -56,7 +58,7 @@ const RealizationsPage = () => {
       <section className="real-hero-banner">
         <div className="real-hero-content">
           <h1 className="real-hero-title">
-            Our Realizations
+            {t('hero.title', 'Our Realizations')}
           </h1>
         </div>
       </section>
@@ -65,9 +67,7 @@ const RealizationsPage = () => {
       <section className="realizations-intro">
         <div className="realizations-intro-content">
           <p className="realizations-intro-text">
-            Explore our portfolio of completed projects. Each realization represents our commitment 
-            to quality craftsmanship, attention to detail, and customer satisfaction. From residential 
-            renovations to commercial builds, we bring your vision to life.
+            {t('intro.description', 'Explore our portfolio of completed projects. Each realization represents our commitment to quality craftsmanship, attention to detail, and customer satisfaction. From residential renovations to commercial builds, we bring your vision to life.')}
           </p>
         </div>
       </section>
@@ -78,7 +78,7 @@ const RealizationsPage = () => {
           <button 
             className="gallery-arrow gallery-arrow-left" 
             onClick={handlePrevious}
-            aria-label="Previous image"
+            aria-label={t('gallery.previousAriaLabel', 'Previous image')}
           >
             <MdArrowBackIos size={32} />
           </button>
@@ -88,19 +88,19 @@ const RealizationsPage = () => {
               <div className="gallery-image-item">
                 <img
                   src={getImageUrl(REALIZATION_IMAGE_IDS[currentIndex])}
-                  alt={`Realization ${currentIndex + 1}`}
+                  alt={t('gallery.imageAlt', `Realization ${currentIndex + 1}`)}
                   className="gallery-image"
                 />
               </div>
             ) : (
-              <p style={{ textAlign: 'center', padding: '5%' }}>No realizations found</p>
+              <p style={{ textAlign: 'center', padding: '5%' }}>{t('gallery.noResults', 'No realizations found')}</p>
             )}
           </div>
 
           <button 
             className="gallery-arrow gallery-arrow-right" 
             onClick={handleNext}
-            aria-label="Next image"
+            aria-label={t('gallery.nextAriaLabel', 'Next image')}
           >
             <MdArrowForwardIos size={32} />
           </button>

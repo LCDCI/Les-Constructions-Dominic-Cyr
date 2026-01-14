@@ -40,8 +40,8 @@
 }
 
 .project-hero {
-  padding: calc(var(--spacing-xxl) * 1.5) var(--spacing-lg);
-  background: linear-gradient(145deg, var(--tertiary-color, #3498db), var(--primary-color, #2c3e50));
+  padding: var(--spacing-section, 8rem) var(--spacing-lg);
+  background: linear-gradient(145deg, #AAB2A6, #8A9287) !important;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -86,20 +86,20 @@
 
 .hero-title {
   font-family: var(--font-heading);
-  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 400;
-  margin-bottom: var(--spacing-md, 1rem);
+  margin-bottom: var(--spacing-sm, 0.75rem);
   text-transform: uppercase;
   letter-spacing: -0.02em;
   color: var(--color-white, white);
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .hero-subtitle {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 300;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.95);
   max-width: 700px;
   margin: 0 auto;
 }

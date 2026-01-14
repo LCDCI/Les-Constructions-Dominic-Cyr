@@ -1,53 +1,52 @@
 {
-  "nav": {
-    "projects": "Projets résidentiels",
-    "renovation": "Rénovation",
-    "projectManagement": "Gestion de projet",
-    "realisations": "Réalisations",
-    "signIn": "Se connecter",
-    "getStarted": "Commencer"
-  },
-  "footer": {
-    "companyName": "Les Constructions Dominic Cyr Inc.",
-    "address": "155 rue Bourgeois",
-    "city": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
-    "phone": "Téléphone : 514-123-4567",
-    "email": "Courriel : constructions.dcyr@gmail.com",
-    "rbq": "Régie du bâtiment du Québec",
-    "rbqLicense": "No licence : 8356-0169-03",
-    "rbqWebsite": "rbq.gouv.qc.ca",
-    "gcr": "Garantie de construction résidentielle",
-    "gcrAccreditation": "No accréditation : 11084",
-    "gcrWebsite": "garantiegcr.com",
-    "contactTitle": "Contact",
-    "contactName": "Isabelle Misiazeck",
-    "contactPhone": "514-123-4567",
-    "contactEmail": "isabelle.misiazeck@foresta.ca",
-    "hoursTitle": "Heures d'ouverture",
-    "hoursWeekdays": "Lundi au mercredi : 13 h à 19 h",
-    "hoursWeekend": "Samedi et dimanche : 11 h à 17 h",
-    "officeTitle": "Bureau",
-    "officeAddress1": "104 rue du Boisé",
-    "officeAddress2": "St-Alphonse de Granby",
-    "officeAddress3": "Granby, QC J2J 2X4",
-    "copyright": "© 2025 Les Constructions Dominic Cyr. Tous droits réservés."
-  },
   "hero": {
-    "title1": "RÉNOVER",
-    "title2": "MODERNISER",
-    "title3": "TRANSFORMER",
-    "subtitle": "Votre maison mérite ce qu'il y a de mieux"
+    "label": "RÉNOVATIONS",
+    "heading": "Rénovations sur mesure, réalisées avec soin",
+    "lede": "Cuisines, sous-sols, espaces ouverts ou façades — nous modernisons chaque secteur avec précision et créativité."
+  },
+  "kicker": {
+    "renovations": "Rénovations"
   },
   "intro": {
-    "title": "Transformez votre maison en un espace de vie dont vous rêvez !",
-    "description": "Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité."
+    "emphasis": "Modernisez",
+    "rest": "votre espace avec style",
+    "description": "Que vous vouliez rafraîchir votre cuisine, repenser votre sous-sol, ouvrir des espaces ou améliorer votre façade, nous réalisons votre projet avec précision, rigueur et créativité.",
+    "cta": "Parlez à un expert"
   },
-  "services": {
-    "title": "Nous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien."
+  "grid": {
+    "kicker": "Notre travail",
+    "title": "Rénovations récentes"
   },
-  "callToAction": {
-    "title": "Confiez votre rénovation à des professionnels passionnés !"
+  "states": {
+    "empty": {
+      "title": "Aucune rénovation disponible actuellement",
+      "body": "Revenez bientôt pour voir nos derniers projets de rénovation !"
+    },
+    "error": {
+      "message": "Impossible de charger les rénovations",
+      "retry": "Réessayer"
+    }
   },
+  "cta": {
+    "kicker": "Par où commencer ?",
+    "title": "Parlons de votre projet",
+    "subtitle": "Recevez un soutien adapté pour transformer votre espace en un lieu qui vous ressemble.",
+    "button": "Contactez-nous",
+    "discover": "Découvrir",
+    "contact": "Contact"
+  },
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets",
+    "realizations": "Réalisations",
+    "renovations": "Rénovations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "company": "Construction Dominic Cyr Inc.",
+    "copyright": "© 2025 Construction Dominic Cyr. Tous droits réservés."
+  }
+}
   "states": {
     "empty": {
       "title": "Aucune rénovation pour le moment",
