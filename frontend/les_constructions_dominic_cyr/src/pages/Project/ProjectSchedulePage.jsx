@@ -34,8 +34,8 @@ const ProjectSchedulePage = () => {
   const [projectName, setProjectName] = useState('');
   const [schedules, setSchedules] = useState([]);
   const [lots, setLots] = useState([]);
-    const [lotsLoading, setLotsLoading] = useState(true);
-    const [lotsError, setLotsError] = useState('');
+  const [lotsLoading, setLotsLoading] = useState(true);
+  const [lotsError, setLotsError] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [defaultDate, setDefaultDate] = useState(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -170,7 +170,14 @@ const ProjectSchedulePage = () => {
 
     return {
       ...schedule,
+      scheduleId:
+        schedule.scheduleId ??
+        schedule.scheduleIdentifier ??
+        schedule.identifier ??
+        schedule.id ??
+        fallbackId,
       id:
+        schedule.scheduleId ??
         schedule.id ??
         schedule.scheduleIdentifier ??
         schedule.identifier ??
@@ -182,9 +189,12 @@ const ProjectSchedulePage = () => {
   const mapScheduleToEvent = (schedule, fallbackId) => {
     const normalized = normalizeSchedule(schedule, fallbackId);
     return {
-      id: normalized.id,
+      id: normalized.scheduleId ?? normalized.id,
       scheduleIdentifier:
-        normalized.scheduleIdentifier ?? normalized.identifier ?? normalized.id,
+        normalized.scheduleId ??
+        normalized.scheduleIdentifier ??
+        normalized.identifier ??
+        normalized.id,
       title: normalized.scheduleDescription ?? 'Schedule',
       start: toDate(normalized.scheduleStartDate, 8),
       end: toDate(normalized.scheduleEndDate, 17),
@@ -207,26 +217,56 @@ const ProjectSchedulePage = () => {
   };
 
   const getScheduleIdentifier = entity =>
-    entity?.scheduleIdentifier ?? entity?.identifier ?? entity?.id ?? null;
+    entity?.scheduleId ??
+    entity?.scheduleIdentifier ??
+    entity?.identifier ??
+    entity?.id ??
+    null;
+
+  const findEventForSchedule = scheduleEntity => {
+    const targetId = getScheduleIdentifier(scheduleEntity);
+    const match = events.find(
+      ev =>
+        getScheduleIdentifier(ev) === targetId || ev.id === scheduleEntity.id
+    );
+    if (match) return match;
+    return mapScheduleToEvent(scheduleEntity, scheduleEntity.id || Date.now());
+  };
 
   useEffect(() => {
     const loadLots = async () => {
       try {
         setLotsLoading(true);
         setLotsError('');
-        const response = await fetchLots();
+        let token = null;
+        if (isAuthenticated) {
+          try {
+            token = await getAccessTokenSilently({
+              authorizationParams: {
+                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+              },
+            });
+          } catch (tokenErr) {
+            console.warn(
+              'Could not get token for lots, proceeding without auth'
+            );
+          }
+        }
+
+        const response = await fetchLots(token);
         setLots(Array.isArray(response) ? response : []);
       } catch (err) {
         console.error('Error fetching lots:', err);
         setLots([]);
-        setLotsError('Unable to load lots. Please try again.');
+        const detailed = extractErrorMessage(err);
+        setLotsError(`Unable to load lots. ${detailed}`);
       } finally {
         setLotsLoading(false);
       }
     };
 
     loadLots();
-  }, []);
+  }, [getAccessTokenSilently, isAuthenticated]);
 
   useEffect(() => {
     const fetchSchedules = async () => {
@@ -382,6 +422,11 @@ const ProjectSchedulePage = () => {
           : prev
       );
     }
+  };
+
+  const onScheduleCardClick = scheduleItem => {
+    const eventLike = findEventForSchedule(scheduleItem);
+    onEventClick(eventLike);
   };
 
   const onSlotSelect = slotInfo => {
@@ -665,7 +710,12 @@ const ProjectSchedulePage = () => {
       resetTaskDrafts(scheduleStart, scheduleEnd);
     } catch (taskErr) {
       console.error('Error saving tasks:', taskErr);
-      setTaskFormError('Failed to save tasks. Please try again.');
+      const status = taskErr?.response?.status;
+      const detailed = extractErrorMessage(taskErr);
+      const authHint = status === 401 || status === 403
+        ? ' Please make sure you are signed in with a role that can create tasks.'
+        : '';
+      setTaskFormError(`Failed to save tasks: ${detailed}.${authHint}`);
     } finally {
       setIsSavingTasks(false);
     }
@@ -872,63 +922,6 @@ const ProjectSchedulePage = () => {
               No schedules yet. Use "Create Schedule" to add one.
             </div>
           )}
-          {selectedEvent && (
-            <div className="schedule-selected">
-              <h3>Selected</h3>
-              <div className="schedule-selected-title">
-                {selectedEvent.title}
-              </div>
-
-              {selectedEvent.description && (
-                <div className="schedule-selected-meta">
-                  {selectedEvent.description}
-                </div>
-              )}
-              <div className="schedule-selected-dates">
-                <span>
-                  {formatDisplayRange(selectedEvent.start, selectedEvent.end)}
-                </span>
-              </div>
-              {Array.isArray(selectedEvent.tasks) && (
-                <div className="schedule-selected-tasks">
-                  <h4>Tasks</h4>
-                  {selectedEvent.tasksLoading ? (
-                    <div className="schedule-selected-meta">Loading tasks…</div>
-                  ) : selectedEvent.tasksError ? (
-                    <div className="schedule-selected-meta">
-                      {selectedEvent.tasksError}
-                    </div>
-                  ) : selectedEvent.tasks.length === 0 ? (
-                    <div className="schedule-selected-meta">
-                      No tasks linked
-                    </div>
-                  ) : (
-                    <ul>
-                      {selectedEvent.tasks.map((task, idx) => {
-                        const taskId =
-                          task.taskId ??
-                          task.id ??
-                          task.identifier ??
-                          `task-${idx + 1}`;
-                        const label =
-                          task.taskDescription ??
-                          task.taskTitle ??
-                          task.description ??
-                          task.name ??
-                          JSON.stringify(task);
-                        return (
-                          <li key={taskId}>
-                            <strong>{taskId}:</strong> {label}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
           <div className="schedule-list-items">
             {schedules.map(item => (
               <div
@@ -936,7 +929,16 @@ const ProjectSchedulePage = () => {
                   item.id ??
                   `${item.scheduleStartDate}-${item.scheduleDescription}`
                 }
-                className="schedule-card"
+                className="schedule-card schedule-card-clickable"
+                role="button"
+                tabIndex={0}
+                onClick={() => onScheduleCardClick(item)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onScheduleCardClick(item);
+                  }
+                }}
               >
                 <div className="schedule-card-date">
                   <span className="schedule-card-date-text">
@@ -1037,7 +1039,9 @@ const ProjectSchedulePage = () => {
                         );
                       })}
                     </select>
-                    {lotsError && <div className="form-error subtle">{lotsError}</div>}
+                    {lotsError && (
+                      <div className="form-error subtle">{lotsError}</div>
+                    )}
                   </label>
 
                   <label>
@@ -1425,22 +1429,43 @@ const ProjectSchedulePage = () => {
                   ) : selectedEvent.tasks.length === 0 ? (
                     <div>None listed</div>
                   ) : (
-                    <ul>
+                    <ul className="schedule-task-list">
                       {selectedEvent.tasks.map((task, idx) => {
                         const taskId =
                           task.taskId ??
                           task.id ??
                           task.identifier ??
                           `task-${idx + 1}`;
-                        const label =
-                          task.taskDescription ??
-                          task.taskTitle ??
-                          task.description ??
-                          task.name ??
-                          JSON.stringify(task);
+                        const title =
+                          task.taskTitle ||
+                          task.taskDescription ||
+                          task.description ||
+                          task.name ||
+                          'Untitled task';
+                        const status = task.taskStatus || 'Not set';
+                        const taskPath = taskId ? `/tasks/${taskId}` : null;
+
                         return (
-                          <li key={taskId}>
-                            <strong>{taskId}:</strong> {label}
+                          <li key={taskId} className="schedule-task-item">
+                            <div className="schedule-task-main">
+                              {taskPath ? (
+                                <button
+                                  type="button"
+                                  className="task-link"
+                                  onClick={() => navigate(taskPath)}
+                                >
+                                  {title}
+                                </button>
+                              ) : (
+                                <span>{title}</span>
+                              )}
+                              <span className="task-chip task-chip-inline">
+                                {status}
+                              </span>
+                            </div>
+                            <div className="schedule-task-sub">
+                              ID: {taskId}
+                            </div>
                           </li>
                         );
                       })}
