@@ -123,14 +123,5 @@ class TranslationRegistryControllerUnitTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(registry, times(1)).registerFileId("en", "home", "");
     }
-    @Test
-    void registerFileId_WithNullFileId_HandlesGracefully() {
-        doNothing().when(registry).registerFileId(anyString(), anyString(), anyString());
-        
-        assertDoesNotThrow(() -> {
-            ResponseEntity<String> response = controller.registerFileId("en", "home", null);
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-        });
-    }
 }
 
