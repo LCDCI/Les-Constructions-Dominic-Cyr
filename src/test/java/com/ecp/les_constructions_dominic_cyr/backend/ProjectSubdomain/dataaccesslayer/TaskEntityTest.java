@@ -22,10 +22,8 @@ class TaskEntityTest {
     void setUp() {
         task = new Task();
         
-        assignedUser = Users.builder()
-                .id(1)
-                .userRole(UserRole.CONTRACTOR)
-                .build();
+        assignedUser = new Users();
+        assignedUser.setUserRole(UserRole.CONTRACTOR);
     }
 
     @Test

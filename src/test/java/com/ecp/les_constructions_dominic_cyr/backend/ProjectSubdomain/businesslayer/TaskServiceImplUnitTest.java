@@ -58,10 +58,8 @@ class TaskServiceImplUnitTest {
     @BeforeEach
     void setUp() {
         UUID contractorId = UUID.randomUUID();
-        contractor = Users.builder()
-                .id(1)
-                .userRole(UserRole.CONTRACTOR)
-                .build();
+        contractor = new Users();
+        contractor.setUserRole(UserRole.CONTRACTOR);
 
         TaskIdentifier taskId1 = new TaskIdentifier("TASK-001");
         task1 = Task.builder()
@@ -363,10 +361,8 @@ class TaskServiceImplUnitTest {
         UUID userId = UUID.randomUUID();
         requestDTO.setAssignedToUserId(userId.toString());
 
-        Users nonContractor = Users.builder()
-                .id(2)
-                .userRole(UserRole.SALESPERSON)
-                .build();
+        Users nonContractor = new Users();
+        nonContractor.setUserRole(UserRole.SALESPERSON);
 
         when(usersRepository.findByUserIdentifier_UserId(userId)).thenReturn(Optional.of(nonContractor));
 
@@ -544,10 +540,8 @@ class TaskServiceImplUnitTest {
         UUID userId = UUID.randomUUID();
         String userIdStr = userId.toString();
 
-        Users nonContractor = Users.builder()
-                .id(2)
-                .userRole(UserRole.CUSTOMER)
-                .build();
+        Users nonContractor = new Users();
+        nonContractor.setUserRole(UserRole.CUSTOMER);
 
         when(usersRepository.findByUserIdentifier_UserId(userId)).thenReturn(Optional.of(nonContractor));
 
