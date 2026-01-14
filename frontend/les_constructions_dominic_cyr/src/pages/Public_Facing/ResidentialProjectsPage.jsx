@@ -119,10 +119,6 @@ const ResidentialProjectsPage = () => {
             {/* PORTFOLIO GRID */}
             <section className="portfolio-section">
                 <div className="container">
-                    <div className="section-header center" data-animate>
-                        <span className="section-kicker">Our Work</span>
-                        <h2 className="section-title">Projects & Achievements</h2>
-                    </div>
                     {filteredProjects.length > 0 ? (
                         <div className="portfolio-grid">
                             {paginatedProjects.map((project) => (
@@ -140,12 +136,6 @@ const ResidentialProjectsPage = () => {
                                         className="card-image-bg"
                                     />
                                     <div className="card-overlay" />
-                                    <div className="card-content">
-                                        <h3 className="card-title">{project.projectName}</h3>
-                                        <p className="card-subtitle">
-                                            {project.projectDescription || 'Residential Project'}
-                                        </p>
-                                    </div>
                                 </Link>
                             ))}
                         </div>
