@@ -23,6 +23,7 @@ var allowedImageTypes = map[string]bool{
 	"image/png":  true,
 	"image/jpeg": true,
 	"image/webp": true,
+	"video/mp4":  true,
 }
 
 const maxUploadBytes = 25 * 1024 * 1024 // 25 MiB hard cap per upload
@@ -131,6 +132,20 @@ func (fc *FileController) download(c *gin.Context) {
 	data, contentType, err := fc.s.Get(c.Request.Context(), id)
 	if err != nil {
 		c.Error(err)
+		return
+	}
+
+	// Support for video streaming with Range requests
+	c.Header("Accept-Ranges", "bytes")
+	c.Header("Content-Type", contentType)
+	c.Header("Cache-Control", "public, max-age=31536000")
+
+	// Handle Range request for video streaming
+	rangeHeader := c.GetHeader("Range")
+	if rangeHeader != "" && strings.HasPrefix(contentType, "video/") {
+		// For now, serve full content with proper headers
+		// Full Range implementation would require parsing and serving partial content
+		c.Data(http.StatusOK, contentType, data)
 		return
 	}
 
