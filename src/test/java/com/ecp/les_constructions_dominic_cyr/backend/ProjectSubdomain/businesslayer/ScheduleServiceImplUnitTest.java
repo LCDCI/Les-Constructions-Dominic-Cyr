@@ -1,6 +1,11 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.businesslayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.ScheduleServiceImpl;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ScheduleMapper;
@@ -37,6 +42,12 @@ class ScheduleServiceImplUnitTest {
     @Mock
     private ScheduleMapper scheduleMapper;
 
+    @Mock
+    private ProjectRepository projectRepository;
+
+    @Mock
+    private LotRepository lotRepository;
+
     @InjectMocks
     private ScheduleServiceImpl scheduleService;
 
@@ -44,16 +55,31 @@ class ScheduleServiceImplUnitTest {
     private Schedule schedule2;
     private ScheduleResponseDTO responseDTO1;
     private ScheduleResponseDTO responseDTO2;
+    private Lot lot;
+    private Project project;
 
     @BeforeEach
     void setUp() {
+        LotIdentifier lotIdentifier = new LotIdentifier("Lot 53");
+        lot = Lot.builder()
+                .id(1)
+                .lotIdentifier(lotIdentifier)
+                .build();
+
+        project = Project.builder()
+                .id(1L)
+                .projectIdentifier("proj-001")
+                .projectName("Test Project")
+                .build();
+
         schedule1 = Schedule.builder()
                 .id(1)
                 .scheduleIdentifier("SCH-001")
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Begin Excavation")
-                .lotNumber("Lot 53")
+                .lotId("Lot 53")
+                .project(project)
                 .build();
 
         schedule2 = Schedule.builder()
@@ -62,7 +88,8 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(1))
                 .scheduleEndDate(LocalDate.now().plusDays(1))
                 .scheduleDescription("Plumbing")
-                .lotNumber("Lot 57")
+                .lotId("Lot 57")
+                .project(project)
                 .build();
 
         responseDTO1 = ScheduleResponseDTO.builder()
@@ -70,7 +97,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Begin Excavation")
-                .lotNumber("Lot 53")
+                .lotId("Lot 53")
                 .build();
 
         responseDTO2 = ScheduleResponseDTO.builder()
@@ -78,7 +105,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(1))
                 .scheduleEndDate(LocalDate.now().plusDays(1))
                 .scheduleDescription("Plumbing")
-                .lotNumber("Lot 57")
+                .lotId("Lot 57")
                 .build();
     }
 
@@ -197,7 +224,13 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotNumber("Lot 100")
+                .lotId("Lot 100")
+                .build();
+
+        LotIdentifier lotId100 = new LotIdentifier("Lot 100");
+        Lot lot100 = Lot.builder()
+                .id(2)
+                .lotIdentifier(lotId100)
                 .build();
 
         Schedule newSchedule = Schedule.builder()
@@ -205,7 +238,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotNumber("Lot 100")
+                .lotId("Lot 100")
                 .build();
 
         ScheduleResponseDTO responseDTO = ScheduleResponseDTO.builder()
@@ -213,9 +246,10 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotNumber("Lot 100")
+                .lotId("Lot 100")
                 .build();
 
+        when(lotRepository.findByLotIdentifier_LotId("Lot 100")).thenReturn(lot100);
         when(scheduleMapper.requestDTOToEntity(requestDTO)).thenReturn(newSchedule);
         when(scheduleRepository.save(newSchedule)).thenReturn(newSchedule);
         when(scheduleMapper.entityToResponseDTO(newSchedule)).thenReturn(responseDTO);
@@ -226,6 +260,7 @@ class ScheduleServiceImplUnitTest {
         assertEquals("SCH-NEW", result.getScheduleIdentifier());
         assertEquals("New Task", result.getScheduleDescription());
 
+        verify(lotRepository).findByLotIdentifier_LotId("Lot 100");
         verify(scheduleMapper).requestDTOToEntity(requestDTO);
         verify(scheduleRepository).save(newSchedule);
         verify(scheduleMapper).entityToResponseDTO(newSchedule);
@@ -237,7 +272,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(null)
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotNumber("Lot 100")
+                .lotId("Lot 100")
                 .build();
 
         assertThrows(InvalidInputException.class, () -> {
@@ -251,7 +286,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("")
-                .lotNumber("Lot 100")
+                .lotId("Lot 100")
                 .build();
 
         assertThrows(InvalidInputException.class, () -> {
@@ -267,7 +302,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(5))
                 .scheduleEndDate(LocalDate.now().plusDays(5))
                 .scheduleDescription("Updated Task")
-                .lotNumber("Lot 101")
+                .lotId("Lot 101")
                 .build();
 
         ScheduleResponseDTO updatedResponseDTO = ScheduleResponseDTO.builder()
@@ -275,7 +310,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(5))
                 .scheduleEndDate(LocalDate.now().plusDays(5))
                 .scheduleDescription("Updated Task")
-                .lotNumber("Lot 101")
+                .lotId("Lot 101")
                 .build();
 
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.of(schedule1));
@@ -300,7 +335,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Updated Task")
-                .lotNumber("Lot 100")
+                .lotId("Lot 100")
                 .build();
 
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.empty());
@@ -393,5 +428,384 @@ class ScheduleServiceImplUnitTest {
         assertEquals(0, result.getOpenTasksCount());
         assertEquals(0, result.getCompletedTasksCount());
         assertFalse(result.getMilestonesPresent());
+    }
+
+    // Tests for validation methods
+    @Test
+    void addSchedule_shouldThrowExceptionWhenScheduleEndDateIsNull() {
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(null)
+                .scheduleDescription("Test")
+                .lotId("Lot 100")
+                .build();
+
+        assertThrows(InvalidInputException.class, () -> {
+            scheduleService.addSchedule(requestDTO);
+        });
+    }
+
+    @Test
+    void addSchedule_shouldThrowExceptionWhenLotIdIsBlank() {
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Test")
+                .lotId("")
+                .build();
+
+        assertThrows(InvalidInputException.class, () -> {
+            scheduleService.addSchedule(requestDTO);
+        });
+    }
+
+    @Test
+    void addSchedule_shouldThrowNotFoundExceptionWhenLotNotFound() {
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Test")
+                .lotId("Lot 999")
+                .build();
+
+        when(lotRepository.findByLotIdentifier_LotId("Lot 999")).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.addSchedule(requestDTO);
+        });
+
+        verify(lotRepository).findByLotIdentifier_LotId("Lot 999");
+    }
+
+    @Test
+    void updateSchedule_shouldUpdateWithLotRepository() {
+        String identifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now().plusDays(5))
+                .scheduleEndDate(LocalDate.now().plusDays(5))
+                .scheduleDescription("Updated Task")
+                .lotId("Lot 101")
+                .build();
+
+        LotIdentifier lotId101 = new LotIdentifier("Lot 101");
+        Lot lot101 = Lot.builder()
+                .id(3)
+                .lotIdentifier(lotId101)
+                .build();
+
+        ScheduleResponseDTO updatedResponseDTO = ScheduleResponseDTO.builder()
+                .scheduleIdentifier("SCH-001")
+                .scheduleStartDate(LocalDate.now().plusDays(5))
+                .scheduleEndDate(LocalDate.now().plusDays(5))
+                .scheduleDescription("Updated Task")
+                .lotId("Lot 101")
+                .build();
+
+        when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.of(schedule1));
+        when(lotRepository.findByLotIdentifier_LotId("Lot 101")).thenReturn(lot101);
+        when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
+        when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
+
+        ScheduleResponseDTO result = scheduleService.updateSchedule(identifier, requestDTO);
+
+        assertNotNull(result);
+        assertEquals("SCH-001", result.getScheduleIdentifier());
+        assertEquals("Updated Task", result.getScheduleDescription());
+
+        verify(scheduleRepository).findByScheduleIdentifier(identifier);
+        verify(lotRepository).findByLotIdentifier_LotId("Lot 101");
+        verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
+        verify(scheduleRepository).save(schedule1);
+    }
+
+    // Tests for project-related methods
+    @Test
+    void getSchedulesByProjectIdentifier_shouldReturnSchedulesForProject() {
+        String projectIdentifier = "proj-001";
+        List<Schedule> schedules = Arrays.asList(schedule1, schedule2);
+        List<ScheduleResponseDTO> responseDTOs = Arrays.asList(responseDTO1, responseDTO2);
+
+        when(scheduleRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(schedules);
+        when(scheduleMapper.entitiesToResponseDTOs(schedules)).thenReturn(responseDTOs);
+
+        List<ScheduleResponseDTO> result = scheduleService.getSchedulesByProjectIdentifier(projectIdentifier);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        verify(scheduleRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleMapper).entitiesToResponseDTOs(schedules);
+    }
+
+    @Test
+    void getSchedulesByProjectIdentifier_shouldReturnEmptyListWhenNoSchedules() {
+        String projectIdentifier = "proj-999";
+
+        when(scheduleRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Collections.emptyList());
+        when(scheduleMapper.entitiesToResponseDTOs(Collections.emptyList())).thenReturn(Collections.emptyList());
+
+        List<ScheduleResponseDTO> result = scheduleService.getSchedulesByProjectIdentifier(projectIdentifier);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(scheduleRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleMapper).entitiesToResponseDTOs(Collections.emptyList());
+    }
+
+    @Test
+    void getScheduleByProjectAndScheduleIdentifier_shouldReturnScheduleWhenFound() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.of(schedule1));
+        when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(responseDTO1);
+
+        ScheduleResponseDTO result = scheduleService.getScheduleByProjectAndScheduleIdentifier(
+                projectIdentifier, scheduleIdentifier);
+
+        assertNotNull(result);
+        assertEquals("SCH-001", result.getScheduleIdentifier());
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
+        verify(scheduleMapper).entityToResponseDTO(schedule1);
+    }
+
+    @Test
+    void getScheduleByProjectAndScheduleIdentifier_shouldThrowNotFoundWhenProjectNotFound() {
+        String projectIdentifier = "proj-999";
+        String scheduleIdentifier = "SCH-001";
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier);
+        });
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository, never()).findByScheduleIdentifier(any());
+    }
+
+    @Test
+    void getScheduleByProjectAndScheduleIdentifier_shouldThrowNotFoundWhenScheduleNotFound() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-999";
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier);
+        });
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
+    }
+
+    @Test
+    void getScheduleByProjectAndScheduleIdentifier_shouldThrowNotFoundWhenScheduleDoesNotBelongToProject() {
+        String projectIdentifier = "proj-002";
+        String scheduleIdentifier = "SCH-001";
+
+        Project otherProject = Project.builder()
+                .id(2L)
+                .projectIdentifier("proj-002")
+                .projectName("Other Project")
+                .build();
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(otherProject));
+        when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.of(schedule1));
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier);
+        });
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
+    }
+
+    @Test
+    void addScheduleToProject_shouldCreateScheduleForProject() {
+        String projectIdentifier = "proj-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(7))
+                .scheduleDescription("Project Schedule")
+                .lotId("Lot 100")
+                .build();
+
+        LotIdentifier lotId100 = new LotIdentifier("Lot 100");
+        Lot lot100 = Lot.builder()
+                .id(2)
+                .lotIdentifier(lotId100)
+                .build();
+
+        Schedule newSchedule = Schedule.builder()
+                .scheduleIdentifier("SCH-NEW")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(7))
+                .scheduleDescription("Project Schedule")
+                .lotId("Lot 100")
+                .project(project)
+                .build();
+
+        ScheduleResponseDTO responseDTO = ScheduleResponseDTO.builder()
+                .scheduleIdentifier("SCH-NEW")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(7))
+                .scheduleDescription("Project Schedule")
+                .lotId("Lot 100")
+                .build();
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId("Lot 100")).thenReturn(lot100);
+        when(scheduleMapper.requestDTOToEntity(requestDTO)).thenReturn(newSchedule);
+        when(scheduleRepository.save(newSchedule)).thenReturn(newSchedule);
+        when(scheduleMapper.entityToResponseDTO(newSchedule)).thenReturn(responseDTO);
+
+        ScheduleResponseDTO result = scheduleService.addScheduleToProject(projectIdentifier, requestDTO);
+
+        assertNotNull(result);
+        assertEquals("SCH-NEW", result.getScheduleIdentifier());
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(lotRepository).findByLotIdentifier_LotId("Lot 100");
+        verify(scheduleMapper).requestDTOToEntity(requestDTO);
+        verify(scheduleRepository).save(newSchedule);
+        verify(scheduleMapper).entityToResponseDTO(newSchedule);
+    }
+
+    @Test
+    void addScheduleToProject_shouldThrowNotFoundWhenProjectNotFound() {
+        String projectIdentifier = "proj-999";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(7))
+                .scheduleDescription("Project Schedule")
+                .lotId("Lot 100")
+                .build();
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.addScheduleToProject(projectIdentifier, requestDTO);
+        });
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository, never()).save(any());
+    }
+
+    @Test
+    void updateScheduleForProject_shouldUpdateScheduleSuccessfully() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now().plusDays(2))
+                .scheduleEndDate(LocalDate.now().plusDays(9))
+                .scheduleDescription("Updated Project Schedule")
+                .lotId("Lot 101")
+                .build();
+
+        LotIdentifier lotId101 = new LotIdentifier("Lot 101");
+        Lot lot101 = Lot.builder()
+                .id(3)
+                .lotIdentifier(lotId101)
+                .build();
+
+        ScheduleResponseDTO updatedResponseDTO = ScheduleResponseDTO.builder()
+                .scheduleIdentifier("SCH-001")
+                .scheduleStartDate(LocalDate.now().plusDays(2))
+                .scheduleEndDate(LocalDate.now().plusDays(9))
+                .scheduleDescription("Updated Project Schedule")
+                .lotId("Lot 101")
+                .build();
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId("Lot 101")).thenReturn(lot101);
+        when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.of(schedule1));
+        when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
+        when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
+
+        ScheduleResponseDTO result = scheduleService.updateScheduleForProject(
+                projectIdentifier, scheduleIdentifier, requestDTO);
+
+        assertNotNull(result);
+        assertEquals("SCH-001", result.getScheduleIdentifier());
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(lotRepository).findByLotIdentifier_LotId("Lot 101");
+        verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
+        verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
+        verify(scheduleRepository).save(schedule1);
+    }
+
+    @Test
+    void updateScheduleForProject_shouldThrowNotFoundWhenProjectNotFound() {
+        String projectIdentifier = "proj-999";
+        String scheduleIdentifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(7))
+                .scheduleDescription("Updated Schedule")
+                .lotId("Lot 100")
+                .build();
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO);
+        });
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository, never()).findByScheduleIdentifier(any());
+    }
+
+    @Test
+    void deleteScheduleFromProject_shouldDeleteScheduleSuccessfully() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.of(schedule1));
+
+        scheduleService.deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
+        verify(scheduleRepository).delete(schedule1);
+    }
+
+    @Test
+    void deleteScheduleFromProject_shouldThrowNotFoundWhenProjectNotFound() {
+        String projectIdentifier = "proj-999";
+        String scheduleIdentifier = "SCH-001";
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+        });
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository, never()).delete(any());
+    }
+
+    @Test
+    void deleteScheduleFromProject_shouldThrowNotFoundWhenScheduleNotFound() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-999";
+
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> {
+            scheduleService.deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+        });
+
+        verify(projectRepository).findByProjectIdentifier(projectIdentifier);
+        verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
+        verify(scheduleRepository, never()).delete(any());
     }
 }

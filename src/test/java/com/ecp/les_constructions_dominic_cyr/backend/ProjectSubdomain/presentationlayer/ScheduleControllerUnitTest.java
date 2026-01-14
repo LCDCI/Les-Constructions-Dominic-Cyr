@@ -2,8 +2,11 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.presentat
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.ScheduleService;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleController;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.BadRequestException;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidRequestException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +46,7 @@ class ScheduleControllerUnitTest{
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Begin Excavation")
-                .lotNumber("Lot 53")
+                .lotId("Lot 53")
                 .build();
 
         responseDTO2 = ScheduleResponseDTO.builder()
@@ -50,7 +54,7 @@ class ScheduleControllerUnitTest{
                 .scheduleStartDate(LocalDate.now().plusDays(1))
                 .scheduleEndDate(LocalDate.now().plusDays(1))
                 .scheduleDescription("Plumbing")
-                .lotNumber("Lot 57")
+                .lotId("Lot 57")
                 .build();
     }
 
@@ -521,5 +525,591 @@ class ScheduleControllerUnitTest{
         assertEquals(errorMessage, response.getBody());
 
         verify(scheduleService).getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier);
+    }
+
+    @Test
+    void getProjectScheduleByIdentifier_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+        String errorMessage = "Unexpected error";
+        when(scheduleService.getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier))
+                .thenThrow(new RuntimeException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.getProjectScheduleByIdentifier(projectIdentifier, scheduleIdentifier);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).getScheduleByProjectAndScheduleIdentifier(projectIdentifier, scheduleIdentifier);
+    }
+
+    @Test
+    void getProjectSchedules_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String projectIdentifier = "proj-001";
+        String errorMessage = "Database error";
+        when(scheduleService.getSchedulesByProjectIdentifier(projectIdentifier))
+                .thenThrow(new RuntimeException(errorMessage));
+
+        ResponseEntity response = scheduleController.getProjectSchedules(projectIdentifier);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).getSchedulesByProjectIdentifier(projectIdentifier);
+    }
+
+    // Tests for Owner Schedule CRUD operations
+    @Test
+    void createOwnerSchedule_shouldReturnCreatedWhenSuccessful() {
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(7))
+                .scheduleDescription("New schedule")
+                .lotId("Lot 100")
+                .build();
+
+        when(scheduleService.addSchedule(requestDTO)).thenReturn(responseDTO1);
+
+        ResponseEntity<?> response = scheduleController.createOwnerSchedule(requestDTO);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(responseDTO1, response.getBody());
+
+        verify(scheduleService).addSchedule(requestDTO);
+    }
+
+    @Test
+    void createOwnerSchedule_shouldReturnBadRequestWhenInvalidInputExceptionThrown() {
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(null)
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("New schedule")
+                .lotId("Lot 100")
+                .build();
+
+        String errorMessage = "Invalid input";
+        when(scheduleService.addSchedule(requestDTO)).thenThrow(new InvalidInputException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.createOwnerSchedule(requestDTO);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).addSchedule(requestDTO);
+    }
+
+    @Test
+    void updateOwnerSchedule_shouldReturnOkWhenSuccessful() {
+        String scheduleIdentifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now().plusDays(1))
+                .scheduleEndDate(LocalDate.now().plusDays(8))
+                .scheduleDescription("Updated schedule")
+                .lotId("Lot 101")
+                .build();
+
+        when(scheduleService.updateSchedule(scheduleIdentifier, requestDTO)).thenReturn(responseDTO1);
+
+        ResponseEntity<?> response = scheduleController.updateOwnerSchedule(scheduleIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDTO1, response.getBody());
+
+        verify(scheduleService).updateSchedule(scheduleIdentifier, requestDTO);
+    }
+
+    @Test
+    void updateOwnerSchedule_shouldReturnNotFoundWhenNotFoundExceptionThrown() {
+        String scheduleIdentifier = "SCH-999";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(7))
+                .scheduleDescription("Updated schedule")
+                .lotId("Lot 100")
+                .build();
+
+        String errorMessage = "Schedule not found";
+        when(scheduleService.updateSchedule(scheduleIdentifier, requestDTO))
+                .thenThrow(new NotFoundException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.updateOwnerSchedule(scheduleIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).updateSchedule(scheduleIdentifier, requestDTO);
+    }
+
+    @Test
+    void updateOwnerSchedule_shouldReturnBadRequestWhenInvalidInputExceptionThrown() {
+        String scheduleIdentifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(null)
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Updated schedule")
+                .lotId("Lot 100")
+                .build();
+
+        String errorMessage = "Invalid input";
+        when(scheduleService.updateSchedule(scheduleIdentifier, requestDTO))
+                .thenThrow(new InvalidInputException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.updateOwnerSchedule(scheduleIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).updateSchedule(scheduleIdentifier, requestDTO);
+    }
+
+    @Test
+    void deleteOwnerSchedule_shouldReturnNoContentWhenSuccessful() {
+        String scheduleIdentifier = "SCH-001";
+
+        doNothing().when(scheduleService).deleteSchedule(scheduleIdentifier);
+
+        ResponseEntity<?> response = scheduleController.deleteOwnerSchedule(scheduleIdentifier);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+
+        verify(scheduleService).deleteSchedule(scheduleIdentifier);
+    }
+
+    @Test
+    void deleteOwnerSchedule_shouldReturnNotFoundWhenNotFoundExceptionThrown() {
+        String scheduleIdentifier = "SCH-999";
+        String errorMessage = "Schedule not found";
+
+        doThrow(new NotFoundException(errorMessage)).when(scheduleService).deleteSchedule(scheduleIdentifier);
+
+        ResponseEntity<?> response = scheduleController.deleteOwnerSchedule(scheduleIdentifier);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).deleteSchedule(scheduleIdentifier);
+    }
+
+    // Tests for Task Summary endpoints
+    @Test
+    void getOwnerCurrentWeekTaskSummary_shouldReturnTaskSummaryWithOkStatus() {
+        String contractorId = "contractor-123";
+        TaskResponseDTO taskSummary = TaskResponseDTO.builder()
+                .contractorId(contractorId)
+                .totalTasks(10)
+                .openTasksCount(5)
+                .completedTasksCount(5)
+                .generatedAt(LocalDateTime.now())
+                .build();
+
+        when(scheduleService.getCurrentWeekTaskSummary(contractorId)).thenReturn(taskSummary);
+
+        ResponseEntity<?> response = scheduleController.getOwnerCurrentWeekTaskSummary(contractorId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(taskSummary, response.getBody());
+
+        verify(scheduleService).getCurrentWeekTaskSummary(contractorId);
+    }
+
+    @Test
+    void getOwnerCurrentWeekTaskSummary_shouldReturnTaskSummaryWithNullContractor() {
+        TaskResponseDTO taskSummary = TaskResponseDTO.builder()
+                .contractorId(null)
+                .totalTasks(15)
+                .openTasksCount(8)
+                .completedTasksCount(7)
+                .generatedAt(LocalDateTime.now())
+                .build();
+
+        when(scheduleService.getCurrentWeekTaskSummary(null)).thenReturn(taskSummary);
+
+        ResponseEntity<?> response = scheduleController.getOwnerCurrentWeekTaskSummary(null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(taskSummary, response.getBody());
+
+        verify(scheduleService).getCurrentWeekTaskSummary(null);
+    }
+
+    @Test
+    void getOwnerCurrentWeekTaskSummary_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String contractorId = "contractor-123";
+        String errorMessage = "Database error";
+
+        when(scheduleService.getCurrentWeekTaskSummary(contractorId))
+                .thenThrow(new RuntimeException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.getOwnerCurrentWeekTaskSummary(contractorId);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).getCurrentWeekTaskSummary(contractorId);
+    }
+
+    @Test
+    void getOwnerTaskSummaryForPeriod_shouldReturnTaskSummaryWithOkStatus() {
+        String scheduleId = "SCH-001";
+        String contractorId = "contractor-123";
+        LocalDate periodStart = LocalDate.now();
+        LocalDate periodEnd = LocalDate.now().plusDays(7);
+
+        TaskResponseDTO taskSummary = TaskResponseDTO.builder()
+                .scheduleId(scheduleId)
+                .contractorId(contractorId)
+                .periodStart(periodStart)
+                .periodEnd(periodEnd)
+                .totalTasks(5)
+                .generatedAt(LocalDateTime.now())
+                .build();
+
+        when(scheduleService.getTaskSummaryForContractor(contractorId, scheduleId, periodStart, periodEnd))
+                .thenReturn(taskSummary);
+
+        ResponseEntity<?> response = scheduleController.getOwnerTaskSummaryForPeriod(
+                scheduleId, contractorId, periodStart, periodEnd);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(taskSummary, response.getBody());
+
+        verify(scheduleService).getTaskSummaryForContractor(contractorId, scheduleId, periodStart, periodEnd);
+    }
+
+    @Test
+    void getOwnerTaskSummaryForPeriod_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String scheduleId = "SCH-001";
+        String contractorId = "contractor-123";
+        LocalDate periodStart = LocalDate.now();
+        LocalDate periodEnd = LocalDate.now().plusDays(7);
+        String errorMessage = "Error generating summary";
+
+        when(scheduleService.getTaskSummaryForContractor(contractorId, scheduleId, periodStart, periodEnd))
+                .thenThrow(new RuntimeException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.getOwnerTaskSummaryForPeriod(
+                scheduleId, contractorId, periodStart, periodEnd);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).getTaskSummaryForContractor(contractorId, scheduleId, periodStart, periodEnd);
+    }
+
+    @Test
+    void getContractorCurrentWeekTaskSummary_shouldReturnTaskSummaryWithOkStatus() {
+        String contractorId = "contractor-456";
+        TaskResponseDTO taskSummary = TaskResponseDTO.builder()
+                .contractorId(contractorId)
+                .totalTasks(8)
+                .openTasksCount(6)
+                .completedTasksCount(2)
+                .generatedAt(LocalDateTime.now())
+                .build();
+
+        when(scheduleService.getCurrentWeekTaskSummary(contractorId)).thenReturn(taskSummary);
+
+        ResponseEntity<?> response = scheduleController.getContractorCurrentWeekTaskSummary(contractorId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(taskSummary, response.getBody());
+
+        verify(scheduleService).getCurrentWeekTaskSummary(contractorId);
+    }
+
+    @Test
+    void getContractorCurrentWeekTaskSummary_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String contractorId = "contractor-456";
+        String errorMessage = "Service unavailable";
+
+        when(scheduleService.getCurrentWeekTaskSummary(contractorId))
+                .thenThrow(new RuntimeException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.getContractorCurrentWeekTaskSummary(contractorId);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).getCurrentWeekTaskSummary(contractorId);
+    }
+
+    @Test
+    void getContractorTaskSummaryForPeriod_shouldReturnTaskSummaryWithOkStatus() {
+        String scheduleId = "SCH-002";
+        String contractorId = "contractor-789";
+        LocalDate periodStart = LocalDate.now().minusDays(7);
+        LocalDate periodEnd = LocalDate.now();
+
+        TaskResponseDTO taskSummary = TaskResponseDTO.builder()
+                .scheduleId(scheduleId)
+                .contractorId(contractorId)
+                .periodStart(periodStart)
+                .periodEnd(periodEnd)
+                .totalTasks(12)
+                .generatedAt(LocalDateTime.now())
+                .build();
+
+        when(scheduleService.getTaskSummaryForContractor(contractorId, scheduleId, periodStart, periodEnd))
+                .thenReturn(taskSummary);
+
+        ResponseEntity<?> response = scheduleController.getContractorTaskSummaryForPeriod(
+                scheduleId, contractorId, periodStart, periodEnd);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(taskSummary, response.getBody());
+
+        verify(scheduleService).getTaskSummaryForContractor(contractorId, scheduleId, periodStart, periodEnd);
+    }
+
+    @Test
+    void getContractorTaskSummaryForPeriod_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String scheduleId = "SCH-002";
+        String contractorId = "contractor-789";
+        LocalDate periodStart = LocalDate.now().minusDays(7);
+        LocalDate periodEnd = LocalDate.now();
+        String errorMessage = "Failed to fetch summary";
+
+        when(scheduleService.getTaskSummaryForContractor(contractorId, scheduleId, periodStart, periodEnd))
+                .thenThrow(new RuntimeException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.getContractorTaskSummaryForPeriod(
+                scheduleId, contractorId, periodStart, periodEnd);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).getTaskSummaryForContractor(contractorId, scheduleId, periodStart, periodEnd);
+    }
+
+    // Tests for Project Schedule CRUD operations
+    @Test
+    void createProjectSchedule_shouldReturnCreatedWhenSuccessful() {
+        String projectIdentifier = "proj-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(10))
+                .scheduleDescription("Project schedule")
+                .lotId("Lot 50")
+                .build();
+
+        when(scheduleService.addScheduleToProject(projectIdentifier, requestDTO)).thenReturn(responseDTO1);
+
+        ResponseEntity<?> response = scheduleController.createProjectSchedule(projectIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(responseDTO1, response.getBody());
+
+        verify(scheduleService).addScheduleToProject(projectIdentifier, requestDTO);
+    }
+
+    @Test
+    void createProjectSchedule_shouldReturnNotFoundWhenProjectNotFound() {
+        String projectIdentifier = "proj-999";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(10))
+                .scheduleDescription("Project schedule")
+                .lotId("Lot 50")
+                .build();
+
+        String errorMessage = "Project not found";
+        when(scheduleService.addScheduleToProject(projectIdentifier, requestDTO))
+                .thenThrow(new NotFoundException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.createProjectSchedule(projectIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).addScheduleToProject(projectIdentifier, requestDTO);
+    }
+
+    @Test
+    void createProjectSchedule_shouldReturnBadRequestWhenInvalidInput() {
+        String projectIdentifier = "proj-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(null)
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Project schedule")
+                .lotId("Lot 50")
+                .build();
+
+        String errorMessage = "Invalid input";
+        when(scheduleService.addScheduleToProject(projectIdentifier, requestDTO))
+                .thenThrow(new InvalidInputException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.createProjectSchedule(projectIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).addScheduleToProject(projectIdentifier, requestDTO);
+    }
+
+    @Test
+    void createProjectSchedule_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String projectIdentifier = "proj-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(10))
+                .scheduleDescription("Project schedule")
+                .lotId("Lot 50")
+                .build();
+
+        String errorMessage = "Database error";
+        when(scheduleService.addScheduleToProject(projectIdentifier, requestDTO))
+                .thenThrow(new RuntimeException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.createProjectSchedule(projectIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).addScheduleToProject(projectIdentifier, requestDTO);
+    }
+
+    @Test
+    void updateProjectSchedule_shouldReturnOkWhenSuccessful() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now().plusDays(2))
+                .scheduleEndDate(LocalDate.now().plusDays(12))
+                .scheduleDescription("Updated project schedule")
+                .lotId("Lot 51")
+                .build();
+
+        when(scheduleService.updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO))
+                .thenReturn(responseDTO1);
+
+        ResponseEntity<?> response = scheduleController.updateProjectSchedule(
+                projectIdentifier, scheduleIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDTO1, response.getBody());
+
+        verify(scheduleService).updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO);
+    }
+
+    @Test
+    void updateProjectSchedule_shouldReturnNotFoundWhenProjectNotFound() {
+        String projectIdentifier = "proj-999";
+        String scheduleIdentifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(10))
+                .scheduleDescription("Updated schedule")
+                .lotId("Lot 50")
+                .build();
+
+        String errorMessage = "Project not found";
+        when(scheduleService.updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO))
+                .thenThrow(new NotFoundException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.updateProjectSchedule(
+                projectIdentifier, scheduleIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO);
+    }
+
+    @Test
+    void updateProjectSchedule_shouldReturnBadRequestWhenInvalidInput() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(null)
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("Updated schedule")
+                .lotId("Lot 50")
+                .build();
+
+        String errorMessage = "Invalid input";
+        when(scheduleService.updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO))
+                .thenThrow(new InvalidInputException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.updateProjectSchedule(
+                projectIdentifier, scheduleIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO);
+    }
+
+    @Test
+    void updateProjectSchedule_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+        ScheduleRequestDTO requestDTO = ScheduleRequestDTO.builder()
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now().plusDays(10))
+                .scheduleDescription("Updated schedule")
+                .lotId("Lot 50")
+                .build();
+
+        String errorMessage = "Unexpected error";
+        when(scheduleService.updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO))
+                .thenThrow(new RuntimeException(errorMessage));
+
+        ResponseEntity<?> response = scheduleController.updateProjectSchedule(
+                projectIdentifier, scheduleIdentifier, requestDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).updateScheduleForProject(projectIdentifier, scheduleIdentifier, requestDTO);
+    }
+
+    @Test
+    void deleteProjectSchedule_shouldReturnNoContentWhenSuccessful() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+
+        doNothing().when(scheduleService).deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+
+        ResponseEntity<?> response = scheduleController.deleteProjectSchedule(projectIdentifier, scheduleIdentifier);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+
+        verify(scheduleService).deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+    }
+
+    @Test
+    void deleteProjectSchedule_shouldReturnNotFoundWhenScheduleNotFound() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-999";
+        String errorMessage = "Schedule not found";
+
+        doThrow(new NotFoundException(errorMessage))
+                .when(scheduleService).deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+
+        ResponseEntity<?> response = scheduleController.deleteProjectSchedule(projectIdentifier, scheduleIdentifier);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+    }
+
+    @Test
+    void deleteProjectSchedule_shouldReturnInternalServerErrorWhenExceptionThrown() {
+        String projectIdentifier = "proj-001";
+        String scheduleIdentifier = "SCH-001";
+        String errorMessage = "Failed to delete";
+
+        doThrow(new RuntimeException(errorMessage))
+                .when(scheduleService).deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
+
+        ResponseEntity<?> response = scheduleController.deleteProjectSchedule(projectIdentifier, scheduleIdentifier);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(scheduleService).deleteScheduleFromProject(projectIdentifier, scheduleIdentifier);
     }
 }
