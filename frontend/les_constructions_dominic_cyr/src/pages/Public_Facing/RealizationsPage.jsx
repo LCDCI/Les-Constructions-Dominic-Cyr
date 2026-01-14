@@ -1,75 +1,52 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/realizations.css';
 import Footer from '../../components/Footers/ProjectsFooter';
 
 const RealizationsPage = () => {
-  const navigate = useNavigate();
-  const [realizations, setRealizations] = useState([]);
-  const [filteredRealizations, setFilteredRealizations] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [loading, setLoading] = useState(true);
+  const { t } = usePageTranslations('realizations');
+  const [loading, setLoading] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Image IDs from file storage - add your image IDs here
+  const REALIZATION_IMAGE_IDS = [
+    '1242c6c5-6a3d-4ca0-bac0-06d25bebb0bd',
+    '1634e9ee-2680-41d1-b28a-47353f842d9c',
+    '1659ff85-b160-4111-b419-84834eb4375a',
+    '1681b3d5-8f0a-4daf-9590-53a1ce37cf20',
+    '2186d36c-4dc7-400b-8d9e-824a5b06f7ba',
+    '48f50cea-f368-41d6-91c3-ae55157bd868',
+    '55378cf7-c0a0-48be-b5f9-9d2507eff177',
+    '610354b2-8a9c-4e87-95a1-3cc63f494c6e',
+    'bb6dd250-ed32-4041-8b4e-020e2ef45e2f'
+  ];
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
-  const apiBaseUrl =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
-
-  useEffect(() => {
-    fetchRealizations();
-  }, []);
-
-  useEffect(() => {
-    const filterRealizations = () => {
-      if (!searchTerm.trim()) {
-        setFilteredRealizations(realizations);
-        return;
-      }
-
-      const filtered = realizations.filter(
-        realization =>
-          realization.realizationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          realization.location.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredRealizations(filtered);
-    };
-
-    filterRealizations();
-  }, [searchTerm, realizations]);
-
-  const fetchRealizations = async () => {
-    try {
-      const response = await fetch(`${apiBaseUrl}/realizations`);
-      const data = await response.json();
-      setRealizations(data);
-      setFilteredRealizations(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Failed to fetch realizations:', error);
-      setLoading(false);
-    }
-  };
 
   const getImageUrl = imageIdentifier => {
     return `${filesServiceUrl}/files/${imageIdentifier}`;
   };
 
-  const handleViewRealization = realizationId => {
-    navigate(`/realizations/${realizationId}`);
+  const handlePrevious = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? REALIZATION_IMAGE_IDS.length - 1 : prevIndex - 1
+    );
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === REALIZATION_IMAGE_IDS.length - 1 ? 0 : prevIndex + 1
+    );
   };
 
   if (loading) {
     return (
       <div className="realizations-page">
-        <div className="realizations-content">
-          <div className="realizations-container">
-            <p
-              style={{ textAlign: 'center', padding: '5%', fontSize: '1.2rem' }}
-            >
-              Loading realizations...
-            </p>
-          </div>
-        </div>
+        <p style={{ textAlign: 'center', padding: '5%', fontSize: '1.2rem' }}>
+          Loading realizations...
+        </p>
         <Footer />
       </div>
     );
@@ -77,69 +54,66 @@ const RealizationsPage = () => {
 
   return (
     <div className="realizations-page">
-      <div className="realizations-content">
-        <div className="realizations-container">
-          <div className="realizations-header">
-            <h1>Realizations</h1>
-          </div>
+      {/* Hero Banner Section */}
+      <section className="real-hero-banner">
+        <div className="real-hero-content">
+          <h1 className="real-hero-title">
+            {t('hero.title', 'Our Realizations')}
+          </h1>
+        </div>
+      </section>
 
-          <div className="realizations-filter">
-            <div className="search-container">
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search realizations by name or location..."
-                aria-label="Search realizations by name or location"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
+      {/* Intro Text Section */}
+      <section className="realizations-intro">
+        <div className="realizations-intro-content">
+          <p className="realizations-intro-text">
+            {t('intro.description', 'Explore our portfolio of completed projects. Each realization represents our commitment to quality craftsmanship, attention to detail, and customer satisfaction. From residential renovations to commercial builds, we bring your vision to life.')}
+          </p>
+        </div>
+      </section>
 
-          <div className="realizations-grid">
-            {filteredRealizations.length > 0 ? (
-              filteredRealizations.map(realization => (
-                <div key={realization.realizationId} className="realization-card">
-                  <div className="realization-image-container">
-                    <img
-                      src={getImageUrl(realization.imageIdentifier)}
-                      alt={realization.realizationName}
-                      className="realization-image"
-                    />
-                  </div>
-                  <h2 className="realization-title">{realization.realizationName}</h2>
-                  <p className="realization-location">{realization.location}</p>
-                  <p className="realization-description">{realization.description}</p>
-                  <div className="realization-details">
-                    <span className="realization-detail-item">
-                      🛏️ {realization.numberOfBedrooms} Bedrooms
-                    </span>
-                    <span className="realization-detail-item">
-                      🛁 {realization.numberOfBathrooms} Bathrooms
-                    </span>
-                    <span className="realization-detail-item">
-                      🚪 {realization.numberOfRooms} Rooms
-                    </span>
-                    <span className="realization-detail-item">
-                      📅 Built in {realization.constructionYear}
-                    </span>
-                  </div>
-                  <button
-                    className="realization-button"
-                    onClick={() => handleViewRealization(realization.realizationId)}
-                  >
-                    View this realization
-                  </button>
-                </div>
-              ))
-            ) : (
-              <div className="no-results">
-                <p>No realizations found matching &quot;{searchTerm}&quot;</p>
+      {/* Gallery Section */}
+      <section className="realizations-gallery-section">
+        <div className="realizations-gallery-container">
+          <button 
+            className="gallery-arrow gallery-arrow-left" 
+            onClick={handlePrevious}
+            aria-label={t('gallery.previousAriaLabel', 'Previous image')}
+          >
+            <MdArrowBackIos size={32} />
+          </button>
+
+          <div className="realizations-gallery">
+            {REALIZATION_IMAGE_IDS.length > 0 ? (
+              <div className="gallery-image-item">
+                <img
+                  src={getImageUrl(REALIZATION_IMAGE_IDS[currentIndex])}
+                  alt={t('gallery.imageAlt', `Realization ${currentIndex + 1}`)}
+                  className="gallery-image"
+                />
               </div>
+            ) : (
+              <p style={{ textAlign: 'center', padding: '5%' }}>{t('gallery.noResults', 'No realizations found')}</p>
             )}
           </div>
+
+          <button 
+            className="gallery-arrow gallery-arrow-right" 
+            onClick={handleNext}
+            aria-label={t('gallery.nextAriaLabel', 'Next image')}
+          >
+            <MdArrowForwardIos size={32} />
+          </button>
         </div>
-      </div>
+
+        {REALIZATION_IMAGE_IDS.length > 0 && (
+          <div className="gallery-counter">
+            {currentIndex + 1} / {REALIZATION_IMAGE_IDS.length}
+          </div>
+        )}
+      </section>
+
+      <Footer />
     </div>
   );
 };

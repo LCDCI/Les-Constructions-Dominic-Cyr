@@ -147,7 +147,7 @@ export default function AppNavBar() {
                 onClick={toggleLanguage}
                 aria-label="Toggle language"
             >
-              {isFrench ? 'FR' : 'EN'}
+              {isFrench ? 'EN' : 'FR'}
             </button>
           </div>
 
