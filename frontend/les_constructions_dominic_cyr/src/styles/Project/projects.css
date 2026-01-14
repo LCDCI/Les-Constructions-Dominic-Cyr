@@ -94,8 +94,10 @@
 
 .projects-filter {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     margin-bottom: 5%;
+    gap: 12px;
 }
 
 .search-container {
@@ -139,11 +141,39 @@
     text-align: center;
     width: 100%;
     max-width: 350px;
+    position: relative;
 }
 
 .project-card:hover {
     transform: translateY(-2%);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.project-card-archived {
+    background-color: #F5F5F5;
+    border: 2px solid #9CA3AF;
+    opacity: 0.85;
+}
+
+.project-card-archived:hover {
+    opacity: 0.95;
+    border-color: #6B7280;
+}
+
+.archived-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: #DC2626;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .project-image-container {
