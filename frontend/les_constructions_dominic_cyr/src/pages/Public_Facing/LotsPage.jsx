@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { fetchLots } from '../features/lots/api/lots';
-import '../styles/lots.css';
-import Footer from '../components/Footers/ProjectsFooter';
+import { fetchLots } from '../../features/lots/api/lots';
+import '../../styles/lots.css';
+import Footer from '../../components/Footers/ProjectsFooter';
 
 const LotsPage = () => {
   const [lots, setLots] = useState([]);
@@ -126,12 +126,13 @@ const LotsPage = () => {
             ) : (
               <div className="no-results">
                 <p>
-                  {searchTerm
-                    ? <>No lots found matching &quot;{searchTerm}&quot;</>
-                    : lots.length === 0
-                      ? <>No available lots at the moment</>
-                      : <>No lots found</>
-                  }
+                  {searchTerm ? (
+                    <>No lots found matching &quot;{searchTerm}&quot;</>
+                  ) : lots.length === 0 ? (
+                    <>No available lots at the moment</>
+                  ) : (
+                    <>No lots found</>
+                  )}
                 </p>
               </div>
             )}

@@ -35,6 +35,20 @@ export const taskApi = {
     });
     return response.data;
   },
+
+  updateTask: async (taskId, taskData, token = null) => {
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await axiosInstance.put(
+      `/owners/tasks/${taskId}`,
+      taskData,
+      { headers }
+    );
+    return response.data;
+  },
 };
 
 export default taskApi;
