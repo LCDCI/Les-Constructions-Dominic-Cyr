@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { projectApi } from '../../features/projects/api/projectApi';
-import { fetchUsers, reactivateUser } from '../../features/users/api/usersApi';
+import { fetchActiveContractors, fetchActiveSalespersons, reactivateUser } from '../../features/users/api/usersApi';
 import { FiUsers, FiActivity, FiInfo } from 'react-icons/fi';
 import '../../styles/Project/project-team-management.css';
 
@@ -22,6 +22,8 @@ export default function ProjectTeamManagementPage() {
   const [successMessage, setSuccessMessage] = useState(null);
   const [activityLog, setActivityLog] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showReactivateConfirm, setShowReactivateConfirm] = useState(false);
+  const [userToReactivate, setUserToReactivate] = useState(null);
 
   useEffect(() => {
     loadProjectData();
@@ -39,13 +41,12 @@ export default function ProjectTeamManagementPage() {
       setSelectedContractorId(projectData.contractorId || '');
       setSelectedSalespersonId(projectData.salespersonId || '');
 
-      // Load available contractors and salespersons
-      const allUsers = await fetchUsers(token);
-      const contractorsData = (allUsers || []).filter((u) => u.userRole === 'CONTRACTOR');
-      const salespersonsData = (allUsers || []).filter((u) => u.userRole === 'SALESPERSON');
+      // Load active contractors and salespersons using dedicated endpoints
+      const contractorsData = await fetchActiveContractors(token);
+      const salespersonsData = await fetchActiveSalespersons(token);
 
-      setContractors(contractorsData);
-      setSalespersons(salespersonsData);
+      setContractors(contractorsData || []);
+      setSalespersons(salespersonsData || []);
 
       // Fetch activity logs from backend
       try {
@@ -103,11 +104,26 @@ export default function ProjectTeamManagementPage() {
       setSuccessMessage(null);
       const token = await getAccessTokenSilently();
 
-      // Handle contractor assignment (reactivate if needed)
+      // Handle contractor assignment (check for reactivation)
       if (selectedContractorId !== (project.contractorId || '')) {
         if (selectedContractorId) {
           const contractor = contractors.find((c) => c.userIdentifier === selectedContractorId);
           if (contractor && contractor.userStatus !== 'ACTIVE') {
+            // Ask for confirmation before reactivating
+            const confirmed = await new Promise((resolve) => {
+              setUserToReactivate({
+                user: contractor,
+                role: 'contractor',
+                resolve
+              });
+              setShowReactivateConfirm(true);
+            });
+            
+            if (!confirmed) {
+              setIsSaving(false);
+              return;
+            }
+            
             await reactivateUser(selectedContractorId, token);
           }
           await projectApi.assignContractorToProject(projectId, selectedContractorId, token);
@@ -116,11 +132,26 @@ export default function ProjectTeamManagementPage() {
         }
       }
 
-      // Handle salesperson assignment (reactivate if needed)
+      // Handle salesperson assignment (check for reactivation)
       if (selectedSalespersonId !== (project.salespersonId || '')) {
         if (selectedSalespersonId) {
           const salesperson = salespersons.find((s) => s.userIdentifier === selectedSalespersonId);
           if (salesperson && salesperson.userStatus !== 'ACTIVE') {
+            // Ask for confirmation before reactivating
+            const confirmed = await new Promise((resolve) => {
+              setUserToReactivate({
+                user: salesperson,
+                role: 'salesperson',
+                resolve
+              });
+              setShowReactivateConfirm(true);
+            });
+            
+            if (!confirmed) {
+              setIsSaving(false);
+              return;
+            }
+            
             await reactivateUser(selectedSalespersonId, token);
           }
           await projectApi.assignSalespersonToProject(projectId, selectedSalespersonId, token);
@@ -234,6 +265,18 @@ export default function ProjectTeamManagementPage() {
             <div className="section-header">
               <h2>Team Assignment</h2>
               <FiUsers className="section-icon" />
+            </div>
+
+            <div className="info-note" style={{ 
+              padding: '12px 16px', 
+              marginBottom: '16px', 
+              backgroundColor: '#E3F2FD', 
+              border: '1px solid #90CAF9',
+              borderRadius: '6px',
+              fontSize: '14px',
+              color: '#1976D2'
+            }}>
+              <strong>Note:</strong> You can assign one contractor and one salesperson per project. To change an assignment, select a different person from the dropdown and save.
             </div>
 
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -406,6 +449,47 @@ export default function ProjectTeamManagementPage() {
           </section>
         </div>
       </div>
+
+      {/* Reactivation Confirmation Dialog */}
+      {showReactivateConfirm && userToReactivate && (
+        <div className="modal-overlay" onClick={() => {
+          userToReactivate.resolve(false);
+          setShowReactivateConfirm(false);
+          setUserToReactivate(null);
+        }}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h3>Reactivate User?</h3>
+            <p>
+              The selected {userToReactivate.role} <strong>{userToReactivate.user.firstName} {userToReactivate.user.lastName}</strong> is currently {getUserStatusLabel(userToReactivate.user.userStatus).toLowerCase()}.
+            </p>
+            <p>
+              Do you want to reactivate this user and assign them to the project?
+            </p>
+            <div className="modal-actions">
+              <button 
+                className="btn-cancel" 
+                onClick={() => {
+                  userToReactivate.resolve(false);
+                  setShowReactivateConfirm(false);
+                  setUserToReactivate(null);
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="btn-confirm" 
+                onClick={() => {
+                  userToReactivate.resolve(true);
+                  setShowReactivateConfirm(false);
+                  setUserToReactivate(null);
+                }}
+              >
+                Reactivate & Assign
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

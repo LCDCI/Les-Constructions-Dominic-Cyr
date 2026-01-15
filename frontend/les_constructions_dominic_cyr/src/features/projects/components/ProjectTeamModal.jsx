@@ -104,25 +104,27 @@ export default function ProjectTeamModal({ isOpen, projectIdentifier, currentCon
 
           {selectedContractorId && (
             <div className="contractor-preview">
-              {contractors.find((c) => c.userIdentifier === selectedContractorId) && (
-                <>
-                  <p>
-                    <strong>Selected Contractor:</strong>
-                  </p>
-                  <p>
-                    {contractors.find((c) => c.userIdentifier === selectedContractorId)?.firstName}{' '}
-                    {contractors.find((c) => c.userIdentifier === selectedContractorId)?.lastName}
-                  </p>
-                  <p className="email">
-                    {contractors.find((c) => c.userIdentifier === selectedContractorId)?.primaryEmail}
-                  </p>
-                  {contractors.find((c) => c.userIdentifier === selectedContractorId)?.phone && (
-                    <p className="phone">
-                      {contractors.find((c) => c.userIdentifier === selectedContractorId)?.phone}
+              {(() => {
+                const selectedContractor = contractors.find((c) => c.userIdentifier === selectedContractorId);
+                return selectedContractor ? (
+                  <>
+                    <p>
+                      <strong>Selected Contractor:</strong>
                     </p>
-                  )}
-                </>
-              )}
+                    <p>
+                      {selectedContractor.firstName} {selectedContractor.lastName}
+                    </p>
+                    <p className="email">
+                      {selectedContractor.primaryEmail}
+                    </p>
+                    {selectedContractor.phone && (
+                      <p className="phone">
+                        {selectedContractor.phone}
+                      </p>
+                    )}
+                  </>
+                ) : null;
+              })()}
             </div>
           )}
         </div>
