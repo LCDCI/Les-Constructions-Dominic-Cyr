@@ -11,6 +11,7 @@ import java.util.List;
 public interface ProjectService {
     ProjectResponseModel createProject(ProjectRequestModel requestModel);
     List<ProjectResponseModel> getAllProjects();
+    List<ProjectResponseModel> getAllProjects(boolean includeArchived);
     ProjectResponseModel getProjectByIdentifier(String projectIdentifier);
     ProjectResponseModel updateProject(String projectIdentifier, ProjectRequestModel requestModel);
     void deleteProject(String projectIdentifier);
@@ -18,6 +19,8 @@ public interface ProjectService {
     List<ProjectResponseModel> getProjectsByCustomerId(String customerId);
     List<ProjectResponseModel> getProjectsByDateRange(LocalDate startDate, LocalDate endDate);
     List<ProjectResponseModel> filterProjects(ProjectStatus status, LocalDate startDate, LocalDate endDate, String customerId);
+    List<ProjectResponseModel> filterProjects(ProjectStatus status, LocalDate startDate, LocalDate endDate, String customerId, boolean includeArchived);
+
     ProjectResponseModel assignContractorToProject(String projectIdentifier, String contractorId, String requestingAuth0UserId);
     ProjectResponseModel removeContractorFromProject(String projectIdentifier, String requestingAuth0UserId);
     ProjectResponseModel assignSalespersonToProject(String projectIdentifier, String salespersonId, String requestingAuth0UserId);

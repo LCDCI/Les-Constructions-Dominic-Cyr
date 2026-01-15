@@ -18,6 +18,8 @@ const ProjectCard = ({ project, onEdit, canEdit }) => {
         return '#10B981';
       case 'CANCELLED':
         return '#6B7280';
+      case 'ARCHIVED':
+        return '#9CA3AF';
       default:
         return '#4D85B9';
     }
@@ -35,6 +37,8 @@ const ProjectCard = ({ project, onEdit, canEdit }) => {
         return 'Completed';
       case 'CANCELLED':
         return 'Cancelled';
+      case 'ARCHIVED':
+        return 'Archived';
       default:
         return status;
     }
