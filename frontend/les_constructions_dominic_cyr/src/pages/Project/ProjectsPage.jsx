@@ -104,11 +104,6 @@ const ProjectsPage = () => {
     setSubmitError(null);
   };
 
-  const handleOpenTeamModal = (project) => {
-    setSelectedProjectForTeam(project);
-    setIsTeamModalOpen(true);
-  };
-
   const handleCloseTeamModal = () => {
     setIsTeamModalOpen(false);
     setSelectedProjectForTeam(null);
