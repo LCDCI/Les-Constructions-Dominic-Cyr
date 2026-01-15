@@ -4,7 +4,6 @@ import '../../styles/Project/create-project.css';
 import '../../styles/Project/edit-project.css';
 import CreateProjectForm from '../../features/projects/components/CreateProjectForm';
 import EditProjectForm from '../../features/projects/components/EditProjectForm';
-import ProjectTeamModal from '../../features/projects/components/ProjectTeamModal';
 import useBackendUser from '../../hooks/useBackendUser';
 import { canCreateProjects, canEditProjects } from '../../utils/permissions';
 
@@ -16,8 +15,6 @@ const ProjectsPage = () => {
   const [error, setError] = useState(null);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
-  const [selectedProjectForTeam, setSelectedProjectForTeam] = useState(null);
   const [projectToEdit, setProjectToEdit] = useState(null);
   const [submitError, setSubmitError] = useState(null);
   const [showConfirmClose, setShowConfirmClose] = useState(false);
@@ -104,15 +101,6 @@ const ProjectsPage = () => {
     setSubmitError(null);
   };
 
-  const handleCloseTeamModal = () => {
-    setIsTeamModalOpen(false);
-    setSelectedProjectForTeam(null);
-  };
-
-  const handleTeamModalSave = () => {
-    fetchProjects();
-  };
-
   const overlayStyle = {
     position: 'fixed',
     inset: 0,
@@ -155,14 +143,14 @@ const ProjectsPage = () => {
   };
 
   return (
-    <div className="projects-page">
-      <div className="projects-content">
-        <div className="projects-container">
-          <div className="projects-header">
+    <div className="admin-projects-page">
+      <div className="admin-projects-content">
+        <div className="admin-projects-container">
+          <div className="admin-projects-header">
             <h1>Projects</h1>
             {canCreate && (
               <button
-                className="create-project-button"
+                className="admin-create-project-button"
                 onClick={() => setIsCreateOpen(true)}
               >
                 Create New Project
@@ -170,11 +158,11 @@ const ProjectsPage = () => {
             )}
           </div>
 
-          <div className="projects-filter">
-            <div className="search-container">
+          <div className="admin-projects-filter">
+            <div className="admin-search-container">
               <input
                 type="text"
-                className="search-input"
+                className="admin-search-input"
                 placeholder="Search projects by name..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
@@ -183,40 +171,40 @@ const ProjectsPage = () => {
           </div>
 
           {loading && (
-            <div className="projects-loading">
+            <div className="admin-projects-loading">
               <p>Loading projects...</p>
             </div>
           )}
 
           {error && (
-            <div className="projects-error">
+            <div className="admin-projects-error">
               <p>{error}</p>
-              <button onClick={fetchProjects} className="retry-button">
+              <button onClick={fetchProjects} className="admin-retry-button">
                 Retry
               </button>
             </div>
           )}
 
           {!loading && !error && (
-            <div className="projects-grid">
+            <div className="admin-projects-grid">
               {filteredProjects.length > 0 ? (
                 filteredProjects.map(project => (
-                  <div key={project.projectIdentifier} className="project-card">
-                    <div className="project-image-container">
+                  <div key={project.projectIdentifier} className="admin-project-card">
+                    <div className="admin-project-image-container">
                       <img
                         src={getImageUrl(project.imageIdentifier)}
                         alt={project.projectName}
-                        className="project-image"
+                        className="admin-project-image"
                       />
                     </div>
-                    <h2 className="project-title">{project.projectName}</h2>
-                    <p className="project-description">
+                    <h2 className="admin-project-title">{project.projectName}</h2>
+                    <p className="admin-project-description">
                       {project.projectDescription}
                     </p>
-                    <div className="project-actions">
+                    <div className="admin-project-actions">
                       <a
                         href={`/projects/${project.projectIdentifier}/metadata`}
-                        className="project-button"
+                        className="admin-project-button"
                       >
                         View this project
                       </a>
@@ -224,14 +212,13 @@ const ProjectsPage = () => {
                         <>
                           <button
                             onClick={() => handleEditProject(project)}
-                            className="project-button edit-button"
+                            className="admin-project-button admin-edit-button"
                           >
                             Edit
                           </button>
                           <a
                             href={`/projects/${project.projectIdentifier}/team-management`}
-                            className="project-button team-button"
-                            style={{ textDecoration: 'none', color: 'inherit' }}
+                            className="admin-project-button admin-team-button"
                           >
                             Manage Team
                           </a>
@@ -241,7 +228,7 @@ const ProjectsPage = () => {
                   </div>
                 ))
               ) : (
-                <div className="no-results">
+                <div className="admin-no-results">
                   <p>No projects found matching &quot;{searchTerm}&quot;</p>
                 </div>
               )}
@@ -344,16 +331,6 @@ const ProjectsPage = () => {
                 />
               </div>
             </div>
-          )}
-
-          {isTeamModalOpen && selectedProjectForTeam && (
-            <ProjectTeamModal
-              isOpen={isTeamModalOpen}
-              projectIdentifier={selectedProjectForTeam.projectIdentifier}
-              currentContractorId={selectedProjectForTeam.contractorId}
-              onClose={handleCloseTeamModal}
-              onSave={handleTeamModalSave}
-            />
           )}
         </div>
       </div>

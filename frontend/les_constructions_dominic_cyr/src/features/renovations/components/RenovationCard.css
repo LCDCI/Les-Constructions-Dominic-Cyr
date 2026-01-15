@@ -25,6 +25,10 @@
     align-items: center;
 }
 
+.renovation-card__content.no-media {
+    grid-template-columns: 1fr;
+}
+
 .renovation-card__text {
     display: flex;
     flex-direction: column;

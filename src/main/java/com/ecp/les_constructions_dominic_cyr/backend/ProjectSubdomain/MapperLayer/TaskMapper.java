@@ -32,6 +32,7 @@ public class TaskMapper {
                     ? task.getAssignedTo().getUserIdentifier().getUserId().toString() : null)
                 .assignedToUserName(task.getAssignedTo() != null 
                     ? task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName() : null)
+                .scheduleId(task.getScheduleId())
                 .build();
     }
 
@@ -54,6 +55,7 @@ public class TaskMapper {
                 .hoursSpent(toDouble(requestDTO.getHoursSpent()))
                 .taskProgress(toDouble(requestDTO.getTaskProgress()))
                 .assignedTo(assignedUser)
+                .scheduleId(requestDTO.getScheduleId())
                 .build();
     }
 
@@ -68,6 +70,9 @@ public class TaskMapper {
         task.setHoursSpent(toDouble(requestDTO.getHoursSpent()));
         task.setTaskProgress(toDouble(requestDTO.getTaskProgress()));
         task.setAssignedTo(assignedUser);
+        if (requestDTO.getScheduleId() != null && !requestDTO.getScheduleId().isBlank()) {
+            task.setScheduleId(requestDTO.getScheduleId());
+        }
     }
 
     private Double toDouble(Number number) {

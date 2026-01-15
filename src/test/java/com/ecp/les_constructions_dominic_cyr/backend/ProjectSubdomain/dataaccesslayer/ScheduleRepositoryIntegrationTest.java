@@ -43,7 +43,7 @@ class ScheduleRepositoryIntegrationTest {
                 .scheduleStartDate(startOfWeek)
                 .scheduleEndDate(startOfWeek)
                 .scheduleDescription("Begin Excavation")
-                .lotNumber("Lot 53")
+                .lotId("Lot 53")
                 .build();
 
         schedule2 = Schedule.builder()
@@ -51,7 +51,7 @@ class ScheduleRepositoryIntegrationTest {
                 .scheduleStartDate(startOfWeek.plusDays(2))
                 .scheduleEndDate(startOfWeek.plusDays(2))
                 .scheduleDescription("Plumbing")
-                .lotNumber("Lot 57")
+                .lotId("Lot 57")
                 .build();
 
         schedule3 = Schedule.builder()
@@ -59,7 +59,7 @@ class ScheduleRepositoryIntegrationTest {
                 .scheduleStartDate(startOfWeek.plusDays(20))
                 .scheduleEndDate(startOfWeek.plusDays(20))
                 .scheduleDescription("Future Task")
-                .lotNumber("Lot 99")
+                .lotId("Lot 99")
                 .build();
 
         scheduleRepository.save(schedule1);
@@ -131,7 +131,7 @@ class ScheduleRepositoryIntegrationTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotNumber("Lot 100")
+                .lotId("Lot 100")
                 .build();
 
         Schedule saved = scheduleRepository.save(newSchedule);

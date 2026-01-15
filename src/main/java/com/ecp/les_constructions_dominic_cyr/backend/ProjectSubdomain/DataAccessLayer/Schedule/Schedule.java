@@ -38,7 +38,7 @@ public class Schedule {
     private String scheduleDescription;
 
     @Column(name = "lot_number", nullable = false, length = 50)
-    private String lotNumber;
+    private String lotId;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -54,15 +54,24 @@ public class Schedule {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate scheduleStartDate, @NotNull LocalDate scheduleEndDate, @NotNull String scheduleDescription, @NotNull String lotNumber) {
+    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate scheduleStartDate, @NotNull LocalDate scheduleEndDate, @NotNull String scheduleDescription, @NotNull String lotId) {
         this.scheduleIdentifier = scheduleIdentifier;
         this.scheduleStartDate = scheduleStartDate;
         this.scheduleEndDate = scheduleEndDate;
         this.scheduleDescription = scheduleDescription;
-        this.lotNumber = lotNumber;
+        this.lotId = lotId;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.tasks = new ArrayList<>();
+    }
+
+    // Backward compatibility: keep legacy accessor names until callers migrate to lotId
+    public String getLotNumber() {
+        return lotId;
+    }
+
+    public void setLotNumber(String lotNumber) {
+        this.lotId = lotNumber;
     }
 
     @PrePersist

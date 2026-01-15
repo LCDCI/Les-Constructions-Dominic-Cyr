@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { FiTool, FiRefreshCw, FiShield } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchRenovations } from '../../features/renovations/api/renovations';
 import RenovationCard from '../../features/renovations/components/RenovationCard';
+import '../../styles/Public_Facing/home.css';
 import '../../styles/Public_Facing/RenovationsPage.css';
 
 const RenovationsPage = ({ resolveAssetUrl }) => {
@@ -31,6 +33,37 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
     loadRenovations();
   }, []);
 
+  // Animate on scroll (reuse pattern from Home page)
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll('[data-animate]'));
+    if (!elements.length) return;
+
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReduced) {
+      elements.forEach(el => el.classList.add('animated'));
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animated');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -80px 0px' }
+    );
+
+    elements.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, [renovations]);
+
   const loadRenovations = async () => {
     try {
       setIsLoading(true);
@@ -49,65 +82,40 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
     loadRenovations();
   };
 
+  // Images are removed site-wide for this page; use decorative gradients instead
+
   return (
-    <section className="renovations-page" aria-live="polite">
+    <div className="renovations-page" aria-live="polite">
       {/* HERO */}
-      <header className="renovations-page__hero">
-        <div className="renovations-page__hero-grid">
-          <div className="renovations-page__badge" aria-hidden="true">
-            <p>{t('hero.title1', 'RÉNOVER')}</p>
-            <p>{t('hero.title2', 'MODERNISER')}</p>
-            <p>{t('hero.title3', 'TRANSFORMER')}</p>
-            <span>
-              {t('hero.subtitle', "Votre maison mérite ce qu'il y a de mieux")}
-            </span>
-          </div>
-          <div className="renovations-page__hero-copy">
-            <h1 className="renovations-page__title">
-              {t('hero.heading', 'Rénovations sur mesure, livrées avec soin')}
-            </h1>
-            <p className="renovations-page__subtitle">
-              {t(
-                'hero.lede',
-                'Cuisine, sous-sol, aire ouverte ou façade — nous modernisons chaque espace avec rigueur et créativité.'
-              )}
-            </p>
+      <section className="hero">
+        <div className="hero-background">
+          <div className="hero-image renovations-hero-bg" />
+          <div className="hero-overlay" />
+        </div>
+        <div className="hero-container">
+          <div className="hero-content" data-animate>
+            <p className="hero-label">{t('hero.label', 'RENOVATIONS')}</p>
+            <h1 className="hero-heading">{t('hero.heading', 'Custom renovations, delivered with care')}</h1>
+            <p className="hero-description">{t('hero.lede', 'Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity.')}</p>
+            <div className="hero-buttons">
+              <Link to="/realizations" className="btn btn-primary">{t('cta.discover', 'Discover')}</Link>
+              <Link to="/contact" className="btn btn-secondary">{t('cta.contact', 'Contact')}</Link>
+            </div>
           </div>
         </div>
-      </header>
+      </section>
 
-      {/* INTRO */}
-      <div className="renovations-page__info-grid">
-        <section className="renovations-page__intro">
-          <h2>
-            <FiTool aria-hidden="true" className="renovations-page__icon" />
-            {t(
-              'intro.title',
-              'Transformez votre maison en un espace de vie dont vous rêvez !'
-            )}
-          </h2>
-          <p>
-            {t(
-              'intro.description',
-              'Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité.'
-            )}
-          </p>
-        </section>
-
-        {/* SERVICES */}
-        <section className="renovations-page__services">
-          <h2>
-            <FiShield aria-hidden="true" />
-            {t('services.heading', 'Service clé en main')}
-          </h2>
-          <p>
-            {t(
-              'services.title',
-              'Nous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien.'
-            )}
-          </p>
-        </section>
-      </div>
+      {/* FEATURED INTRO SECTION */}
+      <section className="content-section featured-section single-column">
+        <div className="section-text-wrapper" data-animate>
+          <div className="section-header center renovations-feature-card">
+            <span className="section-kicker">{t('kicker.renovations', 'Renovations')}</span>
+            <h2 className="section-title"><em>{t('intro.emphasis', 'Modernize')}</em> {t('intro.rest', 'your space with style')}</h2>
+            <p className="section-subtitle">{t('intro.description', 'Whether you want to refresh your kitchen, rethink your basement, open up spaces, or enhance your façade, we deliver with precision, rigor, and creativity.')}</p>
+            <Link to="/contact" className="link-arrow">{t('intro.cta', 'Talk to an expert')}</Link>
+          </div>
+        </div>
+      </section>
 
       {/* ERROR */}
       {isError && (
@@ -134,7 +142,7 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
 
       {/* LOADING */}
       {isLoading && (
-        <div className="renovations-page__grid">
+        <div className="container renovations-page__grid">
           {[0, 1, 2].map(skeleton => (
             <div
               key={skeleton}
@@ -160,37 +168,42 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
 
       {/* RENOVATIONS LIST */}
       {!isLoading && renovations.length > 0 && (
-        <div className="renovations-page__grid">
-          {renovations.map(
-            ({
-              renovationId,
-              beforeImageIdentifier,
-              afterImageIdentifier,
-              description,
-            }) => (
-              <RenovationCard
-                key={renovationId}
-                renovationIdentifier={renovationId}
-                beforeImageIdentifier={beforeImageIdentifier}
-                afterImageIdentifier={afterImageIdentifier}
-                description={description}
-                resolveAssetUrl={getImageUrl}
-              />
-            )
-          )}
-        </div>
+        <section className="portfolio-section">
+          <div className="container">
+            <div className="section-header center" data-animate>
+              <span className="section-kicker">{t('grid.kicker', 'Our Work')}</span>
+              <h2 className="section-title">{t('grid.title', 'Recent Renovations')}</h2>
+            </div>
+            <div className="renovations-page__grid">
+              {renovations.map(({ renovationId, beforeImageIdentifier, afterImageIdentifier, description }) => (
+                <RenovationCard
+                  key={renovationId}
+                  renovationIdentifier={renovationId}
+                  beforeImageIdentifier={''}
+                  afterImageIdentifier={''}
+                  description={description}
+                  resolveAssetUrl={() => ''}
+                  showTitle={false}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
       {/* CALL TO ACTION */}
-      <section className="renovations-page__cta">
-        <h2>
-          {t(
-            'callToAction.title',
-            'Confiez votre rénovation à des professionnels passionnés !'
-          )}
-        </h2>
+      <section className="contact-cta">
+        <div className="contact-wrapper single-column">
+          <div className="contact-content" data-animate>
+            <span className="section-kicker">{t('cta.kicker', 'Where to start?')}</span>
+            <h2 className="contact-title">{t('cta.title', "Let's talk about your project")}</h2>
+            <p className="contact-description">{t('cta.subtitle', 'Get tailored support to transform your space into a place that reflects you.')}</p>
+            <Link to="/contact" className="btn btn-primary">{t('cta.button', 'Contact Us')}</Link>
+          </div>
+          {/* Image removed intentionally */}
+        </div>
       </section>
-    </section>
+    </div>
   );
 };
 
