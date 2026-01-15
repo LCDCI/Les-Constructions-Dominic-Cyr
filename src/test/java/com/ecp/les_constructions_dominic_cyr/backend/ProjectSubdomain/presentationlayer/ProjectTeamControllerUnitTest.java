@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,8 +68,8 @@ public class ProjectTeamControllerUnitTest {
                 .buyerColor("#FF0000")
                 .buyerName("Test Buyer")
                 .customerId("cust-001")
-                .contractorId(testContractorId)
-                .salespersonId(testSalespersonId)
+                .contractorIds(Arrays.asList(testContractorId))
+                .salespersonIds(Arrays.asList(testSalespersonId))
                 .lotIdentifiers(Arrays.asList("lot-001"))
                 .progressPercentage(50)
                 .build();
@@ -87,7 +88,7 @@ public class ProjectTeamControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectIdentifier").value(testProjectId))
-                .andExpect(jsonPath("$.contractorId").value(testContractorId));
+                .andExpect(jsonPath("$.contractorIds[0]").value(testContractorId));
 
         verify(projectService, times(1)).assignContractorToProject(eq(testProjectId), eq(testContractorId), any());
     }
@@ -127,7 +128,7 @@ public class ProjectTeamControllerUnitTest {
         ProjectResponseModel responseWithoutContractor = ProjectResponseModel.builder()
                 .projectIdentifier(testProjectId)
                 .projectName("Test Project")
-                .contractorId(null)
+                .contractorIds(new ArrayList<>())
                 .build();
 
         when(projectService.removeContractorFromProject(eq(testProjectId), any()))
@@ -138,7 +139,7 @@ public class ProjectTeamControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectIdentifier").value(testProjectId))
-                .andExpect(jsonPath("$.contractorId").isEmpty());
+                .andExpect(jsonPath("$.contractorIds").isEmpty());
 
         verify(projectService, times(1)).removeContractorFromProject(eq(testProjectId), any());
     }
@@ -160,7 +161,7 @@ public class ProjectTeamControllerUnitTest {
     void removeContractorFromProject_NoContractorAssigned_ReturnsOk() throws Exception {
         ProjectResponseModel responseWithoutContractor = ProjectResponseModel.builder()
                 .projectIdentifier(testProjectId)
-                .contractorId(null)
+                .contractorIds(new ArrayList<>())
                 .build();
 
         when(projectService.removeContractorFromProject(eq(testProjectId), any()))
@@ -187,7 +188,7 @@ public class ProjectTeamControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectIdentifier").value(testProjectId))
-                .andExpect(jsonPath("$.salespersonId").value(testSalespersonId));
+                .andExpect(jsonPath("$.salespersonIds[0]").value(testSalespersonId));
 
         verify(projectService, times(1)).assignSalespersonToProject(eq(testProjectId), eq(testSalespersonId), any());
     }
@@ -227,7 +228,7 @@ public class ProjectTeamControllerUnitTest {
         ProjectResponseModel responseWithoutSalesperson = ProjectResponseModel.builder()
                 .projectIdentifier(testProjectId)
                 .projectName("Test Project")
-                .salespersonId(null)
+                .salespersonIds(new ArrayList<>())
                 .build();
 
         when(projectService.removeSalespersonFromProject(eq(testProjectId), any()))
@@ -238,7 +239,7 @@ public class ProjectTeamControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.projectIdentifier").value(testProjectId))
-                .andExpect(jsonPath("$.salespersonId").isEmpty());
+                .andExpect(jsonPath("$.salespersonIds").isEmpty());
 
         verify(projectService, times(1)).removeSalespersonFromProject(eq(testProjectId), any());
     }

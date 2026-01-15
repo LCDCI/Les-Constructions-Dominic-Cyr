@@ -28,6 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -196,7 +197,7 @@ public class ProjectTeamServiceUnitTest {
     @Test
     void assignContractorToProject_ReplacesExistingContractor_LogsBothActions() {
         String oldContractorId = UUID.randomUUID().toString();
-        testProject.setContractorId(oldContractorId);
+        testProject.setContractorIds(new ArrayList<>(Arrays.asList(oldContractorId)));
 
         when(projectRepository.findByProjectIdentifier(testProjectId))
                 .thenReturn(Optional.of(testProject));
@@ -218,7 +219,7 @@ public class ProjectTeamServiceUnitTest {
 
     @Test
     void removeContractorFromProject_ValidData_RemovesSuccessfully() {
-        testProject.setContractorId(testContractorId);
+        testProject.setContractorIds(new ArrayList<>(Arrays.asList(testContractorId)));
 
         when(projectRepository.findByProjectIdentifier(testProjectId))
                 .thenReturn(Optional.of(testProject));
@@ -248,7 +249,7 @@ public class ProjectTeamServiceUnitTest {
 
     @Test
     void removeContractorFromProject_NoContractorAssigned_StillSucceeds() {
-        testProject.setContractorId(null);
+        testProject.setContractorIds(new ArrayList<>());
 
         when(projectRepository.findByProjectIdentifier(testProjectId))
                 .thenReturn(Optional.of(testProject));
@@ -341,7 +342,7 @@ public class ProjectTeamServiceUnitTest {
 
     @Test
     void removeSalespersonFromProject_ValidData_RemovesSuccessfully() {
-        testProject.setSalespersonId(testSalespersonId);
+        testProject.setSalespersonIds(new ArrayList<>(Arrays.asList(testSalespersonId)));
 
         when(projectRepository.findByProjectIdentifier(testProjectId))
                 .thenReturn(Optional.of(testProject));
@@ -368,7 +369,7 @@ public class ProjectTeamServiceUnitTest {
 
     @Test
     void removeSalespersonFromProject_NoSalespersonAssigned_StillSucceeds() {
-        testProject.setSalespersonId(null);
+        testProject.setSalespersonIds(new ArrayList<>());
 
         when(projectRepository.findByProjectIdentifier(testProjectId))
                 .thenReturn(Optional.of(testProject));

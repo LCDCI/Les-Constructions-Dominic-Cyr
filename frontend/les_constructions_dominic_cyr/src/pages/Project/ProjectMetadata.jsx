@@ -194,108 +194,76 @@ const ProjectMetadata = () => {
           <section className="metadata-section">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
               <h2 style={{ color: metadata.primaryColor, margin: 0 }}>Assigned Team</h2>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {!metadata.assignedUsers.contractor && (
-                  <a
-                    href="/users"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '8px 14px',
-                      backgroundColor: metadata.primaryColor,
-                      color: 'white',
-                      textDecoration: 'none',
-                      borderRadius: '4px',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    + Contractor
-                  </a>
-                )}
-                {!metadata.assignedUsers.salesperson && (
-                  <a
-                    href="/users"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '8px 14px',
-                      backgroundColor: metadata.primaryColor,
-                      color: 'white',
-                      textDecoration: 'none',
-                      borderRadius: '4px',
-                      fontSize: '13px',
-                      fontWeight: '500',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    + Salesperson
-                  </a>
-                )}
-                <a
-                  href={`/projects/${projectId}/team-management`}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    backgroundColor: metadata.primaryColor,
-                    color: 'white',
-                    textDecoration: 'none',
-                    borderRadius: '4px',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <FiUsers size={18} />
-                  Manage Team
-                </a>
-              </div>
+              <a
+                href={`/projects/${projectId}/team-management`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  backgroundColor: metadata.primaryColor,
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                <FiUsers size={18} />
+                Manage Team
+              </a>
             </div>
             <div className="team-grid">
-              {metadata.assignedUsers.contractor && (
+              {metadata.assignedUsers.contractors && metadata.assignedUsers.contractors.length > 0 && (
                 <div
                   className="team-member"
                   style={{ borderColor: metadata.tertiaryColor }}
                 >
-                  <h3>Contractor</h3>
-                  <p className="member-name">
-                    {metadata.assignedUsers.contractor.firstName}{' '}
-                    {metadata.assignedUsers.contractor.lastName}
-                  </p>
-                  <p className="member-contact">
-                    {metadata.assignedUsers.contractor.primaryEmail}
-                  </p>
-                  {metadata.assignedUsers.contractor.phone && (
-                    <p className="member-contact">
-                      {metadata.assignedUsers.contractor.phone}
-                    </p>
-                  )}
+                  <h3>Contractors</h3>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px' }}>
+                    {metadata.assignedUsers.contractors.map((contractor) => (
+                      <li key={contractor.userIdentifier} style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', paddingBottom: '8px' }}>
+                        <p className="member-name" style={{ marginBottom: '4px' }}>
+                          {contractor.firstName} {contractor.lastName}
+                        </p>
+                        <p className="member-contact" style={{ marginBottom: contractor.phone ? '2px' : 0 }}>
+                          {contractor.primaryEmail}
+                        </p>
+                        {contractor.phone && (
+                          <p className="member-contact" style={{ marginBottom: 0 }}>
+                            {contractor.phone}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
-              {metadata.assignedUsers.salesperson && (
+              {metadata.assignedUsers.salespersons && metadata.assignedUsers.salespersons.length > 0 && (
                 <div
                   className="team-member"
                   style={{ borderColor: metadata.tertiaryColor }}
                 >
-                  <h3>Salesperson</h3>
-                  <p className="member-name">
-                    {metadata.assignedUsers.salesperson.firstName}{' '}
-                    {metadata.assignedUsers.salesperson.lastName}
-                  </p>
-                  <p className="member-contact">
-                    {metadata.assignedUsers.salesperson.primaryEmail}
-                  </p>
-                  {metadata.assignedUsers.salesperson.phone && (
-                    <p className="member-contact">
-                      {metadata.assignedUsers.salesperson.phone}
-                    </p>
-                  )}
+                  <h3>Salespersons</h3>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px' }}>
+                    {metadata.assignedUsers.salespersons.map((salesperson) => (
+                      <li key={salesperson.userIdentifier} style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', paddingBottom: '8px' }}>
+                        <p className="member-name" style={{ marginBottom: '4px' }}>
+                          {salesperson.firstName} {salesperson.lastName}
+                        </p>
+                        <p className="member-contact" style={{ marginBottom: salesperson.phone ? '2px' : 0 }}>
+                          {salesperson.primaryEmail}
+                        </p>
+                        {salesperson.phone && (
+                          <p className="member-contact" style={{ marginBottom: 0 }}>
+                            {salesperson.phone}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
@@ -320,53 +288,13 @@ const ProjectMetadata = () => {
                 </div>
               )}
 
-              {!metadata.assignedUsers.contractor && !metadata.assignedUsers.salesperson && !metadata.assignedUsers.customer && (
+              {(!metadata.assignedUsers.contractors || metadata.assignedUsers.contractors.length === 0) && 
+               (!metadata.assignedUsers.salespersons || metadata.assignedUsers.salespersons.length === 0) && 
+               !metadata.assignedUsers.customer && (
                 <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 20px' }}>
-                  <p style={{ color: '#999', marginBottom: '20px', fontSize: '14px' }}>
+                  <p style={{ color: '#999', fontSize: '14px' }}>
                     No team members assigned yet.
                   </p>
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                    {!metadata.assignedUsers.contractor && (
-                      <a
-                        href="/users"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '10px 16px',
-                          backgroundColor: metadata.primaryColor,
-                          color: 'white',
-                          textDecoration: 'none',
-                          borderRadius: '4px',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        + Add Contractor
-                      </a>
-                    )}
-                    {!metadata.assignedUsers.salesperson && (
-                      <a
-                        href="/users"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: '6px',
-                          padding: '10px 16px',
-                          backgroundColor: metadata.primaryColor,
-                          color: 'white',
-                          textDecoration: 'none',
-                          borderRadius: '4px',
-                          fontSize: '13px',
-                          fontWeight: '500',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        + Add Salesperson
-                      </a>
-                    )}
-                  </div>
                 </div>
               )}
             </div>

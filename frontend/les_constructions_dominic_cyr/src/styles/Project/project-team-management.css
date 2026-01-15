@@ -272,16 +272,19 @@
 }
 
 .add-button {
-  background: #E5EDF5;
-  color: #333;
-  border: 1px solid #333;
+  background: var(--primary-color);
+  color: white;
+  border: 1px solid var(--primary-color);
   margin-bottom: 16px;
-  width: 100%;
+  width: auto;
+  padding: 12px 24px;
 }
 
 .add-button:hover:not(:disabled) {
-  background: #333;
-  color: white;
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .add-button:disabled {
