@@ -72,11 +72,15 @@ public class Project {
 
     private LocalDateTime updatedAt;
 
-    @Column(nullable = true)
-    private String contractorId;
+    @ElementCollection
+    @CollectionTable(name = "project_contractors", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "contractor_id", nullable = false)
+    private List<String> contractorIds = new ArrayList<>();
 
-    @Column(nullable = true)
-    private String salespersonId;
+    @ElementCollection
+    @CollectionTable(name = "project_salespersons", joinColumns = @JoinColumn(name = "project_id"))
+    @Column(name = "salesperson_id", nullable = false)
+    private List<String> salespersonIds = new ArrayList<>();
 
     @Column(nullable = true)
     private String location;
