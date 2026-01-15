@@ -94,8 +94,11 @@
 
 .admin-projects-filter {
     display: flex;
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
     margin-bottom: 5%;
+    gap: 20px;
 }
 
 .admin-search-container {
@@ -139,11 +142,39 @@
     text-align: center;
     width: 100%;
     max-width: 350px;
+    position: relative;
 }
 
 .admin-project-card:hover {
     transform: translateY(-2%);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.project-card-archived {
+    background-color: #F5F5F5;
+    border: 2px solid #9CA3AF;
+    opacity: 0.85;
+}
+
+.project-card-archived:hover {
+    opacity: 0.95;
+    border-color: #6B7280;
+}
+
+.archived-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: #DC2626;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .admin-project-image-container {
@@ -246,6 +277,62 @@
     padding: 5%;
     color: var(--text-secondary);
     font-size: 1.2rem;
+}
+
+/* Filter menu styles */
+.admin-projects-filter .filter-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #E5E7EB;
+    background: #ffffff;
+    color: #111827;
+    font-size: 0.95rem;
+    line-height: 1;
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+}
+
+.admin-projects-filter .filter-trigger:hover {
+    background: #F9FAFB;
+}
+
+.admin-projects-filter .filter-icon {
+    display: inline-block;
+    color: currentColor;
+}
+
+.admin-projects-filter .filter-menu {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    padding: 8px;
+    min-width: 200px;
+    z-index: 100;
+}
+
+.admin-projects-filter .filter-option {
+    width: 100%;
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #111827;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.admin-projects-filter .filter-option:hover {
+    background: #F3F4F6;
+}
+
+.admin-projects-filter .filter-option.active {
+    background: #2563EB;
+    color: #ffffff;
 }
 
 /* Responsive Design */
