@@ -94,10 +94,11 @@
 
 .admin-projects-filter {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    justify-content: center;
     margin-bottom: 5%;
-    gap: 12px;
+    gap: 20px;
 }
 
 .admin-search-container {
@@ -176,7 +177,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.project-image-container {
 .admin-project-image-container {
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -280,7 +280,7 @@
 }
 
 /* Filter menu styles */
-.projects-filter .filter-trigger {
+.admin-projects-filter .filter-trigger {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -295,16 +295,16 @@
     cursor: pointer;
 }
 
-.projects-filter .filter-trigger:hover {
+.admin-projects-filter .filter-trigger:hover {
     background: #F9FAFB;
 }
 
-.projects-filter .filter-icon {
+.admin-projects-filter .filter-icon {
     display: inline-block;
     color: currentColor;
 }
 
-.projects-filter .filter-menu {
+.admin-projects-filter .filter-menu {
     background: #fff;
     border: 1px solid #E5E7EB;
     border-radius: 8px;
@@ -314,7 +314,7 @@
     z-index: 100;
 }
 
-.projects-filter .filter-option {
+.admin-projects-filter .filter-option {
     width: 100%;
     text-align: left;
     padding: 10px 12px;
@@ -326,11 +326,11 @@
     font-size: 0.95rem;
 }
 
-.projects-filter .filter-option:hover {
+.admin-projects-filter .filter-option:hover {
     background: #F3F4F6;
 }
 
-.projects-filter .filter-option.active {
+.admin-projects-filter .filter-option.active {
     background: #2563EB;
     color: #ffffff;
 }
