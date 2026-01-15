@@ -2,6 +2,8 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAcces
 
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,6 +39,8 @@ public class Task {
     @Column(name = "period_end")
     private LocalDate periodEnd;
 
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR) // Map to PostgreSQL TEXT without OID/LOB conversion
+    @Column(name = "task_description", columnDefinition = "TEXT")
     private String taskDescription;
 
     @Enumerated(EnumType.STRING)

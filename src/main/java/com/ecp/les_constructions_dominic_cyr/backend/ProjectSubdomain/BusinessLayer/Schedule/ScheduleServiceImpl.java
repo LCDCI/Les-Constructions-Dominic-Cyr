@@ -4,6 +4,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ScheduleMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
@@ -32,6 +34,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final ProjectRepository projectRepository;
+    private final LotRepository lotRepository;
     private final ScheduleMapper scheduleMapper;
 
     private static final int MAX_TASK_IDS = 50;
@@ -70,7 +73,9 @@ public class ScheduleServiceImpl implements ScheduleService {
         log.info("Adding new schedule");
         validateScheduleRequest(scheduleRequestDTO);
 
+        Lot lot = resolveLot(scheduleRequestDTO.getLotId());
         Schedule schedule = scheduleMapper.requestDTOToEntity(scheduleRequestDTO);
+        schedule.setLotNumber(lot.getLotIdentifier().getLotId());
         Schedule savedSchedule = scheduleRepository.save(schedule);
 
         log.info("Schedule created with identifier: {}", savedSchedule.getScheduleIdentifier());
@@ -83,10 +88,12 @@ public class ScheduleServiceImpl implements ScheduleService {
         log.info("Updating schedule with identifier: {}", scheduleIdentifier);
         validateScheduleRequest(scheduleRequestDTO);
 
+        Lot lot = resolveLot(scheduleRequestDTO.getLotId());
         Schedule existingSchedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
                 .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
 
         scheduleMapper.updateEntityFromRequestDTO(existingSchedule, scheduleRequestDTO);
+        existingSchedule.setLotNumber(lot.getLotIdentifier().getLotId());
         Schedule updatedSchedule = scheduleRepository.save(existingSchedule);
 
         log.info("Schedule updated: {}", scheduleIdentifier);
@@ -217,8 +224,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (scheduleRequestDTO.getScheduleDescription() == null || scheduleRequestDTO.getScheduleDescription().isBlank()) {
             throw new InvalidInputException("Schedule description must not be blank");
         }
-        if (scheduleRequestDTO.getLotNumber() == null || scheduleRequestDTO.getLotNumber().isBlank()) {
-            throw new InvalidInputException("Lot number must not be blank");
+        if (scheduleRequestDTO.getLotId() == null || scheduleRequestDTO.getLotId().isBlank()) {
+            throw new InvalidInputException("Lot ID must not be blank");
         }
     }
 
@@ -254,8 +261,10 @@ public class ScheduleServiceImpl implements ScheduleService {
         Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
         
+        Lot lot = resolveLot(scheduleRequestDTO.getLotId());
         Schedule schedule = scheduleMapper.requestDTOToEntity(scheduleRequestDTO);
         schedule.setProject(project);
+        schedule.setLotNumber(lot.getLotIdentifier().getLotId());
         Schedule savedSchedule = scheduleRepository.save(schedule);
         
         log.info("Schedule created with identifier: {} for project: {}", savedSchedule.getScheduleIdentifier(), projectIdentifier);
@@ -272,16 +281,26 @@ public class ScheduleServiceImpl implements ScheduleService {
         projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
         
+        Lot lot = resolveLot(scheduleRequestDTO.getLotId());
         Schedule existingSchedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
                 .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
         
         validateScheduleBelongsToProject(existingSchedule, projectIdentifier);
         
         scheduleMapper.updateEntityFromRequestDTO(existingSchedule, scheduleRequestDTO);
+        existingSchedule.setLotNumber(lot.getLotIdentifier().getLotId());
         Schedule updatedSchedule = scheduleRepository.save(existingSchedule);
         
         log.info("Schedule {} updated for project {}", scheduleIdentifier, projectIdentifier);
         return scheduleMapper.entityToResponseDTO(updatedSchedule);
+    }
+
+    private Lot resolveLot(String lotId) {
+        Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
+        if (lot == null) {
+            throw new NotFoundException("Lot not found with id: " + lotId);
+        }
+        return lot;
     }
 
     @Override
