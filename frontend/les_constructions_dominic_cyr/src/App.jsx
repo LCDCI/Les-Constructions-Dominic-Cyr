@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/LotsPage';
@@ -32,24 +32,35 @@ import NavigationSetter from './components/NavigationSetter';
 import { loadTheme } from './utils/themeLoader';
 import { useAuth0 } from '@auth0/auth0-react';
 import { setupAxiosInterceptors } from './utils/axios';
+import ReportsPage from './pages/ReportsPage';
+import ReactGA from 'react-ga4';
 
+function PageViewTracker() {
+  const location = useLocation();
+  useEffect(() => {
+    ReactGA.send({ hitType: 'pageview', page: location.pathname });
+  }, [location]);
+  return null;
+}
 
 export default function App() {
-    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
 
   useEffect(() => {
-  loadTheme();
-}, []);
+    loadTheme();
+    ReactGA.initialize('G-CE8NDWBWCB');
+  }, []);
 
-    useEffect(() => {
-        if (isAuthenticated) {
-            setupAxiosInterceptors(getAccessTokenSilently);
-        }
-    }, [isAuthenticated, getAccessTokenSilently]);
+  useEffect(() => {
+    if (isAuthenticated) {
+      setupAxiosInterceptors(getAccessTokenSilently);
+    }
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   return (
     <BrowserRouter>
       <NavigationSetter />
+      <PageViewTracker />
       <div className="app-container">
         <AppNavBar />
         <main style={{ padding: '16px' }}>
@@ -79,22 +90,49 @@ export default function App() {
                 />
               }
             />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<ReportsPage />}
+                />
+              }
+            />
             <Route path="/realizations" element={<RealizationsPage />} />
             <Route path="/renovations" element={<RenovationsPage />} />
-            <Route path="/projectmanagement" element={<ProjectManagementPage />} />
+            <Route
+              path="/projectmanagement"
+              element={<ProjectManagementPage />}
+            />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
             <Route
               path="/inquiries"
-              element={<ProtectedRoute allowedRoles={[ 'OWNER' ]} element={<OwnerInquiriesPage />} />}
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<OwnerInquiriesPage />}
+                />
+              }
             />
             <Route
               path="/users"
-              element={<ProtectedRoute allowedRoles={[ 'OWNER' ]} element={<UsersPage />} />}
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<UsersPage />}
+                />
+              }
             />
             <Route
               path="/owner/dashboard"
-              element={<ProtectedRoute allowedRoles={[ 'OWNER' ]} element={<OwnerDashboard />} />}
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<OwnerDashboard />}
+                />
+              }
             />
             <Route
               path="/projects/:projectId/metadata"
@@ -102,11 +140,21 @@ export default function App() {
             />
             <Route
               path="/customer/dashboard"
-              element={<ProtectedRoute allowedRoles={[ 'CUSTOMER' ]} element={<CustomerDashboard />} />}
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CUSTOMER']}
+                  element={<CustomerDashboard />}
+                />
+              }
             />
             <Route
               path="/salesperson/dashboard"
-              element={<ProtectedRoute allowedRoles={[ 'SALESPERSON' ]} element={<SalespersonDashboard />} />}
+              element={
+                <ProtectedRoute
+                  allowedRoles={['SALESPERSON']}
+                  element={<SalespersonDashboard />}
+                />
+              }
             />
             <Route
               path="/residential-projects"
@@ -114,13 +162,23 @@ export default function App() {
             />
             <Route
               path="/contractor/dashboard"
-              element={<ProtectedRoute allowedRoles={[ 'CONTRACTOR' ]} element={<ContractorDashboard />} />}
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CONTRACTOR']}
+                  element={<ContractorDashboard />}
+                />
+              }
             />
             <Route
               path="/projects/:projectId/files"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProjectFilesPage />}
                 />
               }
@@ -129,7 +187,12 @@ export default function App() {
               path="/projects/:projectId/photos"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProjectPhotosPage />}
                 />
               }
@@ -138,20 +201,30 @@ export default function App() {
               path="/projects/:projectId/schedule"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProjectSchedulePage />}
                 />
               }
             />
             <Route path="/portal/login" element={<PortalLogin />} />
-            <Route 
-              path="/profile" 
+            <Route
+              path="/profile"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProfilePage />}
                 />
-              } 
+              }
             />
             <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="*" element={<NotFound />} />

@@ -1,0 +1,5 @@
+.reports-table { width: 100%; border-collapse: collapse; }
+.reports-table th, .reports-table td { padding: 1rem; border-bottom: 1px solid #ecf0f1; }
+.format-badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; }
+.format-pdf { background-color: #fee; color: #c00; }
+.format-xlsx { background-color: #efe; color: #060; }
