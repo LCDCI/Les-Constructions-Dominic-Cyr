@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchUsers, reactivateUser } from '../../features/users/api/usersApi';
-import { FiUsers, FiMapPin, FiCalendar, FiUser, FiSave, FiActivity, FiInfo } from 'react-icons/fi';
+import { FiUsers, FiActivity, FiInfo } from 'react-icons/fi';
 import '../../styles/Project/project-team-management.css';
 
 export default function ProjectTeamManagementPage() {
