@@ -218,6 +218,19 @@
     background-color: #059669;
 }
 
+.admin-project-button.admin-team-button {
+    background-color: #6366F1;
+    color: white;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 3% 8%;
+}
+
+.admin-project-button.admin-team-button:hover {
+    background-color: #4F46E5;
+}
+
 .admin-project-button:hover {
     background-color: var(--background-color);
     transform: scale(1.05);
