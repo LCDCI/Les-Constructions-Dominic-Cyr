@@ -1,10 +1,9 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule;
 
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
+import java.util.List;
+
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
-
-import java.util.List;
 
 public interface TaskService {
 
@@ -38,5 +37,5 @@ public interface TaskService {
      */
     List<TaskDetailResponseDTO> getTasksForContractor(String contractorId);
 
-    List<Task> getTasksForSchedule(String scheduleIdentifier);
+    List<TaskDetailResponseDTO> getTasksForSchedule(String scheduleIdentifier);
 }

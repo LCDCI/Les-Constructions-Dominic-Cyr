@@ -14,6 +14,7 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import UsersPage from './pages/UsersPage';
 import OwnerDashboard from './pages/Dashboards/OwnerDashboard';
 import ProjectMetadata from './pages/Project/ProjectMetadata';
+import ProjectTeamManagementPage from './pages/Project/ProjectTeamManagementPage';
 import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
 import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPage';
@@ -22,6 +23,7 @@ import ProjectFilesPage from './pages/Project/ProjectFilesPage';
 import ProjectPhotosPage from './pages/Project/ProjectPhotosPage';
 import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
 import PortalLogin from './pages/PortalLogin';
+import TaskDetailsPage from './pages/Tasks/TaskDetailsPage';
 import ProfilePage from './pages/ProfilePage';
 import Unauthorized from './pages/Errors/Unauthorized';
 import NotFound from './pages/Errors/NotFound';
@@ -139,6 +141,10 @@ export default function App() {
               element={<ProjectMetadata />}
             />
             <Route
+              path="/projects/:projectId/team-management"
+              element={<ProtectedRoute allowedRoles={['OWNER']} element={<ProjectTeamManagementPage />} />}
+            />
+            <Route
               path="/customer/dashboard"
               element={
                 <ProtectedRoute
@@ -208,6 +214,20 @@ export default function App() {
                     'CUSTOMER',
                   ]}
                   element={<ProjectSchedulePage />}
+                />
+              }
+            />
+            <Route
+              path="/tasks/:taskId"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<TaskDetailsPage />}
                 />
               }
             />
