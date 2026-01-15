@@ -1,53 +1,68 @@
 {
+  "hero": {
+    "label": "CONCEPTION & CONSTRUCTION",
+    "title": "Créer l'espace de vos rêves",
+    "subtitle": "Construction de qualité, design intemporel, depuis 1990",
+    "button1": "Découvrir",
+    "button2": "Contactez-nous",
+    "scroll": "Défilez"
+  },
+  "think": {
+    "title": "Pensez des espaces intelligents, pratiques et confortables",
+    "subtitle": "Passionnés par l'architecture et le design, notre mission est de vous offrir une expérience unique et mémorable.",
+    "link": "Découvrir"
+  },
+  "build": {
+    "title": "Construisez une relation solide et un partenariat de qualité",
+    "subtitle": "Guidés par notre désir de perfection, nous faisons tout pour que vous soyez plus que satisfait de nos travaux.",
+    "link": "Contactez-nous"
+  },
+  "live": {
+    "title": "Vivez dans un espace qui reflète vos valeurs",
+    "subtitle": "Votre maison est l'un des investissements les plus importants de votre vie. Choisissez la fiabilité et la qualité durable.",
+    "link": "Explorer les projets"
+  },
+  "portfolio": {
+    "kicker": "Notre travail",
+    "title": "Projets et réalisations",
+    "foresta": "Foresta",
+    "forestaSubtitle": "Projet résidentiel",
+    "panorama": "Panorama",
+    "panoramaSubtitle": "Condominiums",
+    "management": "Gestion",
+    "managementSubtitle": "Services de projet",
+    "achievements": "Réalisations",
+    "achievementsSubtitle": "Portefeuille"
+  },
+  "features": {
+    "kicker": "Pourquoi nous choisir",
+    "title": "Soutien personnalisé",
+    "intro": "Construction Dominic Cyr Inc. est une entreprise familiale dynamique avec plus de 30 ans d'expérience dans la construction résidentielle. Nous sommes là pour vous soutenir dans la réalisation de vos idées et de vos projets avec un service personnalisé et professionnel basé sur la transparence.",
+    "feature1": "Passionné et professionnel",
+    "feature2": "Approche créative",
+    "feature3": "Souci du détail",
+    "feature4": "Pratiques écologiques",
+    "feature5": "Normes d'excellence",
+    "feature6": "Service après-vente"
+  },
+  "contact": {
+    "kicker": "Contactez-nous",
+    "title": "Construisons ensemble votre maison de rêve",
+    "description": "Votre maison est l'un des investissements les plus importants que vous ferez jamais. Choisissez un partenaire de confiance avec Construction Dominic Cyr Inc.",
+    "button": "Contactez-nous"
+  },
   "nav": {
-    "projects": "Projets résidentiels",
-    "renovation": "Rénovation",
-    "projectManagement": "Gestion de projet",
-    "realisations": "Réalisations",
-    "signIn": "Se connecter",
-    "getStarted": "Commencer"
+    "home": "Accueil",
+    "projects": "Projets",
+    "realizations": "Réalisations",
+    "renovations": "Rénovations",
+    "contact": "Contact"
   },
   "footer": {
-    "companyName": "Les Constructions Dominic Cyr Inc.",
-    "address": "155 rue Bourgeois",
-    "city": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
-    "phone": "Téléphone : 514-123-4567",
-    "email": "Courriel : constructions.dcyr@gmail.com",
-    "rbq": "Régie du bâtiment du Québec",
-    "rbqLicense": "No licence : 8356-0169-03",
-    "rbqWebsite": "rbq.gouv.qc.ca",
-    "gcr": "Garantie de construction résidentielle",
-    "gcrAccreditation": "No accréditation : 11084",
-    "gcrWebsite": "garantiegcr.com",
-    "contactTitle": "Contact",
-    "contactName": "Isabelle Misiazeck",
-    "contactPhone": "514-123-4567",
-    "contactEmail": "isabelle.misiazeck@foresta.ca",
-    "hoursTitle": "Heures d'ouverture",
-    "hoursWeekdays": "Lundi au mercredi : 13 h à 19 h",
-    "hoursWeekend": "Samedi et dimanche : 11 h à 17 h",
-    "officeTitle": "Bureau",
-    "officeAddress1": "104 rue du Boisé",
-    "officeAddress2": "St-Alphonse de Granby",
-    "officeAddress3": "Granby, QC J2J 2X4",
-    "copyright": "© 2025 Les Constructions Dominic Cyr. Tous droits réservés."
-  },
-  "hero": {
-    "alt": "Construction résidentielle"
-  },
-  "accompaniment": {
-    "title": "UN ACCOMPAGNEMENT SUR MESURE",
-    "subtitle": "Une expérience conviviale",
-    "intro": "Les Constructions Dominic Cyr Inc. est une entreprise familiale et dynamique qui compte plus de 30 ans d'expérience dans le domaine de la construction résidentielle. Nous sommes là pour vous accompagner dans la réalisation de vos idées et de vos projets, en assurant un service personnalisé et professionnel misant sur la transparence.",
-    "values": {
-      "passionate": "Passionné et professionnel",
-      "creative": "Approche créative",
-      "detail": "Souci du détail",
-      "eco": "Pratiques écoresponsables",
-      "excellence": "Critère d'excellence",
-      "afterSale": "Service après-vente"
-    }
-  },
+    "company": "Construction Dominic Cyr Inc.",
+    "copyright": "© 2025 Construction Dominic Cyr. Tous droits réservés."
+  }
+}
   "projects": {
     "foresta": {
       "title": "FORESTA",

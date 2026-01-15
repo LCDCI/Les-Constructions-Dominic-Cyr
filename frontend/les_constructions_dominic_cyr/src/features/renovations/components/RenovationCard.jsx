@@ -12,6 +12,7 @@ const RenovationCard = ({
   afterImageIdentifier,
   description,
   resolveAssetUrl,
+  showTitle,
 }) => {
   const { t, isLoading } = usePageTranslations('renovations');
 
@@ -39,18 +40,22 @@ const RenovationCard = ({
     );
   }
 
+  const noMedia = mediaItems.length === 0;
+
   return (
     <div className="renovation-card" data-testid="renovation-card">
-      <div className="renovation-card__content">
+      <div className={`renovation-card__content${noMedia ? ' no-media' : ''}`}>
         <div className="project-card__body renovation-card__text">
-          <h3 className="renovation-card__title">
-            {t('renovationCard.labels.cardType', 'Rénovation')}
-          </h3>
+          {showTitle && (
+            <h3 className="renovation-card__title">
+              {t('renovationCard.labels.cardType', 'Renovation')}
+            </h3>
+          )}
           <p className="project-card__description renovation-card__description">
             {description ||
               t(
                 'renovationCard.labels.descriptionFallback',
-                'Aucune description disponible'
+                'No description available'
               )}
           </p>
         </div>
@@ -60,7 +65,7 @@ const RenovationCard = ({
             className="project-card__media-grid renovation-card__media-grid"
             aria-label={t(
               'renovationCard.media.sectionLabel',
-              'Images de la rénovation'
+              'Renovation images'
             )}
           >
             {mediaItems.map(({ slot, src, label }) => (
@@ -89,6 +94,7 @@ RenovationCard.propTypes = {
   afterImageIdentifier: PropTypes.string,
   description: PropTypes.string,
   resolveAssetUrl: PropTypes.func,
+  showTitle: PropTypes.bool,
 };
 
 RenovationCard.defaultProps = {
@@ -96,6 +102,7 @@ RenovationCard.defaultProps = {
   afterImageIdentifier: '',
   description: '',
   resolveAssetUrl: identityAssetResolver,
+  showTitle: true,
 };
 
 export default RenovationCard;

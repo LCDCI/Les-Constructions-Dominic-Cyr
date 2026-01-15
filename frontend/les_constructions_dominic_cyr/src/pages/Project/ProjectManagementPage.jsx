@@ -10,14 +10,10 @@ export default function ProjectManagementPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Image UUIDs from MinIO file service
   const PM_IMAGE_IDS = {
-    professionals: '36b7e01d-f6a2-4c65-93e6-ce768806bed0',
-    floorPlan: '24fd5054-1739-464a-9494-220be7718775',
-    tools: 'b25db4c6-0161-4057-bd55-d3a35ab330fb',
-    gallery1: 'e4b5281c-68eb-4c6d-b1cb-c534b725c737',
-    gallery2: '5907733d-8774-4a3e-bab2-c4e9cdc48677',
-    gallery3: '7e224338-adaf-4923-804c-0e803944a9af',
+    professionals: '1659ff85-b160-4111-b419-84834eb4375a',
+    floorPlan: '48f50cea-f368-41d6-91c3-ae55157bd868',
+    tools: 'bb6dd250-ed32-4041-8b4e-020e2ef45e2f'
   };
 
   const filesServiceUrl =
@@ -42,6 +38,12 @@ export default function ProjectManagementPage() {
     }
     return value || defaultValue;
   };
+
+  const pillars = [
+    getContent('intro.heading.line1', 'Planning'),
+    getContent('intro.heading.line2', 'Organization'),
+    getContent('intro.heading.line3', 'Site follow-up'),
+  ];
 
   useEffect(() => {
     const loadContent = async () => {
@@ -81,9 +83,7 @@ export default function ProjectManagementPage() {
       <section className="pm-hero-banner">
         <div className="pm-hero-content">
           <h1 className="pm-hero-title">
-            {getContent('hero.line1', 'LA GESTION DE PROJET,')}
-            <br />
-            {getContent('hero.line2', "POUR UNE TRANQUILLITÉ D'ESPRIT")}
+            {`${getContent('hero.line1', 'PROJECT MANAGEMENT,')} ${getContent('hero.line2', 'FOR PEACE OF MIND')}`}
           </h1>
         </div>
       </section>
@@ -95,16 +95,19 @@ export default function ProjectManagementPage() {
             {/* Heading Section */}
             <div className="pm-heading-section">
               <h2 className="pm-main-heading">
-                {getContent('intro.heading.line1', 'PLANIFICATION')}
-                <br />
-                {getContent('intro.heading.line2', 'ORGANISATION')}
-                <br />
-                {getContent('intro.heading.line3', 'SUIVI DES TRAVAUX')}
+                {getContent('intro.heading.title', 'Planning, organization, and site follow-up without the friction')}
               </h2>
-              <p className="pm-tagline">{getContent('intro.tagline', "On s'en occupe !")}</p>
+              <div className="pm-pill-row">
+                {pillars.map((label, index) => (
+                  <span key={index} className="pm-pill">
+                    {label}
+                  </span>
+                ))}
+              </div>
+              <p className="pm-tagline">{getContent('intro.tagline', 'We handle it for you!')}</p>
             </div>
 
-            {/* Image Grid - Three Images in Better Arrangement */}
+         
             <div className="pm-images-grid">
               <div className="pm-image-card">
                 <div className="pm-image-container">
@@ -140,7 +143,7 @@ export default function ProjectManagementPage() {
               <p>
                 {getContent(
                   'intro.paragraph',
-                  "Vous êtes propriétaire d'un terrain et vous souhaitez confier la gestion de projet à un entrepreneur qualifié? Les Constructions Dominic Cyr Inc. est là pour vous, que ce soit pour certaines étapes spécifiques de la construction ou pour un projet clé en main."
+                  'You own land and want to entrust project management to a qualified builder? Les Constructions Dominic Cyr Inc. is here for you, whether for specific construction stages or a turnkey project.'
                 )}
               </p>
             </div>
@@ -154,18 +157,17 @@ export default function ProjectManagementPage() {
           <h2 className="pm-advantages-heading">
             {getContent(
               'advantages.heading',
-              'Il y a de nombreux avantages à nous confier la gestion de votre projet :'
+              'Our project management strengths'
             )}
           </h2>
 
           <ul className="pm-advantages-list">
-            <li>{getContent('advantages.item1', 'Service conseil')}</li>
-            <li>{getContent('advantages.item2', 'Conformité avec les règles du bâtiment')}</li>
-            <li>{getContent('advantages.item3', 'Planification avec tous les intervenants')}</li>
-            <li>{getContent('advantages.item4', "Établissement de l'échéancier des travaux")}</li>
-            <li>{getContent('advantages.item5', 'Contrôle des coûts')}</li>
-            <li>{getContent('advantages.item6', 'Suivi rigoureux')}</li>
-            <li>{getContent('advantages.item7', 'Assurance conformité')}</li>
+            <li>{getContent('advantages.item1', 'Advisory services')}</li>
+            <li>{getContent('advantages.item2', 'Compliance with building codes')}</li>
+            <li>{getContent('advantages.item3', 'Planning with all stakeholders')}</li>
+            <li>{getContent('advantages.item4', 'Work schedule development')}</li>
+            <li>{getContent('advantages.item5', 'Cost control')}</li>
+            <li>{getContent('advantages.item6', 'Rigorous follow-up')}</li>
           </ul>
 
           {/* Separator Lines */}
@@ -178,62 +180,15 @@ export default function ProjectManagementPage() {
           <p className="pm-pricing-text">
             {getContent(
               'advantages.pricing',
-              "Selon l'ampleur et la complexité du projet, la tarification pourrait être à coût fixe ou à prix majoré. Contactez-nous pour en discuter."
+              'Depending on project scope and complexity, pricing may be fixed-fee or cost-plus. Contact us to discuss.'
             )}
           </p>
 
           {/* Contact Link */}
           <div className="pm-contact-link-wrapper">
             <Link to="/contact" className="pm-contact-link">
-              {getContent('advantages.contactLink', 'Contactez-nous')}
+              {getContent('advantages.contactLink', 'Contact us')}
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery Section */}
-      <section className="pm-gallery-section">
-        <div className="pm-gallery-container">
-          <h2 className="pm-gallery-heading">
-            {getContent(
-              'gallery.heading',
-              'Quelques réalisations en gestion de projet par Les Constructions Dominic Cyr Inc.'
-            )}
-          </h2>
-
-          <div className="pm-gallery-grid">
-            <div className="pm-gallery-card">
-              <div className="pm-gallery-image-container">
-                <img
-                  src={getImageUrl(PM_IMAGE_IDS.gallery1)}
-                  alt={getContent('gallery.image1.alt', 'Résidence')}
-                  className="pm-gallery-image"
-                />
-              </div>
-              <p className="pm-gallery-caption">{getContent('gallery.caption', 'Résidence')}</p>
-            </div>
-
-            <div className="pm-gallery-card">
-              <div className="pm-gallery-image-container">
-                <img
-                  src={getImageUrl(PM_IMAGE_IDS.gallery2)}
-                  alt={getContent('gallery.image2.alt', 'Résidence')}
-                  className="pm-gallery-image"
-                />
-              </div>
-              <p className="pm-gallery-caption">{getContent('gallery.caption', 'Résidence')}</p>
-            </div>
-
-            <div className="pm-gallery-card">
-              <div className="pm-gallery-image-container">
-                <img
-                  src={getImageUrl(PM_IMAGE_IDS.gallery3)}
-                  alt={getContent('gallery.image3.alt', 'Résidence')}
-                  className="pm-gallery-image"
-                />
-              </div>
-              <p className="pm-gallery-caption">{getContent('gallery.caption', 'Résidence')}</p>
-            </div>
           </div>
         </div>
       </section>
