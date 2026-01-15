@@ -1,0 +1,8 @@
+.report-generator { max-width: 600px; }
+.alert { padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; }
+.alert-error { background-color: #fee; color: #c00; border: 1px solid #fcc; }
+.alert-success { background-color: #efe; color: #060; border: 1px solid #cfc; }
+.report-form { display: flex; flex-direction: column; gap: 1.5rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.btn-primary { background-color: #3498db; color: white; padding: 0.75rem; border: none; border-radius: 4px; cursor: pointer; }

@@ -1,0 +1,7 @@
+.reports-page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+.page-header h1 { font-size: 2rem; color: #2c3e50; margin-bottom: 0.5rem; }
+.page-header p { color: #7f8c8d; font-size: 1rem; }
+.tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 2px solid #ecf0f1; }
+.tab { padding: 1rem 2rem; background: none; border: none; cursor: pointer; color: #7f8c8d; }
+.tab.active { color: #3498db; border-bottom: 3px solid #3498db; }
+.tab-content { background: white; border-radius: 8px; padding: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }

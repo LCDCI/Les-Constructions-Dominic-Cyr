@@ -43,6 +43,7 @@ func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 	r.GET("/projects/:projectId/files", fc.listProjectFiles)
 	r.GET("/projects/:projectId/documents", fc.listProjectDocuments)
 	r.POST("/admin/reconcile/:projectId", fc.reconcile)
+	r.POST("/upload", fc.UploadReport)
 }
 
 func (fc *FileController) upload(c *gin.Context) {
@@ -235,4 +236,53 @@ func (fc *FileController) reconcile(c *gin.Context) {
 		"filesReconciled": synced,
 		"projectId":       projectID,
 	})
+}
+
+func (fc *FileController) UploadReport(c *gin.Context) {
+    file, err := c.FormFile("file")
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "File is required"})
+        return
+    }
+
+    objectKey := c.PostForm("objectKey")
+    contentType := c.PostForm("contentType")
+    if contentType == "" {
+        contentType = file.Header.Get("Content-Type")
+    }
+
+    src, err := file.Open()
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to open file"})
+        return
+    }
+    defer src.Close()
+
+    fileBytes, err := io.ReadAll(src)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file content"})
+        return
+    }
+
+    input := domain.FileUploadInput{
+        FileName:    objectKey,
+        ContentType: contentType,
+        Category:    domain.CategoryDocument,
+        ProjectID:   "SYSTEM_REPORTS", 
+        UploadedBy:  "REPORT_SERVICE",
+        Data:        fileBytes,
+    }
+
+    metadata, err := fc.s.Upload(c.Request.Context(), input)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save report to storage"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{
+        "objectKey":    metadata.ID,
+        "contentType":  contentType,
+        "size":         len(fileBytes),
+        "originalName": file.Filename,
+    })
 }
