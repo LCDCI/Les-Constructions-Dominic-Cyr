@@ -209,12 +209,20 @@ const ProjectsPage = () => {
                         View this project
                       </a>
                       {canEdit && (
-                        <button
-                          onClick={() => handleEditProject(project)}
-                          className="admin-project-button admin-edit-button"
-                        >
-                          Edit
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleEditProject(project)}
+                            className="admin-project-button admin-edit-button"
+                          >
+                            Edit
+                          </button>
+                          <a
+                            href={`/projects/${project.projectIdentifier}/team-management`}
+                            className="admin-project-button admin-team-button"
+                          >
+                            Manage Team
+                          </a>
+                        </>
                       )}
                     </div>
                   </div>
