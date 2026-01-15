@@ -3,6 +3,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectActivityLogResponseModel;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,4 +21,9 @@ public interface ProjectService {
     List<ProjectResponseModel> filterProjects(ProjectStatus status, LocalDate startDate, LocalDate endDate, String customerId);
     List<ProjectResponseModel> filterProjects(ProjectStatus status, LocalDate startDate, LocalDate endDate, String customerId, boolean includeArchived);
 
+    ProjectResponseModel assignContractorToProject(String projectIdentifier, String contractorId, String requestingAuth0UserId);
+    ProjectResponseModel removeContractorFromProject(String projectIdentifier, String requestingAuth0UserId);
+    ProjectResponseModel assignSalespersonToProject(String projectIdentifier, String salespersonId, String requestingAuth0UserId);
+    ProjectResponseModel removeSalespersonFromProject(String projectIdentifier, String requestingAuth0UserId);
+    List<ProjectActivityLogResponseModel> getProjectActivityLog(String projectIdentifier);
 }
