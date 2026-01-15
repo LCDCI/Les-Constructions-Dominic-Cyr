@@ -19,6 +19,10 @@ public interface UsersRepository extends JpaRepository<Users, UserIdentifier> {
     List<Users> findByUserStatusIn(List<UserStatus> statuses);
 
     default Optional<Users> findByUserIdentifier(String userIdentifier) {
-        return findById(UserIdentifier.fromString(userIdentifier));
+        try {
+            return findById(UserIdentifier.fromString(userIdentifier));
+        } catch (IllegalArgumentException ex) {
+            return Optional.empty();
+        }
     }
 }
