@@ -27,6 +27,8 @@ public class ProjectMapper {
         // Set default empty string if imageIdentifier is null to satisfy NOT NULL constraint
         project.setImageIdentifier(requestModel.getImageIdentifier() != null ? requestModel.getImageIdentifier() : "");
         project.setCustomerId(requestModel.getCustomerId());
+        project.setContractorIds(requestModel.getContractorIds() != null ? new ArrayList<>(requestModel.getContractorIds()) : new ArrayList<>());
+        project.setSalespersonIds(requestModel.getSalespersonIds() != null ? new ArrayList<>(requestModel.getSalespersonIds()) : new ArrayList<>());
         if (requestModel.getLotIdentifiers() != null) {
             project.setLotIdentifiers(new ArrayList<>(requestModel.getLotIdentifiers()));
         } else {
@@ -52,6 +54,8 @@ public class ProjectMapper {
                 .buyerName(project.getBuyerName())
                 .imageIdentifier(project.getImageIdentifier())
                 .customerId(project.getCustomerId())
+                .contractorIds(project.getContractorIds() != null ? new ArrayList<>(project.getContractorIds()) : new ArrayList<>())
+                .salespersonIds(project.getSalespersonIds() != null ? new ArrayList<>(project.getSalespersonIds()) : new ArrayList<>())
                 .lotIdentifiers(project.getLotIdentifiers() != null ? new ArrayList<>(project.getLotIdentifiers()) : new ArrayList<>())
                 .progressPercentage(project.getProgressPercentage())
                 .location(project.getLocation())
@@ -94,6 +98,12 @@ public class ProjectMapper {
         }
         if (requestModel.getCustomerId() != null) {
             project.setCustomerId(requestModel.getCustomerId());
+        }
+        if (requestModel.getContractorIds() != null) {
+            project.setContractorIds(new ArrayList<>(requestModel.getContractorIds()));
+        }
+        if (requestModel.getSalespersonIds() != null) {
+            project.setSalespersonIds(new ArrayList<>(requestModel.getSalespersonIds()));
         }
         if (requestModel.getLotIdentifiers() != null) {
             project.setLotIdentifiers(new ArrayList<>(requestModel.getLotIdentifiers()));

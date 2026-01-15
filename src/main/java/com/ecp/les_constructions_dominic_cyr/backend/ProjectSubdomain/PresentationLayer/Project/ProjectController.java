@@ -3,6 +3,8 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Project.ProjectService;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,5 +63,51 @@ public class ProjectController {
     public ResponseEntity<Void> deleteProject(@PathVariable String projectIdentifier) {
         projectService.deleteProject(projectIdentifier);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{projectIdentifier}/contractor")
+    public ResponseEntity<ProjectResponseModel> assignContractor(
+            @PathVariable String projectIdentifier,
+            @RequestParam String contractorId,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        ProjectResponseModel updatedProject = projectService.assignContractorToProject(projectIdentifier, contractorId, jwt.getSubject());
+        return ResponseEntity.ok(updatedProject);
+    }
+
+    @DeleteMapping("/{projectIdentifier}/contractor")
+    public ResponseEntity<ProjectResponseModel> removeContractor(
+            @PathVariable String projectIdentifier,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        ProjectResponseModel updatedProject = projectService.removeContractorFromProject(projectIdentifier, jwt.getSubject());
+        return ResponseEntity.ok(updatedProject);
+    }
+
+    @PutMapping("/{projectIdentifier}/salesperson")
+    public ResponseEntity<ProjectResponseModel> assignSalesperson(
+            @PathVariable String projectIdentifier,
+            @RequestParam String salespersonId,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        ProjectResponseModel updatedProject = projectService.assignSalespersonToProject(projectIdentifier, salespersonId, jwt.getSubject());
+        return ResponseEntity.ok(updatedProject);
+    }
+
+    @DeleteMapping("/{projectIdentifier}/salesperson")
+    public ResponseEntity<ProjectResponseModel> removeSalesperson(
+            @PathVariable String projectIdentifier,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        ProjectResponseModel updatedProject = projectService.removeSalespersonFromProject(projectIdentifier, jwt.getSubject());
+        return ResponseEntity.ok(updatedProject);
+    }
+
+    @GetMapping("/{projectIdentifier}/activity-log")
+    public ResponseEntity<List<ProjectActivityLogResponseModel>> getProjectActivityLog(
+            @PathVariable String projectIdentifier
+    ) {
+        List<ProjectActivityLogResponseModel> activityLog = projectService.getProjectActivityLog(projectIdentifier);
+        return ResponseEntity.ok(activityLog);
     }
 }

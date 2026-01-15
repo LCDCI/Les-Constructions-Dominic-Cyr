@@ -4,12 +4,17 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectActivityLog;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectActivityLogRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ProjectMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidProjectDataException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.ProjectNotFoundException;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectActivityLogResponseModel;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +36,15 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
     private final LotRepository lotRepository;
     private final FileServiceClient fileServiceClient;
+    private final ProjectActivityLogRepository activityLogRepository;
+    private final UsersRepository usersRepository;
+
+    private String getFullName(Users user) {
+        if (user == null) return "";
+        String first = user.getFirstName() == null ? "" : user.getFirstName();
+        String last = user.getLastName() == null ? "" : user.getLastName();
+        return (first + " " + last).trim();
+    }
 
     @Override
     public List<ProjectResponseModel> getAllProjects() {
@@ -232,5 +247,199 @@ public class ProjectServiceImpl implements ProjectService {
         if (!exists) {
             throw new InvalidProjectDataException("Image not found in files service with identifier: " + imageIdentifier);
         }
+    }
+
+    @Override
+    @Transactional
+    public ProjectResponseModel assignContractorToProject(String projectIdentifier, String contractorId, String requestingAuth0UserId) {
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        if (contractorId == null || contractorId.trim().isEmpty()) {
+            throw new InvalidProjectDataException("Contractor ID cannot be null or empty");
+        }
+        
+        Users contractor = usersRepository.findByUserIdentifier(contractorId)
+                .orElseThrow(() -> new NotFoundException("Contractor not found with identifier: " + contractorId));
+        
+        List<String> contractorIds = new ArrayList<>(project.getContractorIds());
+        if (!contractorIds.contains(contractorId)) {
+            contractorIds.add(contractorId);
+        }
+        project.setContractorIds(contractorIds);
+        Project updatedProject = projectRepository.save(project);
+        
+        // Resolve who made the change
+        String changerName = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+            .map(this::getFullName)
+            .orElse("Unknown");
+
+        // Log the activity
+        ProjectActivityLog activityLog = new ProjectActivityLog();
+        activityLog.setProjectIdentifier(projectIdentifier);
+        activityLog.setActivityType(ActivityType.CONTRACTOR_ASSIGNED);
+        activityLog.setUserIdentifier(contractorId);
+        activityLog.setUserName(getFullName(contractor));
+        activityLog.setChangedBy(requestingAuth0UserId);
+        activityLog.setChangedByName(changerName);
+        activityLog.setTimestamp(LocalDateTime.now());
+        activityLog.setDescription(getFullName(contractor) + " was assigned as contractor");
+        activityLogRepository.save(activityLog);
+        
+        return projectMapper.entityToResponseModel(updatedProject);
+    }
+
+    @Override
+    @Transactional
+    public ProjectResponseModel removeContractorFromProject(String projectIdentifier, String requestingAuth0UserId) {
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        // Get the last contractor ID from the list (for backward compatibility with single removal)
+        String contractorId = null;
+        if (!project.getContractorIds().isEmpty()) {
+            contractorId = project.getContractorIds().get(project.getContractorIds().size() - 1);
+        }
+        String contractorName = "Unknown";
+        
+        if (contractorId != null) {
+            Users contractor = usersRepository.findByUserIdentifier(contractorId).orElse(null);
+            if (contractor != null) {
+                contractorName = getFullName(contractor);
+            }
+            
+            List<String> contractorIds = new ArrayList<>(project.getContractorIds());
+            contractorIds.remove(contractorId);
+            project.setContractorIds(contractorIds);
+        }
+        
+        Project updatedProject = projectRepository.save(project);
+        
+        // Resolve who made the change
+        String changerName = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+            .map(this::getFullName)
+                .orElse("Unknown");
+
+        // Log the activity
+        if (contractorId != null) {
+            ProjectActivityLog activityLog = new ProjectActivityLog();
+            activityLog.setProjectIdentifier(projectIdentifier);
+            activityLog.setActivityType(ActivityType.CONTRACTOR_REMOVED);
+            activityLog.setUserIdentifier(contractorId);
+            activityLog.setUserName(contractorName);
+            activityLog.setChangedBy(requestingAuth0UserId);
+            activityLog.setChangedByName(changerName);
+            activityLog.setTimestamp(LocalDateTime.now());
+            activityLog.setDescription(contractorName + " was removed as contractor");
+            activityLogRepository.save(activityLog);
+        }
+        
+        return projectMapper.entityToResponseModel(updatedProject);
+    }
+
+    @Override
+    @Transactional
+    public ProjectResponseModel assignSalespersonToProject(String projectIdentifier, String salespersonId, String requestingAuth0UserId) {
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        if (salespersonId == null || salespersonId.trim().isEmpty()) {
+            throw new InvalidProjectDataException("Salesperson ID cannot be null or empty");
+        }
+        
+        Users salesperson = usersRepository.findByUserIdentifier(salespersonId)
+                .orElseThrow(() -> new NotFoundException("Salesperson not found with identifier: " + salespersonId));
+        
+        List<String> salespersonIds = new ArrayList<>(project.getSalespersonIds());
+        if (!salespersonIds.contains(salespersonId)) {
+            salespersonIds.add(salespersonId);
+        }
+        project.setSalespersonIds(salespersonIds);
+        Project updatedProject = projectRepository.save(project);
+        
+        // Resolve who made the change
+        String changerName = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+            .map(this::getFullName)
+            .orElse("Unknown");
+
+        // Log the activity
+        ProjectActivityLog activityLog = new ProjectActivityLog();
+        activityLog.setProjectIdentifier(projectIdentifier);
+        activityLog.setActivityType(ActivityType.SALESPERSON_ASSIGNED);
+        activityLog.setUserIdentifier(salespersonId);
+        activityLog.setUserName(getFullName(salesperson));
+        activityLog.setChangedBy(requestingAuth0UserId);
+        activityLog.setChangedByName(changerName);
+        activityLog.setTimestamp(LocalDateTime.now());
+        activityLog.setDescription(getFullName(salesperson) + " was assigned as salesperson");
+        activityLogRepository.save(activityLog);
+        
+        return projectMapper.entityToResponseModel(updatedProject);
+    }
+
+    @Override
+    @Transactional
+    public ProjectResponseModel removeSalespersonFromProject(String projectIdentifier, String requestingAuth0UserId) {
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        // Get the last salesperson ID from the list (for backward compatibility with single removal)
+        String salespersonId = null;
+        if (!project.getSalespersonIds().isEmpty()) {
+            salespersonId = project.getSalespersonIds().get(project.getSalespersonIds().size() - 1);
+        }
+        String salespersonName = "Unknown";
+        
+        if (salespersonId != null) {
+            Users salesperson = usersRepository.findByUserIdentifier(salespersonId).orElse(null);
+            if (salesperson != null) {
+                salespersonName = getFullName(salesperson);
+            }
+            
+            List<String> salespersonIds = new ArrayList<>(project.getSalespersonIds());
+            salespersonIds.remove(salespersonId);
+            project.setSalespersonIds(salespersonIds);
+        }
+        
+        Project updatedProject = projectRepository.save(project);
+        
+        // Resolve who made the change
+        String changerName = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+            .map(this::getFullName)
+                .orElse("Unknown");
+
+        // Log the activity
+        if (salespersonId != null) {
+            ProjectActivityLog activityLog = new ProjectActivityLog();
+            activityLog.setProjectIdentifier(projectIdentifier);
+            activityLog.setActivityType(ActivityType.SALESPERSON_REMOVED);
+            activityLog.setUserIdentifier(salespersonId);
+            activityLog.setUserName(salespersonName);
+            activityLog.setChangedBy(requestingAuth0UserId);
+            activityLog.setChangedByName(changerName);
+            activityLog.setTimestamp(LocalDateTime.now());
+            activityLog.setDescription(salespersonName + " was removed as salesperson");
+            activityLogRepository.save(activityLog);
+        }
+        
+        return projectMapper.entityToResponseModel(updatedProject);
+    }
+
+    @Override
+    public List<ProjectActivityLogResponseModel> getProjectActivityLog(String projectIdentifier) {
+        return activityLogRepository.findByProjectIdentifierOrderByTimestampDesc(projectIdentifier)
+                .stream()
+                .map(log -> new ProjectActivityLogResponseModel(
+                    log.getId(),
+                    log.getProjectIdentifier(),
+                    log.getActivityType().name(),
+                    log.getUserIdentifier(),
+                    log.getUserName(),
+                    log.getChangedBy(),
+                    log.getChangedByName(),
+                    log.getTimestamp(),
+                    log.getDescription()
+                ))
+                .collect(Collectors.toList());
     }
 }
