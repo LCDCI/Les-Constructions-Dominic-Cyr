@@ -5,12 +5,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AssignedUsersDTO {
-    private UserSummaryDTO contractor;
-    private UserSummaryDTO salesperson;
+    private List<UserSummaryDTO> contractors;
+    private List<UserSummaryDTO> salespersons;
     private UserSummaryDTO customer;
 }

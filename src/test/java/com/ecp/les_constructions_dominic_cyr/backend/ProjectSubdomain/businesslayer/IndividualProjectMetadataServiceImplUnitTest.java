@@ -80,8 +80,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         testProject.setImageIdentifier("main-img-001");
         testProject.setLocation("Montreal, QC");
         testProject.setProgressPercentage(50);
-        testProject.setContractorId(contractorUUID.toString());
-        testProject.setSalespersonId(salespersonUUID.toString());
+        testProject.setContractorIds(new ArrayList<>(Arrays.asList(contractorUUID.toString())));
+        testProject.setSalespersonIds(new ArrayList<>(Arrays.asList(salespersonUUID.toString())));
         testProject.setCustomerId(customerUUID.toString());
         testProject.setLotIdentifiers(new ArrayList<>(Arrays.asList("lot-001")));
 
@@ -168,16 +168,28 @@ public class IndividualProjectMetadataServiceImplUnitTest {
 
         // Verify assigned users
         assertNotNull(result.getAssignedUsers());
-        assertNotNull(result.getAssignedUsers().getContractor());
-        assertEquals("John", result.getAssignedUsers().getContractor().getFirstName());
-        assertEquals("Contractor", result.getAssignedUsers().getContractor().getLastName());
-        assertEquals("john.contractor@example.com", result.getAssignedUsers().getContractor().getPrimaryEmail());
-        assertEquals("555-1234", result.getAssignedUsers().getContractor().getPhone());
-        assertEquals("CONTRACTOR", result.getAssignedUsers().getContractor().getRole());
+        assertNotNull(result.getAssignedUsers().getContractors());
+        assertEquals(1, result.getAssignedUsers().getContractors().size());
+        assertEquals("John", result.getAssignedUsers().getContractors().get(0).getFirstName());
+        assertEquals("Contractor", result.getAssignedUsers().getContractors().get(0).getLastName());
+        assertEquals("john.contractor@example.com", result.getAssignedUsers().getContractors().get(0).getPrimaryEmail());
+        assertEquals("555-1234", result.getAssignedUsers().getContractors().get(0).getPhone());
+        assertEquals("CONTRACTOR", result.getAssignedUsers().getContractors().get(0).getRole());
 
-        assertNotNull(result.getAssignedUsers().getSalesperson());
-        assertEquals("Jane", result.getAssignedUsers().getSalesperson().getFirstName());
-        assertEquals("Sales", result.getAssignedUsers().getSalesperson().getLastName());
+        assertNotNull(result.getAssignedUsers().getSalespersons());
+        assertEquals(1, result.getAssignedUsers().getSalespersons().size());
+        assertEquals("Jane", result.getAssignedUsers().getSalespersons().get(0).getFirstName());
+        assertEquals("Sales", result.getAssignedUsers().getSalespersons().get(0).getLastName());
+        testProject.setContractorIds(new ArrayList<>());
+        testProject.setSalespersonIds(new ArrayList<>());
+        testProject.setContractorIds(new ArrayList<>());
+        testProject.setSalespersonIds(new ArrayList<>());
+        testProject.setContractorIds(new ArrayList<>());
+        testProject.setSalespersonIds(new ArrayList<>());
+        testProject.setContractorIds(new ArrayList<>(Arrays.asList("invalid-uuid")));
+        testProject.setSalespersonIds(new ArrayList<>());
+        testProject.setContractorIds(new ArrayList<>(Arrays.asList(contractorUUID.toString())));
+        testProject.setSalespersonIds(new ArrayList<>(Arrays.asList("invalid-uuid")));
 
         assertNotNull(result.getAssignedUsers().getCustomer());
         assertEquals("Bob", result.getAssignedUsers().getCustomer().getFirstName());
@@ -210,8 +222,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     @Test
     void getProjectMetadata_WhenProjectHasNoAssignedUsers_ReturnsNullUsers() {
         // Arrange
-        testProject.setContractorId(null);
-        testProject.setSalespersonId(null);
+        testProject.setContractorIds(new ArrayList<>());
+        testProject.setSalespersonIds(new ArrayList<>());
         testProject.setCustomerId(null);
 
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
@@ -224,8 +236,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         // Assert
         assertNotNull(result);
         assertNotNull(result.getAssignedUsers());
-        assertNull(result.getAssignedUsers().getContractor());
-        assertNull(result.getAssignedUsers().getSalesperson());
+        assertTrue(result.getAssignedUsers().getContractors().isEmpty());
+        assertTrue(result.getAssignedUsers().getSalespersons().isEmpty());
         assertNull(result.getAssignedUsers().getCustomer());
 
         verify(usersRepository, never()).findById(any());
@@ -246,8 +258,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         // Assert
         assertNotNull(result);
         assertNotNull(result.getAssignedUsers());
-        assertNull(result.getAssignedUsers().getContractor());
-        assertNull(result.getAssignedUsers().getSalesperson());
+        assertTrue(result.getAssignedUsers().getContractors().isEmpty());
+        assertTrue(result.getAssignedUsers().getSalespersons().isEmpty());
         assertNull(result.getAssignedUsers().getCustomer());
 
         verify(usersRepository, times(3)).findById(any(UserIdentifier.class));
@@ -421,7 +433,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     @Test
     void getProjectMetadata_WhenOnlyContractorAssigned_ReturnsOnlyContractor() {
         // Arrange
-        testProject.setSalespersonId(null);
+        testProject.setSalespersonIds(new ArrayList<>());
         testProject.setCustomerId(null);
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
@@ -433,8 +445,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
 
         // Assert
         assertNotNull(result);
-        assertNotNull(result.getAssignedUsers().getContractor());
-        assertNull(result.getAssignedUsers().getSalesperson());
+        assertFalse(result.getAssignedUsers().getContractors().isEmpty());
+        assertTrue(result.getAssignedUsers().getSalespersons().isEmpty());
         assertNull(result.getAssignedUsers().getCustomer());
 
         verify(usersRepository, times(1)).findById(any(UserIdentifier.class));
@@ -443,7 +455,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     @Test
     void getProjectMetadata_WhenOnlySalespersonAssigned_ReturnsOnlySalesperson() {
         // Arrange
-        testProject.setContractorId(null);
+        testProject.setContractorIds(new ArrayList<>());
         testProject.setCustomerId(null);
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
@@ -455,8 +467,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
 
         // Assert
         assertNotNull(result);
-        assertNull(result.getAssignedUsers().getContractor());
-        assertNotNull(result.getAssignedUsers().getSalesperson());
+        assertTrue(result.getAssignedUsers().getContractors().isEmpty());
+        assertFalse(result.getAssignedUsers().getSalespersons().isEmpty());
         assertNull(result.getAssignedUsers().getCustomer());
 
         verify(usersRepository, times(1)).findById(any(UserIdentifier.class));
@@ -465,8 +477,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     @Test
     void getProjectMetadata_WhenOnlyCustomerAssigned_ReturnsOnlyCustomer() {
         // Arrange
-        testProject.setContractorId(null);
-        testProject.setSalespersonId(null);
+        testProject.setContractorIds(new ArrayList<>());
+        testProject.setSalespersonIds(new ArrayList<>());
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
         when(usersRepository.findById(any(UserIdentifier.class)))
@@ -477,8 +489,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
 
         // Assert
         assertNotNull(result);
-        assertNull(result.getAssignedUsers().getContractor());
-        assertNull(result.getAssignedUsers().getSalesperson());
+        assertTrue(result.getAssignedUsers().getContractors().isEmpty());
+        assertTrue(result.getAssignedUsers().getSalespersons().isEmpty());
         assertNotNull(result.getAssignedUsers().getCustomer());
 
         verify(usersRepository, times(1)).findById(any(UserIdentifier.class));
@@ -487,8 +499,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     @Test
     void getProjectMetadata_WhenInvalidUUIDForUser_ReturnsNullForThatUser() {
         // Arrange
-        testProject.setContractorId("invalid-uuid");
-        testProject.setSalespersonId(null);
+        testProject.setContractorIds(new ArrayList<>(Arrays.asList("invalid-uuid")));
+        testProject.setSalespersonIds(new ArrayList<>());
         testProject.setCustomerId(null);
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
@@ -499,7 +511,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         // Assert
         assertNotNull(result);
         assertNotNull(result.getAssignedUsers());
-        assertNull(result.getAssignedUsers().getContractor());
+        assertTrue(result.getAssignedUsers().getContractors().isEmpty());
 
         verify(usersRepository, never()).findById(any());
     }
@@ -507,8 +519,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     @Test
     void getProjectMetadata_WhenMixOfValidAndInvalidUUIDs_ReturnsOnlyValidUsers() {
         // Arrange
-        testProject.setContractorId(contractorUUID.toString());
-        testProject.setSalespersonId("invalid-uuid");
+        testProject.setContractorIds(new ArrayList<>(Arrays.asList(contractorUUID.toString())));
+        testProject.setSalespersonIds(new ArrayList<>(Arrays.asList("invalid-uuid")));
         testProject.setCustomerId(customerUUID.toString());
 
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
@@ -526,8 +538,8 @@ public class IndividualProjectMetadataServiceImplUnitTest {
 
         // Assert
         assertNotNull(result);
-        assertNotNull(result.getAssignedUsers().getContractor());
-        assertNull(result.getAssignedUsers().getSalesperson());
+        assertFalse(result.getAssignedUsers().getContractors().isEmpty());
+        assertTrue(result.getAssignedUsers().getSalespersons().isEmpty());
         assertNotNull(result.getAssignedUsers().getCustomer());
 
         verify(usersRepository, times(2)).findById(any(UserIdentifier.class));
