@@ -1,13 +1,14 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule;
 
+import java.util.Date;
+
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskPriority;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -24,4 +25,5 @@ public class TaskRequestDTO {
     private Number hoursSpent;
     private Number taskProgress;
     private String assignedToUserId; // User UUID
+    private String scheduleId;
 }

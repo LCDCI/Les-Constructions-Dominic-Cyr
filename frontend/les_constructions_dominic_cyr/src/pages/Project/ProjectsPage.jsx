@@ -269,14 +269,14 @@ const ProjectsPage = () => {
   };
 
   return (
-    <div className="projects-page">
-      <div className="projects-content">
-        <div className="projects-container">
-          <div className="projects-header">
+    <div className="admin-projects-page">
+      <div className="admin-projects-content">
+        <div className="admin-projects-container">
+          <div className="admin-projects-header">
             <h1>Projects</h1>
             {canCreate && (
               <button
-                className="create-project-button"
+                className="admin-create-project-button"
                 onClick={() => setIsCreateOpen(true)}
               >
                 Create New Project
@@ -284,11 +284,11 @@ const ProjectsPage = () => {
             )}
           </div>
 
-          <div className="projects-filter">
-            <div className="search-container">
+          <div className="admin-projects-filter">
+            <div className="admin-search-container">
               <input
                 type="text"
-                className="search-input"
+                className="admin-search-input"
                 placeholder="Search projects by name..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
@@ -367,22 +367,22 @@ const ProjectsPage = () => {
           </div>
 
           {loading && (
-            <div className="projects-loading">
+            <div className="admin-projects-loading">
               <p>Loading projects...</p>
             </div>
           )}
 
           {error && (
-            <div className="projects-error">
+            <div className="admin-projects-error">
               <p>{error}</p>
-              <button onClick={fetchProjects} className="retry-button">
+              <button onClick={fetchProjects} className="admin-retry-button">
                 Retry
               </button>
             </div>
           )}
 
           {!loading && !error && (
-            <div className="projects-grid">
+            <div className="admin-projects-grid">
               {filteredProjects.length > 0 ? (
                 filteredProjects.map(project => (
                   <div 
@@ -393,27 +393,29 @@ const ProjectsPage = () => {
                       <div className="archived-badge">ARCHIVED</div>
                     )}
                     <div className="project-image-container">
+                  <div key={project.projectIdentifier} className="admin-project-card">
+                    <div className="admin-project-image-container">
                       <img
                         src={getImageUrl(project.imageIdentifier)}
                         alt={project.projectName}
-                        className="project-image"
+                        className="admin-project-image"
                       />
                     </div>
-                    <h2 className="project-title">{project.projectName}</h2>
-                    <p className="project-description">
+                    <h2 className="admin-project-title">{project.projectName}</h2>
+                    <p className="admin-project-description">
                       {project.projectDescription}
                     </p>
-                    <div className="project-actions">
+                    <div className="admin-project-actions">
                       <a
                         href={`/projects/${project.projectIdentifier}/metadata`}
-                        className="project-button"
+                        className="admin-project-button"
                       >
                         View this project
                       </a>
                       {canEdit && (
                         <button
                           onClick={() => handleEditProject(project)}
-                          className="project-button edit-button"
+                          className="admin-project-button admin-edit-button"
                         >
                           Edit
                         </button>
@@ -430,7 +432,7 @@ const ProjectsPage = () => {
                   </div>
                 ))
               ) : (
-                <div className="no-results">
+                <div className="admin-no-results">
                   <p>No projects found matching &quot;{searchTerm}&quot;</p>
                 </div>
               )}
