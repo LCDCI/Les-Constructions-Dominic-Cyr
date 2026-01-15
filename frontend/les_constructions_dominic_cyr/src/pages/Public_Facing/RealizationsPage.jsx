@@ -112,8 +112,6 @@ const RealizationsPage = () => {
           </div>
         )}
       </section>
-
-      <Footer />
     </div>
   );
 };
