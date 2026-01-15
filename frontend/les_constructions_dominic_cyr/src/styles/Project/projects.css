@@ -249,19 +249,19 @@
     background-color: #059669;
 }
 
-.project-button.archive-button {
-    background-color: #DC2626;
+.admin-project-button.admin-team-button {
+    background-color: #6366F1;
+    color: white;
     border-radius: 25px;
     font-size: 1rem;
     font-weight: 500;
     padding: 3% 8%;
 }
 
-.project-button.archive-button:hover {
-    background-color: #B91C1C;
+.admin-project-button.admin-team-button:hover {
+    background-color: #4F46E5;
 }
 
-.project-button:hover {
 .admin-project-button:hover {
     background-color: var(--background-color);
     transform: scale(1.05);

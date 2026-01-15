@@ -92,4 +92,14 @@ public class UsersController {
         UserResponseModel responseModel = userService.reactivateUser(userId, requestingAuth0UserId);
         return ResponseEntity.ok(responseModel);
     }
+
+    @GetMapping("/contractors/active")
+    public ResponseEntity<List<UserResponseModel>> getActiveContractors() {
+        return ResponseEntity.ok(userService.getActiveContractors());
+    }
+
+    @GetMapping("/salespersons/active")
+    public ResponseEntity<List<UserResponseModel>> getActiveSalespersons() {
+        return ResponseEntity.ok(userService.getActiveSalespersons());
+    }
 }
