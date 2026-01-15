@@ -32,7 +32,7 @@ services:
       AUTH0_ROLE_OWNER: ${AUTH0_ROLE_OWNER}
       APP_INVITE_RESULT_URL: ${APP_INVITE_RESULT_URL}
       GOOGLE_ANALYTICS_PROPERTY_ID: ${GA_PROPERTY_ID}
-      GOOGLE_ANALYTICS_CREDENTIALS_PATH: ${GA_CREDENTIALS_PATH}
+      GOOGLE_ANALYTICS_CREDENTIALS_PATH: "/app/config/google-analytics-credentials.json"
 
     volumes:
       - ${GA_CREDENTIALS_PATH}:/app/config/google-analytics-credentials.json:ro
