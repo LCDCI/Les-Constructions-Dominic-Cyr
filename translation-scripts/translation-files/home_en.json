@@ -1,85 +1,66 @@
 {
+  "hero": {
+    "label": "DESIGN & BUILD",
+    "title": "Crafting Your Dream Space",
+    "subtitle": "Quality construction, timeless design, since 1990",
+    "button1": "Discover",
+    "button2": "Get In Touch",
+    "scroll": "Scroll"
+  },
+  "think": {
+    "title": "Think intelligent, practical and comfortable spaces",
+    "subtitle": "Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.",
+    "link": "Discover"
+  },
+  "build": {
+    "title": "Build a strong relationship and quality partnership",
+    "subtitle": "Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.",
+    "link": "Contact Us"
+  },
+  "live": {
+    "title": "Live in a space that reflects your values",
+    "subtitle": "Your home is one of the most important investments of your life. Choose reliability and lasting quality.",
+    "link": "Explore Projects"
+  },
+  "portfolio": {
+    "kicker": "Our Work",
+    "title": "Projects & Achievements",
+    "foresta": "Foresta",
+    "forestaSubtitle": "Residential Project",
+    "panorama": "Panorama",
+    "panoramaSubtitle": "Condominiums",
+    "management": "Management",
+    "managementSubtitle": "Project Services",
+    "achievements": "Achievements",
+    "achievementsSubtitle": "Portfolio"
+  },
+  "features": {
+    "kicker": "Why Choose Us",
+    "title": "Personalized Support",
+    "intro": "Dominic Cyr Construction Inc. is a dynamic family business with over 30 years of experience in residential construction. We are here to support you in realizing your ideas and projects with personalized, professional service built on transparency.",
+    "feature1": "Passionate & Professional",
+    "feature2": "Creative Approach",
+    "feature3": "Attention to Detail",
+    "feature4": "Eco-Friendly Practices",
+    "feature5": "Excellence Standards",
+    "feature6": "After-Sales Service"
+  },
+  "contact": {
+    "kicker": "Get In Touch",
+    "title": "Let's Build Your Dream Home Together",
+    "description": "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc.",
+    "button": "Contact Us"
+  },
   "nav": {
-    "projects": "Residential Projects",
-    "renovation": "Renovation",
-    "projectManagement": "Project Management",
-    "realisations": "Achievements",
-    "signIn": "Sign in",
-    "getStarted": "Get Started"
+    "home": "Home",
+    "projects": "Projects",
+    "realizations": "Realizations",
+    "renovations": "Renovations",
+    "contact": "Contact"
   },
   "footer": {
-    "companyName": "Les Constructions Dominic Cyr Inc.",
-    "address": "155 rue Bourgeois",
-    "city": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
-    "phone": "Phone: 514-123-4567",
-    "email": "Email: constructions.dcyr@gmail.com",
-    "rbq": "Régie du bâtiment du Québec",
-    "rbqLicense": "No license: 8356-0169-03",
-    "rbqWebsite": "rbq.gouv.qc.ca",
-    "gcr": "Residential Construction Guarantee",
-    "gcrAccreditation": "No accreditation: 11084",
-    "gcrWebsite": "garantiegcr.com",
-    "contactTitle": "Contact",
-    "contactName": "Isabelle Misiazeck",
-    "contactPhone": "514-123-4567",
-    "contactEmail": "isabelle.misiazeck@foresta.ca",
-    "hoursTitle": "Opening Hours",
-    "hoursWeekdays": "Monday to Wednesday: 1 p.m to 7 p.m",
-    "hoursWeekend": "Saturday and Sunday: 11 a.m. to 5 p.m.",
-    "officeTitle": "Office",
-    "officeAddress1": "104 rue du Boisé",
-    "officeAddress2": "St-Alphonse de Granby",
-    "officeAddress3": "Granby, QC J2J 2X4",
-    "copyright": "© 2025 Les Constructions Dominic Cyr. All rights reserved."
-  },
-  "hero": {
-    "alt": "Residential construction"
-  },
-  "accompaniment": {
-    "title": "CUSTOMIZED ACCOMPANIMENT",
-    "subtitle": "A friendly experience",
-    "intro": "Les Constructions Dominic Cyr Inc. is a family-owned and dynamic company with over 30 years of experience in residential construction. We are here to accompany you in realizing your ideas and projects, ensuring personalized and professional service focused on transparency.",
-    "values": {
-      "passionate": "Passionate and professional",
-      "creative": "Creative approach",
-      "detail": "Attention to detail",
-      "eco": "Eco-responsible practices",
-      "excellence": "Excellence criteria",
-      "afterSale": "After-sales service"
-    }
-  },
-  "projects": {
-    "foresta": {
-      "title": "FORESTA",
-      "subtitle": "RESIDENTIAL PROJECT"
-    },
-    "panorama": {
-      "title": "Panorama",
-      "subtitle": "condos"
-    },
-    "management": {
-      "title": "Management",
-      "subtitle": "of project"
-    },
-    "renovation": {
-      "title": "Renovations"
-    },
-    "realisations": {
-      "title": "Achievements"
-    }
-  },
-  "collaboration": {
-    "title": "WE COLLABORATE WITH YOU TO REALIZE YOUR DREAMS!",
-    "description": "Your home is one of the most important investments you will make in your life. Choose a safe and unparalleled value with Les Constructions Dominic Cyr Inc."
-  },
-  "gallery": {
-    "forest": "Panoramic forest",
-    "modernHouse": "Modern illuminated house",
-    "terrace": "Modern terrace",
-    "pool": "Pool and residence",
-    "cabin": "Traditional cabin",
-    "stackedHouse": "Modern stacked house",
-    "interior": "Contemporary interior"
+    "company": "Dominic Cyr Construction Inc.",
+    "copyright": "© 2025 Dominic Cyr Construction. All rights reserved."
   }
 }
 

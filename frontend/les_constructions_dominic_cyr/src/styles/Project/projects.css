@@ -1,13 +1,13 @@
-/* Projects Page Styles */
+/* Admin Projects Page Styles */
 
-.projects-page {
+.admin-projects-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: var(--background-color);
 }
 
-.projects-content {
+.admin-projects-content {
     flex: 1;
     padding: 3% 0 12%;
     width: 100%;
@@ -15,26 +15,26 @@
     justify-content: center;
 }
 
-.projects-container {
+.admin-projects-container {
     width: 80%;
     max-width: 1400px;
     margin: 0 auto;
 }
 
-.projects-header {
+.admin-projects-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 4%;
 }
 
-.projects-header h1 {
+.admin-projects-header h1 {
     font-size: 2.5rem;
     color: var(--text-primary);
     margin: 0;
 }
 
-.create-project-button {
+.admin-create-project-button {
     background-color: var(--primary-color);
     color: white;
     padding: 12px 24px;
@@ -46,17 +46,17 @@
     transition: background-color 0.3s ease;
 }
 
-.create-project-button:hover {
+.admin-create-project-button:hover {
     background-color: var(--accent-color);
 }
 
-.projects-loading {
+.admin-projects-loading {
     text-align: center;
     padding: 2rem;
     color: var(--text-secondary);
 }
 
-.projects-error {
+.admin-projects-error {
     background-color: #fee;
     border: 1px solid #fcc;
     border-radius: 8px;
@@ -66,11 +66,11 @@
     text-align: center;
 }
 
-.projects-error p {
+.admin-projects-error p {
     margin: 0 0 1rem 0;
 }
 
-.retry-button {
+.admin-retry-button {
     background-color: #4D85B9;
     color: white;
     padding: 8px 16px;
@@ -82,7 +82,7 @@
     transition: background-color 0.3s ease;
 }
 
-.retry-button:hover {
+.admin-retry-button:hover {
     background-color: #1565c0;
 }
 
@@ -92,7 +92,7 @@
     color: var(--text-secondary);
 }
 
-.projects-filter {
+.admin-projects-filter {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -100,13 +100,13 @@
     gap: 12px;
 }
 
-.search-container {
+.admin-search-container {
     width: 100%;
     max-width: 500px;
     position: relative;
 }
 
-.search-input {
+.admin-search-input {
     width: 100%;
     padding: 3% 5%;
     font-size: 1rem;
@@ -116,12 +116,12 @@
     box-shadow: var(--box-shadow);
 }
 
-.search-input:focus {
+.admin-search-input:focus {
     border-color: #4D85B9;
     box-shadow: 0 4px 12px rgba(77, 133, 185, 0.2);
 }
 
-.projects-grid {
+.admin-projects-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 4%;
@@ -129,7 +129,7 @@
     justify-items: center;
 }
 
-.project-card {
+.admin-project-card {
     background-color: #E5EDF5;
     border-radius: var(--border-radius);
     padding: 5%;
@@ -144,7 +144,7 @@
     position: relative;
 }
 
-.project-card:hover {
+.admin-project-card:hover {
     transform: translateY(-2%);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
@@ -177,6 +177,7 @@
 }
 
 .project-image-container {
+.admin-project-image-container {
     width: 100%;
     aspect-ratio: 16 / 9;
     border-radius: var(--border-radius);
@@ -185,25 +186,25 @@
     background-color: var(--white);
 }
 
-.project-image {
+.admin-project-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: var(--transition);
 }
 
-.project-card:hover .project-image {
+.admin-project-card:hover .admin-project-image {
     transform: scale(1.05);
 }
 
-.project-title {
+.admin-project-title {
     font-size: 1.5rem;
     color: var(--text-primary);
     margin-bottom: 4%;
     font-weight: 600;
 }
 
-.project-description {
+.admin-project-description {
     font-size: 0.95rem;
     color: var(--text-secondary);
     line-height: 1.6;
@@ -211,7 +212,7 @@
     flex-grow: 1;
 }
 
-.project-actions {
+.admin-project-actions {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -219,7 +220,7 @@
     align-items: center;
 }
 
-.project-button {
+.admin-project-button {
     background-color: var(--primary-color);
     color: var(--white);
     padding: 3% 8%;
@@ -236,7 +237,7 @@
     text-align: center;
 }
 
-.project-button.edit-button {
+.admin-project-button.admin-edit-button {
     background-color: #10B981;
     border-radius: 25px;
     font-size: 1rem;
@@ -244,7 +245,7 @@
     padding: 3% 8%;
 }
 
-.project-button.edit-button:hover {
+.admin-project-button.admin-edit-button:hover {
     background-color: #059669;
 }
 
@@ -261,15 +262,16 @@
 }
 
 .project-button:hover {
+.admin-project-button:hover {
     background-color: var(--background-color);
     transform: scale(1.05);
 }
 
-.project-button:visited {
+.admin-project-button:visited {
     color: var(--white);
 }
 
-.no-results {
+.admin-no-results {
     grid-column: 1 / -1;
     text-align: center;
     padding: 5%;
@@ -335,56 +337,56 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-    .projects-container {
+    .admin-projects-container {
         width: 85%;
     }
 
-    .projects-grid {
+    .admin-projects-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .projects-container {
+    .admin-projects-container {
         width: 90%;
     }
 
-    .projects-header h1 {
+    .admin-projects-header h1 {
         font-size: 2rem;
     }
 
-    .projects-grid {
+    .admin-projects-grid {
         grid-template-columns: 1fr;
         gap: 6%;
     }
 
-    .project-title {
+    .admin-project-title {
         font-size: 1.3rem;
     }
 
-    .project-button {
+    .admin-project-button {
         width: 80%;
     }
 }
 
 @media (max-width: 480px) {
-    .projects-container {
+    .admin-projects-container {
         width: 95%;
     }
 
-    .projects-content {
+    .admin-projects-content {
         padding: 3% 0 15%;
     }
 
-    .projects-header h1 {
+    .admin-projects-header h1 {
         font-size: 1.8rem;
     }
 
-    .search-input {
+    .admin-search-input {
         padding: 4% 6%;
     }
 
-    .project-button {
+    .admin-project-button {
         width: 90%;
     }
 }

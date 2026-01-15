@@ -1,11 +1,23 @@
 // Use relative path to leverage Vite proxy
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
-export async function fetchLots() {
-  const response = await fetch(`${API_BASE_URL}/lots`);
+export async function fetchLots(token = null) {
+  const headers = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/lots`, { headers });
   if (!response.ok) {
-    throw new Error('Failed to fetch lots');
+    let message = 'Failed to fetch lots';
+    try {
+      const errBody = await response.json();
+      if (typeof errBody?.message === 'string') message = errBody.message;
+      else if (typeof errBody?.error === 'string') message = errBody.error;
+    } catch (parseErr) {
+      // ignore parse error, keep fallback message
+    }
+    throw new Error(message);
   }
   return response.json();
 }

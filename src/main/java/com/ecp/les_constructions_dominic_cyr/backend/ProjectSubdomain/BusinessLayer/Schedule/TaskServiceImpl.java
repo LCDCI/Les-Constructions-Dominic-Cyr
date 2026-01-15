@@ -109,8 +109,10 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getTasksForSchedule(String scheduleIdentifier) {
-        return List.of();
+    public List<TaskDetailResponseDTO> getTasksForSchedule(String scheduleIdentifier) {
+        log.info("Fetching tasks for schedule: {}", scheduleIdentifier);
+        List<Task> tasks = taskRepository.findByScheduleId(scheduleIdentifier);
+        return taskMapper.entitiesToResponseDTOs(tasks);
     }
 
     private void validateTaskRequest(TaskRequestDTO taskRequestDTO) {
@@ -131,6 +133,9 @@ public class TaskServiceImpl implements TaskService {
         }
         if (taskRequestDTO.getPeriodEnd() == null) {
             throw new InvalidInputException("Period end must not be null");
+        }
+        if (taskRequestDTO.getScheduleId() == null || taskRequestDTO.getScheduleId().isBlank()) {
+            throw new InvalidInputException("Schedule identifier must not be null or blank");
         }
     }
 

@@ -3,9 +3,9 @@ import { initReactI18next } from 'react-i18next';
 import { cookieUtils } from './cookieUtils';
 import { fetchTranslations } from './translationApi';
 
-// Get language from cookie or default to 'fr'
+// Get language from cookie or default to 'en'
 const getInitialLanguage = () => {
-  return cookieUtils.getLanguage() || 'fr';
+  return cookieUtils.getLanguage() || 'en';
 };
 
 // Initialize i18n synchronously first with empty resources
@@ -17,8 +17,9 @@ i18n
 
     supportedLngs: ['en', 'fr'],
     
-    // Default language - French for Quebec-based company
-    fallbackLng: 'fr',
+    // Default language - English
+
+    fallbackLng: 'en',
     lng: initialLanguage,
     
     // Namespace configuration
