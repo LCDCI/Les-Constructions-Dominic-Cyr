@@ -54,6 +54,10 @@
   border-radius: var(--border-radius, 5px);
   cursor: pointer;
   font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
   transition: background-color 0.3s;
 }
 
@@ -410,6 +414,10 @@
   border-radius: var(--border-radius, 5px);
   cursor: pointer;
   font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
   margin-top: 20px;
   transition: background-color 0.3s;
 }
@@ -548,22 +556,83 @@
 
 .schedule-modal-tasks ul {
   margin: 6px 0 0;
-  padding-left: 18px;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.schedule-modal-tasks li {
-  margin-bottom: 4px;
-  line-height: 1.4;
+.schedule-modal-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
 }
 
-.task-link {
-  background: transparent;
+.edit-schedule-modal {
+  width: min(820px, 95%);
+}
+
+.schedule-task-item {
+  width: 100%;
+}
+
+.schedule-task-card {
+  width: 100%;
   border: none;
-  color: var(--primary-color, #3174ad);
+  background: transparent;
+  border-radius: 10px;
+  padding: 14px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   cursor: pointer;
-  text-decoration: underline;
-  padding: 0;
-  font: inherit;
+  text-align: left;
+  transition: none;
+}
+
+.schedule-task-card:disabled,
+.schedule-task-card[aria-disabled='true'] {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.schedule-task-card:not(:disabled):hover {
+  background: transparent;
+}
+
+.schedule-task-card:not(:disabled):active {
+  background: transparent;
+}
+
+.schedule-task-card:focus-visible {
+  outline: 2px solid var(--accent-color, #5A7D8C);
+  outline-offset: 2px;
+}
+
+.schedule-task-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-primary, #2c3e50);
+}
+
+.schedule-task-title {
+  font-weight: 700;
+  color: var(--text-primary, #2c3e50);
+}
+
+.schedule-task-meta {
+  font-size: 12px;
+  color: var(--text-secondary, #6b7a90);
+}
+
+.schedule-task-status {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
 }
 
 .create-schedule-modal {
@@ -656,7 +725,7 @@
   border: 1px solid var(--card-border, #d7e1ec);
   border-radius: 12px;
   padding: 12px;
-  background: #f7fbff;
+  background: var(--secondary-color, #f2f4f7);
 }
 
 .task-row input {
@@ -686,6 +755,40 @@
 .task-row-title {
   font-weight: 700;
   color: var(--text-primary, #2c3e50);
+}
+
+.task-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-edit-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--accent-color, #5A7D8C);
+  background: rgba(90, 125, 140, 0.08);
+  color: var(--accent-color, #5A7D8C);
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+}
+
+.task-edit-button:hover {
+  background: rgba(90, 125, 140, 0.16);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.task-edit-button.is-active {
+  background: var(--accent-color, #5A7D8C);
+  color: var(--white, #ffffff);
+  box-shadow: 0 4px 12px rgba(90, 125, 140, 0.25);
+}
+
+.task-edit-button:active {
+  transform: translateY(1px);
 }
 
 .task-row-grid {
