@@ -262,7 +262,11 @@ public class ProjectServiceImpl implements ProjectService {
         Users contractor = usersRepository.findByUserIdentifier(contractorId)
                 .orElseThrow(() -> new NotFoundException("Contractor not found with identifier: " + contractorId));
         
-        project.setContractorId(contractorId);
+        List<String> contractorIds = new ArrayList<>(project.getContractorIds());
+        if (!contractorIds.contains(contractorId)) {
+            contractorIds.add(contractorId);
+        }
+        project.setContractorIds(contractorIds);
         Project updatedProject = projectRepository.save(project);
         
         // Resolve who made the change
@@ -291,7 +295,11 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
         
-        String contractorId = project.getContractorId();
+        // Get the last contractor ID from the list (for backward compatibility with single removal)
+        String contractorId = null;
+        if (!project.getContractorIds().isEmpty()) {
+            contractorId = project.getContractorIds().get(project.getContractorIds().size() - 1);
+        }
         String contractorName = "Unknown";
         
         if (contractorId != null) {
@@ -299,9 +307,12 @@ public class ProjectServiceImpl implements ProjectService {
             if (contractor != null) {
                 contractorName = getFullName(contractor);
             }
+            
+            List<String> contractorIds = new ArrayList<>(project.getContractorIds());
+            contractorIds.remove(contractorId);
+            project.setContractorIds(contractorIds);
         }
         
-        project.setContractorId(null);
         Project updatedProject = projectRepository.save(project);
         
         // Resolve who made the change
@@ -339,7 +350,11 @@ public class ProjectServiceImpl implements ProjectService {
         Users salesperson = usersRepository.findByUserIdentifier(salespersonId)
                 .orElseThrow(() -> new NotFoundException("Salesperson not found with identifier: " + salespersonId));
         
-        project.setSalespersonId(salespersonId);
+        List<String> salespersonIds = new ArrayList<>(project.getSalespersonIds());
+        if (!salespersonIds.contains(salespersonId)) {
+            salespersonIds.add(salespersonId);
+        }
+        project.setSalespersonIds(salespersonIds);
         Project updatedProject = projectRepository.save(project);
         
         // Resolve who made the change
@@ -368,7 +383,11 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
         
-        String salespersonId = project.getSalespersonId();
+        // Get the last salesperson ID from the list (for backward compatibility with single removal)
+        String salespersonId = null;
+        if (!project.getSalespersonIds().isEmpty()) {
+            salespersonId = project.getSalespersonIds().get(project.getSalespersonIds().size() - 1);
+        }
         String salespersonName = "Unknown";
         
         if (salespersonId != null) {
@@ -376,9 +395,12 @@ public class ProjectServiceImpl implements ProjectService {
             if (salesperson != null) {
                 salespersonName = getFullName(salesperson);
             }
+            
+            List<String> salespersonIds = new ArrayList<>(project.getSalespersonIds());
+            salespersonIds.remove(salespersonId);
+            project.setSalespersonIds(salespersonIds);
         }
         
-        project.setSalespersonId(null);
         Project updatedProject = projectRepository.save(project);
         
         // Resolve who made the change

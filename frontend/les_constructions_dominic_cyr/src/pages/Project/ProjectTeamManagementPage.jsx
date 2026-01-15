@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { projectApi } from '../../features/projects/api/projectApi';
-import { fetchActiveContractors, fetchActiveSalespersons, reactivateUser } from '../../features/users/api/usersApi';
+import { fetchAllContractors, fetchAllSalespersons, reactivateUser } from '../../features/users/api/usersApi';
 import { FiUsers, FiActivity, FiInfo } from 'react-icons/fi';
 import '../../styles/Project/project-team-management.css';
 
@@ -14,8 +14,8 @@ export default function ProjectTeamManagementPage() {
   const [project, setProject] = useState(null);
   const [contractors, setContractors] = useState([]);
   const [salespersons, setSalespersons] = useState([]);
-  const [selectedContractorId, setSelectedContractorId] = useState('');
-  const [selectedSalespersonId, setSelectedSalespersonId] = useState('');
+  const [selectedContractorIds, setSelectedContractorIds] = useState([]);
+  const [selectedSalespersonIds, setSelectedSalespersonIds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -38,12 +38,12 @@ export default function ProjectTeamManagementPage() {
       // Load project details with authentication
       const projectData = await projectApi.getProjectById(projectId, token);
       setProject(projectData);
-      setSelectedContractorId(projectData.contractorId || '');
-      setSelectedSalespersonId(projectData.salespersonId || '');
+      setSelectedContractorIds(projectData.contractorIds || []);
+      setSelectedSalespersonIds(projectData.salespersonIds || []);
 
-      // Load active contractors and salespersons using dedicated endpoints
-      const contractorsData = await fetchActiveContractors(token);
-      const salespersonsData = await fetchActiveSalespersons(token);
+      // Load all contractors and salespersons (including inactive) to support filtering
+      const contractorsData = await fetchAllContractors(token);
+      const salespersonsData = await fetchAllSalespersons(token);
 
       setContractors(contractorsData || []);
       setSalespersons(salespersonsData || []);
@@ -104,59 +104,84 @@ export default function ProjectTeamManagementPage() {
       setSuccessMessage(null);
       const token = await getAccessTokenSilently();
 
-      // Handle contractor assignment (check for reactivation)
-      if (selectedContractorId !== (project.contractorId || '')) {
-        if (selectedContractorId) {
-          const contractor = contractors.find((c) => c.userIdentifier === selectedContractorId);
-          if (contractor && contractor.userStatus !== 'ACTIVE') {
-            // Ask for confirmation before reactivating
-            const confirmed = await new Promise((resolve) => {
-              setUserToReactivate({
-                user: contractor,
-                role: 'contractor',
-                resolve
-              });
-              setShowReactivateConfirm(true);
-            });
-            
-            if (!confirmed) {
-              setIsSaving(false);
-              return;
-            }
-            
-            await reactivateUser(selectedContractorId, token);
-          }
-          await projectApi.assignContractorToProject(projectId, selectedContractorId, token);
-        } else if (project.contractorId) {
+      const previousContractorIds = project.contractorIds || [];
+      const previousSalespersonIds = project.salespersonIds || [];
+
+      // Determine what changed
+      const contractorsChanged = JSON.stringify([...selectedContractorIds].sort()) !== JSON.stringify([...previousContractorIds].sort());
+      const salespersonsChanged = JSON.stringify([...selectedSalespersonIds].sort()) !== JSON.stringify([...previousSalespersonIds].sort());
+
+      // Check for inactive users that need reactivation
+      const inactiveContractorsToAdd = selectedContractorIds
+        .filter(id => !previousContractorIds.includes(id))
+        .map(id => contractors.find((c) => c.userIdentifier === id))
+        .filter(c => c && c.userStatus !== 'ACTIVE');
+
+      const inactiveSalespersonsToAdd = selectedSalespersonIds
+        .filter(id => !previousSalespersonIds.includes(id))
+        .map(id => salespersons.find((s) => s.userIdentifier === id))
+        .filter(s => s && s.userStatus !== 'ACTIVE');
+
+      // Check for reactivation confirmation
+      for (const contractor of inactiveContractorsToAdd) {
+        const confirmed = await new Promise((resolve) => {
+          setUserToReactivate({
+            user: contractor,
+            role: 'contractor',
+            resolve
+          });
+          setShowReactivateConfirm(true);
+        });
+        
+        if (!confirmed) {
+          setIsSaving(false);
+          return;
+        }
+        
+        await reactivateUser(contractor.userIdentifier, token);
+      }
+
+      for (const salesperson of inactiveSalespersonsToAdd) {
+        const confirmed = await new Promise((resolve) => {
+          setUserToReactivate({
+            user: salesperson,
+            role: 'salesperson',
+            resolve
+          });
+          setShowReactivateConfirm(true);
+        });
+        
+        if (!confirmed) {
+          setIsSaving(false);
+          return;
+        }
+        
+        await reactivateUser(salesperson.userIdentifier, token);
+      }
+
+      // Handle contractors - remove all then add selected ones
+      if (contractorsChanged) {
+        // Remove all existing contractors if there are any
+        if (previousContractorIds.length > 0) {
           await projectApi.removeContractorFromProject(projectId, token);
+        }
+        
+        // Add all selected contractors
+        for (const contractorId of selectedContractorIds) {
+          await projectApi.assignContractorToProject(projectId, contractorId, token);
         }
       }
 
-      // Handle salesperson assignment (check for reactivation)
-      if (selectedSalespersonId !== (project.salespersonId || '')) {
-        if (selectedSalespersonId) {
-          const salesperson = salespersons.find((s) => s.userIdentifier === selectedSalespersonId);
-          if (salesperson && salesperson.userStatus !== 'ACTIVE') {
-            // Ask for confirmation before reactivating
-            const confirmed = await new Promise((resolve) => {
-              setUserToReactivate({
-                user: salesperson,
-                role: 'salesperson',
-                resolve
-              });
-              setShowReactivateConfirm(true);
-            });
-            
-            if (!confirmed) {
-              setIsSaving(false);
-              return;
-            }
-            
-            await reactivateUser(selectedSalespersonId, token);
-          }
-          await projectApi.assignSalespersonToProject(projectId, selectedSalespersonId, token);
-        } else if (project.salespersonId) {
+      // Handle salespersons - remove all then add selected ones
+      if (salespersonsChanged) {
+        // Remove all existing salespersons if there are any
+        if (previousSalespersonIds.length > 0) {
           await projectApi.removeSalespersonFromProject(projectId, token);
+        }
+        
+        // Add all selected salespersons
+        for (const salespersonId of selectedSalespersonIds) {
+          await projectApi.assignSalespersonToProject(projectId, salespersonId, token);
         }
       }
 
@@ -267,18 +292,6 @@ export default function ProjectTeamManagementPage() {
               <FiUsers className="section-icon" />
             </div>
 
-            <div className="info-note" style={{ 
-              padding: '12px 16px', 
-              marginBottom: '16px', 
-              backgroundColor: '#E3F2FD', 
-              border: '1px solid #90CAF9',
-              borderRadius: '6px',
-              fontSize: '14px',
-              color: '#1976D2'
-            }}>
-              <strong>Note:</strong> You can assign one contractor and one salesperson per project. To change an assignment, select a different person from the dropdown and save.
-            </div>
-
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px', alignItems: 'center', justifyContent: 'space-between' }}>
               <button className="add-button" onClick={() => navigate('/users')}>
                 + Create New Team Member
@@ -335,38 +348,30 @@ export default function ProjectTeamManagementPage() {
 
             {/* Salesperson Assignment */}
             <div className="assignment-group">
-              <h3>Salesperson</h3>
-              <div className="select-wrapper">
-                <select
-                  value={selectedSalespersonId}
-                  onChange={(e) => setSelectedSalespersonId(e.target.value)}
-                  className="assignment-select"
-                  disabled={isSaving}
-                >
-                  <option value="">Select Salesperson</option>
-                  {filteredSalespersons.map((salesperson) => (
-                    <option key={salesperson.userIdentifier} value={salesperson.userIdentifier}>
-                      {salesperson.firstName} {salesperson.lastName} ({getUserStatusLabel(salesperson.userStatus)})
-                    </option>
-                  ))}
-                </select>
+              <h3>Salespersons</h3>
+              <div className="contractors-list">
+                {filteredSalespersons.map((salesperson) => (
+                  <div key={salesperson.userIdentifier} className="contractor-checkbox">
+                    <input
+                      type="checkbox"
+                      id={`sp-${salesperson.userIdentifier}`}
+                      checked={selectedSalespersonIds.includes(salesperson.userIdentifier)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedSalespersonIds([...selectedSalespersonIds, salesperson.userIdentifier]);
+                        } else {
+                          setSelectedSalespersonIds(selectedSalespersonIds.filter(id => id !== salesperson.userIdentifier));
+                        }
+                      }}
+                      disabled={isSaving}
+                    />
+                    <label htmlFor={`sp-${salesperson.userIdentifier}`} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>{salesperson.firstName} {salesperson.lastName}</span>
+                      {getStatusBadge(salesperson.userStatus)}
+                    </label>
+                  </div>
+                ))}
               </div>
-
-              {selectedSalespersonId && (
-                <div className="selected-person-list">
-                  {salespersons
-                    .filter((s) => s.userIdentifier === selectedSalespersonId)
-                    .map((salesperson) => (
-                      <div key={salesperson.userIdentifier} className="selected-person">
-                        <input type="checkbox" checked disabled readOnly />
-                        <span>
-                          {salesperson.firstName} {salesperson.lastName}
-                          {getStatusBadge(salesperson.userStatus)}
-                        </span>
-                      </div>
-                    ))}
-                </div>
-              )}
             </div>
 
             {/* Contractors Section */}
@@ -378,12 +383,12 @@ export default function ProjectTeamManagementPage() {
                     <input
                       type="checkbox"
                       id={contractor.userIdentifier}
-                      checked={selectedContractorId === contractor.userIdentifier}
+                      checked={selectedContractorIds.includes(contractor.userIdentifier)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedContractorId(contractor.userIdentifier);
+                          setSelectedContractorIds([...selectedContractorIds, contractor.userIdentifier]);
                         } else {
-                          setSelectedContractorId('');
+                          setSelectedContractorIds(selectedContractorIds.filter(id => id !== contractor.userIdentifier));
                         }
                       }}
                       disabled={isSaving}

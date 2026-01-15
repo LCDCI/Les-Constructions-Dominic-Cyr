@@ -71,9 +71,9 @@ public class IndividualProjectMetadataServiceImpl implements IndividualProjectMe
 
         boolean hasAccess = false;
 
-        if (role == UserRole.CONTRACTOR && userId.equals(project.getContractorId())) {
+        if (role == UserRole.CONTRACTOR && project.getContractorIds() != null && project.getContractorIds().contains(userId)) {
             hasAccess = true;
-        } else if (role == UserRole.SALESPERSON && userId.equals(project.getSalespersonId())) {
+        } else if (role == UserRole.SALESPERSON && project.getSalespersonIds() != null && project.getSalespersonIds().contains(userId)) {
             hasAccess = true;
         } else if (role == UserRole.CUSTOMER && userId.equals(project.getCustomerId())) {
             hasAccess = true;
@@ -101,21 +101,27 @@ public class IndividualProjectMetadataServiceImpl implements IndividualProjectMe
     }
 
     private AssignedUsersDTO buildAssignedUsers(Project project) {
-        UserSummaryDTO contractor = project.getContractorId() != null
-                ? buildUserSummary(project.getContractorId())
-                : null;
+        List<UserSummaryDTO> contractors = project.getContractorIds() != null
+                ? project.getContractorIds().stream()
+                        .map(this::buildUserSummary)
+                        .filter(summary -> summary != null)
+                        .toList()
+                : List.of();
 
-        UserSummaryDTO salesperson = project.getSalespersonId() != null
-                ? buildUserSummary(project.getSalespersonId())
-                : null;
+        List<UserSummaryDTO> salespersons = project.getSalespersonIds() != null
+                ? project.getSalespersonIds().stream()
+                        .map(this::buildUserSummary)
+                        .filter(summary -> summary != null)
+                        .toList()
+                : List.of();
 
         UserSummaryDTO customer = project.getCustomerId() != null
                 ? buildUserSummary(project.getCustomerId())
                 : null;
 
         return AssignedUsersDTO.builder()
-                .contractor(contractor)
-                .salesperson(salesperson)
+                .contractors(contractors)
+                .salespersons(salespersons)
                 .customer(customer)
                 .build();
     }
