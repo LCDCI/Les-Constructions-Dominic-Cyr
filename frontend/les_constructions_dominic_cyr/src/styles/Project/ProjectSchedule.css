@@ -334,7 +334,7 @@
   border: 1px solid var(--card-border, #e0e6ed);
   border-radius: var(--border-radius, 8px);
   padding: 12px;
-  margin-bottom: 3%Fac;
+  margin-bottom: 3%;
   box-shadow: var(--box-shadow, 0 1px 3px rgba(0, 0, 0, 0.06));
 }
 

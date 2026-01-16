@@ -63,18 +63,48 @@ const buildEmptyTask = (start, end, isEditable = false) => ({
   isEditable,
 });
 
+const normalizeDateForInput = value => {
+  if (!value) return '';
+
+  if (typeof value === 'string') {
+    const match = value.match(/\d{4}-\d{2}-\d{2}/);
+    if (match) return match[0];
+    const parsed = parseISO(value);
+    return Number.isNaN(parsed?.getTime())
+      ? ''
+      : formatDate(parsed, 'yyyy-MM-dd');
+  }
+
+  if (value instanceof Date) {
+    return Number.isNaN(value.getTime()) ? '' : formatDate(value, 'yyyy-MM-dd');
+  }
+
+  const coerced = new Date(value);
+  return Number.isNaN(coerced.getTime())
+    ? ''
+    : formatDate(coerced, 'yyyy-MM-dd');
+};
+
+const normalizeTaskFromApi = (task, scheduleStart, scheduleEnd) => ({
+  ...task,
+  periodStart: normalizeDateForInput(
+    task?.periodStart || task?.startDate || scheduleStart
+  ),
+  periodEnd: normalizeDateForInput(
+    task?.periodEnd || task?.endDate || task?.periodStart || scheduleEnd
+  ),
+});
+
 const buildTaskFromExisting = (task, scheduleStart, scheduleEnd) => ({
   taskId: task?.taskId ?? task?.id ?? task?.identifier ?? null,
   taskTitle: task?.taskTitle ?? task?.title ?? '',
   taskStatus: task?.taskStatus ?? task?.status ?? TASK_STATUSES[0],
   taskPriority: task?.taskPriority ?? task?.priority ?? TASK_PRIORITIES[2],
-  periodStart: formatDate(
-    task?.periodStart || task?.startDate || scheduleStart,
-    'yyyy-MM-dd'
+  periodStart: normalizeDateForInput(
+    task?.periodStart || task?.startDate || scheduleStart
   ),
-  periodEnd: formatDate(
-    task?.periodEnd || task?.endDate || task?.periodStart || scheduleEnd,
-    'yyyy-MM-dd'
+  periodEnd: normalizeDateForInput(
+    task?.periodEnd || task?.endDate || task?.periodStart || scheduleEnd
   ),
   assignedToUserId: task?.assignedToUserId ?? task?.assigneeId ?? '',
   taskDescription: task?.taskDescription ?? task?.description ?? '',
@@ -535,16 +565,34 @@ const ProjectSchedulePage = () => {
         }
       }
 
+      const scheduleStart = normalizeDateForInput(
+        event.scheduleStartDate || event.start
+      );
+      const scheduleEnd = normalizeDateForInput(
+        event.scheduleEndDate || event.end || event.start
+      );
+
+      const normalizedTasks = Array.isArray(tasks)
+        ? tasks.map(task =>
+            normalizeTaskFromApi(task, scheduleStart, scheduleEnd)
+          )
+        : [];
+
       setSelectedEvent(prev =>
         prev && getScheduleIdentifier(prev) === scheduleIdentifier
-          ? { ...prev, tasks, tasksLoading: false, tasksError: null }
+          ? {
+              ...prev,
+              tasks: normalizedTasks,
+              tasksLoading: false,
+              tasksError: null,
+            }
           : prev
       );
 
       setSchedules(prev =>
         prev.map(item =>
           getScheduleIdentifier(item) === scheduleIdentifier
-            ? { ...item, tasks }
+            ? { ...item, tasks: normalizedTasks }
             : item
         )
       );
@@ -552,7 +600,7 @@ const ProjectSchedulePage = () => {
       setEvents(prev =>
         prev.map(ev =>
           getScheduleIdentifier(ev) === scheduleIdentifier
-            ? { ...ev, tasks }
+            ? { ...ev, tasks: normalizedTasks }
             : ev
         )
       );
@@ -847,11 +895,19 @@ const ProjectSchedulePage = () => {
       scheduleIdentifier: scheduleId,
     });
 
-    const existingTasks = Array.isArray(normalized.tasks)
+    const existingTasksRaw = Array.isArray(normalized.tasks)
       ? normalized.tasks
       : Array.isArray(normalized.scheduleTasks)
         ? normalized.scheduleTasks
         : [];
+
+    const existingTasks = existingTasksRaw.map(task =>
+      normalizeTaskFromApi(
+        task,
+        normalized.scheduleStartDate,
+        normalized.scheduleEndDate
+      )
+    );
 
     if (existingTasks.length) {
       setEditTaskDrafts(
@@ -881,17 +937,17 @@ const ProjectSchedulePage = () => {
     const scheduleIdentifier = editSchedule.scheduleIdentifier;
     if (!scheduleIdentifier) {
       setEditFormError('Missing schedule identifier for update.');
-      return;
+      return false;
     }
 
     if (!editSchedule.scheduleDescription.trim()) {
       setEditFormError('Schedule description is required.');
-      return;
+      return false;
     }
 
     if (!editSchedule.lotId) {
       setEditFormError('Please select a lot.');
-      return;
+      return false;
     }
 
     const rangeError = validateScheduleRange(
@@ -900,7 +956,7 @@ const ProjectSchedulePage = () => {
     );
     if (rangeError) {
       setEditFormError(rangeError);
-      return;
+      return false;
     }
 
     const tasksToSave = editTaskDrafts
@@ -926,7 +982,7 @@ const ProjectSchedulePage = () => {
       );
       if (validation) {
         setEditFormError(`Task ${i + 1}: ${validation}`);
-        return;
+        return false;
       }
     }
 
@@ -1038,10 +1094,12 @@ const ProjectSchedulePage = () => {
       setIsEditModalOpen(false);
       setEditFormError('');
       setTasksToDelete([]);
+      return true;
     } catch (err) {
       console.error('Error updating schedule:', err);
       const detailed = extractErrorMessage(err);
       setEditFormError(`Failed to update schedule: ${detailed}`);
+      return false;
     } finally {
       setIsSavingEdit(false);
     }
@@ -1064,7 +1122,9 @@ const ProjectSchedulePage = () => {
             },
           });
         } catch (tokenErr) {
-          console.warn('Could not get token for delete, proceeding without auth');
+          console.warn(
+            'Could not get token for delete, proceeding without auth'
+          );
         }
       }
 
@@ -1077,9 +1137,14 @@ const ProjectSchedulePage = () => {
 
       if (allTaskIds.length) {
         try {
-          await Promise.all(allTaskIds.map(id => taskApi.deleteTask(id, token)));
+          await Promise.all(
+            allTaskIds.map(id => taskApi.deleteTask(id, token))
+          );
         } catch (taskDeleteErr) {
-          console.warn('Some tasks could not be deleted during schedule delete', taskDeleteErr);
+          console.warn(
+            'Some tasks could not be deleted during schedule delete',
+            taskDeleteErr
+          );
         }
       }
 
