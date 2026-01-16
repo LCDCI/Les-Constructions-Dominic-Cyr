@@ -35,12 +35,11 @@ public class ReportService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // FIXED: Changed ownerId parameter type to String
     public AnalyticsReport generateReport(String ownerId, String reportType,
                                           String fileFormat, LocalDateTime startDate,
                                           LocalDateTime endDate) {
 
-        Map<String, Object> analyticsData = googleAnalyticsService.fetchAnalyticsData(startDate, endDate);
+        Map<String, Object> analyticsData = googleAnalyticsService.fetchAnalyticsData(startDate, endDate, reportType);
 
         byte[] reportContent;
         String contentType;
@@ -131,7 +130,7 @@ public class ReportService {
             throw new SecurityException("Access denied");
         }
 
-        String downloadUrl = filesServiceBaseUrl + "/download/" + report.getFileKey();
+        String downloadUrl = filesServiceBaseUrl + "/files/" + report.getFileKey();
 
         ResponseEntity<byte[]> response = restTemplate.getForEntity(downloadUrl, byte[].class);
 
@@ -159,7 +158,6 @@ public class ReportService {
         return report;
     }
 
-    // FIXED: Changed ownerId parameter type to String
     public void deleteReport(UUID reportId, String ownerId) {
         AnalyticsReport report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Report not found"));

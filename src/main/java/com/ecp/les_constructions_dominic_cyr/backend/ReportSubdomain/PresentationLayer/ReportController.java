@@ -108,7 +108,6 @@ public class ReportController {
             @PathVariable UUID reportId,
             @AuthenticationPrincipal Jwt jwt) {
 
-        // FIXED: Using String for Auth0 ID instead of UUID
         String ownerId = jwt.getSubject();
         reportService.deleteReport(reportId, ownerId);
 
