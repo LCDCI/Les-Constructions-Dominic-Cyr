@@ -2,124 +2,135 @@ import React, { useState } from 'react';
 import { reportService } from '../../features/reports/reportService';
 import '../../styles/Reports/ReportGenerator.css';
 
-const ReportGenerator = () => {
-  const [formData, setFormData] = useState({
-    reportType: 'ANALYTICS_SUMMARY',
-    fileFormat: 'PDF',
-    startDate: '',
-    endDate: '',
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+const ReportGenerator = ({ onReportGenerated }) => {
+    const [formData, setFormData] = useState({
+        fileFormat: 'PDF',
+        startDate: '',
+        endDate: '',
+    });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+    const handleChange = e => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
+    const handleSubmit = async e => {
+        e.preventDefault();
 
-    try {
-      // Helper to format date as yyyy-MM-ddTHH:mm:ss
-      const formatToBackend = dateStr => {
-        if (!dateStr) return null;
-        const date = new Date(dateStr);
-        // This ensures we get YYYY-MM-DDTHH:mm:ss without the .SSSZ
-        return date.toISOString().split('.')[0];
-      };
+        if (!formData.startDate || !formData.endDate) {
+            setError("Please select both a start and end date.");
+            return;
+        }
 
-      const payload = {
-        reportType: formData.reportType,
-        fileFormat: formData.fileFormat,
-        startDate: formatToBackend(formData.startDate),
-        endDate: formatToBackend(formData.endDate),
-      };
+        setLoading(true);
+        setError(null);
+        setSuccess(null);
 
-      console.log('Sending Payload:', payload); // Debug this in your console!
+        try {
+            const formatToBackend = dateStr => {
+                if (!dateStr) return null;
+                return `${dateStr}T00:00:00`;
+            };
 
-      await reportService.generateReport(payload);
-      // ... success logic
-    } catch (err) {
-      // 400 errors often have a detailed message from Spring Validation
-      const serverMessage = err.response?.data?.errors
-        ? Object.values(err.response.data.errors).join(', ')
-        : err.response?.data?.message;
+            const payload = {
+                reportType: 'ANALYTICS_SUMMARY',
+                fileFormat: formData.fileFormat,
+                startDate: formatToBackend(formData.startDate),
+                endDate: formatToBackend(formData.endDate),
+            };
 
-      setError(serverMessage || 'Failed to generate report');
-    } finally {
-      setLoading(false);
-    }
-  };
+            console.log('Generating Master Audit with Payload:', payload);
 
-  return (
-    <div className="report-generator">
-      <div className="report-generator-header">
-        <h2>Generate Analytics Report</h2>
-        <p>Create custom reports with insights from Google Analytics</p>
-      </div>
-      {error && <div className="alert alert-error">{error}</div>}
-      {success && <div className="alert alert-success">{success}</div>}
-      <form onSubmit={handleSubmit} className="report-form">
-        <div className="form-group">
-          <label htmlFor="reportType">Report Type</label>
-          <select
-            id="reportType"
-            name="reportType"
-            value={formData.reportType}
-            onChange={handleChange}
-            required
-          >
-            <option value="ANALYTICS_SUMMARY">Analytics Summary</option>
-            <option value="USER_BEHAVIOR">User Behavior</option>
-            <option value="TRAFFIC_ANALYSIS">Traffic Analysis</option>
-            <option value="CONVERSION_METRICS">Conversion Metrics</option>
-          </select>
+            await reportService.generateReport(payload);
+
+            setSuccess('Master Audit generated successfully!');
+
+            // Clear dates after success
+            setFormData(prev => ({ ...prev, startDate: '', endDate: '' }));
+
+            if (onReportGenerated) {
+                onReportGenerated();
+            }
+
+        } catch (err) {
+            const serverMessage = err.response?.data?.message || 'Failed to generate report. Check Digital Ocean connection.';
+            setError(serverMessage);
+            console.error('Build 500 Error Details:', err.response);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="report-generator">
+            <div className="report-generator-header">
+                <h2>Generate Analytics Report</h2>
+                <p>Create a 5-page Master Audit with insights from Google Analytics</p>
+            </div>
+
+            {error && <div className="alert alert-error">{error}</div>}
+            {success && <div className="alert alert-success">{success}</div>}
+
+            <form onSubmit={handleSubmit} className="report-form">
+                {/* Report Type is now hidden/removed from user selection */}
+                <div className="form-group">
+                    <label>Selected Report Plan</label>
+                    <input
+                        type="text"
+                        value="Master Analytics Summary (5-Page Audit)"
+                        disabled
+                        style={{ backgroundColor: '#f4f4f4', cursor: 'not-allowed' }}
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="fileFormat">File Format</label>
+                    <select
+                        id="fileFormat"
+                        name="fileFormat"
+                        value={formData.fileFormat}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="PDF">PDF (Recommended)</option>
+                        <option value="XLSX">Excel (XLSX Data Raw)</option>
+                    </select>
+                </div>
+
+                <div className="form-row">
+                    <div className="form-group">
+                        <label htmlFor="startDate">Start Date</label>
+                        <input
+                            type="date"
+                            id="startDate"
+                            name="startDate"
+                            value={formData.startDate}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="endDate">End Date</label>
+                        <input
+                            type="date"
+                            id="endDate"
+                            name="endDate"
+                            value={formData.endDate}
+                            onChange={handleChange}
+                            required
+                        />
+                    </div>
+                </div>
+
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                    {loading ? 'Processing Large Data...' : 'Generate Master Audit'}
+                </button>
+            </form>
         </div>
-        <div className="form-group">
-          <label htmlFor="fileFormat">File Format</label>
-          <select
-            id="fileFormat"
-            name="fileFormat"
-            value={formData.fileFormat}
-            onChange={handleChange}
-            required
-          >
-            <option value="PDF">PDF</option>
-            <option value="XLSX">Excel (XLSX)</option>
-          </select>
-        </div>
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="startDate">Start Date</label>
-            <input
-              type="date"
-              id="startDate"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="endDate">End Date</label>
-            <input
-              type="date"
-              id="endDate"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-            />
-          </div>
-        </div>
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Generating...' : 'Generate Report'}
-        </button>
-      </form>
-    </div>
-  );
+    );
 };
+
 export default ReportGenerator;
