@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
-import LotsPage from './pages/LotsPage';
+import LotsPage from './pages/Public_Facing/LotsPage';
 import ProjectsPage from './pages/Project/ProjectsPage';
 import CreateProjectPage from './pages/Project/CreateProjectPage';
 import RealizationsPage from './pages/Public_Facing/RealizationsPage';
