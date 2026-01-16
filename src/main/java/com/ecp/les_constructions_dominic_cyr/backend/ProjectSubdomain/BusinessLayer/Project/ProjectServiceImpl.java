@@ -48,7 +48,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectResponseModel> getAllProjects() {
+        return getAllProjects(false);
+    }
+
+    @Override
+    public List<ProjectResponseModel> getAllProjects(boolean includeArchived) {
         return projectRepository.findAll().stream()
+                .filter(project -> includeArchived || project.getStatus() != ProjectStatus.ARCHIVED)
                 .map(projectMapper::entityToResponseModel)
                 .collect(Collectors.toList());
     }
@@ -135,8 +141,18 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectResponseModel> filterProjects(ProjectStatus status, LocalDate startDate, LocalDate endDate, String customerId) {
+        return filterProjects(status, startDate, endDate, customerId, false);
+    }
+
+    @Override
+    public List<ProjectResponseModel> filterProjects(ProjectStatus status, LocalDate startDate, LocalDate endDate, String customerId, boolean includeArchived) {
         Specification<Project> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            // Exclude archived projects unless explicitly filtering by ARCHIVED status or if owner wants to see them
+            if (!includeArchived && (status == null || status != ProjectStatus.ARCHIVED)) {
+                predicates.add(criteriaBuilder.notEqual(root.get("status"), ProjectStatus.ARCHIVED));
+            }
 
             if (status != null) {
                 predicates.add(criteriaBuilder.equal(root.get("status"), status));

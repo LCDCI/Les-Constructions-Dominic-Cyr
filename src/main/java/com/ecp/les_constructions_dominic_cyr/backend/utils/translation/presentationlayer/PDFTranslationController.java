@@ -1,6 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.utils.translation.presentationlayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.utils.translation.businesslayer.DeepLService;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.translation.businesslayer.FileServiceUploader;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.translation.businesslayer.TranslationCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -23,6 +24,7 @@ public class PDFTranslationController {
 
     private final DeepLService deepLService;
     private final TranslationCacheService cacheService;
+    private final FileServiceUploader fileServiceUploader;
 
     /**
      * Translates a PDF document from one language to another.
@@ -99,22 +101,27 @@ public class PDFTranslationController {
 
                         // Translate PDF
                         return deepLService.translatePdf(pdfBytes, sourceLang, targetLang)
-                                .map(translatedPdf -> {
-                                    // Save to cache
-                                    cacheService.saveTranslation(originalFilename, targetLangInput, translatedPdf);
-                                    
+                                .flatMap(translatedPdf -> {
+                                    // Generate cache filename for the response
                                     String cacheFilename = cacheService.generateCacheFilename(originalFilename, targetLangInput);
-                                    DataBuffer buffer = org.springframework.core.io.buffer.DefaultDataBufferFactory.sharedInstance
-                                            .wrap(translatedPdf);
                                     
-                                    return ResponseEntity.ok()
-                                            .header(HttpHeaders.CONTENT_DISPOSITION, 
-                                                    "attachment; filename=\"" + cacheFilename + "\"")
-                                            .contentType(MediaType.APPLICATION_PDF)
-                                            .body(Flux.just(buffer));
+                                    // Upload to file service
+                                    return fileServiceUploader.uploadTranslatedPdf(translatedPdf, cacheFilename, "system")
+                                            .map(fileId -> {
+                                                System.out.println("Translated PDF uploaded to file service with ID: " + fileId);
+                                                
+                                                DataBuffer buffer = org.springframework.core.io.buffer.DefaultDataBufferFactory.sharedInstance
+                                                        .wrap(translatedPdf);
+                                                
+                                                return ResponseEntity.ok()
+                                                        .header(HttpHeaders.CONTENT_DISPOSITION, 
+                                                                "attachment; filename=\"" + cacheFilename + "\"")
+                                                        .contentType(MediaType.APPLICATION_PDF)
+                                                        .body(Flux.just(buffer));
+                                            });
                                 })
                                 .onErrorResume(error -> {
-                                    System.err.println("Error translating PDF: " + error.getMessage());
+                                    System.err.println("Error translating PDF or uploading to file service: " + error.getMessage());
                                     error.printStackTrace();
                                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                             .body(Flux.empty()));
