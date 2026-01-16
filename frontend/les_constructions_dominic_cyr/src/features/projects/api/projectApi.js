@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 const FILES_SERVICE_BASE_URL =
   import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 export const projectApi = {
-  getAllProjects: async (filters = {}) => {
+  getAllProjects: async (filters = {}, token = null) => {
     const params = new URLSearchParams();
 
     if (filters.status) params.append('status', filters.status);
@@ -15,7 +15,12 @@ export const projectApi = {
     const queryString = params.toString();
     const url = `${API_BASE_URL}/projects${queryString ? `?${queryString}` : ''}`;
 
-    const response = await fetch(url);
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(url, { headers });
     if (!response.ok) {
       throw new Error('Failed to fetch projects');
     }

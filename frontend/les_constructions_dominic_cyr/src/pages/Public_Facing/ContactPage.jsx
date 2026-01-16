@@ -145,9 +145,6 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
-      <footer>
-      <HomeFooter />
-    </footer>
     </div>
   );
 }
