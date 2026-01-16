@@ -2,13 +2,20 @@ package com.ecp.les_constructions_dominic_cyr.backend.ReportSubdomain.BusinessLa
 
 import com.ecp.les_constructions_dominic_cyr.backend.ReportSubdomain.DataAccessLayer.AnalyticsReport;
 import com.ecp.les_constructions_dominic_cyr.backend.ReportSubdomain.DataAccessLayer.AnalyticsReportRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -39,6 +46,7 @@ public class ReportService {
                                           String fileFormat, LocalDateTime startDate,
                                           LocalDateTime endDate) {
 
+        // 1. Fetch data from Google Analytics
         Map<String, Object> analyticsData = googleAnalyticsService.fetchAnalyticsData(startDate, endDate, reportType);
 
         byte[] reportContent;
@@ -46,6 +54,7 @@ public class ReportService {
         String fileExtension;
 
         try {
+            // 2. Generate the physical file
             if ("PDF".equalsIgnoreCase(fileFormat)) {
                 reportContent = pdfReportGenerator.generatePDFReport(analyticsData, startDate, endDate);
                 contentType = "application/pdf";
@@ -58,6 +67,7 @@ public class ReportService {
                 throw new IllegalArgumentException("Unsupported file format: " + fileFormat);
             }
 
+            // 3. Prepare storage path and upload to Go Service
             String fileName = String.format("%s_%s_%s.%s",
                     reportType,
                     UUID.randomUUID().toString(),
@@ -65,11 +75,11 @@ public class ReportService {
                     fileExtension);
 
             String objectKey = storageBasePath + fileName;
-
             String uploadedKey = uploadToStorage(reportContent, objectKey, contentType);
 
+            // 4. Create Database Record
             AnalyticsReport report = new AnalyticsReport();
-            report.setOwnerId(ownerId); // Now matches: setOwnerId(String)
+            report.setOwnerId(ownerId);
             report.setReportType(reportType);
             report.setFileFormat(fileFormat);
             report.setFileKey(uploadedKey);
@@ -79,28 +89,37 @@ public class ReportService {
             report.setEndDate(endDate);
             report.setStatus("COMPLETED");
 
+            // 5. Build Metadata safely (Fixed TreeMap vs List casting issue)
             Map<String, Object> metadata = new HashMap<>();
             metadata.put("summary", analyticsData.get("summary"));
-            metadata.put("recordCount", ((List<?>) analyticsData.get("dailyMetrics")).size());
+
+            // Get record count by checking if it's a Map (TreeMap) or a Collection (List)
+            Object dailyMetricsObj = analyticsData.get("dailyMetrics");
+            int recordCount = 0;
+            if (dailyMetricsObj instanceof Map) {
+                recordCount = ((Map<?, ?>) dailyMetricsObj).size();
+            } else if (dailyMetricsObj instanceof Collection) {
+                recordCount = ((Collection<?>) dailyMetricsObj).size();
+            }
+
+            metadata.put("recordCount", recordCount);
             report.setMetadata(metadata);
 
             return reportRepository.save(report);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate report", e);
+            System.err.println("CRITICAL: Report Generation failed at Step " + e.getStackTrace()[0].getLineNumber() + ": " + e.getMessage());
+            throw new RuntimeException("Failed to generate report: " + e.getMessage(), e);
         }
     }
 
     private String uploadToStorage(byte[] content, String objectKey, String contentType) {
         String uploadUrl = filesServiceBaseUrl + "/upload";
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        org.springframework.util.MultiValueMap<String, Object> body =
-                new org.springframework.util.LinkedMultiValueMap<>();
-
-        body.add("file", new org.springframework.core.io.ByteArrayResource(content) {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("file", new ByteArrayResource(content) {
             @Override
             public String getFilename() {
                 return objectKey.substring(objectKey.lastIndexOf("/") + 1);
@@ -109,65 +128,84 @@ public class ReportService {
         body.add("objectKey", objectKey);
         body.add("contentType", contentType);
 
-        HttpEntity<org.springframework.util.MultiValueMap<String, Object>> requestEntity =
-                new HttpEntity<>(body, headers);
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(uploadUrl, requestEntity, Map.class);
+        try {
+            ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                    uploadUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<Map<String, Object>>() {}
+            );
 
-        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-            throw new RuntimeException("Failed to upload report to storage");
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                throw new RuntimeException("Go Service error: " + response.getStatusCode());
+            }
+
+            Object returnedKey = response.getBody().get("objectKey");
+            if (returnedKey == null) {
+                throw new RuntimeException("Go Service did not return an objectKey (UUID)");
+            }
+
+            return returnedKey.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("Communication with Go File Service failed: " + e.getMessage());
         }
-
-        return (String) response.getBody().get("objectKey");
     }
 
-    // FIXED: Changed ownerId parameter type to String
     public byte[] downloadReport(UUID reportId, String ownerId) {
-        AnalyticsReport report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
-
-        if (!report.getOwnerId().equals(ownerId)) {
-            throw new SecurityException("Access denied");
-        }
-
+        AnalyticsReport report = getReportById(reportId, ownerId);
         String downloadUrl = filesServiceBaseUrl + "/files/" + report.getFileKey();
 
-        ResponseEntity<byte[]> response = restTemplate.getForEntity(downloadUrl, byte[].class);
-
-        if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
-            throw new RuntimeException("Failed to download report from storage");
+        try {
+            ResponseEntity<byte[]> response = restTemplate.getForEntity(downloadUrl, byte[].class);
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                throw new RuntimeException("Go Service download failed: " + response.getStatusCode());
+            }
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to download report from storage: " + e.getMessage());
         }
-
-        return response.getBody();
     }
 
-    // FIXED: Changed ownerId parameter type to String
     public Page<AnalyticsReport> getReportsByOwner(String ownerId, Pageable pageable) {
         return reportRepository.findByOwnerIdOrderByGenerationTimestampDesc(ownerId, pageable);
     }
 
-    // FIXED: Changed ownerId parameter type to String
     public AnalyticsReport getReportById(UUID reportId, String ownerId) {
         AnalyticsReport report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Report not found"));
 
         if (!report.getOwnerId().equals(ownerId)) {
-            throw new SecurityException("Access denied");
+            throw new SecurityException("Access denied: Report does not belong to user");
         }
 
         return report;
     }
 
+    @Transactional
     public void deleteReport(UUID reportId, String ownerId) {
-        AnalyticsReport report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new RuntimeException("Report not found"));
+        AnalyticsReport report = getReportById(reportId, ownerId);
 
-        if (!report.getOwnerId().equals(ownerId)) {
-            throw new SecurityException("Access denied");
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            Map<String, String> body = new HashMap<>();
+            body.put("deletedBy", ownerId);
+
+            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(body, headers);
+            String goFileId = report.getFileKey();
+
+            restTemplate.exchange(
+                    filesServiceBaseUrl + "/files/" + goFileId,
+                    HttpMethod.DELETE,
+                    requestEntity,
+                    Void.class
+            );
+        } catch (Exception e) {
+            System.err.println("[WARN] Storage cleanup failed for file " + report.getFileKey() + ": " + e.getMessage());
         }
-
-        String deleteUrl = filesServiceBaseUrl + "/delete/" + report.getFileKey();
-        restTemplate.delete(deleteUrl);
 
         reportRepository.delete(report);
     }

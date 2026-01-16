@@ -19,9 +19,6 @@ public class GoogleAnalyticsService {
     @Value("${google.analytics.credentials-path}")
     private String credentialsPath;
 
-    /**
-     * Fetches raw data from Google Analytics and processes it into actionable business insights.
-     */
     public Map<String, Object> fetchAnalyticsData(LocalDateTime startDate, LocalDateTime endDate, String reportType) {
         try {
             GoogleCredentials credentials = GoogleCredentials.fromStream(
@@ -33,32 +30,25 @@ public class GoogleAnalyticsService {
                     .build();
 
             try (BetaAnalyticsDataClient analyticsData = BetaAnalyticsDataClient.create(settings)) {
-
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                String formattedStartDate = startDate.format(formatter);
-                String formattedEndDate = endDate.format(formatter);
 
                 RunReportRequest.Builder requestBuilder = RunReportRequest.newBuilder()
                         .setProperty("properties/" + propertyId)
                         .addDateRanges(DateRange.newBuilder()
-                                .setStartDate(formattedStartDate)
-                                .setEndDate(formattedEndDate))
-                        // Core metrics used for summary and complex calculations
+                                .setStartDate(startDate.format(formatter))
+                                .setEndDate(endDate.format(formatter)))
                         .addMetrics(Metric.newBuilder().setName("activeUsers"))
                         .addMetrics(Metric.newBuilder().setName("sessions"))
+                        .addMetrics(Metric.newBuilder().setName("screenPageViews"))
                         .addMetrics(Metric.newBuilder().setName("bounceRate"))
                         .addMetrics(Metric.newBuilder().setName("averageSessionDuration"))
-                        .addMetrics(Metric.newBuilder().setName("screenPageViews"))
-                        .addMetrics(Metric.newBuilder().setName("newUsers"))
-                        // Core dimensions for segmentation
+                        .addMetrics(Metric.newBuilder().setName("engagementRate"))
+                        .addMetrics(Metric.newBuilder().setName("scrolledUsers"))
                         .addDimensions(Dimension.newBuilder().setName("date"))
-                        .addDimensions(Dimension.newBuilder().setName("country"))
-                        .addDimensions(Dimension.newBuilder().setName("deviceCategory"));
-
-                // Add specialized dimensions based on report type
-                if ("PROJECT_PERFORMANCE".equalsIgnoreCase(reportType)) {
-                    requestBuilder.addDimensions(Dimension.newBuilder().setName("pagePath"));
-                }
+                        .addDimensions(Dimension.newBuilder().setName("pagePath"))
+                        .addDimensions(Dimension.newBuilder().setName("sessionSource"))
+                        .addDimensions(Dimension.newBuilder().setName("deviceCategory"))
+                        .addDimensions(Dimension.newBuilder().setName("city"));
 
                 RunReportResponse response = analyticsData.runReport(requestBuilder.build());
                 return processAnalyticsResponse(response);
@@ -71,104 +61,135 @@ public class GoogleAnalyticsService {
     private Map<String, Object> processAnalyticsResponse(RunReportResponse response) {
         Map<String, Object> data = new HashMap<>();
 
-        // Intermediary structures for aggregation
+        // Standard Structures
         Map<String, Map<String, Object>> dailyAggregation = new TreeMap<>();
-        Map<String, Integer> countryData = new HashMap<>();
+        Map<String, Integer> cityData = new HashMap<>();
+        Map<String, Integer> sourceData = new HashMap<>();
+        Map<String, Long> pageViewsData = new HashMap<>();
         Map<String, Integer> deviceData = new HashMap<>();
 
         long totalUsers = 0;
-        long totalNewUsers = 0;
         long totalSessions = 0;
-        double totalBounceRate = 0;
-        double totalSessionDuration = 0;
         long totalPageViews = 0;
+        long totalScrolledUsers = 0;
+        double totalBounceRate = 0;
+        double sumSessionDuration = 0;
 
         for (Row row : response.getRowsList()) {
             String date = row.getDimensionValues(0).getValue();
-            String country = row.getDimensionValues(1).getValue();
-            String device = row.getDimensionValues(2).getValue();
+            String pagePath = row.getDimensionValues(1).getValue();
+            String source = row.getDimensionValues(2).getValue();
+            String device = row.getDimensionValues(3).getValue();
+            String city = row.getDimensionValues(4).getValue();
 
             long users = Long.parseLong(row.getMetricValues(0).getValue());
             long sessions = Long.parseLong(row.getMetricValues(1).getValue());
-            double bounceRate = Double.parseDouble(row.getMetricValues(2).getValue());
-            double sessionDuration = Double.parseDouble(row.getMetricValues(3).getValue());
-            long pageViews = Long.parseLong(row.getMetricValues(4).getValue());
-            long newUsers = Long.parseLong(row.getMetricValues(5).getValue());
+            long pageViews = Long.parseLong(row.getMetricValues(2).getValue());
+            double bounceRate = Double.parseDouble(row.getMetricValues(3).getValue());
+            double duration = Double.parseDouble(row.getMetricValues(4).getValue());
+            long scrolled = Long.parseLong(row.getMetricValues(6).getValue());
 
-            // 1. Aggregate daily metrics (prevents duplicate dates in charts)
-            dailyAggregation.computeIfAbsent(date, k -> new HashMap<>(Map.of(
-                    "activeUsers", 0L, "sessions", 0L, "pageViews", 0L
-            )));
-            dailyAggregation.get(date).merge("activeUsers", users, (old, val) -> (long)old + (long)val);
-            dailyAggregation.get(date).merge("sessions", sessions, (old, val) -> (long)old + (long)val);
-            dailyAggregation.get(date).merge("pageViews", pageViews, (old, val) -> (long)old + (long)val);
+            dailyAggregation.computeIfAbsent(date, k -> new HashMap<>(Map.of("activeUsers", 0L, "sessions", 0L)));
+            dailyAggregation.get(date).merge("activeUsers", users, (o, v) -> (long)o + (long)v);
+            dailyAggregation.get(date).merge("sessions", sessions, (o, v) -> (long)o + (long)v);
 
-            // 2. Geographic and Device Tally
-            countryData.merge(country, (int) users, Integer::sum);
+            cityData.merge(city, (int) users, Integer::sum);
+            sourceData.merge(source, (int) users, Integer::sum);
+            pageViewsData.merge(pagePath, pageViews, Long::sum);
             deviceData.merge(device, (int) users, Integer::sum);
 
-            // 3. Totals for Summary
             totalUsers += users;
-            totalNewUsers += newUsers;
             totalSessions += sessions;
-            totalBounceRate += bounceRate;
-            totalSessionDuration += sessionDuration;
             totalPageViews += pageViews;
+            totalScrolledUsers += scrolled;
+            totalBounceRate += bounceRate;
+            sumSessionDuration += duration;
         }
 
         int rowCount = response.getRowsCount();
         Map<String, Object> summary = new HashMap<>();
         summary.put("totalUsers", totalUsers);
-        summary.put("totalNewUsers", totalNewUsers);
         summary.put("totalSessions", totalSessions);
-        summary.put("avgBounceRate", rowCount > 0 ? totalBounceRate / rowCount : 0);
-        summary.put("avgSessionDuration", rowCount > 0 ? totalSessionDuration / rowCount : 0);
         summary.put("totalPageViews", totalPageViews);
-
-        // Transform daily map to ordered list for JFreeChart
-        List<Map<String, Object>> dailyMetrics = dailyAggregation.entrySet().stream()
-                .map(e -> {
-                    Map<String, Object> m = e.getValue();
-                    m.put("date", e.getKey());
-                    return m;
-                }).collect(Collectors.toList());
+        summary.put("avgBounceRate", rowCount > 0 ? totalBounceRate / rowCount : 0);
+        summary.put("avgSessionDuration", rowCount > 0 ? sumSessionDuration / rowCount : 0);
+        summary.put("scrollRate", totalUsers > 0 ? ((double) totalScrolledUsers / totalUsers) * 100 : 0);
 
         data.put("summary", summary);
-        data.put("dailyMetrics", dailyMetrics);
-        data.put("countryData", countryData);
+        data.put("dailyMetrics", dailyAggregation);
+        data.put("cityData", cityData);
+        data.put("sourceData", sourceData);
+        data.put("pageViewsData", pageViewsData);
         data.put("deviceData", deviceData);
 
-        // NEW: Complex Data Manipulation
-        data.put("businessInsights", calculateBusinessInsights(summary, totalNewUsers));
+        data.put("projectAnalysis", performProjectInterestAnalysis(response.getRowsList()));
+        data.put("businessInsights", calculateBusinessInsights(summary));
 
         return data;
     }
 
-    /**
-     * Performs complex data manipulations to give the admin deep insights.
-     */
-    private Map<String, Object> calculateBusinessInsights(Map<String, Object> summary, long newUsers) {
+    private List<Map<String, Object>> performProjectInterestAnalysis(List<Row> rows) {
+        List<Map<String, Object>> analysisResult = new ArrayList<>();
+        Map<String, List<Row>> groupedByPage = rows.stream()
+                .collect(Collectors.groupingBy(r -> r.getDimensionValues(1).getValue()));
+
+        for (Map.Entry<String, List<Row>> entry : groupedByPage.entrySet()) {
+            String path = entry.getKey();
+            if (!path.contains("/projects") && !path.equals("/")) continue;
+
+            List<Row> projectRows = entry.getValue();
+
+            long pViews = projectRows.stream().mapToLong(r -> Long.parseLong(r.getMetricValues(2).getValue())).sum();
+            long pUsers = projectRows.stream().mapToLong(r -> Long.parseLong(r.getMetricValues(0).getValue())).sum();
+            double avgDur = projectRows.stream().mapToDouble(r -> Double.parseDouble(r.getMetricValues(4).getValue())).average().orElse(0);
+            long scrolled = projectRows.stream().mapToLong(r -> Long.parseLong(r.getMetricValues(6).getValue())).sum();
+
+            double scrollFactor = pUsers > 0 ? (double) scrolled / pUsers : 0;
+            double durationFactor = Math.min(avgDur / 180.0, 1.0); // Normalize to 3 mins max
+            double volumeFactor = Math.min((double) pViews / 500.0, 1.0); // Normalize to 500 views
+
+            double piiScore = (durationFactor * 0.4) + (scrollFactor * 0.4) + (volumeFactor * 0.2);
+
+            double volatility = calculateVolatility(projectRows);
+
+            Map<String, Object> projectMetrics = new HashMap<>();
+            projectMetrics.put("path", path);
+            projectMetrics.put("piiScore", piiScore * 100);
+            projectMetrics.put("volatility", volatility);
+            projectMetrics.put("engagementLevel", piiScore > 0.7 ? "HOT" : piiScore > 0.4 ? "WARM" : "COLD");
+
+            analysisResult.add(projectMetrics);
+        }
+
+        analysisResult.sort((a, b) -> Double.compare((double) b.get("piiScore"), (double) a.get("piiScore")));
+        return analysisResult.stream().limit(10).collect(Collectors.toList());
+    }
+
+    private double calculateVolatility(List<Row> rows) {
+        List<Long> dailySessions = rows.stream()
+                .map(r -> Long.parseLong(r.getMetricValues(1).getValue()))
+                .collect(Collectors.toList());
+
+        if (dailySessions.size() < 2) return 0.0;
+
+        double mean = dailySessions.stream().mapToLong(Long::longValue).average().orElse(0.0);
+        double variance = dailySessions.stream()
+                .mapToDouble(s -> Math.pow(s - mean, 2))
+                .sum() / dailySessions.size();
+
+        return Math.sqrt(variance);
+    }
+
+    private Map<String, Object> calculateBusinessInsights(Map<String, Object> summary) {
         Map<String, Object> insights = new HashMap<>();
+        double scrollRate = (double) summary.get("scrollRate");
+        double bounceRate = (double) summary.get("avgBounceRate");
 
-        long totalUsers = (long) summary.get("totalUsers");
-        long pageViews = (long) summary.get("totalPageViews");
-        long sessions = (long) summary.get("totalSessions");
-
-        // Insight 1: User Retention vs Acquisition
-        double acquisitionRate = totalUsers > 0 ? ((double) newUsers / totalUsers) * 100 : 0;
-        insights.put("acquisitionRate", String.format("%.2f%%", acquisitionRate));
-        insights.put("retentionDescription", acquisitionRate > 50
-                ? "High new discovery. Focus on lead conversion."
-                : "Strong returning audience. Focus on project updates.");
-
-        // Insight 2: Content Stickiness (Pages per Session)
-        double pagesPerSession = sessions > 0 ? (double) pageViews / sessions : 0;
-        insights.put("contentStickiness", String.format("%.2f pages/session", pagesPerSession));
-
-        // Insight 3: Engagement Efficiency
-        double avgDuration = (double) summary.get("avgSessionDuration");
-        String efficiencyRating = (avgDuration > 120 && pagesPerSession > 2) ? "OPTIMAL" : "LOW";
-        insights.put("engagementEfficiency", efficiencyRating);
+        String intent = (scrollRate > 40 && bounceRate < 50) ? "HIGH" : "PASSIVE";
+        insights.put("readerIntent", intent);
+        insights.put("recommendation", intent.equals("HIGH")
+                ? "Users are deeply engaged. Increase Call-to-Actions on project pages."
+                : "Users are skimming. Use more visual high-level project summaries.");
 
         return insights;
     }

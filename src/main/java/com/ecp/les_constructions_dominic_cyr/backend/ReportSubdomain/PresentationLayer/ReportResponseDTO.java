@@ -11,7 +11,7 @@ public class ReportResponseDTO {
     private String ownerId;
     private String reportType;
     private String fileFormat;
-    private String downloadUrl;
+    private String downloadUrl; // React uses this to verify the file exists
     private Long fileSize;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
