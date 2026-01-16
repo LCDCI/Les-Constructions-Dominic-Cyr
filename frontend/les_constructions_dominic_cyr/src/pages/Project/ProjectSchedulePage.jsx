@@ -22,249 +22,333 @@ import { taskApi } from '../../features/schedules/api/taskApi';
 import { fetchLots } from '../../features/lots/api/lots';
 import ScheduleDetailModal from '../../components/Modals/ScheduleDetailModal';
 import ScheduleFormModal from '../../components/Modals/ScheduleFormModal';
+import EditScheduleModal from '../../components/Modals/EditScheduleModal';
 import '../../styles/Project/ProjectSchedule.css';
+
+const locales = {
+  'en-US': enUS,
+};
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
 
 const TASK_STATUSES = ['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'ON_HOLD'];
 const TASK_PRIORITIES = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'];
+
+const buildEmptyScheduleForm = () => ({
+  scheduleDescription: '',
+  scheduleStartDate: format(new Date(), 'yyyy-MM-dd'),
+  scheduleEndDate: format(new Date(), 'yyyy-MM-dd'),
+  lotId: '',
+  scheduleIdentifier: null,
+});
+
+const buildEmptyTask = (start, end, isEditable = false) => ({
+  taskId: null,
+  taskTitle: '',
+  taskStatus: TASK_STATUSES[0],
+  taskPriority: TASK_PRIORITIES[2],
+  periodStart: start || '',
+  periodEnd: end || start || '',
+  assignedToUserId: '',
+  taskDescription: '',
+  estimatedHours: '',
+  hoursSpent: '',
+  taskProgress: '',
+  isEditable,
+});
+
+const buildTaskFromExisting = (task, scheduleStart, scheduleEnd) => ({
+  taskId: task?.taskId ?? task?.id ?? task?.identifier ?? null,
+  taskTitle: task?.taskTitle ?? task?.title ?? '',
+  taskStatus: task?.taskStatus ?? task?.status ?? TASK_STATUSES[0],
+  taskPriority: task?.taskPriority ?? task?.priority ?? TASK_PRIORITIES[2],
+  periodStart: formatDate(
+    task?.periodStart || task?.startDate || scheduleStart,
+    'yyyy-MM-dd'
+  ),
+  periodEnd: formatDate(
+    task?.periodEnd || task?.endDate || task?.periodStart || scheduleEnd,
+    'yyyy-MM-dd'
+  ),
+  assignedToUserId: task?.assignedToUserId ?? task?.assigneeId ?? '',
+  taskDescription: task?.taskDescription ?? task?.description ?? '',
+  estimatedHours: task?.estimatedHours ?? '',
+  hoursSpent: task?.hoursSpent ?? '',
+  taskProgress: task?.taskProgress ?? '',
+  isEditable: false,
+});
 
 const ProjectSchedulePage = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+
   const [events, setEvents] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const [projectName, setProjectName] = useState('Project');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [projectName, setProjectName] = useState('');
-  const [schedules, setSchedules] = useState([]);
   const [lots, setLots] = useState([]);
-  const [lotsLoading, setLotsLoading] = useState(true);
-  const [lotsError, setLotsError] = useState('');
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [defaultDate, setDefaultDate] = useState(new Date());
+  const [lotsLoading, setLotsLoading] = useState(false);
+  const [lotsError, setLotsError] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [currentView, setCurrentView] = useState(Views.WEEK);
+  const [defaultDate, setDefaultDate] = useState(new Date());
+  const [currentView, setCurrentView] = useState(Views.MONTH);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [taskModalMode, setTaskModalMode] = useState('create');
+
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [scheduleForTasks, setScheduleForTasks] = useState(null);
+  const [newSchedule, setNewSchedule] = useState(buildEmptyScheduleForm());
+  const [editSchedule, setEditSchedule] = useState(buildEmptyScheduleForm());
+  const [taskDrafts, setTaskDrafts] = useState([buildEmptyTask('', '')]);
+  const [editTaskDrafts, setEditTaskDrafts] = useState([]);
+  const [tasksToDelete, setTasksToDelete] = useState([]);
+
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [isDeletingSchedule, setIsDeletingSchedule] = useState(false);
   const [isSavingTasks, setIsSavingTasks] = useState(false);
   const [formError, setFormError] = useState('');
   const [editFormError, setEditFormError] = useState('');
   const [taskFormError, setTaskFormError] = useState('');
+
   const originalOverflow = useRef(null);
+  const didLockBody = useRef(false);
 
-  const normalizeDateInput = value => {
-    if (!value) return '';
-    if (typeof value === 'string') return value.slice(0, 10);
-    const d = new Date(value);
-    return Number.isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
-  };
-
-  const buildEmptyTask = (startDate, endDate, isEditable = true) => ({
-    taskTitle: '',
-    taskDescription: '',
-    taskStatus: TASK_STATUSES[0],
-    taskPriority: TASK_PRIORITIES[2],
-    periodStart:
-      normalizeDateInput(startDate) || format(new Date(), 'yyyy-MM-dd'),
-    periodEnd: normalizeDateInput(endDate) || format(new Date(), 'yyyy-MM-dd'),
-    estimatedHours: '',
-    hoursSpent: '',
-    taskProgress: '',
-    assignedToUserId: '',
-    taskId: undefined,
-    isEditable,
-  });
-
-  const buildTaskFromExisting = (task, fallbackStart, fallbackEnd) => {
-    const base = buildEmptyTask(fallbackStart, fallbackEnd, false);
-    const start =
-      task?.periodStart ||
-      task?.startDate ||
-      task?.taskStartDate ||
-      fallbackStart;
-    const end =
-      task?.periodEnd || task?.endDate || task?.taskEndDate || fallbackEnd;
-    return {
-      ...base,
-      ...task,
-      taskId: task?.taskId ?? task?.id ?? task?.identifier,
-      taskTitle:
-        task?.taskTitle ||
-        task?.taskDescription ||
-        task?.name ||
-        base.taskTitle,
-      taskDescription:
-        task?.taskDescription || task?.taskTitle || base.taskDescription,
-      taskStatus: task?.taskStatus || base.taskStatus,
-      taskPriority: task?.taskPriority || base.taskPriority,
-      periodStart: normalizeDateInput(start) || base.periodStart,
-      periodEnd: normalizeDateInput(end) || base.periodEnd,
-      estimatedHours:
-        task?.estimatedHours === null || task?.estimatedHours === undefined
-          ? ''
-          : task?.estimatedHours,
-      hoursSpent:
-        task?.hoursSpent === null || task?.hoursSpent === undefined
-          ? ''
-          : task?.hoursSpent,
-      taskProgress:
-        task?.taskProgress === null || task?.taskProgress === undefined
-          ? ''
-          : task?.taskProgress,
-      assignedToUserId: task?.assignedToUserId || '',
-      isEditable: false,
-    };
-  };
-
-  const buildEmptyScheduleForm = () => {
-    const today = format(new Date(), 'yyyy-MM-dd');
-    return {
-      scheduleDescription: '',
-      lotId: '',
-      scheduleStartDate: today,
-      scheduleEndDate: today,
-    };
-  };
-
-  const [newSchedule, setNewSchedule] = useState(buildEmptyScheduleForm);
-  const [editSchedule, setEditSchedule] = useState(buildEmptyScheduleForm);
-  const [taskDrafts, setTaskDrafts] = useState([buildEmptyTask()]);
-  const [editTaskDrafts, setEditTaskDrafts] = useState([buildEmptyTask()]);
-  const [scheduleForTasks, setScheduleForTasks] = useState(null);
-
-  const localizer = useMemo(
-    () =>
-      dateFnsLocalizer({
-        format,
-        parse,
-        startOfWeek,
-        getDay,
-        locales: { 'en-US': enUS },
-      }),
-    []
-  );
-
-  const toDate = (dateStr, hour = 8) => {
-    if (!dateStr) return new Date();
-    const base = parseISO(dateStr);
-    const withHour = setMinutes(setHours(base, hour), 0);
-    return withHour;
-  };
-
-  const parseDateSafe = value => {
-    if (!value) return null;
-    const parsed = parseISO(value);
-    return Number.isNaN(parsed.getTime()) ? null : parsed;
-  };
-
-  const extractErrorMessage = err => {
-    if (!err) return 'Unknown error';
-    const responseMsg = err.response?.data?.message;
-    const responseError = err.response?.data?.error;
-    const responseErrors = err.response?.data?.errors;
-    const statusText = err.response?.statusText;
-    const statusCode = err.response?.status;
-
-    if (Array.isArray(responseErrors) && responseErrors.length) {
-      return responseErrors.join(', ');
+  const parseDateSafe = input => {
+    if (!input) return null;
+    if (input instanceof Date) {
+      return Number.isNaN(input.getTime()) ? null : input;
     }
 
-    if (typeof responseMsg === 'string' && responseMsg.trim())
-      return responseMsg;
-    if (typeof responseError === 'string' && responseError.trim())
-      return responseError;
-    if (statusCode || statusText) {
-      return `Request failed${statusCode ? ` (${statusCode})` : ''}${statusText ? ` ${statusText}` : ''}`.trim();
+    try {
+      const parsed =
+        typeof input === 'string' && !/^[0-9]+$/.test(input)
+          ? parseISO(input)
+          : new Date(input);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    } catch (err) {
+      console.warn('Failed to parse date', input, err);
+      return null;
     }
-
-    return err.message || 'Unknown error';
   };
 
-  const validateScheduleRange = (startStr, endStr) => {
-    const start = parseDateSafe(startStr);
-    const end = parseDateSafe(endStr);
-    if (!start || !end) return 'Start and end dates are required.';
-    if (end < start)
-      return 'Schedule end date cannot be before the start date.';
-    return null;
+  const normalizeDateInput = input => {
+    const date = parseDateSafe(input);
+    return date ? format(date, 'yyyy-MM-dd') : '';
   };
 
-  const validateTaskWithinSchedule = (
-    task,
-    scheduleStartStr,
-    scheduleEndStr
-  ) => {
-    const scheduleStart = parseDateSafe(scheduleStartStr);
-    const scheduleEnd = parseDateSafe(scheduleEndStr);
-    if (!scheduleStart || !scheduleEnd) {
-      return 'Schedule dates are missing.';
+  const combineDateAndTime = (dateValue, timeValue, isStart = true) => {
+    const dateOnly = parseDateSafe(dateValue);
+    if (!dateOnly) return null;
+
+    if (timeValue) {
+      const [hoursPart, minutesPart] = String(timeValue).split(':');
+      const hoursNumber = Number(hoursPart);
+      const minutesNumber = Number(minutesPart ?? 0);
+      const safeHours = Number.isNaN(hoursNumber)
+        ? isStart
+          ? 8
+          : 17
+        : hoursNumber;
+      const safeMinutes = Number.isNaN(minutesNumber) ? 0 : minutesNumber;
+      return setMinutes(setHours(dateOnly, safeHours), safeMinutes);
     }
 
-    const periodStart = parseDateSafe(task.periodStart || scheduleStartStr);
-    const periodEnd = parseDateSafe(task.periodEnd || scheduleEndStr);
-
-    if (!periodStart || !periodEnd) {
-      return 'Task start and end dates are required.';
-    }
-
-    if (periodEnd < periodStart) {
-      return 'Task end date cannot be before the task start date.';
-    }
-
-    if (periodStart < scheduleStart || periodEnd > scheduleEnd) {
-      return 'Task dates must fall within the schedule start and end dates.';
-    }
-
-    return null;
+    return isStart
+      ? setMinutes(setHours(dateOnly, 8), 0)
+      : setMinutes(setHours(dateOnly, 23), 59);
   };
 
-  const normalizeSchedule = (schedule, fallbackId) => {
-    const tasks = Array.isArray(schedule.scheduleTasks)
-      ? schedule.scheduleTasks
-      : Array.isArray(schedule.tasks)
-        ? schedule.tasks
+  const normalizeSchedule = (schedule, fallbackId = null) => {
+    if (!schedule) {
+      return {
+        id: fallbackId,
+        scheduleId: fallbackId,
+        scheduleIdentifier: fallbackId,
+        scheduleDescription: '',
+        scheduleStartDate: '',
+        scheduleEndDate: '',
+        lotId: '',
+        lotIdentifier: '',
+        lotNumber: '',
+        projectName: 'Project',
+        tasks: [],
+      };
+    }
+
+    const scheduleIdentifier =
+      schedule.scheduleIdentifier ??
+      schedule.scheduleId ??
+      schedule.identifier ??
+      schedule.id ??
+      fallbackId;
+
+    const rawStart =
+      schedule.scheduleStartDate ??
+      schedule.startDate ??
+      schedule.start ??
+      schedule.periodStart ??
+      schedule.start_time ??
+      schedule.startTime ??
+      null;
+
+    const rawEnd =
+      schedule.scheduleEndDate ??
+      schedule.endDate ??
+      schedule.end ??
+      schedule.periodEnd ??
+      schedule.end_time ??
+      schedule.endTime ??
+      rawStart;
+
+    const normalizedStartDate = normalizeDateInput(rawStart);
+    const normalizedEndDate = normalizeDateInput(rawEnd) || normalizedStartDate;
+
+    const normalizedLotId =
+      schedule.lotIdentifier?.lotId ??
+      schedule.lotId ??
+      schedule.lot?.lotId ??
+      schedule.lot?.id ??
+      (typeof schedule.lotIdentifier === 'string' ||
+      typeof schedule.lotIdentifier === 'number'
+        ? schedule.lotIdentifier
+        : '');
+
+    const normalizedLotNumber =
+      schedule.lotNumber ??
+      schedule.lot?.lotNumber ??
+      schedule.lotIdentifier?.lotNumber ??
+      schedule.lot?.lotIdentifier?.lotNumber ??
+      schedule.lotName ??
+      '';
+
+    const normalizedTasks = Array.isArray(schedule.tasks)
+      ? schedule.tasks
+      : Array.isArray(schedule.scheduleTasks)
+        ? schedule.scheduleTasks
         : [];
 
     return {
       ...schedule,
-      scheduleId:
-        schedule.scheduleId ??
-        schedule.scheduleIdentifier ??
-        schedule.identifier ??
-        schedule.id ??
-        fallbackId,
-      id:
-        schedule.scheduleId ??
-        schedule.id ??
-        schedule.scheduleIdentifier ??
-        schedule.identifier ??
-        fallbackId,
-      tasks,
+      id: schedule.id ?? scheduleIdentifier ?? fallbackId ?? Date.now(),
+      scheduleId: schedule.scheduleId ?? scheduleIdentifier ?? fallbackId,
+      scheduleIdentifier,
+      scheduleDescription:
+        schedule.scheduleDescription ??
+        schedule.description ??
+        schedule.name ??
+        '',
+      scheduleStartDate: normalizedStartDate,
+      scheduleEndDate: normalizedEndDate,
+      lotId: normalizedLotId ? String(normalizedLotId) : '',
+      lotIdentifier: normalizedLotId ? String(normalizedLotId) : '',
+      lotNumber: normalizedLotNumber,
+      projectName:
+        schedule.projectName ??
+        schedule.project?.projectName ??
+        schedule.project?.name ??
+        'Project',
+      tasks: normalizedTasks,
     };
   };
 
-  const mapScheduleToEvent = (schedule, fallbackId) => {
-    const normalized = normalizeSchedule(schedule, fallbackId);
+  const mapScheduleToEvent = (scheduleEntity, fallbackId = null) => {
+    const normalized = normalizeSchedule(scheduleEntity, fallbackId);
+
+    const startDateTime = combineDateAndTime(
+      normalized.scheduleStartDate,
+      normalized.scheduleStartTime ??
+        normalized.startTime ??
+        normalized.startHour,
+      true
+    );
+
+    const endDateTime = combineDateAndTime(
+      normalized.scheduleEndDate,
+      normalized.scheduleEndTime ?? normalized.endTime ?? normalized.endHour,
+      false
+    );
+
+    const safeStart = startDateTime || new Date();
+    const safeEnd = endDateTime || startDateTime || new Date();
+
     return {
-      id: normalized.scheduleId ?? normalized.id,
-      scheduleIdentifier:
-        normalized.scheduleId ??
+      ...normalized,
+      id:
         normalized.scheduleIdentifier ??
-        normalized.identifier ??
-        normalized.id,
-      title: normalized.scheduleDescription ?? 'Schedule',
-      start: toDate(normalized.scheduleStartDate, 8),
-      end: toDate(normalized.scheduleEndDate, 17),
-      lot: normalized.lotNumber,
-      projectName: normalized.projectName,
-      tasks: normalized.tasks,
-      description: normalized.description ?? normalized.scheduleDescription,
+        normalized.id ??
+        fallbackId ??
+        Date.now(),
+      title:
+        normalized.scheduleDescription ||
+        (normalized.lotNumber
+          ? `Schedule · ${normalized.lotNumber}`
+          : 'Schedule'),
+      start: safeStart,
+      end: safeEnd < safeStart ? safeStart : safeEnd,
+      allDay:
+        !(
+          normalized.scheduleStartTime ||
+          normalized.startTime ||
+          normalized.startHour
+        ) &&
+        !(
+          normalized.scheduleEndTime ||
+          normalized.endTime ||
+          normalized.endHour
+        ),
     };
+  };
+
+  const validateTaskWithinSchedule = (task, scheduleStart, scheduleEnd) => {
+    const taskStart = parseDateSafe(task?.periodStart || task?.startDate);
+    const taskEnd = parseDateSafe(
+      task?.periodEnd || task?.endDate || task?.periodStart
+    );
+    const scheduleStartDate = parseDateSafe(scheduleStart);
+    const scheduleEndDate = parseDateSafe(scheduleEnd || scheduleStart);
+
+    if (!taskStart || !taskEnd) return 'Task start and end dates are required.';
+    if (taskEnd < taskStart)
+      return 'Task end date cannot be before the start date.';
+    if (scheduleStartDate && taskStart < scheduleStartDate)
+      return 'Task start date is before the schedule window.';
+    if (scheduleEndDate && taskEnd > scheduleEndDate)
+      return 'Task end date is after the schedule window.';
+    return null;
+  };
+
+  const extractErrorMessage = err => {
+    const responseData = err?.response?.data;
+    if (responseData) {
+      if (typeof responseData === 'string') return responseData;
+      if (typeof responseData.message === 'string') return responseData.message;
+      if (Array.isArray(responseData.errors))
+        return responseData.errors.join(', ');
+    }
+    return err?.message || 'Unexpected error';
+  };
+
+  const validateScheduleRange = (start, end) => {
+    const startDate = parseDateSafe(start);
+    const endDate = parseDateSafe(end);
+    if (!startDate || !endDate) return 'Start and end dates are required.';
+    if (endDate < startDate) {
+      return 'Schedule end date cannot be before the start date.';
+    }
+    return null;
   };
 
   const getLotId = lot =>
@@ -278,6 +362,22 @@ const ProjectSchedulePage = () => {
     return lotId || 'Unknown lot';
   };
 
+  const lotOptions = useMemo(
+    () =>
+      (lots || [])
+        .map(lot => {
+          const value = getLotId(lot);
+          return value
+            ? {
+                value,
+                label: formatLotLabel(lot),
+              }
+            : null;
+        })
+        .filter(Boolean),
+    [lots]
+  );
+
   const getScheduleIdentifier = entity =>
     entity?.scheduleId ??
     entity?.scheduleIdentifier ??
@@ -286,58 +386,23 @@ const ProjectSchedulePage = () => {
     null;
 
   const findEventForSchedule = scheduleEntity => {
+    if (!scheduleEntity) return null;
     const targetId = getScheduleIdentifier(scheduleEntity);
-    const match = events.find(
-      ev =>
-        getScheduleIdentifier(ev) === targetId || ev.id === scheduleEntity.id
+    return (
+      events.find(
+        ev =>
+          getScheduleIdentifier(ev) === targetId || ev.id === scheduleEntity.id
+      ) || null
     );
-    if (match) return match;
-    return mapScheduleToEvent(scheduleEntity, scheduleEntity.id || Date.now());
   };
 
   useEffect(() => {
-    const loadLots = async () => {
-      try {
-        setLotsLoading(true);
-        setLotsError('');
-        let token = null;
-        if (isAuthenticated) {
-          try {
-            token = await getAccessTokenSilently({
-              authorizationParams: {
-                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-              },
-            });
-          } catch (tokenErr) {
-            console.warn(
-              'Could not get token for lots, proceeding without auth'
-            );
-          }
-        }
-
-        const response = await fetchLots(token);
-        setLots(Array.isArray(response) ? response : []);
-      } catch (err) {
-        console.error('Error fetching lots:', err);
-        setLots([]);
-        const detailed = extractErrorMessage(err);
-        setLotsError(`Unable to load lots. ${detailed}`);
-      } finally {
-        setLotsLoading(false);
-      }
-    };
-
-    loadLots();
-  }, [getAccessTokenSilently, isAuthenticated]);
-
-  useEffect(() => {
     const fetchSchedules = async () => {
+      setLoading(true);
+
       try {
-        if (isLoading) return;
-
-        setLoading(true);
-
         let token = null;
+
         if (isAuthenticated) {
           try {
             token = await getAccessTokenSilently({
@@ -395,10 +460,35 @@ const ProjectSchedulePage = () => {
     }
   }, [projectId, isLoading, isAuthenticated, getAccessTokenSilently]);
 
+  useEffect(() => {
+    const loadLots = async () => {
+      setLotsLoading(true);
+      try {
+        let token = null;
+        if (isAuthenticated) {
+          token = await getAccessTokenSilently({
+            authorizationParams: {
+              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+            },
+          });
+        }
+        const response = await fetchLots(token);
+        setLots(Array.isArray(response) ? response : []);
+        setLotsError(null);
+      } catch (err) {
+        console.error('Error loading lots:', err);
+        setLotsError('Unable to load lots.');
+      } finally {
+        setLotsLoading(false);
+      }
+    };
+
+    loadLots();
+  }, [isAuthenticated, getAccessTokenSilently]);
+
   const onEventClick = async event => {
     const scheduleIdentifier = getScheduleIdentifier(event);
 
-    // Show the modal immediately with a loading state for tasks
     setSelectedEvent({
       ...event,
       tasks: event.tasks ?? [],
@@ -430,7 +520,6 @@ const ProjectSchedulePage = () => {
 
       let tasks = await attemptFetch(scheduleIdentifier);
 
-      // Fallback: some backends key tasks by numeric id instead of identifier
       if (
         (!Array.isArray(tasks) || tasks.length === 0) &&
         event.id &&
@@ -448,12 +537,7 @@ const ProjectSchedulePage = () => {
 
       setSelectedEvent(prev =>
         prev && getScheduleIdentifier(prev) === scheduleIdentifier
-          ? {
-              ...prev,
-              tasks,
-              tasksLoading: false,
-              tasksError: null,
-            }
+          ? { ...prev, tasks, tasksLoading: false, tasksError: null }
           : prev
       );
 
@@ -487,7 +571,8 @@ const ProjectSchedulePage = () => {
   };
 
   const onScheduleCardClick = scheduleItem => {
-    const eventLike = findEventForSchedule(scheduleItem);
+    const eventLike =
+      findEventForSchedule(scheduleItem) || mapScheduleToEvent(scheduleItem);
     onEventClick(eventLike);
   };
 
@@ -519,7 +604,6 @@ const ProjectSchedulePage = () => {
   };
 
   useEffect(() => {
-    // If returning from a task detail page opened via the modal, reopen the modal for that event.
     const state = location.state;
     if (!state?.reopenScheduleModal || !state?.scheduleEventId) return;
     if (!events || !events.length) return;
@@ -538,6 +622,7 @@ const ProjectSchedulePage = () => {
     const { reopenScheduleModal, scheduleEventId, ...rest } = state;
     navigate(location.pathname, { replace: true, state: rest });
   }, [location.state, events, navigate, location.pathname]);
+
   const formatDisplayRange = (start, end) => {
     if (!start) return '';
     const startText = formatDate(start, 'eee, MMM d, yyyy h:mm a');
@@ -553,19 +638,10 @@ const ProjectSchedulePage = () => {
     return `${startText} → ${endText}`;
   };
 
-  const handleCreateOverlayClick = e => {
-    if (e.target === e.currentTarget) {
-      setIsCreateModalOpen(false);
-      setFormError('');
-      setNewSchedule(buildEmptyScheduleForm());
-    }
-  };
-
-  const handleEditOverlayClick = e => {
-    if (e.target === e.currentTarget) {
-      setIsEditModalOpen(false);
-      setEditFormError('');
-    }
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false);
+    setFormError('');
+    setNewSchedule(buildEmptyScheduleForm());
   };
 
   const handleTaskOverlayClick = e => {
@@ -587,19 +663,25 @@ const ProjectSchedulePage = () => {
       isModalOpen || isCreateModalOpen || isTaskModalOpen || isEditModalOpen;
 
     if (anyModalOpen) {
-      if (originalOverflow.current === null) {
-        originalOverflow.current = document.body.style.overflow || '';
+      const current = document.body.style.overflow || '';
+      if (current !== 'hidden') {
+        originalOverflow.current = current;
+        document.body.style.overflow = 'hidden';
+        didLockBody.current = true;
+      } else {
+        didLockBody.current = false;
       }
-      document.body.style.overflow = 'hidden';
-    } else if (originalOverflow.current !== null) {
+    } else if (didLockBody.current && originalOverflow.current !== null) {
       document.body.style.overflow = originalOverflow.current;
       originalOverflow.current = null;
+      didLockBody.current = false;
     }
 
     return () => {
-      if (originalOverflow.current !== null) {
+      if (didLockBody.current && originalOverflow.current !== null) {
         document.body.style.overflow = originalOverflow.current;
         originalOverflow.current = null;
+        didLockBody.current = false;
       }
     };
   }, [isModalOpen, isCreateModalOpen, isTaskModalOpen, isEditModalOpen]);
@@ -649,25 +731,22 @@ const ProjectSchedulePage = () => {
   };
 
   const removeTaskRow = index => {
-    setTaskDrafts(prev => {
-      if (prev.length === 1) return prev;
-      return prev.filter((_, idx) => idx !== index);
-    });
+    setTaskDrafts(prev => prev.filter((_, idx) => idx !== index));
   };
 
   const removeEditTaskRow = index => {
     setEditTaskDrafts(prev => {
-      if (prev.length === 1) return prev;
-      return prev.filter((_, idx) => idx !== index);
+      const target = prev[index];
+      const remaining = prev.filter((_, idx) => idx !== index);
+      if (target?.taskId) {
+        setTasksToDelete(ids => [...ids, target.taskId]);
+      }
+      return remaining;
     });
   };
 
   const resetTaskDrafts = (start, end) => {
     setTaskDrafts([buildEmptyTask(start, end)]);
-  };
-
-  const resetEditTaskDrafts = (start, end) => {
-    setEditTaskDrafts([buildEmptyTask(start, end)]);
   };
 
   const handleCreateSchedule = async e => {
@@ -785,11 +864,10 @@ const ProjectSchedulePage = () => {
         )
       );
     } else {
-      resetEditTaskDrafts(
-        normalized.scheduleStartDate,
-        normalized.scheduleEndDate
-      );
+      setEditTaskDrafts([]);
     }
+
+    setTasksToDelete([]);
 
     setEditFormError('');
     setIsModalOpen(false);
@@ -868,6 +946,12 @@ const ProjectSchedulePage = () => {
             'Could not get token for update, proceeding without auth'
           );
         }
+      }
+
+      if (tasksToDelete.length) {
+        await Promise.all(
+          tasksToDelete.map(taskId => taskApi.deleteTask(taskId, token))
+        );
       }
 
       const payload = {
@@ -953,12 +1037,77 @@ const ProjectSchedulePage = () => {
 
       setIsEditModalOpen(false);
       setEditFormError('');
+      setTasksToDelete([]);
     } catch (err) {
       console.error('Error updating schedule:', err);
       const detailed = extractErrorMessage(err);
       setEditFormError(`Failed to update schedule: ${detailed}`);
     } finally {
       setIsSavingEdit(false);
+    }
+  };
+
+  const handleDeleteSchedule = async () => {
+    const scheduleIdentifier = editSchedule.scheduleIdentifier;
+    if (!scheduleIdentifier || isDeletingSchedule) return;
+
+    setEditFormError('');
+    setIsDeletingSchedule(true);
+
+    try {
+      let token = null;
+      if (isAuthenticated) {
+        try {
+          token = await getAccessTokenSilently({
+            authorizationParams: {
+              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+            },
+          });
+        } catch (tokenErr) {
+          console.warn('Could not get token for delete, proceeding without auth');
+        }
+      }
+
+      const allTaskIds = Array.from(
+        new Set([
+          ...editTaskDrafts.map(task => task.taskId).filter(Boolean),
+          ...tasksToDelete.filter(Boolean),
+        ])
+      );
+
+      if (allTaskIds.length) {
+        try {
+          await Promise.all(allTaskIds.map(id => taskApi.deleteTask(id, token)));
+        } catch (taskDeleteErr) {
+          console.warn('Some tasks could not be deleted during schedule delete', taskDeleteErr);
+        }
+      }
+
+      await projectScheduleApi.deleteProjectSchedule(
+        projectId,
+        scheduleIdentifier,
+        token
+      );
+
+      setSchedules(prev =>
+        prev.filter(item => getScheduleIdentifier(item) !== scheduleIdentifier)
+      );
+      setEvents(prev =>
+        prev.filter(ev => getScheduleIdentifier(ev) !== scheduleIdentifier)
+      );
+      setSelectedEvent(prev =>
+        prev && getScheduleIdentifier(prev) === scheduleIdentifier ? null : prev
+      );
+
+      setIsEditModalOpen(false);
+      setEditTaskDrafts([]);
+      setTasksToDelete([]);
+    } catch (err) {
+      console.error('Error deleting schedule:', err);
+      const detailed = extractErrorMessage(err);
+      setEditFormError(`Failed to delete schedule: ${detailed}`);
+    } finally {
+      setIsDeletingSchedule(false);
     }
   };
 
@@ -1103,7 +1252,6 @@ const ProjectSchedulePage = () => {
   };
 
   const CustomToolbar = toolbarProps => {
-    const today = new Date();
     const monthNames = [
       'January',
       'February',
@@ -1141,49 +1289,56 @@ const ProjectSchedulePage = () => {
       toolbarProps.onView(view);
     };
 
+    const today = new Date();
+
     return (
       <div className="schedule-toolbar">
         <div className="toolbar-left">
-          <button
-            type="button"
-            className="toolbar-button"
-            onClick={() => toolbarProps.onNavigate('TODAY')}
-          >
-            Today
-          </button>
-          <button
-            type="button"
-            className="toolbar-button"
-            onClick={() => toolbarProps.onNavigate('PREV')}
-          >
-            ←
-          </button>
-          <button
-            type="button"
-            className="toolbar-button"
-            onClick={() => toolbarProps.onNavigate('NEXT')}
-          >
-            →
-          </button>
-          <button
-            type="button"
-            className={`toolbar-button ${currentView === Views.WEEK ? 'toolbar-button-active' : ''}`}
-            onClick={() => handleViewChange(Views.WEEK)}
-          >
-            Week
-          </button>
-          <button
-            type="button"
-            className={`toolbar-button ${currentView === Views.MONTH ? 'toolbar-button-active' : ''}`}
-            onClick={() => handleViewChange(Views.MONTH)}
-          >
-            Month
-          </button>
-          <span className="today-chip">
-            Today: {formatDate(today, 'eee, MMM d')}
-          </span>
+          <div className="toolbar-today">
+            <button
+              type="button"
+              className="toolbar-button"
+              onClick={() => toolbarProps.onNavigate('TODAY')}
+            >
+              Today
+            </button>
+            <span className="toolbar-today-label">
+              Today: {formatDate(today, 'eee, MMM d')}
+            </span>
+          </div>
+          <div className="toolbar-nav">
+            <button
+              type="button"
+              className="toolbar-button"
+              onClick={() => toolbarProps.onNavigate('PREV')}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              className="toolbar-button"
+              onClick={() => toolbarProps.onNavigate('NEXT')}
+            >
+              →
+            </button>
+          </div>
+          <div className="toolbar-views">
+            <button
+              type="button"
+              className={`toolbar-button ${currentView === Views.WEEK ? 'toolbar-button-active' : ''}`}
+              onClick={() => handleViewChange(Views.WEEK)}
+            >
+              Week
+            </button>
+            <button
+              type="button"
+              className={`toolbar-button ${currentView === Views.MONTH ? 'toolbar-button-active' : ''}`}
+              onClick={() => handleViewChange(Views.MONTH)}
+            >
+              Month
+            </button>
+          </div>
         </div>
-
         <div className="toolbar-right">
           <select
             aria-label="Select month"
@@ -1218,8 +1373,8 @@ const ProjectSchedulePage = () => {
   if (loading) {
     return (
       <div className="schedule-loading">
-        <div className="spinner"></div>
-        <p>Loading project schedule...</p>
+        <div className="spinner" aria-label="Loading schedule" />
+        <span>Loading schedule…</span>
       </div>
     );
   }
@@ -1227,10 +1382,9 @@ const ProjectSchedulePage = () => {
   if (error) {
     return (
       <div className="schedule-error">
-        <h2>Error</h2>
-        <p>{error}</p>
-        <button onClick={() => navigate(-1)} className="back-button">
-          Go Back
+        <div>{error}</div>
+        <button type="button" onClick={() => window.location.reload()}>
+          Retry
         </button>
       </div>
     );
@@ -1239,944 +1393,430 @@ const ProjectSchedulePage = () => {
   return (
     <div className="project-schedule-page">
       <div className="schedule-header">
-        <h1>Project Schedule: {projectName}</h1>
+        <div>
+          <h1>Project Schedule</h1>
+          <div className="schedule-subtitle">{projectName}</div>
+        </div>
         <div className="schedule-actions">
           <button
             type="button"
-            className="create-schedule-button"
+            className="primary"
             onClick={() => {
               setIsCreateModalOpen(true);
-              setIsModalOpen(false);
-              setFormError('');
-              setTaskFormError('');
-              setScheduleForTasks(null);
-              setNewSchedule(buildEmptyScheduleForm());
-              resetTaskDrafts();
+              setTaskDrafts([
+                buildEmptyTask(
+                  newSchedule.scheduleStartDate,
+                  newSchedule.scheduleEndDate
+                ),
+              ]);
             }}
           >
-            Create Schedule
-          </button>
-          <button onClick={() => navigate(-1)} className="back-button-small">
-            ← Back
+            + New schedule
           </button>
         </div>
       </div>
 
-      <div className="schedule-layout">
-        <div className="schedule-panel">
+      <div className="schedule-body">
+        <div className="calendar-section">
           <Calendar
             localizer={localizer}
             events={events}
-            views={[Views.WEEK, Views.MONTH]}
-            defaultView={Views.WEEK}
+            startAccessor="start"
+            endAccessor="end"
             defaultDate={defaultDate}
             date={currentDate}
             view={currentView}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: 680 }}
-            popup={false}
-            onSelectEvent={onEventClick}
-            selectable
-            onSelectSlot={onSlotSelect}
-            eventPropGetter={eventStyleGetter}
-            dayPropGetter={date =>
-              isSameDay(date, new Date())
-                ? { className: 'rbc-day-today-strong' }
-                : undefined
-            }
-            onNavigate={(date, view) => {
-              setCurrentDate(date);
-              setCurrentView(view);
-            }}
+            onNavigate={date => setCurrentDate(date)}
             onView={view => setCurrentView(view)}
-            components={{
-              toolbar: toolbarProps => <CustomToolbar {...toolbarProps} />,
-            }}
+            selectable
+            popup
+            onSelectSlot={onSlotSelect}
+            onSelectEvent={onEventClick}
+            eventPropGetter={eventStyleGetter}
+            components={{ toolbar: CustomToolbar }}
+            style={{ height: '70vh' }}
           />
         </div>
 
-        <div className="schedule-side">
-          <h2>Schedules</h2>
+        <div className="schedule-list">
+          <div className="list-title">Schedules</div>
           {schedules.length === 0 && (
-            <div className="schedule-empty-state">
-              No schedules yet. Use "Create Schedule" to add one.
-            </div>
+            <div className="empty">No schedules yet.</div>
           )}
-          <div className="schedule-list-items">
-            {schedules.map(item => (
+          {schedules.map(schedule => {
+            const start = parseDateSafe(schedule.scheduleStartDate);
+            const end = parseDateSafe(schedule.scheduleEndDate);
+            const isToday = start && isSameDay(start, new Date());
+            const tasksArray = Array.isArray(schedule.tasks)
+              ? schedule.tasks
+              : Array.isArray(schedule.scheduleTasks)
+                ? schedule.scheduleTasks
+                : [];
+            const taskCount = tasksArray.length;
+            const lotLabel = schedule.lotId
+              ? `Lot ${schedule.lotId}`
+              : 'Lot unknown';
+            return (
               <div
-                key={
-                  item.id ??
-                  `${item.scheduleStartDate}-${item.scheduleDescription}`
-                }
+                key={getScheduleIdentifier(schedule)}
                 className="schedule-card schedule-card-clickable"
                 role="button"
                 tabIndex={0}
-                onClick={() => onScheduleCardClick(item)}
+                onClick={() => onScheduleCardClick(schedule)}
                 onKeyDown={e => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    onScheduleCardClick(item);
+                    onScheduleCardClick(schedule);
                   }
                 }}
               >
-                <div className="schedule-card-date">
-                  <span className="schedule-card-date-text">
-                    {item.scheduleStartDate}
-                  </span>
-                </div>
-                <div className="schedule-card-body">
-                  <div className="schedule-card-title">
-                    {item.scheduleDescription}
-                  </div>
-                  <div className="schedule-card-meta">
-                    Lot: {item.lotNumber}
-                  </div>
-                  {Array.isArray(item.tasks) ||
-                  Array.isArray(item.scheduleTasks) ? (
-                    <div className="schedule-card-meta">
-                      Tasks:{' '}
-                      {(Array.isArray(item.scheduleTasks)
-                        ? item.scheduleTasks
-                        : Array.isArray(item.tasks)
-                          ? item.tasks
-                          : []
-                      ).length || 0}
+                <div className="card-top">
+                  <div>
+                    <div className="card-title">
+                      {schedule.scheduleDescription || 'Schedule'}
                     </div>
-                  ) : null}
+                    <div className="card-meta">
+                      {lotLabel} ·{' '}
+                      {start ? formatDate(start, 'MMM d, yyyy') : 'Start ?'}
+                      {end ? ` → ${formatDate(end, 'MMM d, yyyy')}` : ''}
+                      {isToday ? ' · Today' : ''}
+                    </div>
+                    <div className="card-meta">
+                      <span className="card-chip">
+                        {taskCount} task{taskCount === 1 ? '' : 's'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="card-actions">
+                    <button
+                      type="button"
+                      className="ghost"
+                      onClick={e => {
+                        e.stopPropagation();
+                        openEditScheduleModal(schedule);
+                      }}
+                    >
+                      <FiEdit2 size={16} /> Edit
+                    </button>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-        {isCreateModalOpen && (
-          <div
-            className="schedule-modal-overlay"
-            role="dialog"
-            aria-modal="true"
-            onMouseDown={handleCreateOverlayClick}
-          >
-            <div
-              className="schedule-modal create-schedule-modal"
-              onMouseDown={e => e.stopPropagation()}
-            >
-              <div className="schedule-modal-header">
-                <div className="schedule-modal-title">Create Schedule</div>
-                <button
-                  type="button"
-                  className="modal-close"
-                  aria-label="Close"
-                  onClick={() => {
-                    setIsCreateModalOpen(false);
-                    setFormError('');
-                    setNewSchedule(buildEmptyScheduleForm());
-                  }}
-                >
-                  ×
-                </button>
-              </div>
+      </div>
 
-              <form
-                className="create-schedule-form"
-                onSubmit={handleCreateSchedule}
+      <ScheduleFormModal
+        title="Create Schedule"
+        isOpen={isCreateModalOpen}
+        schedule={newSchedule}
+        onChange={setNewSchedule}
+        onSubmit={handleCreateSchedule}
+        onClose={closeCreateModal}
+        lots={lotOptions}
+        lotsLoading={lotsLoading}
+        lotsError={lotsError}
+        isSaving={isSaving}
+        errorMessage={formError}
+      />
+
+      <EditScheduleModal
+        isOpen={isEditModalOpen}
+        schedule={editSchedule}
+        onChange={setEditSchedule}
+        onSubmit={handleUpdateSchedule}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditFormError('');
+        }}
+        lots={lotOptions}
+        lotsLoading={lotsLoading}
+        lotsError={lotsError}
+        isSaving={isSavingEdit}
+        isDeleting={isDeletingSchedule}
+        errorMessage={editFormError}
+        taskDrafts={editTaskDrafts}
+        onTaskChange={handleEditTaskChange}
+        onAddTask={addEditTaskRow}
+        onRemoveTask={removeEditTaskRow}
+        onToggleTaskEdit={toggleEditTask}
+        taskStatuses={TASK_STATUSES}
+        taskPriorities={TASK_PRIORITIES}
+        onDeleteSchedule={handleDeleteSchedule}
+      />
+
+      {scheduleForTasks && isTaskModalOpen && (
+        <div
+          className="schedule-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          onMouseDown={handleTaskOverlayClick}
+        >
+          <div
+            className="schedule-modal tasks-modal"
+            onMouseDown={e => e.stopPropagation()}
+          >
+            <div className="schedule-modal-header">
+              <div className="schedule-modal-title">
+                Add tasks for {scheduleForTasks.scheduleDescription}
+              </div>
+              <button
+                type="button"
+                className="modal-close"
+                aria-label="Close"
+                onClick={() => {
+                  setIsTaskModalOpen(false);
+                  setScheduleForTasks(null);
+                  resetTaskDrafts(
+                    scheduleForTasks.scheduleStartDate,
+                    scheduleForTasks.scheduleEndDate
+                  );
+                  setTaskFormError('');
+                }}
               >
-                <div className="form-row">
-                  <label>
-                    <span>Schedule description</span>
-                    <input
-                      type="text"
-                      value={newSchedule.scheduleDescription}
-                      onChange={e =>
-                        setNewSchedule(prev => ({
-                          ...prev,
-                          scheduleDescription: e.target.value,
-                        }))
-                      }
-                      placeholder="Foundation pour, framing, etc."
-                      required
-                    />
-                  </label>
-                </div>
-
-                <div className="form-row two-col">
-                  <label>
-                    <span>Lot / Phase</span>
-                    <select
-                      value={newSchedule.lotId}
-                      onChange={e =>
-                        setNewSchedule(prev => ({
-                          ...prev,
-                          lotId: e.target.value,
-                        }))
-                      }
-                      disabled={lotsLoading}
-                    >
-                      <option value="" disabled>
-                        {lotsLoading ? 'Loading lots...' : 'Select a lot'}
-                      </option>
-                      {lots.map(lot => {
-                        const lotId = getLotId(lot);
-                        return (
-                          <option key={lotId} value={lotId}>
-                            {formatLotLabel(lot)}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    {lotsError && (
-                      <div className="form-error subtle">{lotsError}</div>
-                    )}
-                  </label>
-
-                  <label>
-                    <span>Start date</span>
-                    <input
-                      type="date"
-                      value={newSchedule.scheduleStartDate}
-                      onChange={e =>
-                        setNewSchedule(prev => ({
-                          ...prev,
-                          scheduleStartDate: e.target.value,
-                        }))
-                      }
-                      required
-                    />
-                  </label>
-                </div>
-
-                <div className="form-row two-col">
-                  <label>
-                    <span>End date</span>
-                    <input
-                      type="date"
-                      value={newSchedule.scheduleEndDate}
-                      onChange={e =>
-                        setNewSchedule(prev => ({
-                          ...prev,
-                          scheduleEndDate: e.target.value,
-                        }))
-                      }
-                      required
-                    />
-                  </label>
-                </div>
-
-                <div className="form-row form-row-note">
-                  <div className="tasks-subtitle">
-                    After saving these schedule details, you will add tasks in
-                    the next step. Tasks will be constrained to the start and
-                    end dates you set here.
-                  </div>
-                </div>
-
-                {formError && <div className="form-error">{formError}</div>}
-
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="modal-secondary"
-                    onClick={() => {
-                      setIsCreateModalOpen(false);
-                      setFormError('');
-                      setNewSchedule(buildEmptyScheduleForm());
-                    }}
-                    disabled={isSaving}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="modal-primary"
-                    disabled={isSaving}
-                  >
-                    {isSaving ? 'Saving…' : 'Save schedule'}
-                  </button>
-                </div>
-              </form>
+                ×
+              </button>
             </div>
-          </div>
-        )}
-        {isEditModalOpen && (
-          <div
-            className="schedule-modal-overlay"
-            role="dialog"
-            aria-modal="true"
-            onMouseDown={handleEditOverlayClick}
-          >
-            <div
-              className="schedule-modal tasks-modal edit-schedule-modal"
-              onMouseDown={e => e.stopPropagation()}
-            >
-              <div className="schedule-modal-header">
-                <div className="schedule-modal-title">Edit Schedule</div>
-                <button
-                  type="button"
-                  className="modal-close"
-                  aria-label="Close"
-                  onClick={() => {
-                    setIsEditModalOpen(false);
-                    setEditFormError('');
-                  }}
-                >
-                  ×
-                </button>
+
+            <div className="schedule-modal-section">
+              <h4>Schedule window</h4>
+              <div>
+                {scheduleForTasks.scheduleStartDate} →{' '}
+                {scheduleForTasks.scheduleEndDate}
+                {scheduleForTasks.lotNumber &&
+                  ` · Lot ${scheduleForTasks.lotNumber}`}
               </div>
-
-              <form
-                className="create-schedule-form"
-                onSubmit={handleUpdateSchedule}
-              >
-                <div className="form-row">
-                  <label>
-                    <span>Schedule description</span>
-                    <input
-                      type="text"
-                      value={editSchedule.scheduleDescription}
-                      onChange={e =>
-                        setEditSchedule(prev => ({
-                          ...prev,
-                          scheduleDescription: e.target.value,
-                        }))
-                      }
-                      placeholder="Foundation pour, framing, etc."
-                      required
-                    />
-                  </label>
-                </div>
-
-                <div className="form-row two-col">
-                  <label>
-                    <span>Lot / Phase</span>
-                    <select
-                      value={editSchedule.lotId}
-                      onChange={e =>
-                        setEditSchedule(prev => ({
-                          ...prev,
-                          lotId: e.target.value,
-                        }))
-                      }
-                      disabled={lotsLoading}
-                    >
-                      <option value="" disabled>
-                        {lotsLoading ? 'Loading lots...' : 'Select a lot'}
-                      </option>
-                      {lots.map(lot => {
-                        const lotId = getLotId(lot);
-                        return (
-                          <option key={lotId} value={lotId}>
-                            {formatLotLabel(lot)}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    {lotsError && (
-                      <div className="form-error subtle">{lotsError}</div>
-                    )}
-                  </label>
-
-                  <label>
-                    <span>Start date</span>
-                    <input
-                      type="date"
-                      value={editSchedule.scheduleStartDate}
-                      onChange={e =>
-                        setEditSchedule(prev => ({
-                          ...prev,
-                          scheduleStartDate: e.target.value,
-                        }))
-                      }
-                      required
-                    />
-                  </label>
-                </div>
-
-                <div className="form-row two-col">
-                  <label>
-                    <span>End date</span>
-                    <input
-                      type="date"
-                      value={editSchedule.scheduleEndDate}
-                      onChange={e =>
-                        setEditSchedule(prev => ({
-                          ...prev,
-                          scheduleEndDate: e.target.value,
-                        }))
-                      }
-                      required
-                    />
-                  </label>
-                </div>
-
-                <div className="schedule-modal-section">
-                  <h4>Edit tasks</h4>
-                  <div className="tasks-subtitle">
-                    Update existing tasks or add new ones. Tasks remain bounded
-                    by the schedule dates.
-                  </div>
-                </div>
-
-                <div className="task-list">
-                  {editTaskDrafts.map((task, idx) => (
-                    <div key={`edit-task-${idx}`} className="task-row">
-                      <div className="task-row-header">
-                        <span className="task-row-title">Task {idx + 1}</span>
-                        <div className="task-row-actions">
-                          <button
-                            type="button"
-                            className={`task-edit-button ${
-                              task.isEditable ? 'is-active' : ''
-                            }`}
-                            onClick={() => toggleEditTask(idx)}
-                            aria-label={
-                              task.isEditable
-                                ? `Lock task ${idx + 1}`
-                                : `Enable editing for task ${idx + 1}`
-                            }
-                          >
-                            <FiEdit2
-                              aria-hidden="true"
-                              style={{ marginRight: 6 }}
-                            />
-                            {task.isEditable ? 'Editing' : 'Edit'}
-                          </button>
-                          <button
-                            type="button"
-                            className="task-remove-button"
-                            onClick={() => removeEditTaskRow(idx)}
-                            aria-label={`Remove task ${idx + 1}`}
-                            disabled={editTaskDrafts.length === 1}
-                          >
-                            Remove
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="task-row-grid">
-                        <label>
-                          <span>Title</span>
-                          <input
-                            type="text"
-                            value={task.taskTitle}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'taskTitle',
-                                e.target.value
-                              )
-                            }
-                            placeholder={`Task ${idx + 1} title`}
-                          />
-                        </label>
-
-                        <label>
-                          <span>Status</span>
-                          <select
-                            value={task.taskStatus}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'taskStatus',
-                                e.target.value
-                              )
-                            }
-                          >
-                            {TASK_STATUSES.map(status => (
-                              <option key={status} value={status}>
-                                {status.replaceAll('_', ' ')}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-
-                        <label>
-                          <span>Priority</span>
-                          <select
-                            value={task.taskPriority}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'taskPriority',
-                                e.target.value
-                              )
-                            }
-                          >
-                            {TASK_PRIORITIES.map(priority => (
-                              <option key={priority} value={priority}>
-                                {priority.replaceAll('_', ' ')}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                      </div>
-
-                      <div className="task-row-grid">
-                        <label>
-                          <span>Period start</span>
-                          <input
-                            type="date"
-                            value={task.periodStart}
-                            min={editSchedule.scheduleStartDate}
-                            max={editSchedule.scheduleEndDate}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'periodStart',
-                                e.target.value
-                              )
-                            }
-                          />
-                        </label>
-
-                        <label>
-                          <span>Period end</span>
-                          <input
-                            type="date"
-                            value={task.periodEnd}
-                            min={editSchedule.scheduleStartDate}
-                            max={editSchedule.scheduleEndDate}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'periodEnd',
-                                e.target.value
-                              )
-                            }
-                          />
-                        </label>
-
-                        <label>
-                          <span>Assignee (user UUID)</span>
-                          <input
-                            type="text"
-                            value={task.assignedToUserId}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'assignedToUserId',
-                                e.target.value
-                              )
-                            }
-                            placeholder="Optional"
-                          />
-                        </label>
-                      </div>
-
-                      <label className="task-row-full">
-                        <span>Description</span>
-                        <textarea
-                          value={task.taskDescription}
-                          disabled={!task.isEditable}
-                          onChange={e =>
-                            handleEditTaskChange(
-                              idx,
-                              'taskDescription',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Describe the work to be completed"
-                          rows={2}
-                        />
-                      </label>
-
-                      <div className="task-row-grid task-row-numbers">
-                        <label>
-                          <span>Estimated hours</span>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.5"
-                            value={task.estimatedHours}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'estimatedHours',
-                                e.target.value
-                              )
-                            }
-                            placeholder="Optional"
-                          />
-                        </label>
-
-                        <label>
-                          <span>Hours spent</span>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.5"
-                            value={task.hoursSpent}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'hoursSpent',
-                                e.target.value
-                              )
-                            }
-                            placeholder="Optional"
-                          />
-                        </label>
-
-                        <label>
-                          <span>Progress (%)</span>
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="1"
-                            value={task.taskProgress}
-                            disabled={!task.isEditable}
-                            onChange={e =>
-                              handleEditTaskChange(
-                                idx,
-                                'taskProgress',
-                                e.target.value
-                              )
-                            }
-                            placeholder="Optional"
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="task-actions">
-                  <button
-                    type="button"
-                    className="task-add-button"
-                    onClick={() =>
-                      addEditTaskRow(
-                        editSchedule.scheduleStartDate,
-                        editSchedule.scheduleEndDate
-                      )
-                    }
-                  >
-                    + Add task
-                  </button>
-                </div>
-
-                {editFormError && (
-                  <div className="form-error">{editFormError}</div>
-                )}
-
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="modal-secondary"
-                    onClick={() => {
-                      setIsEditModalOpen(false);
-                      setEditFormError('');
-                    }}
-                    disabled={isSavingEdit}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="modal-primary"
-                    disabled={isSavingEdit}
-                  >
-                    {isSavingEdit ? 'Saving…' : 'Save changes'}
-                  </button>
-                </div>
-              </form>
+              <div className="tasks-subtitle">
+                Task dates must stay within this window.
+              </div>
             </div>
-          </div>
-        )}
-        {scheduleForTasks && isTaskModalOpen && (
-          <div
-            className="schedule-modal-overlay"
-            role="dialog"
-            aria-modal="true"
-            onMouseDown={handleTaskOverlayClick}
-          >
-            <div
-              className="schedule-modal tasks-modal"
-              onMouseDown={e => e.stopPropagation()}
-            >
-              <div className="schedule-modal-header">
-                <div className="schedule-modal-title">
-                  Add tasks for {scheduleForTasks.scheduleDescription}
-                </div>
-                <button
-                  type="button"
-                  className="modal-close"
-                  aria-label="Close"
-                  onClick={() => {
-                    setIsTaskModalOpen(false);
-                    setScheduleForTasks(null);
-                    resetTaskDrafts(
-                      scheduleForTasks.scheduleStartDate,
-                      scheduleForTasks.scheduleEndDate
-                    );
-                    setTaskFormError('');
-                  }}
-                >
-                  ×
-                </button>
-              </div>
 
-              <div className="schedule-modal-section">
-                <h4>Schedule window</h4>
-                <div>
-                  {scheduleForTasks.scheduleStartDate} →{' '}
-                  {scheduleForTasks.scheduleEndDate}
-                  {scheduleForTasks.lotNumber &&
-                    ` · Lot ${scheduleForTasks.lotNumber}`}
-                </div>
-                <div className="tasks-subtitle">
-                  Task dates must stay within this window.
-                </div>
-              </div>
+            <div className="task-list">
+              {taskDrafts.map((task, idx) => (
+                <div key={`task-${idx}`} className="task-row">
+                  <div className="task-row-header">
+                    <span className="task-row-title">Task {idx + 1}</span>
+                    <button
+                      type="button"
+                      className="task-remove-button"
+                      onClick={() => removeTaskRow(idx)}
+                      aria-label={`Remove task ${idx + 1}`}
+                      disabled={taskDrafts.length === 1}
+                    >
+                      Remove
+                    </button>
+                  </div>
 
-              <div className="task-list">
-                {taskDrafts.map((task, idx) => (
-                  <div key={`task-${idx}`} className="task-row">
-                    <div className="task-row-header">
-                      <span className="task-row-title">Task {idx + 1}</span>
-                      <button
-                        type="button"
-                        className="task-remove-button"
-                        onClick={() => removeTaskRow(idx)}
-                        aria-label={`Remove task ${idx + 1}`}
-                        disabled={taskDrafts.length === 1}
-                      >
-                        Remove
-                      </button>
-                    </div>
-
-                    <div className="task-row-grid">
-                      <label>
-                        <span>Title</span>
-                        <input
-                          type="text"
-                          value={task.taskTitle}
-                          onChange={e =>
-                            handleTaskChange(idx, 'taskTitle', e.target.value)
-                          }
-                          placeholder={`Task ${idx + 1} title`}
-                        />
-                      </label>
-
-                      <label>
-                        <span>Status</span>
-                        <select
-                          value={task.taskStatus}
-                          onChange={e =>
-                            handleTaskChange(idx, 'taskStatus', e.target.value)
-                          }
-                        >
-                          {TASK_STATUSES.map(status => (
-                            <option key={status} value={status}>
-                              {status.replaceAll('_', ' ')}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-
-                      <label>
-                        <span>Priority</span>
-                        <select
-                          value={task.taskPriority}
-                          onChange={e =>
-                            handleTaskChange(
-                              idx,
-                              'taskPriority',
-                              e.target.value
-                            )
-                          }
-                        >
-                          {TASK_PRIORITIES.map(priority => (
-                            <option key={priority} value={priority}>
-                              {priority.replaceAll('_', ' ')}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                    </div>
-
-                    <div className="task-row-grid">
-                      <label>
-                        <span>Period start</span>
-                        <input
-                          type="date"
-                          value={task.periodStart}
-                          min={scheduleForTasks.scheduleStartDate}
-                          max={scheduleForTasks.scheduleEndDate}
-                          onChange={e =>
-                            handleTaskChange(idx, 'periodStart', e.target.value)
-                          }
-                        />
-                      </label>
-
-                      <label>
-                        <span>Period end</span>
-                        <input
-                          type="date"
-                          value={task.periodEnd}
-                          min={scheduleForTasks.scheduleStartDate}
-                          max={scheduleForTasks.scheduleEndDate}
-                          onChange={e =>
-                            handleTaskChange(idx, 'periodEnd', e.target.value)
-                          }
-                        />
-                      </label>
-
-                      <label>
-                        <span>Assignee (user UUID)</span>
-                        <input
-                          type="text"
-                          value={task.assignedToUserId}
-                          onChange={e =>
-                            handleTaskChange(
-                              idx,
-                              'assignedToUserId',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Optional"
-                        />
-                      </label>
-                    </div>
-
-                    <label className="task-row-full">
-                      <span>Description</span>
-                      <textarea
-                        value={task.taskDescription}
+                  <div className="task-row-grid">
+                    <label>
+                      <span>Title</span>
+                      <input
+                        type="text"
+                        value={task.taskTitle}
                         onChange={e =>
-                          handleTaskChange(
-                            idx,
-                            'taskDescription',
-                            e.target.value
-                          )
+                          handleTaskChange(idx, 'taskTitle', e.target.value)
                         }
-                        placeholder="Describe the work to be completed"
-                        rows={2}
+                        placeholder={`Task ${idx + 1} title`}
                       />
                     </label>
 
-                    <div className="task-row-grid task-row-numbers">
-                      <label>
-                        <span>Estimated hours</span>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.5"
-                          value={task.estimatedHours}
-                          onChange={e =>
-                            handleTaskChange(
-                              idx,
-                              'estimatedHours',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Optional"
-                        />
-                      </label>
+                    <label>
+                      <span>Status</span>
+                      <select
+                        value={task.taskStatus}
+                        onChange={e =>
+                          handleTaskChange(idx, 'taskStatus', e.target.value)
+                        }
+                      >
+                        {TASK_STATUSES.map(status => (
+                          <option key={status} value={status}>
+                            {status.replaceAll('_', ' ')}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
 
-                      <label>
-                        <span>Hours spent</span>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.5"
-                          value={task.hoursSpent}
-                          onChange={e =>
-                            handleTaskChange(idx, 'hoursSpent', e.target.value)
-                          }
-                          placeholder="Optional"
-                        />
-                      </label>
-
-                      <label>
-                        <span>Progress (%)</span>
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          step="1"
-                          value={task.taskProgress}
-                          onChange={e =>
-                            handleTaskChange(
-                              idx,
-                              'taskProgress',
-                              e.target.value
-                            )
-                          }
-                          placeholder="Optional"
-                        />
-                      </label>
-                    </div>
+                    <label>
+                      <span>Priority</span>
+                      <select
+                        value={task.taskPriority}
+                        onChange={e =>
+                          handleTaskChange(idx, 'taskPriority', e.target.value)
+                        }
+                      >
+                        {TASK_PRIORITIES.map(priority => (
+                          <option key={priority} value={priority}>
+                            {priority.replaceAll('_', ' ')}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                   </div>
-                ))}
-              </div>
 
-              <div className="task-actions">
-                <button
-                  type="button"
-                  className="task-add-button"
-                  onClick={() =>
-                    addTaskRow(
-                      scheduleForTasks.scheduleStartDate,
-                      scheduleForTasks.scheduleEndDate
-                    )
-                  }
-                >
-                  + Add task
-                </button>
-              </div>
+                  <div className="task-row-grid">
+                    <label>
+                      <span>Period start</span>
+                      <input
+                        type="date"
+                        value={task.periodStart}
+                        min={scheduleForTasks.scheduleStartDate}
+                        max={scheduleForTasks.scheduleEndDate}
+                        onChange={e =>
+                          handleTaskChange(idx, 'periodStart', e.target.value)
+                        }
+                      />
+                    </label>
 
-              {taskFormError && (
-                <div className="form-error">{taskFormError}</div>
-              )}
+                    <label>
+                      <span>Period end</span>
+                      <input
+                        type="date"
+                        value={task.periodEnd}
+                        min={scheduleForTasks.scheduleStartDate}
+                        max={scheduleForTasks.scheduleEndDate}
+                        onChange={e =>
+                          handleTaskChange(idx, 'periodEnd', e.target.value)
+                        }
+                      />
+                    </label>
 
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="modal-secondary"
-                  onClick={() => {
-                    setIsTaskModalOpen(false);
-                    setScheduleForTasks(null);
-                    resetTaskDrafts(
-                      scheduleForTasks.scheduleStartDate,
-                      scheduleForTasks.scheduleEndDate
-                    );
-                    setTaskFormError('');
-                  }}
-                  disabled={isSavingTasks}
-                >
-                  Skip for now
-                </button>
-                <button
-                  type="button"
-                  className="modal-primary"
-                  onClick={handleSaveTasks}
-                  disabled={isSavingTasks}
-                >
-                  {isSavingTasks ? 'Saving tasks…' : 'Save tasks'}
-                </button>
-              </div>
+                    <label>
+                      <span>Assignee (user UUID)</span>
+                      <input
+                        type="text"
+                        value={task.assignedToUserId}
+                        onChange={e =>
+                          handleTaskChange(
+                            idx,
+                            'assignedToUserId',
+                            e.target.value
+                          )
+                        }
+                        placeholder="Optional"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="task-row-full">
+                    <span>Description</span>
+                    <textarea
+                      value={task.taskDescription}
+                      onChange={e =>
+                        handleTaskChange(idx, 'taskDescription', e.target.value)
+                      }
+                      placeholder="Describe the work to be completed"
+                      rows={2}
+                    />
+                  </label>
+
+                  <div className="task-row-grid task-row-numbers">
+                    <label>
+                      <span>Estimated hours</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        value={task.estimatedHours}
+                        onChange={e =>
+                          handleTaskChange(
+                            idx,
+                            'estimatedHours',
+                            e.target.value
+                          )
+                        }
+                        placeholder="Optional"
+                      />
+                    </label>
+
+                    <label>
+                      <span>Hours spent</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        value={task.hoursSpent}
+                        onChange={e =>
+                          handleTaskChange(idx, 'hoursSpent', e.target.value)
+                        }
+                        placeholder="Optional"
+                      />
+                    </label>
+
+                    <label>
+                      <span>Progress (%)</span>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={task.taskProgress}
+                        onChange={e =>
+                          handleTaskChange(idx, 'taskProgress', e.target.value)
+                        }
+                        placeholder="Optional"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="task-actions">
+              <button
+                type="button"
+                className="task-add-button"
+                onClick={() =>
+                  addTaskRow(
+                    scheduleForTasks.scheduleStartDate,
+                    scheduleForTasks.scheduleEndDate
+                  )
+                }
+              >
+                + Add task
+              </button>
+            </div>
+
+            {taskFormError && <div className="form-error">{taskFormError}</div>}
+
+            <div className="form-actions">
+              <button
+                type="button"
+                className="modal-secondary"
+                onClick={() => {
+                  setIsTaskModalOpen(false);
+                  setScheduleForTasks(null);
+                  resetTaskDrafts(
+                    scheduleForTasks.scheduleStartDate,
+                    scheduleForTasks.scheduleEndDate
+                  );
+                  setTaskFormError('');
+                }}
+                disabled={isSavingTasks}
+              >
+                Skip for now
+              </button>
+              <button
+                type="button"
+                className="modal-primary"
+                onClick={handleSaveTasks}
+                disabled={isSavingTasks}
+              >
+                {isSavingTasks ? 'Saving tasks…' : 'Save tasks'}
+              </button>
             </div>
           </div>
-        )}
-        <ScheduleDetailModal
-          isOpen={isModalOpen}
-          event={selectedEvent}
-          onClose={() => setIsModalOpen(false)}
-          onTaskNavigate={(path, navState) => navigate(path, navState)}
-          returnPath={location.pathname}
-          onEditSchedule={openEditScheduleModal}
-          formatDisplayRange={formatDisplayRange}
-        />
-      </div>
+        </div>
+      )}
+
+      <ScheduleDetailModal
+        isOpen={isModalOpen}
+        event={selectedEvent}
+        onClose={() => setIsModalOpen(false)}
+        onTaskNavigate={(path, navState) => navigate(path, navState)}
+        returnPath={location.pathname}
+        onEditSchedule={openEditScheduleModal}
+        formatDisplayRange={formatDisplayRange}
+      />
     </div>
   );
 };

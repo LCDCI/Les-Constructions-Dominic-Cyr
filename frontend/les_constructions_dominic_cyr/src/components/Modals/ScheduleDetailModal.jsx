@@ -28,22 +28,30 @@ const ScheduleDetailModal = ({
   };
 
   const originalOverflow = useRef(null);
+  const didLockBody = useRef(false);
 
   useEffect(() => {
-    // Lock the body scroll while the modal is open.
+    // Lock body scroll only if it wasn't already locked elsewhere.
     if (isOpen) {
-      if (originalOverflow.current === null) {
-        originalOverflow.current = document.body.style.overflow || '';
+      const current = document.body.style.overflow || '';
+      if (current !== 'hidden') {
+        originalOverflow.current = current;
+        document.body.style.overflow = 'hidden';
+        didLockBody.current = true;
+      } else {
+        // Already locked by another modal; don't record/restore.
+        didLockBody.current = false;
       }
-      document.body.style.overflow = 'hidden';
-    } else if (originalOverflow.current !== null) {
+    } else if (didLockBody.current && originalOverflow.current !== null) {
       document.body.style.overflow = originalOverflow.current;
       originalOverflow.current = null;
+      didLockBody.current = false;
     }
     return () => {
-      if (originalOverflow.current !== null) {
+      if (didLockBody.current && originalOverflow.current !== null) {
         document.body.style.overflow = originalOverflow.current;
         originalOverflow.current = null;
+        didLockBody.current = false;
       }
     };
   }, [isOpen]);
