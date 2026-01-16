@@ -6,7 +6,7 @@ const DeleteScheduleConfirmationModal = ({
   isOpen,
   onCancel,
   onConfirm,
-  isDeleting,
+  isDeleting = false,
 }) => {
   if (!isOpen) return null;
 
@@ -68,10 +68,6 @@ DeleteScheduleConfirmationModal.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
   isDeleting: PropTypes.bool,
-};
-
-DeleteScheduleConfirmationModal.defaultProps = {
-  isDeleting: false,
 };
 
 export default DeleteScheduleConfirmationModal;

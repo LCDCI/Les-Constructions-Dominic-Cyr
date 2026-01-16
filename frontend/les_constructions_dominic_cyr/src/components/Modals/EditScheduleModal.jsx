@@ -10,11 +10,11 @@ const EditScheduleModal = ({
   onSubmit,
   onClose,
   lots,
-  lotsLoading,
-  lotsError,
-  isSaving,
-  isDeleting,
-  errorMessage,
+  lotsLoading = false,
+  lotsError = '',
+  isSaving = false,
+  isDeleting = false,
+  errorMessage = '',
   taskDrafts,
   onTaskChange,
   onAddTask,
@@ -22,7 +22,7 @@ const EditScheduleModal = ({
   onToggleTaskEdit,
   taskStatuses,
   taskPriorities,
-  onDeleteSchedule,
+  onDeleteSchedule = null,
 }) => {
   const originalOverflow = useRef(null);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -72,6 +72,21 @@ const EditScheduleModal = ({
     setIsDeleteConfirmOpen(false);
   };
 
+  const handleFormSubmit = async e => {
+    e.preventDefault();
+    if (isSaving || isDeleting) return;
+
+    try {
+      const result = await onSubmit?.(e);
+      if (result !== false) {
+        onClose?.();
+      }
+    } catch (err) {
+      // Let parent handle errors; keep modal open
+      console.error('Save schedule failed', err);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -99,7 +114,7 @@ const EditScheduleModal = ({
 
         {errorMessage ? <div className="form-error">{errorMessage}</div> : null}
 
-        <form className="create-schedule-form" onSubmit={onSubmit}>
+        <form className="create-schedule-form" onSubmit={handleFormSubmit}>
           <div className="form-row">
             <label>
               <span>Schedule description</span>
@@ -388,8 +403,9 @@ const EditScheduleModal = ({
                 Cancel
               </button>
               <button
-                type="submit"
+                type="button"
                 className="modal-primary"
+                onClick={handleFormSubmit}
                 disabled={isSaving}
               >
                 {isSaving ? 'Saving…' : 'Save changes'}
@@ -421,7 +437,7 @@ EditScheduleModal.propTypes = {
     scheduleIdentifier: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
-      PropTypes.null,
+      PropTypes.oneOf([null]),
     ]),
   }).isRequired,
   onChange: PropTypes.func.isRequired,
@@ -446,13 +462,4 @@ EditScheduleModal.propTypes = {
   taskStatuses: PropTypes.arrayOf(PropTypes.string).isRequired,
   taskPriorities: PropTypes.arrayOf(PropTypes.string).isRequired,
   onDeleteSchedule: PropTypes.func,
-};
-
-EditScheduleModal.defaultProps = {
-  lotsLoading: false,
-  lotsError: '',
-  isSaving: false,
-  isDeleting: false,
-  onDeleteSchedule: null,
-  errorMessage: '',
 };
