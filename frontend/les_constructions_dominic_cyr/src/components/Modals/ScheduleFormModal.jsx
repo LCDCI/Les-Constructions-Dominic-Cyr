@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useRef } from 'react';
 
 const ScheduleFormModal = ({
@@ -78,7 +79,7 @@ const ScheduleFormModal = ({
         <form className="create-schedule-form" onSubmit={onSubmit}>
           <div className="form-row">
             <label>
-              <span>Schedule description</span>
+              <span>Work description</span>
               <input
                 type="text"
                 value={schedule.scheduleDescription}
@@ -158,7 +159,7 @@ const ScheduleFormModal = ({
               Cancel
             </button>
             <button type="submit" className="modal-primary" disabled={isSaving}>
-              {isSaving ? 'Saving…' : 'Save schedule'}
+              {isSaving ? 'Saving…' : 'Save work'}
             </button>
           </div>
         </form>
