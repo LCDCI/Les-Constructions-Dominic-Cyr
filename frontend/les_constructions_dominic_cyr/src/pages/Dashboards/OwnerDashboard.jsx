@@ -4,15 +4,14 @@ import ownerUseSchedules from '../../features/schedules/hooks/ownerUseSchedules'
 import ScheduleList from '../../features/schedules/components/ScheduleList';
 import DashboardCard from '../../components/DashboardCard';
 import '../../styles/Dashboards/OwnerDashboard.css';
-import { GoInbox } from "react-icons/go";
-import { GoArrowUp } from "react-icons/go";
-import { GoPeople } from "react-icons/go";
-import { GoGraph } from "react-icons/go";
-import { GoPackage } from "react-icons/go";
-import { GoFileDiff } from "react-icons/go";
-import { GoFile } from "react-icons/go";
-import { FaMapLocationDot } from "react-icons/fa6";
-
+import { GoInbox } from 'react-icons/go';
+import { GoArrowUp } from 'react-icons/go';
+import { GoPeople } from 'react-icons/go';
+import { GoGraph } from 'react-icons/go';
+import { GoPackage } from 'react-icons/go';
+import { GoFileDiff } from 'react-icons/go';
+import { GoFile } from 'react-icons/go';
+import { FaMapLocationDot } from 'react-icons/fa6';
 
 const OwnerDashboard = () => {
   const { schedules, loading, error } = ownerUseSchedules(false);
@@ -33,7 +32,7 @@ const OwnerDashboard = () => {
       icon: <GoGraph />,
       title: 'Analytics & Reports',
       buttonText: 'View Reports',
-      action: () => navigate('/owner/reports'),
+      action: () => navigate('/reports'),
     },
     {
       icon: <GoPackage />,
