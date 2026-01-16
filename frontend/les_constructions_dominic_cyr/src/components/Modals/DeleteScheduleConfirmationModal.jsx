@@ -23,7 +23,7 @@ const DeleteScheduleConfirmationModal = ({
         role="document"
       >
         <div className="schedule-modal-header">
-          <div className="schedule-modal-title">Delete schedule?</div>
+          <div className="schedule-modal-title">Delete work?</div>
           <button
             type="button"
             className="modal-close"
@@ -36,8 +36,8 @@ const DeleteScheduleConfirmationModal = ({
         </div>
 
         <div className="delete-schedule-body">
-          This will delete the schedule and all associated tasks. This action
-          cannot be undone.
+          This will delete the work and all associated tasks. This action be
+          undone.
         </div>
 
         <div className="form-actions with-danger">

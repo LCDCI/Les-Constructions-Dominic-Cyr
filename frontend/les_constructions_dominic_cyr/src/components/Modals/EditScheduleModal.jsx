@@ -81,10 +81,8 @@ const EditScheduleModal = ({
       if (result !== false) {
         onClose?.();
       }
-    } catch (err) {
-      // Let parent handle errors; keep modal open
-      console.error('Save schedule failed', err);
-    }
+      // eslint-disable-next-line no-empty
+    } catch (err) {}
   };
 
   if (!isOpen) return null;
@@ -101,7 +99,7 @@ const EditScheduleModal = ({
         onMouseDown={e => e.stopPropagation()}
       >
         <div className="schedule-modal-header">
-          <div className="schedule-modal-title">Edit Schedule</div>
+          <div className="schedule-modal-title">Edit Work</div>
           <button
             type="button"
             className="modal-close"
@@ -117,7 +115,7 @@ const EditScheduleModal = ({
         <form className="create-schedule-form" onSubmit={handleFormSubmit}>
           <div className="form-row">
             <label>
-              <span>Schedule description</span>
+              <span>Work description</span>
               <input
                 type="text"
                 value={schedule.scheduleDescription}
@@ -132,7 +130,7 @@ const EditScheduleModal = ({
 
           <div className="form-row two-col">
             <label>
-              <span>Lot / Phase</span>
+              <span>Lot</span>
               <select
                 value={schedule.lotId}
                 onChange={e => handleFieldChange('lotId', e.target.value)}
@@ -152,7 +150,7 @@ const EditScheduleModal = ({
             </label>
 
             <label>
-              <span>Start date</span>
+              <span>Work Start Date</span>
               <input
                 type="date"
                 value={schedule.scheduleStartDate}
@@ -166,7 +164,7 @@ const EditScheduleModal = ({
 
           <div className="form-row two-col">
             <label>
-              <span>End date</span>
+              <span>Work End Date</span>
               <input
                 type="date"
                 value={schedule.scheduleEndDate}
@@ -182,7 +180,7 @@ const EditScheduleModal = ({
             <div>
               <div className="tasks-title">Tasks</div>
               <div className="tasks-subtitle">
-                Edit, remove, or add tasks for this schedule.
+                Edit, remove, or add tasks for this work.
               </div>
             </div>
             <button
@@ -273,7 +271,7 @@ const EditScheduleModal = ({
 
                 <div className="task-row-grid">
                   <label>
-                    <span>Period start</span>
+                    <span>Task Start Date</span>
                     <input
                       type="date"
                       value={task.periodStart}
@@ -287,7 +285,7 @@ const EditScheduleModal = ({
                   </label>
 
                   <label>
-                    <span>Period end</span>
+                    <span>Task End Date</span>
                     <input
                       type="date"
                       value={task.periodEnd}
@@ -389,7 +387,7 @@ const EditScheduleModal = ({
                   onClick={handleDeleteClick}
                   disabled={isSaving || isDeleting}
                 >
-                  {isDeleting ? 'Deleting…' : 'Delete schedule'}
+                  {isDeleting ? 'Deleting…' : 'Delete Work'}
                 </button>
               </div>
             ) : null}

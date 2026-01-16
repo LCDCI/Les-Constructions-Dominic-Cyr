@@ -1,3 +1,4 @@
+/* eslint-disable no-empty */
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { FiEdit2 } from 'react-icons/fi';
@@ -23,6 +24,7 @@ import { fetchLots } from '../../features/lots/api/lots';
 import ScheduleDetailModal from '../../components/Modals/ScheduleDetailModal';
 import ScheduleFormModal from '../../components/Modals/ScheduleFormModal';
 import EditScheduleModal from '../../components/Modals/EditScheduleModal';
+import TaskModal from '../../components/Modals/TaskModal';
 import '../../styles/Project/ProjectSchedule.css';
 
 const locales = {
@@ -169,7 +171,6 @@ const ProjectSchedulePage = () => {
           : new Date(input);
       return Number.isNaN(parsed.getTime()) ? null : parsed;
     } catch (err) {
-      console.warn('Failed to parse date', input, err);
       return null;
     }
   };
@@ -440,9 +441,7 @@ const ProjectSchedulePage = () => {
                 audience: import.meta.env.VITE_AUTH0_AUDIENCE,
               },
             });
-          } catch (tokenErr) {
-            console.warn('Could not get token, proceeding without auth');
-          }
+          } catch (tokenErr) {}
         }
 
         const scheduleResponse = await projectScheduleApi.getProjectSchedules(
@@ -478,7 +477,6 @@ const ProjectSchedulePage = () => {
         setProjectName(scheduleWithIds[0]?.projectName || 'Project');
         setError(null);
       } catch (err) {
-        console.error('Error fetching schedules:', err);
         setError('Failed to load project schedules. Please try again later.');
       } finally {
         setLoading(false);
@@ -506,7 +504,6 @@ const ProjectSchedulePage = () => {
         setLots(Array.isArray(response) ? response : []);
         setLotsError(null);
       } catch (err) {
-        console.error('Error loading lots:', err);
         setLotsError('Unable to load lots.');
       } finally {
         setLotsLoading(false);
@@ -538,11 +535,7 @@ const ProjectSchedulePage = () => {
               audience: import.meta.env.VITE_AUTH0_AUDIENCE,
             },
           });
-        } catch (tokenErr) {
-          console.warn(
-            'Could not get token for task fetch, proceeding without auth'
-          );
-        }
+        } catch (tokenErr) {}
       }
 
       const attemptFetch = async ident =>
@@ -560,9 +553,7 @@ const ProjectSchedulePage = () => {
           if (Array.isArray(altTasks) && altTasks.length) {
             tasks = altTasks;
           }
-        } catch (altErr) {
-          console.warn('Alternate task fetch by id failed:', altErr);
-        }
+        } catch (altErr) {}
       }
 
       const scheduleStart = normalizeDateForInput(
@@ -605,7 +596,6 @@ const ProjectSchedulePage = () => {
         )
       );
     } catch (taskErr) {
-      console.error('Error fetching tasks for schedule:', taskErr);
       setSelectedEvent(prev =>
         prev && getScheduleIdentifier(prev) === scheduleIdentifier
           ? {
@@ -667,6 +657,7 @@ const ProjectSchedulePage = () => {
       setIsModalOpen(true);
     }
 
+    // eslint-disable-next-line no-unused-vars
     const { reopenScheduleModal, scheduleEventId, ...rest } = state;
     navigate(location.pathname, { replace: true, state: rest });
   }, [location.state, events, navigate, location.pathname]);
@@ -692,18 +683,16 @@ const ProjectSchedulePage = () => {
     setNewSchedule(buildEmptyScheduleForm());
   };
 
-  const handleTaskOverlayClick = e => {
-    if (e.target === e.currentTarget) {
-      setIsTaskModalOpen(false);
-      setScheduleForTasks(null);
-      if (scheduleForTasks) {
-        resetTaskDrafts(
-          scheduleForTasks.scheduleStartDate,
-          scheduleForTasks.scheduleEndDate
-        );
-      }
-      setTaskFormError('');
+  const handleCloseTaskModal = () => {
+    setIsTaskModalOpen(false);
+    if (scheduleForTasks) {
+      resetTaskDrafts(
+        scheduleForTasks.scheduleStartDate,
+        scheduleForTasks.scheduleEndDate
+      );
     }
+    setScheduleForTasks(null);
+    setTaskFormError('');
   };
 
   useEffect(() => {
@@ -831,11 +820,7 @@ const ProjectSchedulePage = () => {
               audience: import.meta.env.VITE_AUTH0_AUDIENCE,
             },
           });
-        } catch (tokenErr) {
-          console.warn(
-            'Could not get token for create, proceeding without auth'
-          );
-        }
+        } catch (tokenErr) {}
       }
 
       const payload = {
@@ -870,7 +855,6 @@ const ProjectSchedulePage = () => {
       setTaskFormError('');
       setNewSchedule(buildEmptyScheduleForm());
     } catch (err) {
-      console.error('Error creating schedule:', err);
       const detailed = extractErrorMessage(err);
       setFormError(`Failed to create schedule: ${detailed}`);
     } finally {
@@ -997,11 +981,7 @@ const ProjectSchedulePage = () => {
               audience: import.meta.env.VITE_AUTH0_AUDIENCE,
             },
           });
-        } catch (tokenErr) {
-          console.warn(
-            'Could not get token for update, proceeding without auth'
-          );
-        }
+        } catch (tokenErr) {}
       }
 
       if (tasksToDelete.length) {
@@ -1096,7 +1076,6 @@ const ProjectSchedulePage = () => {
       setTasksToDelete([]);
       return true;
     } catch (err) {
-      console.error('Error updating schedule:', err);
       const detailed = extractErrorMessage(err);
       setEditFormError(`Failed to update schedule: ${detailed}`);
       return false;
@@ -1121,11 +1100,7 @@ const ProjectSchedulePage = () => {
               audience: import.meta.env.VITE_AUTH0_AUDIENCE,
             },
           });
-        } catch (tokenErr) {
-          console.warn(
-            'Could not get token for delete, proceeding without auth'
-          );
-        }
+        } catch (tokenErr) {}
       }
 
       const allTaskIds = Array.from(
@@ -1140,12 +1115,7 @@ const ProjectSchedulePage = () => {
           await Promise.all(
             allTaskIds.map(id => taskApi.deleteTask(id, token))
           );
-        } catch (taskDeleteErr) {
-          console.warn(
-            'Some tasks could not be deleted during schedule delete',
-            taskDeleteErr
-          );
-        }
+        } catch (taskDeleteErr) {}
       }
 
       await projectScheduleApi.deleteProjectSchedule(
@@ -1168,7 +1138,6 @@ const ProjectSchedulePage = () => {
       setEditTaskDrafts([]);
       setTasksToDelete([]);
     } catch (err) {
-      console.error('Error deleting schedule:', err);
       const detailed = extractErrorMessage(err);
       setEditFormError(`Failed to delete schedule: ${detailed}`);
     } finally {
@@ -1232,11 +1201,7 @@ const ProjectSchedulePage = () => {
               audience: import.meta.env.VITE_AUTH0_AUDIENCE,
             },
           });
-        } catch (tokenErr) {
-          console.warn(
-            'Could not get token for tasks, proceeding without auth'
-          );
-        }
+        } catch (tokenErr) {}
       }
 
       const scheduleIdentifier = getScheduleIdentifier(scheduleForTasks);
@@ -1303,7 +1268,6 @@ const ProjectSchedulePage = () => {
       setScheduleForTasks(null);
       resetTaskDrafts(scheduleStart, scheduleEnd);
     } catch (taskErr) {
-      console.error('Error saving tasks:', taskErr);
       const status = taskErr?.response?.status;
       const detailed = extractErrorMessage(taskErr);
       const authHint =
@@ -1476,7 +1440,7 @@ const ProjectSchedulePage = () => {
               ]);
             }}
           >
-            + New schedule
+            + New Work
           </button>
         </div>
       </div>
@@ -1504,7 +1468,7 @@ const ProjectSchedulePage = () => {
         </div>
 
         <div className="schedule-list">
-          <div className="list-title">Schedules</div>
+          <div className="list-title">Upcoming Work</div>
           {schedules.length === 0 && (
             <div className="empty">No schedules yet.</div>
           )}
@@ -1572,7 +1536,7 @@ const ProjectSchedulePage = () => {
       </div>
 
       <ScheduleFormModal
-        title="Create Schedule"
+        title="Create Work"
         isOpen={isCreateModalOpen}
         schedule={newSchedule}
         onChange={setNewSchedule}
@@ -1610,268 +1574,20 @@ const ProjectSchedulePage = () => {
         onDeleteSchedule={handleDeleteSchedule}
       />
 
-      {scheduleForTasks && isTaskModalOpen && (
-        <div
-          className="schedule-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          onMouseDown={handleTaskOverlayClick}
-        >
-          <div
-            className="schedule-modal tasks-modal"
-            onMouseDown={e => e.stopPropagation()}
-          >
-            <div className="schedule-modal-header">
-              <div className="schedule-modal-title">
-                Add tasks for {scheduleForTasks.scheduleDescription}
-              </div>
-              <button
-                type="button"
-                className="modal-close"
-                aria-label="Close"
-                onClick={() => {
-                  setIsTaskModalOpen(false);
-                  setScheduleForTasks(null);
-                  resetTaskDrafts(
-                    scheduleForTasks.scheduleStartDate,
-                    scheduleForTasks.scheduleEndDate
-                  );
-                  setTaskFormError('');
-                }}
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="schedule-modal-section">
-              <h4>Schedule window</h4>
-              <div>
-                {scheduleForTasks.scheduleStartDate} →{' '}
-                {scheduleForTasks.scheduleEndDate}
-                {scheduleForTasks.lotNumber &&
-                  ` · Lot ${scheduleForTasks.lotNumber}`}
-              </div>
-              <div className="tasks-subtitle">
-                Task dates must stay within this window.
-              </div>
-            </div>
-
-            <div className="task-list">
-              {taskDrafts.map((task, idx) => (
-                <div key={`task-${idx}`} className="task-row">
-                  <div className="task-row-header">
-                    <span className="task-row-title">Task {idx + 1}</span>
-                    <button
-                      type="button"
-                      className="task-remove-button"
-                      onClick={() => removeTaskRow(idx)}
-                      aria-label={`Remove task ${idx + 1}`}
-                      disabled={taskDrafts.length === 1}
-                    >
-                      Remove
-                    </button>
-                  </div>
-
-                  <div className="task-row-grid">
-                    <label>
-                      <span>Title</span>
-                      <input
-                        type="text"
-                        value={task.taskTitle}
-                        onChange={e =>
-                          handleTaskChange(idx, 'taskTitle', e.target.value)
-                        }
-                        placeholder={`Task ${idx + 1} title`}
-                      />
-                    </label>
-
-                    <label>
-                      <span>Status</span>
-                      <select
-                        value={task.taskStatus}
-                        onChange={e =>
-                          handleTaskChange(idx, 'taskStatus', e.target.value)
-                        }
-                      >
-                        {TASK_STATUSES.map(status => (
-                          <option key={status} value={status}>
-                            {status.replaceAll('_', ' ')}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-
-                    <label>
-                      <span>Priority</span>
-                      <select
-                        value={task.taskPriority}
-                        onChange={e =>
-                          handleTaskChange(idx, 'taskPriority', e.target.value)
-                        }
-                      >
-                        {TASK_PRIORITIES.map(priority => (
-                          <option key={priority} value={priority}>
-                            {priority.replaceAll('_', ' ')}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-
-                  <div className="task-row-grid">
-                    <label>
-                      <span>Period start</span>
-                      <input
-                        type="date"
-                        value={task.periodStart}
-                        min={scheduleForTasks.scheduleStartDate}
-                        max={scheduleForTasks.scheduleEndDate}
-                        onChange={e =>
-                          handleTaskChange(idx, 'periodStart', e.target.value)
-                        }
-                      />
-                    </label>
-
-                    <label>
-                      <span>Period end</span>
-                      <input
-                        type="date"
-                        value={task.periodEnd}
-                        min={scheduleForTasks.scheduleStartDate}
-                        max={scheduleForTasks.scheduleEndDate}
-                        onChange={e =>
-                          handleTaskChange(idx, 'periodEnd', e.target.value)
-                        }
-                      />
-                    </label>
-
-                    <label>
-                      <span>Assignee (user UUID)</span>
-                      <input
-                        type="text"
-                        value={task.assignedToUserId}
-                        onChange={e =>
-                          handleTaskChange(
-                            idx,
-                            'assignedToUserId',
-                            e.target.value
-                          )
-                        }
-                        placeholder="Optional"
-                      />
-                    </label>
-                  </div>
-
-                  <label className="task-row-full">
-                    <span>Description</span>
-                    <textarea
-                      value={task.taskDescription}
-                      onChange={e =>
-                        handleTaskChange(idx, 'taskDescription', e.target.value)
-                      }
-                      placeholder="Describe the work to be completed"
-                      rows={2}
-                    />
-                  </label>
-
-                  <div className="task-row-grid task-row-numbers">
-                    <label>
-                      <span>Estimated hours</span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.5"
-                        value={task.estimatedHours}
-                        onChange={e =>
-                          handleTaskChange(
-                            idx,
-                            'estimatedHours',
-                            e.target.value
-                          )
-                        }
-                        placeholder="Optional"
-                      />
-                    </label>
-
-                    <label>
-                      <span>Hours spent</span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.5"
-                        value={task.hoursSpent}
-                        onChange={e =>
-                          handleTaskChange(idx, 'hoursSpent', e.target.value)
-                        }
-                        placeholder="Optional"
-                      />
-                    </label>
-
-                    <label>
-                      <span>Progress (%)</span>
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="1"
-                        value={task.taskProgress}
-                        onChange={e =>
-                          handleTaskChange(idx, 'taskProgress', e.target.value)
-                        }
-                        placeholder="Optional"
-                      />
-                    </label>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="task-actions">
-              <button
-                type="button"
-                className="task-add-button"
-                onClick={() =>
-                  addTaskRow(
-                    scheduleForTasks.scheduleStartDate,
-                    scheduleForTasks.scheduleEndDate
-                  )
-                }
-              >
-                + Add task
-              </button>
-            </div>
-
-            {taskFormError && <div className="form-error">{taskFormError}</div>}
-
-            <div className="form-actions">
-              <button
-                type="button"
-                className="modal-secondary"
-                onClick={() => {
-                  setIsTaskModalOpen(false);
-                  setScheduleForTasks(null);
-                  resetTaskDrafts(
-                    scheduleForTasks.scheduleStartDate,
-                    scheduleForTasks.scheduleEndDate
-                  );
-                  setTaskFormError('');
-                }}
-                disabled={isSavingTasks}
-              >
-                Skip for now
-              </button>
-              <button
-                type="button"
-                className="modal-primary"
-                onClick={handleSaveTasks}
-                disabled={isSavingTasks}
-              >
-                {isSavingTasks ? 'Saving tasks…' : 'Save tasks'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <TaskModal
+        isOpen={isTaskModalOpen}
+        schedule={scheduleForTasks}
+        tasks={taskDrafts}
+        statuses={TASK_STATUSES}
+        priorities={TASK_PRIORITIES}
+        errorMessage={taskFormError}
+        isSaving={isSavingTasks}
+        onClose={handleCloseTaskModal}
+        onSave={handleSaveTasks}
+        onTaskChange={handleTaskChange}
+        onAddTask={addTaskRow}
+        onRemoveTask={removeTaskRow}
+      />
 
       <ScheduleDetailModal
         isOpen={isModalOpen}

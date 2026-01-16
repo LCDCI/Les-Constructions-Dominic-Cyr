@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useRef } from 'react';
 import { FiEdit2 } from 'react-icons/fi';
 
@@ -159,7 +160,7 @@ const ScheduleDetailModal = ({
             onClick={() => onEditSchedule?.(event)}
           >
             <FiEdit2 aria-hidden="true" style={{ marginRight: 6 }} />
-            Edit schedule
+            Edit Work
           </button>
         </div>
       </div>
