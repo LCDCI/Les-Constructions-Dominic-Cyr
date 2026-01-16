@@ -11,6 +11,7 @@ const ScheduleFormModal = ({
   lotsLoading,
   lotsError,
   isSaving,
+  errorMessage,
 }) => {
   const originalOverflow = useRef(null);
 
@@ -71,6 +72,8 @@ const ScheduleFormModal = ({
             ×
           </button>
         </div>
+
+        {errorMessage ? <div className="form-error">{errorMessage}</div> : null}
 
         <form className="create-schedule-form" onSubmit={onSubmit}>
           <div className="form-row">

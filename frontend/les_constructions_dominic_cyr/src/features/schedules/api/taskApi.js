@@ -49,6 +49,18 @@ export const taskApi = {
     );
     return response.data;
   },
+
+  deleteTask: async (taskId, token = null) => {
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await axiosInstance.delete(`/owners/tasks/${taskId}`, {
+      headers,
+    });
+    return response.data;
+  },
 };
 
 export default taskApi;
