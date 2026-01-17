@@ -44,16 +44,17 @@ public class LotServiceImpl implements LotService{
 
     @Override
     public LotResponseModel addLot(LotRequestModel lotRequestModel) {
-        Lot lot = new Lot();
         validateLotRequest(lotRequestModel);
 
-        lot.setLotNumber(lotRequestModel.getLotNumber());
-        lot.setCivicAddress(lotRequestModel.getCivicAddress());
-        lot.setPrice(lotRequestModel.getPrice());
-        lot.setDimensionsSquareFeet(lotRequestModel.getDimensionsSquareFeet());
-        lot.setDimensionsSquareMeters(lotRequestModel.getDimensionsSquareMeters());
-        lot.setLotStatus(lotRequestModel.getLotStatus());
-        lot.setLotIdentifier(new LotIdentifier());   // always generate
+        Lot lot = new Lot(
+                new LotIdentifier(),  // always generate new ID
+                lotRequestModel.getLotNumber(),
+                lotRequestModel.getCivicAddress(),
+                lotRequestModel.getPrice(),
+                lotRequestModel.getDimensionsSquareFeet(),
+                lotRequestModel.getDimensionsSquareMeters(),
+                lotRequestModel.getLotStatus()
+        );
 
         Lot savedLot = lotRepository.save(lot);
         return mapToResponse(savedLot);
