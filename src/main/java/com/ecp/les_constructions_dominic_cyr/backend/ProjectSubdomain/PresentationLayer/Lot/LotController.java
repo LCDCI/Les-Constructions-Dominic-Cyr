@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/lots")
+@RequestMapping("/api/v1/projects/{projectIdentifier}/lots")
 @CrossOrigin(origins = {
         "http://localhost:3000",
         "http://localhost:3001",

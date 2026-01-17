@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchLots } from '../features/lots/api/lots';
+import { fetchLots, resolveProjectIdentifier } from '../features/lots/api/lots';
 import '../styles/lots.css';
 import Footer from '../components/Footers/ProjectsFooter';
 
@@ -8,29 +8,44 @@ const LotsPage = () => {
   const [filteredLots, setFilteredLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [projectIdentifier, setProjectIdentifier] = useState(null);
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 
   useEffect(() => {
-    fetchAvailableLots();
+    try {
+      const resolved = resolveProjectIdentifier();
+      setProjectIdentifier(resolved);
+    } catch (err) {
+      setError(err.message || 'Project identifier is required');
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (projectIdentifier) {
+      fetchAvailableLots(projectIdentifier);
+    }
+  }, [projectIdentifier]);
 
   useEffect(() => {
     filterLots();
   }, [searchTerm, lots]);
 
-  const fetchAvailableLots = async () => {
+  const fetchAvailableLots = async projectId => {
     try {
-      const data = await fetchLots();
-      // Filter to show only AVAILABLE lots
+      setLoading(true);
+      setError('');
+      const data = await fetchLots({ projectIdentifier: projectId });
       const availableLots = data.filter(lot => lot.lotStatus === 'AVAILABLE');
       setLots(availableLots);
       setFilteredLots(availableLots);
-      setLoading(false);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to fetch lots:', error);
+    } catch (err) {
+      console.error('Failed to fetch lots:', err);
+      setError(err.message || 'Failed to fetch lots');
+    } finally {
       setLoading(false);
     }
   };
@@ -41,8 +56,15 @@ const LotsPage = () => {
       return;
     }
 
+    const term = searchTerm.toLowerCase();
     const filtered = lots.filter(lot =>
-      lot.location.toLowerCase().includes(searchTerm.toLowerCase())
+      Object.values(lot || {}).some(value => {
+        if (value === null || value === undefined) return false;
+        if (typeof value === 'string') return value.toLowerCase().includes(term);
+        if (typeof value === 'number')
+          return value.toString().toLowerCase().includes(term);
+        return false;
+      })
     );
     setFilteredLots(filtered);
   };
@@ -62,6 +84,29 @@ const LotsPage = () => {
       return price.toString();
     }
   };
+
+  const formatLabel = key => {
+    return key
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/[_-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/^./, c => c.toUpperCase());
+  };
+
+  const formatValue = value => {
+    if (value === null || value === undefined || value === '') return '—';
+    if (Array.isArray(value)) return value.length ? value.join(', ') : '—';
+    if (typeof value === 'object') return JSON.stringify(value);
+    return value;
+  };
+
+  const renderField = (label, value, key) => (
+    <div className="lot-field" key={key || label}>
+      <div className="lot-field-label">{label}</div>
+      <div className="lot-field-value">{value ?? '—'}</div>
+    </div>
+  );
 
   if (loading) {
     return (
@@ -102,27 +147,77 @@ const LotsPage = () => {
           </div>
 
           <div className="lots-grid">
-            {filteredLots.length > 0 ? (
-              filteredLots.map(lot => (
-                <div key={lot.lotId} className="lot-card">
-                  <div className="lot-image-container">
-                    <img
-                      src={getImageUrl(lot.imageIdentifier)}
-                      alt={lot.location}
-                      className="lot-image"
-                    />
-                  </div>
-                  <h2 className="lot-title">{lot.location}</h2>
-                  <div className="lot-details">
-                    <div className="lot-detail-item">
-                      <strong>Size:</strong> {lot.dimensions}
+            {error ? (
+              <div className="no-results">
+                <p>{error}</p>
+              </div>
+            ) : filteredLots.length > 0 ? (
+              <div className="lots-list">
+                {filteredLots.map(lot => {
+                  const extraFields = Object.entries(lot || {}).filter(
+                    ([key]) =>
+                      ![
+                        'lotId',
+                        'location',
+                        'dimensions',
+                        'price',
+                        'lotStatus',
+                        'imageIdentifier',
+                        'projectIdentifier',
+                      ].includes(key)
+                  );
+
+                  const statusClass = `status-${String(lot?.lotStatus || 'unknown').toLowerCase()}`;
+
+                  return (
+                    <div key={lot.lotId || lot.location} className="lot-row">
+                      <div className="lot-row-header">
+                        <div className="lot-row-titles">
+                          <h2 className="lot-title">{lot.location || 'Unnamed lot'}</h2>
+                          <div className="lot-subtitle">
+                            <span>Lot ID: {lot.lotId || '—'}</span>
+                            <span>
+                              Project: {lot.projectIdentifier || projectIdentifier || '—'}
+                            </span>
+                          </div>
+                        </div>
+                        <span className={`lot-status-badge ${statusClass}`}>
+                          {lot.lotStatus || 'UNKNOWN'}
+                        </span>
+                      </div>
+
+                      <div className="lot-row-body">
+                        {renderField('Location', lot.location, 'location')}
+                        {renderField('Dimensions', lot.dimensions, 'dimensions')}
+                        {renderField('Price', formatPrice(lot.price), 'price')}
+                        {renderField('Status', lot.lotStatus || '—', 'lotStatus')}
+                        {renderField(
+                          'Project Identifier',
+                          lot.projectIdentifier || projectIdentifier || '—',
+                          'projectIdentifier'
+                        )}
+                        {renderField(
+                          'Image',
+                          lot.imageIdentifier ? (
+                            <img
+                              src={getImageUrl(lot.imageIdentifier)}
+                              alt={lot.location || 'Lot photo'}
+                              className="lot-thumb"
+                            />
+                          ) : (
+                            '—'
+                          ),
+                          'image'
+                        )}
+
+                        {extraFields.map(([key, value]) =>
+                          renderField(formatLabel(key), formatValue(value), key)
+                        )}
+                      </div>
                     </div>
-                    <div className="lot-detail-item">
-                      <strong>Price:</strong> {formatPrice(lot.price)}
-                    </div>
-                  </div>
-                </div>
-              ))
+                  );
+                })}
+              </div>
             ) : (
               <div className="no-results">
                 <p>
@@ -130,8 +225,7 @@ const LotsPage = () => {
                     ? <>No lots found matching &quot;{searchTerm}&quot;</>
                     : lots.length === 0
                       ? <>No available lots at the moment</>
-                      : <>No lots found</>
-                  }
+                      : <>No lots found</>}
                 </p>
               </div>
             )}
