@@ -34,14 +34,15 @@ class LotControllerUnitTest {
 
     @Test
     void whenNoLotsExist_thenReturnEmptyList() {
-        when(lotService.getAllLots()).thenReturn(List.of());
+        String projectIdentifier = "proj-001-test";
+        when(lotService.getAllLotsByProject(projectIdentifier)).thenReturn(List.of());
 
-        ResponseEntity<List<LotResponseModel>> resp = lotController.getAllLots();
+        ResponseEntity<List<LotResponseModel>> resp = lotController.getAllLots(projectIdentifier);
 
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         assertNotNull(resp.getBody());
         assertTrue(resp.getBody().isEmpty());
-        verify(lotService, times(1)).getAllLots();
+        verify(lotService, times(1)).getAllLotsByProject(projectIdentifier);
     }
 
     // ==== GET ONE ====
