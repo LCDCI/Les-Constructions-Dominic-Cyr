@@ -20,6 +20,8 @@ public class Lot {
     @Embedded
     private LotIdentifier lotIdentifier;
 
+    private String lotNumber;
+
     private String civicAddress;
 
     private Float price;
@@ -35,8 +37,9 @@ public class Lot {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
-    public Lot(@NonNull LotIdentifier lotIdentifier, @NonNull String civicAddress, @NonNull Float price, @NonNull String dimensionsSquareFeet, @NonNull String dimensionsSquareMeters, @NonNull LotStatus lotStatus) {
+    public Lot(@NonNull LotIdentifier lotIdentifier, @NonNull String lotNumber, @NonNull String civicAddress, @NonNull Float price, @NonNull String dimensionsSquareFeet, @NonNull String dimensionsSquareMeters, @NonNull LotStatus lotStatus) {
         this.lotIdentifier = lotIdentifier;
+        this.lotNumber = lotNumber;
         this.civicAddress = civicAddress;
         this.price = price;
         this.dimensionsSquareFeet = dimensionsSquareFeet;

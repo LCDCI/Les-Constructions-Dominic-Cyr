@@ -6,10 +6,11 @@ DROP TABLE IF EXISTS lots;
 CREATE TABLE IF NOT EXISTS lots (
     id BIGSERIAL PRIMARY KEY,
     lot_identifier UUID,
-    image_identifier VARCHAR(255),
-    location VARCHAR(255),
+    lot_number VARCHAR(255),
+    civic_address VARCHAR(255),
     price REAL NOT NULL,
-    dimensions VARCHAR(255) NOT NULL,
+    dimensions_square_feet VARCHAR(255) NOT NULL,
+    dimensions_square_meters VARCHAR(255) NOT NULL,
     lot_status VARCHAR(50) NOT NULL DEFAULT 'AVAILABLE',
     project_id BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -93,7 +94,7 @@ CREATE TABLE IF NOT EXISTS schedules (
     schedule_end_date DATE NOT NULL,
     schedule_description VARCHAR(500) NOT NULL,
     lot_number VARCHAR(50) NOT NULL,
-    project_id BIGINT,
+    project_id VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE

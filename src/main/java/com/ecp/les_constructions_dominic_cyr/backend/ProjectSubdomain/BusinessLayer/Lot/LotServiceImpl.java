@@ -47,6 +47,7 @@ public class LotServiceImpl implements LotService{
         Lot lot = new Lot();
         validateLotRequest(lotRequestModel);
 
+        lot.setLotNumber(lotRequestModel.getLotNumber());
         lot.setCivicAddress(lotRequestModel.getCivicAddress());
         lot.setPrice(lotRequestModel.getPrice());
         lot.setDimensionsSquareFeet(lotRequestModel.getDimensionsSquareFeet());
@@ -66,7 +67,7 @@ public class LotServiceImpl implements LotService{
         }
 
         validateLotRequest(lotRequestModel);
-        // Update the existing entity instead of creating a new one (preserve id and embedded lotIdentifier)
+        foundLot.setLotNumber(lotRequestModel.getLotNumber());
         foundLot.setCivicAddress(lotRequestModel.getCivicAddress());
         foundLot.setPrice(lotRequestModel.getPrice());
         foundLot.setDimensionsSquareFeet(lotRequestModel.getDimensionsSquareFeet());
@@ -88,6 +89,7 @@ public class LotServiceImpl implements LotService{
     private LotResponseModel mapToResponse(Lot lot) {
         LotResponseModel dto = new LotResponseModel();
         dto.setLotId(lot.getLotIdentifier().getLotId());
+        dto.setLotNumber(lot.getLotNumber());
         dto.setCivicAddress(lot.getCivicAddress());
         dto.setPrice(lot.getPrice());
         dto.setDimensionsSquareFeet(lot.getDimensionsSquareFeet());
@@ -97,6 +99,9 @@ public class LotServiceImpl implements LotService{
     }
 
     private void validateLotRequest(LotRequestModel lotRequestModel) {
+        if (lotRequestModel.getLotNumber() == null || lotRequestModel.getLotNumber().isBlank()) {
+            throw new InvalidInputException("Lot number must not be blank");
+        }
         if (lotRequestModel.getCivicAddress() == null || lotRequestModel.getCivicAddress().isBlank()) {
             throw new InvalidInputException("Civic address must not be blank");
         }

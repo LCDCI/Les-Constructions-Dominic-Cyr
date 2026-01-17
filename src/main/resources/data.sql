@@ -1,16 +1,24 @@
 -- data for lots
-INSERT INTO lots (lot_identifier, image_identifier, location, price, dimensions, lot_status) VALUES
-                                                                                                 ('f3c8837d-bd65-4bc5-9f01-cb9082fc657e', NULL, 'Montreal, QC', 120000.0, '55x110', 'AVAILABLE'),
-                                                                                                 ('5a82954c-8e2c-466a-8a8f-9983b79ede63', NULL, 'Quebec City, QC', 180000.0, '65x125', 'SOLD'),
-                                                                                                 ('cd465054-403e-4861-b9ab-1b672672c053', NULL, 'Sherbrooke, QC', 140000.0, '60x115', 'PENDING'),
-                                                                                                 ('a51e7923-7a46-4e65-8cee-8783126e780b', NULL, 'Trois-Rivières, QC', 155000.0, '70x130', 'AVAILABLE'),
-                                                                                                 ('64f2d3b1-eb36-49d6-8bc3-a816d97ddeb9', NULL, 'Gatineau, QC', 110000.0, '50x100', 'SOLD'),
-                                                                                                 ('3b9b8bf2-7ea4-4b3a-9250-53ccb1a77f87', NULL, 'Drummondville, QC', 175000.0, '75x145', 'AVAILABLE'),
-                                                                                                 ('02088623-dd3c-4fef-af67-2caf60dc1902', NULL, 'Saguenay, QC', 165000.0, '70x140', 'PENDING'),
-                                                                                                 ('97fd170d-189b-4c4c-880d-31893a146712', NULL, 'Rimouski, QC', 130000.0, '55x120', 'AVAILABLE'),
-                                                                                                 ('db43c148-68de-4882-818a-d15dc8d5fcdb', NULL, 'Chicoutimi, QC', 160000.0, '65x135', 'SOLD'),
-                                                                                                 ('adb6f5b7-e036-49cf-899e-a39dcaecd91f', NULL, 'Baie-Comeau, QC', 145000.0, '60x125', 'AVAILABLE');
-
+INSERT INTO lots (
+    lot_identifier,
+    lot_number,
+    civic_address,
+    price,
+    dimensions_square_feet,
+    dimensions_square_meters,
+    lot_status,
+    project_id
+) VALUES
+      ('f3c8837d-bd65-4bc5-9f01-cb9082fc657e', 'Lot-101', 'Montreal, QC', 120000.0, '6050', '562', 'AVAILABLE', 'proj-001-foresta'),
+      ('5a82954c-8e2c-466a-8a8f-9983b79ede63', 'Lot-102', 'Quebec City, QC', 180000.0, '8125', '755', 'SOLD', 'proj-001-foresta'),
+      ('cd465054-403e-4861-b9ab-1b672672c053', 'Lot-103', 'Sherbrooke, QC', 140000.0, '6900', '641', 'PENDING', 'proj-001-foresta'),
+      ('a51e7923-7a46-4e65-8cee-8783126e780b', 'Lot-104', 'Trois-Rivières, QC', 155000.0, '9100', '845', 'AVAILABLE', 'proj-001-foresta'),
+      ('64f2d3b1-eb36-49d6-8bc3-a816d97ddeb9', 'Lot-105', 'Gatineau, QC', 110000.0, '5000', '464', 'SOLD', 'proj-001-foresta'),
+      ('3b9b8bf2-7ea4-4b3a-9250-53ccb1a77f87', 'Lot-106', 'Drummondville, QC', 175000.0, '10875', '1010', 'AVAILABLE', 'proj-001-foresta'),
+      ('02088623-dd3c-4fef-af67-2caf60dc1902', 'Lot-107', 'Saguenay, QC', 165000.0, '9800', '910', 'PENDING', 'proj-002-panorama'),
+      ('97fd170d-189b-4c4c-880d-31893a146712', 'Lot-108', 'Rimouski, QC', 130000.0, '6600', '613', 'AVAILABLE', 'proj-002-panorama'),
+      ('db43c148-68de-4882-818a-d15dc8d5fcdb', 'Lot-109', 'Chicoutimi, QC', 160000.0, '8775', '815', 'SOLD', 'proj-002-panorama'),
+      ('adb6f5b7-e036-49cf-899e-a39dcaecd91f', 'Lot-110', 'Baie-Comeau, QC', 145000.0, '7500', '696', 'AVAILABLE', 'proj-002-panorama');
 -- data for realizations
 INSERT INTO realizations (realization_identifier, realization_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year)
 VALUES

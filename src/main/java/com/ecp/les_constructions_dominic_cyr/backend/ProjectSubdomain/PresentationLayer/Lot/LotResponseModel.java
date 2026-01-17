@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class LotResponseModel {
     private String lotId;
+    private String lotNumber;
     private String civicAddress;
     private Float price;
     private String dimensionsSquareFeet;
