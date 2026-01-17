@@ -470,6 +470,12 @@ const ProjectOverviewPage = () => {
         >
           &larr; Back to Residential Projects
         </button>
+        <button
+          className="view-lots-button"
+          onClick={() => navigate(`/projects/${projectIdentifier}/lots`)}
+        >
+          View Available Lots &rarr;
+        </button>
       </div>
     </div>
   );

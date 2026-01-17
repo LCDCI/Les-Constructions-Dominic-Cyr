@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { fetchLots, resolveProjectIdentifier } from '../features/lots/api/lots';
 import '../styles/lots.css';
 import Footer from '../components/Footers/ProjectsFooter';
 
 const LotsPage = () => {
+  const { projectIdentifier: urlProjectIdentifier } = useParams();
   const [lots, setLots] = useState([]);
   const [filteredLots, setFilteredLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,13 +18,14 @@ const LotsPage = () => {
 
   useEffect(() => {
     try {
-      const resolved = resolveProjectIdentifier();
+      // Use URL parameter if available, otherwise fallback to environment variable
+      const resolved = urlProjectIdentifier || resolveProjectIdentifier();
       setProjectIdentifier(resolved);
     } catch (err) {
       setError(err.message || 'Project identifier is required');
       setLoading(false);
     }
-  }, []);
+  }, [urlProjectIdentifier]);
 
   useEffect(() => {
     if (projectIdentifier) {
