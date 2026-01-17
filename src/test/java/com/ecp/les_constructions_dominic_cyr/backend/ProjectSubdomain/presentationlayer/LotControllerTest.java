@@ -42,10 +42,10 @@ class LotControllerTest {
     private static final String INVALID_FORMAT_LOT_ID = "not-a-uuid-string-of-length-36";
 
     private final LotRequestModel mockRequest = new LotRequestModel();
-    private final LotResponseModel mockResponse = new LotResponseModel(VALID_LOT_ID, "Location A");
+    private final LotResponseModel mockResponse = new LotResponseModel(VALID_LOT_ID, "Location A", 1000f, "1000", "92.9");
     private final List<LotResponseModel> mockResponseList = List.of(
-            new LotResponseModel(UUID.randomUUID().toString(), "Location B"),
-            new LotResponseModel(UUID.randomUUID().toString(), "Location C")
+            new LotResponseModel(UUID.randomUUID().toString(), "Location B", 2000f, "2000", "185.8"),
+            new LotResponseModel(UUID.randomUUID().toString(), "Location C", 3000f, "3000", "278.7")
     );
 
 
@@ -119,11 +119,17 @@ class LotControllerTest {
 
     static class LotResponseModel {
         public String id;
-        public String location;
+        public String civicAddress;
+        public Float price;
+        public String dimensionsSquareFeet;
+        public String dimensionsSquareMeters;
 
-        public LotResponseModel(String id, String location) {
+        public LotResponseModel(String id, String civicAddress, Float price, String dimensionsSquareFeet, String dimensionsSquareMeters) {
             this.id = id;
-            this.location = location;
+            this.civicAddress = civicAddress;
+            this.price = price;
+            this.dimensionsSquareFeet = dimensionsSquareFeet;
+            this.dimensionsSquareMeters = dimensionsSquareMeters;
         }
 
         @Override
@@ -131,12 +137,12 @@ class LotControllerTest {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             LotResponseModel that = (LotResponseModel) o;
-            return id.equals(that.id) && location.equals(that.location);
+            return id.equals(that.id) && civicAddress.equals(that.civicAddress);
         }
 
         @Override
         public int hashCode() {
-            return java.util.Objects.hash(id, location);
+            return java.util.Objects.hash(id, civicAddress);
         }
     }
 }

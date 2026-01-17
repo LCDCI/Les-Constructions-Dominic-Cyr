@@ -47,10 +47,10 @@ public class LotServiceImpl implements LotService{
         Lot lot = new Lot();
         validateLotRequest(lotRequestModel);
 
-        lot.setImageIdentifier(lotRequestModel.getImageIdentifier());
-        lot.setCivicAddress(lotRequestModel.getLocation());
+        lot.setCivicAddress(lotRequestModel.getCivicAddress());
         lot.setPrice(lotRequestModel.getPrice());
-        lot.setDimensionsSquareFeet(lotRequestModel.getDimensions());
+        lot.setDimensionsSquareFeet(lotRequestModel.getDimensionsSquareFeet());
+        lot.setDimensionsSquareMeters(lotRequestModel.getDimensionsSquareMeters());
         lot.setLotStatus(lotRequestModel.getLotStatus());
         lot.setLotIdentifier(new LotIdentifier());   // always generate
 
@@ -67,10 +67,10 @@ public class LotServiceImpl implements LotService{
 
         validateLotRequest(lotRequestModel);
         // Update the existing entity instead of creating a new one (preserve id and embedded lotIdentifier)
-        foundLot.setImageIdentifier(lotRequestModel.getImageIdentifier());
-        foundLot.setCivicAddress(lotRequestModel.getLocation());
+        foundLot.setCivicAddress(lotRequestModel.getCivicAddress());
         foundLot.setPrice(lotRequestModel.getPrice());
-        foundLot.setDimensionsSquareFeet(lotRequestModel.getDimensions());
+        foundLot.setDimensionsSquareFeet(lotRequestModel.getDimensionsSquareFeet());
+        foundLot.setDimensionsSquareMeters(lotRequestModel.getDimensionsSquareMeters());
         foundLot.setLotStatus(lotRequestModel.getLotStatus());
         Lot updatedLot = lotRepository.save(foundLot);
         return mapToResponse(updatedLot);
@@ -88,23 +88,26 @@ public class LotServiceImpl implements LotService{
     private LotResponseModel mapToResponse(Lot lot) {
         LotResponseModel dto = new LotResponseModel();
         dto.setLotId(lot.getLotIdentifier().getLotId());
-        dto.setImageIdentifier(lot.getImageIdentifier());
-        dto.setLocation(lot.getCivicAddress());
+        dto.setCivicAddress(lot.getCivicAddress());
         dto.setPrice(lot.getPrice());
-        dto.setDimensions(lot.getDimensionsSquareFeet());
+        dto.setDimensionsSquareFeet(lot.getDimensionsSquareFeet());
+        dto.setDimensionsSquareMeters(lot.getDimensionsSquareMeters());
         dto.setLotStatus(lot.getLotStatus());
         return dto;
     }
 
     private void validateLotRequest(LotRequestModel lotRequestModel) {
-        if (lotRequestModel.getLocation() == null || lotRequestModel.getLocation().isBlank()) {
-            throw new InvalidInputException("Location must not be blank");
+        if (lotRequestModel.getCivicAddress() == null || lotRequestModel.getCivicAddress().isBlank()) {
+            throw new InvalidInputException("Civic address must not be blank");
         }
         if (lotRequestModel.getPrice() == null || lotRequestModel.getPrice() <= 0) {
             throw new InvalidInputException("Price must be positive");
         }
-        if (lotRequestModel.getDimensions() == null || lotRequestModel.getDimensions().isBlank()) {
-            throw new InvalidInputException("Dimensions must not be blank");
+        if (lotRequestModel.getDimensionsSquareFeet() == null || lotRequestModel.getDimensionsSquareFeet().isBlank()) {
+            throw new InvalidInputException("Dimensions in square feet must not be blank");
+        }
+        if (lotRequestModel.getDimensionsSquareMeters() == null || lotRequestModel.getDimensionsSquareMeters().isBlank()) {
+            throw new InvalidInputException("Dimensions in square meters must not be blank");
         }
         if (lotRequestModel.getLotStatus() == null) {
             throw new InvalidInputException("Lot status must not be null");
