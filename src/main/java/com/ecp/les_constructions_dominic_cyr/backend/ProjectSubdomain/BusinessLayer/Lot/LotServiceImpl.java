@@ -33,6 +33,18 @@ public class LotServiceImpl implements LotService{
     }
 
     @Override
+    public List<LotResponseModel> getAllLotsByProject(String projectIdentifier) {
+        List<Lot> lots = lotRepository.findByProject_ProjectIdentifier(projectIdentifier);
+        List<LotResponseModel> responseList = new ArrayList<>();
+
+        for (Lot lot : lots) {
+            responseList.add(mapToResponse(lot));
+        }
+
+        return responseList;
+    }
+
+    @Override
     public LotResponseModel getLotById(String lotId) {
         Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
 
