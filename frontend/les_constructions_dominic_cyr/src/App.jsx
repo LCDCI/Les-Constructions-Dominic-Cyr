@@ -1,5 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/Public_Facing/LotsPage';
@@ -28,31 +30,166 @@ import ProfilePage from './pages/ProfilePage';
 import Unauthorized from './pages/Errors/Unauthorized';
 import NotFound from './pages/Errors/NotFound';
 import ProjectsOverviewPage from './pages/Project/ProjectsOverviewPage';
+
 import ProtectedRoute from './components/ProtectedRoute';
 import HomeFooter from './components/Footers/HomeFooter';
 import NavigationSetter from './components/NavigationSetter';
+import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
+
 import { loadTheme } from './utils/themeLoader';
-import { useAuth0 } from '@auth0/auth0-react';
 import { setupAxiosInterceptors } from './utils/axios';
+import { clearAppSession } from './features/users/api/clearAppSession';
 
 export default function App() {
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { getAccessTokenSilently, isAuthenticated, logout } = useAuth0();
 
+  const [showIdleModal, setShowIdleModal] = useState(false);
+  const showIdleModalRef = useRef(false);
+
+  const setShowIdleModalSafe = (v) => {
+    showIdleModalRef.current = v;
+    setShowIdleModal(v);
+  };
+  const [remainingSeconds, setRemainingSeconds] = useState(120);
+
+  const idleTimerRef = useRef(null);
+  const countdownTimerRef = useRef(null);
+  const resetIdleTimerRef = useRef(null);
+
+  /* ----------------------------------
+     Theme
+  -----------------------------------*/
   useEffect(() => {
     loadTheme();
   }, []);
 
+  /* ----------------------------------
+     Axios + Auth0 Interceptor
+  -----------------------------------*/
   useEffect(() => {
-    if (isAuthenticated) {
-      setupAxiosInterceptors(getAccessTokenSilently);
-    }
-  }, [isAuthenticated, getAccessTokenSilently]);
+    if (!isAuthenticated) return;
 
+    setupAxiosInterceptors(getAccessTokenSilently, () => {
+      try {
+        clearAppSession();
+      } catch (e) {
+        console.error('Failed clearing app session', e);
+      }
+
+      logout({
+        logoutParams: {
+          returnTo: window.location.origin + '/portal/login',
+        },
+      });
+    });
+  }, [isAuthenticated, getAccessTokenSilently, logout]);
+
+  /* ----------------------------------
+     Idle Timeout Logic
+  -----------------------------------*/
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const idleMinutes = parseInt(
+      import.meta.env.VITE_SESSION_IDLE_MINUTES || '30',
+      10
+    );
+
+    const timeoutMs = Math.max(1, idleMinutes) * 60 * 1000;
+    const warningDurationSec = 120;
+
+    const clearTimers = () => {
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+        idleTimerRef.current = null;
+      }
+      if (countdownTimerRef.current) {
+        clearInterval(countdownTimerRef.current);
+        countdownTimerRef.current = null;
+      }
+    };
+
+    const performLogout = () => {
+      clearTimers();
+      setShowIdleModal(false);
+      showIdleModalRef.current = false;
+      clearAppSession();
+
+      // Perform local-only logout and redirect immediately to avoid showing Auth0 error pages
+      try {
+        window.location.assign(window.location.origin + '/portal/login');
+      } catch (e) {
+        // last-resort
+        window.location.href = window.location.origin + '/portal/login';
+      }
+    };
+
+    const startCountdown = () => {
+      setRemainingSeconds(warningDurationSec);
+
+      countdownTimerRef.current = setInterval(() => {
+        setRemainingSeconds((s) => {
+          if (s <= 1) {
+            clearInterval(countdownTimerRef.current);
+            countdownTimerRef.current = null;
+            performLogout();
+            return 0;
+          }
+          return s - 1;
+        });
+      }, 1000);
+    };
+
+    const onIdle = () => {
+      setShowIdleModalSafe(true);
+      startCountdown();
+    };
+
+    const resetIdleTimer = () => {
+      // If modal is visible, don't close it on incidental activity — keep the countdown running.
+      if (showIdleModalRef.current) {
+        return;
+      }
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = setTimeout(onIdle, timeoutMs);
+    };
+
+    // Expose reset function so outside handlers (like Stay button) can reset timers
+    resetIdleTimerRef.current = resetIdleTimer;
+
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'click'];
+    events.forEach((ev) => window.addEventListener(ev, resetIdleTimer));
+
+    resetIdleTimer();
+
+    // Dev helper: support ?forceIdle=true to immediately show the idle modal for testing
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('forceIdle') === 'true') {
+        onIdle();
+      }
+    } catch (e) {
+      /* ignore */
+    }
+
+    return () => {
+      clearTimers();
+      events.forEach((ev) =>
+        window.removeEventListener(ev, resetIdleTimer)
+      );
+    };
+  }, [isAuthenticated, logout]);
+
+  /* ----------------------------------
+     Render
+  -----------------------------------*/
   return (
     <BrowserRouter>
       <NavigationSetter />
+
       <div className="app-container">
         <AppNavBar />
+
         <main style={{ padding: '16px' }}>
           <Routes>
             <Route path="/" element={<Home />} />
@@ -61,12 +198,7 @@ export default function App() {
               path="/projects"
               element={
                 <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
+                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
                   element={<ProjectsPage />}
                 />
               }
@@ -82,12 +214,10 @@ export default function App() {
             />
             <Route path="/realizations" element={<RealizationsPage />} />
             <Route path="/renovations" element={<RenovationsPage />} />
-            <Route
-              path="/projectmanagement"
-              element={<ProjectManagementPage />}
-            />
+            <Route path="/projectmanagement" element={<ProjectManagementPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
+
             <Route
               path="/inquiries"
               element={
@@ -115,14 +245,19 @@ export default function App() {
                 />
               }
             />
-            <Route
-              path="/projects/:projectId/metadata"
-              element={<ProjectMetadata />}
-            />
+
+            <Route path="/projects/:projectId/metadata" element={<ProjectMetadata />} />
+
             <Route
               path="/projects/:projectId/team-management"
-              element={<ProtectedRoute allowedRoles={['OWNER']} element={<ProjectTeamManagementPage />} />}
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<ProjectTeamManagementPage />}
+                />
+              }
             />
+
             <Route
               path="/customer/dashboard"
               element={
@@ -132,6 +267,7 @@ export default function App() {
                 />
               }
             />
+
             <Route
               path="/salesperson/dashboard"
               element={
@@ -141,10 +277,9 @@ export default function App() {
                 />
               }
             />
-            <Route
-              path="/residential-projects"
-              element={<ResidentialProjectsPage />}
-            />
+
+            <Route path="/residential-projects" element={<ResidentialProjectsPage />} />
+
             <Route
               path="/contractor/dashboard"
               element={
@@ -154,86 +289,91 @@ export default function App() {
                 />
               }
             />
+
             <Route
               path="/projects/:projectId/files"
               element={
                 <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
+                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
                   element={<ProjectFilesPage />}
                 />
               }
             />
+
             <Route
               path="/projects/:projectId/photos"
               element={
                 <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
+                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
                   element={<ProjectPhotosPage />}
                 />
               }
             />
+
             <Route
               path="/projects/:projectId/schedule"
               element={
                 <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
+                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
                   element={<ProjectSchedulePage />}
                 />
               }
             />
+
             <Route
               path="/tasks/:taskId"
               element={
                 <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
+                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
                   element={<TaskDetailsPage />}
                 />
               }
             />
+
             <Route path="/portal/login" element={<PortalLogin />} />
+
             <Route
               path="/profile"
               element={
                 <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
+                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
                   element={<ProfilePage />}
                 />
               }
             />
+
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/projects/:projectIdentifier/overview" element={<ProjectsOverviewPage />} />
             <Route path="*" element={<NotFound />} />
-            <Route
-              path="/projects/:projectIdentifier/overview"
-              element={<ProjectsOverviewPage />}
-            />
           </Routes>
         </main>
+
         <HomeFooter />
+
+        {showIdleModal && (
+          <IdleTimeoutModal
+            remainingSeconds={remainingSeconds}
+            onStay={() => {
+              // user stays: close modal and reset idle timer
+              setShowIdleModalSafe(false);
+              setRemainingSeconds(120);
+              try {
+                resetIdleTimerRef.current && resetIdleTimerRef.current();
+              } catch (e) {
+                console.debug('resetIdleTimerRef call failed', e);
+              }
+            }}
+            onLogout={() => {
+              // Local-only logout: clear app session and navigate to homepage
+              clearAppSession();
+              try {
+                window.location.assign(window.location.origin + '/');
+              } catch (e) {
+                window.location.href = window.location.origin + '/';
+              }
+            }}
+          />
+        )}
       </div>
     </BrowserRouter>
   );
