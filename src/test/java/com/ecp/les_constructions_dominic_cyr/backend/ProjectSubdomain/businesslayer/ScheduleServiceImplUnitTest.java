@@ -4,6 +4,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLa
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
@@ -61,9 +62,8 @@ class ScheduleServiceImplUnitTest {
     @BeforeEach
     void setUp() {
         LotIdentifier lotIdentifier = new LotIdentifier("Lot 53");
-        lot = new Lot();
+        lot = new Lot(lotIdentifier, "Lot-53", "Test Address", 150000f, "5000", "464.5", LotStatus.AVAILABLE);
         lot.setId(1);
-        lot.setLotIdentifier(lotIdentifier);
 
         project = new Project();
         project.setProjectId(1L);

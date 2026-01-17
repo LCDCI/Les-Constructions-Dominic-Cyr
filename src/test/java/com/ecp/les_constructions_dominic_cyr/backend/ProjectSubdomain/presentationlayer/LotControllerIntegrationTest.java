@@ -56,7 +56,7 @@ class LotControllerIntegrationTest {
     @Test
     void whenGetAll_thenReturnList() throws Exception {
         LotIdentifier id = new LotIdentifier(UUID.randomUUID().toString());
-        Lot entity = new Lot(id, "Integration Loc", 777f, "7700", "715.5", LotStatus.AVAILABLE);
+        Lot entity = new Lot(id, "Lot-INT-001", "Integration Loc", 777f, "7700", "715.5", LotStatus.AVAILABLE);
         lotRepository.save(entity);
 
         mockMvc.perform(get(BASE_URI)
@@ -69,7 +69,7 @@ class LotControllerIntegrationTest {
     @Test
     void whenGetByIdExists_thenReturn() throws Exception {
         String idVal = UUID.randomUUID().toString();
-        lotRepository.save(new Lot(new LotIdentifier(idVal), "ById Loc", 111f, "1110", "103.1", LotStatus.AVAILABLE));
+        lotRepository.save(new Lot(new LotIdentifier(idVal), "Lot-INT-002", "ById Loc", 111f, "1110", "103.1", LotStatus.AVAILABLE));
 
         mockMvc.perform(get(BASE_URI + "/{id}", idVal)
                         .with(jwt().authorities(ADMIN_ROLE))
@@ -83,7 +83,7 @@ class LotControllerIntegrationTest {
     @Test
     void whenDeleteExists_thenNoContent() throws Exception {
         String idVal = UUID.randomUUID().toString();
-        lotRepository.save(new Lot(new LotIdentifier(idVal), "ToDelete", 11f, "110", "10.2", LotStatus.AVAILABLE));
+        lotRepository.save(new Lot(new LotIdentifier(idVal), "Lot-INT-003", "ToDelete", 11f, "110", "10.2", LotStatus.AVAILABLE));
 
         mockMvc.perform(delete(BASE_URI + "/{id}", idVal)
                         .with(jwt().authorities(ADMIN_ROLE)))
