@@ -101,16 +101,9 @@ public class DataSeederTest {
     );
 
     private void seedLotImages() {
-        LOTS_IMAGES.forEach((lotId, imageId) -> {
-            Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
-            if (lot != null) {
-                if (lot.getImageIdentifier() == null || lot.getImageIdentifier().isEmpty()) {
-                    lot.setImageIdentifier(imageId);
-                    lotRepository.save(lot);
-                    log.info("Linked image to lot: {}", lotId);
-                }
-            }
-        });
+        // Note: Lot entity no longer has imageIdentifier field
+        // This method is kept for backward compatibility but does nothing
+        log.info("seedLotImages is deprecated - Lot entity no longer has imageIdentifier field");
     }
 
     private static final Map<String, RenovationImages> RENOVATION_IMAGES = Map.ofEntries(

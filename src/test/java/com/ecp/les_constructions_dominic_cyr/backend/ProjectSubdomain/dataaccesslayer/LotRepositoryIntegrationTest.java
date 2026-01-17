@@ -35,14 +35,16 @@ public class LotRepositoryIntegrationTest {
         a1.setLotIdentifier(new LotIdentifier("id-1"));
         a1.setCivicAddress("L1");
         a1.setPrice(100f);
-        a1.setDimensionsSquareFeet("10x10");
+        a1.setDimensionsSquareFeet("1000");
+        a1.setDimensionsSquareMeters("92.9");
         a1.setLotStatus(LotStatus.AVAILABLE);
 
         Lot a2 = new Lot();
         a2.setLotIdentifier(new LotIdentifier("id-2"));
         a2.setCivicAddress("L2");
         a2.setPrice(200f);
-        a2.setDimensionsSquareFeet("20x20");
+        a2.setDimensionsSquareFeet("2000");
+        a2.setDimensionsSquareMeters("185.8");
         a2.setLotStatus(LotStatus.SOLD);
 
         lotRepository.save(a1);
@@ -63,7 +65,8 @@ public class LotRepositoryIntegrationTest {
         toSave.setLotIdentifier(new LotIdentifier("test-lot-1"));
         toSave.setCivicAddress("LocX");
         toSave.setPrice(123f);
-        toSave.setDimensionsSquareFeet("12x12");
+        toSave.setDimensionsSquareFeet("1230");
+        toSave.setDimensionsSquareMeters("114.3");
         toSave.setLotStatus(LotStatus.AVAILABLE);
         lotRepository.save(toSave);
 
@@ -87,7 +90,8 @@ public class LotRepositoryIntegrationTest {
         entity.setLotIdentifier(new LotIdentifier("save-1"));
         entity.setCivicAddress("Saved");
         entity.setPrice(321f);
-        entity.setDimensionsSquareFeet("3x3");
+        entity.setDimensionsSquareFeet("3210");
+        entity.setDimensionsSquareMeters("298.3");
         entity.setLotStatus(LotStatus.AVAILABLE);
 
         Lot saved = lotRepository.save(entity);
@@ -105,17 +109,20 @@ public class LotRepositoryIntegrationTest {
         entity.setLotIdentifier(new LotIdentifier("upd-1"));
         entity.setCivicAddress("Old");
         entity.setPrice(10f);
-        entity.setDimensionsSquareFeet("1x1");
+        entity.setDimensionsSquareFeet("100");
+        entity.setDimensionsSquareMeters("9.3");
         entity.setLotStatus(LotStatus.AVAILABLE);
 
         Lot saved = lotRepository.save(entity);
 
         saved.setCivicAddress("New");
-        saved.setDimensionsSquareFeet("2x2");
+        saved.setDimensionsSquareFeet("200");
+        saved.setDimensionsSquareMeters("18.6");
         Lot updated = lotRepository.save(saved);
 
         assertEquals("New", updated.getCivicAddress());
-        assertEquals("2x2", updated.getDimensionsSquareFeet());
+        assertEquals("200", updated.getDimensionsSquareFeet());
+        assertEquals("18.6", updated.getDimensionsSquareMeters());
     }
 
     @Test
@@ -125,7 +132,8 @@ public class LotRepositoryIntegrationTest {
         ghost.setLotIdentifier(new LotIdentifier("ghost-1"));
         ghost.setCivicAddress("Ghost");
         ghost.setPrice(5f);
-        ghost.setDimensionsSquareFeet("0x0");
+        ghost.setDimensionsSquareFeet("50");
+        ghost.setDimensionsSquareMeters("4.6");
         ghost.setLotStatus(LotStatus.AVAILABLE);
 
         long before = lotRepository.count();
@@ -143,7 +151,8 @@ public class LotRepositoryIntegrationTest {
         entity.setLotIdentifier(new LotIdentifier("del-1"));
         entity.setCivicAddress("ToDelete");
         entity.setPrice(11f);
-        entity.setDimensionsSquareFeet("11x11");
+        entity.setDimensionsSquareFeet("110");
+        entity.setDimensionsSquareMeters("10.2");
         entity.setLotStatus(LotStatus.AVAILABLE);
 
         lotRepository.save(entity);
@@ -162,7 +171,8 @@ public class LotRepositoryIntegrationTest {
         ghost.setLotIdentifier(new LotIdentifier("ghost-del"));
         ghost.setCivicAddress("G");
         ghost.setPrice(1f);
-        ghost.setDimensionsSquareFeet("1x1");
+        ghost.setDimensionsSquareFeet("10");
+        ghost.setDimensionsSquareMeters("0.9");
         ghost.setLotStatus(LotStatus.AVAILABLE);
 
         assertDoesNotThrow(() -> lotRepository.delete(ghost));
@@ -175,7 +185,8 @@ public class LotRepositoryIntegrationTest {
         e.setLotIdentifier(new LotIdentifier("ex-1"));
         e.setCivicAddress("UniqueLoc");
         e.setPrice(99f);
-        e.setDimensionsSquareFeet("9x9");
+        e.setDimensionsSquareFeet("990");
+        e.setDimensionsSquareMeters("92.0");
         e.setLotStatus(LotStatus.AVAILABLE);
         lotRepository.save(e);
 
