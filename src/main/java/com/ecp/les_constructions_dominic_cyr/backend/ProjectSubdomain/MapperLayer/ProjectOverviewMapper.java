@@ -45,9 +45,9 @@ public class ProjectOverviewMapper {
     public LotResponseModel lotToResponseModel(Lot lot) {
         return LotResponseModel.builder()
                 .lotId(lot.getLotIdentifier().getLotId())
-                .location(lot.getLocation())
+                .location(lot.getCivicAddress())
                 .price(lot.getPrice())
-                .dimensions(lot.getDimensions())
+                .dimensions(lot.getDimensionsSquareFeet())
                 .lotStatus(lot.getLotStatus())
                 .imageIdentifier(lot.getImageIdentifier())
                 .build();

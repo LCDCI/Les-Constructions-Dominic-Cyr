@@ -1,6 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot;
 
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,22 +20,27 @@ public class Lot {
     @Embedded
     private LotIdentifier lotIdentifier;
 
-    private String imageIdentifier;
-
-    private String location;
+    private String civicAddress;
 
     private Float price;
 
-    private String dimensions;
+    private String dimensionsSquareFeet;
+
+    private String dimensionsSquareMeters;
 
     @Enumerated(EnumType.STRING)
     private LotStatus lotStatus;
 
-    public Lot(@NonNull LotIdentifier lotIdentifier, @NonNull String location, @NonNull Float price, @NonNull String dimensions, @NonNull LotStatus lotStatus) {
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private Project project;
+
+    public Lot(@NonNull LotIdentifier lotIdentifier, @NonNull String civicAddress, @NonNull Float price, @NonNull String dimensionsSquareFeet, @NonNull String dimensionsSquareMeters, @NonNull LotStatus lotStatus) {
         this.lotIdentifier = lotIdentifier;
-        this.location = location;
+        this.civicAddress = civicAddress;
         this.price = price;
-        this.dimensions = dimensions;
+        this.dimensionsSquareFeet = dimensionsSquareFeet;
+        this.dimensionsSquareMeters = dimensionsSquareMeters;
         this.lotStatus = lotStatus;
     }
 }

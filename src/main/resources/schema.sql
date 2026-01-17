@@ -3,15 +3,24 @@
 -- schema for lot
 DROP TABLE IF EXISTS lots;
 
-CREATE TABLE lots (
-                      id SERIAL PRIMARY KEY,
-                      lot_identifier UUID NOT NULL UNIQUE,
-                      image_identifier VARCHAR(255),
-                      location VARCHAR(255) NOT NULL,
-                      price REAL NOT NULL, -- Use REAL for FLOAT compatibility
-                      dimensions VARCHAR(255) NOT NULL,
-                      lot_status VARCHAR(50) NOT NULL
-);
+CREATE TABLE IF NOT EXISTS lots (
+    id BIGSERIAL PRIMARY KEY,
+    lot_identifier UUID,
+    image_identifier VARCHAR(255),
+    location VARCHAR(255),
+    price REAL NOT NULL,
+    dimensions VARCHAR(255) NOT NULL,
+    lot_status VARCHAR(50) NOT NULL DEFAULT 'AVAILABLE',
+    project_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_lots_projects FOREIGN KEY (project_id) REFERENCES projects(project_id) ON DELETE CASCADE
+    );
+
+CREATE INDEX IF NOT EXISTS idx_lots_project_id ON lots(project_id);
+CREATE INDEX IF NOT EXISTS idx_lots_lot_identifier ON lots(lot_identifier);
+
+--
 
 -- schema for realization
 DROP TABLE IF EXISTS realizations;

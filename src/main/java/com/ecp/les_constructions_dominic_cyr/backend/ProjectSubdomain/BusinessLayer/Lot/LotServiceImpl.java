@@ -48,9 +48,9 @@ public class LotServiceImpl implements LotService{
         validateLotRequest(lotRequestModel);
 
         lot.setImageIdentifier(lotRequestModel.getImageIdentifier());
-        lot.setLocation(lotRequestModel.getLocation());
+        lot.setCivicAddress(lotRequestModel.getLocation());
         lot.setPrice(lotRequestModel.getPrice());
-        lot.setDimensions(lotRequestModel.getDimensions());
+        lot.setDimensionsSquareFeet(lotRequestModel.getDimensions());
         lot.setLotStatus(lotRequestModel.getLotStatus());
         lot.setLotIdentifier(new LotIdentifier());   // always generate
 
@@ -68,9 +68,9 @@ public class LotServiceImpl implements LotService{
         validateLotRequest(lotRequestModel);
         // Update the existing entity instead of creating a new one (preserve id and embedded lotIdentifier)
         foundLot.setImageIdentifier(lotRequestModel.getImageIdentifier());
-        foundLot.setLocation(lotRequestModel.getLocation());
+        foundLot.setCivicAddress(lotRequestModel.getLocation());
         foundLot.setPrice(lotRequestModel.getPrice());
-        foundLot.setDimensions(lotRequestModel.getDimensions());
+        foundLot.setDimensionsSquareFeet(lotRequestModel.getDimensions());
         foundLot.setLotStatus(lotRequestModel.getLotStatus());
         Lot updatedLot = lotRepository.save(foundLot);
         return mapToResponse(updatedLot);
@@ -89,9 +89,9 @@ public class LotServiceImpl implements LotService{
         LotResponseModel dto = new LotResponseModel();
         dto.setLotId(lot.getLotIdentifier().getLotId());
         dto.setImageIdentifier(lot.getImageIdentifier());
-        dto.setLocation(lot.getLocation());
+        dto.setLocation(lot.getCivicAddress());
         dto.setPrice(lot.getPrice());
-        dto.setDimensions(lot.getDimensions());
+        dto.setDimensions(lot.getDimensionsSquareFeet());
         dto.setLotStatus(lot.getLotStatus());
         return dto;
     }
