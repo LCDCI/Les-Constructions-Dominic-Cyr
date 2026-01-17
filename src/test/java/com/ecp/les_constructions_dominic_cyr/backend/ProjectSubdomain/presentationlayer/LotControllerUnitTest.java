@@ -37,7 +37,7 @@ class LotControllerUnitTest {
         String projectIdentifier = "proj-001-test";
         when(lotService.getAllLotsByProject(projectIdentifier)).thenReturn(List.of());
 
-        ResponseEntity<List<LotResponseModel>> resp = lotController.getAllLots(projectIdentifier);
+        ResponseEntity<List<LotResponseModel>> resp = lotController.getAllLotsByProject(projectIdentifier);
 
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         assertNotNull(resp.getBody());

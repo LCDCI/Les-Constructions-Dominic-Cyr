@@ -15,16 +15,12 @@ const parseErrorMessage = async (response, fallback) => {
   } catch (err) {
     // keep fallback message
   }
-  return message;
+  const statusInfo = response?.status ? ` (status ${response.status})` : '';
+  return `${message}${statusInfo}`;
 };
 
-export const resolveProjectIdentifier = projectIdentifier => {
-  const resolved = projectIdentifier || FALLBACK_PROJECT_IDENTIFIER;
-  if (!resolved) {
-    throw new Error('Project identifier is required to call the lots API');
-  }
-  return resolved;
-};
+export const resolveProjectIdentifier = projectIdentifier =>
+  projectIdentifier || FALLBACK_PROJECT_IDENTIFIER || null;
 
 export async function fetchLots({ projectIdentifier, token } = {}) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
@@ -33,9 +29,11 @@ export async function fetchLots({ projectIdentifier, token } = {}) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/lots`, {
-    headers,
-  });
+  const url = projectId
+    ? `${API_BASE_URL}/projects/${projectId}/lots`
+    : `${API_BASE_URL}/lots`;
+
+  const response = await fetch(url, { headers });
 
   if (!response.ok) {
     const message = await parseErrorMessage(response, 'Failed to fetch lots');
@@ -46,9 +44,11 @@ export async function fetchLots({ projectIdentifier, token } = {}) {
 
 export async function fetchLotById({ projectIdentifier, lotId }) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
-  const response = await fetch(
-    `${API_BASE_URL}/projects/${projectId}/lots/${lotId}`
-  );
+  const url = projectId
+    ? `${API_BASE_URL}/projects/${projectId}/lots/${lotId}`
+    : `${API_BASE_URL}/lots/${lotId}`;
+
+  const response = await fetch(url);
   if (!response.ok) {
     const message = await parseErrorMessage(response, 'Failed to fetch lot');
     throw new Error(message);
@@ -58,7 +58,11 @@ export async function fetchLotById({ projectIdentifier, lotId }) {
 
 export async function createLot({ projectIdentifier, lotData }) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
-  const response = await fetch(`${API_BASE_URL}/projects/${projectId}/lots`, {
+  const url = projectId
+    ? `${API_BASE_URL}/projects/${projectId}/lots`
+    : `${API_BASE_URL}/lots`;
+
+  const response = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
