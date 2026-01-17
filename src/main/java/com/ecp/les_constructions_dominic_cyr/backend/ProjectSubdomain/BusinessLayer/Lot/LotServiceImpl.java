@@ -23,13 +23,16 @@ public class LotServiceImpl implements LotService{
     @Override
     public List<LotResponseModel> getAllLots() {
         List<Lot> lots = lotRepository.findAll();
-        List<LotResponseModel> responseList = new ArrayList<>();
+        return mapLotsToResponses(lots);
+    }
 
-        for (Lot lot : lots) {
-            responseList.add(mapToResponse(lot));
+    @Override
+    public List<LotResponseModel> getAllLotsByProject(String projectIdentifier) {
+        if (projectIdentifier == null || projectIdentifier.isBlank()) {
+            throw new InvalidInputException("Project identifier must not be blank");
         }
-
-        return responseList;
+        List<Lot> lots = lotRepository.findByProject_ProjectIdentifier(projectIdentifier);
+        return mapLotsToResponses(lots);
     }
 
     @Override
@@ -97,6 +100,14 @@ public class LotServiceImpl implements LotService{
         dto.setDimensionsSquareMeters(lot.getDimensionsSquareMeters());
         dto.setLotStatus(lot.getLotStatus());
         return dto;
+    }
+
+    private List<LotResponseModel> mapLotsToResponses(List<Lot> lots) {
+        List<LotResponseModel> responseList = new ArrayList<>();
+        for (Lot lot : lots) {
+            responseList.add(mapToResponse(lot));
+        }
+        return responseList;
     }
 
     private void validateLotRequest(LotRequestModel lotRequestModel) {

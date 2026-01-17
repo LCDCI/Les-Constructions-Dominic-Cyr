@@ -59,9 +59,10 @@ class LotControllerTest {
 
 
     @Test
-    @DisplayName("GET /api/v1/lots should return a list of all lots with 200 OK")
+    @DisplayName("GET /api/v1/projects/{projectIdentifier}/lots should return a list of all lots with 200 OK")
     void getAllLots_ReturnsAllLots() {
-        webTestClient.get().uri("/api/v1/lots")
+        String projectIdentifier = "proj-001-test";
+        webTestClient.get().uri("/api/v1/projects/{projectIdentifier}/lots", projectIdentifier)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -71,10 +72,11 @@ class LotControllerTest {
 
 
     @Test
-    @DisplayName("GET /api/v1/lots/{lotId} should return 400 Bad Request for incorrect ID length")
+    @DisplayName("GET /api/v1/projects/{projectIdentifier}/lots/{lotId} should return 400 Bad Request for incorrect ID length")
     void getLotById_InvalidLength_Returns400() {
+        String projectIdentifier = "proj-001-test";
         // ACT & ASSERT
-        webTestClient.get().uri("/api/v1/lots/{lotId}", INVALID_SHORT_LOT_ID)
+        webTestClient.get().uri("/api/v1/projects/{projectIdentifier}/lots/{lotId}", projectIdentifier, INVALID_SHORT_LOT_ID)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody(String.class)
@@ -85,13 +87,14 @@ class LotControllerTest {
 
 
     @Test
-    @DisplayName("DELETE /api/v1/lots/{lotId} should return 204 No Content for valid ID")
+    @DisplayName("DELETE /api/v1/projects/{projectIdentifier}/lots/{lotId} should return 204 No Content for valid ID")
     void deleteLot_ValidId_Returns204() {
+        String projectIdentifier = "proj-001-test";
         // ARRANGE
         doNothing().when(lotService).deleteLot(eq(VALID_LOT_ID));
 
         // ACT & ASSERT
-        webTestClient.delete().uri("/api/v1/lots/{lotId}", VALID_LOT_ID)
+        webTestClient.delete().uri("/api/v1/projects/{projectIdentifier}/lots/{lotId}", projectIdentifier, VALID_LOT_ID)
                 .exchange()
                 .expectStatus().isNoContent()
                 .expectBody().isEmpty();
@@ -101,10 +104,11 @@ class LotControllerTest {
 
 
     @Test
-    @DisplayName("DELETE /api/v1/lots/{lotId} should return 400 Bad Request for incorrect delete ID length")
+    @DisplayName("DELETE /api/v1/projects/{projectIdentifier}/lots/{lotId} should return 400 Bad Request for incorrect delete ID length")
     void deleteLot_InvalidLength_Returns400() {
+        String projectIdentifier = "proj-001-test";
         // ACT & ASSERT
-        webTestClient.delete().uri("/api/v1/lots/{lotId}", INVALID_SHORT_LOT_ID)
+        webTestClient.delete().uri("/api/v1/projects/{projectIdentifier}/lots/{lotId}", projectIdentifier, INVALID_SHORT_LOT_ID)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody(String.class)
