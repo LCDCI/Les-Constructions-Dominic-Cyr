@@ -34,7 +34,11 @@ public class Lot {
     private LotStatus lotStatus;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(
+            name = "project_id",                          // The FK column in 'lots' table
+            referencedColumnName = "project_identifier",   // The column in 'projects' table
+            nullable = false
+    )
     private Project project;
 
     public Lot(@NonNull LotIdentifier lotIdentifier, @NonNull String lotNumber, @NonNull String civicAddress, @NonNull Float price, @NonNull String dimensionsSquareFeet, @NonNull String dimensionsSquareMeters, @NonNull LotStatus lotStatus) {

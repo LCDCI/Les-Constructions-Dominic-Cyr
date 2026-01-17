@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { fetchLots, resolveProjectIdentifier } from '../../features/lots/api/lots';
-import { projectApi } from '../../features/projects/api/projectApi';
-import '../../styles/lots.css';
-import Footer from '../../components/Footers/ProjectsFooter';
+import { fetchLots, resolveProjectIdentifier } from '../features/lots/api/lots';
+import { projectApi } from '../features/projects/api/projectApi';
+import '../styles/lots.css';
+import Footer from '../components/Footers/ProjectsFooter';
 
 const LotsPage = () => {
   const { projectIdentifier: urlProjectIdentifier } = useParams();
-  const { isAuthenticated, isLoading: authLoading, getAccessTokenSilently } =
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    getAccessTokenSilently,
     useAuth0();
   const [lots, setLots] = useState([]);
   const [filteredLots, setFilteredLots] = useState([]);
