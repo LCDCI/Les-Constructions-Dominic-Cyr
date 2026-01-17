@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import { fetchLots, resolveProjectIdentifier } from '../features/lots/api/lots';
+import { projectApi } from '../features/projects/api/projectApi';
 import '../styles/lots.css';
 import Footer from '../components/Footers/ProjectsFooter';
 
 const LotsPage = () => {
   const { projectIdentifier: urlProjectIdentifier } = useParams();
+  const { isAuthenticated, isLoading: authLoading, getAccessTokenSilently } =
+    useAuth0();
   const [lots, setLots] = useState([]);
   const [filteredLots, setFilteredLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,39 +21,95 @@ const LotsPage = () => {
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 
   useEffect(() => {
-    try {
-      // Use URL parameter if available, otherwise fallback to environment variable
-      const resolved = urlProjectIdentifier || resolveProjectIdentifier();
-      setProjectIdentifier(resolved);
-    } catch (err) {
-      setError(err.message || 'Project identifier is required');
-      setLoading(false);
-    }
-  }, [urlProjectIdentifier]);
+    let cancelled = false;
 
-  useEffect(() => {
-    if (projectIdentifier) {
-      fetchAvailableLots(projectIdentifier);
-    }
-  }, [projectIdentifier]);
+    const resolveProjectAndFetch = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        // Prefer URL param, then env, then auto-discover a project
+        let resolved = urlProjectIdentifier || resolveProjectIdentifier();
+
+        if (!resolved) {
+          const projects = await projectApi.getAllProjects();
+          const first = Array.isArray(projects) ? projects[0] : null;
+          // Prefer numeric projectId when available to satisfy backends that expect a bigint path variable
+          resolved =
+            first?.projectId || first?.id || first?.projectIdentifier || null;
+        }
+
+        if (!resolved) {
+          if (!cancelled) {
+            setError(
+              'No project found. Open via /projects/{projectIdentifier}/lots or create a project first.'
+            );
+          }
+          return;
+        }
+
+        let token = null;
+        if (isAuthenticated) {
+          try {
+            token = await getAccessTokenSilently({
+              authorizationParams: {
+                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+              },
+            });
+          } catch (tokenErr) {
+            console.warn('Could not get token for lots, continuing without', tokenErr);
+          }
+        }
+
+        if (!cancelled) {
+          setProjectIdentifier(resolved);
+        }
+
+        await fetchAvailableLots(resolved, token, () => cancelled);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err.message || 'Failed to fetch lots');
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    resolveProjectAndFetch();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [urlProjectIdentifier, isAuthenticated, authLoading]);
 
   useEffect(() => {
     filterLots();
   }, [searchTerm, lots]);
 
-  const fetchAvailableLots = async projectId => {
+  const fetchAvailableLots = async (projectId, token, shouldCancel) => {
     try {
       setLoading(true);
       setError('');
-      const data = await fetchLots({ projectIdentifier: projectId });
+      const data = await fetchLots({ projectIdentifier: projectId, token });
       const availableLots = data.filter(lot => lot.lotStatus === 'AVAILABLE');
+      if (shouldCancel?.()) return;
       setLots(availableLots);
       setFilteredLots(availableLots);
     } catch (err) {
       console.error('Failed to fetch lots:', err);
-      setError(err.message || 'Failed to fetch lots');
+      if (!shouldCancel?.()) {
+        const message = err.message || 'Failed to fetch lots';
+        if (message.includes('status 401')) {
+          setError('Unauthorized. Please sign in to view lots.');
+        } else {
+          setError(message);
+        }
+      }
     } finally {
-      setLoading(false);
+      if (!shouldCancel?.()) {
+        setLoading(false);
+      }
     }
   };
 

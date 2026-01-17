@@ -30,7 +30,7 @@ public class LotController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<LotResponseModel>> getAllLots(@PathVariable String projectIdentifier){
+    public ResponseEntity<List<LotResponseModel>> getAllLotsByProject(@PathVariable String projectIdentifier){
         if(projectIdentifier == null || projectIdentifier.isBlank()){
             throw new InvalidInputException("Project identifier must not be blank");
         }
