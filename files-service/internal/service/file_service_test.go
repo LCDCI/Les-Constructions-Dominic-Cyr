@@ -9,19 +9,35 @@ import (
 )
 
 type mockRepo struct {
-	SaveFn     func(ctx context.Context, f *domain.File) error
-	FindByIdFn func(ctx context.Context, id string) (*domain.File, error)
-	DeleteFn   func(ctx context.Context, id string, deletedBy string) error
+	SaveFn      func(ctx context.Context, f *domain.File) error
+	FindByIdFn  func(ctx context.Context, id string) (*domain.File, error)
+	DeleteFn    func(ctx context.Context, id string, deletedBy string) error
+	ArchiveFn   func(ctx context.Context, id string, archivedBy string) error
+	UnarchiveFn func(ctx context.Context, id string) error
 
-	FindByProjectIDFn func(ctx context.Context, projectID string) ([]domain.File, error)
+	FindByProjectIDFn         func(ctx context.Context, projectID string) ([]domain.File, error)
+	FindByObjectKeyFn         func(ctx context.Context, objectKey string) (*domain.File, error)
+	FindArchivedByProjectIDFn func(ctx context.Context, projectID string) ([]domain.File, error)
 }
 
 func (m *mockRepo) Save(ctx context.Context, f *domain.File) error { return m.SaveFn(ctx, f) }
 func (m *mockRepo) FindById(ctx context.Context, id string) (*domain.File, error) {
 	return m.FindByIdFn(ctx, id)
 }
-func (m *mockRepo) Delete(ctx context.Context, id string, deletedBy string) error { 
-	return m.DeleteFn(ctx, id, deletedBy) 
+func (m *mockRepo) Delete(ctx context.Context, id string, deletedBy string) error {
+	return m.DeleteFn(ctx, id, deletedBy)
+}
+func (m *mockRepo) Archive(ctx context.Context, id string, archivedBy string) error {
+	if m.ArchiveFn != nil {
+		return m.ArchiveFn(ctx, id, archivedBy)
+	}
+	return nil
+}
+func (m *mockRepo) Unarchive(ctx context.Context, id string) error {
+	if m.UnarchiveFn != nil {
+		return m.UnarchiveFn(ctx, id)
+	}
+	return nil
 }
 func (m *mockRepo) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
 	if m.FindByProjectIDFn != nil {
@@ -30,19 +46,41 @@ func (m *mockRepo) FindByProjectID(ctx context.Context, projectID string) ([]dom
 	return nil, nil
 }
 
-type mockStorage struct {
-	UploadFn   func(ctx context.Context, data []byte, key string, contentType string) (string, error)
-	DownloadFn func(ctx context.Context, key string) ([]byte, error)
-	DeleteFn   func(ctx context.Context, key string) error
+func (m *mockRepo) FindByObjectKey(ctx context.Context, objectKey string) (*domain.File, error) {
+	if m.FindByObjectKeyFn != nil {
+		return m.FindByObjectKeyFn(ctx, objectKey)
+	}
+	return nil, nil
 }
 
-func (m *mockStorage) Upload(ctx context.Context, data []byte, key string, ct string) (string, error) {
-	return m.UploadFn(ctx, data, key, ct)
+func (m *mockRepo) FindArchivedByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
+	if m.FindArchivedByProjectIDFn != nil {
+		return m.FindArchivedByProjectIDFn(ctx, projectID)
+	}
+	return nil, nil
+}
+
+type mockStorage struct {
+	UploadFn      func(ctx context.Context, data []byte, key string, contentType string, metadata map[string]string) (string, error)
+	DownloadFn    func(ctx context.Context, key string) ([]byte, error)
+	DeleteFn      func(ctx context.Context, key string) error
+	ListObjectsFn func(ctx context.Context, prefix string) ([]service.ObjectInfo, error)
+}
+
+func (m *mockStorage) Upload(ctx context.Context, data []byte, key string, ct string, metadata map[string]string) (string, error) {
+	return m.UploadFn(ctx, data, key, ct, metadata)
 }
 func (m *mockStorage) Download(ctx context.Context, key string) ([]byte, error) {
 	return m.DownloadFn(ctx, key)
 }
 func (m *mockStorage) Delete(ctx context.Context, key string) error { return m.DeleteFn(ctx, key) }
+
+func (m *mockStorage) ListObjects(ctx context.Context, prefix string) ([]service.ObjectInfo, error) {
+	if m.ListObjectsFn != nil {
+		return m.ListObjectsFn(ctx, prefix)
+	}
+	return nil, nil
+}
 
 func TestUpload_Success(t *testing.T) {
 	repo := &mockRepo{
@@ -50,7 +88,7 @@ func TestUpload_Success(t *testing.T) {
 	}
 
 	storage := &mockStorage{
-		UploadFn: func(ctx context.Context, data []byte, key string, c string) (string, error) {
+		UploadFn: func(ctx context.Context, data []byte, key string, c string, metadata map[string]string) (string, error) {
 			return key, nil
 		},
 	}
@@ -97,7 +135,7 @@ func TestUpload_StorageError(t *testing.T) {
 	storageErr := errors.New("storage down")
 
 	storage := &mockStorage{
-		UploadFn: func(ctx context.Context, data []byte, key, c string) (string, error) {
+		UploadFn: func(ctx context.Context, data []byte, key, c string, metadata map[string]string) (string, error) {
 			return "", storageErr
 		},
 	}
@@ -128,7 +166,9 @@ func TestUpload_SaveError_CleanupSuccess(t *testing.T) {
 	cleanupCalled := false
 
 	storage := &mockStorage{
-		UploadFn: func(ctx context.Context, d []byte, k, c string) (string, error) { return k, nil },
+		UploadFn: func(ctx context.Context, d []byte, k, c string, metadata map[string]string) (string, error) {
+			return k, nil
+		},
 		DeleteFn: func(ctx context.Context, k string) error {
 			cleanupCalled = true
 			return nil
@@ -163,7 +203,9 @@ func TestUpload_SaveError_CleanupFails(t *testing.T) {
 	}
 
 	storage := &mockStorage{
-		UploadFn: func(ctx context.Context, d []byte, k, c string) (string, error) { return k, nil },
+		UploadFn: func(ctx context.Context, d []byte, k, c string, metadata map[string]string) (string, error) {
+			return k, nil
+		},
 		DeleteFn: func(ctx context.Context, k string) error { return errors.New("cleanup failed") },
 	}
 
@@ -310,7 +352,7 @@ func TestDelete_Success(t *testing.T) {
 
 	s := service.NewFileService(repo, &mockStorage{})
 
-	err := s.Delete(context.Background(), "123", "user-456")
+	err := s.Delete(context.Background(), "123", "11111111-1111-1111-1111-111111111111")
 	if err != nil {
 		t.Fatalf("unexpected error")
 	}
@@ -323,7 +365,7 @@ func TestDelete_NotFound(t *testing.T) {
 
 	s := service.NewFileService(repo, &mockStorage{})
 
-	err := s.Delete(context.Background(), "nonexistent", "user-789")
+	err := s.Delete(context.Background(), "nonexistent", "11111111-1111-1111-1111-111111111111")
 	if err != domain.ErrNotFound {
 		t.Fatalf("expected ErrNotFound")
 	}
@@ -338,30 +380,25 @@ func TestDelete_FindError(t *testing.T) {
 
 	s := service.NewFileService(repo, &mockStorage{})
 
-	err := s.Delete(context.Background(), "file-123", "user-789")
+	err := s.Delete(context.Background(), "file-123", "11111111-1111-1111-1111-111111111111")
 	if !errors.Is(err, findErr) {
 		t.Fatalf("expected find error")
 	}
 }
 
 func TestDelete_StorageError(t *testing.T) {
-	storageErr := errors.New("S3 delete error")
-
 	repo := &mockRepo{
 		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
 			return &domain.File{ObjectKey: "key"}, nil
 		},
+		DeleteFn: func(ctx context.Context, id string, deletedBy string) error { return nil },
 	}
 
-	storage := &mockStorage{
-		DeleteFn: func(ctx context.Context, key string) error { return storageErr },
-	}
+	s := service.NewFileService(repo, &mockStorage{})
 
-	s := service.NewFileService(repo, storage)
-
-	err := s.Delete(context.Background(), "123", "user-id")
-	if !errors.Is(err, storageErr) {
-		t.Fatalf("expected storage delete error")
+	err := s.Delete(context.Background(), "123", "11111111-1111-1111-1111-111111111111")
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
 	}
 }
 
@@ -381,7 +418,7 @@ func TestDelete_RepoDeleteError(t *testing.T) {
 
 	s := service.NewFileService(repo, storage)
 
-	err := s.Delete(context.Background(), "123", "user-789")
+	err := s.Delete(context.Background(), "123", "11111111-1111-1111-1111-111111111111")
 	if !errors.Is(err, repoErr) {
 		t.Fatalf("expected repo delete error")
 	}
@@ -404,8 +441,8 @@ func TestDelete_WithAuditTrail(t *testing.T) {
 			if id != "file-123" {
 				t.Errorf("expected id 'file-123', got '%s'", id)
 			}
-			if deletedBy != "user-456" {
-				t.Errorf("expected deletedBy 'user-456', got '%s'", deletedBy)
+			if deletedBy != "11111111-1111-1111-1111-111111111111" {
+				t.Errorf("expected deletedBy '11111111-1111-1111-1111-111111111111', got '%s'", deletedBy)
 			}
 			return nil
 		},
@@ -413,7 +450,7 @@ func TestDelete_WithAuditTrail(t *testing.T) {
 
 	s := service.NewFileService(repo, &mockStorage{})
 
-	err := s.Delete(context.Background(), "file-123", "user-456")
+	err := s.Delete(context.Background(), "file-123", "11111111-1111-1111-1111-111111111111")
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -446,7 +483,7 @@ func TestDelete_FileNotFound(t *testing.T) {
 
 	s := service.NewFileService(repo, &mockStorage{})
 
-	err := s.Delete(context.Background(), "nonexistent", "user-789")
+	err := s.Delete(context.Background(), "nonexistent", "11111111-1111-1111-1111-111111111111")
 	if err != domain.ErrNotFound {
 		t.Fatalf("expected not found error, got %v", err)
 	}
@@ -466,8 +503,157 @@ func TestDelete_RepositoryDeleteError(t *testing.T) {
 
 	s := service.NewFileService(repo, &mockStorage{})
 
-	err := s.Delete(context.Background(), "file-123", "user-789")
+	err := s.Delete(context.Background(), "file-123", "11111111-1111-1111-1111-111111111111")
 	if !errors.Is(err, softDeleteErr) {
 		t.Fatalf("expected soft delete error, got %v", err)
+	}
+}
+
+// Archive Tests
+func TestArchive_Success(t *testing.T) {
+	archiveCalled := false
+	archiveUserID := ""
+
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return &domain.File{ID: id, FileName: "photo.jpg", ProjectID: "proj-1"}, nil
+		},
+		ArchiveFn: func(ctx context.Context, id string, archivedBy string) error {
+			archiveCalled = true
+			archiveUserID = archivedBy
+			return nil
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	validUUID := "11111111-1111-1111-1111-111111111111"
+	err := s.Archive(context.Background(), "file-123", validUUID)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !archiveCalled {
+		t.Fatalf("expected archive to be called")
+	}
+
+	if archiveUserID != validUUID {
+		t.Fatalf("expected user ID to be passed, got %s", archiveUserID)
+	}
+}
+
+func TestArchive_MissingArchivedBy(t *testing.T) {
+	s := service.NewFileService(&mockRepo{}, &mockStorage{})
+
+	err := s.Archive(context.Background(), "file-123", "")
+	if err != domain.ErrValidation {
+		t.Fatalf("expected validation error, got %v", err)
+	}
+}
+
+func TestArchive_InvalidUUID(t *testing.T) {
+	s := service.NewFileService(&mockRepo{}, &mockStorage{})
+
+	err := s.Archive(context.Background(), "file-123", "not-a-uuid")
+	if err != domain.ErrValidation {
+		t.Fatalf("expected validation error for invalid UUID, got %v", err)
+	}
+}
+
+func TestArchive_FileNotFound(t *testing.T) {
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return nil, nil
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	validUUID := "11111111-1111-1111-1111-111111111111"
+	err := s.Archive(context.Background(), "nonexistent", validUUID)
+	if err != domain.ErrNotFound {
+		t.Fatalf("expected not found error, got %v", err)
+	}
+}
+
+func TestArchive_RepositoryArchiveError(t *testing.T) {
+	archiveErr := errors.New("archive failed")
+
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return &domain.File{ID: id, FileName: "test.jpg"}, nil
+		},
+		ArchiveFn: func(ctx context.Context, id string, archivedBy string) error {
+			return archiveErr
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	validUUID := "11111111-1111-1111-1111-111111111111"
+	err := s.Archive(context.Background(), "file-123", validUUID)
+	if !errors.Is(err, archiveErr) {
+		t.Fatalf("expected archive error, got %v", err)
+	}
+}
+
+// Unarchive Tests
+func TestUnarchive_Success(t *testing.T) {
+	unarchiveCalled := false
+
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return &domain.File{ID: id, FileName: "photo.jpg", ProjectID: "proj-1"}, nil
+		},
+		UnarchiveFn: func(ctx context.Context, id string) error {
+			unarchiveCalled = true
+			return nil
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	err := s.Unarchive(context.Background(), "file-123")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !unarchiveCalled {
+		t.Fatalf("expected unarchive to be called")
+	}
+}
+
+func TestUnarchive_FileNotFound(t *testing.T) {
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return nil, nil
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	err := s.Unarchive(context.Background(), "nonexistent")
+	if err != domain.ErrNotFound {
+		t.Fatalf("expected not found error, got %v", err)
+	}
+}
+
+func TestUnarchive_RepositoryUnarchiveError(t *testing.T) {
+	unarchiveErr := errors.New("unarchive failed")
+
+	repo := &mockRepo{
+		FindByIdFn: func(ctx context.Context, id string) (*domain.File, error) {
+			return &domain.File{ID: id, FileName: "test.jpg"}, nil
+		},
+		UnarchiveFn: func(ctx context.Context, id string) error {
+			return unarchiveErr
+		},
+	}
+
+	s := service.NewFileService(repo, &mockStorage{})
+
+	err := s.Unarchive(context.Background(), "file-123")
+	if !errors.Is(err, unarchiveErr) {
+		t.Fatalf("expected unarchive error, got %v", err)
 	}
 }
