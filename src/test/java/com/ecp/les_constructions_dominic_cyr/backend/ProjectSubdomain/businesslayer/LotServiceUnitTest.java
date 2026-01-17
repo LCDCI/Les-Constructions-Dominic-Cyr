@@ -28,7 +28,7 @@ public class LotServiceUnitTest {
     @InjectMocks
     private LotServiceImpl lotService;
 
-    private Lot buildLotEntity(String lotId, String lotNumber, String civicAddress, float price, String dimsSqFt, String dimsSqM, LotStatus status, String projectId) {
+    private Lot buildLotEntity(String lotId, String lotNumber, String civicAddress, float price, String dimsSqFt, String dimsSqM, LotStatus status) {
         var id = new LotIdentifier(lotId);
         return new Lot(id, lotNumber, civicAddress, price, dimsSqFt, dimsSqM, status);
     }
@@ -37,8 +37,8 @@ public class LotServiceUnitTest {
     @Test
     public void whenLotsExist_thenReturnAllLots() {
         // arrange
-        var e1 = buildLotEntity('db43c148-68de-4882-818a-d15dc8d5fcdb', 'Lot-109', 'Chicoutimi, QC', 160000.0, '8775', '815', 'SOLD', 'proj-002-panorama');
-        var e2 = buildLotEntity('adb6f5b7-e036-49cf-899e-a39dcaecd91f', 'Lot-110', 'Baie-Comeau, QC', 145000.0, '7500', '696', 'AVAILABLE', 'proj-002-panorama');
+        var e1 = buildLotEntity("db43c148-68de-4882-818a-d15dc8d5fcdb", "Lot-109", "Chicoutimi, QC", 160000.0f, "8775", "815", LotStatus.SOLD);
+        var e2 = buildLotEntity("adb6f5b7-e036-49cf-899e-a39dcaecd91f", "Lot-110", "Baie-Comeau, QC", 145000.0f, "7500", "696", LotStatus.AVAILABLE);
         when(lotRepository.findAll()).thenReturn(List.of(e1, e2));
 
         // act
@@ -47,7 +47,7 @@ public class LotServiceUnitTest {
         // assert
         assertNotNull(list);
         assertEquals(2, list.size());
-        assertEquals("Loc1", list.get(0).getCivicAddress());
+        assertEquals("Chicoutimi, QC", list.get(0).getCivicAddress());
         verify(lotRepository, times(1)).findAll();
     }
 
@@ -66,7 +66,7 @@ public class LotServiceUnitTest {
     @Test
     public void whenGetByIdFound_thenReturnDto() {
         String id = "found-id-1";
-        var entity = buildLotEntity(id, "FoundLoc", 150f, "1500", "139.4", LotStatus.AVAILABLE);
+        var entity = buildLotEntity(id, "Lot-123", "FoundLoc", 150f, "1500", "139.4", LotStatus.AVAILABLE);
         when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(entity);
 
         LotResponseModel resp = lotService.getLotById(id);
@@ -92,6 +92,7 @@ public class LotServiceUnitTest {
     public void whenValidCreate_thenReturnCreatedDto() {
         // arrange request
         LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-456");
         req.setCivicAddress("CreateLoc");
         req.setPrice(123f);
         req.setDimensionsSquareFeet("1230");
@@ -127,12 +128,13 @@ public class LotServiceUnitTest {
     @Test
     public void whenUpdateExisting_thenReturnUpdatedDto() {
         String id = "upd-id-1";
-        var stored = buildLotEntity(id, "OldLoc", 50f, "500", "46.5", LotStatus.AVAILABLE);
+        var stored = buildLotEntity(id, "Lot-789", "OldLoc", 50f, "500", "46.5", LotStatus.AVAILABLE);
 
         when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
         when(lotRepository.save(stored)).thenReturn(stored);
 
         LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-789-Updated");
         req.setCivicAddress("NewLoc");
         req.setPrice(60f);
         req.setDimensionsSquareFeet("600");
@@ -161,7 +163,7 @@ public class LotServiceUnitTest {
     @Test
     public void whenDeleteExisting_thenDeletes() {
         String id = "del-id-1";
-        var stored = buildLotEntity(id, "Rem", 10f, "100", "9.3", LotStatus.AVAILABLE);
+        var stored = buildLotEntity(id, "Lot-999", "Rem", 10f, "100", "9.3", LotStatus.AVAILABLE);
         when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
 
         assertDoesNotThrow(() -> lotService.deleteLot(id));

@@ -76,6 +76,7 @@ class LotControllerUnitTest {
     @Test
     void whenValidCreate_thenReturnCreated() {
         LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-TEST-001");
         req.setCivicAddress("LocA");
         req.setPrice(100f);
         req.setDimensionsSquareFeet("1000");
@@ -106,6 +107,7 @@ class LotControllerUnitTest {
     @Test
     void whenValidUpdate_thenReturnOk() {
         LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-TEST-002");
         req.setCivicAddress("Updated");
 
         LotResponseModel updated = new LotResponseModel();

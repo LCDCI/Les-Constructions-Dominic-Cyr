@@ -59,7 +59,7 @@ class ProjectControllerIntegrationTest {
     @BeforeEach
     void setUp() {
         lotRepository.deleteAll();
-        lotRepository.save(new Lot(new LotIdentifier("lot-001"), "Loc", 100f, "1000", "92.9", LotStatus.AVAILABLE));
+        lotRepository.save(new Lot(new LotIdentifier("lot-001"), "Lot-001", "Loc", 100f, "1000", "92.9", LotStatus.AVAILABLE));
         when(fileServiceClient.validateFileExists(anyString())).thenReturn(Mono.just(true));
     }
 
