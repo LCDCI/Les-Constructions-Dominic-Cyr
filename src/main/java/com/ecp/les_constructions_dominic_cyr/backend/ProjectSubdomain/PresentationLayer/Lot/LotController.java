@@ -30,8 +30,8 @@ public class LotController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<LotResponseModel>> getAllLots(){
-        return ResponseEntity.ok().body(lotService.getAllLots());
+    public ResponseEntity<List<LotResponseModel>> getAllLots(@PathVariable String projectIdentifier){
+        return ResponseEntity.ok().body(lotService.getAllLotsByProject(projectIdentifier));
     }
 
     @GetMapping("/{lotId}")
