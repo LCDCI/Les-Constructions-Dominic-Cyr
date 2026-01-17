@@ -45,11 +45,11 @@ public class ProjectOverviewMapper {
     public LotResponseModel lotToResponseModel(Lot lot) {
         return LotResponseModel.builder()
                 .lotId(lot.getLotIdentifier().getLotId())
-                .location(lot.getCivicAddress())
+                .civicAddress(lot.getCivicAddress())
                 .price(lot.getPrice())
-                .dimensions(lot.getDimensionsSquareFeet())
+                .dimensionsSquareFeet(lot.getDimensionsSquareFeet())
+                .dimensionsSquareMeters(lot.getDimensionsSquareMeters())
                 .lotStatus(lot.getLotStatus())
-                .imageIdentifier(lot.getImageIdentifier())
                 .build();
     }
 
