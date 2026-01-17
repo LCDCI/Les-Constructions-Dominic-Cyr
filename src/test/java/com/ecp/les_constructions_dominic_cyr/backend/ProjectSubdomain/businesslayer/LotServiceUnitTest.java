@@ -28,17 +28,17 @@ public class LotServiceUnitTest {
     @InjectMocks
     private LotServiceImpl lotService;
 
-    private Lot buildLotEntity(String lotId, String civicAddress, float price, String dimsSqFt, String dimsSqM, LotStatus status) {
+    private Lot buildLotEntity(String lotId, String lotNumber, String civicAddress, float price, String dimsSqFt, String dimsSqM, LotStatus status, String projectId) {
         var id = new LotIdentifier(lotId);
-        return new Lot(id, civicAddress, price, dimsSqFt, dimsSqM, status);
+        return new Lot(id, lotNumber, civicAddress, price, dimsSqFt, dimsSqM, status);
     }
 
     // ==== GET ALL ====
     @Test
     public void whenLotsExist_thenReturnAllLots() {
         // arrange
-        var e1 = buildLotEntity("id-1", "Loc1", 100f, "1000", "92.9", LotStatus.AVAILABLE);
-        var e2 = buildLotEntity("id-2", "Loc2", 200f, "2000", "185.8", LotStatus.SOLD);
+        var e1 = buildLotEntity('db43c148-68de-4882-818a-d15dc8d5fcdb', 'Lot-109', 'Chicoutimi, QC', 160000.0, '8775', '815', 'SOLD', 'proj-002-panorama');
+        var e2 = buildLotEntity('adb6f5b7-e036-49cf-899e-a39dcaecd91f', 'Lot-110', 'Baie-Comeau, QC', 145000.0, '7500', '696', 'AVAILABLE', 'proj-002-panorama');
         when(lotRepository.findAll()).thenReturn(List.of(e1, e2));
 
         // act
