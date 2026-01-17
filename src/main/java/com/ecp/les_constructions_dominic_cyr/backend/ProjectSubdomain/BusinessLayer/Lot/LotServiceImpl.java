@@ -28,6 +28,9 @@ public class LotServiceImpl implements LotService{
 
     @Override
     public List<LotResponseModel> getAllLotsByProject(String projectIdentifier) {
+        if (projectIdentifier == null || projectIdentifier.isBlank()) {
+            throw new InvalidInputException("Project identifier must not be blank");
+        }
         List<Lot> lots = lotRepository.findByProject_ProjectIdentifier(projectIdentifier);
         return mapLotsToResponses(lots);
     }
