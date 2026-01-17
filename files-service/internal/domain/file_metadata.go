@@ -7,5 +7,7 @@ type FileMetadata struct {
 	Category    FileCategory `json:"category"`
 	ProjectID   string       `json:"projectId"`
 	UploadedBy  string       `json:"uploadedBy"`
+	CreatedAt   string       `json:"createdAt"`
 	Url         string       `json:"url"`
+	IsArchived  bool         `json:"isArchived"`
 }
