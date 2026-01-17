@@ -129,6 +129,7 @@ public class ProjectServiceUnitTest {
         when(lotRepository.findByLotIdentifier_LotId(any())).thenReturn(
                 new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot(
                         new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier("lot-001"),
+                        "Lot-001",
                         "Loc", 100f, "1000", "92.9",
                         com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus.AVAILABLE
                 )
