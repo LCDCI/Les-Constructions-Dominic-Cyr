@@ -31,9 +31,9 @@ class LotTest {
 
         assertNotNull(lot.getLotIdentifier(), "LotIdentifier should not be null");
         assertEquals(lotIdentifier, lot.getLotIdentifier(), "LotIdentifier should match the one provided");
-        assertEquals(LOCATION, lot.getLocation(), "Location should match the one provided");
+        assertEquals(LOCATION, lot.getCivicAddress(), "Location should match the one provided");
         assertEquals(PRICE, lot.getPrice(), "Price should match the one provided");
-        assertEquals(DIMENSIONS, lot.getDimensions(), "Dimensions should match the one provided");
+        assertEquals(DIMENSIONS, lot.getDimensionsSquareFeet(), "Dimensions should match the one provided");
         assertEquals(STATUS, lot.getLotStatus(), "LotStatus should match the one provided");
         assertNull(lot.getImageIdentifier(), "ImageIdentifier should be null by default");
         assertNull(lot.getId(), "ID should be null before persistence");
@@ -48,10 +48,10 @@ class LotTest {
         String newImageId = "new-img-456";
 
 
-        lot.setLocation(newLocation);
+        lot.setCivicAddress(newLocation);
         lot.setImageIdentifier(newImageId);
 
-        assertEquals(newLocation, lot.getLocation());
+        assertEquals(newLocation, lot.getCivicAddress());
         assertEquals(newImageId, lot.getImageIdentifier());
     }
     @Test

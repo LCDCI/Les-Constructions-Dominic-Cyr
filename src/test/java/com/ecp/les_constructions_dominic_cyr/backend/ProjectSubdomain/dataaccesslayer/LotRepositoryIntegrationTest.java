@@ -33,16 +33,16 @@ public class LotRepositoryIntegrationTest {
     public void whenLotsExist_thenReturnAll() {
         Lot a1 = new Lot();
         a1.setLotIdentifier(new LotIdentifier("id-1"));
-        a1.setLocation("L1");
+        a1.setCivicAddress("L1");
         a1.setPrice(100f);
-        a1.setDimensions("10x10");
+        a1.setDimensionsSquareFeet("10x10");
         a1.setLotStatus(LotStatus.AVAILABLE);
 
         Lot a2 = new Lot();
         a2.setLotIdentifier(new LotIdentifier("id-2"));
-        a2.setLocation("L2");
+        a2.setCivicAddress("L2");
         a2.setPrice(200f);
-        a2.setDimensions("20x20");
+        a2.setDimensionsSquareFeet("20x20");
         a2.setLotStatus(LotStatus.SOLD);
 
         lotRepository.save(a1);
@@ -61,9 +61,9 @@ public class LotRepositoryIntegrationTest {
     public void whenFindByLotId_thenReturnEntity() {
         Lot toSave = new Lot();
         toSave.setLotIdentifier(new LotIdentifier("test-lot-1"));
-        toSave.setLocation("LocX");
+        toSave.setCivicAddress("LocX");
         toSave.setPrice(123f);
-        toSave.setDimensions("12x12");
+        toSave.setDimensionsSquareFeet("12x12");
         toSave.setLotStatus(LotStatus.AVAILABLE);
         lotRepository.save(toSave);
 
@@ -85,16 +85,16 @@ public class LotRepositoryIntegrationTest {
     public void whenValidEntityIsSaved_thenPersist() {
         Lot entity = new Lot();
         entity.setLotIdentifier(new LotIdentifier("save-1"));
-        entity.setLocation("Saved");
+        entity.setCivicAddress("Saved");
         entity.setPrice(321f);
-        entity.setDimensions("3x3");
+        entity.setDimensionsSquareFeet("3x3");
         entity.setLotStatus(LotStatus.AVAILABLE);
 
         Lot saved = lotRepository.save(entity);
 
         assertNotNull(saved);
         assertNotNull(saved.getId());
-        assertEquals("Saved", saved.getLocation());
+        assertEquals("Saved", saved.getCivicAddress());
         assertEquals("save-1", saved.getLotIdentifier().getLotId());
     }
 
@@ -103,19 +103,19 @@ public class LotRepositoryIntegrationTest {
     public void whenEntityUpdated_thenChangesPersist() {
         Lot entity = new Lot();
         entity.setLotIdentifier(new LotIdentifier("upd-1"));
-        entity.setLocation("Old");
+        entity.setCivicAddress("Old");
         entity.setPrice(10f);
-        entity.setDimensions("1x1");
+        entity.setDimensionsSquareFeet("1x1");
         entity.setLotStatus(LotStatus.AVAILABLE);
 
         Lot saved = lotRepository.save(entity);
 
-        saved.setLocation("New");
-        saved.setDimensions("2x2");
+        saved.setCivicAddress("New");
+        saved.setDimensionsSquareFeet("2x2");
         Lot updated = lotRepository.save(saved);
 
-        assertEquals("New", updated.getLocation());
-        assertEquals("2x2", updated.getDimensions());
+        assertEquals("New", updated.getCivicAddress());
+        assertEquals("2x2", updated.getDimensionsSquareFeet());
     }
 
     @Test
@@ -123,9 +123,9 @@ public class LotRepositoryIntegrationTest {
     public void whenInsertNonExistent_thenInsertNewRecord() {
         Lot ghost = new Lot();
         ghost.setLotIdentifier(new LotIdentifier("ghost-1"));
-        ghost.setLocation("Ghost");
+        ghost.setCivicAddress("Ghost");
         ghost.setPrice(5f);
-        ghost.setDimensions("0x0");
+        ghost.setDimensionsSquareFeet("0x0");
         ghost.setLotStatus(LotStatus.AVAILABLE);
 
         long before = lotRepository.count();
@@ -141,9 +141,9 @@ public class LotRepositoryIntegrationTest {
     public void whenDeleteEntity_thenReturnNullOnFind() {
         Lot entity = new Lot();
         entity.setLotIdentifier(new LotIdentifier("del-1"));
-        entity.setLocation("ToDelete");
+        entity.setCivicAddress("ToDelete");
         entity.setPrice(11f);
-        entity.setDimensions("11x11");
+        entity.setDimensionsSquareFeet("11x11");
         entity.setLotStatus(LotStatus.AVAILABLE);
 
         lotRepository.save(entity);
@@ -160,9 +160,9 @@ public class LotRepositoryIntegrationTest {
     public void whenDeleteNonExistent_thenNoExceptionThrown() {
         Lot ghost = new Lot();
         ghost.setLotIdentifier(new LotIdentifier("ghost-del"));
-        ghost.setLocation("G");
+        ghost.setCivicAddress("G");
         ghost.setPrice(1f);
-        ghost.setDimensions("1x1");
+        ghost.setDimensionsSquareFeet("1x1");
         ghost.setLotStatus(LotStatus.AVAILABLE);
 
         assertDoesNotThrow(() -> lotRepository.delete(ghost));
@@ -173,13 +173,13 @@ public class LotRepositoryIntegrationTest {
     public void whenExistsByLocation_thenReturnTrueFalse() {
         Lot e = new Lot();
         e.setLotIdentifier(new LotIdentifier("ex-1"));
-        e.setLocation("UniqueLoc");
+        e.setCivicAddress("UniqueLoc");
         e.setPrice(99f);
-        e.setDimensions("9x9");
+        e.setDimensionsSquareFeet("9x9");
         e.setLotStatus(LotStatus.AVAILABLE);
         lotRepository.save(e);
 
         List<Lot> all = lotRepository.findAll();
-        assertTrue(all.stream().anyMatch(l -> "UniqueLoc".equals(l.getLocation())));
+        assertTrue(all.stream().anyMatch(l -> "UniqueLoc".equals(l.getCivicAddress())));
     }
 }

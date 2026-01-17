@@ -372,7 +372,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     void getProjectMetadata_WhenNoLocationAndLotHasNoLocation_ReturnsDefaultLocation() {
         // Arrange
         testProject.setLocation(null);
-        testLot.setLocation(null);
+        testLot.setCivicAddress(null);
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
         when(lotRepository.findByLotIdentifier_LotId(eq("lot-001")))
