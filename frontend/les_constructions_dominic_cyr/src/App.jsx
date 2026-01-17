@@ -226,11 +226,15 @@ export default function App() {
               }
             />
             <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="*" element={<NotFound />} />
             <Route
               path="/projects/:projectIdentifier/overview"
               element={<ProjectsOverviewPage />}
             />
+            <Route
+              path="/projects/:projectIdentifier/lots"
+              element={<LotsPage />}
+            />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
         <HomeFooter />
