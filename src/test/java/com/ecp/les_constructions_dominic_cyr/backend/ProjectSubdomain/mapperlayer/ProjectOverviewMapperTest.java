@@ -293,6 +293,7 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-001"),
+                "Lot-001",
                 "Downtown Location",
                 500000.0f,
                 "5000",
@@ -318,6 +319,7 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-002"),
+                "Lot-002",
                 "Suburban Location",
                 350000.0f,
                 "4000",
@@ -343,6 +345,7 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-003"),
+                "Lot-003",
                 "Urban Location",
                 750000.0f,
                 "7200",
@@ -364,6 +367,7 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot1 = new Lot(
                 new LotIdentifier("lot-001"),
+                "Lot-001",
                 "Location 1",
                 100000.0f,
                 "1500",
@@ -373,6 +377,7 @@ class ProjectOverviewMapperTest {
 
         Lot lot2 = new Lot(
                 new LotIdentifier("lot-002"),
+                "Lot-002",
                 "Location 2",
                 200000.0f,
                 "2400",
@@ -382,6 +387,7 @@ class ProjectOverviewMapperTest {
 
         Lot lot3 = new Lot(
                 new LotIdentifier("lot-003"),
+                "Lot-003",
                 "Location 3",
                 300000.0f,
                 "3500",
@@ -424,6 +430,7 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-single"),
+                "Lot-Single",
                 "Single Location",
                 450000.0f,
                 "4050",
@@ -448,6 +455,7 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot availableLot = new Lot(
                 new LotIdentifier("lot-avail"),
+                "Lot-Avail",
                 "Available Loc",
                 100000.0f,
                 "1500",
@@ -457,6 +465,7 @@ class ProjectOverviewMapperTest {
 
         Lot reservedLot = new Lot(
                 new LotIdentifier("lot-pending"),
+                "Lot-Pending",
                 "Pending Loc",
                 200000.0f,
                 "2400",
@@ -466,6 +475,7 @@ class ProjectOverviewMapperTest {
 
         Lot soldLot = new Lot(
                 new LotIdentifier("lot-sold"),
+                "Lot-Sold",
                 "Sold Loc",
                 300000.0f,
                 "3500",
@@ -491,6 +501,7 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-expensive"),
+                "Lot-Expensive",
                 "Premium Location",
                 9999999.99f,
                 "20000",
@@ -511,6 +522,7 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-special"),
+                "Lot-Special",
                 "Location with Special Chars: #123, St. André-Est",
                 500000.0f,
                 "5000",
