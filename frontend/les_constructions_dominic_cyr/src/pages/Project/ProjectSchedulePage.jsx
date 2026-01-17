@@ -253,7 +253,10 @@ const ProjectSchedulePage = () => {
           }
         }
 
-        const response = await fetchLots(token);
+        const response = await fetchLots({
+          projectIdentifier: projectId,
+          token,
+        });
         setLots(Array.isArray(response) ? response : []);
       } catch (err) {
         console.error('Error fetching lots:', err);
