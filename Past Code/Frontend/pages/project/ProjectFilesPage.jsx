@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaSync, FaArchive } from 'react-icons/fa';
-import { FaFileArrowUp } from 'react-icons/fa6';
+import { FaFileArrowUp, FaFileDownload } from 'react-icons/fa6';
 import FileUploadModal from '../../components/Modals/FileUploadModal';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import FileCard from '../../features/files/components/FileCard';

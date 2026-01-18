@@ -42,13 +42,10 @@ func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 	r.GET("/files/:id", fc.download)
 	r.GET("/files/:id/download", fc.downloadWithRoleCheck)
 	r.DELETE("/files/:id", fc.delete)
-	r.POST("/files/:id/archive", fc.archive)
-	r.POST("/files/:id/unarchive", fc.unarchive)
 	r.GET("/projects/:projectId/files", fc.listProjectFiles)
 	r.GET("/projects/:projectId/documents", fc.listProjectDocuments)
 	r.GET("/projects/:projectId/documents/zip", fc.downloadProjectDocumentsZip)
 	r.POST("/admin/reconcile/:projectId", fc.reconcile)
-	r.POST("/upload", fc.UploadReport)
 }
 
 func (fc *FileController) upload(c *gin.Context) {
@@ -162,7 +159,24 @@ func (fc *FileController) upload(c *gin.Context) {
 
 func (fc *FileController) download(c *gin.Context) {
 	id := c.Param("id")
+	role := c.Query("role")
+	userId := c.Query("userId")
 
+	// If role and userId are provided, use role-based check
+	if role != "" && userId != "" {
+		data, contentType, err := fc.s.GetWithRoleCheck(c.Request.Context(), id, role, userId)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+		// Set headers for download
+		c.Header("Content-Type", contentType)
+		c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "document"))
+		c.Data(http.StatusOK, contentType, data)
+		return
+	}
+
+	// Otherwise, use regular download (backward compatibility)
 	data, contentType, err := fc.s.Get(c.Request.Context(), id)
 	if err != nil {
 		c.Error(err)
@@ -189,16 +203,7 @@ func (fc *FileController) download(c *gin.Context) {
 func (fc *FileController) listProjectFiles(c *gin.Context) {
 	projectID := c.Param("projectId")
 
-	archivedParam := c.Query("archived")
-
-	var metadataList []domain.FileMetadata
-	var err error
-	if archivedParam == "true" {
-		metadataList, err = fc.s.ListArchivedByProjectID(c.Request.Context(), projectID)
-	} else {
-		metadataList, err = fc.s.ListByProjectID(c.Request.Context(), projectID)
-	}
-
+	metadataList, err := fc.s.ListByProjectID(c.Request.Context(), projectID)
 	if err != nil {
 		c.Error(err)
 		return
@@ -326,50 +331,6 @@ func (fc *FileController) delete(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-// archive handles archiving a file (owner-only permission required).
-// Archives files instead of deleting them to maintain compliance and audit trails.
-// The frontend should enforce owner-only permissions before calling this endpoint.
-func (fc *FileController) archive(c *gin.Context) {
-	id := c.Param("id")
-
-	var request struct {
-		ArchivedBy string `json:"archivedBy"`
-	}
-
-	// Bind JSON from request body
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body or missing archivedBy field"})
-		return
-	}
-
-	if request.ArchivedBy == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "archivedBy field is required"})
-		return
-	}
-
-	err := fc.s.Archive(c.Request.Context(), id, request.ArchivedBy)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	c.Status(http.StatusNoContent)
-}
-
-// unarchive handles restoring a previously archived file.
-// Restores archived files back to visible status so they can be used again.
-func (fc *FileController) unarchive(c *gin.Context) {
-	id := c.Param("id")
-
-	err := fc.s.Unarchive(c.Request.Context(), id)
-	if err != nil {
-		c.Error(err)
-		return
-	}
-
-	c.Status(http.StatusNoContent)
-}
-
 func (fc *FileController) reconcile(c *gin.Context) {
 	projectID := c.Param("projectId")
 	if projectID == "" {
@@ -388,53 +349,4 @@ func (fc *FileController) reconcile(c *gin.Context) {
 		"filesReconciled": synced,
 		"projectId":       projectID,
 	})
-}
-
-func (fc *FileController) UploadReport(c *gin.Context) {
-    file, err := c.FormFile("file")
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "File is required"})
-        return
-    }
-
-    objectKey := c.PostForm("objectKey")
-    contentType := c.PostForm("contentType")
-    if contentType == "" {
-        contentType = file.Header.Get("Content-Type")
-    }
-
-    src, err := file.Open()
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to open file"})
-        return
-    }
-    defer src.Close()
-
-    fileBytes, err := io.ReadAll(src)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file content"})
-        return
-    }
-
-    input := domain.FileUploadInput{
-        FileName:    objectKey,
-        ContentType: contentType,
-        Category:    domain.CategoryDocument,
-        ProjectID:   "SYSTEM_REPORTS", 
-        UploadedBy:  "REPORT_SERVICE",
-        Data:        fileBytes,
-    }
-
-    metadata, err := fc.s.Upload(c.Request.Context(), input)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save report to storage"})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{
-        "objectKey":    metadata.ID,
-        "contentType":  contentType,
-        "size":         len(fileBytes),
-        "originalName": file.Filename,
-    })
 }
