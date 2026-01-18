@@ -108,7 +108,6 @@ public class ReportService {
             return reportRepository.save(report);
 
         } catch (Exception e) {
-            System.err.println("CRITICAL: Report Generation failed at Step " + e.getStackTrace()[0].getLineNumber() + ": " + e.getMessage());
             throw new RuntimeException("Failed to generate report: " + e.getMessage(), e);
         }
     }
@@ -204,8 +203,8 @@ public class ReportService {
                     Void.class
             );
         } catch (Exception e) {
-            System.err.println("[WARN] Storage cleanup failed for file " + report.getFileKey() + ": " + e.getMessage());
-        }
+            throw new RuntimeException("Failed to delete report from storage: " + e.getMessage());
+                   }
 
         reportRepository.delete(report);
     }

@@ -13,14 +13,6 @@
 }
 .page-header h1 { font-size: 2rem; color: #2c3e50; margin-bottom: 0.5rem; }
 .page-header p { color: #7f8c8d; font-size: 1rem; }
-.tabs { 
-    display: flex; 
-    justify-content: center;
-    gap: 1rem; 
-    margin-bottom: 2rem; 
-    border-bottom: 2px solid #ecf0f1;
-    width: 100%;
-}
 .tab { padding: 1rem 2rem; background: none; border: none; cursor: pointer; color: #7f8c8d; }
 .tab.active { color: #3498db; border-bottom: 3px solid #3498db; }
 .tab-content { 
