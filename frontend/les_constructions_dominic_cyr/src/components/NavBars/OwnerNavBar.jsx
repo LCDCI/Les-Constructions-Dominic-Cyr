@@ -17,7 +17,7 @@ import {
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
 import { FaMapLocationDot } from 'react-icons/fa6';
-import { CgProfile } from "react-icons/cg";
+import { CgProfile } from 'react-icons/cg';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +42,6 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    // Cleanup on unmount
     return () => {
       document.body.classList.remove('menu-open');
     };
@@ -217,8 +216,8 @@ const Navbar = () => {
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/analytics-reports"
-                  className={`navbar-link ${isActive('/analytics-reports')}`}
+                  to="/reports"
+                  className={`navbar-link ${isActive('/reports')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">

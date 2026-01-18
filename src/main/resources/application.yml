@@ -65,3 +65,13 @@ auth0:
 app:
   invite:
     result-url: ${APP_INVITE_RESULT_URL:}
+
+google:
+  analytics:
+    property-id: ${GA_PROPERTY_ID:}
+    credentials-path: ${GA_CREDENTIALS_PATH:}
+
+reports:
+  storage:
+    base-path: reports/
+    retention-days: 90

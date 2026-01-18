@@ -244,3 +244,22 @@ CREATE TABLE app_theme (
                            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS analytics_reports (
+                                                 id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    owner_id UUID NOT NULL,
+    report_type VARCHAR(50) NOT NULL,
+    file_format VARCHAR(10) NOT NULL,
+    file_key VARCHAR(500) NOT NULL,
+    file_size BIGINT NOT NULL,
+    generation_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    start_date TIMESTAMP,
+    end_date TIMESTAMP,
+    status VARCHAR(50) NOT NULL DEFAULT 'COMPLETED',
+    metadata JSONB,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE INDEX idx_analytics_reports_owner ON analytics_reports(owner_id);
+CREATE INDEX idx_analytics_reports_timestamp ON analytics_reports(generation_timestamp DESC);
