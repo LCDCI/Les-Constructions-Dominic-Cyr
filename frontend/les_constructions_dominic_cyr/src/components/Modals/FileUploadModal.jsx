@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // eslint-disable-next-line no-unused-vars
 import axios from 'axios';
 import { FaTimes } from 'react-icons/fa';
@@ -18,6 +18,7 @@ const MAX_FILE_SIZE_MB = 10;
 export default function FileUploadModal({
   projectId,
   uploadedBy,
+  uploaderRole,
   onClose,
   onUploadSuccess,
 }) {
@@ -28,6 +29,17 @@ export default function FileUploadModal({
 
   // Hardcode category to DOCUMENT
   const category = 'DOCUMENT';
+
+  // Debug: Log props when modal opens
+  useEffect(() => {
+    console.log('FileUploadModal props:', {
+      projectId,
+      uploadedBy,
+      uploaderRole,
+      hasUploadedBy: !!uploadedBy,
+      hasUploaderRole: !!uploaderRole
+    });
+  }, [projectId, uploadedBy, uploaderRole]);
 
   const handleFileChange = e => {
     const selectedFile = e.target.files[0];
@@ -65,11 +77,48 @@ export default function FileUploadModal({
       return;
     }
 
+    if (!uploadedBy || uploadedBy.trim() === '') {
+      setErrorMessage('User identifier is missing. Please refresh the page and try again.');
+      setIsLoading(false);
+      console.error('Upload failed: uploadedBy is missing', { uploadedBy, uploaderRole });
+      return;
+    }
+
+    if (!uploaderRole || uploaderRole.trim() === '') {
+      setErrorMessage('User role is missing. Please refresh the page and try again.');
+      setIsLoading(false);
+      console.error('Upload failed: uploaderRole is missing', { uploadedBy, uploaderRole });
+      return;
+    }
+    
+    // Validate role is one of the expected values
+    const validRoles = ['OWNER', 'CONTRACTOR', 'SALESPERSON', 'CUSTOMER'];
+    const normalizedRole = uploaderRole.trim().toUpperCase();
+    if (!validRoles.includes(normalizedRole)) {
+      setErrorMessage(`Invalid user role: ${uploaderRole}. Please contact support.`);
+      setIsLoading(false);
+      console.error('Upload failed: invalid role', { uploadedBy, uploaderRole, normalizedRole });
+      return;
+    }
+
+    const trimmedUploadedBy = uploadedBy.trim();
+    const trimmedUploaderRole = uploaderRole.trim().toUpperCase();
+    
+    // Debug logging
+    console.log('Uploading file with:', {
+      projectId,
+      uploadedBy: trimmedUploadedBy,
+      uploaderRole: trimmedUploaderRole,
+      fileName: file.name,
+      fileSize: file.size
+    });
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('category', category);
     formData.append('projectId', projectId);
-    formData.append('uploadedBy', uploadedBy);
+    formData.append('uploadedBy', trimmedUploadedBy);
+    formData.append('uploaderRole', trimmedUploaderRole);
 
     setIsLoading(true);
     try {
@@ -152,6 +201,7 @@ export default function FileUploadModal({
 FileUploadModal.propTypes = {
   projectId: PropTypes.string.isRequired,
   uploadedBy: PropTypes.string.isRequired,
+  uploaderRole: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   onUploadSuccess: PropTypes.func.isRequired,
 };

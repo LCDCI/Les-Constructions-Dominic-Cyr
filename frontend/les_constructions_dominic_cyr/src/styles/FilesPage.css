@@ -108,16 +108,23 @@
     font-size: 1.1rem;
 }
 
+.document-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .document-action-buttons button {
-    margin-right: 5px;
     padding: 5px 10px;
     border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 500;
     transition: background-color 0.15s ease;
+    white-space: nowrap;
 }
 
-.btn-view, .btn-delete {
+.btn-view, .btn-delete, .btn-download {
     color: var(--white);
 }
 
@@ -128,11 +135,47 @@
     background-color: var(--accent-color);
 }
 
+.btn-download {
+    background-color: #10B981;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.btn-download:hover {
+    background-color: #059669;
+}
+
 .btn-delete {
     background-color: #EF4444;
 }
 .btn-delete:hover {
     background-color: #DC2626;
+}
+
+.btn-download-all {
+    background-color: #10B981;
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-download-all:hover:not(:disabled) {
+    background-color: #059669;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.btn-download-all:disabled {
+    background-color: #9CA3AF;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* --- Modal Styles (Aesthetic & Responsive) --- */
