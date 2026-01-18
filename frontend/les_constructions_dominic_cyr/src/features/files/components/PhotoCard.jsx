@@ -1,12 +1,12 @@
 // src/features/files/components/PhotoCard.jsx
 import React from 'react'; 
 import PropTypes from 'prop-types';
-import { FaTrashAlt, FaExpand } from 'react-icons/fa'; 
+import { FaTrashAlt, FaExpand, FaArchive, FaBoxOpen } from 'react-icons/fa'; 
 import '../../../styles/PhotosPage.css';
 
 const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
 
-export default function PhotoCard({ file, onDelete, canDelete = false }) {
+export default function PhotoCard({ file, onDelete, canDelete = false, onArchive, onUnarchive, canArchive = false, canUnarchive = false }) {
     
     if (!file || !file.id || !file.fileName) {
         return null; 
@@ -16,7 +16,7 @@ export default function PhotoCard({ file, onDelete, canDelete = false }) {
     const uploadedDate = new Date(file.createdAt).toLocaleDateString();
 
     return (
-        <div className="photo-card">
+        <div className={`photo-card ${file.isArchived ? 'archived' : ''}`}>
             <a href={photoUrl} target="_blank" rel="noopener noreferrer" className="photo-link"> 
                 <img 
                     src={photoUrl} 
@@ -31,15 +31,47 @@ export default function PhotoCard({ file, onDelete, canDelete = false }) {
                 </div>
             </a>
             
-            {canDelete && (
-                <button 
-                    className="btn-delete" 
-                    onClick={() => onDelete(file.id)}
-                    aria-label={`Delete photo ${file.fileName}`}
+
+            {/* Overlay unarchive button on image for archived items */}
+            {file.isArchived && canUnarchive && (
+                <button
+                    className="btn-unarchive"
+                    onClick={() => onUnarchive(file.id)}
+                    aria-label={`Unarchive photo ${file.fileName}`}
                 >
-                    <FaTrashAlt />
+                    <FaBoxOpen />
                 </button>
             )}
+
+            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                {canDelete && (
+                    <button 
+                        className="btn-delete" 
+                        onClick={() => onDelete(file.id)}
+                        aria-label={`Delete photo ${file.fileName}`}
+                    >
+                        <FaTrashAlt />
+                    </button>
+                )}
+                {canArchive && !file.isArchived && (
+                    <button
+                        className="btn-archive"
+                        onClick={() => onArchive(file.id)}
+                        aria-label={`Archive photo ${file.fileName}`}
+                    >
+                        <FaArchive />
+                    </button>
+                )}
+                {canUnarchive && file.isArchived && (
+                    <button
+                        className="btn-unarchive"
+                        onClick={() => onUnarchive(file.id)}
+                        aria-label={`Unarchive photo ${file.fileName}`}
+                    >
+                        <FaBoxOpen />
+                    </button>
+                )}
+            </div>
             
             <a href={photoUrl} target="_blank" rel="noopener noreferrer">
                 <button 
@@ -61,7 +93,12 @@ PhotoCard.propTypes = {
         category: PropTypes.string.isRequired,
         uploadedBy: PropTypes.string.isRequired,
         createdAt: PropTypes.string.isRequired,
+        isArchived: PropTypes.bool,
     }).isRequired,
     onDelete: PropTypes.func.isRequired,
     canDelete: PropTypes.bool,
+    onArchive: PropTypes.func,
+    onUnarchive: PropTypes.func,
+    canArchive: PropTypes.bool,
+    canUnarchive: PropTypes.bool,
 };

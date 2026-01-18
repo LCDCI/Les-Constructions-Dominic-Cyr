@@ -6,7 +6,10 @@ type FileService interface {
 	Upload(ctx context.Context, input FileUploadInput) (FileMetadata, error)
 	Get(ctx context.Context, fileID string) ([]byte, string, error)
 	Delete(ctx context.Context, fileID string, deletedBy string) error
+	Archive(ctx context.Context, fileID string, archivedBy string) error
+	Unarchive(ctx context.Context, fileID string) error
 	ListByProjectID(ctx context.Context, projectID string) ([]FileMetadata, error)
+	ListArchivedByProjectID(ctx context.Context, projectID string) ([]FileMetadata, error)
 	ReconcileStorageWithDatabase(ctx context.Context, projectID string) (int, error)
 	AutoReconcileAllProjects(ctx context.Context) error
 }

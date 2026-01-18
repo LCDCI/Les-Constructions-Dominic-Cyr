@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { taskApi } from '../../features/schedules/api/taskApi';
 import '../../styles/Project/ProjectSchedule.css';
@@ -7,6 +7,7 @@ import '../../styles/Project/ProjectSchedule.css';
 const TaskDetailsPage = () => {
   const { taskId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   const [task, setTask] = useState(null);
@@ -103,6 +104,24 @@ const TaskDetailsPage = () => {
 
   const numericOrDash = value => (value === 0 || value ? value : '—');
 
+  const goBack = () => {
+    const fromSchedule = location.state?.fromScheduleModal;
+    const returnTo = location.state?.returnTo;
+    const scheduleEventId = location.state?.scheduleEventId;
+
+    if (fromSchedule && returnTo && scheduleEventId) {
+      navigate(returnTo, {
+        state: {
+          reopenScheduleModal: true,
+          scheduleEventId,
+        },
+      });
+      return;
+    }
+
+    navigate(-1);
+  };
+
   return (
     <div className="project-schedule-page task-details-page">
       <div className="schedule-header">
@@ -112,7 +131,7 @@ const TaskDetailsPage = () => {
           <div className="task-subtle">ID: {taskId}</div>
         </div>
         <div className="task-header-actions">
-          <button className="back-button-small" onClick={() => navigate(-1)}>
+          <button className="back-button-small" onClick={goBack}>
             ← Back
           </button>
         </div>

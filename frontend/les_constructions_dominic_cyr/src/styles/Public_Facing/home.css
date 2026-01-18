@@ -308,7 +308,6 @@ body {
   padding: var(--spacing-xl);
   border-radius: 0;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  gap: var(--spacing-xl);
   margin-bottom: var(--spacing-xxl) !important;
   margin-top: 0 !important;
 }
@@ -402,7 +401,10 @@ body {
 }
 
 .section-header {
-  margin-bottom: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 0;
 }
 
 .section-header[data-animate] {
@@ -420,7 +422,7 @@ body {
   font-family: var(--font-heading);
   font-size: clamp(1.8rem, 3.5vw, 2.5rem);
   font-weight: 400;
-  margin-bottom: var(--spacing-md);
+  margin: 0.35rem 0 0.25rem;
   letter-spacing: -0.01em;
   color: var(--color-primary);
   line-height: 1.35;
@@ -435,7 +437,7 @@ body {
 .section-subtitle {
   font-size: 1rem;
   font-weight: 400;
-  margin-bottom: var(--spacing-md);
+  margin: 0.5rem 0 var(--spacing-lg);
   color: var(--color-text-muted);
   line-height: 1.7;
 }
@@ -622,6 +624,7 @@ body {
   margin-bottom: 0.5rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: var(--color-white) !important;
 }
 
 .card-subtitle {
