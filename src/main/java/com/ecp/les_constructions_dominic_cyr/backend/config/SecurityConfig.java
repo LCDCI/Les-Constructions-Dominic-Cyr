@@ -74,7 +74,7 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
                     .requestMatchers("/api/v1/contractors/**").hasAuthority("ROLE_CONTRACTOR")
                     .requestMatchers("/api/v1/salesperson/**").hasAuthority("ROLE_SALESPERSON")
                     .requestMatchers("/api/v1/customers/**").hasAuthority("ROLE_CUSTOMER")
-                    
+                    .requestMatchers("/api/v1/reports/**").hasAuthority("ROLE_OWNER")
                     // 3. Catch-all
                     .anyRequest().authenticated()
             )
