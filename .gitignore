@@ -53,3 +53,5 @@ node_modules/
 
 # Frontend build artifacts
 frontend/les_constructions_dominic_cyr/dist/
+
+google-analytics-credentials.json
