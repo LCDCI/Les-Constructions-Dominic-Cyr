@@ -71,11 +71,11 @@ CREATE INDEX idx_project_end_date ON projects(end_date);
 DROP TABLE IF EXISTS lots CASCADE;
 
 CREATE TABLE lots (
-                      id BIGSERIAL PRIMARY KEY,
-                      lot_identifier UUID,
-                      lot_number VARCHAR(255),
+                      id BIGSERIAL PRIMARY KEY UNIQUE NOT NULL ,
+                      lot_identifier UUID UNIQUE NOT NULL,
+                      lot_number VARCHAR(255) NOT NULL,
                       civic_address VARCHAR(255),
-                      price REAL NOT NULL,
+                      price REAL,
                       dimensions_square_feet VARCHAR(255) NOT NULL,
                       dimensions_square_meters VARCHAR(255) NOT NULL,
                       lot_status VARCHAR(50) NOT NULL DEFAULT 'AVAILABLE',
