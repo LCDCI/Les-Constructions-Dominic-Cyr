@@ -102,4 +102,9 @@ public class UsersController {
     public ResponseEntity<List<UserResponseModel>> getActiveSalespersons() {
         return ResponseEntity.ok(userService.getActiveSalespersons());
     }
+
+    @GetMapping("/customers/active")
+    public ResponseEntity<List<UserResponseModel>> getActiveCustomers() {
+        return ResponseEntity.ok(userService.getActiveCustomers());
+    }
 }
