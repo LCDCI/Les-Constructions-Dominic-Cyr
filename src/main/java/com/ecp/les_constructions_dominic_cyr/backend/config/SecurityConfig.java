@@ -84,7 +84,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/contractors/**").hasAuthority("ROLE_CONTRACTOR")
                         .requestMatchers("/api/v1/salesperson/**").hasAuthority("ROLE_SALESPERSON")
                         .requestMatchers("/api/v1/customers/**").hasAuthority("ROLE_CUSTOMER")
-
+                        .requestMatchers("/api/v1/reports/**").hasAuthority("ROLE_OWNER")
                         // --- 5. CATCH-ALL ---
                         .anyRequest().authenticated()
                 )
@@ -94,6 +94,7 @@ public class SecurityConfig {
                                 .jwtAuthenticationConverter(jwtAuthConverter())
                         )
                 );
+
 
         return http.build();
     }

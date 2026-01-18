@@ -1,0 +1,77 @@
+.reports-table { width: 100%; border-collapse: collapse; }
+.reports-table th, .reports-table td { padding: 1rem; border-bottom: 1px solid #ecf0f1; }
+.format-badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; }
+.format-pdf { background-color: #fee; color: #c00; }
+.format-xlsx { background-color: #efe; color: #060; }
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-left: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.delete-btn:disabled {
+    background-color: #95a5a6;
+}
+
+.download-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.report-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.report-list th {
+    text-align: left;
+    padding: 1.25rem 1rem;
+    border-bottom: 2px solid #ecf0f1;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.report-list td {
+    padding: 1.5rem 1rem; 
+    border-bottom: 1px solid #f1f1f1;
+    vertical-align: middle;
+}
+
+.report-list tr:hover td {
+    background-color: #f9fbfd;
+}
+
+.format-badge {
+    padding: 0.4rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.download-btn, .delete-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.actions-cell {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+}
