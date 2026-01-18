@@ -565,7 +565,7 @@ public class ProjectTeamServiceUnitTest {
     }
 
     @Test
-    void assignCustomerToProject_ReplacesExistingCustomer_RemovesThenAdds() {
+    void assignCustomerToProject_ReplacesExistingCustomer_LogsOnlyAssignment() {
         String oldCustomerId = UUID.randomUUID().toString();
         testProject.setCustomerId(oldCustomerId);
 
