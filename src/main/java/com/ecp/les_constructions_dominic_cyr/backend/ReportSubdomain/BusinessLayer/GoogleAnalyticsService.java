@@ -19,11 +19,30 @@ public class GoogleAnalyticsService {
     @Value("${google.analytics.credentials-path}")
     private String credentialsPath;
 
+
+    private long safeParseLong(String value) {
+        try {
+            return (value == null || value.isEmpty()) ? 0L : Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
+    }
+
+    private double safeParseDouble(String value) {
+        try {
+            return (value == null || value.isEmpty()) ? 0.0 : Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
     public Map<String, Object> fetchAnalyticsData(LocalDateTime startDate, LocalDateTime endDate, String reportType) {
         try {
-            GoogleCredentials credentials = GoogleCredentials.fromStream(
-                    new FileInputStream(credentialsPath)
-            ).createScoped(Collections.singletonList("https://www.googleapis.com/auth/analytics.readonly"));
+            GoogleCredentials credentials;
+            try (FileInputStream fis = new FileInputStream(credentialsPath)) {
+                credentials = GoogleCredentials.fromStream(fis)
+                        .createScoped(Collections.singletonList("https://www.googleapis.com/auth/analytics.readonly"));
+            }
 
             BetaAnalyticsDataSettings settings = BetaAnalyticsDataSettings.newBuilder()
                     .setCredentialsProvider(() -> credentials)
@@ -61,7 +80,6 @@ public class GoogleAnalyticsService {
     private Map<String, Object> processAnalyticsResponse(RunReportResponse response) {
         Map<String, Object> data = new HashMap<>();
 
-        // Standard Structures
         Map<String, Map<String, Object>> dailyAggregation = new TreeMap<>();
         Map<String, Integer> cityData = new HashMap<>();
         Map<String, Integer> sourceData = new HashMap<>();
@@ -82,17 +100,16 @@ public class GoogleAnalyticsService {
             String device = row.getDimensionValues(3).getValue();
             String city = row.getDimensionValues(4).getValue();
 
-            long users = Long.parseLong(row.getMetricValues(0).getValue());
-            long sessions = Long.parseLong(row.getMetricValues(1).getValue());
-            long pageViews = Long.parseLong(row.getMetricValues(2).getValue());
-            double bounceRate = Double.parseDouble(row.getMetricValues(3).getValue());
-            double duration = Double.parseDouble(row.getMetricValues(4).getValue());
-            long scrolled = Long.parseLong(row.getMetricValues(6).getValue());
+            long users = safeParseLong(row.getMetricValues(0).getValue());
+            long sessions = safeParseLong(row.getMetricValues(1).getValue());
+            long pageViews = safeParseLong(row.getMetricValues(2).getValue());
+            double bounceRate = safeParseDouble(row.getMetricValues(3).getValue());
+            double duration = safeParseDouble(row.getMetricValues(4).getValue());
+            long scrolled = safeParseLong(row.getMetricValues(6).getValue());
 
             dailyAggregation.computeIfAbsent(date, k -> new HashMap<>(Map.of("activeUsers", 0L, "sessions", 0L)));
-            dailyAggregation.get(date).merge("activeUsers", users, (o, v) -> (long)o + (long)v);
-            dailyAggregation.get(date).merge("sessions", sessions, (o, v) -> (long)o + (long)v);
-
+            dailyAggregation.get(date).merge("activeUsers", users, (o, v) -> ((Number)o).longValue() + ((Number)v).longValue());
+            dailyAggregation.get(date).merge("sessions", sessions, (o, v) -> ((Number)o).longValue() + ((Number)v).longValue());
             cityData.merge(city, (int) users, Integer::sum);
             sourceData.merge(source, (int) users, Integer::sum);
             pageViewsData.merge(pagePath, pageViews, Long::sum);
@@ -139,14 +156,14 @@ public class GoogleAnalyticsService {
 
             List<Row> projectRows = entry.getValue();
 
-            long pViews = projectRows.stream().mapToLong(r -> Long.parseLong(r.getMetricValues(2).getValue())).sum();
-            long pUsers = projectRows.stream().mapToLong(r -> Long.parseLong(r.getMetricValues(0).getValue())).sum();
-            double avgDur = projectRows.stream().mapToDouble(r -> Double.parseDouble(r.getMetricValues(4).getValue())).average().orElse(0);
-            long scrolled = projectRows.stream().mapToLong(r -> Long.parseLong(r.getMetricValues(6).getValue())).sum();
+            long pViews = projectRows.stream().mapToLong(r -> safeParseLong(r.getMetricValues(2).getValue())).sum();
+            long pUsers = projectRows.stream().mapToLong(r -> safeParseLong(r.getMetricValues(0).getValue())).sum();
+            double avgDur = projectRows.stream().mapToDouble(r -> safeParseDouble(r.getMetricValues(4).getValue())).average().orElse(0);
+            long scrolled = projectRows.stream().mapToLong(r -> safeParseLong(r.getMetricValues(6).getValue())).sum();
 
             double scrollFactor = pUsers > 0 ? (double) scrolled / pUsers : 0;
-            double durationFactor = Math.min(avgDur / 180.0, 1.0); // Normalize to 3 mins max
-            double volumeFactor = Math.min((double) pViews / 500.0, 1.0); // Normalize to 500 views
+            double durationFactor = Math.min(avgDur / 180.0, 1.0);
+            double volumeFactor = Math.min((double) pViews / 500.0, 1.0);
 
             double piiScore = (durationFactor * 0.4) + (scrollFactor * 0.4) + (volumeFactor * 0.2);
 
@@ -167,7 +184,7 @@ public class GoogleAnalyticsService {
 
     private double calculateVolatility(List<Row> rows) {
         List<Long> dailySessions = rows.stream()
-                .map(r -> Long.parseLong(r.getMetricValues(1).getValue()))
+                .map(r -> safeParseLong(r.getMetricValues(1).getValue()))
                 .collect(Collectors.toList());
 
         if (dailySessions.size() < 2) return 0.0;
@@ -182,8 +199,8 @@ public class GoogleAnalyticsService {
 
     private Map<String, Object> calculateBusinessInsights(Map<String, Object> summary) {
         Map<String, Object> insights = new HashMap<>();
-        double scrollRate = (double) summary.get("scrollRate");
-        double bounceRate = (double) summary.get("avgBounceRate");
+        double scrollRate = ((Number) summary.get("scrollRate")).doubleValue();
+        double bounceRate = ((Number) summary.get("avgBounceRate")).doubleValue();
 
         String intent = (scrollRate > 40 && bounceRate < 50) ? "HIGH" : "PASSIVE";
         insights.put("readerIntent", intent);

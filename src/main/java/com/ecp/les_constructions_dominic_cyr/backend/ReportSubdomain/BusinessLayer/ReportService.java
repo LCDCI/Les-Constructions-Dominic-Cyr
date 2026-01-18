@@ -108,7 +108,7 @@ public class ReportService {
             return reportRepository.save(report);
 
         } catch (Exception e) {
-            throw new RuntimeException("Failed to generate report: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to generate report");
         }
     }
 
@@ -203,8 +203,8 @@ public class ReportService {
                     Void.class
             );
         } catch (Exception e) {
-            throw new RuntimeException("Failed to delete report from storage: " + e.getMessage());
-                   }
+            System.err.println("Storage cleanup failed for file ");
+        }
 
         reportRepository.delete(report);
     }
