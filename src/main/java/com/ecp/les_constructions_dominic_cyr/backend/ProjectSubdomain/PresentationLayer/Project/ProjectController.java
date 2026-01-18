@@ -5,6 +5,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
@@ -61,8 +63,10 @@ public class ProjectController {
             try {
                 currentUser = userService.getUserByAuth0Id(auth0UserId);
             } catch (Exception e) {
-                // If user not found, return empty list
-                return ResponseEntity.ok(List.of());
+                // Authenticated user not found in database indicates data integrity issue
+                log.warn("Authenticated user not found in database. Auth0 ID: {}", auth0UserId, e);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(List.of());
             }
             
             final String userIdentifier = currentUser.getUserIdentifier();
