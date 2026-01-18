@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 });
 
 // Export the function that App.jsx is expecting
-export const setupAxiosInterceptors = getAccessTokenSilently => {
+export const setupAxiosInterceptors = (getAccessTokenSilently, onUnauthorized) => {
   axiosInstance.interceptors.request.use(
     async config => {
       try {
@@ -20,11 +20,26 @@ export const setupAxiosInterceptors = getAccessTokenSilently => {
           config.headers.Authorization = `Bearer ${token}`;
         }
       } catch (error) {
-        console.error('Error getting access token:', error);
+        // no token available
       }
       return config;
     },
     error => Promise.reject(error)
+  );
+
+  axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+      const status = error?.response?.status;
+      if ((status === 401 || status === 403) && typeof onUnauthorized === 'function') {
+        try {
+          onUnauthorized();
+        } catch (e) {
+          console.error('onUnauthorized handler failed', e);
+        }
+      }
+      return Promise.reject(error);
+    }
   );
 };
 

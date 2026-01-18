@@ -20,6 +20,17 @@
     border-bottom: 1px solid #E5E5E5;
 }
 
+.photos-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.photos-actions button {
+    white-space: nowrap;
+}
+
 .photos-header h1 {
     color: var(--secondary-color);
     font-size: 2rem;
@@ -110,6 +121,30 @@
 }
 
 .photo-card:hover .btn-delete {
+    opacity: 1;
+}
+
+.photo-card .btn-unarchive {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(16, 185, 129, 0.9);
+    color: var(--white);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+}
+
+.photo-card:hover .btn-unarchive {
+    opacity: 1;
+}
+
+/* Make unarchive visible by default when photo is archived */
+.photo-card.archived .btn-unarchive {
     opacity: 1;
 }
 

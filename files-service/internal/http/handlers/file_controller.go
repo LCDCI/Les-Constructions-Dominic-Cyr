@@ -40,6 +40,8 @@ func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 	r.POST("/files", fc.upload)
 	r.GET("/files/:id", fc.download)
 	r.DELETE("/files/:id", fc.delete)
+	r.POST("/files/:id/archive", fc.archive)
+	r.POST("/files/:id/unarchive", fc.unarchive)
 	r.GET("/projects/:projectId/files", fc.listProjectFiles)
 	r.GET("/projects/:projectId/documents", fc.listProjectDocuments)
 	r.POST("/admin/reconcile/:projectId", fc.reconcile)
@@ -156,7 +158,16 @@ func (fc *FileController) download(c *gin.Context) {
 func (fc *FileController) listProjectFiles(c *gin.Context) {
 	projectID := c.Param("projectId")
 
-	metadataList, err := fc.s.ListByProjectID(c.Request.Context(), projectID)
+	archivedParam := c.Query("archived")
+
+	var metadataList []domain.FileMetadata
+	var err error
+	if archivedParam == "true" {
+		metadataList, err = fc.s.ListArchivedByProjectID(c.Request.Context(), projectID)
+	} else {
+		metadataList, err = fc.s.ListByProjectID(c.Request.Context(), projectID)
+	}
+
 	if err != nil {
 		c.Error(err)
 		return
@@ -210,6 +221,50 @@ func (fc *FileController) delete(c *gin.Context) {
 	}
 
 	err := fc.s.Delete(c.Request.Context(), id, request.DeletedBy)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+// archive handles archiving a file (owner-only permission required).
+// Archives files instead of deleting them to maintain compliance and audit trails.
+// The frontend should enforce owner-only permissions before calling this endpoint.
+func (fc *FileController) archive(c *gin.Context) {
+	id := c.Param("id")
+
+	var request struct {
+		ArchivedBy string `json:"archivedBy"`
+	}
+
+	// Bind JSON from request body
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body or missing archivedBy field"})
+		return
+	}
+
+	if request.ArchivedBy == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "archivedBy field is required"})
+		return
+	}
+
+	err := fc.s.Archive(c.Request.Context(), id, request.ArchivedBy)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
+}
+
+// unarchive handles restoring a previously archived file.
+// Restores archived files back to visible status so they can be used again.
+func (fc *FileController) unarchive(c *gin.Context) {
+	id := c.Param("id")
+
+	err := fc.s.Unarchive(c.Request.Context(), id)
 	if err != nil {
 		c.Error(err)
 		return
