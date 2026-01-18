@@ -500,7 +500,7 @@ public class ProjectServiceImpl implements ProjectService {
         // Resolve who made the change
         String changerName = usersRepository.findByAuth0UserId(requestingAuth0UserId)
             .map(this::getFullName)
-                .orElse("Unknown");
+            .orElse("Unknown");
 
         // Log the activity
         if (customerId != null) {
