@@ -21,11 +21,15 @@ import (
 )
 
 type mockFileService struct {
-	UploadFn func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error)
-	GetFn    func(ctx context.Context, id string) ([]byte, string, error)
-	DeleteFn func(ctx context.Context, id string, deletedBy string) error
+	UploadFn    func(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error)
+	GetFn       func(ctx context.Context, id string) ([]byte, string, error)
+	DeleteFn    func(ctx context.Context, id string, deletedBy string) error
+	ArchiveFn   func(ctx context.Context, id string, archivedBy string) error
+	UnarchiveFn func(ctx context.Context, id string) error
 
-	ListByProjectIDFn func(ctx context.Context, projectID string) ([]domain.FileMetadata, error)
+	ListByProjectIDFn              func(ctx context.Context, projectID string) ([]domain.FileMetadata, error)
+	ListArchivedByProjectIDFn      func(ctx context.Context, projectID string) ([]domain.FileMetadata, error)
+	ReconcileStorageWithDatabaseFn func(ctx context.Context, projectID string) (int, error)
 }
 
 func (m *mockFileService) Upload(ctx context.Context, in domain.FileUploadInput) (domain.FileMetadata, error) {
@@ -37,11 +41,38 @@ func (m *mockFileService) Get(ctx context.Context, id string) ([]byte, string, e
 func (m *mockFileService) Delete(ctx context.Context, id string, deletedBy string) error {
 	return m.DeleteFn(ctx, id, deletedBy)
 }
+func (m *mockFileService) Archive(ctx context.Context, id string, archivedBy string) error {
+	if m.ArchiveFn != nil {
+		return m.ArchiveFn(ctx, id, archivedBy)
+	}
+	return nil
+}
+func (m *mockFileService) Unarchive(ctx context.Context, id string) error {
+	if m.UnarchiveFn != nil {
+		return m.UnarchiveFn(ctx, id)
+	}
+	return nil
+}
 func (m *mockFileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
 	if m.ListByProjectIDFn != nil {
 		return m.ListByProjectIDFn(ctx, projectID)
 	}
 	return nil, nil
+}
+func (m *mockFileService) ListArchivedByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+	if m.ListArchivedByProjectIDFn != nil {
+		return m.ListArchivedByProjectIDFn(ctx, projectID)
+	}
+	return nil, nil
+}
+func (m *mockFileService) AutoReconcileAllProjects(ctx context.Context) error {
+	return nil
+}
+func (m *mockFileService) ReconcileStorageWithDatabase(ctx context.Context, projectID string) (int, error) {
+	if m.ReconcileStorageWithDatabaseFn != nil {
+		return m.ReconcileStorageWithDatabaseFn(ctx, projectID)
+	}
+	return 0, nil
 }
 
 func setupRouter(s domain.FileService) *gin.Engine {
@@ -388,8 +419,8 @@ func TestDelete_Success(t *testing.T) {
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	if w.Code != http.StatusOK {
-		t.Fatalf("expected 200, got %d", w.Code)
+	if w.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d", w.Code)
 	}
 }
 
@@ -523,18 +554,12 @@ func TestSoftDelete_Success(t *testing.T) {
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
-	if w.Code != http.StatusOK {
-		t.Fatalf("expected 200, got %d", w.Code)
+	if w.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d", w.Code)
 	}
 
 	if !deleteCalledWithParams {
 		t.Fatal("Delete was not called with correct parameters")
-	}
-
-	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
-	if response["message"] != "File successfully deleted and archived" {
-		t.Errorf("unexpected response message: %s", response["message"])
 	}
 }
 
@@ -593,6 +618,191 @@ func TestSoftDelete_InternalError(t *testing.T) {
 
 	body := strings.NewReader(`{"deletedBy":"user-456"}`)
 	req := httptest.NewRequest("DELETE", "/files/file-123", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", w.Code)
+	}
+}
+
+// Archive Endpoint Tests
+func TestArchive_Success(t *testing.T) {
+	archiveCalled := false
+	archiveFileID := ""
+
+	mock := &mockFileService{
+		ArchiveFn: func(ctx context.Context, id string, archivedBy string) error {
+			archiveCalled = true
+			archiveFileID = id
+			return nil
+		},
+	}
+
+	router := setupRouter(mock)
+
+	body := strings.NewReader(`{"archivedBy":"user-456-uuid"}`)
+	req := httptest.NewRequest("POST", "/files/file-123/archive", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d", w.Code)
+	}
+
+	if !archiveCalled {
+		t.Fatalf("expected archive to be called")
+	}
+
+	if archiveFileID != "file-123" {
+		t.Fatalf("expected file-123, got %s", archiveFileID)
+	}
+}
+
+func TestArchive_MissingArchivedBy(t *testing.T) {
+	mock := &mockFileService{
+		ArchiveFn: func(ctx context.Context, id string, archivedBy string) error {
+			return nil
+		},
+	}
+
+	router := setupRouter(mock)
+
+	body := strings.NewReader(`{"archivedBy":""}`)
+	req := httptest.NewRequest("POST", "/files/file-123/archive", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", w.Code)
+	}
+}
+
+func TestArchive_InvalidJSON(t *testing.T) {
+	mock := &mockFileService{
+		ArchiveFn: func(ctx context.Context, id string, archivedBy string) error {
+			return nil
+		},
+	}
+
+	router := setupRouter(mock)
+
+	body := strings.NewReader(`invalid json`)
+	req := httptest.NewRequest("POST", "/files/file-123/archive", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusBadRequest {
+		t.Fatalf("expected 400, got %d", w.Code)
+	}
+}
+
+func TestArchive_ServiceError(t *testing.T) {
+	mock := &mockFileService{
+		ArchiveFn: func(ctx context.Context, id string, archivedBy string) error {
+			return errors.New("service error")
+		},
+	}
+
+	router := setupRouter(mock)
+
+	body := strings.NewReader(`{"archivedBy":"user-456-uuid"}`)
+	req := httptest.NewRequest("POST", "/files/file-123/archive", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("expected 500, got %d", w.Code)
+	}
+}
+
+func TestArchive_FileNotFound(t *testing.T) {
+	mock := &mockFileService{
+		ArchiveFn: func(ctx context.Context, id string, archivedBy string) error {
+			return domain.ErrNotFound
+		},
+	}
+
+	router := setupRouter(mock)
+
+	body := strings.NewReader(`{"archivedBy":"user-456-uuid"}`)
+	req := httptest.NewRequest("POST", "/files/nonexistent/archive", body)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d", w.Code)
+	}
+}
+
+// Unarchive Endpoint Tests
+func TestUnarchive_Success(t *testing.T) {
+	unarchiveCalled := false
+	unarchiveFileID := ""
+
+	mock := &mockFileService{
+		UnarchiveFn: func(ctx context.Context, id string) error {
+			unarchiveCalled = true
+			unarchiveFileID = id
+			return nil
+		},
+	}
+
+	router := setupRouter(mock)
+
+	req := httptest.NewRequest("POST", "/files/file-123/unarchive", nil)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNoContent {
+		t.Fatalf("expected 204, got %d", w.Code)
+	}
+
+	if !unarchiveCalled {
+		t.Fatalf("expected unarchive to be called")
+	}
+
+	if unarchiveFileID != "file-123" {
+		t.Fatalf("expected file-123, got %s", unarchiveFileID)
+	}
+}
+
+func TestUnarchive_FileNotFound(t *testing.T) {
+	mock := &mockFileService{
+		UnarchiveFn: func(ctx context.Context, id string) error {
+			return domain.ErrNotFound
+		},
+	}
+
+	router := setupRouter(mock)
+
+	req := httptest.NewRequest("POST", "/files/nonexistent/unarchive", nil)
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected 404, got %d", w.Code)
+	}
+}
+
+func TestUnarchive_ServiceError(t *testing.T) {
+	mock := &mockFileService{
+		UnarchiveFn: func(ctx context.Context, id string) error {
+			return errors.New("database error")
+		},
+	}
+
+	router := setupRouter(mock)
+
+	req := httptest.NewRequest("POST", "/files/file-123/unarchive", nil)
 	req.Header.Set("Content-Type", "application/json")
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
