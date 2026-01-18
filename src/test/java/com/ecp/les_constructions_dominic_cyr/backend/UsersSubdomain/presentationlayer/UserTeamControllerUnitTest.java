@@ -39,6 +39,7 @@ public class UserTeamControllerUnitTest {
     private ObjectMapper objectMapper;
     private UserResponseModel activeContractor;
     private UserResponseModel activeSalesperson;
+    private UserResponseModel activeCustomer;
 
     @BeforeEach
     void setUp() {
@@ -61,6 +62,15 @@ public class UserTeamControllerUnitTest {
         activeSalesperson.setPhone("514-555-0002");
         activeSalesperson.setUserRole(UserRole.SALESPERSON);
         activeSalesperson.setUserStatus(UserStatus.ACTIVE);
+
+        activeCustomer = new UserResponseModel();
+        activeCustomer.setUserIdentifier(UUID.randomUUID().toString());
+        activeCustomer.setFirstName("Alice");
+        activeCustomer.setLastName("Customer");
+        activeCustomer.setPrimaryEmail("alice.customer@example.com");
+        activeCustomer.setPhone("514-555-0004");
+        activeCustomer.setUserRole(UserRole.CUSTOMER);
+        activeCustomer.setUserStatus(UserStatus.ACTIVE);
     }
 
     // ========================== GET ACTIVE CONTRACTORS TESTS ==========================
@@ -273,6 +283,111 @@ public class UserTeamControllerUnitTest {
         verify(userService, times(1)).getActiveSalespersons();
     }
 
+    // ========================== GET ACTIVE CUSTOMERS TESTS ==========================
+
+    @Test
+    @WithMockUser
+    void getActiveCustomers_WithCustomers_ReturnsOk() throws Exception {
+        List<UserResponseModel> customers = Arrays.asList(activeCustomer);
+        when(userService.getActiveCustomers()).thenReturn(customers);
+
+        mockMvc.perform(get("/api/v1/users/customers/active")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].firstName").value("Alice"))
+                .andExpect(jsonPath("$[0].lastName").value("Customer"))
+                .andExpect(jsonPath("$[0].userRole").value("CUSTOMER"))
+                .andExpect(jsonPath("$[0].userStatus").value("ACTIVE"))
+                .andExpect(jsonPath("$[0].primaryEmail").value("alice.customer@example.com"));
+
+        verify(userService, times(1)).getActiveCustomers();
+    }
+
+    @Test
+    @WithMockUser
+    void getActiveCustomers_WithMultipleCustomers_ReturnsAll() throws Exception {
+        UserResponseModel secondCustomer = new UserResponseModel();
+        secondCustomer.setUserIdentifier(UUID.randomUUID().toString());
+        secondCustomer.setFirstName("Bob");
+        secondCustomer.setLastName("Client");
+        secondCustomer.setPrimaryEmail("bob.client@example.com");
+        secondCustomer.setUserRole(UserRole.CUSTOMER);
+        secondCustomer.setUserStatus(UserStatus.ACTIVE);
+
+        List<UserResponseModel> customers = Arrays.asList(activeCustomer, secondCustomer);
+        when(userService.getActiveCustomers()).thenReturn(customers);
+
+        mockMvc.perform(get("/api/v1/users/customers/active")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].firstName").value("Alice"))
+                .andExpect(jsonPath("$[1].firstName").value("Bob"));
+
+        verify(userService, times(1)).getActiveCustomers();
+    }
+
+    @Test
+    @WithMockUser
+    void getActiveCustomers_WithNoCustomers_ReturnsEmptyArray() throws Exception {
+        when(userService.getActiveCustomers()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/v1/users/customers/active")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(0));
+
+        verify(userService, times(1)).getActiveCustomers();
+    }
+
+    @Test
+    @WithMockUser
+    void getActiveCustomers_ServiceThrowsException_Returns500() throws Exception {
+        when(userService.getActiveCustomers())
+                .thenThrow(new RuntimeException("Database connection error"));
+
+        mockMvc.perform(get("/api/v1/users/customers/active")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+
+        verify(userService, times(1)).getActiveCustomers();
+    }
+
+    @Test
+    @WithMockUser
+    void getActiveCustomers_IncludesAllRequiredFields() throws Exception {
+        UserResponseModel customerWithAllFields = new UserResponseModel();
+        customerWithAllFields.setUserIdentifier(UUID.randomUUID().toString());
+        customerWithAllFields.setFirstName("Complete");
+        customerWithAllFields.setLastName("Customer");
+        customerWithAllFields.setPrimaryEmail("complete.customer@example.com");
+        customerWithAllFields.setSecondaryEmail("secondary.customer@example.com");
+        customerWithAllFields.setPhone("514-555-7890");
+        customerWithAllFields.setUserRole(UserRole.CUSTOMER);
+        customerWithAllFields.setUserStatus(UserStatus.ACTIVE);
+
+        when(userService.getActiveCustomers())
+                .thenReturn(Arrays.asList(customerWithAllFields));
+
+        mockMvc.perform(get("/api/v1/users/customers/active")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userIdentifier").exists())
+                .andExpect(jsonPath("$[0].firstName").value("Complete"))
+                .andExpect(jsonPath("$[0].lastName").value("Customer"))
+                .andExpect(jsonPath("$[0].primaryEmail").value("complete.customer@example.com"))
+                .andExpect(jsonPath("$[0].secondaryEmail").value("secondary.customer@example.com"))
+                .andExpect(jsonPath("$[0].phone").value("514-555-7890"))
+                .andExpect(jsonPath("$[0].userRole").value("CUSTOMER"))
+                .andExpect(jsonPath("$[0].userStatus").value("ACTIVE"));
+
+        verify(userService, times(1)).getActiveCustomers();
+    }
+
     // ========================== EDGE CASE TESTS ==========================
 
     @Test
@@ -327,5 +442,32 @@ public class UserTeamControllerUnitTest {
                 .andExpect(jsonPath("$[0].phone").doesNotExist());
 
         verify(userService, times(1)).getActiveSalespersons();
+    }
+
+    @Test
+    @WithMockUser
+    void getActiveCustomers_WithNullOptionalFields_ReturnsSuccessfully() throws Exception {
+        UserResponseModel customerWithNulls = new UserResponseModel();
+        customerWithNulls.setUserIdentifier(UUID.randomUUID().toString());
+        customerWithNulls.setFirstName("Minimal");
+        customerWithNulls.setLastName("Customer");
+        customerWithNulls.setPrimaryEmail("minimal.customer@example.com");
+        customerWithNulls.setSecondaryEmail(null);
+        customerWithNulls.setPhone(null);
+        customerWithNulls.setUserRole(UserRole.CUSTOMER);
+        customerWithNulls.setUserStatus(UserStatus.ACTIVE);
+
+        when(userService.getActiveCustomers())
+                .thenReturn(Arrays.asList(customerWithNulls));
+
+        mockMvc.perform(get("/api/v1/users/customers/active")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].firstName").value("Minimal"))
+                .andExpect(jsonPath("$[0].primaryEmail").value("minimal.customer@example.com"))
+                .andExpect(jsonPath("$[0].secondaryEmail").doesNotExist())
+                .andExpect(jsonPath("$[0].phone").doesNotExist());
+
+        verify(userService, times(1)).getActiveCustomers();
     }
 }

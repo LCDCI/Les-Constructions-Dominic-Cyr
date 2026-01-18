@@ -365,6 +365,133 @@ public class UserTeamServiceUnitTest {
         verify(usersRepository, times(1)).findByUserStatus(UserStatus.ACTIVE);
     }
 
+    // ========================== GET ACTIVE CUSTOMERS TESTS ==========================
+
+    @Test
+    void getActiveCustomers_WithActiveCustomers_ReturnsOnlyActiveCustomers() {
+        List<Users> allActiveUsers = Arrays.asList(
+                activeContractor,
+                activeSalesperson,
+                activeOwner,
+                activeCustomer
+        );
+
+        when(usersRepository.findByUserStatus(UserStatus.ACTIVE))
+                .thenReturn(allActiveUsers);
+
+        List<UserResponseModel> result = userService.getActiveCustomers();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Customer", result.get(0).getFirstName());
+        assertEquals("User", result.get(0).getLastName());
+        assertEquals(UserRole.CUSTOMER, result.get(0).getUserRole());
+        assertEquals("customer@example.com", result.get(0).getPrimaryEmail());
+
+        verify(usersRepository, times(1)).findByUserStatus(UserStatus.ACTIVE);
+    }
+
+    @Test
+    void getActiveCustomers_WithMultipleActiveCustomers_ReturnsAll() {
+        Users secondCustomer = new Users();
+        secondCustomer.setUserIdentifier(UserIdentifier.fromString(UUID.randomUUID().toString()));
+        secondCustomer.setFirstName("Bob");
+        secondCustomer.setLastName("Client");
+        secondCustomer.setPrimaryEmail("bob.client@example.com");
+        secondCustomer.setUserRole(UserRole.CUSTOMER);
+        secondCustomer.setUserStatus(UserStatus.ACTIVE);
+
+        List<Users> allActiveUsers = Arrays.asList(
+                activeCustomer,
+                secondCustomer,
+                activeContractor
+        );
+
+        when(usersRepository.findByUserStatus(UserStatus.ACTIVE))
+                .thenReturn(allActiveUsers);
+
+        List<UserResponseModel> result = userService.getActiveCustomers();
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.stream().allMatch(u -> u.getUserRole() == UserRole.CUSTOMER));
+        assertTrue(result.stream().anyMatch(u -> u.getFirstName().equals("Customer")));
+        assertTrue(result.stream().anyMatch(u -> u.getFirstName().equals("Bob")));
+
+        verify(usersRepository, times(1)).findByUserStatus(UserStatus.ACTIVE);
+    }
+
+    @Test
+    void getActiveCustomers_WithNoActiveCustomers_ReturnsEmptyList() {
+        List<Users> allActiveUsers = Arrays.asList(
+                activeContractor,
+                activeSalesperson,
+                activeOwner
+        );
+
+        when(usersRepository.findByUserStatus(UserStatus.ACTIVE))
+                .thenReturn(allActiveUsers);
+
+        List<UserResponseModel> result = userService.getActiveCustomers();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(usersRepository, times(1)).findByUserStatus(UserStatus.ACTIVE);
+    }
+
+    @Test
+    void getActiveCustomers_WithNoActiveUsers_ReturnsEmptyList() {
+        when(usersRepository.findByUserStatus(UserStatus.ACTIVE))
+                .thenReturn(Collections.emptyList());
+
+        List<UserResponseModel> result = userService.getActiveCustomers();
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(usersRepository, times(1)).findByUserStatus(UserStatus.ACTIVE);
+    }
+
+    @Test
+    void getActiveCustomers_DoesNotIncludeInactiveCustomers() {
+        List<Users> allActiveUsers = Arrays.asList(activeCustomer);
+
+        when(usersRepository.findByUserStatus(UserStatus.ACTIVE))
+                .thenReturn(allActiveUsers);
+
+        List<UserResponseModel> result = userService.getActiveCustomers();
+
+        assertEquals(1, result.size());
+        assertFalse(result.stream().anyMatch(u -> 
+                u.getPrimaryEmail().equals("inactive.customer@example.com")));
+
+        verify(usersRepository, times(1)).findByUserStatus(UserStatus.ACTIVE);
+    }
+
+    @Test
+    void getActiveCustomers_FiltersOutOtherRoles() {
+        List<Users> allActiveUsers = Arrays.asList(
+                activeContractor,
+                activeSalesperson,
+                activeOwner,
+                activeCustomer
+        );
+
+        when(usersRepository.findByUserStatus(UserStatus.ACTIVE))
+                .thenReturn(allActiveUsers);
+
+        List<UserResponseModel> result = userService.getActiveCustomers();
+
+        assertEquals(1, result.size());
+        assertTrue(result.stream().allMatch(u -> u.getUserRole() == UserRole.CUSTOMER));
+        assertFalse(result.stream().anyMatch(u -> u.getUserRole() == UserRole.CONTRACTOR));
+        assertFalse(result.stream().anyMatch(u -> u.getUserRole() == UserRole.SALESPERSON));
+        assertFalse(result.stream().anyMatch(u -> u.getUserRole() == UserRole.OWNER));
+
+        verify(usersRepository, times(1)).findByUserStatus(UserStatus.ACTIVE);
+    }
+
     // ========================== EDGE CASE TESTS ==========================
 
     @Test
@@ -449,5 +576,46 @@ public class UserTeamServiceUnitTest {
         assertEquals("514-555-0002", salesperson.getPhone());
         assertEquals(UserRole.SALESPERSON, salesperson.getUserRole());
         assertEquals(UserStatus.ACTIVE, salesperson.getUserStatus());
+    }
+
+    @Test
+    void getActiveCustomers_WithNullFields_HandlesGracefully() {
+        Users customerWithNulls = new Users();
+        customerWithNulls.setUserIdentifier(UserIdentifier.fromString(UUID.randomUUID().toString()));
+        customerWithNulls.setFirstName("Test");
+        customerWithNulls.setLastName("User");
+        customerWithNulls.setPrimaryEmail("test@example.com");
+        customerWithNulls.setSecondaryEmail(null);
+        customerWithNulls.setPhone(null);
+        customerWithNulls.setUserRole(UserRole.CUSTOMER);
+        customerWithNulls.setUserStatus(UserStatus.ACTIVE);
+
+        when(usersRepository.findByUserStatus(UserStatus.ACTIVE))
+                .thenReturn(Arrays.asList(customerWithNulls));
+
+        List<UserResponseModel> result = userService.getActiveCustomers();
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertNull(result.get(0).getSecondaryEmail());
+        assertNull(result.get(0).getPhone());
+    }
+
+    @Test
+    void getActiveCustomers_MapsAllFieldsCorrectly() {
+        when(usersRepository.findByUserStatus(UserStatus.ACTIVE))
+                .thenReturn(Arrays.asList(activeCustomer));
+
+        List<UserResponseModel> result = userService.getActiveCustomers();
+
+        assertEquals(1, result.size());
+        UserResponseModel customer = result.get(0);
+        
+        assertNotNull(customer.getUserIdentifier());
+        assertEquals("Customer", customer.getFirstName());
+        assertEquals("User", customer.getLastName());
+        assertEquals("customer@example.com", customer.getPrimaryEmail());
+        assertEquals(UserRole.CUSTOMER, customer.getUserRole());
+        assertEquals(UserStatus.ACTIVE, customer.getUserStatus());
     }
 }

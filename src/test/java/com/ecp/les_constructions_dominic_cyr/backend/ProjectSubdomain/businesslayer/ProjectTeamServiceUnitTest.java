@@ -61,10 +61,12 @@ public class ProjectTeamServiceUnitTest {
     private Project testProject;
     private Users testContractor;
     private Users testSalesperson;
+    private Users testCustomer;
     private Users testOwner;
     private final String testProjectId = "proj-001";
     private final String testContractorId = UUID.randomUUID().toString();
     private final String testSalespersonId = UUID.randomUUID().toString();
+    private final String testCustomerId = UUID.randomUUID().toString();
     private final String testAuth0UserId = "auth0|owner123";
 
     @BeforeEach
@@ -92,6 +94,14 @@ public class ProjectTeamServiceUnitTest {
         testSalesperson.setPrimaryEmail("jane.salesperson@example.com");
         testSalesperson.setUserRole(UserRole.SALESPERSON);
         testSalesperson.setUserStatus(UserStatus.ACTIVE);
+
+        testCustomer = new Users();
+        testCustomer.setUserIdentifier(UserIdentifier.fromString(testCustomerId));
+        testCustomer.setFirstName("Alice");
+        testCustomer.setLastName("Customer");
+        testCustomer.setPrimaryEmail("alice.customer@example.com");
+        testCustomer.setUserRole(UserRole.CUSTOMER);
+        testCustomer.setUserStatus(UserStatus.ACTIVE);
 
         testOwner = new Users();
         testOwner.setAuth0UserId(testAuth0UserId);
@@ -463,5 +473,222 @@ public class ProjectTeamServiceUnitTest {
         assertEquals(2, result.size());
         assertEquals("CONTRACTOR_ASSIGNED", result.get(0).getActivityType());
         assertEquals("SALESPERSON_ASSIGNED", result.get(1).getActivityType());
+    }
+
+    // ========================== ASSIGN CUSTOMER TESTS ==========================
+
+    @Test
+    void assignCustomerToProject_ValidData_AssignsSuccessfully() {
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByUserIdentifier(testCustomerId))
+                .thenReturn(Optional.of(testCustomer));
+        when(usersRepository.findByAuth0UserId(testAuth0UserId))
+                .thenReturn(Optional.of(testOwner));
+        when(projectRepository.save(any(Project.class)))
+                .thenReturn(testProject);
+
+        ProjectResponseModel result = projectService.assignCustomerToProject(
+                testProjectId, testCustomerId, testAuth0UserId);
+
+        assertNotNull(result);
+        verify(projectRepository).save(any(Project.class));
+        verify(activityLogRepository).save(any(ProjectActivityLog.class));
+
+        // Verify activity log was created with correct data
+        ArgumentCaptor<ProjectActivityLog> logCaptor = ArgumentCaptor.forClass(ProjectActivityLog.class);
+        verify(activityLogRepository).save(logCaptor.capture());
+        ProjectActivityLog savedLog = logCaptor.getValue();
+
+        assertEquals(testProjectId, savedLog.getProjectIdentifier());
+        assertEquals(ActivityType.CUSTOMER_ASSIGNED, savedLog.getActivityType());
+        assertEquals(testCustomerId, savedLog.getUserIdentifier());
+        assertEquals("Alice Customer", savedLog.getUserName());
+        assertEquals(testAuth0UserId, savedLog.getChangedBy());
+        assertEquals("Owner User", savedLog.getChangedByName());
+        assertNotNull(savedLog.getTimestamp());
+        assertTrue(savedLog.getDescription().contains("assigned as customer"));
+    }
+
+    @Test
+    void assignCustomerToProject_ProjectNotFound_ThrowsException() {
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ProjectNotFoundException.class, () ->
+                projectService.assignCustomerToProject(testProjectId, testCustomerId, testAuth0UserId)
+        );
+
+        verify(projectRepository, never()).save(any());
+        verify(activityLogRepository, never()).save(any());
+    }
+
+    @Test
+    void assignCustomerToProject_CustomerNotFound_ThrowsException() {
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByUserIdentifier(testCustomerId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                projectService.assignCustomerToProject(testProjectId, testCustomerId, testAuth0UserId)
+        );
+
+        verify(projectRepository, never()).save(any());
+        verify(activityLogRepository, never()).save(any());
+    }
+
+    @Test
+    void assignCustomerToProject_NullCustomerId_ThrowsException() {
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.of(testProject));
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.assignCustomerToProject(testProjectId, null, testAuth0UserId)
+        );
+
+        verify(projectRepository, never()).save(any());
+        verify(activityLogRepository, never()).save(any());
+    }
+
+    @Test
+    void assignCustomerToProject_EmptyCustomerId_ThrowsException() {
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.of(testProject));
+
+        assertThrows(InvalidProjectDataException.class, () ->
+                projectService.assignCustomerToProject(testProjectId, "   ", testAuth0UserId)
+        );
+
+        verify(projectRepository, never()).save(any());
+        verify(activityLogRepository, never()).save(any());
+    }
+
+    @Test
+    void assignCustomerToProject_ReplacesExistingCustomer_RemovesThenAdds() {
+        String oldCustomerId = UUID.randomUUID().toString();
+        testProject.setCustomerId(oldCustomerId);
+
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByUserIdentifier(testCustomerId))
+                .thenReturn(Optional.of(testCustomer));
+        when(usersRepository.findByAuth0UserId(testAuth0UserId))
+                .thenReturn(Optional.of(testOwner));
+        when(projectRepository.save(any(Project.class)))
+                .thenReturn(testProject);
+
+        ProjectResponseModel result = projectService.assignCustomerToProject(
+                testProjectId, testCustomerId, testAuth0UserId);
+
+        assertNotNull(result);
+        
+        // Verify that projectRepository.save was called
+        ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
+        verify(projectRepository).save(projectCaptor.capture());
+        Project savedProject = projectCaptor.getValue();
+        
+        // Verify the new customer ID was set in the project
+        assertEquals(testCustomerId, savedProject.getCustomerId());
+        
+        // Verify assignment log was created
+        verify(activityLogRepository, times(1)).save(any(ProjectActivityLog.class));
+
+        ArgumentCaptor<ProjectActivityLog> logCaptor = ArgumentCaptor.forClass(ProjectActivityLog.class);
+        verify(activityLogRepository).save(logCaptor.capture());
+        ProjectActivityLog log = logCaptor.getValue();
+
+        // Log should be CUSTOMER_ASSIGNED
+        assertEquals(ActivityType.CUSTOMER_ASSIGNED, log.getActivityType());
+        assertEquals(testCustomerId, log.getUserIdentifier());
+        assertTrue(log.getDescription().contains("assigned"));
+    }
+
+    // ========================== REMOVE CUSTOMER TESTS ==========================
+
+    @Test
+    void removeCustomerFromProject_ValidData_RemovesSuccessfully() {
+        testProject.setCustomerId(testCustomerId);
+
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByUserIdentifier(testCustomerId))
+                .thenReturn(Optional.of(testCustomer));
+        when(usersRepository.findByAuth0UserId(testAuth0UserId))
+                .thenReturn(Optional.of(testOwner));
+        when(projectRepository.save(any(Project.class)))
+                .thenReturn(testProject);
+
+        ProjectResponseModel result = projectService.removeCustomerFromProject(
+                testProjectId, testAuth0UserId);
+
+        assertNotNull(result);
+        verify(projectRepository).save(any(Project.class));
+        verify(activityLogRepository).save(any(ProjectActivityLog.class));
+
+        // Verify activity log
+        ArgumentCaptor<ProjectActivityLog> logCaptor = ArgumentCaptor.forClass(ProjectActivityLog.class);
+        verify(activityLogRepository).save(logCaptor.capture());
+        ProjectActivityLog savedLog = logCaptor.getValue();
+
+        assertEquals(ActivityType.CUSTOMER_REMOVED, savedLog.getActivityType());
+        assertEquals(testCustomerId, savedLog.getUserIdentifier());
+        assertEquals("Alice Customer", savedLog.getUserName());
+        assertTrue(savedLog.getDescription().contains("removed"));
+    }
+
+    @Test
+    void removeCustomerFromProject_NoCustomerAssigned_StillSucceeds() {
+        testProject.setCustomerId(null);
+
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByAuth0UserId(testAuth0UserId))
+                .thenReturn(Optional.of(testOwner));
+        when(projectRepository.save(any(Project.class)))
+                .thenReturn(testProject);
+
+        ProjectResponseModel result = projectService.removeCustomerFromProject(
+                testProjectId, testAuth0UserId);
+
+        assertNotNull(result);
+        verify(projectRepository).save(any(Project.class));
+        // Should not log removal if no customer was assigned
+        verify(activityLogRepository, never()).save(any(ProjectActivityLog.class));
+    }
+
+    @Test
+    void removeCustomerFromProject_ProjectNotFound_ThrowsException() {
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ProjectNotFoundException.class, () ->
+                projectService.removeCustomerFromProject(testProjectId, testAuth0UserId)
+        );
+
+        verify(projectRepository, never()).save(any());
+        verify(activityLogRepository, never()).save(any());
+    }
+
+    @Test
+    void removeCustomerFromProject_CustomerNotFoundInDatabase_StillRemovesFromProject() {
+        testProject.setCustomerId(testCustomerId);
+
+        when(projectRepository.findByProjectIdentifier(testProjectId))
+                .thenReturn(Optional.of(testProject));
+        when(usersRepository.findByUserIdentifier(testCustomerId))
+                .thenReturn(Optional.empty()); // Customer not found in DB
+        when(usersRepository.findByAuth0UserId(testAuth0UserId))
+                .thenReturn(Optional.of(testOwner));
+        when(projectRepository.save(any(Project.class)))
+                .thenReturn(testProject);
+
+        ProjectResponseModel result = projectService.removeCustomerFromProject(
+                testProjectId, testAuth0UserId);
+
+        assertNotNull(result);
+        verify(projectRepository).save(any(Project.class));
+        // Still logs the removal even if customer not found
+        verify(activityLogRepository).save(any(ProjectActivityLog.class));
     }
 }

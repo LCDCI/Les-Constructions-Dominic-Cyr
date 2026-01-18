@@ -223,6 +223,42 @@ export const projectApi = {
     return response.json();
   },
 
+  assignCustomerToProject: async (projectIdentifier, customerId, token) => {
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/customer?customerId=${customerId}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to assign customer to project');
+    }
+    return response.json();
+  },
+
+  removeCustomerFromProject: async (projectIdentifier, token) => {
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/customer`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to remove customer from project');
+    }
+    return response.json();
+  },
+
   getProjectActivityLog: async (projectIdentifier, token) => {
     const headers = {};
     if (token) {

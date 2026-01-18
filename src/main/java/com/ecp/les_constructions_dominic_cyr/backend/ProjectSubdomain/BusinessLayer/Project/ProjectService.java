@@ -25,5 +25,7 @@ public interface ProjectService {
     ProjectResponseModel removeContractorFromProject(String projectIdentifier, String requestingAuth0UserId);
     ProjectResponseModel assignSalespersonToProject(String projectIdentifier, String salespersonId, String requestingAuth0UserId);
     ProjectResponseModel removeSalespersonFromProject(String projectIdentifier, String requestingAuth0UserId);
+    ProjectResponseModel assignCustomerToProject(String projectIdentifier, String customerId, String requestingAuth0UserId);
+    ProjectResponseModel removeCustomerFromProject(String projectIdentifier, String requestingAuth0UserId);
     List<ProjectActivityLogResponseModel> getProjectActivityLog(String projectIdentifier);
 }
