@@ -86,7 +86,7 @@ func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) 
 
 	file := domain.File{
 		ID:           id,
-		ProjectID:   input.ProjectID,
+		ProjectID:    input.ProjectID,
 		FileName:     input.FileName,
 		UploadedBy:   input.UploadedBy,
 		UploaderRole: input.UploaderRole,
@@ -130,6 +130,59 @@ func (s *fileService) Get(ctx context.Context, fileID string) ([]byte, string, e
 
 	return data, f.ContentType, nil
 }
+func (s *fileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
+	if projectID == "" {
+		return nil, domain.ErrValidation
+	}
+
+	files, err := s.repo.FindByProjectID(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	metadataList := make([]domain.FileMetadata, len(files))
+	for i, f := range files {
+		metadataList[i] = domain.FileMetadata{
+			ID:          f.ID,
+			FileName:    f.FileName,
+			ContentType: f.ContentType,
+			Category:    f.Category,
+			ProjectID:   f.ProjectID,
+			UploadedBy:  f.UploadedBy,
+			Url:         "/files/" + f.ID,
+		}
+	}
+	return metadataList, nil
+}
+
+// ListDocumentsByProjectIDAndRole returns documents filtered by role
+func (s *fileService) ListDocumentsByProjectIDAndRole(ctx context.Context, projectID, role, userId string) ([]domain.FileMetadata, error) {
+	if projectID == "" {
+		return nil, domain.ErrValidation
+	}
+
+	files, err := s.repo.FindByProjectIDAndRole(ctx, projectID, role, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter to only DOCUMENT category
+	metadataList := make([]domain.FileMetadata, 0)
+	for _, f := range files {
+		if f.Category == domain.CategoryDocument {
+			metadataList = append(metadataList, domain.FileMetadata{
+				ID:          f.ID,
+				FileName:    f.FileName,
+				ContentType: f.ContentType,
+				Category:    f.Category,
+				ProjectID:   f.ProjectID,
+				UploadedBy:  f.UploadedBy,
+				Url:         "/files/" + f.ID,
+			})
+		}
+	}
+	return metadataList, nil
+}
 
 // GetWithRoleCheck checks if user has permission to download file based on role
 func (s *fileService) GetWithRoleCheck(ctx context.Context, fileID, role, userId string) ([]byte, string, error) {
@@ -171,62 +224,6 @@ func (s *fileService) GetWithRoleCheck(ctx context.Context, fileID, role, userId
 	return data, f.ContentType, nil
 }
 
-func (s *fileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
-	if projectID == "" {
-		return nil, domain.ErrValidation
-	}
-
-	files, err := s.repo.FindByProjectID(ctx, projectID)
-	if err != nil {
-		return nil, err
-	}
-
-	metadataList := make([]domain.FileMetadata, len(files))
-	for i, f := range files {
-		metadataList[i] = domain.FileMetadata{
-			ID:          f.ID,
-			FileName:    f.FileName,
-			ContentType: f.ContentType,
-			Category:    f.Category,
-			ProjectID:   f.ProjectID,
-			UploadedBy:  f.UploadedBy,
-			Url:         "/files/" + f.ID,
-			CreatedAt:   f.CreatedAt.Format(time.RFC3339),
-		}
-	}
-	return metadataList, nil
-}
-
-// ListDocumentsByProjectIDAndRole returns documents filtered by role
-func (s *fileService) ListDocumentsByProjectIDAndRole(ctx context.Context, projectID, role, userId string) ([]domain.FileMetadata, error) {
-	if projectID == "" {
-		return nil, domain.ErrValidation
-	}
-
-	files, err := s.repo.FindByProjectIDAndRole(ctx, projectID, role, userId)
-	if err != nil {
-		return nil, err
-	}
-
-	// Filter to only DOCUMENT category
-	metadataList := make([]domain.FileMetadata, 0)
-	for _, f := range files {
-		if f.Category == domain.CategoryDocument {
-			metadataList = append(metadataList, domain.FileMetadata{
-				ID:          f.ID,
-				FileName:    f.FileName,
-				ContentType: f.ContentType,
-				Category:    f.Category,
-				ProjectID:   f.ProjectID,
-				UploadedBy:  f.UploadedBy,
-				Url:         "/files/" + f.ID,
-				CreatedAt:   f.CreatedAt.Format(time.RFC3339),
-			})
-		}
-	}
-	return metadataList, nil
-}
-
 // DownloadProjectDocumentsZip creates a ZIP archive of all documents for a project filtered by role
 func (s *fileService) DownloadProjectDocumentsZip(ctx context.Context, projectID, role, userId, projectName string) ([]byte, error) {
 	if projectID == "" {
@@ -248,7 +245,7 @@ func (s *fileService) DownloadProjectDocumentsZip(ctx context.Context, projectID
 
 // createZipArchive creates a ZIP archive from documents
 func (s *fileService) createZipArchive(ctx context.Context, documents []domain.FileMetadata) ([]byte, error) {
-	// Import archive/zip and bytes
+	// Use bytes.Buffer for ZIP creation
 	var buf bytes.Buffer
 	zipWriter := zip.NewWriter(&buf)
 
@@ -289,33 +286,6 @@ func (s *fileService) createZipArchive(ctx context.Context, documents []domain.F
 	return buf.Bytes(), nil
 }
 
-func (s *fileService) ListArchivedByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
-	if projectID == "" {
-		return nil, domain.ErrValidation
-	}
-
-	files, err := s.repo.FindArchivedByProjectID(ctx, projectID)
-	if err != nil {
-		return nil, err
-	}
-
-	metadataList := make([]domain.FileMetadata, len(files))
-	for i, f := range files {
-		metadataList[i] = domain.FileMetadata{
-			ID:          f.ID,
-			FileName:    f.FileName,
-			ContentType: f.ContentType,
-			Category:    f.Category,
-			ProjectID:   f.ProjectID,
-			UploadedBy:  f.UploadedBy,
-			Url:         "/files/" + f.ID,
-			CreatedAt:   f.CreatedAt.Format(time.RFC3339),
-			IsArchived:  f.IsArchived,
-		}
-	}
-	return metadataList, nil
-}
-
 func (s *fileService) Delete(ctx context.Context, fileID string, deletedBy string) error {
 	// Validate deletedBy field
 	deletedBy = strings.TrimSpace(deletedBy)
@@ -338,73 +308,21 @@ func (s *fileService) Delete(ctx context.Context, fileID string, deletedBy strin
 		return domain.ErrNotFound
 	}
 
-	// Perform soft delete
+	// Perform soft delete - deactivate the file, don't remove it
 	if err := s.repo.Delete(ctx, fileID, deletedBy); err != nil {
 		log.Printf("[ERROR] Failed to delete file %s: %v", fileID, err)
 		return err
 	}
 
-	log.Printf("[AUDIT] File deleted: FileID=%s, DeletedBy=%s", fileID, deletedBy)
-	return nil
-}
+	// Also delete the file from storage to prevent storage bloat
+	if err := s.storage.Delete(ctx, f.ObjectKey); err != nil {
+		log.Printf("[ERROR] Failed to delete file %s from storage: %v", f.ObjectKey, err)
+		// Continue; file is soft-deleted in DB, but storage cleanup failed
+	}
+	// Log deletion for audit trail
+	log.Printf("[AUDIT] File deleted (archived): ID=%s, FileName=%s, ProjectID=%s, Category=%s, DeletedBy=%s",
+		fileID, f.FileName, f.ProjectID, f.Category, deletedBy)
 
-// Archive marks a file as archived instead of deleted.
-// Archived files are hidden from the UI but remain in the database for legal/compliance reasons.
-// This is used for correcting wrong uploads while maintaining a complete audit trail.
-// Owner-only permission required (enforced at the HTTP handler level).
-func (s *fileService) Archive(ctx context.Context, fileID string, archivedBy string) error {
-	// Validate archivedBy field
-	archivedBy = strings.TrimSpace(archivedBy)
-	if archivedBy == "" {
-		return domain.ErrValidation
-	}
-	// Ensure archivedBy is a valid UUID
-	if _, err := uuid.Parse(archivedBy); err != nil {
-		return domain.ErrValidation
-	}
-
-	// Find the file to ensure it exists and is not already archived
-	f, err := s.repo.FindById(ctx, fileID)
-	if err != nil {
-		log.Printf("[ERROR] Failed to find file %s for archiving: %v", fileID, err)
-		return err
-	}
-	if f == nil {
-		log.Printf("[WARN] File %s not found for archiving", fileID)
-		return domain.ErrNotFound
-	}
-
-	// Perform archive
-	if err := s.repo.Archive(ctx, fileID, archivedBy); err != nil {
-		log.Printf("[ERROR] Failed to archive file %s: %v", fileID, err)
-		return err
-	}
-
-	log.Printf("[AUDIT] File archived: FileID=%s, FileName=%s, ProjectID=%s, ArchivedBy=%s", fileID, f.FileName, f.ProjectID, archivedBy)
-	return nil
-}
-
-// Unarchive restores a previously archived file, making it visible in the UI again.
-// This allows owners to restore mistakenly archived files or correct their decision.
-func (s *fileService) Unarchive(ctx context.Context, fileID string) error {
-	// Check if file exists and is archived
-	f, err := s.repo.FindById(ctx, fileID)
-	if err != nil {
-		log.Printf("[ERROR] Failed to find file %s for unarchiving: %v", fileID, err)
-		return err
-	}
-	if f == nil {
-		log.Printf("[WARN] File %s not found or not archived", fileID)
-		return domain.ErrNotFound
-	}
-
-	// Perform unarchive
-	if err := s.repo.Unarchive(ctx, fileID); err != nil {
-		log.Printf("[ERROR] Failed to unarchive file %s: %v", fileID, err)
-		return err
-	}
-
-	log.Printf("[AUDIT] File unarchived: FileID=%s, FileName=%s, ProjectID=%s", fileID, f.FileName, f.ProjectID)
 	return nil
 }
 

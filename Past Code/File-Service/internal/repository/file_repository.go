@@ -27,13 +27,12 @@ func (r *fileRepository) Save(ctx context.Context, f *domain.File) error {
 func (r *fileRepository) FindById(ctx context.Context, id string) (*domain.File, error) {
 	f := domain.File{}
 	err := r.db.QueryRowContext(ctx, `
-		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
+		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active
 		FROM files WHERE id=$1 AND is_active=true
 	`, id).Scan(
 		&f.ID, &f.FileName, &f.ContentType,
 		&f.Category, &f.Size, &f.ObjectKey, &f.CreatedAt,
 		&f.ProjectID, &f.UploadedBy, &f.UploaderRole, &f.IsActive,
-		&f.IsArchived,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
@@ -60,47 +59,10 @@ func (r *fileRepository) Delete(ctx context.Context, id string, deletedBy string
 	return nil
 }
 
-// Archive marks a file as archived instead of deleted.
-// Archived files are hidden from the UI (is_archived = true) but remain in the database for legal/compliance reasons.
-// This is different from Delete which marks files as inactive. Archives can be used to correct wrong uploads while
-// maintaining a complete audit trail.
-func (r *fileRepository) Archive(ctx context.Context, id string, archivedBy string) error {
-	result, err := r.db.ExecContext(ctx, `UPDATE files SET is_archived = true, archived_at = NOW(), archived_by = $2 WHERE id = $1 AND is_archived = false`, id, archivedBy)
-	if err != nil {
-		return err
-	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rowsAffected == 0 {
-		return sql.ErrNoRows
-	}
-	return nil
-}
-
-// Unarchive restores a previously archived file, making it visible in the UI again.
-// This allows owners to restore mistakenly archived files or correct their decision.
-// The file must be currently archived to unarchive successfully.
-func (r *fileRepository) Unarchive(ctx context.Context, id string) error {
-	result, err := r.db.ExecContext(ctx, `UPDATE files SET is_archived = false, archived_at = NULL, archived_by = NULL WHERE id = $1 AND is_archived = true`, id)
-	if err != nil {
-		return err
-	}
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rowsAffected == 0 {
-		return sql.ErrNoRows
-	}
-	return nil
-}
-
 func (r *fileRepository) FindByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
 	rows, err := r.db.QueryContext(ctx, `
-		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
-		FROM files WHERE project_id=$1 AND is_active=true AND is_archived=false ORDER BY created_at DESC
+		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active
+		FROM files WHERE project_id=$1 AND is_active=true ORDER BY created_at DESC
 	`, projectID)
 	if err != nil {
 		return nil, err
@@ -114,7 +76,6 @@ func (r *fileRepository) FindByProjectID(ctx context.Context, projectID string) 
 			&f.ID, &f.FileName, &f.ContentType,
 			&f.Category, &f.Size, &f.ObjectKey, &f.CreatedAt,
 			&f.ProjectID, &f.UploadedBy, &f.UploaderRole, &f.IsActive,
-			&f.IsArchived,
 		)
 		if err != nil {
 			return nil, err
@@ -144,9 +105,9 @@ func (r *fileRepository) FindByProjectIDAndRole(ctx context.Context, projectID, 
 	case "CONTRACTOR":
 		// CONTRACTOR: only files they uploaded (strict - no NULL role files)
 		query = `
-			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
+			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active
 			FROM files 
-			WHERE project_id=$1 AND is_active=true AND is_archived=false
+			WHERE project_id=$1 AND is_active=true 
 			AND uploaded_by=$2 AND uploader_role='CONTRACTOR'
 			ORDER BY created_at DESC
 		`
@@ -154,9 +115,9 @@ func (r *fileRepository) FindByProjectIDAndRole(ctx context.Context, projectID, 
 	case "SALESPERSON":
 		// SALESPERSON: only files they uploaded (strict - no NULL role files)
 		query = `
-			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
+			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active
 			FROM files 
-			WHERE project_id=$1 AND is_active=true AND is_archived=false
+			WHERE project_id=$1 AND is_active=true 
 			AND uploaded_by=$2 AND uploader_role='SALESPERSON'
 			ORDER BY created_at DESC
 		`
@@ -164,9 +125,9 @@ func (r *fileRepository) FindByProjectIDAndRole(ctx context.Context, projectID, 
 	case "CUSTOMER":
 		// CUSTOMER: files from both CONTRACTOR and SALESPERSON (strict - no NULL role files)
 		query = `
-			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
+			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active
 			FROM files 
-			WHERE project_id=$1 AND is_active=true AND is_archived=false
+			WHERE project_id=$1 AND is_active=true 
 			AND uploader_role IN ('CONTRACTOR', 'SALESPERSON')
 			ORDER BY created_at DESC
 		`
@@ -174,18 +135,18 @@ func (r *fileRepository) FindByProjectIDAndRole(ctx context.Context, projectID, 
 	case "OWNER":
 		// OWNER: all files (no filter)
 		query = `
-			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
+			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active
 			FROM files 
-			WHERE project_id=$1 AND is_active=true AND is_archived=false
+			WHERE project_id=$1 AND is_active=true 
 			ORDER BY created_at DESC
 		`
 		args = []interface{}{projectID}
 	default:
 		// Unknown role: return empty (or could return all with NULL role for safety)
 		query = `
-			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
+			SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active
 			FROM files 
-			WHERE project_id=$1 AND is_active=true AND is_archived=false
+			WHERE project_id=$1 AND is_active=true 
 			AND uploader_role IS NULL
 			ORDER BY created_at DESC
 		`
@@ -205,7 +166,6 @@ func (r *fileRepository) FindByProjectIDAndRole(ctx context.Context, projectID, 
 			&f.ID, &f.FileName, &f.ContentType,
 			&f.Category, &f.Size, &f.ObjectKey, &f.CreatedAt,
 			&f.ProjectID, &f.UploadedBy, &f.UploaderRole, &f.IsActive,
-			&f.IsArchived,
 		)
 		if err != nil {
 			return nil, err
@@ -224,48 +184,15 @@ func (r *fileRepository) FindByProjectIDAndRole(ctx context.Context, projectID, 
 func (r *fileRepository) FindByObjectKey(ctx context.Context, objectKey string) (*domain.File, error) {
 	f := domain.File{}
 	err := r.db.QueryRowContext(ctx, `
-		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
+		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active
 		FROM files WHERE object_key=$1 AND is_active=true
 	`, objectKey).Scan(
 		&f.ID, &f.FileName, &f.ContentType,
 		&f.Category, &f.Size, &f.ObjectKey, &f.CreatedAt,
 		&f.ProjectID, &f.UploadedBy, &f.UploaderRole, &f.IsActive,
-		&f.IsArchived,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
 	return &f, err
-}
-
-func (r *fileRepository) FindArchivedByProjectID(ctx context.Context, projectID string) ([]domain.File, error) {
-	rows, err := r.db.QueryContext(ctx, `
-		SELECT id, file_name, content_type, category, size, object_key, created_at, project_id, uploaded_by, uploader_role, is_active, is_archived
-		FROM files WHERE project_id=$1 AND is_active=true AND is_archived=true ORDER BY created_at DESC
-	`, projectID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var files []domain.File
-	for rows.Next() {
-		f := domain.File{}
-		err := rows.Scan(
-			&f.ID, &f.FileName, &f.ContentType,
-			&f.Category, &f.Size, &f.ObjectKey, &f.CreatedAt,
-			&f.ProjectID, &f.UploadedBy, &f.UploaderRole, &f.IsActive,
-			&f.IsArchived,
-		)
-		if err != nil {
-			return nil, err
-		}
-		files = append(files, f)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return files, nil
 }
