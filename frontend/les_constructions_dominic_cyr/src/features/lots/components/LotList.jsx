@@ -2,15 +2,25 @@ import React from 'react';
 import './LotList.css';
 
 function formatPrice(p, isOwner) {
-  if (!isOwner) return '—'; 
+  if (!isOwner) return '—';
   if (!p) return '—';
   const n = typeof p === 'number' ? p : Number(p);
-  return !Number.isNaN(n) ? new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(n) : String(p);
+  return !Number.isNaN(n)
+    ? new Intl.NumberFormat('en-CA', {
+        style: 'currency',
+        currency: 'CAD',
+      }).format(n)
+    : String(p);
 }
 
+// eslint-disable-next-line react/prop-types
 export default function LotList({ lots = [], isOwner = false }) {
   if (!lots || lots.length === 0) {
-    return <div className="no-results"><p>No available lots found.</p></div>;
+    return (
+      <div className="no-results">
+        <p>No available lots found.</p>
+      </div>
+    );
   }
 
   return (
@@ -20,7 +30,7 @@ export default function LotList({ lots = [], isOwner = false }) {
           <tr>
             {/* Hide Column Header for ID */}
             {isOwner && <th style={{ width: '18%' }}>Identifier</th>}
-            
+
             <th style={{ width: isOwner ? '10%' : '15%' }}>Lot #</th>
             <th style={{ width: isOwner ? '22%' : '35%' }}>Civic Address</th>
             <th style={{ width: '12%' }}>Area (sqft)</th>
@@ -30,20 +40,26 @@ export default function LotList({ lots = [], isOwner = false }) {
           </tr>
         </thead>
         <tbody>
-          {lots.map((l) => (
+          {lots.map(l => (
             <tr key={l.lotId}>
               {/* Hide ID Cell */}
-              {isOwner && <td className="id-cell" title={l.lotId}>{l.lotId}</td>}
-              
+              {isOwner && (
+                <td className="id-cell" title={l.lotId}>
+                  {l.lotId}
+                </td>
+              )}
+
               <td className="bold-cell">{l.lotNumber || '—'}</td>
               <td className="address-cell">{l.civicAddress || '—'}</td>
               <td>{l.dimensionsSquareFeet || '—'}</td>
               <td>{l.dimensionsSquareMeters || '—'}</td>
               <td className="price-cell">{formatPrice(l.price, isOwner)}</td>
               <td>
-                <span className={`status-pill ${String(l.lotStatus || '').toLowerCase()}`}>
+                <span
+                  className={`status-pill ${String(l.lotStatus || '').toLowerCase()}`}
+                >
                   {/* Visitor only ever sees "AVAILABLE" */}
-                  {isOwner ? (l.lotStatus || 'UNKNOWN') : 'AVAILABLE'}
+                  {isOwner ? l.lotStatus || 'UNKNOWN' : 'AVAILABLE'}
                 </span>
               </td>
             </tr>

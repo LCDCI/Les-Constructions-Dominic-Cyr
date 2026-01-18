@@ -19,11 +19,11 @@ import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    iconRetinaUrl: iconRetina,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+  iconUrl: icon,
+  iconRetinaUrl: iconRetina,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
@@ -358,9 +358,9 @@ const ProjectOverviewPage = () => {
             alt={overview.projectName}
             className="hero-image"
             onError={e => {
-             e.target.onerror = null; 
-             e.target.src = '/fallback.jpg'; 
-  }}
+              e.target.onerror = null;
+              e.target.src = '/fallback.jpg';
+            }}
           />
         </div>
         <div className="hero-content">
