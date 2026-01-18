@@ -38,15 +38,13 @@ import ReactGA from 'react-ga4';
 import { loadTheme } from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
-import ReportsPage from './pages/ReportsPage';
-import ReactGA from 'react-ga4';
 
 function PageViewTracker() {
-    const location = useLocation();
-    useEffect(() => {
-        ReactGA.send({ hitType: 'pageview', page: location.pathname });
-    }, [location]);
-    return null;
+  const location = useLocation();
+  useEffect(() => {
+    ReactGA.send({ hitType: 'pageview', page: location.pathname });
+  }, [location]);
+  return null;
 }
 
 export default function App() {
@@ -55,7 +53,7 @@ export default function App() {
   const [showIdleModal, setShowIdleModal] = useState(false);
   const showIdleModalRef = useRef(false);
 
-  const setShowIdleModalSafe = (v) => {
+  const setShowIdleModalSafe = v => {
     showIdleModalRef.current = v;
     setShowIdleModal(v);
   };
@@ -70,7 +68,10 @@ export default function App() {
   -----------------------------------*/
   useEffect(() => {
     loadTheme();
-    ReactGA.initialize('G-CE8NDWBWCB');
+    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    if (measurementId) {
+      ReactGA.initialize(measurementId);
+    }
   }, []);
 
   /* ----------------------------------
@@ -83,7 +84,7 @@ export default function App() {
       try {
         clearAppSession();
       } catch (e) {
-        console.error('Failed clearing app session', e);
+        // exception needed
       }
 
       logout({
@@ -138,7 +139,7 @@ export default function App() {
       setRemainingSeconds(warningDurationSec);
 
       countdownTimerRef.current = setInterval(() => {
-        setRemainingSeconds((s) => {
+        setRemainingSeconds(s => {
           if (s <= 1) {
             clearInterval(countdownTimerRef.current);
             countdownTimerRef.current = null;
@@ -168,7 +169,7 @@ export default function App() {
     resetIdleTimerRef.current = resetIdleTimer;
 
     const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'click'];
-    events.forEach((ev) => window.addEventListener(ev, resetIdleTimer));
+    events.forEach(ev => window.addEventListener(ev, resetIdleTimer));
 
     resetIdleTimer();
 
@@ -184,9 +185,7 @@ export default function App() {
 
     return () => {
       clearTimers();
-      events.forEach((ev) =>
-        window.removeEventListener(ev, resetIdleTimer)
-      );
+      events.forEach(ev => window.removeEventListener(ev, resetIdleTimer));
     };
   }, [isAuthenticated, logout]);
 
@@ -208,7 +207,12 @@ export default function App() {
               path="/projects"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProjectsPage />}
                 />
               }
@@ -233,7 +237,10 @@ export default function App() {
             />
             <Route path="/realizations" element={<RealizationsPage />} />
             <Route path="/renovations" element={<RenovationsPage />} />
-            <Route path="/projectmanagement" element={<ProjectManagementPage />} />
+            <Route
+              path="/projectmanagement"
+              element={<ProjectManagementPage />}
+            />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/error" element={<ServerError />} />
 
@@ -265,7 +272,10 @@ export default function App() {
               }
             />
 
-            <Route path="/projects/:projectId/metadata" element={<ProjectMetadata />} />
+            <Route
+              path="/projects/:projectId/metadata"
+              element={<ProjectMetadata />}
+            />
 
             <Route
               path="/projects/:projectId/team-management"
@@ -297,7 +307,10 @@ export default function App() {
               }
             />
 
-            <Route path="/residential-projects" element={<ResidentialProjectsPage />} />
+            <Route
+              path="/residential-projects"
+              element={<ResidentialProjectsPage />}
+            />
 
             <Route
               path="/contractor/dashboard"
@@ -313,7 +326,12 @@ export default function App() {
               path="/projects/:projectId/files"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProjectFilesPage />}
                 />
               }
@@ -323,7 +341,12 @@ export default function App() {
               path="/projects/:projectId/photos"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProjectPhotosPage />}
                 />
               }
@@ -333,7 +356,12 @@ export default function App() {
               path="/projects/:projectId/schedule"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProjectSchedulePage />}
                 />
               }
@@ -343,7 +371,12 @@ export default function App() {
               path="/tasks/:taskId"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<TaskDetailsPage />}
                 />
               }
@@ -355,14 +388,22 @@ export default function App() {
               path="/profile"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
                   element={<ProfilePage />}
                 />
               }
             />
 
             <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="/projects/:projectIdentifier/overview" element={<ProjectsOverviewPage />} />
+            <Route
+              path="/projects/:projectIdentifier/overview"
+              element={<ProjectsOverviewPage />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -379,7 +420,7 @@ export default function App() {
               try {
                 resetIdleTimerRef.current && resetIdleTimerRef.current();
               } catch (e) {
-                console.debug('resetIdleTimerRef call failed', e);
+                //exception needed
               }
             }}
             onLogout={() => {
