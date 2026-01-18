@@ -36,7 +36,6 @@ import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import ReportsPage from './pages/ReportsPage';
 import ReactGA from 'react-ga4';
 import { loadTheme } from './utils/themeLoader';
-import { useAuth0 } from '@auth0/auth0-react';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
 
