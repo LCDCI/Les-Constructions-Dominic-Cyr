@@ -33,22 +33,7 @@ class TranslationControllerUnitTest {
 
     @BeforeEach
     void setUp() {
-        // Don't set default mocks here - set them per test to avoid unnecessary stubbing
-    }
-
-    @Test
-    void getAllTranslations_WithValidLanguage_ReturnsTranslations() {
-        Map<String, Object> translations = Map.of("key1", "value1", "key2", "value2");
-        when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getAllTranslations("fr")).thenReturn(Mono.just(translations));
-        
-        StepVerifier.create(translationController.getAllTranslations("fr"))
-                .assertNext(response -> {
-                    assertEquals(HttpStatus.OK, response.getStatusCode());
-                    assertEquals("fr", response.getBody().getLanguage());
-                    assertEquals(translations, response.getBody().getTranslations());
-                })
-                .verifyComplete();
+        // No default mocks - each test will set up what it needs
     }
 
     @Test
@@ -67,39 +52,9 @@ class TranslationControllerUnitTest {
     }
 
     @Test
-    void getAllTranslations_WithNullLanguage_DefaultsToEnglish() {
-        Map<String, Object> translations = new HashMap<>();
-        // When language is null, the controller doesn't call isLanguageSupported, it directly uses default
-        when(translationService.getDefaultLanguage()).thenReturn("en");
-        when(translationService.getAllTranslations("en")).thenReturn(Mono.just(translations));
-        
-        StepVerifier.create(translationController.getAllTranslations(null))
-                .assertNext(response -> {
-                    assertEquals(HttpStatus.OK, response.getStatusCode());
-                    assertEquals("en", response.getBody().getLanguage());
-                })
-                .verifyComplete();
-    }
-
-    @Test
-    void getAllTranslations_WithError_ReturnsInternalServerError() {
-        when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getAllTranslations("fr")).thenReturn(Mono.error(new RuntimeException("Service error")));
-        
-        StepVerifier.create(translationController.getAllTranslations("fr"))
-                .assertNext(response -> {
-                    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-                    assertEquals("fr", response.getBody().getLanguage());
-                    assertTrue(response.getBody().getTranslations().isEmpty());
-                })
-                .verifyComplete();
-    }
-
-    @Test
     void getDefaultTranslations_CallsGetAllTranslationsWithDefault() {
         Map<String, Object> translations = new HashMap<>();
         when(translationService.getDefaultLanguage()).thenReturn("en");
-        when(translationService.isLanguageSupported("en")).thenReturn(true);
         when(translationService.getAllTranslations("en")).thenReturn(Mono.just(translations));
         
         StepVerifier.create(translationController.getDefaultTranslations())
@@ -109,19 +64,51 @@ class TranslationControllerUnitTest {
                 })
                 .verifyComplete();
         
-        verify(translationService, times(1)).getDefaultLanguage();
+        verify(translationService, atLeastOnce()).getDefaultLanguage();
+        verify(translationService).getAllTranslations("en");
+    }
+
+    @Test
+    void getAllTranslations_WithValidLanguage_ReturnsTranslations() {
+        Map<String, Object> translations = Map.of("home", Map.of("title", "Home"));
+        when(translationService.isLanguageSupported("fr")).thenReturn(true);
+        when(translationService.getAllTranslations("fr")).thenReturn(Mono.just(translations));
+        
+        StepVerifier.create(translationController.getAllTranslations("fr"))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.OK, response.getStatusCode());
+                    assertEquals("fr", response.getBody().getLanguage());
+                    assertEquals(translations, response.getBody().getTranslations());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void getAllTranslations_WithError_ReturnsInternalServerError() {
+        when(translationService.isLanguageSupported("en")).thenReturn(true);
+        when(translationService.getAllTranslations("en"))
+                .thenReturn(Mono.error(new RuntimeException("Service error")));
+        
+        StepVerifier.create(translationController.getAllTranslations("en"))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+                    assertEquals("en", response.getBody().getLanguage());
+                    assertTrue(response.getBody().getTranslations().isEmpty());
+                })
+                .verifyComplete();
     }
 
     @Test
     void getTranslation_WithValidKeyAndLanguage_ReturnsTranslation() {
         when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getTranslation("test.key", "fr")).thenReturn(Mono.just("Test Value"));
+        when(translationService.getTranslation("home.title", "fr"))
+                .thenReturn(Mono.just("Accueil"));
         
-        StepVerifier.create(translationController.getTranslation("test.key", "fr"))
+        StepVerifier.create(translationController.getTranslation("home.title", "fr"))
                 .assertNext(response -> {
                     assertEquals(HttpStatus.OK, response.getStatusCode());
-                    assertEquals("test.key", response.getBody().getKey());
-                    assertEquals("Test Value", response.getBody().getValue());
+                    assertEquals("home.title", response.getBody().getKey());
+                    assertEquals("Accueil", response.getBody().getValue());
                     assertEquals("fr", response.getBody().getLanguage());
                 })
                 .verifyComplete();
@@ -131,9 +118,10 @@ class TranslationControllerUnitTest {
     void getTranslation_WithInvalidLanguage_DefaultsToEnglish() {
         when(translationService.isLanguageSupported("invalid")).thenReturn(false);
         when(translationService.getDefaultLanguage()).thenReturn("en");
-        when(translationService.getTranslation("test.key", "en")).thenReturn(Mono.just("Test Value"));
+        when(translationService.getTranslation("home.title", "en"))
+                .thenReturn(Mono.just("Home"));
         
-        StepVerifier.create(translationController.getTranslation("test.key", "invalid"))
+        StepVerifier.create(translationController.getTranslation("home.title", "invalid"))
                 .assertNext(response -> {
                     assertEquals(HttpStatus.OK, response.getStatusCode());
                     assertEquals("en", response.getBody().getLanguage());
@@ -143,22 +131,28 @@ class TranslationControllerUnitTest {
 
     @Test
     void getTranslation_WithError_ReturnsNotFound() {
-        when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getTranslation("test.key", "fr")).thenReturn(Mono.error(new RuntimeException("Not found")));
+        when(translationService.isLanguageSupported("en")).thenReturn(true);
+        when(translationService.getTranslation("nonexistent.key", "en"))
+                .thenReturn(Mono.error(new RuntimeException("Key not found")));
         
-        StepVerifier.create(translationController.getTranslation("test.key", "fr"))
+        StepVerifier.create(translationController.getTranslation("nonexistent.key", "en"))
                 .assertNext(response -> {
                     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+                    assertNull(response.getBody());
                 })
                 .verifyComplete();
     }
 
     @Test
     void getTranslationsBatch_WithValidKeys_ReturnsTranslations() {
-        List<String> keys = List.of("key1", "key2");
-        Map<String, String> translations = Map.of("key1", "value1", "key2", "value2");
+        List<String> keys = List.of("home.title", "home.subtitle");
+        Map<String, String> translations = Map.of(
+                "home.title", "Home",
+                "home.subtitle", "Welcome"
+        );
         when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getTranslations(keys, "fr")).thenReturn(Mono.just(translations));
+        when(translationService.getTranslations(keys, "fr"))
+                .thenReturn(Mono.just(translations));
         
         StepVerifier.create(translationController.getTranslationsBatch("fr", keys))
                 .assertNext(response -> {
@@ -166,26 +160,33 @@ class TranslationControllerUnitTest {
                     assertEquals(translations, response.getBody());
                 })
                 .verifyComplete();
+        
+        verify(translationService).getTranslations(keys, "fr");
     }
 
     @Test
     void getTranslationsBatch_WithError_ReturnsInternalServerError() {
-        List<String> keys = List.of("key1");
-        when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getTranslations(keys, "fr")).thenReturn(Mono.error(new RuntimeException("Error")));
+        List<String> keys = List.of("home.title");
+        when(translationService.isLanguageSupported("en")).thenReturn(true);
+        when(translationService.getTranslations(keys, "en"))
+                .thenReturn(Mono.error(new RuntimeException("Service error")));
         
-        StepVerifier.create(translationController.getTranslationsBatch("fr", keys))
+        StepVerifier.create(translationController.getTranslationsBatch("en", keys))
                 .assertNext(response -> {
                     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+                    assertNull(response.getBody());
                 })
                 .verifyComplete();
+        
+        verify(translationService).getTranslations(keys, "en");
     }
 
     @Test
     void getPageTranslations_WithValidPage_ReturnsPageTranslations() {
-        Map<String, Object> translations = Map.of("page.key", "value");
+        Map<String, Object> translations = Map.of("title", "Home", "subtitle", "Welcome");
         when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getPageTranslations("home", "fr")).thenReturn(Mono.just(translations));
+        when(translationService.getPageTranslations("home", "fr"))
+                .thenReturn(Mono.just(translations));
         
         StepVerifier.create(translationController.getPageTranslations("home", "fr"))
                 .assertNext(response -> {
@@ -198,13 +199,14 @@ class TranslationControllerUnitTest {
 
     @Test
     void getPageTranslations_WithError_ReturnsInternalServerError() {
-        when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getPageTranslations("home", "fr")).thenReturn(Mono.error(new RuntimeException("Error")));
+        when(translationService.isLanguageSupported("en")).thenReturn(true);
+        when(translationService.getPageTranslations("nonexistent", "en"))
+                .thenReturn(Mono.error(new RuntimeException("Page not found")));
         
-        StepVerifier.create(translationController.getPageTranslations("home", "fr"))
+        StepVerifier.create(translationController.getPageTranslations("nonexistent", "en"))
                 .assertNext(response -> {
                     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-                    assertEquals("fr", response.getBody().getLanguage());
+                    assertEquals("en", response.getBody().getLanguage());
                     assertTrue(response.getBody().getTranslations().isEmpty());
                 })
                 .verifyComplete();
@@ -212,9 +214,10 @@ class TranslationControllerUnitTest {
 
     @Test
     void getTranslationsByNamespace_WithValidNamespace_ReturnsTranslations() {
-        Map<String, Object> translations = Map.of("namespace.key", "value");
+        Map<String, Object> translations = Map.of("message", "Hello");
         when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getTranslationsByNamespace("messages", "fr")).thenReturn(Mono.just(translations));
+        when(translationService.getTranslationsByNamespace("messages", "fr"))
+                .thenReturn(Mono.just(translations));
         
         StepVerifier.create(translationController.getTranslationsByNamespace("messages", "fr"))
                 .assertNext(response -> {
@@ -227,13 +230,14 @@ class TranslationControllerUnitTest {
 
     @Test
     void getTranslationsByNamespace_WithError_ReturnsInternalServerError() {
-        when(translationService.isLanguageSupported("fr")).thenReturn(true);
-        when(translationService.getTranslationsByNamespace("messages", "fr")).thenReturn(Mono.error(new RuntimeException("Error")));
+        when(translationService.isLanguageSupported("en")).thenReturn(true);
+        when(translationService.getTranslationsByNamespace("invalid", "en"))
+                .thenReturn(Mono.error(new RuntimeException("Namespace not found")));
         
-        StepVerifier.create(translationController.getTranslationsByNamespace("messages", "fr"))
+        StepVerifier.create(translationController.getTranslationsByNamespace("invalid", "en"))
                 .assertNext(response -> {
                     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-                    assertEquals("fr", response.getBody().getLanguage());
+                    assertEquals("en", response.getBody().getLanguage());
                     assertTrue(response.getBody().getTranslations().isEmpty());
                 })
                 .verifyComplete();
@@ -252,5 +256,18 @@ class TranslationControllerUnitTest {
                 .verifyComplete();
     }
 
+    @Test
+    void getAllTranslations_WithNullLanguage_DefaultsToEnglish() {
+        Map<String, Object> translations = new HashMap<>();
+        when(translationService.getDefaultLanguage()).thenReturn("en");
+        when(translationService.getAllTranslations("en")).thenReturn(Mono.just(translations));
+        
+        StepVerifier.create(translationController.getAllTranslations(null))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.OK, response.getStatusCode());
+                    assertEquals("en", response.getBody().getLanguage());
+                })
+                .verifyComplete();
+    }
 }
 

@@ -16,7 +16,4 @@ type File struct {
 	IsActive    bool
 	DeletedAt   *time.Time
 	DeletedBy   string
-	IsArchived  bool
-	ArchivedAt  *time.Time
-	ArchivedBy  string
 }
