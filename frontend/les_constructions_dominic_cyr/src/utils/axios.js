@@ -31,7 +31,7 @@ export const setupAxiosInterceptors = (getAccessTokenSilently, onUnauthorized) =
     response => response,
     error => {
       const status = error?.response?.status;
-      if ((status === 401 || status === 403) && typeof onUnauthorized === 'function') {
+      if (status === 401 && typeof onUnauthorized === 'function') {
         try {
           onUnauthorized();
         } catch (e) {

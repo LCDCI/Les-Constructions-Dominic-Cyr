@@ -16,6 +16,7 @@ const TaskDetailsPage = () => {
   const location = useLocation();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const { role, loading: roleLoading } = useBackendUser();
+  const stateTask = location.state?.task;
 
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +29,11 @@ const TaskDetailsPage = () => {
   useEffect(() => {
     const loadTask = async () => {
       try {
+        // Show cached task immediately if present
+        if (stateTask) {
+          setTask(stateTask);
+        }
+
         setLoading(true);
         setError('');
 
@@ -51,14 +57,22 @@ const TaskDetailsPage = () => {
         setTask(normalized);
       } catch (err) {
         console.error('Error loading task:', err);
+        const status = err?.response?.status;
         const respMessage = err?.response?.data?.message;
         const respError = err?.response?.data?.error;
-        setError(
-          respMessage ||
-            respError ||
-            err.message ||
-            'Failed to load task details.'
-        );
+
+        if (status === 403 && stateTask) {
+          // Contractors may be forbidden from direct fetch; fall back to passed data
+          setError('');
+          setTask(prev => prev || stateTask);
+        } else {
+          setError(
+            respMessage ||
+              respError ||
+              err.message ||
+              'Failed to load task details.'
+          );
+        }
       } finally {
         setLoading(false);
       }
@@ -67,7 +81,7 @@ const TaskDetailsPage = () => {
     if (taskId) {
       loadTask();
     }
-  }, [taskId, getAccessTokenSilently, isAuthenticated]);
+  }, [taskId, getAccessTokenSilently, isAuthenticated, stateTask]);
 
   if (loading) {
     return (
@@ -153,7 +167,9 @@ const TaskDetailsPage = () => {
 
     const parseDate = v => (v ? new Date(v) : null);
     const startDate = parseDate(taskDraft.periodStart || startOnly);
-    const endDate = parseDate(taskDraft.periodEnd || taskDraft.periodStart || endOnly);
+    const endDate = parseDate(
+      taskDraft.periodEnd || taskDraft.periodStart || endOnly
+    );
     if (startDate && endDate && endDate < startDate) {
       setEditError('End date cannot be before start date.');
       return;
@@ -178,9 +194,17 @@ const TaskDetailsPage = () => {
 
       const payload = {
         taskStatus: taskDraft.taskStatus || TASK_STATUSES[0],
-        taskTitle: taskDraft.taskTitle?.trim() || taskDraft.taskDescription?.trim() || `Task ${taskId}`,
+        taskTitle:
+          taskDraft.taskTitle?.trim() ||
+          taskDraft.taskDescription?.trim() ||
+          `Task ${taskId}`,
         periodStart: taskDraft.periodStart || startOnly || null,
-        periodEnd: taskDraft.periodEnd || taskDraft.periodStart || endOnly || taskDraft.periodStart || null,
+        periodEnd:
+          taskDraft.periodEnd ||
+          taskDraft.periodStart ||
+          endOnly ||
+          taskDraft.periodStart ||
+          null,
         taskDescription:
           taskDraft.taskDescription?.trim() ||
           taskDraft.taskTitle?.trim() ||
@@ -191,7 +215,10 @@ const TaskDetailsPage = () => {
         taskProgress: toNumberOrNull(taskDraft.taskProgress),
         assignedToUserId: taskDraft.assignedToUserId || null,
         scheduleId:
-          task.scheduleId || task.scheduleIdentifier || task.schedule?.scheduleId || null,
+          task.scheduleId ||
+          task.scheduleIdentifier ||
+          task.schedule?.scheduleId ||
+          null,
       };
 
       const updated = await taskApi.updateTask(taskId, payload, token);
@@ -202,8 +229,17 @@ const TaskDetailsPage = () => {
       setIsEditTaskOpen(false);
     } catch (err) {
       const resp = err?.response?.data;
-      const msg = resp?.message || resp?.error || err.message || 'Failed to update task.';
+      const status = err?.response?.status;
+      let msg =
+        resp?.message || resp?.error || err.message || 'Failed to update task.';
+
+      if (status === 403 && role === ROLES.CONTRACTOR) {
+        msg =
+          'Backend permissions issue: Contractors are not authorized to update tasks. Please contact the administrator to grant contractors update permissions on /tasks/:id or /owners/tasks/:id endpoints.';
+      }
+
       setEditError(msg);
+      console.error('Task update error:', err);
     } finally {
       setIsSavingEdit(false);
     }
