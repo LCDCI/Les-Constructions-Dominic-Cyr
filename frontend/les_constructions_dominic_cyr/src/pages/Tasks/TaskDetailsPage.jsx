@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { taskApi } from '../../features/schedules/api/taskApi';
+import { projectApi } from '../../features/projects/api/projectApi';
+import { fetchAllContractors } from '../../features/users/api/usersApi';
 import { useBackendUser } from '../../hooks/useBackendUser';
 import { ROLES } from '../../utils/permissions';
 import EditTaskModal from '../../components/Modals/EditTaskModal';
@@ -25,6 +27,7 @@ const TaskDetailsPage = () => {
   const [taskDraft, setTaskDraft] = useState(null);
   const [editError, setEditError] = useState('');
   const [isSavingEdit, setIsSavingEdit] = useState(false);
+  const [projectContractors, setProjectContractors] = useState([]);
 
   useEffect(() => {
     const loadTask = async () => {
@@ -54,6 +57,41 @@ const TaskDetailsPage = () => {
         const response = await taskApi.getTaskById(taskId, token);
         const normalized = Array.isArray(response) ? response[0] : response;
         setTask(normalized);
+
+        // Fetch project contractors if we have a projectId
+        const projectId =
+          normalized.projectId ||
+          normalized.projectIdentifier ||
+          location.state?.projectId;
+        if (projectId) {
+          try {
+            const projectData = await projectApi.getProjectById(
+              projectId,
+              token
+            );
+            const contractorIds = projectData.contractorIds || [];
+            console.log('Project contractor IDs:', contractorIds);
+
+            if (contractorIds.length > 0) {
+              const allContractors = await fetchAllContractors(token);
+              const projectContractorsList = allContractors.filter(contractor =>
+                contractorIds.includes(
+                  contractor.userId || contractor.userIdentifier
+                )
+              );
+              console.log(
+                'Filtered project contractors:',
+                projectContractorsList
+              );
+              setProjectContractors(projectContractorsList);
+            } else {
+              setProjectContractors([]);
+            }
+          } catch (projectErr) {
+            console.warn('Could not load project contractors:', projectErr);
+            setProjectContractors([]);
+          }
+        }
       } catch (err) {
         console.error('Error loading task:', err);
         const status = err?.response?.status;
@@ -129,6 +167,35 @@ const TaskDetailsPage = () => {
     ((role && (role === ROLES.OWNER || role === ROLES.CONTRACTOR)) ||
       (!role && !roleLoading));
 
+  const getContractorIdentifier = c => c?.userId || c?.userIdentifier;
+  const assigneeIdentifier =
+    task?.assignedToUserId ?? task?.assigneeId ?? task?.assignedTo ?? null;
+  const assigneeObj = projectContractors.find(
+    c => getContractorIdentifier(c) === assigneeIdentifier
+  );
+  const assigneeName = assigneeObj
+    ? `${assigneeObj.firstName} ${assigneeObj.lastName}`
+    : assigneeIdentifier || 'Unassigned';
+
+  // Compute progress as hoursSpent / estimatedHours * 100 (rounded)
+  const computeProgress = (estimated, hours, fallback) => {
+    const e = Number(estimated);
+    const h = Number(hours);
+    if (!e || Number.isNaN(e) || e === 0) {
+      // if estimated missing/0, return any existing progress or 0
+      return fallback === undefined || fallback === null ? 0 : Number(fallback);
+    }
+    if (Number.isNaN(h)) return 0;
+    const pct = Math.round((h / e) * 100);
+    return pct < 0 ? 0 : pct;
+  };
+
+  const computedProgress = computeProgress(
+    task?.estimatedHours,
+    task?.hoursSpent,
+    task?.taskProgress
+  );
+
   const openEditTaskModal = () => {
     setTaskDraft({
       taskTitle: task.taskTitle || '',
@@ -170,11 +237,30 @@ const TaskDetailsPage = () => {
       const toNumberOrNull = value =>
         value === '' || value === undefined ? null : Number(value);
 
+      // Calculate progress from draft values (hoursSpent / estimatedHours * 100)
+      const draftEstimated = toNumberOrNull(taskDraft.estimatedHours);
+      const draftHours = toNumberOrNull(taskDraft.hoursSpent);
+      const computeDraftProgress = () => {
+        if (
+          !draftEstimated ||
+          Number.isNaN(draftEstimated) ||
+          draftEstimated === 0
+        ) {
+          return taskDraft.taskProgress === '' ||
+            taskDraft.taskProgress === undefined
+            ? null
+            : toNumberOrNull(taskDraft.taskProgress);
+        }
+        if (!draftHours || Number.isNaN(draftHours)) return 0;
+        const pct = Math.round((draftHours / draftEstimated) * 100);
+        return pct < 0 ? 0 : pct;
+      };
+
       const payload = {
         ...taskDraft,
-        estimatedHours: toNumberOrNull(taskDraft.estimatedHours),
-        hoursSpent: toNumberOrNull(taskDraft.hoursSpent),
-        taskProgress: toNumberOrNull(taskDraft.taskProgress),
+        estimatedHours: draftEstimated,
+        hoursSpent: draftHours,
+        taskProgress: computeDraftProgress(),
         scheduleId: task.scheduleId || task.scheduleIdentifier || null,
       };
 
@@ -238,9 +324,7 @@ const TaskDetailsPage = () => {
           </div>
           <div className="task-meta-block">
             <span className="task-label">Assignee</span>
-            <div className="task-value">
-              {task.assignedToUserId || 'Unassigned'}
-            </div>
+            <div className="task-value">{assigneeName}</div>
           </div>
           <div className="task-meta-block">
             <span className="task-label">Status</span>
@@ -274,7 +358,7 @@ const TaskDetailsPage = () => {
             </div>
             <div className="task-stat">
               <span className="task-label">Progress</span>
-              <div className="task-value">{task.taskProgress ?? 0}%</div>
+              <div className="task-value">{computedProgress}%</div>
             </div>
           </div>
         </div>
@@ -285,6 +369,7 @@ const TaskDetailsPage = () => {
         task={taskDraft}
         statuses={TASK_STATUSES}
         priorities={TASK_PRIORITIES}
+        contractors={projectContractors}
         errorMessage={editError}
         isSaving={isSavingEdit}
         onClose={() => setIsEditTaskOpen(false)}

@@ -7,6 +7,7 @@ const TaskModal = ({
   tasks,
   statuses,
   priorities,
+  contractors,
   errorMessage,
   isSaving,
   onClose,
@@ -149,15 +150,23 @@ const TaskModal = ({
                 </label>
 
                 <label>
-                  <span>Assignee (user UUID)</span>
-                  <input
-                    type="text"
+                  <span>Assignee</span>
+                  <select
                     value={task.assignedToUserId}
                     onChange={e =>
                       onTaskChange(idx, 'assignedToUserId', e.target.value)
                     }
-                    placeholder="Optional"
-                  />
+                  >
+                    <option value="">Unassigned</option>
+                    {contractors?.map(contractor => (
+                      <option
+                        key={contractor.userId || contractor.userIdentifier}
+                        value={contractor.userId || contractor.userIdentifier}
+                      >
+                        {contractor.firstName} {contractor.lastName}
+                      </option>
+                    ))}
+                  </select>
                 </label>
               </div>
 
@@ -202,20 +211,7 @@ const TaskModal = ({
                   />
                 </label>
 
-                <label>
-                  <span>Progress (%)</span>
-                  <input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="1"
-                    value={task.taskProgress}
-                    onChange={e =>
-                      onTaskChange(idx, 'taskProgress', e.target.value)
-                    }
-                    placeholder="Optional"
-                  />
-                </label>
+                {/* Progress is computed from estimatedHours/hoursSpent; not editable in forms */}
               </div>
             </div>
           ))}
