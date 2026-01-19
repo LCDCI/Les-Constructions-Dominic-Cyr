@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { projectApi } from '../../features/projects/api/projectApi';
-import { fetchAllContractors, fetchAllSalespersons, reactivateUser } from '../../features/users/api/usersApi';
+import { fetchAllContractors, fetchAllSalespersons, fetchAllCustomers, reactivateUser } from '../../features/users/api/usersApi';
 import { FiUsers, FiActivity, FiInfo } from 'react-icons/fi';
 import '../../styles/Project/project-team-management.css';
 
@@ -14,8 +14,10 @@ export default function ProjectTeamManagementPage() {
   const [project, setProject] = useState(null);
   const [contractors, setContractors] = useState([]);
   const [salespersons, setSalespersons] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [selectedContractorIds, setSelectedContractorIds] = useState([]);
   const [selectedSalespersonIds, setSelectedSalespersonIds] = useState([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -40,13 +42,16 @@ export default function ProjectTeamManagementPage() {
       setProject(projectData);
       setSelectedContractorIds(projectData.contractorIds || []);
       setSelectedSalespersonIds(projectData.salespersonIds || []);
+      setSelectedCustomerId(projectData.customerId || '');
 
-      // Load all contractors and salespersons (including inactive) to support filtering
+      // Load all contractors, salespersons, and customers (including inactive) to support filtering
       const contractorsData = await fetchAllContractors(token);
       const salespersonsData = await fetchAllSalespersons(token);
+      const customersData = await fetchAllCustomers(token);
 
       setContractors(contractorsData || []);
       setSalespersons(salespersonsData || []);
+      setCustomers(customersData || []);
 
       // Fetch activity logs from backend
       try {
@@ -106,10 +111,12 @@ export default function ProjectTeamManagementPage() {
 
       const previousContractorIds = project.contractorIds || [];
       const previousSalespersonIds = project.salespersonIds || [];
+      const previousCustomerId = project.customerId || '';
 
       // Determine what changed
       const contractorsChanged = JSON.stringify([...selectedContractorIds].sort()) !== JSON.stringify([...previousContractorIds].sort());
       const salespersonsChanged = JSON.stringify([...selectedSalespersonIds].sort()) !== JSON.stringify([...previousSalespersonIds].sort());
+      const customerChanged = selectedCustomerId !== previousCustomerId;
 
       // Check for inactive users that need reactivation
       const inactiveContractorsToAdd = selectedContractorIds
@@ -121,6 +128,10 @@ export default function ProjectTeamManagementPage() {
         .filter(id => !previousSalespersonIds.includes(id))
         .map(id => salespersons.find((s) => s.userIdentifier === id))
         .filter(s => s && s.userStatus !== 'ACTIVE');
+
+      const inactiveCustomerToAdd = selectedCustomerId && selectedCustomerId !== previousCustomerId
+        ? customers.find((c) => c.userIdentifier === selectedCustomerId)
+        : null;
 
       // Check for reactivation confirmation
       for (const contractor of inactiveContractorsToAdd) {
@@ -159,6 +170,24 @@ export default function ProjectTeamManagementPage() {
         await reactivateUser(salesperson.userIdentifier, token);
       }
 
+      if (inactiveCustomerToAdd && inactiveCustomerToAdd.userStatus !== 'ACTIVE') {
+        const confirmed = await new Promise((resolve) => {
+          setUserToReactivate({
+            user: inactiveCustomerToAdd,
+            role: 'customer',
+            resolve
+          });
+          setShowReactivateConfirm(true);
+        });
+        
+        if (!confirmed) {
+          setIsSaving(false);
+          return;
+        }
+        
+        await reactivateUser(inactiveCustomerToAdd.userIdentifier, token);
+      }
+
       // Handle contractors - remove all then add selected ones
       if (contractorsChanged) {
         // Remove all existing contractors if there are any
@@ -182,6 +211,17 @@ export default function ProjectTeamManagementPage() {
         // Add all selected salespersons
         for (const salespersonId of selectedSalespersonIds) {
           await projectApi.assignSalespersonToProject(projectId, salespersonId, token);
+        }
+      }
+
+      // Handle customer - remove if cleared, assign if changed
+      if (customerChanged) {
+        if (previousCustomerId && !selectedCustomerId) {
+          // Remove customer
+          await projectApi.removeCustomerFromProject(projectId, token);
+        } else if (selectedCustomerId) {
+          // Assign new customer
+          await projectApi.assignCustomerToProject(projectId, selectedCustomerId, token);
         }
       }
 
@@ -243,6 +283,13 @@ export default function ProjectTeamManagementPage() {
     return true;
   });
 
+  const filteredCustomers = customers.filter(c => {
+    if (statusFilter === 'all') return true;
+    if (statusFilter === 'active') return c.userStatus === 'ACTIVE';
+    if (statusFilter === 'inactive') return c.userStatus === 'INACTIVE' || c.userStatus === 'DEACTIVATED';
+    return true;
+  });
+
   if (isLoading) {
     return <div className="page team-management-page">Loading...</div>;
   }
@@ -255,7 +302,7 @@ export default function ProjectTeamManagementPage() {
     <div className="page team-management-page">
       <div className="team-management-container">
         <div className="team-management-header">
-          <h1>Add Contractor & Salesperson</h1>
+          <h1>Add Contractor, Salesperson & Customer</h1>
           <p className="project-id">Project ID: {project.projectIdentifier}</p>
         </div>
 
@@ -399,6 +446,34 @@ export default function ProjectTeamManagementPage() {
                     </label>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Customer Assignment */}
+            <div className="assignment-group">
+              <h3>Customer</h3>
+              <div className="customer-select-container">
+                <select
+                  value={selectedCustomerId}
+                  onChange={(e) => setSelectedCustomerId(e.target.value)}
+                  disabled={isSaving}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '4px',
+                    border: '1px solid var(--secondary-color)',
+                    fontSize: '14px',
+                    backgroundColor: 'white',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="">-- No Customer Assigned --</option>
+                  {filteredCustomers.map((customer) => (
+                    <option key={customer.userIdentifier} value={customer.userIdentifier}>
+                      {customer.firstName} {customer.lastName} {customer.userStatus !== 'ACTIVE' ? `(${getUserStatusLabel(customer.userStatus)})` : ''}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
