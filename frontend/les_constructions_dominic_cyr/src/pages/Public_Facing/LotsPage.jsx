@@ -1,144 +1,186 @@
 import { useState, useEffect } from 'react';
-import { fetchLots } from '../../features/lots/api/lots';
-import '../../styles/lots.css';
+import { useParams } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
+import {
+  fetchLots,
+  resolveProjectIdentifier,
+} from '../../features/lots/api/lots';
+import { projectApi } from '../../features/projects/api/projectApi';
+import LotList from '../../features/lots/components/LotList';
 import Footer from '../../components/Footers/ProjectsFooter';
+import '../../styles/lots.css';
 
 const LotsPage = () => {
+  const { projectIdentifier: urlProjectIdentifier } = useParams();
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    getAccessTokenSilently,
+    user,
+  } = useAuth0();
+
   const [lots, setLots] = useState([]);
   const [filteredLots, setFilteredLots] = useState([]);
+  const [projectName, setProjectName] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortConfig, setSortConfig] = useState({
+    key: 'none',
+    direction: 'asc',
+  });
 
-  const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+  const roles = user?.['https://construction-api.loca/roles'] || [];
+  const isOwner =
+    isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
 
   useEffect(() => {
-    fetchAvailableLots();
-  }, []);
+    let cancelled = false;
 
+    const resolveAndFetch = async () => {
+      setLoading(true);
+      try {
+        const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+        if (!resolved) return;
+
+        const token = isAuthenticated
+          ? await getAccessTokenSilently().catch(() => null)
+          : null;
+
+        try {
+          const projectData = await projectApi.getProjectById(resolved, token);
+          if (!cancelled) setProjectName(projectData.projectName);
+        } catch (e) {
+          //
+        }
+
+        // --- 2. Fetch Lots (Using the token!) ---
+        const data = await fetchLots({ projectIdentifier: resolved, token });
+
+        if (!cancelled) {
+          setLots(data);
+          setFilteredLots(data);
+        }
+      } catch (err) {
+        if (!cancelled) setError(err.message || 'Failed to fetch');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    if (!authLoading) resolveAndFetch();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    urlProjectIdentifier,
+    isAuthenticated,
+    authLoading,
+    getAccessTokenSilently,
+  ]);
+
+  // Filtering and Sorting Logic
   useEffect(() => {
-    filterLots();
-  }, [searchTerm, lots]);
-
-  const fetchAvailableLots = async () => {
-    try {
-      const data = await fetchLots();
-      // Filter to show only AVAILABLE lots
-      const availableLots = data.filter(lot => lot.lotStatus === 'AVAILABLE');
-      setLots(availableLots);
-      setFilteredLots(availableLots);
-      setLoading(false);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to fetch lots:', error);
-      setLoading(false);
+    let result = [...lots];
+    if (!isOwner) {
+      result = result.filter(
+        lot => lot.lotStatus?.toUpperCase() === 'AVAILABLE'
+      );
+    } else if (statusFilter !== 'all') {
+      result = result.filter(
+        lot => lot.lotStatus?.toLowerCase() === statusFilter
+      );
     }
-  };
-
-  const filterLots = () => {
-    if (!searchTerm.trim()) {
-      setFilteredLots(lots);
-      return;
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(
+        lot =>
+          lot.civicAddress?.toLowerCase().includes(term) ||
+          lot.lotNumber?.toLowerCase().includes(term)
+      );
     }
-
-    const filtered = lots.filter(lot =>
-      lot.location.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredLots(filtered);
-  };
-
-  const getImageUrl = imageIdentifier => {
-    return `${filesServiceUrl}/files/${imageIdentifier}`;
-  };
-
-  const formatPrice = price => {
-    if (price === null || price === undefined) return '—';
-    try {
-      return new Intl.NumberFormat(undefined, {
-        style: 'currency',
-        currency: 'CAD',
-      }).format(price);
-    } catch (e) {
-      return price.toString();
+    if (sortConfig.key !== 'none') {
+      result.sort((a, b) => {
+        const valA = a[sortConfig.key] || 0;
+        const valB = b[sortConfig.key] || 0;
+        return sortConfig.direction === 'asc'
+          ? valA > valB
+            ? 1
+            : -1
+          : valA < valB
+            ? 1
+            : -1;
+      });
     }
-  };
+    setFilteredLots(result);
+  }, [searchTerm, statusFilter, sortConfig, lots, isOwner]);
 
-  if (loading) {
+  if (loading)
     return (
       <div className="lots-page">
-        <div className="lots-content">
-          <div className="lots-container">
-            <p
-              style={{ textAlign: 'center', padding: '5%', fontSize: '1.2rem' }}
-            >
-              Loading lots...
-            </p>
-          </div>
-        </div>
-        <Footer />
+        <div className="lots-content">Loading Foresta project data...</div>
       </div>
     );
-  }
 
   return (
     <div className="lots-page">
       <div className="lots-content">
-        <div className="lots-container">
-          <div className="lots-header">
-            <h1>Available Lots</h1>
+        <div className="lots-header-section">
+          <h1>{projectName ? `${projectName}'s Lots` : 'Project Lots'}</h1>
+        </div>
+
+        <div className="toolbar-section">
+          <div className="search-box">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search by address or lot..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
           </div>
 
-          <div className="lots-filter">
-            <div className="search-container">
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search lots by location..."
-                aria-label="Search lots by location"
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="lots-grid">
-            {filteredLots.length > 0 ? (
-              filteredLots.map(lot => (
-                <div key={lot.lotId} className="lot-card">
-                  <div className="lot-image-container">
-                    <img
-                      src={getImageUrl(lot.imageIdentifier)}
-                      alt={lot.location}
-                      className="lot-image"
-                    />
-                  </div>
-                  <h2 className="lot-title">{lot.location}</h2>
-                  <div className="lot-details">
-                    <div className="lot-detail-item">
-                      <strong>Size:</strong> {lot.dimensions}
-                    </div>
-                    <div className="lot-detail-item">
-                      <strong>Price:</strong> {formatPrice(lot.price)}
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="no-results">
-                <p>
-                  {searchTerm ? (
-                    <>No lots found matching &quot;{searchTerm}&quot;</>
-                  ) : lots.length === 0 ? (
-                    <>No available lots at the moment</>
-                  ) : (
-                    <>No lots found</>
-                  )}
-                </p>
-              </div>
+          <div className="filter-group">
+            {isOwner && (
+              <select
+                className="filter-select"
+                value={statusFilter}
+                onChange={e => setStatusFilter(e.target.value)}
+              >
+                <option value="all">All Statuses</option>
+                <option value="available">Available</option>
+                <option value="sold">Sold</option>
+                <option value="pending">Pending</option>
+              </select>
             )}
+            <select
+              className="filter-select"
+              onChange={e => {
+                const [key, dir] = e.target.value.split('-');
+                setSortConfig({ key, direction: dir });
+              }}
+            >
+              <option value="none-asc">Sort By</option>
+              {isOwner && <option value="price-asc">Price: Low to High</option>}
+              {isOwner && (
+                <option value="price-desc">Price: High to Low</option>
+              )}
+              <option value="dimensionsSquareFeet-asc">Size: Smallest</option>
+              <option value="dimensionsSquareFeet-desc">Size: Largest</option>
+            </select>
           </div>
         </div>
+
+        <div className="list-section">
+          {error ? (
+            <div className="no-results">{error}</div>
+          ) : (
+            <LotList lots={filteredLots} isOwner={isOwner} />
+          )}
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

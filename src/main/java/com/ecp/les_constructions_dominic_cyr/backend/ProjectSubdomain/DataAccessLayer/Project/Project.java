@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectId;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "project_identifier", nullable = false, unique = true) // Add name here
     private String projectIdentifier;
 
     @Column(nullable = false)
@@ -64,6 +65,9 @@ public class Project {
     @CollectionTable(name = "project_lots", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "lot_identifier", nullable = false)
     private List<String> lotIdentifiers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Lot> lots = new ArrayList<>();
 
     private Integer progressPercentage;
 

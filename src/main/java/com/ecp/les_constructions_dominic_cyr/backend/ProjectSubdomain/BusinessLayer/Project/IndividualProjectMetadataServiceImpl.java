@@ -92,8 +92,8 @@ public class IndividualProjectMetadataServiceImpl implements IndividualProjectMe
         List<String> lotIdentifiers = project.getLotIdentifiers();
         if (lotIdentifiers != null && !lotIdentifiers.isEmpty()) {
             Lot firstLot = lotRepository.findByLotIdentifier_LotId(lotIdentifiers.get(0));
-            if (firstLot != null && firstLot.getLocation() != null) {
-                return firstLot.getLocation();
+            if (firstLot != null && firstLot.getCivicAddress() != null) {
+                return firstLot.getCivicAddress();
             }
         }
 
