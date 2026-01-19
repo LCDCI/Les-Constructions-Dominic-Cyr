@@ -5,8 +5,10 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectActivityLogResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectController;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.ProjectNotFoundException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.GlobalControllerExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,7 +35,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProjectController.class)
-@org.springframework.context.annotation.Import(com.ecp.les_constructions_dominic_cyr.backend.utils.GlobalControllerExceptionHandler.class)
+@AutoConfigureMockMvc
+@Import(GlobalControllerExceptionHandler.class)
+@org.springframework.test.annotation.DirtiesContext(classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 public class ProjectTeamControllerUnitTest {
 
     @Autowired
@@ -42,6 +47,9 @@ public class ProjectTeamControllerUnitTest {
     private ProjectService projectService;
 
     @MockitoBean
+    private UserService userService;
+
+    @MockitoBean
     private org.springframework.security.oauth2.jwt.JwtDecoder jwtDecoder;
 
     private ObjectMapper objectMapper;
@@ -49,6 +57,7 @@ public class ProjectTeamControllerUnitTest {
     private final String testProjectId = "proj-001";
     private final String testContractorId = "contractor-001";
     private final String testSalespersonId = "salesperson-001";
+    private final String testCustomerId = "customer-001";
     private final String testAuth0UserId = "auth0|123456";
 
     @BeforeEach
@@ -329,5 +338,134 @@ public class ProjectTeamControllerUnitTest {
                 .andExpect(status().isNotFound());
 
         verify(projectService, times(1)).getProjectActivityLog(eq("invalid-project"));
+    }
+
+    // ========================== ASSIGN CUSTOMER TESTS ==========================
+
+    @Test
+    void assignCustomerToProject_ValidRequest_ReturnsOk() throws Exception {
+        String testCustomerId = "customer-001";
+        ProjectResponseModel responseWithCustomer = ProjectResponseModel.builder()
+                .projectIdentifier(testProjectId)
+                .projectName("Test Project")
+                .customerId(testCustomerId)
+                .build();
+
+        when(projectService.assignCustomerToProject(eq(testProjectId), eq(testCustomerId), any()))
+                .thenReturn(responseWithCustomer);
+
+        mockMvc.perform(put("/api/v1/projects/{projectIdentifier}/customer", testProjectId)
+                        .param("customerId", testCustomerId)
+                        .with(jwt().jwt(j -> j.subject(testAuth0UserId)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectIdentifier").value(testProjectId))
+                .andExpect(jsonPath("$.customerId").value(testCustomerId));
+
+        verify(projectService, times(1)).assignCustomerToProject(eq(testProjectId), eq(testCustomerId), any());
+    }
+
+    @Test
+    void assignCustomerToProject_ProjectNotFound_Returns404() throws Exception {
+        String testCustomerId = "customer-001";
+        when(projectService.assignCustomerToProject(eq(testProjectId), eq(testCustomerId), any()))
+                .thenThrow(new ProjectNotFoundException("Project not found"));
+
+        mockMvc.perform(put("/api/v1/projects/{projectIdentifier}/customer", testProjectId)
+                        .param("customerId", testCustomerId)
+                        .with(jwt().jwt(j -> j.subject(testAuth0UserId)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(projectService, times(1)).assignCustomerToProject(eq(testProjectId), eq(testCustomerId), any());
+    }
+
+    @Test
+    void assignCustomerToProject_CustomerNotFound_Returns404() throws Exception {
+        when(projectService.assignCustomerToProject(eq(testProjectId), eq("invalid-customer"), any()))
+                .thenThrow(new NotFoundException("Customer not found"));
+
+        mockMvc.perform(put("/api/v1/projects/{projectIdentifier}/customer", testProjectId)
+                        .param("customerId", "invalid-customer")
+                        .with(jwt().jwt(j -> j.subject(testAuth0UserId)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(projectService, times(1)).assignCustomerToProject(eq(testProjectId), eq("invalid-customer"), any());
+    }
+
+    @Test
+    void assignCustomerToProject_ReplacesExistingCustomer_ReturnsOk() throws Exception {
+        String newCustomerId = "customer-002";
+        ProjectResponseModel responseWithNewCustomer = ProjectResponseModel.builder()
+                .projectIdentifier(testProjectId)
+                .projectName("Test Project")
+                .customerId(newCustomerId)
+                .build();
+
+        when(projectService.assignCustomerToProject(eq(testProjectId), eq(newCustomerId), any()))
+                .thenReturn(responseWithNewCustomer);
+
+        mockMvc.perform(put("/api/v1/projects/{projectIdentifier}/customer", testProjectId)
+                        .param("customerId", newCustomerId)
+                        .with(jwt().jwt(j -> j.subject(testAuth0UserId)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerId").value(newCustomerId));
+
+        verify(projectService, times(1)).assignCustomerToProject(eq(testProjectId), eq(newCustomerId), any());
+    }
+
+    // ========================== REMOVE CUSTOMER TESTS ==========================
+
+    @Test
+    void removeCustomerFromProject_ValidRequest_ReturnsOk() throws Exception {
+        ProjectResponseModel responseWithoutCustomer = ProjectResponseModel.builder()
+                .projectIdentifier(testProjectId)
+                .projectName("Test Project")
+                .customerId(null)
+                .build();
+
+        when(projectService.removeCustomerFromProject(eq(testProjectId), any()))
+                .thenReturn(responseWithoutCustomer);
+
+        mockMvc.perform(delete("/api/v1/projects/{projectIdentifier}/customer", testProjectId)
+                        .with(jwt().jwt(j -> j.subject(testAuth0UserId)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.projectIdentifier").value(testProjectId));
+
+        verify(projectService, times(1)).removeCustomerFromProject(eq(testProjectId), any());
+    }
+
+    @Test
+    void removeCustomerFromProject_ProjectNotFound_Returns404() throws Exception {
+        when(projectService.removeCustomerFromProject(eq("invalid-project"), any()))
+                .thenThrow(new ProjectNotFoundException("Project not found"));
+
+        mockMvc.perform(delete("/api/v1/projects/{projectIdentifier}/customer", "invalid-project")
+                        .with(jwt().jwt(j -> j.subject(testAuth0UserId)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+        verify(projectService, times(1)).removeCustomerFromProject(eq("invalid-project"), any());
+    }
+
+    @Test
+    void removeCustomerFromProject_NoCustomerAssigned_ReturnsOk() throws Exception {
+        ProjectResponseModel responseWithoutCustomer = ProjectResponseModel.builder()
+                .projectIdentifier(testProjectId)
+                .customerId(null)
+                .build();
+
+        when(projectService.removeCustomerFromProject(eq(testProjectId), any()))
+                .thenReturn(responseWithoutCustomer);
+
+        mockMvc.perform(delete("/api/v1/projects/{projectIdentifier}/customer", testProjectId)
+                        .with(jwt().jwt(j -> j.subject(testAuth0UserId)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(projectService, times(1)).removeCustomerFromProject(eq(testProjectId), any());
     }
 }

@@ -275,4 +275,12 @@ public class UserServiceImpl implements UserService {
                 .map(user -> UserMapper.toResponseModel(user, null))
                 .toList();
     }
+
+    @Override
+    public List<UserResponseModel> getActiveCustomers() {
+        return usersRepository.findByUserStatus(UserStatus.ACTIVE).stream()
+                .filter(user -> user.getUserRole() == UserRole.CUSTOMER)
+                .map(user -> UserMapper.toResponseModel(user, null))
+                .toList();
+    }
 }
