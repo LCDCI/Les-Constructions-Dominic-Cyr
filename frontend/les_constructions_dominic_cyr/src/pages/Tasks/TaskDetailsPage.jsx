@@ -29,7 +29,6 @@ const TaskDetailsPage = () => {
   useEffect(() => {
     const loadTask = async () => {
       try {
-        // Show cached task immediately if present
         if (stateTask) {
           setTask(stateTask);
         }
@@ -58,17 +57,13 @@ const TaskDetailsPage = () => {
       } catch (err) {
         console.error('Error loading task:', err);
         const status = err?.response?.status;
-        const respMessage = err?.response?.data?.message;
-        const respError = err?.response?.data?.error;
 
         if (status === 403 && stateTask) {
-          // Contractors may be forbidden from direct fetch; fall back to passed data
           setError('');
           setTask(prev => prev || stateTask);
         } else {
           setError(
-            respMessage ||
-              respError ||
+            err?.response?.data?.message ||
               err.message ||
               'Failed to load task details.'
           );
@@ -104,9 +99,7 @@ const TaskDetailsPage = () => {
     );
   }
 
-  if (!task) {
-    return null;
-  }
+  if (!task) return null;
 
   const title = task.taskTitle || task.taskDescription || `Task ${taskId}`;
   const status = task.taskStatus || 'Not set';
@@ -114,9 +107,6 @@ const TaskDetailsPage = () => {
 
   const toDateOnly = value => {
     if (!value) return null;
-    if (typeof value === 'string' && value.length >= 10) {
-      return value.slice(0, 10);
-    }
     const parsed = new Date(value);
     return Number.isNaN(parsed.getTime())
       ? String(value)
@@ -165,60 +155,27 @@ const TaskDetailsPage = () => {
       return;
     }
 
-    const parseDate = v => (v ? new Date(v) : null);
-    const startDate = parseDate(taskDraft.periodStart || startOnly);
-    const endDate = parseDate(
-      taskDraft.periodEnd || taskDraft.periodStart || endOnly
-    );
-    if (startDate && endDate && endDate < startDate) {
-      setEditError('End date cannot be before start date.');
-      return;
-    }
-
     setIsSavingEdit(true);
 
     try {
       let token = null;
       if (isAuthenticated) {
-        try {
-          token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            },
-          });
-        } catch (tokenErr) {}
+        token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          },
+        });
       }
 
       const toNumberOrNull = value =>
         value === '' || value === undefined ? null : Number(value);
 
       const payload = {
-        taskStatus: taskDraft.taskStatus || TASK_STATUSES[0],
-        taskTitle:
-          taskDraft.taskTitle?.trim() ||
-          taskDraft.taskDescription?.trim() ||
-          `Task ${taskId}`,
-        periodStart: taskDraft.periodStart || startOnly || null,
-        periodEnd:
-          taskDraft.periodEnd ||
-          taskDraft.periodStart ||
-          endOnly ||
-          taskDraft.periodStart ||
-          null,
-        taskDescription:
-          taskDraft.taskDescription?.trim() ||
-          taskDraft.taskTitle?.trim() ||
-          `Task ${taskId}`,
-        taskPriority: taskDraft.taskPriority || TASK_PRIORITIES[2],
+        ...taskDraft,
         estimatedHours: toNumberOrNull(taskDraft.estimatedHours),
         hoursSpent: toNumberOrNull(taskDraft.hoursSpent),
         taskProgress: toNumberOrNull(taskDraft.taskProgress),
-        assignedToUserId: taskDraft.assignedToUserId || null,
-        scheduleId:
-          task.scheduleId ||
-          task.scheduleIdentifier ||
-          task.schedule?.scheduleId ||
-          null,
+        scheduleId: task.scheduleId || task.scheduleIdentifier || null,
       };
 
       const updated = await taskApi.updateTask(taskId, payload, token);
@@ -228,14 +185,13 @@ const TaskDetailsPage = () => {
       setTaskDraft(null);
       setIsEditTaskOpen(false);
     } catch (err) {
-      const resp = err?.response?.data;
       const status = err?.response?.status;
       let msg =
-        resp?.message || resp?.error || err.message || 'Failed to update task.';
+        err?.response?.data?.message || err.message || 'Failed to update task.';
 
-      if (status === 403 && role === ROLES.CONTRACTOR) {
+      if (status === 403) {
         msg =
-          'Backend permissions issue: Contractors are not authorized to update tasks. Please contact the administrator to grant contractors update permissions on /tasks/:id or /owners/tasks/:id endpoints.';
+          'You do not have permission to update this task. Please ensure you are the assigned contractor or an owner.';
       }
 
       setEditError(msg);
@@ -244,28 +200,8 @@ const TaskDetailsPage = () => {
       setIsSavingEdit(false);
     }
   };
-  const handleEditTask = () => {
-    if (!canEditTask) return;
-    openEditTaskModal();
-  };
 
-  const goBack = () => {
-    const fromSchedule = location.state?.fromScheduleModal;
-    const returnTo = location.state?.returnTo;
-    const scheduleEventId = location.state?.scheduleEventId;
-
-    if (fromSchedule && returnTo && scheduleEventId) {
-      navigate(returnTo, {
-        state: {
-          reopenScheduleModal: true,
-          scheduleEventId,
-        },
-      });
-      return;
-    }
-
-    navigate(-1);
-  };
+  const goBack = () => navigate(-1);
 
   return (
     <div className="project-schedule-page task-details-page">
@@ -277,7 +213,7 @@ const TaskDetailsPage = () => {
         </div>
         <div className="task-header-actions">
           {canEditTask && (
-            <button className="primary" onClick={handleEditTask}>
+            <button className="primary" onClick={openEditTaskModal}>
               Edit Task
             </button>
           )}
@@ -307,11 +243,11 @@ const TaskDetailsPage = () => {
             </div>
           </div>
           <div className="task-meta-block">
-            <span className="task-label">Task Status</span>
+            <span className="task-label">Status</span>
             <div className="task-value">{status}</div>
           </div>
           <div className="task-meta-block">
-            <span className="task-label">Task Priority</span>
+            <span className="task-label">Priority</span>
             <div className="task-value">{priority}</div>
           </div>
         </div>
@@ -327,22 +263,18 @@ const TaskDetailsPage = () => {
           <h3>Time + effort</h3>
           <div className="task-stats">
             <div className="task-stat">
-              <span className="task-label">Estimated hours</span>
+              <span className="task-label">Estimated</span>
               <div className="task-value">
                 {numericOrDash(task.estimatedHours)}
               </div>
             </div>
             <div className="task-stat">
-              <span className="task-label">Hours spent</span>
+              <span className="task-label">Spent</span>
               <div className="task-value">{numericOrDash(task.hoursSpent)}</div>
             </div>
             <div className="task-stat">
               <span className="task-label">Progress</span>
-              <div className="task-value">
-                {task.taskProgress === 0 || task.taskProgress
-                  ? `${task.taskProgress}%`
-                  : '—'}
-              </div>
+              <div className="task-value">{task.taskProgress ?? 0}%</div>
             </div>
           </div>
         </div>
@@ -355,10 +287,7 @@ const TaskDetailsPage = () => {
         priorities={TASK_PRIORITIES}
         errorMessage={editError}
         isSaving={isSavingEdit}
-        onClose={() => {
-          setIsEditTaskOpen(false);
-          setEditError('');
-        }}
+        onClose={() => setIsEditTaskOpen(false)}
         onChange={setTaskDraft}
         onSave={handleEditTaskSave}
         scheduleWindow={scheduleWindow}
