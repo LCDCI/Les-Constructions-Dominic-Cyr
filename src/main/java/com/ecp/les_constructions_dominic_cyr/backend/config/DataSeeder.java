@@ -30,9 +30,6 @@ public class DataSeeder {
     private RealizationRepository realizationRepository;
 
     @Autowired
-    private LotRepository lotRepository;
-
-    @Autowired
     private RenovationRepository renovationRepository;
 
     private static final Map<String, String> PROJECT_IMAGES = Map.of(
@@ -45,7 +42,6 @@ public class DataSeeder {
         log.info("Running data seeder...");
         seedProjectImages();
         seedRealizationImages();
-        seedLotImages();
         seedRenovationImages();
     }
 
@@ -82,32 +78,6 @@ public class DataSeeder {
                     realization.setImageIdentifier(imageId);
                     realizationRepository.save(realization);
                     log.info("Linked image to realization: {}", realizationId);
-                }
-            }
-        });
-    }
-
-    private static final Map<String, String> LOTS_IMAGES = Map.of(
-            "f3c8837d-bd65-4bc5-9f01-cb9082fc657e", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "5a82954c-8e2c-466a-8a8f-9983b79ede63", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "cd465054-403e-4861-b9ab-1b672672c053", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "a51e7923-7a46-4e65-8cee-8783126e780b", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "64f2d3b1-eb36-49d6-8bc3-a816d97ddeb9", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "3b9b8bf2-7ea4-4b3a-9250-53ccb1a77f87", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "02088623-dd3c-4fef-af67-2caf60dc1902", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "97fd170d-189b-4c4c-880d-31893a146712", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "db43c148-68de-4882-818a-d15dc8d5fcdb", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "adb6f5b7-e036-49cf-899e-a39dcaecd91f", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c"
-    );
-
-    private void seedLotImages() {
-        LOTS_IMAGES.forEach((lotId, imageId) -> {
-            Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
-            if (lot != null) {
-                if (lot.getImageIdentifier() == null || lot.getImageIdentifier().isEmpty()) {
-                    lot.setImageIdentifier(imageId);
-                    lotRepository.save(lot);
-                    log.info("Linked image to lot: {}", lotId);
                 }
             }
         });

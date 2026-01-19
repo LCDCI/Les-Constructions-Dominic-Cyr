@@ -117,7 +117,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 ownerUser.setUserRole(UserRole.OWNER);
                 ownerUser.setAuth0UserId(OWNER_AUTH0_ID);
 
-        testLot = new Lot(new LotIdentifier("lot-001"), "Downtown Location", 500000f, "50x100", LotStatus.AVAILABLE);
+        testLot = new Lot(new LotIdentifier("lot-001"), "Lot-001", "Downtown Location", 500000f, "5000", "464.5", LotStatus.AVAILABLE);
 
                 lenient().when(usersRepository.findByAuth0UserId(anyString())).thenReturn(Optional.of(ownerUser));
     }
@@ -372,7 +372,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
     void getProjectMetadata_WhenNoLocationAndLotHasNoLocation_ReturnsDefaultLocation() {
         // Arrange
         testProject.setLocation(null);
-        testLot.setLocation(null);
+        testLot.setCivicAddress(null);
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
         when(lotRepository.findByLotIdentifier_LotId(eq("lot-001")))

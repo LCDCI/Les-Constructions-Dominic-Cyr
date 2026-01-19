@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"files-service/internal/domain"
 	"files-service/internal/model"
 	"io"
@@ -39,11 +40,13 @@ func NewFileController(s domain.FileService) *FileController {
 func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 	r.POST("/files", fc.upload)
 	r.GET("/files/:id", fc.download)
+	r.GET("/files/:id/download", fc.downloadWithRoleCheck)
 	r.DELETE("/files/:id", fc.delete)
 	r.POST("/files/:id/archive", fc.archive)
 	r.POST("/files/:id/unarchive", fc.unarchive)
 	r.GET("/projects/:projectId/files", fc.listProjectFiles)
 	r.GET("/projects/:projectId/documents", fc.listProjectDocuments)
+	r.GET("/projects/:projectId/documents/zip", fc.downloadProjectDocumentsZip)
 	r.POST("/admin/reconcile/:projectId", fc.reconcile)
 	r.POST("/upload", fc.UploadReport)
 }
@@ -103,13 +106,41 @@ func (fc *FileController) upload(c *gin.Context) {
 		return
 	}
 
+	// Get uploadedBy - required field
+	uploadedBy := strings.TrimSpace(c.PostForm("uploadedBy"))
+	if uploadedBy == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "uploadedBy is required"})
+		return
+	}
+
+	// Get uploaderRole from form data - required for role-based filtering
+	uploaderRoleStr := strings.TrimSpace(c.PostForm("uploaderRole"))
+	if uploaderRoleStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "uploaderRole is required"})
+		return
+	}
+	
+	// Validate role is one of the allowed values
+	validRoles := map[string]bool{
+		"OWNER":       true,
+		"CONTRACTOR":  true,
+		"SALESPERSON": true,
+		"CUSTOMER":    true,
+	}
+	if !validRoles[strings.ToUpper(uploaderRoleStr)] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid uploaderRole. Must be OWNER, CONTRACTOR, SALESPERSON, or CUSTOMER"})
+		return
+	}
+	uploaderRole := strings.ToUpper(uploaderRoleStr)
+
 	input := domain.FileUploadInput{
-		FileName:    file.Filename,
-		ContentType: contentType,
-		Category:    category,
-		ProjectID:   c.PostForm("projectId"),
-		UploadedBy:  c.PostForm("uploadedBy"),
-		Data:        fileBytes,
+		FileName:     file.Filename,
+		ContentType:  contentType,
+		Category:     category,
+		ProjectID:    strings.TrimSpace(c.PostForm("projectId")),
+		UploadedBy:   uploadedBy,
+		UploaderRole: &uploaderRole,
+		Data:         fileBytes,
 	}
 
 	metadata, err := fc.s.Upload(c.Request.Context(), input)
@@ -185,7 +216,21 @@ func (fc *FileController) listProjectFiles(c *gin.Context) {
 
 func (fc *FileController) listProjectDocuments(c *gin.Context) {
 	projectID := c.Param("projectId")
+	role := c.Query("role")
+	userId := c.Query("userId")
 
+	// If role and userId are provided, use role-based filtering
+	if role != "" && userId != "" {
+		metadataList, err := fc.s.ListDocumentsByProjectIDAndRole(c.Request.Context(), projectID, role, userId)
+		if err != nil {
+			c.Error(err)
+			return
+		}
+		c.JSON(http.StatusOK, metadataList)
+		return
+	}
+
+	// Otherwise, return all documents (backward compatibility)
 	metadataList, err := fc.s.ListByProjectID(c.Request.Context(), projectID)
 	if err != nil {
 		c.Error(err)
@@ -200,6 +245,58 @@ func (fc *FileController) listProjectDocuments(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, documents)
+}
+
+func (fc *FileController) downloadWithRoleCheck(c *gin.Context) {
+	id := c.Param("id")
+	role := c.Query("role")
+	userId := c.Query("userId")
+
+	if role == "" || userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "role and userId query parameters are required"})
+		return
+	}
+
+	data, contentType, err := fc.s.GetWithRoleCheck(c.Request.Context(), id, role, userId)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	// Set headers for download
+	c.Header("Content-Type", contentType)
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", "document"))
+	c.Data(http.StatusOK, contentType, data)
+}
+
+func (fc *FileController) downloadProjectDocumentsZip(c *gin.Context) {
+	projectID := c.Param("projectId")
+	role := c.Query("role")
+	userId := c.Query("userId")
+	projectName := c.Query("projectName")
+
+	if role == "" || userId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "role and userId query parameters are required"})
+		return
+	}
+
+	// Use projectName if provided, otherwise use projectId
+	zipFileName := projectName
+	if zipFileName == "" {
+		zipFileName = fmt.Sprintf("project-%s", projectID)
+	}
+	zipFileName = strings.ReplaceAll(zipFileName, " ", "-") + "-documents.zip"
+
+	zipData, err := fc.s.DownloadProjectDocumentsZip(c.Request.Context(), projectID, role, userId, projectName)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	// Set headers for ZIP download
+	c.Header("Content-Type", "application/zip")
+	c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s\"", zipFileName))
+	c.Data(http.StatusOK, "application/zip", zipData)
 }
 
 func (fc *FileController) delete(c *gin.Context) {
