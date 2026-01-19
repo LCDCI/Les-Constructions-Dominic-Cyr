@@ -74,6 +74,25 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get('error');
+    const errorDescription = params.get('error_description');
+
+    if (
+      error === 'access_denied' &&
+      errorDescription === 'verification_pending'
+    ) {
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname + '#/portal/login'
+      );
+
+      // Optional: If you have a global toast/notification state, trigger it here.
+      // Otherwise, the PortalLogin page will handle the "blocked" state.
+    }
+  }, []);
   /* ----------------------------------
      Axios + Auth0 Interceptor
   -----------------------------------*/

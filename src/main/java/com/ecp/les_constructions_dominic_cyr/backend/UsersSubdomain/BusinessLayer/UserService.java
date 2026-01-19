@@ -19,4 +19,5 @@ public interface UserService {
     UserResponseModel reactivateUser(String userId, String requestingAuth0UserId);
     List<UserResponseModel> getActiveContractors();
     List<UserResponseModel> getActiveSalespersons();
+    List<UserResponseModel> getActiveCustomers();
 }
