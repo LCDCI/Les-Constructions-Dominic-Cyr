@@ -70,7 +70,6 @@ class DataSeederUnitTest {
     void init_WhenLotExistsWithImage_DoesNotUpdate() {
         Lot lot = new Lot();
         lot.setLotIdentifier(new LotIdentifier("f3c8837d-bd65-4bc5-9f01-cb9082fc657e"));
-        lot.setImageIdentifier("existing-image-id");
 
         when(projectRepository.findByProjectIdentifier(anyString())).thenReturn(Optional.empty());
         when(realizationRepository.findRealizationByRealizationIdentifier_RealizationId(anyString())).thenReturn(null);
