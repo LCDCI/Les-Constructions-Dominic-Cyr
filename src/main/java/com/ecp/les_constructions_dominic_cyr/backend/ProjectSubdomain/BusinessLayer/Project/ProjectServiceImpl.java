@@ -442,6 +442,84 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    @Transactional
+    public ProjectResponseModel assignCustomerToProject(String projectIdentifier, String customerId, String requestingAuth0UserId) {
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        if (customerId == null || customerId.trim().isEmpty()) {
+            throw new InvalidProjectDataException("Customer ID cannot be null or empty");
+        }
+        
+        Users customer = usersRepository.findByUserIdentifier(customerId)
+                .orElseThrow(() -> new NotFoundException("Customer not found with identifier: " + customerId));
+        
+        project.setCustomerId(customerId);
+        Project updatedProject = projectRepository.save(project);
+        
+        // Resolve who made the change
+        String changerName = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+            .map(this::getFullName)
+            .orElse("Unknown");
+
+        // Log the activity
+        ProjectActivityLog activityLog = new ProjectActivityLog();
+        activityLog.setProjectIdentifier(projectIdentifier);
+        activityLog.setActivityType(ActivityType.CUSTOMER_ASSIGNED);
+        activityLog.setUserIdentifier(customerId);
+        activityLog.setUserName(getFullName(customer));
+        activityLog.setChangedBy(requestingAuth0UserId);
+        activityLog.setChangedByName(changerName);
+        activityLog.setTimestamp(LocalDateTime.now());
+        activityLog.setDescription(getFullName(customer) + " was assigned as customer");
+        activityLogRepository.save(activityLog);
+        
+        return projectMapper.entityToResponseModel(updatedProject);
+    }
+
+    @Override
+    @Transactional
+    public ProjectResponseModel removeCustomerFromProject(String projectIdentifier, String requestingAuth0UserId) {
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
+        
+        String customerId = project.getCustomerId();
+        String customerName = "Unknown";
+        
+        if (customerId != null) {
+            Users customer = usersRepository.findByUserIdentifier(customerId).orElse(null);
+            if (customer != null) {
+                customerName = getFullName(customer);
+            }
+            
+            project.setCustomerId(null);
+        }
+        
+        Project updatedProject = projectRepository.save(project);
+        
+        // Resolve who made the change
+        String changerName = usersRepository.findByAuth0UserId(requestingAuth0UserId)
+            .map(this::getFullName)
+            .orElse("Unknown");
+
+        // Log the activity
+        if (customerId != null) {
+            ProjectActivityLog activityLog = new ProjectActivityLog();
+            activityLog.setProjectIdentifier(projectIdentifier);
+            activityLog.setActivityType(ActivityType.CUSTOMER_REMOVED);
+            activityLog.setUserIdentifier(customerId);
+            activityLog.setUserName(customerName);
+            activityLog.setChangedBy(requestingAuth0UserId);
+            activityLog.setChangedByName(changerName);
+            activityLog.setTimestamp(LocalDateTime.now());
+            activityLog.setDescription(customerName + " was removed as customer");
+            activityLogRepository.save(activityLog);
+        }
+        
+        return projectMapper.entityToResponseModel(updatedProject);
+    }
+
+    @Override
     public List<ProjectActivityLogResponseModel> getProjectActivityLog(String projectIdentifier) {
         return activityLogRepository.findByProjectIdentifierOrderByTimestampDesc(projectIdentifier)
                 .stream()

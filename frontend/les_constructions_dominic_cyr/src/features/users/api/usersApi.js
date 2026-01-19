@@ -79,6 +79,13 @@ export async function fetchActiveSalespersons(token) {
   return response.data;
 }
 
+export async function fetchActiveCustomers(token) {
+  const response = await axios.get(`${API_BASE}/users/customers/active`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return response.data;
+}
+
 export async function fetchAllContractors(token) {
   const response = await axios.get(`${API_BASE}/users`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -93,6 +100,14 @@ export async function fetchAllSalespersons(token) {
   });
   const allUsers = response.data;
   return allUsers.filter(user => user.userRole === 'SALESPERSON');
+}
+
+export async function fetchAllCustomers(token) {
+  const response = await axios.get(`${API_BASE}/users`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  const allUsers = response.data;
+  return allUsers.filter(user => user.userRole === 'CUSTOMER');
 }
 
 export async function setUserInactive(userId, token) {
