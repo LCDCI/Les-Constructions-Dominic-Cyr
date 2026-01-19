@@ -684,6 +684,19 @@ body {
   border: 2px solid transparent;
 }
 
+/* Ensure feature card content is strictly centered (horizontal + vertical) */
+.features-grid .feature-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.features-grid .feature-card .feature-title {
+  margin: 0;
+  display: block;
+  text-align: center;
+}
+
 .feature-card.animated {
   opacity: 1;
   transform: translateY(0);
@@ -713,6 +726,16 @@ body {
   word-break: break-word;
   overflow-wrap: anywhere;
   hyphens: auto;
+}
+
+/* Ensure feature title is centered inside the card both horizontally and vertically */
+.feature-card .feature-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
 }
 
 /* ========== CONTACT SECTION ========== */
@@ -1296,6 +1319,18 @@ body {
   .feature-title {
     font-size: clamp(0.9rem, 4.5vw, 1rem);
     line-height: 1.35;
+  }
+
+  /* Ensure feature card content is strictly centered (highest specificity) */
+  .features-grid .feature-card,
+  .features-grid .feature-card .feature-title {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 
   .contact-wrapper {
