@@ -293,12 +293,13 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-001"),
+                "Lot-001",
                 "Downtown Location",
                 500000.0f,
-                "50x100",
+                "5000",
+                "464.5",
                 LotStatus.AVAILABLE
         );
-        lot.setImageIdentifier("lot-img-001");
 
         // Act
         LotResponseModel result = mapper.lotToResponseModel(lot);
@@ -306,11 +307,11 @@ class ProjectOverviewMapperTest {
         // Assert
         assertNotNull(result);
         assertEquals("lot-001", result.getLotId());
-        assertEquals("Downtown Location", result.getLocation());
+        assertEquals("Downtown Location", result.getCivicAddress());
         assertEquals(500000.0f, result.getPrice());
-        assertEquals("50x100", result.getDimensions());
+        assertEquals("5000", result.getDimensionsSquareFeet());
+        assertEquals("464.5", result.getDimensionsSquareMeters());
         assertEquals(LotStatus.AVAILABLE, result.getLotStatus());
-        assertEquals("lot-img-001", result.getImageIdentifier());
     }
 
     @Test
@@ -318,12 +319,13 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-002"),
+                "Lot-002",
                 "Suburban Location",
                 350000.0f,
-                "40x80",
+                "4000",
+                "371.6",
                 LotStatus.PENDING
         );
-        lot.setImageIdentifier(null);
 
         // Act
         LotResponseModel result = mapper.lotToResponseModel(lot);
@@ -331,11 +333,11 @@ class ProjectOverviewMapperTest {
         // Assert
         assertNotNull(result);
         assertEquals("lot-002", result.getLotId());
-        assertEquals("Suburban Location", result.getLocation());
+        assertEquals("Suburban Location", result.getCivicAddress());
         assertEquals(350000.0f, result.getPrice());
-        assertEquals("40x80", result.getDimensions());
+        assertEquals("4000", result.getDimensionsSquareFeet());
+        assertEquals("371.6", result.getDimensionsSquareMeters());
         assertEquals(LotStatus.PENDING, result.getLotStatus());
-        assertNull(result.getImageIdentifier());
     }
 
     @Test
@@ -343,12 +345,13 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-003"),
+                "Lot-003",
                 "Urban Location",
                 750000.0f,
-                "60x120",
+                "7200",
+                "668.9",
                 LotStatus.SOLD
         );
-        lot.setImageIdentifier("lot-img-003");
 
         // Act
         LotResponseModel result = mapper.lotToResponseModel(lot);
@@ -364,30 +367,33 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot1 = new Lot(
                 new LotIdentifier("lot-001"),
+                "Lot-001",
                 "Location 1",
                 100000.0f,
-                "30x50",
+                "1500",
+                "139.4",
                 LotStatus.AVAILABLE
         );
-        lot1.setImageIdentifier("img-001");
 
         Lot lot2 = new Lot(
                 new LotIdentifier("lot-002"),
+                "Lot-002",
                 "Location 2",
                 200000.0f,
-                "40x60",
+                "2400",
+                "223.0",
                 LotStatus.PENDING
         );
-        lot2.setImageIdentifier("img-002");
 
         Lot lot3 = new Lot(
                 new LotIdentifier("lot-003"),
+                "Lot-003",
                 "Location 3",
                 300000.0f,
-                "50x70",
+                "3500",
+                "325.2",
                 LotStatus.SOLD
         );
-        lot3.setImageIdentifier("img-003");
 
         List<Lot> lots = Arrays.asList(lot1, lot2, lot3);
 
@@ -398,9 +404,9 @@ class ProjectOverviewMapperTest {
         assertNotNull(result);
         assertEquals(3, result.size());
         assertEquals("lot-001", result.get(0).getLotId());
-        assertEquals("Location 1", result.get(0).getLocation());
+        assertEquals("Location 1", result.get(0).getCivicAddress());
         assertEquals(100000.0f, result.get(0).getPrice());
-        assertEquals("30x50", result.get(0).getDimensions());
+        assertEquals("1500", result.get(0).getDimensionsSquareFeet());
         assertEquals(LotStatus.AVAILABLE, result.get(0).getLotStatus());
         assertEquals("lot-002", result.get(1).getLotId());
         assertEquals("lot-003", result.get(2).getLotId());
@@ -424,12 +430,13 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-single"),
+                "Lot-Single",
                 "Single Location",
                 450000.0f,
-                "45x90",
+                "4050",
+                "376.3",
                 LotStatus.AVAILABLE
         );
-        lot.setImageIdentifier("img-single");
 
         List<Lot> lots = Collections.singletonList(lot);
 
@@ -440,7 +447,7 @@ class ProjectOverviewMapperTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("lot-single", result.get(0).getLotId());
-        assertEquals("Single Location", result.get(0).getLocation());
+        assertEquals("Single Location", result.get(0).getCivicAddress());
     }
 
     @Test
@@ -448,25 +455,31 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot availableLot = new Lot(
                 new LotIdentifier("lot-avail"),
+                "Lot-Avail",
                 "Available Loc",
                 100000.0f,
-                "30x50",
+                "1500",
+                "139.4",
                 LotStatus.AVAILABLE
         );
 
         Lot reservedLot = new Lot(
                 new LotIdentifier("lot-pending"),
+                "Lot-Pending",
                 "Pending Loc",
                 200000.0f,
-                "40x60",
+                "2400",
+                "223.0",
                 LotStatus.PENDING
         );
 
         Lot soldLot = new Lot(
                 new LotIdentifier("lot-sold"),
+                "Lot-Sold",
                 "Sold Loc",
                 300000.0f,
-                "50x70",
+                "3500",
+                "325.2",
                 LotStatus.SOLD
         );
 
@@ -488,12 +501,13 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-expensive"),
+                "Lot-Expensive",
                 "Premium Location",
                 9999999.99f,
-                "100x200",
+                "20000",
+                "1858.0",
                 LotStatus.AVAILABLE
         );
-        lot.setImageIdentifier("premium-img");
 
         // Act
         LotResponseModel result = mapper.lotToResponseModel(lot);
@@ -508,18 +522,19 @@ class ProjectOverviewMapperTest {
         // Arrange
         Lot lot = new Lot(
                 new LotIdentifier("lot-special"),
+                "Lot-Special",
                 "Location with Special Chars: #123, St. André-Est",
                 500000.0f,
-                "50x100",
+                "5000",
+                "464.5",
                 LotStatus.AVAILABLE
         );
-        lot.setImageIdentifier("special-img");
 
         // Act
         LotResponseModel result = mapper.lotToResponseModel(lot);
 
         // Assert
         assertNotNull(result);
-        assertEquals("Location with Special Chars: #123, St. André-Est", result.getLocation());
+        assertEquals("Location with Special Chars: #123, St. André-Est", result.getCivicAddress());
     }
 }

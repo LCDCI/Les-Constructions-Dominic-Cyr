@@ -1,188 +1,71 @@
-/* Lots Page Styles */
-
 .lots-page {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--background-color);
+    background-color: #f8fafc;
 }
 
 .lots-content {
     flex: 1;
-    padding: 3% 0 12%;
     width: 100%;
+    padding: 60px 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
-.lots-container {
-    width: 80%;
-    max-width: 1400px;
-    margin: 0 auto;
+/* Master alignment for Header, Toolbar, and List */
+.lots-header-section,
+.toolbar-section,
+.list-section {
+    width: 90vw;
+    max-width: 1600px;
+    margin-bottom: 20px;
 }
 
-.lots-header {
-    text-align: center;
-    margin-bottom: 4%;
-}
-
-.lots-header h1 {
-    font-size: 2.5rem;
-    color: var(--text-primary);
-    margin-bottom: 1%;
-}
-
-.lots-filter {
+/* Toolbar Layout */
+.toolbar-section {
     display: flex;
-    justify-content: center;
-    margin-bottom: 5%;
+    gap: 15px;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.search-container {
-    width: 100%;
-    max-width: 500px;
-    position: relative;
+.search-box {
+    flex: 1; /* Search takes remaining space */
 }
 
 .search-input {
     width: 100%;
-    padding: 3% 5%;
+    padding: 0.8rem 1.2rem;
     font-size: 1rem;
-    border: 2px solid #D1D5DB;
-    border-radius: 25px;
-    background-color: var(--white);
-    box-shadow: var(--box-shadow);
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-sizing: border-box;
 }
 
-.search-input:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 4px 12px rgba(74, 144, 164, 0.2);
-}
-
-.lots-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 4%;
-    margin-bottom: 10%;
-    justify-items: center;
-}
-
-.lot-card {
-    background-color: #E5EDF5;
-    border-radius: var(--border-radius);
-    padding: 5%;
-    box-shadow: var(--box-shadow);
-    transition: var(--transition);
+.filter-group {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 100%;
-    max-width: 350px;
+    gap: 10px;
 }
 
-.lot-card:hover {
-    transform: translateY(-2%);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+.filter-select {
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background-color: white;
+    font-size: 0.9rem;
+    color: #334155;
+    cursor: pointer;
+    min-width: 150px;
 }
 
-.lot-image-container {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    margin-bottom: 5%;
-    background-color: var(--white);
+.filter-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    ring: 2px rgba(59, 130, 246, 0.2);
 }
 
-.lot-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: var(--transition);
-}
-
-.lot-card:hover .lot-image {
-    transform: scale(1.05);
-}
-
-.lot-title {
-    font-size: 1.5rem;
-    color: var(--text-primary);
-    margin-bottom: 4%;
-    font-weight: 600;
-}
-
-.lot-details {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 2%;
-    margin-top: 4%;
-}
-
-.lot-detail-item {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-
-.lot-detail-item strong {
-    color: var(--text-primary);
-}
-
-.no-results {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 5%;
-    color: var(--text-secondary);
-    font-size: 1.2rem;
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .lots-container {
-        width: 85%;
-    }
-
-    .lots-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    .lots-container {
-        width: 90%;
-    }
-
-    .lots-header h1 {
-        font-size: 2rem;
-    }
-
-    .lots-grid {
-        grid-template-columns: 1fr;
-        gap: 6%;
-    }
-
-    .lot-title {
-        font-size: 1.3rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .lots-container {
-        width: 95%;
-    }
-
-    .lots-content {
-        padding: 3% 0 15%;
-    }
-
-    .lots-header h1 {
-        font-size: 1.8rem;
-    }
-
-    .search-input {
-        padding: 4% 6%;
-    }
+.list-section {
+    margin-top: 10px;
 }

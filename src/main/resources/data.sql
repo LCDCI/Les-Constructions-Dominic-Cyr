@@ -1,16 +1,3 @@
--- data for lots
-INSERT INTO lots (lot_identifier, image_identifier, location, price, dimensions, lot_status) VALUES
-                                                                                                 ('f3c8837d-bd65-4bc5-9f01-cb9082fc657e', NULL, 'Montreal, QC', 120000.0, '55x110', 'AVAILABLE'),
-                                                                                                 ('5a82954c-8e2c-466a-8a8f-9983b79ede63', NULL, 'Quebec City, QC', 180000.0, '65x125', 'SOLD'),
-                                                                                                 ('cd465054-403e-4861-b9ab-1b672672c053', NULL, 'Sherbrooke, QC', 140000.0, '60x115', 'PENDING'),
-                                                                                                 ('a51e7923-7a46-4e65-8cee-8783126e780b', NULL, 'Trois-Rivières, QC', 155000.0, '70x130', 'AVAILABLE'),
-                                                                                                 ('64f2d3b1-eb36-49d6-8bc3-a816d97ddeb9', NULL, 'Gatineau, QC', 110000.0, '50x100', 'SOLD'),
-                                                                                                 ('3b9b8bf2-7ea4-4b3a-9250-53ccb1a77f87', NULL, 'Drummondville, QC', 175000.0, '75x145', 'AVAILABLE'),
-                                                                                                 ('02088623-dd3c-4fef-af67-2caf60dc1902', NULL, 'Saguenay, QC', 165000.0, '70x140', 'PENDING'),
-                                                                                                 ('97fd170d-189b-4c4c-880d-31893a146712', NULL, 'Rimouski, QC', 130000.0, '55x120', 'AVAILABLE'),
-                                                                                                 ('db43c148-68de-4882-818a-d15dc8d5fcdb', NULL, 'Chicoutimi, QC', 160000.0, '65x135', 'SOLD'),
-                                                                                                 ('adb6f5b7-e036-49cf-899e-a39dcaecd91f', NULL, 'Baie-Comeau, QC', 145000.0, '60x125', 'AVAILABLE');
-
 -- data for realizations
 INSERT INTO realizations (realization_identifier, realization_name, location, description, number_of_rooms, number_of_bedrooms, number_of_bathrooms, construction_year)
 VALUES
@@ -98,23 +85,91 @@ INSERT INTO projects (
           80
       );
 
-INSERT INTO schedules (schedule_identifier, schedule_start_date, schedule_end_date, schedule_description, lot_number, project_id) VALUES
-    ('SCH-001', '2026-01-20', '2026-01-20', 'Foundation Work - Pour Concrete', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
-    ('SCH-002', '2026-01-22', '2026-01-22', 'Framing - Install Floor Joists', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
-    ('SCH-003', '2026-01-25', '2026-01-25', 'Framing - Wall Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
-    ('SCH-004', '2026-01-28', '2026-01-28', 'Roofing - Sheathing', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
-    ('SCH-005', '2026-02-01', '2026-02-01', 'Roofing - Shingles Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
-    ('SCH-006', '2026-02-05', '2026-02-05', 'Plumbing - Rough-In', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
-    ('SCH-007', '2026-02-08', '2026-02-08', 'Electrical - Rough Wiring', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
-    ('SCH-008', '2026-02-12', '2026-02-12', 'HVAC Installation', 'Lot 53', (SELECT project_id FROM projects WHERE project_identifier = 'proj-001-foresta')),
-    ('SCH-009', '2026-01-23', '2026-01-23', 'Site Preparation - Excavation', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
-    ('SCH-010', '2026-01-27', '2026-01-27', 'Foundation - Footings', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
-    ('SCH-011', '2026-01-30', '2026-01-30', 'Foundation - Pour Concrete', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
-    ('SCH-012', '2026-02-03', '2026-02-03', 'Framing - Install Floor System', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
-    ('SCH-013', '2026-02-06', '2026-02-06', 'Framing - Wall Framing', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
-    ('SCH-014', '2026-02-10', '2026-02-10', 'Framing - Roof Trusses', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama')),
-    ('SCH-015', '2026-02-13', '2026-02-13', 'Exterior - Window Installation', 'Lot 57', (SELECT project_id FROM projects WHERE project_identifier = 'proj-002-panorama'));
+-- data for lots
+INSERT INTO lots (
+    lot_identifier,
+    lot_number,
+    civic_address,
+    price,
+    dimensions_square_feet,
+    dimensions_square_meters,
+    lot_status,
+    project_id
+) VALUES
+      ('046f5c88-5188-467a-85d8-041460f7347a', '6 690 952', '104 rue du Boisé', 0.0, '16944.5', '1574.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('923df8f0-1090-48e0-a92c-0e78c4391630', '6 690 953', '108 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('575c8739-16a3-4a11-a89e-2131920dfa1d', '6 690 954', '112 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('143e1da0-e070-496e-a32b-340645601289', '6 690 955', '116 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('36195861-8406-4448-b4c6-e789839443c5', '6 690 956', '120 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('f2b3b793-cc07-4e6c-a87d-84224b172d3e', '6 690 957', '124 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('79477e68-07e5-4f30-81f1-c4be19c351b0', '6 690 958', '128 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('e5ca72c8-895c-44c1-8840-a15d65457ef4', '6 690 959', '132 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('225c957a-9a00-410a-8646-6f81f9b31953', '6 690 960', '136 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('30c51f49-55da-48eb-a9eb-9da21b443213', '', '140 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('64687d60-70f7-48f8-8098-b8072045564c', '', '144 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('07590212-9c17-48df-b5b6-7649520a776c', '', '148 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('3160a283-9b48-4e89-943f-b32813dfd59a', '', 'rue du Boisé 152', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('9b84a9e5-9435-46b0-968b-594246101918', '', 'rue du Boisé 156', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('41295246-8868-43f1-b1e1-1b9195311894', '', '160 rue du Boisé', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('14f56f4d-91b4-4b52-b850-891963032133', '', '168 rue du Boisé', 0.0, '19769.0', '1836.6', 'AVAILABLE', 'proj-001-foresta'),
+      ('04153862-2144-4361-9c6a-463288410940', '', 'rue du Boisé 172', 0.0, '17087.7', '1587.5', 'AVAILABLE', 'proj-001-foresta'),
+      ('e5512156-f28a-4061-9f93-165842813134', '', '176 rue du Boisé', 0.0, '16681.9', '1549.8', 'AVAILABLE', 'proj-001-foresta'),
+      ('16164213-3982-4113-be12-984439167151', '', '180 rue du Boisé', 0.0, '19077.9', '1772.4', 'AVAILABLE', 'proj-001-foresta'),
+      ('57945860-2525-4c6e-812e-132470653133', '', '184 rue du Boisé', 0.0, '16222.3', '1507.1', 'AVAILABLE', 'proj-001-foresta'),
+      ('31871407-1601-4965-985b-017646733153', '', '183 rue du Boisé', 0.0, '16982.2', '1577.7', 'AVAILABLE', 'proj-001-foresta'),
+      ('21453261-0428-4c91-8848-181156633633', '', '179 rue du Boisé', 0.0, '16191.1', '1504.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('19614480-1677-4467-874e-518214156133', '', '175 rue du Boisé', 0.0, '16212.6', '1506.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('14561081-3444-4828-984e-333161406155', '', '54 rue du Bosquet', 0.0, '16417.1', '1525.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('15701824-3408-4122-823a-533214151333', '', '58 rue du Bosquet', 0.0, '16504.3', '1533.3', 'AVAILABLE', 'proj-001-foresta'),
+      ('13145611-1313-4158-b11a-531640101563', '', '62 rue du Bosquet', 0.0, '16944.5', '1574.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('31341400-1415-4636-963a-631610410133', '', '66 rue du Bosquet', 0.0, '27215.4', '2528.4', 'AVAILABLE', 'proj-001-foresta'),
+      ('14144415-3141-4131-828e-536100140156', '', '70 rue du Bosquet', 0.0, '25049.7', '2327.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('31441401-4415-4636-b11e-536101410141', '', '67 rue du Bosquet', 0.0, '24726.8', '2297.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('41341401-1401-4141-981e-536141410131', '', '63 rue du Bosquet', 0.0, '18598.9', '1727.9', 'AVAILABLE', 'proj-001-foresta'),
+      ('14134101-1415-4141-8e8e-536101410133', '', '59 rue du Bosquet', 0.0, '16150.2', '1500.4', 'AVAILABLE', 'proj-001-foresta'),
+      ('31414141-1415-4141-981e-536101410131', '', '55 rue du Bosquet', 0.0, '16173.8', '1502.6', 'AVAILABLE', 'proj-001-foresta'),
+      ('41414141-1415-4141-981e-536101410131', '6 690 978', '4 rue de la Fougère', 0.0, '16170.6', '1502.3', 'AVAILABLE', 'proj-001-foresta'),
+      ('51414141-1415-4141-981e-536101410131', '6 690 977', '8 rue de la Fougère', 0.0, '16145.9', '1500.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('61414141-1415-4141-981e-536101410131', '6 690 976', '12 rue de la Fougère', 0.0, '18878.8', '1753.9', 'AVAILABLE', 'proj-001-foresta'),
+      ('71414141-1415-4141-981e-536101410131', '6 690 975', '16 rue de la Fougère', 0.0, '20295.3', '1885.5', 'AVAILABLE', 'proj-001-foresta'),
+      ('81414141-1415-4141-981e-536101410131', '6 690 974', '20 rue de la Fougère', 0.0, '16199.7', '1505.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('91414141-1415-4141-981e-536101410131', '6 690 973', '24 rue de la Fougère', 0.0, '16148.0', '1500.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('02414141-1415-4141-981e-536101410131', '6 690 972', '28 rue de la Fougère', 0.0, '17675.4', '1642.1', 'AVAILABLE', 'proj-001-foresta'),
+      ('12414141-1415-4141-981e-536101410131', '6 690 971', '32 rue de la Fougère', 0.0, '39872.7', '3704.3', 'AVAILABLE', 'proj-001-foresta'),
+      ('22414141-1415-4141-981e-536101410131', '6 690 970', '36 rue de la Fougère', 0.0, '50151.2', '4659.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('32414141-1415-4141-981e-536101410131', '6 690 969', '17 rue de la Fougère', 0.0, '21967.0', '2040.8', 'AVAILABLE', 'proj-001-foresta'),
+      ('42414141-1415-4141-981e-536101410131', '6 690 968', '13 rue de la Fougère', 0.0, '16491.4', '1532.1', 'AVAILABLE', 'proj-001-foresta'),
+      ('52414141-1415-4141-981e-536101410131', '6 690 966', '125 rue du Boisé', 0.0, '16279.3', '1512.4', 'AVAILABLE', 'proj-001-foresta'),
+      ('62414141-1415-4141-981e-536101410131', '6 690 965', '121 rue du Boisé', 0.0, '16574.3', '1539.8', 'AVAILABLE', 'proj-001-foresta'),
+      ('72414141-1415-4141-981e-536101410131', '6 690 964', 'rue du Boisé 117', 0.0, '16180.3', '1503.2', 'AVAILABLE', 'proj-001-foresta'),
+      ('82414141-1415-4141-981e-536101410131', '6 690 963', '113 rue du Boisé', 0.0, '19171.6', '1781.1', 'AVAILABLE', 'proj-001-foresta'),
+      ('92414141-1415-4141-981e-536101410131', '6 690 962', '109 rue du Boisé', 0.0, '29805.2', '2769.0', 'AVAILABLE', 'proj-001-foresta'),
+      ('03414141-1415-4141-981e-536101410131', '6 690 961', '105 rue du Boisé', 0.0, '25016.4', '2324.1', 'AVAILABLE', 'proj-001-foresta'),
+      ('13414141-1415-4141-981e-536101410131', '', 'rue du Boisé 164', 0.0, '29156.2', '2708.7', 'AVAILABLE', 'proj-001-foresta');
 
+INSERT INTO schedules (
+    schedule_identifier,
+    schedule_start_date,
+    schedule_end_date,
+    schedule_description,
+    lot_number,
+    project_id
+) VALUES
+      ('SCH-001', '2026-01-20', '2026-01-20', 'Foundation Work - Pour Concrete', 'Lot 53', 'proj-001-foresta'),
+      ('SCH-002', '2026-01-22', '2026-01-22', 'Framing - Install Floor Joists', 'Lot 53', 'proj-001-foresta'),
+      ('SCH-003', '2026-01-25', '2026-01-25', 'Framing - Wall Installation', 'Lot 53', 'proj-001-foresta'),
+      ('SCH-004', '2026-01-28', '2026-01-28', 'Roofing - Sheathing', 'Lot 53', 'proj-001-foresta'),
+      ('SCH-005', '2026-02-01', '2026-02-01', 'Roofing - Shingles Installation', 'Lot 53', 'proj-001-foresta'),
+      ('SCH-006', '2026-02-05', '2026-02-05', 'Plumbing - Rough-In', 'Lot 53', 'proj-001-foresta'),
+      ('SCH-007', '2026-02-08', '2026-02-08', 'Electrical - Rough Wiring', 'Lot 53', 'proj-001-foresta'),
+      ('SCH-008', '2026-02-12', '2026-02-12', 'HVAC Installation', 'Lot 53', 'proj-001-foresta'),
+      ('SCH-009', '2026-01-23', '2026-01-23', 'Site Preparation - Excavation', 'Lot 57', 'proj-002-panorama'),
+      ('SCH-010', '2026-01-27', '2026-01-27', 'Foundation - Footings', 'Lot 57', 'proj-002-panorama'),
+      ('SCH-011', '2026-01-30', '2026-01-30', 'Foundation - Pour Concrete', 'Lot 57', 'proj-002-panorama'),
+      ('SCH-012', '2026-02-03', '2026-02-03', 'Framing - Install Floor System', 'Lot 57', 'proj-002-panorama'),
+      ('SCH-013', '2026-02-06', '2026-02-06', 'Framing - Wall Framing', 'Lot 57', 'proj-002-panorama'),
+      ('SCH-014', '2026-02-10', '2026-02-10', 'Framing - Roof Trusses', 'Lot 57', 'proj-002-panorama'),
+      ('SCH-015', '2026-02-13', '2026-02-13', 'Exterior - Window Installation', 'Lot 57', 'proj-002-panorama');
 
 
 INSERT INTO project_overview_content (

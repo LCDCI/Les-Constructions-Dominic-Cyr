@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface LotService {
     List<LotResponseModel> getAllLots();
+    List<LotResponseModel> getAllLotsByProject(String projectIdentifier);
     LotResponseModel getLotById(String lotId);
     LotResponseModel addLot(LotRequestModel lotRequestModel);
     LotResponseModel updateLot(LotRequestModel lotRequestModel, String lotId);
