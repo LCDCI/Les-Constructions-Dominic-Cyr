@@ -1,5 +1,10 @@
-/* eslint-disable no-empty */
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { FiEdit2 } from 'react-icons/fi';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -409,7 +414,7 @@ const ProjectSchedulePage = () => {
             : null;
         })
         .filter(Boolean),
-      [lots]
+    [lots]
   );
 
   const getScheduleIdentifier = entity =>
@@ -504,15 +509,17 @@ const ProjectSchedulePage = () => {
           });
         } catch (tokenErr) {}
       }
-      const response = await fetchLots(token);
+
+      const response = await fetchLots({ projectIdentifier: projectId, token });
       setLots(Array.isArray(response) ? response : []);
       setLotsError(null);
     } catch (err) {
+      console.error('Lots loading error:', err);
       setLotsError('Unable to load lots.');
     } finally {
       setLotsLoading(false);
     }
-  }, [isAuthenticated, getAccessTokenSilently]);
+  }, [isAuthenticated, getAccessTokenSilently, projectId]);
 
   useEffect(() => {
     loadLots();
@@ -1482,7 +1489,7 @@ const ProjectSchedulePage = () => {
             onSelectEvent={onEventClick}
             eventPropGetter={eventStyleGetter}
             components={{ toolbar: CustomToolbar }}
-            style={{ height: '70vh' }}
+            style={{ minHeight: '70vh', height: '100%' }}
           />
         </div>
 
@@ -1616,7 +1623,9 @@ const ProjectSchedulePage = () => {
         onClose={() => setIsModalOpen(false)}
         onTaskNavigate={(path, navState) => navigate(path, navState)}
         returnPath={location.pathname}
-        onEditSchedule={role === ROLES.CONTRACTOR ? undefined : openEditScheduleModal}
+        onEditSchedule={
+          role === ROLES.CONTRACTOR ? undefined : openEditScheduleModal
+        }
         formatDisplayRange={formatDisplayRange}
       />
     </div>

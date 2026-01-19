@@ -85,7 +85,7 @@
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
 }
 
 .calendar-section {
@@ -93,6 +93,14 @@
   border-radius: var(--border-radius, 8px);
   box-shadow: var(--box-shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
   padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 70vh;
+}
+
+.calendar-section .rbc-calendar {
+  flex: 1;
+  min-height: 0;
 }
 
 .schedule-list {
