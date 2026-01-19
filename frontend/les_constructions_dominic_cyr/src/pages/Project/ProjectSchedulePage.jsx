@@ -643,7 +643,10 @@ const ProjectSchedulePage = () => {
 
   useEffect(() => {
     const state = location.state;
-    if (!state?.reopenScheduleModal || !state?.scheduleEventId) return;
+    const wantsEdit = state?.openEditSchedule;
+    const wantsDetail = state?.reopenScheduleModal;
+    if (!state || (!wantsEdit && !wantsDetail) || !state?.scheduleEventId)
+      return;
     if (!events || !events.length) return;
 
     const eventToOpen = events.find(ev => {
@@ -653,12 +656,17 @@ const ProjectSchedulePage = () => {
     });
 
     if (eventToOpen) {
-      setSelectedEvent(eventToOpen);
-      setIsModalOpen(true);
+      if (wantsEdit) {
+        openEditScheduleModal(eventToOpen);
+      } else if (wantsDetail) {
+        setSelectedEvent(eventToOpen);
+        setIsModalOpen(true);
+      }
     }
 
     // eslint-disable-next-line no-unused-vars
-    const { reopenScheduleModal, scheduleEventId, ...rest } = state;
+    const { reopenScheduleModal, scheduleEventId, openEditSchedule, ...rest } =
+      state;
     navigate(location.pathname, { replace: true, state: rest });
   }, [location.state, events, navigate, location.pathname]);
 
