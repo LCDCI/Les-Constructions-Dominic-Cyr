@@ -92,7 +92,7 @@ const ScheduleFormModal = ({
             </label>
           </div>
 
-          <div className="form-row two-col">
+          <div className="form-row">
             <label>
               <span>Lot / Phase</span>
               <select
@@ -113,7 +113,9 @@ const ScheduleFormModal = ({
                 <div className="form-error subtle">{lotsError}</div>
               )}
             </label>
+          </div>
 
+          <div className="form-row two-col">
             <label>
               <span>Start date</span>
               <input
@@ -125,9 +127,7 @@ const ScheduleFormModal = ({
                 required
               />
             </label>
-          </div>
 
-          <div className="form-row two-col">
             <label>
               <span>End date</span>
               <input
