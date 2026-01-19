@@ -119,7 +119,7 @@ export default function Home() {
         <div className="section-text-wrapper" data-animate>
           <div className="section-header">
             <h2 className="section-title">
-              <em>Think</em> {t('think.title', 'intelligent, practical and comfortable spaces')}
+               {t('think.title', 'intelligent, practical and comfortable spaces')}
             </h2>
             <p className="section-subtitle">
               {t('think.subtitle', 'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.')}
@@ -144,7 +144,7 @@ export default function Home() {
         <div className="section-text-wrapper" data-animate>
           <div className="section-header">
             <h2 className="section-title">
-              <em>Build</em> {t('build.title', 'a strong relationship and quality partnership')}
+              {t('build.title', 'a strong relationship and quality partnership')}
             </h2>
             <p className="section-subtitle">
               {t('build.subtitle', 'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.')}
@@ -169,7 +169,7 @@ export default function Home() {
         <div className="section-text-wrapper" data-animate>
           <div className="section-header">
             <h2 className="section-title">
-              <em>Live</em> {t('live.title', 'in a space that reflects your values')}
+               {t('live.title', 'in a space that reflects your values')}
             </h2>
             <p className="section-subtitle">
               {t('live.subtitle', 'Your home is one of the most important investments of your life. Choose reliability and lasting quality.')}
