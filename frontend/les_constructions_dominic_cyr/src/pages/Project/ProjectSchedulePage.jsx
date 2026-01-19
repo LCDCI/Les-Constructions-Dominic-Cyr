@@ -1,5 +1,10 @@
-/* eslint-disable no-empty */
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { FiEdit2 } from 'react-icons/fi';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -25,6 +30,8 @@ import ScheduleDetailModal from '../../components/Modals/ScheduleDetailModal';
 import ScheduleFormModal from '../../components/Modals/ScheduleFormModal';
 import EditScheduleModal from '../../components/Modals/EditScheduleModal';
 import TaskModal from '../../components/Modals/TaskModal';
+import { useBackendUser } from '../../hooks/useBackendUser';
+import { ROLES } from '../../utils/permissions';
 import '../../styles/Project/ProjectSchedule.css';
 
 const locales = {
@@ -121,6 +128,7 @@ const ProjectSchedulePage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { role, loading: roleLoading } = useBackendUser();
 
   const [events, setEvents] = useState([]);
   const [schedules, setSchedules] = useState([]);
@@ -488,30 +496,34 @@ const ProjectSchedulePage = () => {
     }
   }, [projectId, isLoading, isAuthenticated, getAccessTokenSilently]);
 
-  useEffect(() => {
-    const loadLots = async () => {
-      setLotsLoading(true);
-      try {
-        let token = null;
-        if (isAuthenticated) {
+  const loadLots = useCallback(async () => {
+    setLotsLoading(true);
+    try {
+      let token = null;
+      if (isAuthenticated) {
+        try {
           token = await getAccessTokenSilently({
             authorizationParams: {
               audience: import.meta.env.VITE_AUTH0_AUDIENCE,
             },
           });
-        }
-        const response = await fetchLots(token);
-        setLots(Array.isArray(response) ? response : []);
-        setLotsError(null);
-      } catch (err) {
-        setLotsError('Unable to load lots.');
-      } finally {
-        setLotsLoading(false);
+        } catch (tokenErr) {}
       }
-    };
 
+      const response = await fetchLots({ projectIdentifier: projectId, token });
+      setLots(Array.isArray(response) ? response : []);
+      setLotsError(null);
+    } catch (err) {
+      console.error('Lots loading error:', err);
+      setLotsError('Unable to load lots.');
+    } finally {
+      setLotsLoading(false);
+    }
+  }, [isAuthenticated, getAccessTokenSilently, projectId]);
+
+  useEffect(() => {
     loadLots();
-  }, [isAuthenticated, getAccessTokenSilently]);
+  }, [loadLots]);
 
   const onEventClick = async event => {
     const scheduleIdentifier = getScheduleIdentifier(event);
@@ -615,6 +627,7 @@ const ProjectSchedulePage = () => {
   };
 
   const onSlotSelect = slotInfo => {
+    if (role === ROLES.CONTRACTOR) return;
     setSelectedEvent(null);
     setIsModalOpen(false);
     setIsCreateModalOpen(true);
@@ -643,7 +656,10 @@ const ProjectSchedulePage = () => {
 
   useEffect(() => {
     const state = location.state;
-    if (!state?.reopenScheduleModal || !state?.scheduleEventId) return;
+    const wantsEdit = state?.openEditSchedule;
+    const wantsDetail = state?.reopenScheduleModal;
+    if (!state || (!wantsEdit && !wantsDetail) || !state?.scheduleEventId)
+      return;
     if (!events || !events.length) return;
 
     const eventToOpen = events.find(ev => {
@@ -653,12 +669,17 @@ const ProjectSchedulePage = () => {
     });
 
     if (eventToOpen) {
-      setSelectedEvent(eventToOpen);
-      setIsModalOpen(true);
+      if (wantsEdit) {
+        openEditScheduleModal(eventToOpen);
+      } else if (wantsDetail) {
+        setSelectedEvent(eventToOpen);
+        setIsModalOpen(true);
+      }
     }
 
     // eslint-disable-next-line no-unused-vars
-    const { reopenScheduleModal, scheduleEventId, ...rest } = state;
+    const { reopenScheduleModal, scheduleEventId, openEditSchedule, ...rest } =
+      state;
     navigate(location.pathname, { replace: true, state: rest });
   }, [location.state, events, navigate, location.pathname]);
 
@@ -1427,21 +1448,26 @@ const ProjectSchedulePage = () => {
           <div className="schedule-subtitle">{projectName}</div>
         </div>
         <div className="schedule-actions">
-          <button
-            type="button"
-            className="primary"
-            onClick={() => {
-              setIsCreateModalOpen(true);
-              setTaskDrafts([
-                buildEmptyTask(
-                  newSchedule.scheduleStartDate,
-                  newSchedule.scheduleEndDate
-                ),
-              ]);
-            }}
-          >
-            + New Work
-          </button>
+          {role !== ROLES.CONTRACTOR && (
+            <button
+              type="button"
+              className="primary"
+              onClick={async () => {
+                if (!lots.length && !lotsLoading) {
+                  await loadLots();
+                }
+                setIsCreateModalOpen(true);
+                setTaskDrafts([
+                  buildEmptyTask(
+                    newSchedule.scheduleStartDate,
+                    newSchedule.scheduleEndDate
+                  ),
+                ]);
+              }}
+            >
+              + New Work
+            </button>
+          )}
         </div>
       </div>
 
@@ -1463,7 +1489,7 @@ const ProjectSchedulePage = () => {
             onSelectEvent={onEventClick}
             eventPropGetter={eventStyleGetter}
             components={{ toolbar: CustomToolbar }}
-            style={{ height: '70vh' }}
+            style={{ minHeight: '70vh', height: '100%' }}
           />
         </div>
 
@@ -1516,18 +1542,20 @@ const ProjectSchedulePage = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="card-actions">
-                    <button
-                      type="button"
-                      className="ghost"
-                      onClick={e => {
-                        e.stopPropagation();
-                        openEditScheduleModal(schedule);
-                      }}
-                    >
-                      <FiEdit2 size={16} /> Edit
-                    </button>
-                  </div>
+                  {role !== ROLES.CONTRACTOR && (
+                    <div className="card-actions">
+                      <button
+                        type="button"
+                        className="ghost"
+                        onClick={e => {
+                          e.stopPropagation();
+                          openEditScheduleModal(schedule);
+                        }}
+                      >
+                        <FiEdit2 size={16} /> Edit
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -1595,7 +1623,9 @@ const ProjectSchedulePage = () => {
         onClose={() => setIsModalOpen(false)}
         onTaskNavigate={(path, navState) => navigate(path, navState)}
         returnPath={location.pathname}
-        onEditSchedule={openEditScheduleModal}
+        onEditSchedule={
+          role === ROLES.CONTRACTOR ? undefined : openEditScheduleModal
+        }
         formatDisplayRange={formatDisplayRange}
       />
     </div>

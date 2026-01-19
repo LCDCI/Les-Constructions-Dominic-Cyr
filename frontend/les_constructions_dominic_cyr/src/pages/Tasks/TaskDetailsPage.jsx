@@ -2,21 +2,37 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { taskApi } from '../../features/schedules/api/taskApi';
+import { useBackendUser } from '../../hooks/useBackendUser';
+import { ROLES } from '../../utils/permissions';
+import EditTaskModal from '../../components/Modals/EditTaskModal';
 import '../../styles/Project/ProjectSchedule.css';
+
+const TASK_STATUSES = ['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'ON_HOLD'];
+const TASK_PRIORITIES = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'];
 
 const TaskDetailsPage = () => {
   const { taskId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { role, loading: roleLoading } = useBackendUser();
+  const stateTask = location.state?.task;
 
   const [task, setTask] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
+  const [taskDraft, setTaskDraft] = useState(null);
+  const [editError, setEditError] = useState('');
+  const [isSavingEdit, setIsSavingEdit] = useState(false);
 
   useEffect(() => {
     const loadTask = async () => {
       try {
+        if (stateTask) {
+          setTask(stateTask);
+        }
+
         setLoading(true);
         setError('');
 
@@ -40,14 +56,18 @@ const TaskDetailsPage = () => {
         setTask(normalized);
       } catch (err) {
         console.error('Error loading task:', err);
-        const respMessage = err?.response?.data?.message;
-        const respError = err?.response?.data?.error;
-        setError(
-          respMessage ||
-            respError ||
-            err.message ||
-            'Failed to load task details.'
-        );
+        const status = err?.response?.status;
+
+        if (status === 403 && stateTask) {
+          setError('');
+          setTask(prev => prev || stateTask);
+        } else {
+          setError(
+            err?.response?.data?.message ||
+              err.message ||
+              'Failed to load task details.'
+          );
+        }
       } finally {
         setLoading(false);
       }
@@ -56,7 +76,7 @@ const TaskDetailsPage = () => {
     if (taskId) {
       loadTask();
     }
-  }, [taskId, getAccessTokenSilently, isAuthenticated]);
+  }, [taskId, getAccessTokenSilently, isAuthenticated, stateTask]);
 
   if (loading) {
     return (
@@ -79,9 +99,7 @@ const TaskDetailsPage = () => {
     );
   }
 
-  if (!task) {
-    return null;
-  }
+  if (!task) return null;
 
   const title = task.taskTitle || task.taskDescription || `Task ${taskId}`;
   const status = task.taskStatus || 'Not set';
@@ -89,9 +107,6 @@ const TaskDetailsPage = () => {
 
   const toDateOnly = value => {
     if (!value) return null;
-    if (typeof value === 'string' && value.length >= 10) {
-      return value.slice(0, 10);
-    }
     const parsed = new Date(value);
     return Number.isNaN(parsed.getTime())
       ? String(value)
@@ -104,23 +119,89 @@ const TaskDetailsPage = () => {
 
   const numericOrDash = value => (value === 0 || value ? value : '—');
 
-  const goBack = () => {
-    const fromSchedule = location.state?.fromScheduleModal;
-    const returnTo = location.state?.returnTo;
-    const scheduleEventId = location.state?.scheduleEventId;
+  const scheduleWindow = {
+    start: startOnly || task.scheduleStartDate || undefined,
+    end: endOnly || task.scheduleEndDate || undefined,
+  };
 
-    if (fromSchedule && returnTo && scheduleEventId) {
-      navigate(returnTo, {
-        state: {
-          reopenScheduleModal: true,
-          scheduleEventId,
-        },
-      });
+  const canEditTask =
+    isAuthenticated &&
+    ((role && (role === ROLES.OWNER || role === ROLES.CONTRACTOR)) ||
+      (!role && !roleLoading));
+
+  const openEditTaskModal = () => {
+    setTaskDraft({
+      taskTitle: task.taskTitle || '',
+      taskStatus: task.taskStatus || TASK_STATUSES[0],
+      taskPriority: task.taskPriority || TASK_PRIORITIES[2],
+      periodStart: startOnly || '',
+      periodEnd: endOnly || startOnly || '',
+      assignedToUserId: task.assignedToUserId || '',
+      taskDescription: task.taskDescription || '',
+      estimatedHours: task.estimatedHours ?? '',
+      hoursSpent: task.hoursSpent ?? '',
+      taskProgress: task.taskProgress ?? '',
+    });
+    setEditError('');
+    setIsEditTaskOpen(true);
+  };
+
+  const handleEditTaskSave = async () => {
+    if (!taskDraft) return;
+    setEditError('');
+
+    if (!taskDraft.taskTitle?.trim() && !taskDraft.taskDescription?.trim()) {
+      setEditError('Please provide a title or description.');
       return;
     }
 
-    navigate(-1);
+    setIsSavingEdit(true);
+
+    try {
+      let token = null;
+      if (isAuthenticated) {
+        token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          },
+        });
+      }
+
+      const toNumberOrNull = value =>
+        value === '' || value === undefined ? null : Number(value);
+
+      const payload = {
+        ...taskDraft,
+        estimatedHours: toNumberOrNull(taskDraft.estimatedHours),
+        hoursSpent: toNumberOrNull(taskDraft.hoursSpent),
+        taskProgress: toNumberOrNull(taskDraft.taskProgress),
+        scheduleId: task.scheduleId || task.scheduleIdentifier || null,
+      };
+
+      const updated = await taskApi.updateTask(taskId, payload, token);
+      const normalized = Array.isArray(updated) ? updated[0] : updated;
+
+      setTask(normalized);
+      setTaskDraft(null);
+      setIsEditTaskOpen(false);
+    } catch (err) {
+      const status = err?.response?.status;
+      let msg =
+        err?.response?.data?.message || err.message || 'Failed to update task.';
+
+      if (status === 403) {
+        msg =
+          'You do not have permission to update this task. Please ensure you are the assigned contractor or an owner.';
+      }
+
+      setEditError(msg);
+      console.error('Task update error:', err);
+    } finally {
+      setIsSavingEdit(false);
+    }
   };
+
+  const goBack = () => navigate(-1);
 
   return (
     <div className="project-schedule-page task-details-page">
@@ -131,6 +212,11 @@ const TaskDetailsPage = () => {
           <div className="task-subtle">ID: {taskId}</div>
         </div>
         <div className="task-header-actions">
+          {canEditTask && (
+            <button className="primary" onClick={openEditTaskModal}>
+              Edit Task
+            </button>
+          )}
           <button className="back-button-small" onClick={goBack}>
             ← Back
           </button>
@@ -157,11 +243,11 @@ const TaskDetailsPage = () => {
             </div>
           </div>
           <div className="task-meta-block">
-            <span className="task-label">Task Status</span>
+            <span className="task-label">Status</span>
             <div className="task-value">{status}</div>
           </div>
           <div className="task-meta-block">
-            <span className="task-label">Task Priority</span>
+            <span className="task-label">Priority</span>
             <div className="task-value">{priority}</div>
           </div>
         </div>
@@ -177,26 +263,35 @@ const TaskDetailsPage = () => {
           <h3>Time + effort</h3>
           <div className="task-stats">
             <div className="task-stat">
-              <span className="task-label">Estimated hours</span>
+              <span className="task-label">Estimated</span>
               <div className="task-value">
                 {numericOrDash(task.estimatedHours)}
               </div>
             </div>
             <div className="task-stat">
-              <span className="task-label">Hours spent</span>
+              <span className="task-label">Spent</span>
               <div className="task-value">{numericOrDash(task.hoursSpent)}</div>
             </div>
             <div className="task-stat">
               <span className="task-label">Progress</span>
-              <div className="task-value">
-                {task.taskProgress === 0 || task.taskProgress
-                  ? `${task.taskProgress}%`
-                  : '—'}
-              </div>
+              <div className="task-value">{task.taskProgress ?? 0}%</div>
             </div>
           </div>
         </div>
       </div>
+
+      <EditTaskModal
+        isOpen={isEditTaskOpen}
+        task={taskDraft}
+        statuses={TASK_STATUSES}
+        priorities={TASK_PRIORITIES}
+        errorMessage={editError}
+        isSaving={isSavingEdit}
+        onClose={() => setIsEditTaskOpen(false)}
+        onChange={setTaskDraft}
+        onSave={handleEditTaskSave}
+        scheduleWindow={scheduleWindow}
+      />
     </div>
   );
 };

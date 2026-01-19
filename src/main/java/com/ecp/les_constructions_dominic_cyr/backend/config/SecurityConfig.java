@@ -74,6 +74,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_OWNER")
 
+                        // Task updates (allow contractor and owner) — placed before the broader owners/** rule
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+
                         // Lot Management (Original permissions, just moved below public GET)
                         .requestMatchers(HttpMethod.POST, "/api/v1/lots").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
@@ -81,6 +87,9 @@ public class SecurityConfig {
 
                         // --- 4. OTHER ROLES (From your original list) ---
                         .requestMatchers("/api/v1/projects/**").hasAnyAuthority("ROLE_CONTRACTOR", "ROLE_SALESPERSON", "ROLE_OWNER", "ROLE_CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers("/api/v1/contractors/**").hasAuthority("ROLE_CONTRACTOR")
                         .requestMatchers("/api/v1/salesperson/**").hasAuthority("ROLE_SALESPERSON")
                         .requestMatchers("/api/v1/customers/**").hasAuthority("ROLE_CUSTOMER")

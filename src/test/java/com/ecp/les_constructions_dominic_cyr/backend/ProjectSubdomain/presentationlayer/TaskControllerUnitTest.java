@@ -337,6 +337,33 @@ class TaskControllerUnitTest {
         verify(taskService).getTaskByIdentifier(taskId);
     }
 
+    @Test
+    void updateContractorTask_shouldReturnOkWhenSuccessful() {
+        String taskId = "TASK-001";
+        when(taskService.updateTask(taskId, taskRequestDTO)).thenReturn(taskResponseDTO1);
+
+        ResponseEntity<?> response = taskController.updateContractorTask(taskId, taskRequestDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(taskResponseDTO1, response.getBody());
+
+        verify(taskService).updateTask(taskId, taskRequestDTO);
+    }
+
+    @Test
+    void updateContractorTask_shouldReturnBadRequestWhenInvalidInput() {
+        String taskId = "TASK-001";
+        String errorMessage = "Invalid input for contractor update";
+        when(taskService.updateTask(taskId, taskRequestDTO)).thenThrow(new InvalidInputException(errorMessage));
+
+        ResponseEntity<?> response = taskController.updateContractorTask(taskId, taskRequestDTO);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(taskService).updateTask(taskId, taskRequestDTO);
+    }
+
     // Schedule Task Endpoints Tests
     @Test
     void getTasksForSchedule_shouldReturnTasksForScheduleWithOkStatus() {

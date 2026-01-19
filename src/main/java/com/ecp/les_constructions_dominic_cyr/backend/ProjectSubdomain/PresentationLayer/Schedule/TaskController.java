@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,6 +61,27 @@ public class TaskController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (InvalidInputException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PutMapping("/contractors/tasks/{taskId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<?> updateContractorTask(@PathVariable String taskId,
+                                                  @RequestBody TaskRequestDTO taskRequestDTO) {
+        log.info("Contractor/Owner attempting to update task: {}", taskId);
+        try {
+            // We reuse the same service logic as the owner update
+            TaskDetailResponseDTO task = taskService.updateTask(taskId, taskRequestDTO);
+            return ResponseEntity.ok(task);
+        } catch (NotFoundException ex) {
+            log.error("Task not found for update: {}", taskId);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidInputException ex) {
+            log.error("Invalid input for task update: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            log.error("Unexpected error updating task: {}", ex.getMessage());
+            return new ResponseEntity<>("An internal error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
