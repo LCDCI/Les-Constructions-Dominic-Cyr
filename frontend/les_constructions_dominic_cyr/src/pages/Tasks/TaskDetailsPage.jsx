@@ -121,8 +121,9 @@ const TaskDetailsPage = () => {
   };
 
   const canEditTask =
-    isAuthenticated && !roleLoading &&
-    (role === ROLES.OWNER || role === ROLES.CONTRACTOR);
+    isAuthenticated &&
+    ((role && (role === ROLES.OWNER || role === ROLES.CONTRACTOR)) ||
+      (!role && !roleLoading));
 
   const openEditTaskModal = () => {
     setTaskDraft({
