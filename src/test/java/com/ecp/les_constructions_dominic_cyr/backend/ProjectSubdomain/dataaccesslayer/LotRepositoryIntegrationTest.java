@@ -31,19 +31,8 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenLotsExist_thenReturnAll")
     public void whenLotsExist_thenReturnAll() {
-        Lot a1 = new Lot();
-        a1.setLotIdentifier(new LotIdentifier("id-1"));
-        a1.setLocation("L1");
-        a1.setPrice(100f);
-        a1.setDimensions("10x10");
-        a1.setLotStatus(LotStatus.AVAILABLE);
-
-        Lot a2 = new Lot();
-        a2.setLotIdentifier(new LotIdentifier("id-2"));
-        a2.setLocation("L2");
-        a2.setPrice(200f);
-        a2.setDimensions("20x20");
-        a2.setLotStatus(LotStatus.SOLD);
+        Lot a1 = new Lot(new LotIdentifier("id-1"), "Lot-A1", "L1", 100f, "1000", "92.9", LotStatus.AVAILABLE);
+        Lot a2 = new Lot(new LotIdentifier("id-2"), "Lot-A2", "L2", 200f, "2000", "185.8", LotStatus.SOLD);
 
         lotRepository.save(a1);
         lotRepository.save(a2);
@@ -59,12 +48,7 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenFindByLotId_thenReturnEntity")
     public void whenFindByLotId_thenReturnEntity() {
-        Lot toSave = new Lot();
-        toSave.setLotIdentifier(new LotIdentifier("test-lot-1"));
-        toSave.setLocation("LocX");
-        toSave.setPrice(123f);
-        toSave.setDimensions("12x12");
-        toSave.setLotStatus(LotStatus.AVAILABLE);
+        Lot toSave = new Lot(new LotIdentifier("test-lot-1"), "Lot-TEST-1", "LocX", 123f, "1230", "114.3", LotStatus.AVAILABLE);
         lotRepository.save(toSave);
 
         Lot found = lotRepository.findByLotIdentifier_LotId("test-lot-1");
@@ -83,50 +67,37 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenValidEntityIsSaved_thenPersist")
     public void whenValidEntityIsSaved_thenPersist() {
-        Lot entity = new Lot();
-        entity.setLotIdentifier(new LotIdentifier("save-1"));
-        entity.setLocation("Saved");
-        entity.setPrice(321f);
-        entity.setDimensions("3x3");
-        entity.setLotStatus(LotStatus.AVAILABLE);
+        Lot entity = new Lot(new LotIdentifier("save-1"), "Lot-SAVE-1", "Saved", 321f, "3210", "298.3", LotStatus.AVAILABLE);
 
         Lot saved = lotRepository.save(entity);
 
         assertNotNull(saved);
         assertNotNull(saved.getId());
-        assertEquals("Saved", saved.getLocation());
+        assertEquals("Saved", saved.getCivicAddress());
         assertEquals("save-1", saved.getLotIdentifier().getLotId());
     }
 
     @Test
     @DisplayName("whenEntityUpdated_thenChangesPersist")
     public void whenEntityUpdated_thenChangesPersist() {
-        Lot entity = new Lot();
-        entity.setLotIdentifier(new LotIdentifier("upd-1"));
-        entity.setLocation("Old");
-        entity.setPrice(10f);
-        entity.setDimensions("1x1");
-        entity.setLotStatus(LotStatus.AVAILABLE);
+        Lot entity = new Lot(new LotIdentifier("upd-1"), "Lot-UPD-1", "Old", 10f, "100", "9.3", LotStatus.AVAILABLE);
 
         Lot saved = lotRepository.save(entity);
 
-        saved.setLocation("New");
-        saved.setDimensions("2x2");
+        saved.setCivicAddress("New");
+        saved.setDimensionsSquareFeet("200");
+        saved.setDimensionsSquareMeters("18.6");
         Lot updated = lotRepository.save(saved);
 
-        assertEquals("New", updated.getLocation());
-        assertEquals("2x2", updated.getDimensions());
+        assertEquals("New", updated.getCivicAddress());
+        assertEquals("200", updated.getDimensionsSquareFeet());
+        assertEquals("18.6", updated.getDimensionsSquareMeters());
     }
 
     @Test
     @DisplayName("whenInsertNonExistent_thenInsertNewRecord")
     public void whenInsertNonExistent_thenInsertNewRecord() {
-        Lot ghost = new Lot();
-        ghost.setLotIdentifier(new LotIdentifier("ghost-1"));
-        ghost.setLocation("Ghost");
-        ghost.setPrice(5f);
-        ghost.setDimensions("0x0");
-        ghost.setLotStatus(LotStatus.AVAILABLE);
+        Lot ghost = new Lot(new LotIdentifier("ghost-1"), "Lot-GHOST-1", "Ghost", 5f, "50", "4.6", LotStatus.AVAILABLE);
 
         long before = lotRepository.count();
         Lot inserted = lotRepository.save(ghost);
@@ -139,12 +110,7 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenDeleteEntity_thenReturnNullOnFind")
     public void whenDeleteEntity_thenReturnNullOnFind() {
-        Lot entity = new Lot();
-        entity.setLotIdentifier(new LotIdentifier("del-1"));
-        entity.setLocation("ToDelete");
-        entity.setPrice(11f);
-        entity.setDimensions("11x11");
-        entity.setLotStatus(LotStatus.AVAILABLE);
+        Lot entity = new Lot(new LotIdentifier("del-1"), "Lot-DEL-1", "ToDelete", 11f, "110", "10.2", LotStatus.AVAILABLE);
 
         lotRepository.save(entity);
 
@@ -158,12 +124,7 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenDeleteNonExistent_thenNoExceptionThrown")
     public void whenDeleteNonExistent_thenNoExceptionThrown() {
-        Lot ghost = new Lot();
-        ghost.setLotIdentifier(new LotIdentifier("ghost-del"));
-        ghost.setLocation("G");
-        ghost.setPrice(1f);
-        ghost.setDimensions("1x1");
-        ghost.setLotStatus(LotStatus.AVAILABLE);
+        Lot ghost = new Lot(new LotIdentifier("ghost-del"), "Lot-GHOST-DEL", "G", 1f, "10", "0.9", LotStatus.AVAILABLE);
 
         assertDoesNotThrow(() -> lotRepository.delete(ghost));
     }
@@ -171,15 +132,10 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenExistsByLocation_thenReturnTrueFalse")
     public void whenExistsByLocation_thenReturnTrueFalse() {
-        Lot e = new Lot();
-        e.setLotIdentifier(new LotIdentifier("ex-1"));
-        e.setLocation("UniqueLoc");
-        e.setPrice(99f);
-        e.setDimensions("9x9");
-        e.setLotStatus(LotStatus.AVAILABLE);
+        Lot e = new Lot(new LotIdentifier("ex-1"), "Lot-EX-1", "UniqueLoc", 99f, "990", "92.0", LotStatus.AVAILABLE);
         lotRepository.save(e);
 
         List<Lot> all = lotRepository.findAll();
-        assertTrue(all.stream().anyMatch(l -> "UniqueLoc".equals(l.getLocation())));
+        assertTrue(all.stream().anyMatch(l -> "UniqueLoc".equals(l.getCivicAddress())));
     }
 }
