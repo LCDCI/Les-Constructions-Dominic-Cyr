@@ -22,6 +22,7 @@ const EditScheduleModal = ({
   onToggleTaskEdit,
   taskStatuses,
   taskPriorities,
+  contractors,
   onDeleteSchedule = null,
 }) => {
   const originalOverflow = useRef(null);
@@ -299,16 +300,24 @@ const EditScheduleModal = ({
                   </label>
 
                   <label>
-                    <span>Assignee (user UUID)</span>
-                    <input
-                      type="text"
+                    <span>Assignee</span>
+                    <select
                       value={task.assignedToUserId}
                       disabled={!task.isEditable}
                       onChange={e =>
                         onTaskChange(idx, 'assignedToUserId', e.target.value)
                       }
-                      placeholder="Optional"
-                    />
+                    >
+                      <option value="">Unassigned</option>
+                      {contractors?.map(contractor => (
+                        <option
+                          key={contractor.userId || contractor.userIdentifier}
+                          value={contractor.userId || contractor.userIdentifier}
+                        >
+                          {contractor.firstName} {contractor.lastName}
+                        </option>
+                      ))}
+                    </select>
                   </label>
                 </div>
 
@@ -356,21 +365,7 @@ const EditScheduleModal = ({
                     />
                   </label>
 
-                  <label>
-                    <span>Progress (%)</span>
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      step="1"
-                      value={task.taskProgress}
-                      disabled={!task.isEditable}
-                      onChange={e =>
-                        onTaskChange(idx, 'taskProgress', e.target.value)
-                      }
-                      placeholder="Optional"
-                    />
-                  </label>
+                  {/* Progress is computed from estimatedHours/hoursSpent; not editable in forms */}
                 </div>
               </div>
             ))}
@@ -459,5 +454,13 @@ EditScheduleModal.propTypes = {
   onToggleTaskEdit: PropTypes.func.isRequired,
   taskStatuses: PropTypes.arrayOf(PropTypes.string).isRequired,
   taskPriorities: PropTypes.arrayOf(PropTypes.string).isRequired,
+  contractors: PropTypes.arrayOf(
+    PropTypes.shape({
+      userId: PropTypes.string,
+      userIdentifier: PropTypes.string,
+      firstName: PropTypes.string.isRequired,
+      lastName: PropTypes.string.isRequired,
+    })
+  ),
   onDeleteSchedule: PropTypes.func,
 };

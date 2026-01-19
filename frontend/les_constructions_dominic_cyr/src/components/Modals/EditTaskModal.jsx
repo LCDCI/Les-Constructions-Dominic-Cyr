@@ -6,6 +6,7 @@ const EditTaskModal = ({
   task,
   statuses,
   priorities,
+  contractors,
   errorMessage,
   isSaving,
   onClose,
@@ -149,13 +150,21 @@ const EditTaskModal = ({
             </label>
 
             <label>
-              <span>Assignee (user UUID)</span>
-              <input
-                type="text"
+              <span>Assignee</span>
+              <select
                 value={task.assignedToUserId}
                 onChange={e => handleField('assignedToUserId', e.target.value)}
-                placeholder="Optional"
-              />
+              >
+                <option value="">Unassigned</option>
+                {contractors?.map(contractor => (
+                  <option
+                    key={contractor.userId || contractor.userIdentifier}
+                    value={contractor.userId || contractor.userIdentifier}
+                  >
+                    {contractor.firstName} {contractor.lastName}
+                  </option>
+                ))}
+              </select>
             </label>
           </div>
 
@@ -194,18 +203,7 @@ const EditTaskModal = ({
               />
             </label>
 
-            <label>
-              <span>Progress (%)</span>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                step="1"
-                value={task.taskProgress}
-                onChange={e => handleField('taskProgress', e.target.value)}
-                placeholder="Optional"
-              />
-            </label>
+            {/* Progress is computed from estimatedHours/hoursSpent; not editable in forms */}
           </div>
         </div>
 
