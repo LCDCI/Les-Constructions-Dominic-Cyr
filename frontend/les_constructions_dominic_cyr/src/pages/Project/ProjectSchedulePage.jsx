@@ -26,6 +26,8 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { projectScheduleApi } from '../../features/schedules/api/projectScheduleApi';
 import { taskApi } from '../../features/schedules/api/taskApi';
 import { fetchLots } from '../../features/lots/api/lots';
+import { projectApi } from '../../features/projects/api/projectApi';
+import { fetchAllContractors } from '../../features/users/api/usersApi';
 import ScheduleDetailModal from '../../components/Modals/ScheduleDetailModal';
 import ScheduleFormModal from '../../components/Modals/ScheduleFormModal';
 import EditScheduleModal from '../../components/Modals/EditScheduleModal';
@@ -68,7 +70,6 @@ const buildEmptyTask = (start, end, isEditable = false) => ({
   taskDescription: '',
   estimatedHours: '',
   hoursSpent: '',
-  taskProgress: '',
   isEditable,
 });
 
@@ -119,9 +120,16 @@ const buildTaskFromExisting = (task, scheduleStart, scheduleEnd) => ({
   taskDescription: task?.taskDescription ?? task?.description ?? '',
   estimatedHours: task?.estimatedHours ?? '',
   hoursSpent: task?.hoursSpent ?? '',
-  taskProgress: task?.taskProgress ?? '',
   isEditable: false,
 });
+
+const computeTaskProgress = (estimated, hours) => {
+  const e =
+    estimated === '' || estimated === undefined ? null : Number(estimated);
+  const h = hours === '' || hours === undefined ? null : Number(hours);
+  if (e === null || e === 0 || h === null) return null;
+  return Math.round((h / e) * 100);
+};
 
 const ProjectSchedulePage = () => {
   const { projectId } = useParams();
@@ -154,6 +162,8 @@ const ProjectSchedulePage = () => {
   const [taskDrafts, setTaskDrafts] = useState([buildEmptyTask('', '')]);
   const [editTaskDrafts, setEditTaskDrafts] = useState([]);
   const [tasksToDelete, setTasksToDelete] = useState([]);
+
+  const [projectContractors, setProjectContractors] = useState([]);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
@@ -394,11 +404,14 @@ const ProjectSchedulePage = () => {
     lot?.lotIdentifier?.lotId || lot?.lotId || (lot?.id ? String(lot.id) : '');
 
   const formatLotLabel = lot => {
-    const lotId = getLotId(lot);
-    if (lot?.location) {
-      return `${lot.location} (${lotId})`;
-    }
-    return lotId || 'Unknown lot';
+    // Prefer human-friendly civic address when available
+    const civic = lot?.civicAddress;
+    if (civic) return civic;
+
+    // Fall back to location, lot number, or the internal id
+    if (lot?.location) return `${lot.location} (${getLotId(lot)})`;
+    if (lot?.lotNumber) return `Lot ${lot.lotNumber} (${getLotId(lot)})`;
+    return getLotId(lot) || 'Unknown lot';
   };
 
   const lotOptions = useMemo(
@@ -483,6 +496,28 @@ const ProjectSchedulePage = () => {
         setEvents(mappedEvents);
         setSchedules(scheduleWithIds);
         setProjectName(scheduleWithIds[0]?.projectName || 'Project');
+
+        // Fetch project data to get contractor IDs
+        try {
+          const projectData = await projectApi.getProjectById(projectId, token);
+          const contractorIds = projectData.contractorIds || [];
+
+          if (contractorIds.length > 0) {
+            const allContractors = await fetchAllContractors(token);
+            const projectContractorsList = allContractors.filter(contractor =>
+              contractorIds.includes(
+                contractor.userId || contractor.userIdentifier
+              )
+            );
+            setProjectContractors(projectContractorsList);
+          } else {
+            setProjectContractors([]);
+          }
+        } catch (projectErr) {
+          console.warn('Could not load project contractors:', projectErr);
+          setProjectContractors([]);
+        }
+
         setError(null);
       } catch (err) {
         setError('Failed to load project schedules. Please try again later.');
@@ -1040,10 +1075,7 @@ const ProjectSchedulePage = () => {
           task.hoursSpent === '' || task.hoursSpent === undefined
             ? null
             : Number(task.hoursSpent),
-        taskProgress:
-          task.taskProgress === '' || task.taskProgress === undefined
-            ? null
-            : Number(task.taskProgress),
+        taskProgress: computeTaskProgress(task.estimatedHours, task.hoursSpent),
         assignedToUserId: task.assignedToUserId || null,
         scheduleId: scheduleIdentifier,
         taskSequence: idx + 1,
@@ -1246,10 +1278,7 @@ const ProjectSchedulePage = () => {
           task.hoursSpent === '' || task.hoursSpent === undefined
             ? null
             : Number(task.hoursSpent),
-        taskProgress:
-          task.taskProgress === '' || task.taskProgress === undefined
-            ? null
-            : Number(task.taskProgress),
+        taskProgress: computeTaskProgress(task.estimatedHours, task.hoursSpent),
         assignedToUserId: task.assignedToUserId || null,
         scheduleId: scheduleIdentifier,
         taskSequence: idx + 1,
@@ -1599,6 +1628,7 @@ const ProjectSchedulePage = () => {
         onToggleTaskEdit={toggleEditTask}
         taskStatuses={TASK_STATUSES}
         taskPriorities={TASK_PRIORITIES}
+        contractors={projectContractors}
         onDeleteSchedule={handleDeleteSchedule}
       />
 
@@ -1608,6 +1638,7 @@ const ProjectSchedulePage = () => {
         tasks={taskDrafts}
         statuses={TASK_STATUSES}
         priorities={TASK_PRIORITIES}
+        contractors={projectContractors}
         errorMessage={taskFormError}
         isSaving={isSavingTasks}
         onClose={handleCloseTaskModal}
@@ -1623,6 +1654,7 @@ const ProjectSchedulePage = () => {
         onClose={() => setIsModalOpen(false)}
         onTaskNavigate={(path, navState) => navigate(path, navState)}
         returnPath={location.pathname}
+        projectId={projectId}
         onEditSchedule={
           role === ROLES.CONTRACTOR ? undefined : openEditScheduleModal
         }

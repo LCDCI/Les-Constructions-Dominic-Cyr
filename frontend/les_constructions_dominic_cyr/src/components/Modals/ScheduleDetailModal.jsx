@@ -8,6 +8,7 @@ const ScheduleDetailModal = ({
   onClose,
   onTaskNavigate,
   returnPath,
+  projectId,
   onEditSchedule,
   formatDisplayRange,
 }) => {
@@ -25,6 +26,7 @@ const ScheduleDetailModal = ({
         scheduleEventId,
         returnTo: returnPath,
         task,
+        projectId,
       },
     });
   };
