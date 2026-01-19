@@ -50,8 +50,12 @@ public class Schedule {
     @JoinColumn(name = "schedule_id", referencedColumnName = "schedule_identifier")
     private List<Task> tasks;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "project_id",                          // The FK column in 'lots' table
+            referencedColumnName = "project_identifier",   // The column in 'projects' table
+            nullable = false
+    )
     private Project project;
 
     public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate scheduleStartDate, @NotNull LocalDate scheduleEndDate, @NotNull String scheduleDescription, @NotNull String lotId) {

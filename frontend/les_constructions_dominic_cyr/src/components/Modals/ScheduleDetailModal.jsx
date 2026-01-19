@@ -14,7 +14,7 @@ const ScheduleDetailModal = ({
   const shouldRender = isOpen && event;
 
   const tasks = Array.isArray(event?.tasks) ? event.tasks : null;
-  const handleTaskClick = path => {
+  const handleTaskClick = (path, task) => {
     if (!path || !onTaskNavigate) return;
     const scheduleEventId =
       event?.id || event?.scheduleId || event?.scheduleIdentifier;
@@ -24,6 +24,7 @@ const ScheduleDetailModal = ({
         fromScheduleModal: true,
         scheduleEventId,
         returnTo: returnPath,
+        task,
       },
     });
   };
@@ -130,7 +131,7 @@ const ScheduleDetailModal = ({
                         type="button"
                         className="schedule-task-card"
                         onClick={() =>
-                          isClickable ? handleTaskClick(taskPath) : null
+                          isClickable ? handleTaskClick(taskPath, task) : null
                         }
                         disabled={!isClickable}
                         aria-disabled={!isClickable}
