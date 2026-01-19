@@ -202,7 +202,6 @@ export default function App() {
         <main style={{ padding: '16px' }}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/lots" element={<LotsPage />} />
             <Route
               path="/projects"
               element={
@@ -403,6 +402,11 @@ export default function App() {
             <Route
               path="/projects/:projectIdentifier/overview"
               element={<ProjectsOverviewPage />}
+            />
+            <Route path="*" element={<NotFound />} />
+            <Route
+              path="/projects/:projectIdentifier/lots"
+              element={<LotsPage />}
             />
             <Route path="*" element={<NotFound />} />
           </Routes>

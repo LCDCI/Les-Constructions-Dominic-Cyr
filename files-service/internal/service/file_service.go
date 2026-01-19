@@ -1,6 +1,8 @@
 package service
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"files-service/internal/domain"
 	"fmt"
@@ -83,15 +85,16 @@ func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) 
 	}
 
 	file := domain.File{
-		ID:          id,
+		ID:           id,
 		ProjectID:   input.ProjectID,
-		FileName:    input.FileName,
-		UploadedBy:  input.UploadedBy,
-		ContentType: input.ContentType,
-		Category:    input.Category,
-		Size:        int64(len(input.Data)),
-		ObjectKey:   objectKey,
-		CreatedAt:   time.Now(),
+		FileName:     input.FileName,
+		UploadedBy:   input.UploadedBy,
+		UploaderRole: input.UploaderRole,
+		ContentType:  input.ContentType,
+		Category:     input.Category,
+		Size:         int64(len(input.Data)),
+		ObjectKey:    objectKey,
+		CreatedAt:    time.Now(),
 	}
 
 	if err := s.repo.Save(ctx, &file); err != nil {
@@ -127,6 +130,47 @@ func (s *fileService) Get(ctx context.Context, fileID string) ([]byte, string, e
 
 	return data, f.ContentType, nil
 }
+
+// GetWithRoleCheck checks if user has permission to download file based on role
+func (s *fileService) GetWithRoleCheck(ctx context.Context, fileID, role, userId string) ([]byte, string, error) {
+	f, err := s.repo.FindById(ctx, fileID)
+	if err != nil {
+		return nil, "", err
+	}
+	if f == nil {
+		return nil, "", domain.ErrNotFound
+	}
+
+	// Check permission based on role
+	hasPermission := false
+	switch role {
+	case "OWNER":
+		hasPermission = true // Owner can access all files (including NULL role files)
+	case "CONTRACTOR":
+		// CONTRACTOR: only their files with explicit CONTRACTOR role (no NULL role files)
+		hasPermission = f.UploadedBy == userId && f.UploaderRole != nil && *f.UploaderRole == "CONTRACTOR"
+	case "SALESPERSON":
+		// SALESPERSON: only their files with explicit SALESPERSON role (no NULL role files)
+		hasPermission = f.UploadedBy == userId && f.UploaderRole != nil && *f.UploaderRole == "SALESPERSON"
+	case "CUSTOMER":
+		// CUSTOMER: files from CONTRACTOR or SALESPERSON (no NULL role files)
+		hasPermission = f.UploaderRole != nil && (*f.UploaderRole == "CONTRACTOR" || *f.UploaderRole == "SALESPERSON")
+	default:
+		hasPermission = false
+	}
+
+	if !hasPermission {
+		return nil, "", domain.ErrNotFound // Return not found to hide existence
+	}
+
+	data, err := s.storage.Download(ctx, f.ObjectKey)
+	if err != nil {
+		return nil, "", err
+	}
+
+	return data, f.ContentType, nil
+}
+
 func (s *fileService) ListByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {
 	if projectID == "" {
 		return nil, domain.ErrValidation
@@ -151,6 +195,98 @@ func (s *fileService) ListByProjectID(ctx context.Context, projectID string) ([]
 		}
 	}
 	return metadataList, nil
+}
+
+// ListDocumentsByProjectIDAndRole returns documents filtered by role
+func (s *fileService) ListDocumentsByProjectIDAndRole(ctx context.Context, projectID, role, userId string) ([]domain.FileMetadata, error) {
+	if projectID == "" {
+		return nil, domain.ErrValidation
+	}
+
+	files, err := s.repo.FindByProjectIDAndRole(ctx, projectID, role, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter to only DOCUMENT category
+	metadataList := make([]domain.FileMetadata, 0)
+	for _, f := range files {
+		if f.Category == domain.CategoryDocument {
+			metadataList = append(metadataList, domain.FileMetadata{
+				ID:          f.ID,
+				FileName:    f.FileName,
+				ContentType: f.ContentType,
+				Category:    f.Category,
+				ProjectID:   f.ProjectID,
+				UploadedBy:  f.UploadedBy,
+				Url:         "/files/" + f.ID,
+				CreatedAt:   f.CreatedAt.Format(time.RFC3339),
+			})
+		}
+	}
+	return metadataList, nil
+}
+
+// DownloadProjectDocumentsZip creates a ZIP archive of all documents for a project filtered by role
+func (s *fileService) DownloadProjectDocumentsZip(ctx context.Context, projectID, role, userId, projectName string) ([]byte, error) {
+	if projectID == "" {
+		return nil, domain.ErrValidation
+	}
+
+	// Get filtered documents
+	documents, err := s.ListDocumentsByProjectIDAndRole(ctx, projectID, role, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(documents) == 0 {
+		return nil, domain.ErrNotFound
+	}
+
+	return s.createZipArchive(ctx, documents)
+}
+
+// createZipArchive creates a ZIP archive from documents
+func (s *fileService) createZipArchive(ctx context.Context, documents []domain.FileMetadata) ([]byte, error) {
+	// Import archive/zip and bytes
+	var buf bytes.Buffer
+	zipWriter := zip.NewWriter(&buf)
+
+	// Add each file to ZIP
+	for _, doc := range documents {
+		// Get file from repository to get object key
+		f, err := s.repo.FindById(ctx, doc.ID)
+		if err != nil || f == nil {
+			log.Printf("[WARN] File %s not found for ZIP", doc.ID)
+			continue
+		}
+
+		// Download file from storage
+		fileData, err := s.storage.Download(ctx, f.ObjectKey)
+		if err != nil {
+			log.Printf("[WARN] Failed to download file %s for ZIP: %v", doc.ID, err)
+			continue
+		}
+
+		// Create file entry in ZIP
+		fileWriter, err := zipWriter.Create(doc.FileName)
+		if err != nil {
+			log.Printf("[WARN] Failed to create ZIP entry for %s: %v", doc.FileName, err)
+			continue
+		}
+
+		// Write file data to ZIP
+		if _, err := fileWriter.Write(fileData); err != nil {
+			log.Printf("[WARN] Failed to write file %s to ZIP: %v", doc.FileName, err)
+			continue
+		}
+	}
+
+	if err := zipWriter.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close ZIP: %w", err)
+	}
+
+	return buf.Bytes(), nil
 }
 
 func (s *fileService) ListArchivedByProjectID(ctx context.Context, projectID string) ([]domain.FileMetadata, error) {

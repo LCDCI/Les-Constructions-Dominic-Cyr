@@ -1,6 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.utils.Translation.presentationlayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.utils.translation.businesslayer.DeepLService;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.translation.businesslayer.FileServiceUploader;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.translation.businesslayer.TranslationCacheService;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.translation.presentationlayer.PDFTranslationController;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class PDFTranslationControllerUnitTest {
 
     @Mock
     private TranslationCacheService cacheService;
+
+    @Mock
+    private FileServiceUploader fileServiceUploader;
 
     @Mock
     private FilePart filePart;
@@ -111,6 +115,143 @@ class PDFTranslationControllerUnitTest {
                     assertNotNull(response.getBody());
                     assertTrue(response.getBody().contains("Not configured"));
                     assertTrue(response.getBody().contains("deepl.api.key"));
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void translatePdf_WithNonCachedTranslation_TranslatesAndUploads() {
+        byte[] translatedPdf = "translated pdf".getBytes();
+        DataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap(testPdfData);
+        
+        when(filePart.filename()).thenReturn("test.pdf");
+        when(filePart.headers()).thenReturn(new HttpHeaders());
+        when(filePart.content()).thenReturn(Flux.just(dataBuffer));
+        when(cacheService.getCachedTranslation("test.pdf", "fr")).thenReturn(null);
+        when(deepLService.toDeepLLanguageCode("fr")).thenReturn("FR");
+        when(deepLService.translatePdf(any(), any(), eq("FR"))).thenReturn(Mono.just(translatedPdf));
+        when(cacheService.generateCacheFilename("test.pdf", "fr")).thenReturn("test_fr.pdf");
+        when(fileServiceUploader.uploadTranslatedPdf(any(), any(), any())).thenReturn(Mono.just("file-id-123"));
+        
+        StepVerifier.create(controller.translatePdf(Mono.just(filePart), null, null))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.OK, response.getStatusCode());
+                    assertEquals(MediaType.APPLICATION_PDF, response.getHeaders().getContentType());
+                })
+                .verifyComplete();
+        
+        verify(deepLService, times(1)).translatePdf(any(), any(), eq("FR"));
+        verify(fileServiceUploader, times(1)).uploadTranslatedPdf(any(), any(), any());
+    }
+
+    @Test
+    void translatePdf_WithSourceLanguageSpecified_TranslatesToOpposite() {
+        byte[] translatedPdf = "translated pdf".getBytes();
+        DataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap(testPdfData);
+        
+        when(filePart.filename()).thenReturn("test.pdf");
+        when(filePart.headers()).thenReturn(new HttpHeaders());
+        when(filePart.content()).thenReturn(Flux.just(dataBuffer));
+        when(cacheService.getCachedTranslation("test.pdf", "fr")).thenReturn(null);
+        when(deepLService.toDeepLLanguageCode("en")).thenReturn("EN");
+        when(deepLService.toDeepLLanguageCode("fr")).thenReturn("FR");
+        when(deepLService.translatePdf(any(), eq("EN"), eq("FR"))).thenReturn(Mono.just(translatedPdf));
+        when(cacheService.generateCacheFilename("test.pdf", "fr")).thenReturn("test_fr.pdf");
+        when(fileServiceUploader.uploadTranslatedPdf(any(), any(), any())).thenReturn(Mono.just("file-id-123"));
+        
+        StepVerifier.create(controller.translatePdf(Mono.just(filePart), "en", null))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.OK, response.getStatusCode());
+                })
+                .verifyComplete();
+        
+        verify(deepLService, times(1)).translatePdf(any(), eq("EN"), eq("FR"));
+    }
+
+    @Test
+    void translatePdf_WithBothLanguagesSpecified_UsesProvidedLanguages() {
+        byte[] translatedPdf = "translated pdf".getBytes();
+        DataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap(testPdfData);
+        
+        when(filePart.filename()).thenReturn("test.pdf");
+        when(filePart.headers()).thenReturn(new HttpHeaders());
+        when(filePart.content()).thenReturn(Flux.just(dataBuffer));
+        when(cacheService.getCachedTranslation("test.pdf", "en")).thenReturn(null);
+        when(deepLService.toDeepLLanguageCode("fr")).thenReturn("FR");
+        when(deepLService.toDeepLLanguageCode("en")).thenReturn("EN");
+        when(deepLService.translatePdf(any(), eq("FR"), eq("EN"))).thenReturn(Mono.just(translatedPdf));
+        when(cacheService.generateCacheFilename("test.pdf", "en")).thenReturn("test_en.pdf");
+        when(fileServiceUploader.uploadTranslatedPdf(any(), any(), any())).thenReturn(Mono.just("file-id-123"));
+        
+        StepVerifier.create(controller.translatePdf(Mono.just(filePart), "fr", "en"))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.OK, response.getStatusCode());
+                })
+                .verifyComplete();
+        
+        verify(deepLService, times(1)).translatePdf(any(), eq("FR"), eq("EN"));
+    }
+
+    @Test
+    void translatePdf_WithTranslationError_ReturnsInternalServerError() {
+        DataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap(testPdfData);
+        
+        when(filePart.filename()).thenReturn("test.pdf");
+        when(filePart.headers()).thenReturn(new HttpHeaders());
+        when(filePart.content()).thenReturn(Flux.just(dataBuffer));
+        when(cacheService.getCachedTranslation("test.pdf", "fr")).thenReturn(null);
+        when(deepLService.toDeepLLanguageCode("fr")).thenReturn("FR");
+        when(deepLService.translatePdf(any(), any(), eq("FR"))).thenReturn(Mono.error(new RuntimeException("Translation failed")));
+        
+        StepVerifier.create(controller.translatePdf(Mono.just(filePart), null, null))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void translatePdf_WithPdfContentType_ValidatesCorrectly() {
+        byte[] translatedPdf = "translated".getBytes();
+        DataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap(testPdfData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        
+        when(filePart.filename()).thenReturn("document");
+        when(filePart.headers()).thenReturn(headers);
+        when(filePart.content()).thenReturn(Flux.just(dataBuffer));
+        when(cacheService.getCachedTranslation("document", "fr")).thenReturn(null);
+        when(deepLService.toDeepLLanguageCode("fr")).thenReturn("FR");
+        when(deepLService.translatePdf(any(), any(), any())).thenReturn(Mono.just(translatedPdf));
+        when(cacheService.generateCacheFilename("document", "fr")).thenReturn("document_fr.pdf");
+        when(fileServiceUploader.uploadTranslatedPdf(any(), any(), any())).thenReturn(Mono.just("file-id"));
+        
+        StepVerifier.create(controller.translatePdf(Mono.just(filePart), null, null))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.OK, response.getStatusCode());
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void translatePdf_WithNullFilename_UsesDefaultFilename() {
+        byte[] translatedPdf = "translated pdf".getBytes();
+        DataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap(testPdfData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        
+        when(filePart.filename()).thenReturn(null);
+        when(filePart.headers()).thenReturn(headers);
+        when(filePart.content()).thenReturn(Flux.just(dataBuffer));
+        when(cacheService.getCachedTranslation("document.pdf", "fr")).thenReturn(null);
+        when(deepLService.toDeepLLanguageCode("fr")).thenReturn("FR");
+        when(deepLService.translatePdf(any(), any(), any())).thenReturn(Mono.just(translatedPdf));
+        when(cacheService.generateCacheFilename("document.pdf", "fr")).thenReturn("document_fr.pdf");
+        when(fileServiceUploader.uploadTranslatedPdf(any(), any(), any())).thenReturn(Mono.just("file-id-123"));
+        
+        StepVerifier.create(controller.translatePdf(Mono.just(filePart), null, null))
+                .assertNext(response -> {
+                    assertEquals(HttpStatus.OK, response.getStatusCode());
                 })
                 .verifyComplete();
     }
