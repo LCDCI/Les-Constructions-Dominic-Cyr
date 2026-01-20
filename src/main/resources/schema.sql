@@ -261,5 +261,5 @@ CREATE TABLE IF NOT EXISTS analytics_reports (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
-CREATE INDEX idx_analytics_reports_owner ON analytics_reports(owner_id);
-CREATE INDEX idx_analytics_reports_timestamp ON analytics_reports(generation_timestamp DESC);
+-- CREATE INDEX idx_analytics_reports_owner ON analytics_reports(owner_id);
+-- CREATE INDEX idx_analytics_reports_timestamp ON analytics_reports(generation_timestamp DESC);
