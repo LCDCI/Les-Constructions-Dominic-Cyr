@@ -33,21 +33,16 @@ export const usePageTranslations = pageName => {
         namespace
       );
 
-      if (hasResources) {
-        setIsInitialized(true);
-        return;
-      }
-
       setIsLoading(true);
       try {
-        // Fetch translations for the current language
+        // Always fetch fresh translations to ensure nav/footer are up-to-date
         const translations = await fetchPageTranslations(
           pageName,
           currentLanguage
         );
 
         if (translations && Object.keys(translations).length > 0) {
-          // Add translations as a new namespace
+          // Add/update translations as a new namespace
           i18nInstance.addResourceBundle(
             currentLanguage,
             namespace,
@@ -59,7 +54,8 @@ export const usePageTranslations = pageName => {
             `[usePageTranslations] Loaded translations for ${pageName} (${currentLanguage})`
           );
 
-          // Also add nav and footer to 'translation' namespace so they're globally available
+          // Always update nav and footer in 'translation' namespace when page loads
+          // This ensures navbar shows the correct translations for the current page
           const globalTranslations = {};
           if (translations.nav) {
             globalTranslations.nav = translations.nav;
@@ -68,6 +64,7 @@ export const usePageTranslations = pageName => {
             globalTranslations.footer = translations.footer;
           }
           if (Object.keys(globalTranslations).length > 0) {
+            // Use merge: true, deep: true to properly overwrite existing nav/footer values
             i18nInstance.addResourceBundle(
               currentLanguage,
               'translation',
@@ -75,8 +72,11 @@ export const usePageTranslations = pageName => {
               true,
               true
             );
+            // Force a re-render by emitting a language change event
+            // This ensures the navbar updates with the latest translations
+            i18nInstance.emit('languageChanged', currentLanguage);
             console.log(
-              `[usePageTranslations] Added nav/footer to 'translation' namespace for ${currentLanguage}`
+              `[usePageTranslations] Updated nav/footer in 'translation' namespace for ${currentLanguage}`
             );
           }
         } else {
@@ -118,7 +118,7 @@ export const usePageTranslations = pageName => {
               true
             );
 
-            // Also add nav and footer to 'translation' namespace
+            // Always update nav and footer in 'translation' namespace when language changes
             const globalTranslations = {};
             if (translations.nav) {
               globalTranslations.nav = translations.nav;
@@ -133,6 +133,11 @@ export const usePageTranslations = pageName => {
                 globalTranslations,
                 true,
                 true
+              );
+              // Force a re-render to ensure navbar updates
+              i18nInstance.emit('languageChanged', currentLanguage);
+              console.log(
+                `[usePageTranslations] Updated nav/footer in 'translation' namespace for ${currentLanguage} (language change)`
               );
             }
           }
