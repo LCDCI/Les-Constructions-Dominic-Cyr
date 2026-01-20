@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import '../styles/portal.css';
 
 export default function PortalLogin() {
-  const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, isLoading, error } = useAuth0();
   const location = useLocation();
 
   if (isLoading) {
@@ -22,9 +22,30 @@ export default function PortalLogin() {
   return (
     <div className="portal-page">
       <div className="portal-card">
+        {error?.message === 'verification_pending' && (
+          <div className="verification-error-banner">
+            <p>
+              <strong>Verification Required:</strong> Please check your email
+              and click the verification link before logging in.
+            </p>
+          </div>
+        )}
+
         <h1>Access Portal</h1>
         <p>Sign in to access your dashboard</p>
-        <button onClick={() => loginWithRedirect({ appState: { returnTo: (location.state && location.state.returnTo) || '/' } })}>
+        <button
+          onClick={() =>
+            loginWithRedirect({
+              authorizationParams: {
+                // Ensure this is inside authorizationParams
+                prompt: 'login',
+              },
+              appState: {
+                returnTo: (location.state && location.state.returnTo) || '/',
+              },
+            })
+          }
+        >
           Continue to Login →
         </button>
       </div>

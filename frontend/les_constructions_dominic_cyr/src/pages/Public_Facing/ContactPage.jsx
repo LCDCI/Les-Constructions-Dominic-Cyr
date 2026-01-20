@@ -81,6 +81,8 @@ export default function ContactPage() {
 
       <section className="contact-body">
         <div className="contact-grid">
+          <InquiryForm className="contact-form-wrapper" />
+          
           <div className="contact-card">
             <h2>{t('contactInfo.title', f.contactInfo.title)}</h2>
             <div className="info-item">
@@ -141,13 +143,8 @@ export default function ContactPage() {
               </p>
             </div>
           </div>
-
-          <InquiryForm className="contact-form-wrapper" />
         </div>
       </section>
-      <footer>
-      <HomeFooter />
-    </footer>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-# Default Spring Profile
+# Common defaults (works even if no Spring profile is set)
 server:
   error:
     include-message: always
@@ -10,23 +10,17 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-# for docker
-
 spring:
-  config:
-    activate:
-      on-profile: docker
-
   datasource:
-    url: jdbc:postgresql://postgres1/cdc-db
-    username: ${DB_USERNAME:user}
-    password: ${DB_PASSWORD:pwd}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres1/cdc-db}
+    username: ${SPRING_DATASOURCE_USERNAME:user}
+    password: ${SPRING_DATASOURCE_PASSWORD:pwd}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update   # use create to allow JPA to auto-generate from Entity classes; use none to use
-
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -45,7 +39,7 @@ spring.datasource.hikari.initializationFailTimeout: 60000
 
 files:
   service:
-    base-url: http://localhost:8082
+    base-url: ${FILES_SERVICE_BASE_URL:http://localhost:8082}
 
 # DeepL API Configuration (for PDF translation)
 deepl:
@@ -71,3 +65,13 @@ auth0:
 app:
   invite:
     result-url: ${APP_INVITE_RESULT_URL:}
+
+google:
+  analytics:
+    property-id: ${GA_PROPERTY_ID:}
+    credentials-path: ${GA_CREDENTIALS_PATH:}
+
+reports:
+  storage:
+    base-path: reports/
+    retention-days: 90

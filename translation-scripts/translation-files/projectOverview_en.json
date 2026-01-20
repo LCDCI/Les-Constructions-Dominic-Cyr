@@ -1,0 +1,48 @@
+{
+  "hero": {
+    "title": "Project Overview"
+  },
+  "details": {
+    "projectInfo": "Project Information",
+    "location": "Location",
+    "status": "Status",
+    "budget": "Budget",
+    "timeline": "Timeline",
+    "description": "Description"
+  },
+  "gallery": {
+    "title": "Project Gallery",
+    "previousAriaLabel": "Previous image",
+    "nextAriaLabel": "Next image",
+    "imageAlt": "Project image",
+    "noImages": "No images available"
+  },
+  "specs": {
+    "title": "Project Specifications",
+    "squareFootage": "Square Footage",
+    "rooms": "Rooms",
+    "bathrooms": "Bathrooms",
+    "finishDate": "Finish Date",
+    "contractor": "Contractor",
+    "architect": "Architect"
+  },
+  "contact": {
+    "title": "Interested in this project?",
+    "subtitle": "Get in touch with our team to learn more or discuss your own project.",
+    "button": "Contact Us"
+  },
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "realizations": "Realizations",
+    "renovations": "Renovations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "company": "Dominic Cyr Construction Inc.",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "copyright": "Copyright © 2024. All rights reserved."
+  }
+}

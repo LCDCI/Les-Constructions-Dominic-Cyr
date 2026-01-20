@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets résidentiels",
+    "realizations": "Réalisations",
+    "renovations": "Rénovations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois",
+    "phone": "514-123-4567",
+    "email": "constructions.dcyr@gmail.com"
+  },
+  "hero": {
+    "kicker": "Notre travail",
+    "title": "Projets résidentiels",
+    "subtitle": "Explorez notre portefeuille de projets résidentiels mettant en avant une construction de qualité et un design innovant."
+  },
+  "search": {
+    "placeholder": "Rechercher des projets par nom..."
+  },
+  "noResults": "Aucun projet trouvé correspondant à votre recherche",
+  "pagination": {
+    "prev": "Précédent",
+    "next": "Suivant"
+  }
+}

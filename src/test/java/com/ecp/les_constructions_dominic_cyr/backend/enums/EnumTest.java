@@ -117,12 +117,13 @@ public class EnumTest {
     void projectStatus_HasAllExpectedValues() {
         ProjectStatus[] values = ProjectStatus.values();
 
-        assertEquals(5, values.length);
+        assertEquals(6, values.length);
         assertNotNull(ProjectStatus. PLANNED);
         assertNotNull(ProjectStatus. IN_PROGRESS);
         assertNotNull(ProjectStatus. COMPLETED);
         assertNotNull(ProjectStatus. DELAYED);
         assertNotNull(ProjectStatus. CANCELLED);
+        assertNotNull(ProjectStatus.ARCHIVED);
     }
 
     @Test

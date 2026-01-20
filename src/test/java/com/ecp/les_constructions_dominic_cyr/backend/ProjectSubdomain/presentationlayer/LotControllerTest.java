@@ -42,10 +42,10 @@ class LotControllerTest {
     private static final String INVALID_FORMAT_LOT_ID = "not-a-uuid-string-of-length-36";
 
     private final LotRequestModel mockRequest = new LotRequestModel();
-    private final LotResponseModel mockResponse = new LotResponseModel(VALID_LOT_ID, "Location A");
+    private final LotResponseModel mockResponse = new LotResponseModel(VALID_LOT_ID, "Location A", 1000f, "1000", "92.9");
     private final List<LotResponseModel> mockResponseList = List.of(
-            new LotResponseModel(UUID.randomUUID().toString(), "Location B"),
-            new LotResponseModel(UUID.randomUUID().toString(), "Location C")
+            new LotResponseModel(UUID.randomUUID().toString(), "Location B", 2000f, "2000", "185.8"),
+            new LotResponseModel(UUID.randomUUID().toString(), "Location C", 3000f, "3000", "278.7")
     );
 
 
@@ -59,9 +59,10 @@ class LotControllerTest {
 
 
     @Test
-    @DisplayName("GET /api/v1/lots should return a list of all lots with 200 OK")
+    @DisplayName("GET /api/v1/projects/{projectIdentifier}/lots should return a list of all lots with 200 OK")
     void getAllLots_ReturnsAllLots() {
-        webTestClient.get().uri("/api/v1/lots")
+        String projectIdentifier = "proj-001-test";
+        webTestClient.get().uri("/api/v1/projects/{projectIdentifier}/lots", projectIdentifier)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
@@ -71,10 +72,11 @@ class LotControllerTest {
 
 
     @Test
-    @DisplayName("GET /api/v1/lots/{lotId} should return 400 Bad Request for incorrect ID length")
+    @DisplayName("GET /api/v1/projects/{projectIdentifier}/lots/{lotId} should return 400 Bad Request for incorrect ID length")
     void getLotById_InvalidLength_Returns400() {
+        String projectIdentifier = "proj-001-test";
         // ACT & ASSERT
-        webTestClient.get().uri("/api/v1/lots/{lotId}", INVALID_SHORT_LOT_ID)
+        webTestClient.get().uri("/api/v1/projects/{projectIdentifier}/lots/{lotId}", projectIdentifier, INVALID_SHORT_LOT_ID)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody(String.class)
@@ -85,13 +87,14 @@ class LotControllerTest {
 
 
     @Test
-    @DisplayName("DELETE /api/v1/lots/{lotId} should return 204 No Content for valid ID")
+    @DisplayName("DELETE /api/v1/projects/{projectIdentifier}/lots/{lotId} should return 204 No Content for valid ID")
     void deleteLot_ValidId_Returns204() {
+        String projectIdentifier = "proj-001-test";
         // ARRANGE
         doNothing().when(lotService).deleteLot(eq(VALID_LOT_ID));
 
         // ACT & ASSERT
-        webTestClient.delete().uri("/api/v1/lots/{lotId}", VALID_LOT_ID)
+        webTestClient.delete().uri("/api/v1/projects/{projectIdentifier}/lots/{lotId}", projectIdentifier, VALID_LOT_ID)
                 .exchange()
                 .expectStatus().isNoContent()
                 .expectBody().isEmpty();
@@ -101,10 +104,11 @@ class LotControllerTest {
 
 
     @Test
-    @DisplayName("DELETE /api/v1/lots/{lotId} should return 400 Bad Request for incorrect delete ID length")
+    @DisplayName("DELETE /api/v1/projects/{projectIdentifier}/lots/{lotId} should return 400 Bad Request for incorrect delete ID length")
     void deleteLot_InvalidLength_Returns400() {
+        String projectIdentifier = "proj-001-test";
         // ACT & ASSERT
-        webTestClient.delete().uri("/api/v1/lots/{lotId}", INVALID_SHORT_LOT_ID)
+        webTestClient.delete().uri("/api/v1/projects/{projectIdentifier}/lots/{lotId}", projectIdentifier, INVALID_SHORT_LOT_ID)
                 .exchange()
                 .expectStatus().isBadRequest()
                 .expectBody(String.class)
@@ -119,11 +123,17 @@ class LotControllerTest {
 
     static class LotResponseModel {
         public String id;
-        public String location;
+        public String civicAddress;
+        public Float price;
+        public String dimensionsSquareFeet;
+        public String dimensionsSquareMeters;
 
-        public LotResponseModel(String id, String location) {
+        public LotResponseModel(String id, String civicAddress, Float price, String dimensionsSquareFeet, String dimensionsSquareMeters) {
             this.id = id;
-            this.location = location;
+            this.civicAddress = civicAddress;
+            this.price = price;
+            this.dimensionsSquareFeet = dimensionsSquareFeet;
+            this.dimensionsSquareMeters = dimensionsSquareMeters;
         }
 
         @Override
@@ -131,12 +141,12 @@ class LotControllerTest {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             LotResponseModel that = (LotResponseModel) o;
-            return id.equals(that.id) && location.equals(that.location);
+            return id.equals(that.id) && civicAddress.equals(that.civicAddress);
         }
 
         @Override
         public int hashCode() {
-            return java.util.Objects.hash(id, location);
+            return java.util.Objects.hash(id, civicAddress);
         }
     }
 }

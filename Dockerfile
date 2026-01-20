@@ -19,6 +19,7 @@ WORKDIR /app
 
 EXPOSE 8080
 
-COPY --from=backend-build /app/build/libs/*.jar app.jar
+# Copy only the runnable Spring Boot JAR
+COPY --from=backend-build /app/build/libs/les_constructions_dominic_cyr-0.0.1-SNAPSHOT.jar /app/app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

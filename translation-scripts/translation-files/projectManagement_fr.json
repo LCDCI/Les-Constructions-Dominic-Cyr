@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets résidentiels",
+    "realizations": "Réalisations",
+    "renovations": "Rénovations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois",
+    "phone": "514-123-4567",
+    "email": "constructions.dcyr@gmail.com"
+  },
+  "hero": {
+    "line1": "LA GESTION DE PROJET,",
+    "line2": "POUR UNE TRANQUILLITÉ D'ESPRIT"
+  },
+  "intro": {
+    "heading": {
+      "title": "Planification, organisation et suivi de site sans friction",
+      "line1": "Planification",
+      "line2": "Organisation",
+      "line3": "Suivi de site"
+    },
+    "tagline": "On s'en occupe !",
+    "paragraph": "Vous êtes propriétaire d'un terrain et vous souhaitez confier la gestion de projet à un entrepreneur qualifié? Les Constructions Dominic Cyr Inc. est là pour vous, que ce soit pour certaines étapes spécifiques de la construction ou pour un projet clé en main.",
+    "image1": {
+      "alt": "Professionnels collaborant sur un projet"
+    },
+    "image2": {
+      "alt": "Rendu de plan d'étage 3D"
+    },
+    "image3": {
+      "alt": "Outils et matériaux de construction"
+    }
+  },
+  "advantages": {
+    "heading": "Il y a de nombreux avantages à nous confier la gestion de votre projet :",
+    "item1": "Service conseil",
+    "item2": "Conformité avec les règles du bâtiment",
+    "item3": "Planification avec tous les intervenants",
+    "item4": "Établissement de l'échéancier des travaux",
+    "item5": "Contrôle des coûts",
+    "item6": "Suivi rigoureux",
+    "item7": "Assurance conformité",
+    "pricing": "Selon l'ampleur et la complexité du projet, la tarification pourrait être à coût fixe ou à prix majoré. Contactez-nous pour en discuter.",
+    "contactLink": "Contactez-nous"
+  },
+  "gallery": {
+    "heading": "Quelques réalisations en gestion de projet par Les Constructions Dominic Cyr Inc.",
+    "caption": "Résidence",
+    "image1": {
+      "alt": "Résidence"
+    },
+    "image2": {
+      "alt": "Résidence"
+    },
+    "image3": {
+      "alt": "Résidence"
+    }
+  }
+}

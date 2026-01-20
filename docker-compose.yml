@@ -31,7 +31,12 @@ services:
       AUTH0_ROLE_SALESPERSON: ${AUTH0_ROLE_SALESPERSON}
       AUTH0_ROLE_OWNER: ${AUTH0_ROLE_OWNER}
       APP_INVITE_RESULT_URL: ${APP_INVITE_RESULT_URL}
+      GOOGLE_ANALYTICS_PROPERTY_ID: ${GA_PROPERTY_ID}
+      GOOGLE_ANALYTICS_CREDENTIALS_PATH: "/app/config/google-analytics-credentials.json"
 
+    volumes:
+      - ${GA_CREDENTIALS_PATH}:/app/config/google-analytics-credentials.json:ro
+    
     depends_on:
       files-service:
         condition: service_started
@@ -48,10 +53,19 @@ services:
       context: ./frontend/les_constructions_dominic_cyr
       dockerfile: Dockerfile
       args:
-        - VITE_API_BASE=/api/v1
+        - VITE_API_BASE=${VITE_API_BASE:-/api/v1}
+        - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN:-${AUTH0_DOMAIN}}
+        - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID:-${AUTH0_CLIENT_ID}}
+        - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE:-${AUTH0_AUDIENCE}}
     container_name: lcdci-frontend
     ports:
       - "3000:80"
+    environment:
+      - YOUR_BACKEND_URL=http://backend:8080
+      - VITE_API_BASE=${VITE_API_BASE:-/api/v1}
+      - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN:-${AUTH0_DOMAIN}}
+      - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID:-${AUTH0_CLIENT_ID}}
+      - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE:-${AUTH0_AUDIENCE}}
     depends_on:
       - backend
     networks:
@@ -94,7 +108,8 @@ services:
     networks:
       - app-network
   #######################################################################
-  # FILES-SERVICE (Go + Gin + Postgres + MinIO)
+  # FILES-SERVICE (Go + Gin + Postgres + S3-compatible storage)
+  # Supports both local MinIO and DigitalOcean Spaces
   #######################################################################
   files-service:
     build:
@@ -105,20 +120,19 @@ services:
       - "8082:8080"   # external 8082 -> internal 8080
     environment:
       DB_URL: "${FILES_DB_URL}"
-      MINIO_ENDPOINT: "minio:9000"
-      MINIO_ACCESS_KEY: "${MINIO_ROOT_USER}"
-      MINIO_SECRET_KEY: "${MINIO_ROOT_PASSWORD}"
+      # S3-compatible storage configuration (works with MinIO or DigitalOcean Spaces)
+      MINIO_ENDPOINT: "${SPACES_ENDPOINT:-minio:9000}"
+      MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY:-${MINIO_ROOT_USER}}"
+      MINIO_SECRET_KEY: "${SPACES_SECRET_KEY:-${MINIO_ROOT_PASSWORD}}"
+      MINIO_BUCKET: "${SPACES_BUCKET:-project-files}"
+      MINIO_USE_SSL: "${MINIO_USE_SSL:-false}"
+      MINIO_REGION: "${SPACES_REGION:-us-east-1}"
     healthcheck:
       test: [ "CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/health || exit 1" ]
       interval: 5s
       timeout: 3s
       retries: 5
       start_period: 10s
-    depends_on:
-      files-db:
-        condition: service_healthy
-      minio:
-        condition: service_started
     networks:
       - app-network
 
@@ -126,6 +140,8 @@ services:
   # POSTGRES (files database)
   #######################################################################
   files-db:
+    profiles:
+      - local-db
     image: postgres:16
     container_name: files-db
     restart: always
@@ -140,16 +156,21 @@ services:
       - ./data/files-db:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${FILES_DB_USER} -d ${FILES_DB_NAME}"]
-      interval: 3s
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 25s
     networks:
       - app-network
 
   #######################################################################
-  # MINIO (S3-compatible object storage)
+  # MINIO (S3-compatible object storage) - LOCAL DEVELOPMENT ONLY
+  # Use 'docker compose --profile local-minio up' to start with MinIO
+  # For production, use DigitalOcean Spaces with SPACES_* env vars
   #######################################################################
   minio:
+    profiles:
+      - local-minio
     image: minio/minio:latest
     container_name: minio
     environment:
