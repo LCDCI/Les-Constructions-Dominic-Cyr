@@ -22,16 +22,16 @@ public class TranslationRegistry {
     
     public TranslationRegistry() {
         // Home page translations
-        fileIdMap.put("en.home", "f129c133-d8e3-4c4f-95b4-47d06d4635ad");
-        fileIdMap.put("fr.home", "34da3a9d-fa77-4687-8233-a26ee24eab5e");
+        fileIdMap.put("en.home", "a8a61cc3-e7d5-4ed6-bcc3-985d2b2f88b9");
+        fileIdMap.put("fr.home", "235a225b-63b3-44cd-a840-c6142368fa82");
         
         // Contact page translations
         fileIdMap.put("en.contact", "de84e96b-4477-48e3-a643-68f622533285");
         fileIdMap.put("fr.contact", "e9563bff-cd4b-4621-9d1c-502b9047bd09");
         
         // Renovations page translations
-        fileIdMap.put("en.renovations", "485cb6a4-ed37-4229-8555-e21d2d47493c");
-        fileIdMap.put("fr.renovations", "3d6e56d3-758a-4f44-8045-b71b64ffcbd2");
+        fileIdMap.put("en.renovations", "e08e5638-b14e-42cf-9219-8faea86cd27c");
+        fileIdMap.put("fr.renovations", "ad964f35-d412-4ce3-ad57-9e3999ee56e5");
         
         // Realizations page translations
         fileIdMap.put("en.realizations", "879ef57b-ea47-4083-9239-49e5eb2e98e9");
