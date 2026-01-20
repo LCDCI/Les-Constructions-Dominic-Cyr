@@ -54,8 +54,10 @@
   "nav": {
     "home": "Home",
     "projects": "Residential Projects",
-    "realizations": "Realizations",
+    "renovation": "Renovations",
     "renovations": "Renovations",
+    "projectManagement": "Project Management",
+    "realizations": "Realizations",
     "contact": "Contact"
   },
   "footer": {
