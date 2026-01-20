@@ -44,4 +44,4 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 # Ensure BACKEND_URL has a default and no trailing slash before rendering the template
-CMD ["/bin/sh", "-c", "BACKEND_URL=${BACKEND_URL:-http://localhost:8080}; BACKEND_URL=${BACKEND_URL%/}; export BACKEND_URL; envsubst '$BACKEND_URL' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "BACKEND_URL=${BACKEND_URL:-http://localhost:8080}; BACKEND_URL=$(printf '%s' \"$BACKEND_URL\" | sed 's:/*$::'); export BACKEND_URL; envsubst '$BACKEND_URL' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
