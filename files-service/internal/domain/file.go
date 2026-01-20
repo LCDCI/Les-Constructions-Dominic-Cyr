@@ -9,10 +9,14 @@ type File struct {
 	Category    FileCategory
 	ProjectID   string
 	UploadedBy  string
+	UploaderRole *string // NULL for existing files, populated for new files
 	Size        int64
 	ObjectKey   string
 	CreatedAt   time.Time
 	IsActive    bool
 	DeletedAt   *time.Time
 	DeletedBy   string
+	IsArchived  bool
+	ArchivedAt  *time.Time
+	ArchivedBy  string
 }

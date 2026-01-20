@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class LotRequestModel {
-    private String imageIdentifier;
-    private String location;
+    private String lotNumber;
+    private String civicAddress;
     private Float price;
-    private String dimensions;
+    private String dimensionsSquareFeet;
+    private String dimensionsSquareMeters;
     private LotStatus lotStatus;
 }

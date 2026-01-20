@@ -34,14 +34,15 @@ class LotControllerUnitTest {
 
     @Test
     void whenNoLotsExist_thenReturnEmptyList() {
-        when(lotService.getAllLots()).thenReturn(List.of());
+        String projectIdentifier = "proj-001-test";
+        when(lotService.getAllLotsByProject(projectIdentifier)).thenReturn(List.of());
 
-        ResponseEntity<List<LotResponseModel>> resp = lotController.getAllLots();
+        ResponseEntity<List<LotResponseModel>> resp = lotController.getAllLotsByProject(projectIdentifier);
 
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         assertNotNull(resp.getBody());
         assertTrue(resp.getBody().isEmpty());
-        verify(lotService, times(1)).getAllLots();
+        verify(lotService, times(1)).getAllLotsByProject(projectIdentifier);
     }
 
     // ==== GET ONE ====
@@ -76,9 +77,11 @@ class LotControllerUnitTest {
     @Test
     void whenValidCreate_thenReturnCreated() {
         LotRequestModel req = new LotRequestModel();
-        req.setLocation("LocA");
+        req.setLotNumber("Lot-TEST-001");
+        req.setCivicAddress("LocA");
         req.setPrice(100f);
-        req.setDimensions("10x10");
+        req.setDimensionsSquareFeet("1000");
+        req.setDimensionsSquareMeters("92.9");
 
         LotResponseModel created = new LotResponseModel();
         created.setLotId(FOUND_ID);
@@ -105,11 +108,12 @@ class LotControllerUnitTest {
     @Test
     void whenValidUpdate_thenReturnOk() {
         LotRequestModel req = new LotRequestModel();
-        req.setLocation("Updated");
+        req.setLotNumber("Lot-TEST-002");
+        req.setCivicAddress("Updated");
 
         LotResponseModel updated = new LotResponseModel();
         updated.setLotId(FOUND_ID);
-        updated.setLocation("Updated");
+        updated.setCivicAddress("Updated");
 
         when(lotService.updateLot(req, FOUND_ID)).thenReturn(updated);
 

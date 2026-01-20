@@ -5,6 +5,7 @@ import (
 	"context"
 	"files-service/internal/config"
 	"files-service/internal/domain"
+	"files-service/internal/service"
 	"log"
 
 	"github.com/minio/minio-go/v7"
@@ -17,9 +18,13 @@ type MinioStorage struct {
 }
 
 func NewMinioClient(cfg *config.Config) *MinioStorage {
+	log.Printf("Connecting to S3-compatible storage at %s (SSL: %v, Region: %s, Bucket: %s)",
+		cfg.MinioEndpoint, cfg.MinioUseSSL, cfg.MinioRegion, cfg.MinioBucket)
+
 	c, err := minio.New(cfg.MinioEndpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(cfg.MinioAccessKey, cfg.MinioSecretKey, ""),
-		Secure: false, // Set to true if using HTTPS
+		Secure: cfg.MinioUseSSL, // true for DigitalOcean Spaces (HTTPS), false for local MinIO
+		Region: cfg.MinioRegion, // Required for DigitalOcean Spaces (e.g., "tor1")
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +51,7 @@ func NewMinioClient(cfg *config.Config) *MinioStorage {
 }
 
 // Upload accepts objectKey directly (instead of generating UUID here) to let the service control it.
-func (m *MinioStorage) Upload(ctx context.Context, data []byte, key string, contentType string) (string, error) {
+func (m *MinioStorage) Upload(ctx context.Context, data []byte, key string, contentType string, metadata map[string]string) (string, error) {
 
 	_, err := m.client.PutObject(
 		ctx,
@@ -54,7 +59,10 @@ func (m *MinioStorage) Upload(ctx context.Context, data []byte, key string, cont
 		key,
 		bytes.NewReader(data),
 		int64(len(data)),
-		minio.PutObjectOptions{ContentType: contentType},
+		minio.PutObjectOptions{
+			ContentType:  contentType,
+			UserMetadata: metadata,
+		},
 	)
 	if err != nil {
 		return "", domain.ErrStorageFailed
@@ -84,4 +92,41 @@ func (m *MinioStorage) Delete(ctx context.Context, key string) error {
 		return domain.ErrStorageFailed
 	}
 	return nil
+}
+
+// ListObjects returns all objects with a given prefix from the bucket
+func (m *MinioStorage) ListObjects(ctx context.Context, prefix string) ([]service.ObjectInfo, error) {
+	opts := minio.ListObjectsOptions{
+		Prefix:    prefix,
+		Recursive: true,
+	}
+
+	var objects []service.ObjectInfo
+	for objInfo := range m.client.ListObjects(ctx, m.cfg.MinioBucket, opts) {
+		if objInfo.Err != nil {
+			return nil, domain.ErrStorageFailed
+		}
+
+		// Fetch full object metadata
+		statInfo, err := m.client.StatObject(ctx, m.cfg.MinioBucket, objInfo.Key, minio.StatObjectOptions{})
+		if err != nil {
+			log.Printf("[WARN] Failed to fetch metadata for %s: %v", objInfo.Key, err)
+			objects = append(objects, service.ObjectInfo{
+				Key:         objInfo.Key,
+				Size:        objInfo.Size,
+				ContentType: objInfo.ContentType,
+				Metadata:    make(map[string]string),
+			})
+			continue
+		}
+
+		objects = append(objects, service.ObjectInfo{
+			Key:         objInfo.Key,
+			Size:        objInfo.Size,
+			ContentType: statInfo.ContentType,
+			Metadata:    statInfo.UserMetadata,
+		})
+	}
+
+	return objects, nil
 }

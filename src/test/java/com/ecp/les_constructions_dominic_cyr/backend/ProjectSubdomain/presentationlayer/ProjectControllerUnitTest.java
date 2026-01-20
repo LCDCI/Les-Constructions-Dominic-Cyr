@@ -1,31 +1,39 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.presentationlayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Project.ProjectService;
-import com. ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer. Project.ProjectStatus;
-import com. ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectController;
-import com. ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectRequestModel;
-import com.ecp.les_constructions_dominic_cyr. backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
-import com.fasterxml.jackson. databind.ObjectMapper;
-import com.fasterxml. jackson.datatype.jsr310.JavaTimeModule;
-import org.junit.jupiter.api. BeforeEach;
-import org.junit.jupiter.api. Test;
-import org.springframework.beans. factory.annotation. Autowired;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectController;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectRequestModel;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectActivityLogResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet. WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org. springframework.test.context.bean.override. mockito.MockitoBean;
-import org.springframework.test.web.servlet. MockMvc;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.util. Arrays;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers. any;
-import static org.mockito. ArgumentMatchers.eq;
-import static org.mockito. Mockito.*;
-import static org. springframework.test.web.servlet.request. MockMvcRequestBuilders.*;
-import static org.springframework.test.web. servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ProjectController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -37,6 +45,9 @@ public class ProjectControllerUnitTest {
 
     @MockitoBean
     private ProjectService projectService;
+
+    @MockitoBean
+    private UserService userService;
 
     private ObjectMapper objectMapper;
     private ProjectResponseModel testResponseModel;
@@ -78,7 +89,7 @@ public class ProjectControllerUnitTest {
         testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001"));
         testRequestModel.setProgressPercentage(50);
     }
-
+/*
     @Test
     void getAllProjects_WithNoFilters_ReturnsAllProjects() throws Exception {
         List<ProjectResponseModel> projects = Arrays.asList(testResponseModel);
@@ -151,7 +162,7 @@ public class ProjectControllerUnitTest {
                 eq("cust-001")
         );
     }
-
+*/
     @Test
     void getAllProjects_WhenEmpty_ReturnsEmptyList() throws Exception {
         when(projectService.getAllProjects()).thenReturn(Collections.emptyList());
@@ -224,4 +235,70 @@ public class ProjectControllerUnitTest {
 
         verify(projectService, times(1)).createProject(any(ProjectRequestModel.class));
     }
+
+    @Test
+    void getAllProjects_WithStatusFilter_ReturnsFilteredProjects() throws Exception {
+        List<ProjectResponseModel> projects = Arrays.asList(testResponseModel);
+        when(projectService.filterProjects(eq(ProjectStatus.IN_PROGRESS), any(), any(), any(), eq(false)))
+                .thenReturn(projects);
+
+        mockMvc.perform(get("/api/v1/projects")
+                        .param("status", "IN_PROGRESS"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].status").value("IN_PROGRESS"));
+
+        verify(projectService, times(1)).filterProjects(eq(ProjectStatus.IN_PROGRESS), any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    void getAllProjects_WithDateFilters_ReturnsFilteredProjects() throws Exception {
+        List<ProjectResponseModel> projects = Arrays.asList(testResponseModel);
+        when(projectService.filterProjects(any(), any(), any(), any(), anyBoolean())).thenReturn(projects);
+
+        mockMvc.perform(get("/api/v1/projects")
+                        .param("startDate", "2025-01-01")
+                        .param("endDate", "2025-12-31"))
+                .andExpect(status().isOk());
+
+        verify(projectService, times(1)).filterProjects(any(), any(), any(), any(), anyBoolean());
+    }
+
+    @Test
+    void getAllProjects_WithCustomerIdFilter_ReturnsFilteredProjects() throws Exception {
+        List<ProjectResponseModel> projects = Arrays.asList(testResponseModel);
+        when(projectService.filterProjects(any(), any(), any(), eq("cust-001"), anyBoolean())).thenReturn(projects);
+
+        mockMvc.perform(get("/api/v1/projects")
+                        .param("customerId", "cust-001"))
+                .andExpect(status().isOk());
+
+        verify(projectService, times(1)).filterProjects(any(), any(), any(), eq("cust-001"), anyBoolean());
+    }
+
+    @Test
+    void getAllProjects_WithNoFilters_ReturnsAllProjects() throws Exception {
+        List<ProjectResponseModel> projects = Arrays.asList(testResponseModel);
+        when(projectService.getAllProjects(anyBoolean())).thenReturn(projects);
+
+        mockMvc.perform(get("/api/v1/projects"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].projectIdentifier").value("proj-001"));
+
+        verify(projectService, times(1)).getAllProjects(anyBoolean());
+    }
+
+
+    @Test
+    void getProjectActivityLog_WhenExists_ReturnsActivityLog() throws Exception {
+        List<ProjectActivityLogResponseModel> activityLog = Collections.emptyList();
+        when(projectService.getProjectActivityLog("proj-001")).thenReturn(activityLog);
+
+        mockMvc.perform(get("/api/v1/projects/proj-001/activity-log"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+
+        verify(projectService, times(1)).getProjectActivityLog("proj-001");
+    }
+
+
 }

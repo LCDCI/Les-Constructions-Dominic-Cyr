@@ -53,24 +53,24 @@ class ScheduleControllerIntegrationTest {
         // Using standard setters instead of builder to avoid "cannot resolve method builder"
         Schedule schedule1 = new Schedule();
         schedule1.setScheduleIdentifier("SCH-TEST-001");
-        schedule1.setTaskDate(startOfWeek);
-        schedule1.setTaskDescription("Begin Excavation");
+        schedule1.setScheduleStartDate(startOfWeek);
+        schedule1.setScheduleEndDate(startOfWeek);
+        schedule1.setScheduleDescription("Begin Excavation");
         schedule1.setLotNumber("Lot 53");
-        schedule1.setDayOfWeek("Monday");
 
         Schedule schedule2 = new Schedule();
         schedule2.setScheduleIdentifier("SCH-TEST-002");
-        schedule2.setTaskDate(startOfWeek.plusDays(1));
-        schedule2.setTaskDescription("Plumbing");
+        schedule2.setScheduleStartDate(startOfWeek.plusDays(1));
+        schedule2.setScheduleEndDate(startOfWeek.plusDays(1));
+        schedule2.setScheduleDescription("Plumbing");
         schedule2.setLotNumber("Lot 57");
-        schedule2.setDayOfWeek("Tuesday");
 
         Schedule schedule3 = new Schedule();
         schedule3.setScheduleIdentifier("SCH-TEST-003");
-        schedule3.setTaskDate(startOfWeek.plusDays(10));
-        schedule3.setTaskDescription("Future Task");
+        schedule3.setScheduleStartDate(startOfWeek.plusDays(10));
+        schedule3.setScheduleEndDate(startOfWeek.plusDays(10));
+        schedule3.setScheduleDescription("Future Task");
         schedule3.setLotNumber("Lot 99");
-        schedule3.setDayOfWeek("Thursday");
 
         scheduleRepository.save(schedule1);
         scheduleRepository.save(schedule2);
@@ -82,7 +82,7 @@ class ScheduleControllerIntegrationTest {
         scheduleRepository.deleteAll();
     }
 
-    //@Test
+    @Test
     void getOwnerAllSchedules_shouldReturnAllSchedules() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/all")
                         .with(jwt().authorities(OWNER_ROLE))
@@ -93,13 +93,13 @@ class ScheduleControllerIntegrationTest {
                         containsInAnyOrder("SCH-TEST-001", "SCH-TEST-002", "SCH-TEST-003")));
     }
 
-    //@Test
+    @Test
     void getOwnerScheduleByIdentifier_shouldReturnScheduleWhenExists() throws Exception {
         mockMvc.perform(get("/api/v1/owners/schedules/SCH-TEST-001")
                         .with(jwt().authorities(OWNER_ROLE))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.scheduleIdentifier", is("SCH-TEST-001")))
-                .andExpect(jsonPath("$.taskDescription", is("Begin Excavation")));
+                .andExpect(jsonPath("$.scheduleDescription", is("Begin Excavation")));
     }
 }
