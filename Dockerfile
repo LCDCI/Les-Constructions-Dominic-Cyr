@@ -35,8 +35,8 @@ WORKDIR /app
 # Copy backend JAR
 COPY --from=backend-build /app/build/libs/les_constructions_dominic_cyr-0.0.1-SNAPSHOT.jar /app/app.jar
 
-# Install nginx
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
+# Install nginx and gettext-base (for envsubst)
+RUN apt-get update && apt-get install -y nginx gettext-base && rm -rf /var/lib/apt/lists/*
 
 # Copy built frontend and nginx config
 COPY --from=frontend-build /frontend/dist/ /usr/share/nginx/html/
@@ -50,5 +50,16 @@ EXPOSE 8080 80
 # Set default backend URL (override with env var)
 ENV BACKEND_API_URL=http://localhost:8080
 
+# Create startup script
+RUN echo '#!/bin/bash\n\
+set -e\n\
+# Process nginx config template\n\
+export BACKEND_API_URL=${BACKEND_API_URL:-http://localhost:8080}\n\
+envsubst "\$BACKEND_API_URL" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf\n\
+# Start nginx in background\n\
+nginx\n\
+# Start backend (foreground)\n\
+exec java -jar /app/app.jar' > /start.sh && chmod +x /start.sh
+
 # Start both backend and nginx
-CMD /docker-entrypoint.sh & java -jar /app/app.jar
+CMD ["/start.sh"]
