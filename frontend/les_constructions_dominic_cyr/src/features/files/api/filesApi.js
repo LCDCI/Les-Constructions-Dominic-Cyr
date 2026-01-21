@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || `${window.location.origin}/files`;
+// For production on DigitalOcean, use the files-service directly
+// For local/development, use the relative path
+const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 
+  (typeof window !== 'undefined' && window.location.hostname.includes('ondigitalocean') 
+    ? 'https://files-service-app-xubs2.ondigitalocean.app' 
+    : `${window.location.origin}/files`);
 
 // Archive a file (photo)
 export async function archiveFile(fileId, { archivedBy }) {
