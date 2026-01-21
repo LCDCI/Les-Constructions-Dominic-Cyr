@@ -65,4 +65,46 @@ public class UsersController {
         UserResponseModel responseModel = userService.updateUserAsOwner(userId, requestModel, requestingAuth0UserId);
         return ResponseEntity.ok(responseModel);
     }
+
+    @PatchMapping("/{userId}/deactivate")
+    public ResponseEntity<UserResponseModel> deactivateUser(
+            @PathVariable String userId,
+            @AuthenticationPrincipal Jwt jwt) {
+        String requestingAuth0UserId = jwt.getSubject();
+        UserResponseModel responseModel = userService.deactivateUser(userId, requestingAuth0UserId);
+        return ResponseEntity.ok(responseModel);
+    }
+
+    @PatchMapping("/{userId}/inactive")
+    public ResponseEntity<UserResponseModel> setUserInactive(
+            @PathVariable String userId,
+            @AuthenticationPrincipal Jwt jwt) {
+        String requestingAuth0UserId = jwt.getSubject();
+        UserResponseModel responseModel = userService.setUserInactive(userId, requestingAuth0UserId);
+        return ResponseEntity.ok(responseModel);
+    }
+
+    @PatchMapping("/{userId}/reactivate")
+    public ResponseEntity<UserResponseModel> reactivateUser(
+            @PathVariable String userId,
+            @AuthenticationPrincipal Jwt jwt) {
+        String requestingAuth0UserId = jwt.getSubject();
+        UserResponseModel responseModel = userService.reactivateUser(userId, requestingAuth0UserId);
+        return ResponseEntity.ok(responseModel);
+    }
+
+    @GetMapping("/contractors/active")
+    public ResponseEntity<List<UserResponseModel>> getActiveContractors() {
+        return ResponseEntity.ok(userService.getActiveContractors());
+    }
+
+    @GetMapping("/salespersons/active")
+    public ResponseEntity<List<UserResponseModel>> getActiveSalespersons() {
+        return ResponseEntity.ok(userService.getActiveSalespersons());
+    }
+
+    @GetMapping("/customers/active")
+    public ResponseEntity<List<UserResponseModel>> getActiveCustomers() {
+        return ResponseEntity.ok(userService.getActiveCustomers());
+    }
 }

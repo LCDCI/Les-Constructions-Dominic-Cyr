@@ -1,6 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserStatus;
 
 public class UserResponseModel {
 
@@ -16,7 +17,7 @@ public class UserResponseModel {
 
     private String phone;
     private UserRole userRole;
-
+    private UserStatus userStatus;
     private String inviteLink;
 
     public UserResponseModel() {
@@ -76,6 +77,14 @@ public class UserResponseModel {
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public UserStatus getUserStatus() {
+        return userStatus;
+    }
+
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 
     public String getInviteLink() {

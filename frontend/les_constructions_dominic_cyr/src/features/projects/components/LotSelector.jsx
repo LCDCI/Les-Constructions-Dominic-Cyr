@@ -59,6 +59,7 @@ const LotSelector = ({
   selectedLots, 
   onChange, 
   onLotCreated,
+  projectIdentifier,
   // Props to persist lot form state across language switches
   lotFormData,
   onLotFormDataChange,
@@ -110,7 +111,7 @@ const LotSelector = ({
     try {
       setIsLoading(true);
       setError(null);
-      const lots = await fetchLots();
+      const lots = await fetchLots({ projectIdentifier });
       setAvailableLots(lots || []);
     } catch (err) {
       setError(err.message || 'Failed to load lots');
@@ -242,7 +243,10 @@ const LotSelector = ({
         imageIdentifier: imageIdentifier || newLotData.imageIdentifier || null,
       };
 
-      const createdLot = await createLot(lotData);
+      const createdLot = await createLot({
+        projectIdentifier,
+        lotData,
+      });
       
       if (!createdLot || !createdLot.lotId) {
         throw new Error('Lot was created but no lotId was returned');
@@ -566,6 +570,7 @@ LotSelector.propTypes = {
   selectedLots: PropTypes.arrayOf(PropTypes.string).isRequired,
   onChange: PropTypes.func.isRequired,
   onLotCreated: PropTypes.func,
+  projectIdentifier: PropTypes.string,
   // Optional props for persisting lot form state across language switches
   lotFormData: PropTypes.object,
   onLotFormDataChange: PropTypes.func,

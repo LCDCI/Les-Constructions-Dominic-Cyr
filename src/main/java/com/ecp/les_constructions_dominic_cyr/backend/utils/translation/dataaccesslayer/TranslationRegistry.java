@@ -21,21 +21,41 @@ public class TranslationRegistry {
     private final Map<String, String> fileIdMap = new HashMap<>();
     
     public TranslationRegistry() {
-        // Initialize with empty map
-        // File IDs will be added after uploading translation files to file service
-        // 
-        // To add file IDs:
-        // 1. Upload translation JSON files using upload-translations.ps1 or upload-translations.sh
-        // 2. Copy the file IDs from the script output
-        // 3. Add them below:
-        //
-        // Example (replace with actual file IDs after upload):
-        // fileIdMap.put("en.home", "your-english-file-id-here");
-        // fileIdMap.put("fr.home", "your-french-file-id-here");
+        // Home page translations
+        fileIdMap.put("en.home", "f2d54860-30af-48fb-8cfb-dde6b93ce847");
+        fileIdMap.put("fr.home", "a86149c0-452e-4dce-890a-989fe6659f00");
         
         // Contact page translations
-        fileIdMap.put("en.contact", "3c4ef848-4b70-4bfa-9596-e2fdc5541386");
-        fileIdMap.put("fr.contact", "7853c9d6-52c2-4b2e-b9c0-fd10f2696fe3");
+        fileIdMap.put("en.contact", "54897f58-2f88-4e2a-81b2-cced943541bb");
+        fileIdMap.put("fr.contact", "bb7203b2-975a-43be-9d69-5a2847543cec");
+        
+        // Renovations page translations
+        fileIdMap.put("en.renovations", "c73f88fc-934c-4634-a523-917d88ec7dc9");
+        fileIdMap.put("fr.renovations", "64d36b39-21d4-4d6a-b5b4-cf1dd670eb0a");
+        
+        // Realizations page translations
+        fileIdMap.put("en.realizations", "cbb6c67a-bd74-4c07-8a04-95706446183a");
+        fileIdMap.put("fr.realizations", "8fa54390-8e3c-4bcc-a409-f729572e2bde");
+        
+        // Residential Projects page translations
+        fileIdMap.put("en.residentialprojects", "2323ba44-a51f-4385-b102-5559f04ef0c0");
+        fileIdMap.put("fr.residentialprojects", "edc7a148-3150-48e5-b20f-e399f0d9911c");
+        
+        // Project Management page translations
+        fileIdMap.put("en.projectmanagement", "94942154-b27b-4b48-a830-8623cd1275a8");
+        fileIdMap.put("fr.projectmanagement", "a33e3eb0-83f0-4af6-8691-5684d9253298");
+        
+        // 404 Not Found page translations
+        fileIdMap.put("en.notfound", "c0e10c2b-51e6-4ac3-9802-81f8b5ed7686");
+        fileIdMap.put("fr.notfound", "995a0589-e141-40b0-b87e-a895273442c7");
+        
+        // 500 Server Error page translations
+        fileIdMap.put("en.servererror", "befe6470-56ab-4e41-ae87-72e7f02a20eb");
+        fileIdMap.put("fr.servererror", "f54a08b1-b0f6-4fda-9469-dac983b1ef42");
+        
+        // Project Overview page translations
+        fileIdMap.put("en.projectoverview", "b690c9f9-a2ee-4a49-9e28-2d87cb3dc15e");
+        fileIdMap.put("fr.projectoverview", "78c97b4d-2cdd-45e7-93b9-0e5e9d23d668");
     }
     
     /**

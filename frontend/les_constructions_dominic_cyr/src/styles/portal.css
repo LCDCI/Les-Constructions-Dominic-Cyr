@@ -39,6 +39,23 @@
   background: #1d4ed8;
 }
 
+.verification-error-banner {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.verification-error-banner strong {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
 @media (max-width: 480px) {
   .portal-card {
     width: 94%;

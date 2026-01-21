@@ -1,0 +1,50 @@
+{
+  "hero": {
+    "title": "Aperçu du projet"
+  },
+  "details": {
+    "projectInfo": "Informations du projet",
+    "location": "Localisation",
+    "status": "Statut",
+    "budget": "Budget",
+    "timeline": "Calendrier",
+    "description": "Description"
+  },
+  "gallery": {
+    "title": "Galerie du projet",
+    "previousAriaLabel": "Image précédente",
+    "nextAriaLabel": "Image suivante",
+    "imageAlt": "Image du projet",
+    "noImages": "Aucune image disponible"
+  },
+  "specs": {
+    "title": "Spécifications du projet",
+    "squareFootage": "Superficie",
+    "rooms": "Chambres",
+    "bathrooms": "Salles de bain",
+    "finishDate": "Date d'achèvement",
+    "contractor": "Entrepreneur",
+    "architect": "Architecte"
+  },
+  "contact": {
+    "title": "Intéressé par ce projet?",
+    "subtitle": "Communiquez avec notre équipe pour en savoir plus ou discuter de votre propre projet.",
+    "button": "Nous contacter"
+  },
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets résidentiels",
+    "renovation": "Rénovations",
+    "renovations": "Rénovations",
+    "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "company": "Construction Dominic Cyr Inc.",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "Courriel",
+    "copyright": "Droits d'auteur © 2024. Tous droits réservés."
+  }
+}

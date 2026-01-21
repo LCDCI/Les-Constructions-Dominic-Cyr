@@ -1,70 +1,71 @@
 import React from 'react';
 import './LotList.css';
 
-function formatPrice(p) {
-  if (p === null || p === undefined || p === '') return '—';
-  // Try to coerce to a number, then format as currency (use CAD by default)
+function formatPrice(p, isOwner) {
+  if (!isOwner) return '—';
+  if (!p) return '—';
   const n = typeof p === 'number' ? p : Number(p);
-  if (!Number.isNaN(n)) {
-    try {
-      return new Intl.NumberFormat(undefined, {
+  return !Number.isNaN(n)
+    ? new Intl.NumberFormat('en-CA', {
         style: 'currency',
         currency: 'CAD',
-      }).format(n);
-    } catch (e) {
-      return n.toString();
-    }
-  }
-  return String(p);
+      }).format(n)
+    : String(p);
 }
 
 // eslint-disable-next-line react/prop-types
-export default function LotList({ lots = [] }) {
-  if (!lots || lots.length === 0) return null;
+export default function LotList({ lots = [], isOwner = false }) {
+  if (!lots || lots.length === 0) {
+    return (
+      <div className="no-results">
+        <p>No available lots found.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="lots-list" aria-label="Available lots">
-      {lots.map(l => {
-        const imgSrc = l.image
-          ? `/images/lots/${l.image}`
-          : l.lotId
-            ? `/images/lots/lot-${l.lotId}.jpg`
-            : '/images/lots/default.jpg';
+    <div className="table-container">
+      <table className="fixed-table">
+        <thead>
+          <tr>
+            {/* Hide Column Header for ID */}
+            {isOwner && <th style={{ width: '18%' }}>Identifier</th>}
 
-        return (
-          <div
-            className="lot-card"
-            key={l.lotId || `${l.location}-${l.dimensions}`}
-          >
-            <div className="thumb">
-              <img
-                src={imgSrc}
-                alt={l.location ? `Photo of ${l.location}` : 'Lot photo'}
-                loading="lazy"
-              />
-            </div>
-            <div className="lot-info">
-              <h3 className="location" title={l.location}>
-                {l.location || '—'}
-              </h3>
-              <div className="meta">
-                <div className="meta-item">
-                  <strong>Size:</strong> <span>{l.dimensions || '—'}</span>
-                </div>
-                <div className="meta-item">
-                  <span className="price">{formatPrice(l.price)}</span>
-                </div>
-                <div className="meta-item">
-                  <span
-                    className={`status ${String(l.lotStatus || '').toLowerCase()}`}
-                    aria-label={l.lotStatus || 'UNKNOWN'}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })}
+            <th style={{ width: isOwner ? '10%' : '15%' }}>Lot #</th>
+            <th style={{ width: isOwner ? '22%' : '35%' }}>Civic Address</th>
+            <th style={{ width: '12%' }}>Area (sqft)</th>
+            <th style={{ width: '12%' }}>Area (m²)</th>
+            <th style={{ width: '15%' }}>Price</th>
+            <th style={{ width: '11%' }}>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {lots.map(l => (
+            <tr key={l.lotId}>
+              {/* Hide ID Cell */}
+              {isOwner && (
+                <td className="id-cell" title={l.lotId}>
+                  {l.lotId}
+                </td>
+              )}
+
+              <td className="bold-cell">{l.lotNumber || '—'}</td>
+              <td className="address-cell">{l.civicAddress || '—'}</td>
+              <td>{l.dimensionsSquareFeet || '—'}</td>
+              <td>{l.dimensionsSquareMeters || '—'}</td>
+              <td className="price-cell">{formatPrice(l.price, isOwner)}</td>
+              <td>
+                <span
+                  className={`status-pill ${String(l.lotStatus || '').toLowerCase()}`}
+                >
+                  {/* Visitor only ever sees "AVAILABLE" */}
+                  {isOwner ? l.lotStatus || 'UNKNOWN' : 'AVAILABLE'}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

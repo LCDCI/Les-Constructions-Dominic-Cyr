@@ -60,6 +60,7 @@ const ProjectFilter = ({ filters, onFilterChange }) => {
             <option value="DELAYED">Delayed</option>
             <option value="COMPLETED">Completed</option>
             <option value="CANCELLED">Cancelled</option>
+            <option value="ARCHIVED">Archived</option>
           </select>
         </div>
 
