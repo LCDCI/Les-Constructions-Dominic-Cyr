@@ -3,6 +3,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectActivityLogResponseModel;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.List;
 public interface ProjectService {
     ProjectResponseModel createProject(ProjectRequestModel requestModel);
     List<ProjectResponseModel> getAllProjects();
+    List<ProjectResponseModel> getAllProjects(boolean includeArchived);
     ProjectResponseModel getProjectByIdentifier(String projectIdentifier);
     ProjectResponseModel updateProject(String projectIdentifier, ProjectRequestModel requestModel);
     void deleteProject(String projectIdentifier);
@@ -17,5 +19,13 @@ public interface ProjectService {
     List<ProjectResponseModel> getProjectsByCustomerId(String customerId);
     List<ProjectResponseModel> getProjectsByDateRange(LocalDate startDate, LocalDate endDate);
     List<ProjectResponseModel> filterProjects(ProjectStatus status, LocalDate startDate, LocalDate endDate, String customerId);
+    List<ProjectResponseModel> filterProjects(ProjectStatus status, LocalDate startDate, LocalDate endDate, String customerId, boolean includeArchived);
 
+    ProjectResponseModel assignContractorToProject(String projectIdentifier, String contractorId, String requestingAuth0UserId);
+    ProjectResponseModel removeContractorFromProject(String projectIdentifier, String requestingAuth0UserId);
+    ProjectResponseModel assignSalespersonToProject(String projectIdentifier, String salespersonId, String requestingAuth0UserId);
+    ProjectResponseModel removeSalespersonFromProject(String projectIdentifier, String requestingAuth0UserId);
+    ProjectResponseModel assignCustomerToProject(String projectIdentifier, String customerId, String requestingAuth0UserId);
+    ProjectResponseModel removeCustomerFromProject(String projectIdentifier, String requestingAuth0UserId);
+    List<ProjectActivityLogResponseModel> getProjectActivityLog(String projectIdentifier);
 }

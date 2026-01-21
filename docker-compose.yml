@@ -10,13 +10,13 @@ services:
     container_name: backend
     ports:
       - "8080:8080"
-    command: [ "/bin/bash", "-c", "./wait-for-it.sh postgres1:5432 --timeout=30 --strict -- java -jar app.jar" ]
+    command: [ "java", "-jar", "app.jar" ]
     environment:
       FILES_SERVICE_BASE_URL: "http://files-service:8080"
       FILE_SERVICE_URL: "${FILE_SERVICE_URL}"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres1/cdc-db"
-      SPRING_DATASOURCE_USERNAME: "user"
-      SPRING_DATASOURCE_PASSWORD: "pwd"
+      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
+      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
+      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
       SPRING_PROFILES_ACTIVE: "docker"
       SERVER_TOMCAT_RELAXED_PATH_CHARS: "|,%,[,]"
@@ -31,12 +31,18 @@ services:
       AUTH0_ROLE_SALESPERSON: ${AUTH0_ROLE_SALESPERSON}
       AUTH0_ROLE_OWNER: ${AUTH0_ROLE_OWNER}
       APP_INVITE_RESULT_URL: ${APP_INVITE_RESULT_URL}
+      GOOGLE_ANALYTICS_PROPERTY_ID: ${GA_PROPERTY_ID}
+      GOOGLE_ANALYTICS_CREDENTIALS_PATH: "/app/config/google-analytics-credentials.json"
 
+    volumes:
+      - ${GA_CREDENTIALS_PATH}:/app/config/google-analytics-credentials.json:ro
+    
     depends_on:
       files-service:
         condition: service_started
       postgres1:
         condition: service_healthy
+        required: false
     networks:
       - app-network
 
@@ -48,10 +54,19 @@ services:
       context: ./frontend/les_constructions_dominic_cyr
       dockerfile: Dockerfile
       args:
-        - VITE_API_BASE=/api/v1
+        - VITE_API_BASE=${VITE_API_BASE:-/api/v1}
+        - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN:-${AUTH0_DOMAIN}}
+        - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID:-${AUTH0_CLIENT_ID}}
+        - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE:-${AUTH0_AUDIENCE}}
     container_name: lcdci-frontend
     ports:
       - "3000:80"
+    environment:
+      - BACKEND_URL=http://backend:8080
+      - VITE_API_BASE=${VITE_API_BASE:-/api/v1}
+      - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN:-${AUTH0_DOMAIN}}
+      - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID:-${AUTH0_CLIENT_ID}}
+      - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE:-${AUTH0_AUDIENCE}}
     depends_on:
       - backend
     networks:
@@ -60,6 +75,8 @@ services:
   # POSTGRES (database)
   #######################################################################
   postgres1:
+    profiles:
+      - local-only
     image: postgres:16
     container_name: postgres1-cdc
     hostname: postgres1
@@ -89,8 +106,6 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
       - 9005:80
-    depends_on:
-      - postgres1
     networks:
       - app-network
   #######################################################################
@@ -105,7 +120,7 @@ services:
     ports:
       - "8082:8080"   # external 8082 -> internal 8080
     environment:
-      DB_URL: "${FILES_DB_URL}"
+      DB_URL: "${FILES_DB_URL:-postgresql://files-db:5432/files_db?sslmode=disable}"
       # S3-compatible storage configuration (works with MinIO or DigitalOcean Spaces)
       MINIO_ENDPOINT: "${SPACES_ENDPOINT:-minio:9000}"
       MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY:-${MINIO_ROOT_USER}}"
@@ -145,7 +160,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-      start_period: 30s
+      start_period: 25s
     networks:
       - app-network
 

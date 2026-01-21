@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Home",
+    "projects": "Residential Projects",
+    "renovation": "Renovations",
+    "renovations": "Renovations",
+    "projectManagement": "Project Management",
+    "realizations": "Realizations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois",
+    "phone": "514-123-4567",
+    "email": "constructions.dcyr@gmail.com"
+  },
+  "hero": {
+    "line1": "PROJECT MANAGEMENT,",
+    "line2": "FOR PEACE OF MIND"
+  },
+  "intro": {
+    "heading": {
+      "title": "Planning, organization, and site follow-up without the friction",
+      "line1": "Planning",
+      "line2": "Organization",
+      "line3": "Site follow-up"
+    },
+    "tagline": "We take care of it!",
+    "paragraph": "You own a piece of land and want to entrust project management to a qualified contractor? Les Constructions Dominic Cyr Inc. is here for you, whether for specific construction stages or a turnkey project.",
+    "image1": {
+      "alt": "Professionals collaborating on project"
+    },
+    "image2": {
+      "alt": "3D floor plan rendering"
+    },
+    "image3": {
+      "alt": "Construction tools and materials"
+    }
+  },
+  "advantages": {
+    "heading": "There are many advantages to entrusting us with the management of your project:",
+    "item1": "Consulting service",
+    "item2": "Compliance with building regulations",
+    "item3": "Planning with all stakeholders",
+    "item4": "Establishment of the work schedule",
+    "item5": "Cost control",
+    "item6": "Rigorous monitoring",
+    "item7": "Compliance assurance",
+    "pricing": "Depending on the scope and complexity of the project, pricing could be at a fixed cost or at a marked-up price. Contact us to discuss.",
+    "contactLink": "Contact us"
+  },
+  "gallery": {
+    "heading": "Some project management achievements by Les Constructions Dominic Cyr Inc.",
+    "caption": "Residence",
+    "image1": {
+      "alt": "Residence"
+    },
+    "image2": {
+      "alt": "Residence"
+    },
+    "image3": {
+      "alt": "Residence"
+    }
+  }
+}

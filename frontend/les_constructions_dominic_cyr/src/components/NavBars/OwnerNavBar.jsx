@@ -17,14 +17,17 @@ import {
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
 import { FaMapLocationDot } from 'react-icons/fa6';
-import { CgProfile } from "react-icons/cg";
+import { CgProfile } from 'react-icons/cg';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
   const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+    import.meta.env.VITE_FILES_SERVICE_URL || 
+    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
+      : (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`));
   const logoId = import.meta.env.VITE_LOGO_ID;
 
   const toggleMenu = () => {
@@ -42,7 +45,6 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    // Cleanup on unmount
     return () => {
       document.body.classList.remove('menu-open');
     };
@@ -217,8 +219,8 @@ const Navbar = () => {
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/analytics-reports"
-                  className={`navbar-link ${isActive('/analytics-reports')}`}
+                  to="/reports"
+                  className={`navbar-link ${isActive('/reports')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">

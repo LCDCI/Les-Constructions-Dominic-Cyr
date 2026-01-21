@@ -1,8 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FaDownload } from 'react-icons/fa6';
 import '../../../styles/FilesPage.css';
 
-const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 
+    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
+      : `${window.location.origin}/files`);
 
 const getFileIcon = (contentType = '') => {
     if (contentType.includes('pdf')) return <span className="file-icon" style={{ color: '#E53935' }}>&#128441;</span>;
@@ -20,9 +24,20 @@ const formatCategory = (contentType = '') => {
     return 'Document';
 };
 
-export default function FileCard({ file, onDelete, canDelete = false }) {
+export default function FileCard({ file, onDelete, onDownload, canDelete = false, userNameMap = {} }) {
     if (!file) return null;
     const safeContentType = file.contentType || '';
+
+    const handleDownload = () => {
+        if (onDownload) {
+            onDownload(file.id, file.fileName);
+        }
+    };
+
+    // Get user name from map, fallback to ID or 'Unknown'
+    const uploadedByName = file.uploadedBy 
+        ? (userNameMap[file.uploadedBy] || file.uploadedBy || 'Unknown')
+        : 'Unknown';
 
     return (
         <tr>
@@ -30,11 +45,16 @@ export default function FileCard({ file, onDelete, canDelete = false }) {
                 {getFileIcon(safeContentType)} {file.fileName || 'Untitled'}
             </td>
             <td>{formatCategory(safeContentType)}</td>
-            <td>{file.uploadedBy || 'Unknown'}</td>
+            <td>{uploadedByName}</td>
             <td className="document-action-buttons">
                 <a href={`${BASE_API_URL}/files/${file.id}`} target="_blank" rel="noopener noreferrer">
                     <button className="btn-view">View</button>
                 </a>
+                {onDownload && (
+                    <button className="btn-download" onClick={handleDownload}>
+                        <FaDownload /> Download
+                    </button>
+                )}
                 {canDelete && (
                     <button className="btn-delete" onClick={() => onDelete(file.id)}>
                         Delete
@@ -55,5 +75,7 @@ FileCard.propTypes = {
         createdAt: PropTypes.string,
     }),
     onDelete: PropTypes.func.isRequired,
+    onDownload: PropTypes.func,
     canDelete: PropTypes.bool,
+    userNameMap: PropTypes.object,
 };

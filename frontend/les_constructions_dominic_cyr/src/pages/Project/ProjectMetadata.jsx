@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
+import { FiUsers } from 'react-icons/fi';
 import '../../styles/Project/ProjectMetadata.css';
 
 const ProjectMetadata = () => {
@@ -60,10 +61,20 @@ const ProjectMetadata = () => {
 
     fetchMetadata();
 
+    // Refresh data every 30 seconds
     const interval = setInterval(fetchMetadata, 30000);
+
+    // Refresh when page becomes visible (tab focus)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchMetadata();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       document.documentElement.style.removeProperty('--project-primary');
       document.documentElement.style.removeProperty('--project-tertiary');
       document.documentElement.style.removeProperty('--project-buyer');
@@ -120,7 +131,7 @@ const ProjectMetadata = () => {
         {metadata.imageIdentifier && (
           <div className="hero-image">
             <img
-              src={`http://localhost:8082/files/${metadata.imageIdentifier}`}
+              src={`${import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend')) ? 'https://files-service-app-xubs2.ondigitalocean.app' : `${window.location.origin}/files`)}/files/${metadata.imageIdentifier}`}
               alt={metadata.projectName}
             />
           </div>
@@ -181,47 +192,78 @@ const ProjectMetadata = () => {
 
         {metadata.assignedUsers && (
           <section className="metadata-section">
-            <h2 style={{ color: metadata.primaryColor }}>Assigned Team</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+              <h2 style={{ color: metadata.primaryColor, margin: 0 }}>Assigned Team</h2>
+              <a
+                href={`/projects/${projectId}/team-management`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  backgroundColor: metadata.primaryColor,
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: 'pointer'
+                }}
+              >
+                <FiUsers size={18} />
+                Manage Team
+              </a>
+            </div>
             <div className="team-grid">
-              {metadata.assignedUsers.contractor && (
+              {metadata.assignedUsers.contractors && metadata.assignedUsers.contractors.length > 0 && (
                 <div
                   className="team-member"
                   style={{ borderColor: metadata.tertiaryColor }}
                 >
-                  <h3>Contractor</h3>
-                  <p className="member-name">
-                    {metadata.assignedUsers.contractor.firstName}{' '}
-                    {metadata.assignedUsers.contractor.lastName}
-                  </p>
-                  <p className="member-contact">
-                    {metadata.assignedUsers.contractor.primaryEmail}
-                  </p>
-                  {metadata.assignedUsers.contractor.phone && (
-                    <p className="member-contact">
-                      {metadata.assignedUsers.contractor.phone}
-                    </p>
-                  )}
+                  <h3>Contractors</h3>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px' }}>
+                    {metadata.assignedUsers.contractors.map((contractor) => (
+                      <li key={contractor.userIdentifier} style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', paddingBottom: '8px' }}>
+                        <p className="member-name" style={{ marginBottom: '4px' }}>
+                          {contractor.firstName} {contractor.lastName}
+                        </p>
+                        <p className="member-contact" style={{ marginBottom: contractor.phone ? '2px' : 0 }}>
+                          {contractor.primaryEmail}
+                        </p>
+                        {contractor.phone && (
+                          <p className="member-contact" style={{ marginBottom: 0 }}>
+                            {contractor.phone}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
-              {metadata.assignedUsers.salesperson && (
+              {metadata.assignedUsers.salespersons && metadata.assignedUsers.salespersons.length > 0 && (
                 <div
                   className="team-member"
                   style={{ borderColor: metadata.tertiaryColor }}
                 >
-                  <h3>Salesperson</h3>
-                  <p className="member-name">
-                    {metadata.assignedUsers.salesperson.firstName}{' '}
-                    {metadata.assignedUsers.salesperson.lastName}
-                  </p>
-                  <p className="member-contact">
-                    {metadata.assignedUsers.salesperson.primaryEmail}
-                  </p>
-                  {metadata.assignedUsers.salesperson.phone && (
-                    <p className="member-contact">
-                      {metadata.assignedUsers.salesperson.phone}
-                    </p>
-                  )}
+                  <h3>Salespersons</h3>
+                  <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: '10px' }}>
+                    {metadata.assignedUsers.salespersons.map((salesperson) => (
+                      <li key={salesperson.userIdentifier} style={{ borderBottom: '1px solid rgba(0,0,0,0.08)', paddingBottom: '8px' }}>
+                        <p className="member-name" style={{ marginBottom: '4px' }}>
+                          {salesperson.firstName} {salesperson.lastName}
+                        </p>
+                        <p className="member-contact" style={{ marginBottom: salesperson.phone ? '2px' : 0 }}>
+                          {salesperson.primaryEmail}
+                        </p>
+                        {salesperson.phone && (
+                          <p className="member-contact" style={{ marginBottom: 0 }}>
+                            {salesperson.phone}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
@@ -245,6 +287,16 @@ const ProjectMetadata = () => {
                   )}
                 </div>
               )}
+
+              {(!metadata.assignedUsers.contractors || metadata.assignedUsers.contractors.length === 0) && 
+               (!metadata.assignedUsers.salespersons || metadata.assignedUsers.salespersons.length === 0) && 
+               !metadata.assignedUsers.customer && (
+                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 20px' }}>
+                  <p style={{ color: '#999', fontSize: '14px' }}>
+                    No team members assigned yet.
+                  </p>
+                </div>
+              )}
             </div>
           </section>
         )}
@@ -263,6 +315,9 @@ const ProjectMetadata = () => {
       </div>
 
       <div className="button-container">
+        <a href={`/projects/${projectId}/schedule`} className="project-metadata-schedule">
+          View Project Schedule
+        </a>
         <a href={`/projects`} className="project-metadata-back">
           Back to projects
         </a>

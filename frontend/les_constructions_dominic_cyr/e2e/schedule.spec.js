@@ -9,24 +9,24 @@ test.describe('Schedule Section', () => {
         body: JSON.stringify([
           {
             scheduleIdentifier: 'SCH-001',
-            taskDate: '2024-11-26',
-            taskDescription: 'Begin Excavation',
+            scheduleStartDate: '2024-11-26',
+            scheduleEndDate: '2024-11-26',
+            scheduleDescription: 'Begin Excavation',
             lotNumber: 'Lot 53',
-            dayOfWeek: 'Wednesday',
           },
           {
             scheduleIdentifier: 'SCH-002',
-            taskDate: '2024-11-26',
-            taskDescription: 'Plumbing',
+            scheduleStartDate: '2024-11-26',
+            scheduleEndDate: '2024-11-26',
+            scheduleDescription: 'Plumbing',
             lotNumber: 'Lot 57',
-            dayOfWeek: 'Wednesday',
           },
           {
             scheduleIdentifier: 'SCH-003',
-            taskDate: '2024-11-27',
-            taskDescription: 'Electrical',
+            scheduleStartDate: '2024-11-27',
+            scheduleEndDate: '2024-11-27',
+            scheduleDescription: 'Electrical',
             lotNumber: 'Lot 54',
-            dayOfWeek: 'Thursday',
           },
         ]),
       });
@@ -94,10 +94,10 @@ test.describe('Schedule Section', () => {
         body: JSON.stringify([
           {
             scheduleIdentifier: 'SCH-001',
-            taskDate: '2024-11-26',
-            taskDescription: 'Begin Excavation',
+            scheduleStartDate: '2024-11-26',
+            scheduleEndDate: '2024-11-26',
+            scheduleDescription: 'Begin Excavation',
             lotNumber: 'Lot 53',
-            dayOfWeek: 'Tuesday',
           },
         ]),
       });
@@ -114,10 +114,10 @@ test.describe('Schedule Section', () => {
   test('should display multiple schedule items correctly', async ({ page }) => {
     const mockSchedules = Array.from({ length: 5 }, (_, i) => ({
       scheduleIdentifier: `SCH-${i + 1}`,
-      taskDate: '2024-11-26',
-      taskDescription: `Task ${i + 1}`,
+      scheduleStartDate: '2024-11-26',
+      scheduleEndDate: '2024-11-26',
+      scheduleDescription: `Task ${i + 1}`,
       lotNumber: `Lot ${i + 50}`,
-      dayOfWeek: 'Wednesday',
     }));
 
     await page.route('**/api/v1/owners/schedules', async route => {

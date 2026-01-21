@@ -19,11 +19,11 @@ import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    iconRetinaUrl: iconRetina,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+  iconUrl: icon,
+  iconRetinaUrl: iconRetina,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
@@ -31,7 +31,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const DEFAULT_COORDS = [45.31941496688032, -72.79945127353109];
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/v1';
+  import.meta.env.VITE_API_BASE || '/api/v1';
 
 export const projectOverviewApi = {
   getProjectOverview: async projectIdentifier => {
@@ -213,8 +213,10 @@ const ProjectOverviewPage = () => {
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
 
-  const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || 
+    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
+      : `${window.location.origin}/files`);
 
   useEffect(() => {
     const fetchOverview = async () => {
@@ -287,7 +289,7 @@ const ProjectOverviewPage = () => {
     switch (title) {
       case 'living environment':
         return IoLeafOutline;
-      case 'new houses':
+      case 'new realizations':
         return HiOutlineHomeModern;
       case 'lots':
         return LuMapPinned;
@@ -302,8 +304,8 @@ const ProjectOverviewPage = () => {
     switch (title) {
       case 'living environment':
         return 'living-environment';
-      case 'new houses':
-        return 'houses';
+      case 'new realizations':
+        return 'realizations';
       case 'lots':
         return 'lots';
       default:
@@ -358,20 +360,18 @@ const ProjectOverviewPage = () => {
             alt={overview.projectName}
             className="hero-image"
             onError={e => {
-             e.target.onerror = null; 
-             e.target.src = '/fallback.jpg'; 
-  }}
+              e.target.onerror = null;
+              e.target.src = '/fallback.jpg';
+            }}
           />
-          <div className="hero-overlay">
-            <div className="hero-content">
-              <h1 className="hero-title">
-                {overview.heroTitle || overview.projectName}
-              </h1>
-              {overview.heroSubtitle && (
-                <p className="hero-subtitle">{overview.heroSubtitle}</p>
-              )}
-            </div>
-          </div>
+        </div>
+        <div className="hero-content">
+          <h1 className="hero-title">
+            {overview.heroTitle || overview.projectName}
+          </h1>
+          {overview.heroSubtitle && (
+            <p className="hero-subtitle">{overview.heroSubtitle}</p>
+          )}
         </div>
       </section>
       {overview.overviewSectionContent && (
@@ -384,53 +384,6 @@ const ProjectOverviewPage = () => {
             {overview.heroDescription && (
               <p className="section-description">{overview.heroDescription}</p>
             )}
-          </div>
-        </section>
-      )}
-      {overview.features && overview.features.length > 0 && (
-        <section className="project-section features-section">
-          <div className="section-container">
-            {overview.featuresSectionTitle && (
-              <h2 className="section-title">{overview.featuresSectionTitle}</h2>
-            )}
-            <div className="features-grid">
-              {overview.features.map((feature, index) => {
-                const IconComponent = getFeatureIcon(feature.featureTitle);
-                const path = getFeaturePath(feature.featureTitle);
-                const isClickable = !!path;
-
-                const handleClick = () => {
-                  if (isClickable) {
-                    //Ideal solution, but we do not have houses or living environment per project for the pages
-                    //navigate(`/${projectIdentifier}/${path}`);
-                    navigate(`/${path}`);
-                  }
-                };
-
-                return (
-                  <div
-                    key={index}
-                    className={`feature-card ${isClickable ? 'clickable-card' : ''}`}
-                    onClick={handleClick}
-                    role={isClickable ? 'button' : undefined}
-                    tabIndex={isClickable ? 0 : undefined}
-                    onKeyDown={e => {
-                      if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
-                        handleClick();
-                      }
-                    }}
-                  >
-                    <IconComponent className="feature-icon" />
-                    <h3 className="feature-title">{feature.featureTitle}</h3>
-                    {feature.featureDescription && (
-                      <p className="feature-description">
-                        {feature.featureDescription}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
           </div>
         </section>
       )}
@@ -518,6 +471,12 @@ const ProjectOverviewPage = () => {
           onClick={() => navigate('/residential-projects')}
         >
           &larr; Back to Residential Projects
+        </button>
+        <button
+          className="view-lots-button"
+          onClick={() => navigate(`/projects/${projectIdentifier}/lots`)}
+        >
+          View Available Lots &rarr;
         </button>
       </div>
     </div>

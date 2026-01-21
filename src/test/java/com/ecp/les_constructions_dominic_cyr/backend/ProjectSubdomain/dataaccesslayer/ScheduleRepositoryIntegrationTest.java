@@ -40,26 +40,26 @@ class ScheduleRepositoryIntegrationTest {
 
         schedule1 = Schedule.builder()
                 .scheduleIdentifier("SCH-REPO-001")
-                .taskDate(startOfWeek)
-                .taskDescription("Begin Excavation")
-                .lotNumber("Lot 53")
-                .dayOfWeek("Monday")
+                .scheduleStartDate(startOfWeek)
+                .scheduleEndDate(startOfWeek)
+                .scheduleDescription("Begin Excavation")
+                .lotId("Lot 53")
                 .build();
 
         schedule2 = Schedule.builder()
                 .scheduleIdentifier("SCH-REPO-002")
-                .taskDate(startOfWeek.plusDays(2))
-                .taskDescription("Plumbing")
-                .lotNumber("Lot 57")
-                .dayOfWeek("Wednesday")
+                .scheduleStartDate(startOfWeek.plusDays(2))
+                .scheduleEndDate(startOfWeek.plusDays(2))
+                .scheduleDescription("Plumbing")
+                .lotId("Lot 57")
                 .build();
 
         schedule3 = Schedule.builder()
                 .scheduleIdentifier("SCH-REPO-003")
-                .taskDate(startOfWeek.plusDays(20))
-                .taskDescription("Future Task")
-                .lotNumber("Lot 99")
-                .dayOfWeek("Sunday")
+                .scheduleStartDate(startOfWeek.plusDays(20))
+                .scheduleEndDate(startOfWeek.plusDays(20))
+                .scheduleDescription("Future Task")
+                .lotId("Lot 99")
                 .build();
 
         scheduleRepository.save(schedule1);
@@ -78,7 +78,7 @@ class ScheduleRepositoryIntegrationTest {
 
         assertTrue(result.isPresent());
         assertEquals("SCH-REPO-001", result.get().getScheduleIdentifier());
-        assertEquals("Begin Excavation", result.get().getTaskDescription());
+        assertEquals("Begin Excavation", result.get().getScheduleDescription());
         assertEquals("Lot 53", result.get().getLotNumber());
     }
 
@@ -105,12 +105,12 @@ class ScheduleRepositoryIntegrationTest {
     }
 
     @Test
-    void findByTaskDateBetween_shouldReturnSchedulesInDateRange() {
+    void findByScheduleStartDateBetween_shouldReturnSchedulesInDateRange() {
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate endOfWeek = startOfWeek.plusDays(6);
 
-        List<Schedule> result = scheduleRepository.findByTaskDateBetween(startOfWeek, endOfWeek);
+        List<Schedule> result = scheduleRepository.findByScheduleStartDateBetween(startOfWeek, endOfWeek);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -128,10 +128,10 @@ class ScheduleRepositoryIntegrationTest {
     void save_shouldPersistSchedule() {
         Schedule newSchedule = Schedule.builder()
                 .scheduleIdentifier("SCH-REPO-NEW")
-                .taskDate(LocalDate.now())
-                .taskDescription("New Task")
-                .lotNumber("Lot 100")
-                .dayOfWeek("Friday")
+                .scheduleStartDate(LocalDate.now())
+                .scheduleEndDate(LocalDate.now())
+                .scheduleDescription("New Task")
+                .lotId("Lot 100")
                 .build();
 
         Schedule saved = scheduleRepository.save(newSchedule);

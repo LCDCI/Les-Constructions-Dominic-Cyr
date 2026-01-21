@@ -41,6 +41,7 @@ out/
 
 ## DATA DIRECTORIES (for persistent local data until deployment)
 data/
+minio-data/
 
 # Playwright
 node_modules/
@@ -52,3 +53,5 @@ node_modules/
 
 # Frontend build artifacts
 frontend/les_constructions_dominic_cyr/dist/
+
+google-analytics-credentials.json

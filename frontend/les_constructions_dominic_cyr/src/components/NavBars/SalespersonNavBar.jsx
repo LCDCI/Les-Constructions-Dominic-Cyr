@@ -17,7 +17,10 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
 
-    const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+    const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || 
+    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
+      : (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`));
     const logoId = import.meta.env. VITE_LOGO_ID;
 
     const toggleMenu = () => {

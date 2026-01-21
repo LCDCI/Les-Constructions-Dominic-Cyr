@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useAuth0 } from '@auth0/auth0-react';
 import LanguageSwitcher from './LanguageSwitcher';
 import LotSelector from './LotSelector';
 import { projectApi } from '../api/projectApi';
@@ -115,6 +116,7 @@ const translations = {
 };
 
 const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
+  const { getAccessTokenSilently } = useAuth0();
   // Start with French form first
   const [currentLanguage, setCurrentLanguage] = useState('fr');
   
@@ -485,7 +487,14 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
       // Note: Translation files will be uploaded separately after project creation
       // Backend will need to be updated to store references to translation files
 
-      const createdProject = await projectApi.createProject(projectData);
+      // Get auth token
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://construction-api.loca',
+        },
+      });
+
+      const createdProject = await projectApi.createProject(projectData, token);
       console.log('Project created successfully:', createdProject);
 
       // If a cover image was selected, upload it and update the project
@@ -502,7 +511,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
           if (uploadedId) {
             await projectApi.updateProject(createdProject.projectIdentifier, {
               imageIdentifier: uploadedId,
-            });
+            }, token);
           }
         } catch (uploadErr) {
           console.error('Cover image upload failed:', uploadErr);

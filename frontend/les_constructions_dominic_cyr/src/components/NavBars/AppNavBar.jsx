@@ -114,10 +114,10 @@ export default function AppNavBar() {
             </NavLink>
 
             <NavLink
-                to="/realisations"
+                to="/realizations"
                 className={({ isActive }) => (isActive ? 'active' : '')}
             >
-              {t('nav.realisations', 'Réalisations')}
+              {t('nav.realizations', 'Réalisations')}
             </NavLink>
 
             <NavLink
@@ -147,7 +147,7 @@ export default function AppNavBar() {
                 onClick={toggleLanguage}
                 aria-label="Toggle language"
             >
-              {isFrench ? 'FR' : 'EN'}
+              {isFrench ? 'EN' : 'FR'}
             </button>
           </div>
 

@@ -1,226 +1,311 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import '../../styles/Public_Facing/home.css';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 export default function Home() {
   const { t } = usePageTranslations('home');
+  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || 
+    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
+      : (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`));
+  const [videoLoaded, setVideoLoaded] = useState(false);
+
+  const photos = useMemo(
+    () => ({
+      hero: '2186d36c-4dc7-400b-8d9e-824a5b06f7ba',
+      think: '1634e9ee-2680-41d1-b28a-47353f842d9c',
+      build: '1659ff85-b160-4111-b419-84834eb4375a',
+      live: '1681b3d5-8f0a-4daf-9590-53a1ce37cf20',
+      collage1: '48f50cea-f368-41d6-91c3-ae55157bd868',
+      collage2: '55378cf7-c0a0-48be-b5f9-9d2507eff177',
+      collage3: '610354b2-8a9c-4e87-95a1-3cc63f494c6e',
+      project2: 'bb6dd250-ed32-4041-8b4e-020e2ef45e2f',
+      contact: 'dff685b4-05a5-443a-9c84-848fa9dbd905',
+    }),
+    []
+  );
+
+  useEffect(() => {
+    const elements = Array.from(document.querySelectorAll('[data-animate]'));
+    if (!elements.length) return;
+
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReduced) {
+      elements.forEach(el => el.classList.add('animated'));
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animated');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -80px 0px' }
+    );
+
+    elements.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
+  // Ensure loader doesn't block on small screens where video is hidden
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      setVideoLoaded(true);
+    }
+  }, []);
+
   return (
-    <div className="home-content">
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-image-container">
-          <img
-            src="https://placehold.co/1920x600/4A90A4/FFFFFF?text=Les+Constructions+Dominic+Cyr&font=roboto"
-            alt={t('hero.alt', 'Construction résidentielle')}
+    <div className="home">
+      {!videoLoaded && (
+        <div className="page-loader">
+          <div className="loader-spinner"></div>
+        </div>
+      )}
+      {/* HERO SECTION */}
+      <section className="hero">
+        <div className="hero-background">
+          <video
+            src={`${filesServiceUrl}/files/${photos.hero}`}
             className="hero-image"
-            onError={e => {
-              e.target.style.backgroundColor = '#4A90A4';
-              e.target.style.color = '#FFFFFF';
-              e.target.style.display = 'flex';
-              e.target.style.alignItems = 'center';
-              e.target.style.justifyContent = 'center';
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            onCanPlay={() => setVideoLoaded(true)}
+            onLoadedData={() => setVideoLoaded(true)}
+            onPlaying={() => setVideoLoaded(true)}
+            onLoadStart={() => {
+              if (typeof window !== 'undefined' && window.innerWidth > 768) {
+                setVideoLoaded(false);
+              }
             }}
           />
+          <div className="hero-overlay" />
         </div>
-      </section>
-
-      {/* Photo Collage Section */}
-      <section className="photo-collage-section">
-        <div className="collage-wrapper">
-          {/* Top Row - Three Images */}
-          <div className="collage-top-row">
-            <div className="collage-item collage-landscape-left">
-              <img
-                src="https://placehold.co/600x400/4A90A4/FFFFFF?text=Maisons+Style+Grange&font=roboto"
-                  alt={t('gallery.terrace', 'Terrasse moderne')}
-                className="collage-image"
-              />
-            </div>
-            <div className="collage-item collage-landscape-middle">
-              <img
-                src="https://placehold.co/600x400/5A7D8C/FFFFFF?text=Maison+Moderne+2+Etages&font=roboto"
-                  alt={t('gallery.modernHouse', 'Maison moderne illuminée')}
-                className="collage-image"
-              />
-            </div>
-            <div className="collage-item collage-portrait-right">
-              <img
-                src="https://placehold.co/400x600/2C3E50/FFFFFF?text=Terrasse+Moderne&font=roboto"
-                alt="Terrasse moderne"
-                className="collage-image"
-              />
-            </div>
-          </div>
-
-          {/* Bottom Row - Panoramic Image */}
-          <div className="collage-bottom-row">
-            <div className="collage-panoramic">
-              <img
-                src="https://placehold.co/1800x500/4A90A4/FFFFFF?text=Piscine+et+Residence&font=roboto"
-                  alt={t('gallery.pool', 'Piscine et résidence')}
-                className="collage-panoramic-image"
-              />
+        <div className="hero-container">
+          <div className="hero-content" data-animate>
+            <p className="hero-label">{t('hero.label', 'DESIGN & BUILD')}</p>
+            <h1 className="hero-heading">{t('hero.title', 'Crafting Your Dream Space')}</h1>
+            <p className="hero-description">{t('hero.subtitle', 'Quality construction, timeless design, since 1990')}</p>
+            <div className="hero-buttons">
+              <Link to="/realizations" className="btn btn-primary">{t('hero.button1', 'Discover')}</Link>
+              <Link to="/contact" className="btn btn-secondary">{t('hero.button2', 'Get In Touch')}</Link>
             </div>
           </div>
         </div>
+        <div className="scroll-down" data-animate>
+          <div className="scroll-icon"></div>
+          <p>{t('hero.scroll', 'Scroll')}</p>
+        </div>
       </section>
 
-      {/* Main Content Section */}
-      <section className="main-content-section">
-        <div className="content-wrapper">
-          {/* Accompaniment Section */}
-          <div className="accompaniment-section">
-            <div className="section-header">
-              <h2 className="section-title">{t('accompaniment.title', 'UN ACCOMPAGNEMENT SUR MESURE')}</h2>
-              <h3 className="section-subtitle">{t('accompaniment.subtitle', 'Une expérience conviviale')}</h3>
+      {/* THINK SECTION */}
+      <section className="content-section featured-section offset-left">
+        <div className="section-image-container" data-animate>
+          <img
+            src={`${filesServiceUrl}/files/${photos.think}`}
+            alt="Design concept"
+            className="section-image"
+            loading="lazy"
+          />
+        </div>
+        <div className="section-text-wrapper" data-animate>
+          <div className="section-header">
+            <h2 className="section-title">
+               {t('think.title', 'intelligent, practical and comfortable spaces')}
+            </h2>
+            <p className="section-subtitle">
+              {t('think.subtitle', 'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.')}
+            </p>
+            <Link to="/realizations" className="link-arrow">
+              {t('think.link', 'Discover')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* BUILD SECTION */}
+      <section className="content-section featured-section alt reverse offset-right">
+        <div className="section-image-container" data-animate>
+          <img
+            src={`${filesServiceUrl}/files/${photos.build}`}
+            alt="Construction"
+            className="section-image"
+            loading="lazy"
+          />
+        </div>
+        <div className="section-text-wrapper" data-animate>
+          <div className="section-header">
+            <h2 className="section-title">
+              {t('build.title', 'a strong relationship and quality partnership')}
+            </h2>
+            <p className="section-subtitle">
+              {t('build.subtitle', 'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.')}
+            </p>
+            <Link to="/contact" className="link-arrow">
+              {t('build.link', 'Contact Us')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* LIVE SECTION */}
+      <section className="content-section featured-section offset-left">
+        <div className="section-image-container" data-animate>
+          <img
+            src={`${filesServiceUrl}/files/${photos.live}`}
+            alt="Lifestyle"
+            className="section-image"
+            loading="lazy"
+          />
+        </div>
+        <div className="section-text-wrapper" data-animate>
+          <div className="section-header">
+            <h2 className="section-title">
+               {t('live.title', 'in a space that reflects your values')}
+            </h2>
+            <p className="section-subtitle">
+              {t('live.subtitle', 'Your home is one of the most important investments of your life. Choose reliability and lasting quality.')}
+            </p>
+            <Link to="/residential-projects" className="link-arrow">
+              {t('live.link', 'Explore Projects')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* PORTFOLIO GRID */}
+      <section className="portfolio-section">
+        <div className="container">
+          <div className="section-header center" data-animate>
+            <span className="section-kicker">{t('portfolio.kicker', 'Our Work')}</span>
+            <h2 className="section-title">{t('portfolio.title', 'Projects & Achievements')}</h2>
+          </div>
+          <div className="portfolio-grid">
+            <Link to="/projects/proj-001-foresta/overview" className="portfolio-card" data-animate>
+              <img
+                src={`${filesServiceUrl}/files/${photos.collage1}`}
+                alt="Foresta Project"
+                loading="lazy"
+                className="card-image-bg"
+              />
+              <div className="card-overlay" />
+              <div className="card-content">
+                <h3 className="card-title">{t('portfolio.foresta', 'Foresta')}</h3>
+                <p className="card-subtitle">{t('portfolio.forestaSubtitle', 'Residential Project')}</p>
+              </div>
+            </Link>
+
+            <Link to="/projects/proj-002-panorama/overview" className="portfolio-card" data-animate>
+              <img
+                src={`${filesServiceUrl}/files/${photos.collage2}`}
+                alt="Panorama Project"
+                loading="lazy"
+                className="card-image-bg"
+              />
+              <div className="card-overlay" />
+              <div className="card-content">
+                <h3 className="card-title">{t('portfolio.panorama', 'Panorama')}</h3>
+                <p className="card-subtitle">{t('portfolio.panoramaSubtitle', 'Condominiums')}</p>
+              </div>
+            </Link>
+
+            <Link to="/projectmanagement" className="portfolio-card" data-animate>
+              <img
+                src={`${filesServiceUrl}/files/${photos.collage3}`}
+                alt="Project Management"
+                loading="lazy"
+                className="card-image-bg"
+              />
+              <div className="card-overlay" />
+              <div className="card-content">
+                <h3 className="card-title">{t('portfolio.management', 'Management')}</h3>
+                <p className="card-subtitle">{t('portfolio.managementSubtitle', 'Project Services')}</p>
+              </div>
+            </Link>
+
+            <Link to="/realizations" className="portfolio-card" data-animate>
+              <img
+                src={`${filesServiceUrl}/files/${photos.project2}`}
+                alt="Our Achievements"
+                loading="lazy"
+                className="card-image-bg"
+              />
+              <div className="card-overlay" />
+              <div className="card-content">
+                <h3 className="card-title">{t('portfolio.achievements', 'Achievements')}</h3>
+                <p className="card-subtitle">{t('portfolio.achievementsSubtitle', 'Portfolio')}</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* FEATURES SECTION */}
+      <section className="features-section">
+        <div className="container">
+          <div className="section-header center" data-animate>
+            <span className="section-kicker">{t('features.kicker', 'Why Choose Us')}</span>
+            <h2 className="section-title">{t('features.title', 'Personalized Support')}</h2>
+          </div>
+          <p className="features-intro" data-animate>
+            {t('features.intro', 'Dominic Cyr Construction Inc. is a dynamic family business with over 30 years of experience in residential construction. We are here to support you in realizing your ideas and projects with personalized, professional service built on transparency.')}
+          </p>
+          <div className="features-grid">
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">{t('features.feature1', 'Passionate & Professional')}</h3>
             </div>
-
-            <div className="section-content">
-              <div className="text-content">
-                <p className="intro-text">
-                  {t('accompaniment.intro', 'Les Constructions Dominic Cyr Inc. est une entreprise familiale et dynamique qui compte plus de 30 ans d\'expérience dans le domaine de la construction résidentielle. Nous sommes là pour vous accompagner dans la réalisation de vos idées et de vos projets, en assurant un service personnalisé et professionnel misant sur la transparence.')}
-                </p>
-              </div>
-
-              <div className="values-grid">
-                <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x1f3d7, 0xfe0f)}</div>
-                  <h4>{t('accompaniment.values.passionate', 'Passionné et professionnel')}</h4>
-                </div>
-                <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x2728)}</div>
-                  <h4>{t('accompaniment.values.creative', 'Approche créative')}</h4>
-                </div>
-                <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x1f50d)}</div>
-                  <h4>{t('accompaniment.values.detail', 'Souci du détail')}</h4>
-                </div>
-                <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x1f331)}</div>
-                  <h4>{t('accompaniment.values.eco', 'Pratiques écoresponsables')}</h4>
-                </div>
-                <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x2b50)}</div>
-                  <h4>{t('accompaniment.values.excellence', 'Critère d\'excellence')}</h4>
-                </div>
-                <div className="value-item">
-                  <div className="value-icon">{String.fromCodePoint(0x1f91d)}</div>
-                  <h4>{t('accompaniment.values.afterSale', 'Service après-vente')}</h4>
-                </div>
-              </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">{t('features.feature2', 'Creative Approach')}</h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">{t('features.feature3', 'Attention to Detail')}</h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">{t('features.feature4', 'Eco-Friendly Practices')}</h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">{t('features.feature5', 'Excellence Standards')}</h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">{t('features.feature6', 'After-Sales Service')}</h3>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Photo Gallery Section */}
-          <div className="photo-gallery-section">
-            <div className="gallery-grid">
-              {/* Row 1: 2 items */}
-              <div className="gallery-item gallery-logo-box">
-                <div className="logo-box-content">
-                  <Link to="/projects/foresta" className="logo-link">
-                    <div className="logo-icon">{String.fromCodePoint(0x1f33f)}</div>
-                    <h2 className="logo-text">{t('projects.foresta.title', 'FORESTA')}</h2>
-                    <p className="logo-subtext">{t('projects.foresta.subtitle', 'PROJET DOMICILIAIRE')}</p>
-                  </Link>
-                </div>
-              </div>
-              <div className="gallery-item gallery-image-forest">
-                <img
-                  src="https://placehold.co/800x400/4A90A4/FFFFFF?text=Foret+Panoramique&font=roboto"
-                  alt={t('gallery.forest', 'Forêt panoramique')}
-                  className="gallery-image"
-                />
-              </div>
-
-              {/* Row 2: 2 items */}
-              <div className="gallery-item gallery-image-modern-house">
-                <img
-                  src="https://placehold.co/800x500/5A7D8C/FFFFFF?text=Maison+Moderne+Illuminee&font=roboto"
-                  alt={t('gallery.modernHouse', 'Maison moderne illuminée')}
-                  className="gallery-image"
-                />
-              </div>
-              <div className="gallery-item gallery-box gallery-box-blue">
-                <div className="gallery-box-content">
-                  <Link to="/projects/panorama" className="logo-link">
-                    <h3>{t('projects.panorama.title', 'Panorama')}</h3>
-                    <p>{t('projects.panorama.subtitle', 'condos')}</p>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Row 3: 3 items */}
-              <div className="gallery-item gallery-image-cabin">
-                <img
-                  src="https://placehold.co/500x400/2C3E50/FFFFFF?text=Chalet+Traditionnel&font=roboto"
-                  alt={t('gallery.cabin', 'Chalet traditionnel')}
-                  className="gallery-image"
-                />
-              </div>
-              <div className="gallery-item gallery-box gallery-box-grey">
-                <div className="gallery-box-content">
-                  <Link to="/projectmanagement" className="logo-link">
-                    <h3>{t('projects.management.title', 'Gestion')}</h3>
-                    <p>{t('projects.management.subtitle', 'de projet')}</p>
-                  </Link>
-                </div>
-              </div>
-              <div className="gallery-item gallery-image-stacked-house">
-                <img
-                  src="https://placehold.co/500x400/4A90A4/FFFFFF?text=Maison+Empilee+Moderne&font=roboto"
-                  alt={t('gallery.stackedHouse', 'Maison empilée moderne')}
-                  className="gallery-image"
-                />
-              </div>
-
-              {/* Row 4: 3 items */}
-              <div className="gallery-item gallery-box gallery-box-green">
-                <div className="gallery-box-content">
-                  <Link to="/renovation" className="logo-link">
-                    <h3>{t('projects.renovation.title', 'Rénovations')}</h3>
-                  </Link>
-                </div>
-              </div>
-              <div className="gallery-item gallery-image-interior">
-                <img
-                  src="https://placehold.co/500x400/5A7D8C/FFFFFF?text=Interieur+Contemporain&font=roboto"
-                  alt={t('gallery.interior', 'Intérieur contemporain')}
-                  className="gallery-image"
-                />
-              </div>
-              <div className="gallery-item gallery-box gallery-box-grey">
-                <div className="gallery-box-content">
-                  <Link to="/realisation" className="logo-link">
-                    <h3>{t('projects.realisations.title', 'Réalisations')}</h3>
-                  </Link>
-                </div>
-              </div>
-            </div>
+      {/* CONTACT CTA */}
+      <section className="contact-cta">
+        <div className="contact-wrapper">
+          <div className="contact-image" data-animate>
+            <img
+              src={`${filesServiceUrl}/files/${photos.contact}`}
+              alt="Contact us"
+              loading="lazy"
+            />
           </div>
-
-          {/* Collaboration Section */}
-          <div className="collaboration-section">
-            <div className="collaboration-content">
-              <div className="collaboration-image">
-                <img
-                  src="https://placehold.co/600x400/5A7D8C/FFFFFF?text=Construction+Residentielle&font=roboto"
-                  alt={t('collaboration.title', 'NOUS COLLABORONS AVEC VOUS À LA RÉALISATION DE VOS RÊVES !')}
-                  className="section-image"
-                />
-              </div>
-              <div className="collaboration-text">
-                <h2 className="collaboration-title">
-                  {t('collaboration.title', 'NOUS COLLABORONS AVEC VOUS À LA RÉALISATION DE VOS RÊVES !')}
-                </h2>
-                <p className="collaboration-description">
-                  {t('collaboration.description', 'Votre maison constitue l\'un des plus importants investissements que vous ferez dans votre vie. Optez pour une valeur sûre et sans pareil avec Les Constructions Dominic Cyr Inc.')}
-                </p>
-              </div>
-            </div>
+          <div className="contact-content" data-animate>
+            <span className="section-kicker">{t('contact.kicker', 'Get In Touch')}</span>
+            <h2 className="contact-title">
+              {t('contact.title', "Let's Build Your Dream Home Together")}
+            </h2>
+            <p className="contact-description">
+              {t('contact.description', "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc.")}
+            </p>
+            <Link to="/contact" className="btn btn-primary">
+              {t('contact.button', 'Contact Us')}
+            </Link>
           </div>
-
-          
         </div>
       </section>
     </div>

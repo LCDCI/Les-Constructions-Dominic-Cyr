@@ -1,7 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.config;
 
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.House;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization.Realization;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization.RealizationRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
@@ -27,10 +27,7 @@ public class DataSeeder {
     private ProjectRepository projectRepository;
 
     @Autowired
-    private HouseRepository houseRepository;
-
-    @Autowired
-    private LotRepository lotRepository;
+    private RealizationRepository realizationRepository;
 
     @Autowired
     private RenovationRepository renovationRepository;
@@ -44,8 +41,7 @@ public class DataSeeder {
     public void init() {
         log.info("Running data seeder...");
         seedProjectImages();
-        seedHouseImages();
-        seedLotImages();
+        seedRealizationImages();
         seedRenovationImages();
     }
 
@@ -61,7 +57,7 @@ public class DataSeeder {
         });
     }
 
-    private static final Map<String, String> HOUSE_IMAGES = Map.of(
+    private static final Map<String, String> REALIZATION_IMAGES = Map.of(
             "a3f1c0f1-8f2b-4c3d-9d5a-1b2a3c4d5e6f", "c15dc19e-bab3-478c-b0f7-4696acccb69d",
             "b7d2e1a4-2c6f-4b8e-9f3c-7a9b0c1d2e3f", "b4cbbd58-722a-4117-89bd-57c0bbb94970",
             "c9e3f2b5-3d7a-4f9b-8e4d-0a1b2c3d4e5f", "9fbe99e4-4ecd-423b-9414-4bc828c09ba5",
@@ -74,40 +70,14 @@ public class DataSeeder {
             "37a029c3-0e4b-1f6d-5d7c-8e9f0a1b2c3d", "dbb884ce-8b9e-4d40-89ea-f85af12af0b8"
     );
 
-    private void seedHouseImages() {
-        HOUSE_IMAGES.forEach((houseId, imageId) -> {
-            House house = houseRepository.findHouseByHouseIdentifier_HouseId(houseId);
-            if (house != null) {
-                if (house.getImageIdentifier() == null || house.getImageIdentifier().isEmpty()) {
-                    house.setImageIdentifier(imageId);
-                    houseRepository.save(house);
-                    log.info("Linked image to house: {}", houseId);
-                }
-            }
-        });
-    }
-
-    private static final Map<String, String> LOTS_IMAGES = Map.of(
-            "f3c8837d-bd65-4bc5-9f01-cb9082fc657e", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "5a82954c-8e2c-466a-8a8f-9983b79ede63", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "cd465054-403e-4861-b9ab-1b672672c053", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "a51e7923-7a46-4e65-8cee-8783126e780b", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "64f2d3b1-eb36-49d6-8bc3-a816d97ddeb9", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "3b9b8bf2-7ea4-4b3a-9250-53ccb1a77f87", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "02088623-dd3c-4fef-af67-2caf60dc1902", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "97fd170d-189b-4c4c-880d-31893a146712", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "db43c148-68de-4882-818a-d15dc8d5fcdb", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c",
-            "adb6f5b7-e036-49cf-899e-a39dcaecd91f", "ea6635b6-f380-4e01-aee8-5e1dfd4e853c"
-    );
-
-    private void seedLotImages() {
-        LOTS_IMAGES.forEach((lotId, imageId) -> {
-            Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
-            if (lot != null) {
-                if (lot.getImageIdentifier() == null || lot.getImageIdentifier().isEmpty()) {
-                    lot.setImageIdentifier(imageId);
-                    lotRepository.save(lot);
-                    log.info("Linked image to lot: {}", lotId);
+    private void seedRealizationImages() {
+        REALIZATION_IMAGES.forEach((realizationId, imageId) -> {
+            Realization realization = realizationRepository.findRealizationByRealizationIdentifier_RealizationId(realizationId);
+            if (realization != null) {
+                if (realization.getImageIdentifier() == null || realization.getImageIdentifier().isEmpty()) {
+                    realization.setImageIdentifier(imageId);
+                    realizationRepository.save(realization);
+                    log.info("Linked image to realization: {}", realizationId);
                 }
             }
         });

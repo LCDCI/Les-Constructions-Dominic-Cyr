@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
@@ -42,49 +41,72 @@ public class SecurityConfig {
     private List<String> allowedOrigins;
 
     @Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(auth -> auth
-                    // 1. Specific Public Endpoints FIRST
-                    .requestMatchers("/actuator/**", "/api/theme").permitAll()
-                    .requestMatchers("/api/v1/translations/**").permitAll()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(auth -> auth
+                        // --- 1. PUBLIC ENDPOINTS (Originals + New Public Lots) ---
+                        .requestMatchers("/actuator/**", "/api/theme").permitAll()
+                        .requestMatchers("/api/v1/translations/**").permitAll()
+                        .requestMatchers("/api/v1/residential-projects/**").permitAll()
+                        .requestMatchers("/api/v1/renovations/**").permitAll()
+                        .requestMatchers("/api/v1/project-management/**").permitAll()
+                        .requestMatchers("/api/v1/realizations/**").permitAll()
+                        .requestMatchers("/api/v1/contact/**").permitAll()
 
-                    // Permit the specific overview AND the general list
-                    .requestMatchers("/api/v1/projects/{id}/overview").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
+                        // Project Public Endpoints (From your original list)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
+                        .requestMatchers("/api/v1/projects/{id}/overview").permitAll()
 
-                    .requestMatchers("/api/v1/residential-projects/**").permitAll()
-                    .requestMatchers("/api/v1/renovations/**").permitAll()
-                    .requestMatchers("/api/v1/project-management/**").permitAll()
-                    .requestMatchers("/api/v1/realisations/**").permitAll()
-                    .requestMatchers("/api/v1/contact/**").permitAll()
+                        // Lot Public Access (Added to prevent 401)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/lots/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/lots/**").permitAll()
 
-                    // 2. Role-Specific Endpoints
+                        // --- 2. AUTHENTICATED USER ENDPOINTS (From your original list) ---
+                        .requestMatchers("/api/v1/users/me").authenticated()
+                        .requestMatchers("/api/v1/users/auth0/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").authenticated()
 
-                    //To allow all logged in users to access their own user info with restrictions
-                    .requestMatchers("/api/v1/users/me").authenticated()
-                    .requestMatchers("/api/v1/users/auth0/**").authenticated()
-                    .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").authenticated()
-                    .requestMatchers("/api/v1/projects/**").hasAnyAuthority("ROLE_CONTRACTOR", "ROLE_SALESPERSON", "ROLE_OWNER", "ROLE_CUSTOMER")
-                    .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
-                    .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_OWNER")
-                    .requestMatchers("/api/v1/contractors/**").hasAuthority("ROLE_CONTRACTOR")
-                    .requestMatchers("/api/v1/salesperson/**").hasAuthority("ROLE_SALESPERSON")
-                    .requestMatchers("/api/v1/customers/**").hasAuthority("ROLE_CUSTOMER")
-                    
-                    // 3. Catch-all
-                    .anyRequest().authenticated()
-            )
-        .oauth2ResourceServer(oauth2 -> oauth2
-            .jwt(jwt -> jwt
-                .decoder(jwtDecoder())
-                .jwtAuthenticationConverter(jwtAuthConverter())
-            )
-        );
+                        // --- 3. OWNER SPECIFIC (From your original list) ---
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/deactivate").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/inactive").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/reactivate").hasAuthority("ROLE_OWNER")
+                        .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
+                        .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_OWNER")
 
-    return http.build();
-}
+                        // Task updates (allow contractor and owner) — placed before the broader owners/** rule
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+
+                        // Lot Management (Original permissions, just moved below public GET)
+                        .requestMatchers(HttpMethod.POST, "/api/v1/lots").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
+
+                        // --- 4. OTHER ROLES (From your original list) ---
+                        .requestMatchers("/api/v1/projects/**").hasAnyAuthority("ROLE_CONTRACTOR", "ROLE_SALESPERSON", "ROLE_OWNER", "ROLE_CUSTOMER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers("/api/v1/contractors/**").hasAuthority("ROLE_CONTRACTOR")
+                        .requestMatchers("/api/v1/salesperson/**").hasAuthority("ROLE_SALESPERSON")
+                        .requestMatchers("/api/v1/customers/**").hasAuthority("ROLE_CUSTOMER")
+                        .requestMatchers("/api/v1/reports/**").hasAuthority("ROLE_OWNER")
+                        // --- 5. CATCH-ALL ---
+                        .anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .decoder(jwtDecoder())
+                                .jwtAuthenticationConverter(jwtAuthConverter())
+                        )
+                );
+
+
+        return http.build();
+    }
 
     @Bean
     public JwtDecoder jwtDecoder() {
