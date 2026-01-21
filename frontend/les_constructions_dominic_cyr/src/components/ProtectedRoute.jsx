@@ -13,10 +13,21 @@ export default function ProtectedRoute({ allowedRoles, element }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/portal/login" state={{ returnTo: location.pathname }} replace />;
+    return (
+      <Navigate
+        to="/portal/login"
+        state={{ returnTo: location.pathname }}
+        replace
+      />
+    );
   }
 
-  if (allowedRoles && allowedRoles.length > 0 && role && !allowedRoles.includes(role)) {
+  if (
+    allowedRoles &&
+    allowedRoles.length > 0 &&
+    role &&
+    !allowedRoles.includes(role)
+  ) {
     return <Navigate to="/unauthorized" replace />;
   }
 

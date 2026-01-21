@@ -2,24 +2,24 @@
 
 :root {
   /* Primary Theme Colors */
-  --primary-color: #4C4D4F;
-  --secondary-color: #E6E7E8;
-  --accent-color: #5A7D8C;
-  --card-background: #AAB2A6;
-  --background-color: #F5F7FA;
-  --text-primary: #4C4D4F;
-  --white: #FFFFFF;
-  
+  --primary-color: #4c4d4f;
+  --secondary-color: #e6e7e8;
+  --accent-color: #5a7d8c;
+  --card-background: #aab2a6;
+  --background-color: #f5f7fa;
+  --text-primary: #4c4d4f;
+  --white: #ffffff;
+
   /* Status Badge Colors */
-  --status-active-bg: #E8F5E9;
-  --status-active-color: #2E7D32;
-  --status-active-border: #C8E6C9;
-  --status-inactive-bg: #FFF3E0;
-  --status-inactive-color: #E65100;
-  --status-inactive-border: #FFE0B2;
-  --status-deactivated-bg: #EEEEEE;
+  --status-active-bg: #e8f5e9;
+  --status-active-color: #2e7d32;
+  --status-active-border: #c8e6c9;
+  --status-inactive-bg: #fff3e0;
+  --status-inactive-color: #e65100;
+  --status-inactive-border: #ffe0b2;
+  --status-deactivated-bg: #eeeeee;
   --status-deactivated-color: #424242;
-  --status-deactivated-border: #BDBDBD;
+  --status-deactivated-border: #bdbdbd;
 }
 
 .team-management-page {
@@ -246,7 +246,7 @@
 }
 
 .contractor-checkbox:hover {
-  background: #E5EDF5;
+  background: #e5edf5;
   border-color: #333;
 }
 

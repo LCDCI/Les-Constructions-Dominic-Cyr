@@ -6,7 +6,7 @@
 
 /* Make hero same size as other pages (project management) */
 .renovations-page .hero {
-  background: linear-gradient(145deg, #6B7469, #5A6358);
+  background: linear-gradient(145deg, #6b7469, #5a6358);
   height: auto;
   min-height: auto;
   padding: var(--spacing-section) var(--spacing-lg);
@@ -49,7 +49,11 @@
 }
 
 .renovations-page .hero-overlay {
-  background: linear-gradient(180deg, rgba(0,0,0,0.08) 0%, rgba(0,0,0,0.15) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.15) 100%
+  );
 }
 
 /* Hero text styling to match other pages */
@@ -118,10 +122,10 @@
 
 /* Grid for renovation cards */
 .renovations-page__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: var(--spacing-lg);
-    align-items: stretch;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+  align-items: stretch;
 }
 
 /* Decorative panels used instead of images */
@@ -129,34 +133,39 @@
   width: 100%;
   height: 100%;
   min-height: 500px;
-  background: linear-gradient(135deg, rgba(170,178,166,0.6) 0%, rgba(98,141,181,0.6) 50%, rgba(76,77,79,0.85) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(170, 178, 166, 0.6) 0%,
+    rgba(98, 141, 181, 0.6) 50%,
+    rgba(76, 77, 79, 0.85) 100%
+  );
   backdrop-filter: blur(2px);
 }
 
 /* Loading skeletons */
 .renovations-page__skeleton {
-    height: 320px;
-    border-radius: 4px;
-    background: var(--color-light);
+  height: 320px;
+  border-radius: 4px;
+  background: var(--color-light);
 }
 
 /* Status blocks */
 .renovations-page__status {
-    max-width: 720px;
-    margin: var(--spacing-lg) auto;
-    padding: var(--spacing-md);
-    border-radius: 4px;
-    background: var(--color-light);
-    color: var(--color-text);
+  max-width: 720px;
+  margin: var(--spacing-lg) auto;
+  padding: var(--spacing-md);
+  border-radius: 4px;
+  background: var(--color-light);
+  color: var(--color-text);
 }
 
 .renovations-page__status--error {
-    background: var(--color-primary);
-    color: var(--color-white);
+  background: var(--color-primary);
+  color: var(--color-white);
 }
 
 .renovations-page__status--empty {
-    color: var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 
 /* Retry button */

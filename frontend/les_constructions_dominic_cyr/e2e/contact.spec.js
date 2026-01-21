@@ -13,9 +13,12 @@ test.describe('Contact Page - Inquiry Form', () => {
   test('submits inquiry with all fields', async ({ page }) => {
     const requests = [];
 
-    await page.route('**/api/inquiries', async (route) => {
+    await page.route('**/api/inquiries', async route => {
       requests.push(route.request().postDataJSON());
-      await route.fulfill({ status: 200, body: 'Thank you! Your inquiry has been received.' });
+      await route.fulfill({
+        status: 200,
+        body: 'Thank you! Your inquiry has been received.',
+      });
     });
 
     await contactPage.fillForm({
@@ -27,7 +30,9 @@ test.describe('Contact Page - Inquiry Form', () => {
 
     await contactPage.submit();
 
-    await expect(contactPage.statusMessage).toHaveText(/thank you! your inquiry has been received/i);
+    await expect(contactPage.statusMessage).toHaveText(
+      /thank you! your inquiry has been received/i
+    );
     await expect(contactPage.nameInput).toHaveValue('');
     await expect(contactPage.emailInput).toHaveValue('');
     await expect(contactPage.phoneInput).toHaveValue('');
@@ -45,9 +50,12 @@ test.describe('Contact Page - Inquiry Form', () => {
   test('submits inquiry without optional phone field', async ({ page }) => {
     const requests = [];
 
-    await page.route('**/api/inquiries', async (route) => {
+    await page.route('**/api/inquiries', async route => {
       requests.push(route.request().postDataJSON());
-      await route.fulfill({ status: 200, body: 'Thank you! Your inquiry has been received.' });
+      await route.fulfill({
+        status: 200,
+        body: 'Thank you! Your inquiry has been received.',
+      });
     });
 
     await contactPage.fillForm({
@@ -58,7 +66,9 @@ test.describe('Contact Page - Inquiry Form', () => {
 
     await contactPage.submit();
 
-    await expect(contactPage.statusMessage).toHaveText(/thank you! your inquiry has been received/i);
+    await expect(contactPage.statusMessage).toHaveText(
+      /thank you! your inquiry has been received/i
+    );
     expect(requests).toHaveLength(1);
     expect(requests[0]).toEqual({
       name: 'John Smith',
@@ -68,25 +78,31 @@ test.describe('Contact Page - Inquiry Form', () => {
     });
   });
 
-  test('shows validation error when required fields are missing', async ({ page }) => {
+  test('shows validation error when required fields are missing', async ({
+    page,
+  }) => {
     const requests = [];
 
-    await page.route('**/api/inquiries', async (route) => {
+    await page.route('**/api/inquiries', async route => {
       requests.push(route.request().postDataJSON());
       await route.fulfill({ status: 200, body: 'noop' });
     });
 
     // Disable native browser validation so the component's client-side validation can run
-    await page.locator('form').evaluate((form) => form.setAttribute('novalidate', ''));
+    await page
+      .locator('form')
+      .evaluate(form => form.setAttribute('novalidate', ''));
 
     await contactPage.submit();
 
-    await expect(contactPage.statusMessage).toHaveText(/please fill out all required fields/i);
+    await expect(contactPage.statusMessage).toHaveText(
+      /please fill out all required fields/i
+    );
     expect(requests).toHaveLength(0);
   });
 
   test('shows server error message when submission fails', async ({ page }) => {
-    await page.route('**/api/inquiries', async (route) => {
+    await page.route('**/api/inquiries', async route => {
       await route.fulfill({ status: 500, body: 'Server error' });
     });
 
@@ -102,7 +118,7 @@ test.describe('Contact Page - Inquiry Form', () => {
   });
 
   test('shows network error when request fails', async ({ page }) => {
-    await page.route('**/api/inquiries', (route) => route.abort());
+    await page.route('**/api/inquiries', route => route.abort());
 
     await contactPage.fillForm({
       name: 'Bob',
@@ -115,14 +131,19 @@ test.describe('Contact Page - Inquiry Form', () => {
     await expect(contactPage.statusMessage).toHaveText(/network error/i);
   });
 
-  test('submit button shows loading state during submission', async ({ page }) => {
+  test('submit button shows loading state during submission', async ({
+    page,
+  }) => {
     let releaseResponse;
 
-    await page.route('**/api/inquiries', async (route) => {
-      await new Promise((resolve) => {
+    await page.route('**/api/inquiries', async route => {
+      await new Promise(resolve => {
         releaseResponse = resolve;
       });
-      await route.fulfill({ status: 200, body: 'Thank you! Your inquiry has been received.' });
+      await route.fulfill({
+        status: 200,
+        body: 'Thank you! Your inquiry has been received.',
+      });
     });
 
     await contactPage.fillForm({

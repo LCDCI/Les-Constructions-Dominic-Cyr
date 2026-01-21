@@ -8,13 +8,10 @@ on:
       - 'build.gradle'
       - 'settings.gradle'
       - 'gradle/**'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches: ["main"]
-    paths:
-      - 'src/**'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - 'gradle/**'
+  workflow_dispatch:
 
 jobs:
   # ============================================

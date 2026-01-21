@@ -1,77 +1,83 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-
 :root {
-   --primary-color: #000000;
-    --secondary-color: #000000;
-    --accent-color: #000000;
-    --card-background: #000000;
-    --background-color: #ffffff;
-    --white: #ffffff;
-    --text-primary: var(--primary-color);
-    --border-radius: 8px;
-    --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    --transition: all 0.3s ease;
+  --primary-color: #000000;
+  --secondary-color: #000000;
+  --accent-color: #000000;
+  --card-background: #000000;
+  --background-color: #ffffff;
+  --white: #ffffff;
+  --text-primary: var(--primary-color);
+  --border-radius: 8px;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
 }
 
 body {
-    font-family: 'Arial', 'Helvetica', sans-serif;
-    color: var(--text-primary); 
-    background-color: var(--background-color); 
-    line-height: 1.6;
-    overflow-x: hidden;
+  font-family: 'Arial', 'Helvetica', sans-serif;
+  color: var(--text-primary);
+  background-color: var(--background-color);
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
 .container {
-    width: 90%;
-    max-width: 1400px;
-    padding: 24px 0;
-    margin: 0 auto;
+  width: 90%;
+  max-width: 1400px;
+  padding: 24px 0;
+  margin: 0 auto;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
-    margin-bottom: 1%;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  margin-bottom: 1%;
 }
 
 button {
-    cursor: pointer;
-    border: none;
-    outline: none;
-    transition: var(--transition);
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: var(--transition);
 }
 
 a {
-    text-decoration: none;
-    transition: var(--transition);
+  text-decoration: none;
+  transition: var(--transition);
 }
 
-input, select {
-    font-family: inherit;
-    font-size: 100%;
-    border: 1px solid #D1D5DB;
-    border-radius: var(--border-radius);
-    padding: 2% 3%;
-    transition: var(--transition);
+input,
+select {
+  font-family: inherit;
+  font-size: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: var(--border-radius);
+  padding: 2% 3%;
+  transition: var(--transition);
 }
 
-input:focus, select:focus {
-    outline: none;
-    border-color: var(--primary-color);
+input:focus,
+select:focus {
+  outline: none;
+  border-color: var(--primary-color);
 }
 
 @media (max-width: 768px) {
-    .container {
-        width: 95%;
-    }
+  .container {
+    width: 95%;
+  }
 }
 
 @media (max-width: 480px) {
-    body {
-        font-size: 90%;
-    }
+  body {
+    font-size: 90%;
+  }
 }
