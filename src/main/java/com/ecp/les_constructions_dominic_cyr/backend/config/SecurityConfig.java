@@ -60,7 +60,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/contact/**").permitAll()
                         // Inquiries: allow public submissions and owner-only reads (match trailing slash too)
                         .requestMatchers(HttpMethod.OPTIONS, "/api/inquiries", "/api/inquiries/**").permitAll()
-                        .requestMatchers(HttpMethod.HEAD, "/api/inquiries", "/api/inquiries/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/inquiries", "/api/inquiries/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/inquiries", "/api/inquiries/**").hasAuthority("ROLE_OWNER")
 
