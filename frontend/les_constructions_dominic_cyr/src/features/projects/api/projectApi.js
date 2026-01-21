@@ -1,8 +1,8 @@
 // Use relative path to leverage Vite proxy
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
-const FILES_SERVICE_BASE_URL =
-  import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+import { getFilesServiceBase } from '../../../utils/filesService';
+const FILES_SERVICE_BASE_URL = getFilesServiceBase();
 export const projectApi = {
   getAllProjects: async (filters = {}, token = null) => {
     const params = new URLSearchParams();
@@ -32,11 +32,26 @@ export const projectApi = {
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}`,
-      { headers }
-    );
+
+    const url = `${API_BASE_URL}/projects/${projectIdentifier}`;
+    const response = await fetch(url, { headers });
+
+    // If the project endpoint is protected (401/403) or not found (404),
+    // try the public overview endpoint as a fallback so public pages
+    // (like the lots or public projects listing) can still render.
     if (!response.ok) {
+      const status = response.status;
+      if (status === 401 || status === 403 || status === 404) {
+        const overviewUrl = `${API_BASE_URL}/projects/${projectIdentifier}/overview`;
+        try {
+          const overviewResp = await fetch(overviewUrl);
+          if (overviewResp.ok) {
+            return overviewResp.json();
+          }
+        } catch (e) {
+          // swallow and rethrow below
+        }
+      }
       throw new Error(`Failed to fetch project (${response.status})`);
     }
     return response.json();

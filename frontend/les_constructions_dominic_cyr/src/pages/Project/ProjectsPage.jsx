@@ -32,8 +32,7 @@ const ProjectsPage = () => {
 
   const filterMenuContainerRef = useRef(null);
 
-  const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
   // Use relative path to leverage Vite proxy
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 

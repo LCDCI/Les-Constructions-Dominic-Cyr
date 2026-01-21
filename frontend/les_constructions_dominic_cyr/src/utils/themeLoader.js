@@ -71,6 +71,25 @@ export async function loadTheme(getToken) {
   if (!res || !res.ok) {
     const statusInfo = res ? `${res.status} ${res.statusText}` : 'no response';
     console.warn(`Theme load failed: ${statusInfo}`);
+
+    // If the backend exposes the theme at /api/theme (no v1), try that
+    // as a fallback for deployed backends that use a different path.
+    try {
+      const alt = '/api/theme';
+      const altRes = await fetch(alt, { headers });
+      if (altRes && altRes.ok) {
+        try {
+          const altTheme = await altRes.json();
+          applyTheme(altTheme);
+          return;
+        } catch (e) {
+          console.warn('Failed to parse alt theme JSON', e);
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+
     applyTheme(getDefaultTheme());
     return;
   }
