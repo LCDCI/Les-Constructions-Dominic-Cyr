@@ -35,7 +35,7 @@ import NavigationSetter from './components/NavigationSetter';
 import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import ReportsPage from './pages/ReportsPage';
 import ReactGA from 'react-ga4';
-import { loadTheme } from './utils/themeLoader';
+// import { loadTheme } from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
 
