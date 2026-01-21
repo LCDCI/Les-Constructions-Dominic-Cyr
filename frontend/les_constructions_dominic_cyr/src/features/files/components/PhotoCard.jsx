@@ -4,7 +4,10 @@ import PropTypes from 'prop-types';
 import { FaTrashAlt, FaExpand, FaArchive, FaBoxOpen } from 'react-icons/fa'; 
 import '../../../styles/PhotosPage.css';
 
-const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || `${window.location.origin}/files`;
+const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 
+    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
+      : `${window.location.origin}/files`);
 
 export default function PhotoCard({ file, onDelete, canDelete = false, onArchive, onUnarchive, canArchive = false, canUnarchive = false }) {
     

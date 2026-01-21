@@ -32,7 +32,10 @@ const ProjectsPage = () => {
 
   const filterMenuContainerRef = useRef(null);
 
-  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || `${window.location.origin}/files`;
+  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || 
+    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
+      : `${window.location.origin}/files`);
   // Use relative path to leverage Vite proxy
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
