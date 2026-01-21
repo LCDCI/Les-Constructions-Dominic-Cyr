@@ -50,7 +50,7 @@ public class SecurityConfig {
         http
             .securityMatcher("/api/inquiries/**")
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/inquiries/**"))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(inquiriesRateLimitFilter(), BearerTokenAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
@@ -74,7 +74,21 @@ public class SecurityConfig {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
+                // Enable CSRF by default; ignore only known public/stateless endpoints
+                .csrf(csrf -> csrf.ignoringRequestMatchers(
+                        "/api/inquiries/**",
+                        "/api/theme",
+                        "/api/v1/translations/**",
+                        "/api/v1/residential-projects/**",
+                        "/api/v1/renovations/**",
+                        "/api/v1/project-management/**",
+                        "/api/v1/realizations/**",
+                        "/api/v1/contact/**",
+                        "/api/v1/lots/**",
+                        "/api/v1/projects/*/lots/**",
+                        "/api/v1/projects",
+                        "/api/v1/projects/{id}/overview"
+                ))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(inquiriesRateLimitFilter(), BearerTokenAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
