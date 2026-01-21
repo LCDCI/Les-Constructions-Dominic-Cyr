@@ -31,7 +31,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const DEFAULT_COORDS = [45.31941496688032, -72.79945127353109];
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE || 'http://localhost:8080/api/v1';
+  import.meta.env.VITE_API_BASE || '/api/v1';
 
 export const projectOverviewApi = {
   getProjectOverview: async projectIdentifier => {
@@ -213,7 +213,7 @@ const ProjectOverviewPage = () => {
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
 
-  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
+  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || `${window.location.origin}/files`;
 
   useEffect(() => {
     const fetchOverview = async () => {

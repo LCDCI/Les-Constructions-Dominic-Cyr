@@ -22,7 +22,7 @@ const RealizationsPage = () => {
   ];
 
   const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
+    import.meta.env.VITE_FILES_SERVICE_URL || `${window.location.origin}/files`;
 
   const getImageUrl = imageIdentifier => {
     return `${filesServiceUrl}/files/${imageIdentifier}`;

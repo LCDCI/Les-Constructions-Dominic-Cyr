@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
+const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || `${window.location.origin}/files`;
 
 // Archive a file (photo)
 export async function archiveFile(fileId, { archivedBy }) {
