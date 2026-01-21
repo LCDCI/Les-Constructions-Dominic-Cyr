@@ -5,10 +5,16 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 export default function Home() {
   const { t } = usePageTranslations('home');
-  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || 
-    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
-      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
-      : (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`));
+  const filesServiceUrl =
+    import.meta.env.VITE_FILES_SERVICE_URL ||
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : typeof window !== 'undefined' &&
+          window.location.hostname === 'localhost'
+        ? 'http://localhost:8082'
+        : `${window.location.origin}/files`);
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   const photos = useMemo(
@@ -95,11 +101,22 @@ export default function Home() {
         <div className="hero-container">
           <div className="hero-content" data-animate>
             <p className="hero-label">{t('hero.label', 'DESIGN & BUILD')}</p>
-            <h1 className="hero-heading">{t('hero.title', 'Crafting Your Dream Space')}</h1>
-            <p className="hero-description">{t('hero.subtitle', 'Quality construction, timeless design, since 1990')}</p>
+            <h1 className="hero-heading">
+              {t('hero.title', 'Crafting Your Dream Space')}
+            </h1>
+            <p className="hero-description">
+              {t(
+                'hero.subtitle',
+                'Quality construction, timeless design, since 1990'
+              )}
+            </p>
             <div className="hero-buttons">
-              <Link to="/realizations" className="btn btn-primary">{t('hero.button1', 'Discover')}</Link>
-              <Link to="/contact" className="btn btn-secondary">{t('hero.button2', 'Get In Touch')}</Link>
+              <Link to="/realizations" className="btn btn-primary">
+                {t('hero.button1', 'Discover')}
+              </Link>
+              <Link to="/contact" className="btn btn-secondary">
+                {t('hero.button2', 'Get In Touch')}
+              </Link>
             </div>
           </div>
         </div>
@@ -122,10 +139,16 @@ export default function Home() {
         <div className="section-text-wrapper" data-animate>
           <div className="section-header">
             <h2 className="section-title">
-               {t('think.title', 'intelligent, practical and comfortable spaces')}
+              {t(
+                'think.title',
+                'intelligent, practical and comfortable spaces'
+              )}
             </h2>
             <p className="section-subtitle">
-              {t('think.subtitle', 'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.')}
+              {t(
+                'think.subtitle',
+                'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.'
+              )}
             </p>
             <Link to="/realizations" className="link-arrow">
               {t('think.link', 'Discover')}
@@ -147,10 +170,16 @@ export default function Home() {
         <div className="section-text-wrapper" data-animate>
           <div className="section-header">
             <h2 className="section-title">
-              {t('build.title', 'a strong relationship and quality partnership')}
+              {t(
+                'build.title',
+                'a strong relationship and quality partnership'
+              )}
             </h2>
             <p className="section-subtitle">
-              {t('build.subtitle', 'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.')}
+              {t(
+                'build.subtitle',
+                'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
+              )}
             </p>
             <Link to="/contact" className="link-arrow">
               {t('build.link', 'Contact Us')}
@@ -172,10 +201,13 @@ export default function Home() {
         <div className="section-text-wrapper" data-animate>
           <div className="section-header">
             <h2 className="section-title">
-               {t('live.title', 'in a space that reflects your values')}
+              {t('live.title', 'in a space that reflects your values')}
             </h2>
             <p className="section-subtitle">
-              {t('live.subtitle', 'Your home is one of the most important investments of your life. Choose reliability and lasting quality.')}
+              {t(
+                'live.subtitle',
+                'Your home is one of the most important investments of your life. Choose reliability and lasting quality.'
+              )}
             </p>
             <Link to="/residential-projects" className="link-arrow">
               {t('live.link', 'Explore Projects')}
@@ -188,11 +220,19 @@ export default function Home() {
       <section className="portfolio-section">
         <div className="container">
           <div className="section-header center" data-animate>
-            <span className="section-kicker">{t('portfolio.kicker', 'Our Work')}</span>
-            <h2 className="section-title">{t('portfolio.title', 'Projects & Achievements')}</h2>
+            <span className="section-kicker">
+              {t('portfolio.kicker', 'Our Work')}
+            </span>
+            <h2 className="section-title">
+              {t('portfolio.title', 'Projects & Achievements')}
+            </h2>
           </div>
           <div className="portfolio-grid">
-            <Link to="/projects/proj-001-foresta/overview" className="portfolio-card" data-animate>
+            <Link
+              to="/projects/proj-001-foresta/overview"
+              className="portfolio-card"
+              data-animate
+            >
               <img
                 src={`${filesServiceUrl}/files/${photos.collage1}`}
                 alt="Foresta Project"
@@ -201,12 +241,20 @@ export default function Home() {
               />
               <div className="card-overlay" />
               <div className="card-content">
-                <h3 className="card-title">{t('portfolio.foresta', 'Foresta')}</h3>
-                <p className="card-subtitle">{t('portfolio.forestaSubtitle', 'Residential Project')}</p>
+                <h3 className="card-title">
+                  {t('portfolio.foresta', 'Foresta')}
+                </h3>
+                <p className="card-subtitle">
+                  {t('portfolio.forestaSubtitle', 'Residential Project')}
+                </p>
               </div>
             </Link>
 
-            <Link to="/projects/proj-002-panorama/overview" className="portfolio-card" data-animate>
+            <Link
+              to="/projects/proj-002-panorama/overview"
+              className="portfolio-card"
+              data-animate
+            >
               <img
                 src={`${filesServiceUrl}/files/${photos.collage2}`}
                 alt="Panorama Project"
@@ -215,12 +263,20 @@ export default function Home() {
               />
               <div className="card-overlay" />
               <div className="card-content">
-                <h3 className="card-title">{t('portfolio.panorama', 'Panorama')}</h3>
-                <p className="card-subtitle">{t('portfolio.panoramaSubtitle', 'Condominiums')}</p>
+                <h3 className="card-title">
+                  {t('portfolio.panorama', 'Panorama')}
+                </h3>
+                <p className="card-subtitle">
+                  {t('portfolio.panoramaSubtitle', 'Condominiums')}
+                </p>
               </div>
             </Link>
 
-            <Link to="/projectmanagement" className="portfolio-card" data-animate>
+            <Link
+              to="/projectmanagement"
+              className="portfolio-card"
+              data-animate
+            >
               <img
                 src={`${filesServiceUrl}/files/${photos.collage3}`}
                 alt="Project Management"
@@ -229,8 +285,12 @@ export default function Home() {
               />
               <div className="card-overlay" />
               <div className="card-content">
-                <h3 className="card-title">{t('portfolio.management', 'Management')}</h3>
-                <p className="card-subtitle">{t('portfolio.managementSubtitle', 'Project Services')}</p>
+                <h3 className="card-title">
+                  {t('portfolio.management', 'Management')}
+                </h3>
+                <p className="card-subtitle">
+                  {t('portfolio.managementSubtitle', 'Project Services')}
+                </p>
               </div>
             </Link>
 
@@ -243,8 +303,12 @@ export default function Home() {
               />
               <div className="card-overlay" />
               <div className="card-content">
-                <h3 className="card-title">{t('portfolio.achievements', 'Achievements')}</h3>
-                <p className="card-subtitle">{t('portfolio.achievementsSubtitle', 'Portfolio')}</p>
+                <h3 className="card-title">
+                  {t('portfolio.achievements', 'Achievements')}
+                </h3>
+                <p className="card-subtitle">
+                  {t('portfolio.achievementsSubtitle', 'Portfolio')}
+                </p>
               </div>
             </Link>
           </div>
@@ -255,30 +319,49 @@ export default function Home() {
       <section className="features-section">
         <div className="container">
           <div className="section-header center" data-animate>
-            <span className="section-kicker">{t('features.kicker', 'Why Choose Us')}</span>
-            <h2 className="section-title">{t('features.title', 'Personalized Support')}</h2>
+            <span className="section-kicker">
+              {t('features.kicker', 'Why Choose Us')}
+            </span>
+            <h2 className="section-title">
+              {t('features.title', 'Personalized Support')}
+            </h2>
           </div>
           <p className="features-intro" data-animate>
-            {t('features.intro', 'Dominic Cyr Construction Inc. is a dynamic family business with over 30 years of experience in residential construction. We are here to support you in realizing your ideas and projects with personalized, professional service built on transparency.')}
+            {t(
+              'features.intro',
+              'Dominic Cyr Construction Inc. is a dynamic family business with over 30 years of experience in residential construction. We are here to support you in realizing your ideas and projects with personalized, professional service built on transparency.'
+            )}
           </p>
           <div className="features-grid">
             <div className="feature-card" data-animate>
-              <h3 className="feature-title">{t('features.feature1', 'Passionate & Professional')}</h3>
+              <h3 className="feature-title">
+                {t('features.feature1', 'Passionate & Professional')}
+              </h3>
             </div>
             <div className="feature-card" data-animate>
-              <h3 className="feature-title">{t('features.feature2', 'Creative Approach')}</h3>
+              <h3 className="feature-title">
+                {t('features.feature2', 'Creative Approach')}
+              </h3>
             </div>
             <div className="feature-card" data-animate>
-              <h3 className="feature-title">{t('features.feature3', 'Attention to Detail')}</h3>
+              <h3 className="feature-title">
+                {t('features.feature3', 'Attention to Detail')}
+              </h3>
             </div>
             <div className="feature-card" data-animate>
-              <h3 className="feature-title">{t('features.feature4', 'Eco-Friendly Practices')}</h3>
+              <h3 className="feature-title">
+                {t('features.feature4', 'Eco-Friendly Practices')}
+              </h3>
             </div>
             <div className="feature-card" data-animate>
-              <h3 className="feature-title">{t('features.feature5', 'Excellence Standards')}</h3>
+              <h3 className="feature-title">
+                {t('features.feature5', 'Excellence Standards')}
+              </h3>
             </div>
             <div className="feature-card" data-animate>
-              <h3 className="feature-title">{t('features.feature6', 'After-Sales Service')}</h3>
+              <h3 className="feature-title">
+                {t('features.feature6', 'After-Sales Service')}
+              </h3>
             </div>
           </div>
         </div>
@@ -295,12 +378,17 @@ export default function Home() {
             />
           </div>
           <div className="contact-content" data-animate>
-            <span className="section-kicker">{t('contact.kicker', 'Get In Touch')}</span>
+            <span className="section-kicker">
+              {t('contact.kicker', 'Get In Touch')}
+            </span>
             <h2 className="contact-title">
               {t('contact.title', "Let's Build Your Dream Home Together")}
             </h2>
             <p className="contact-description">
-              {t('contact.description', "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc.")}
+              {t(
+                'contact.description',
+                "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc."
+              )}
             </p>
             <Link to="/contact" className="btn btn-primary">
               {t('contact.button', 'Contact Us')}

@@ -2,7 +2,9 @@ export class ProjectsPage {
   constructor(page) {
     this.page = page;
     this.pageTitle = page.locator('.projects-header h1');
-    this.searchInput = page.locator('input.search-input, input[placeholder*="Search"]');
+    this.searchInput = page.locator(
+      'input.search-input, input[placeholder*="Search"]'
+    );
     this.projectCards = page.locator('.project-card');
     this.projectGrid = page.locator('.projects-grid');
     this.loadingIndicator = page.locator('text=Loading projects...');
@@ -23,7 +25,9 @@ export class ProjectsPage {
   }
 
   async clearSearch() {
-    const searchInput = this.page.locator('input.search-input, input[placeholder*="Search"]');
+    const searchInput = this.page.locator(
+      'input.search-input, input[placeholder*="Search"]'
+    );
     await searchInput.clear();
   }
 
@@ -60,7 +64,9 @@ export class ProjectsPage {
   }
 
   async fillProjectDescription(description) {
-    const input = this.page.locator('textarea[id="projectDescription"]').first();
+    const input = this.page
+      .locator('textarea[id="projectDescription"]')
+      .first();
     await input.fill(description);
   }
 

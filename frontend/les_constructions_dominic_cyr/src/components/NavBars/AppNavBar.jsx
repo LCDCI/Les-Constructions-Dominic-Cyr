@@ -21,7 +21,7 @@ function clearAppSession() {
     'lastVisitedRoute',
   ];
 
-  APP_KEYS.forEach((k) => {
+  APP_KEYS.forEach(k => {
     localStorage.removeItem(k);
     sessionStorage.removeItem(k);
   });
@@ -30,8 +30,8 @@ function clearAppSession() {
     const keys = [];
     for (let i = 0; i < storage.length; i++) keys.push(storage.key(i));
     keys
-        .filter((k) => k && prefixes.some((p) => k.startsWith(p)))
-        .forEach((k) => storage.removeItem(k));
+      .filter(k => k && prefixes.some(p => k.startsWith(p)))
+      .forEach(k => storage.removeItem(k));
   };
 
   purgeByPrefix(localStorage, ['auth0', '@@auth0spajs@@']);
@@ -57,7 +57,7 @@ export default function AppNavBar() {
   };
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen((prev) => !prev);
+    setIsMobileMenuOpen(prev => !prev);
   };
 
   const goToPortal = () => {
@@ -77,166 +77,168 @@ export default function AppNavBar() {
   };
 
   return (
-      <header className="site-nav">
-        <div className="site-nav-inner">
-          {!roleLoading && role === 'OWNER' && <OwnerNavBar />}
-          {!roleLoading && role === 'SALESPERSON' && <SalespersonNavBar />}
-          {!roleLoading && role === 'CONTRACTOR' && <ContractorNavBar />}
-          {!roleLoading && role === 'CUSTOMER' && <CustomerNavBar />}
+    <header className="site-nav">
+      <div className="site-nav-inner">
+        {!roleLoading && role === 'OWNER' && <OwnerNavBar />}
+        {!roleLoading && role === 'SALESPERSON' && <SalespersonNavBar />}
+        {!roleLoading && role === 'CONTRACTOR' && <ContractorNavBar />}
+        {!roleLoading && role === 'CUSTOMER' && <CustomerNavBar />}
 
-          <nav className="desktop-nav">
-            <NavLink
-                to="/"
-                className={({ isActive }) => (isActive ? 'active' : '')}
-            >
-              {t('nav.home', 'Accueil')}
-            </NavLink>
-
-            <NavLink
-                to="/residential-projects"
-                className={({ isActive }) => (isActive ? 'active' : '')}
-            >
-              {t('nav.projects', 'Projets résidentiels')}
-            </NavLink>
-
-            <NavLink
-                to="/renovations"
-                className={({ isActive }) => (isActive ? 'active' : '')}
-            >
-              {t('nav.renovation', 'Rénovation')}
-            </NavLink>
-
-            <NavLink
-                to="/projectmanagement"
-                className={({ isActive }) => (isActive ? 'active' : '')}
-            >
-              {t('nav.projectManagement', 'Gestion de projet')}
-            </NavLink>
-
-            <NavLink
-                to="/realizations"
-                className={({ isActive }) => (isActive ? 'active' : '')}
-            >
-              {t('nav.realizations', 'Réalisations')}
-            </NavLink>
-
-            <NavLink
-                to="/contact"
-                className={({ isActive }) => (isActive ? 'active' : '')}
-            >
-              Contact
-            </NavLink>
-          </nav>
-
-          <div className="nav-actions">
-            {!isAuthenticated && (
-                <button type="button" className="btn-portal" onClick={goToPortal}>
-                  {t('nav.accessPortal', 'Access Portal')} <span className="arrow">→</span>
-                </button>
-            )}
-
-            {isAuthenticated && (
-                <button type="button" className="btn-portal" onClick={handleLogout}>
-                  {t('nav.logout', 'Logout')}
-                </button>
-            )}
-
-            <button
-                type="button"
-                className="btn-language"
-                onClick={toggleLanguage}
-                aria-label="Toggle language"
-            >
-              {isFrench ? 'EN' : 'FR'}
-            </button>
-          </div>
-
-          <button
-              className="mobile-menu-toggle"
-              onClick={toggleMobileMenu}
-              aria-label="Toggle menu"
-              type="button"
-          >
-          <span className={isMobileMenuOpen ? 'hamburger open' : 'hamburger'}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
-          </button>
-        </div>
-
-        <nav className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
+        <nav className="desktop-nav">
           <NavLink
-              to="/"
-              className={({ isActive }) => (isActive ? 'active' : '')}
-              onClick={() => setIsMobileMenuOpen(false)}
+            to="/"
+            className={({ isActive }) => (isActive ? 'active' : '')}
           >
             {t('nav.home', 'Accueil')}
           </NavLink>
 
           <NavLink
-              to="/residential-projects"
-              className={({ isActive }) => (isActive ? 'active' : '')}
-              onClick={() => setIsMobileMenuOpen(false)}
+            to="/residential-projects"
+            className={({ isActive }) => (isActive ? 'active' : '')}
           >
             {t('nav.projects', 'Projets résidentiels')}
           </NavLink>
 
           <NavLink
-              to="/renovations"
-              className={({ isActive }) => (isActive ? 'active' : '')}
-              onClick={() => setIsMobileMenuOpen(false)}
+            to="/renovations"
+            className={({ isActive }) => (isActive ? 'active' : '')}
           >
             {t('nav.renovation', 'Rénovation')}
           </NavLink>
 
           <NavLink
-              to="/projectmanagement"
-              className={({ isActive }) => (isActive ? 'active' : '')}
-              onClick={() => setIsMobileMenuOpen(false)}
+            to="/projectmanagement"
+            className={({ isActive }) => (isActive ? 'active' : '')}
           >
             {t('nav.projectManagement', 'Gestion de projet')}
           </NavLink>
 
           <NavLink
-              to="/realisations"
-              className={({ isActive }) => (isActive ? 'active' : '')}
-              onClick={() => setIsMobileMenuOpen(false)}
+            to="/realizations"
+            className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.realisations', 'Réalisations')}
+            {t('nav.realizations', 'Réalisations')}
           </NavLink>
 
           <NavLink
-              to="/contact"
-              className={({ isActive }) => (isActive ? 'active' : '')}
-              onClick={() => setIsMobileMenuOpen(false)}
+            to="/contact"
+            className={({ isActive }) => (isActive ? 'active' : '')}
           >
             Contact
           </NavLink>
-
-          <div className="mobile-actions">
-            {!isAuthenticated && (
-                <button type="button" className="btn-portal" onClick={goToPortal}>
-                  {t('nav.accessPortal', 'Access Portal')} <span className="arrow">→</span>
-                </button>
-            )}
-
-            {isAuthenticated && (
-                <button type="button" className="btn-portal" onClick={handleLogout}>
-                  {t('nav.logout', 'Logout')}
-                </button>
-            )}
-
-            <button
-                type="button"
-                className="btn-language"
-                onClick={toggleLanguage}
-                aria-label="Toggle language"
-            >
-              {isFrench ? 'FR' : 'EN'}
-            </button>
-          </div>
         </nav>
-      </header>
+
+        <div className="nav-actions">
+          {!isAuthenticated && (
+            <button type="button" className="btn-portal" onClick={goToPortal}>
+              {t('nav.accessPortal', 'Access Portal')}{' '}
+              <span className="arrow">→</span>
+            </button>
+          )}
+
+          {isAuthenticated && (
+            <button type="button" className="btn-portal" onClick={handleLogout}>
+              {t('nav.logout', 'Logout')}
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="btn-language"
+            onClick={toggleLanguage}
+            aria-label="Toggle language"
+          >
+            {isFrench ? 'EN' : 'FR'}
+          </button>
+        </div>
+
+        <button
+          className="mobile-menu-toggle"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+          type="button"
+        >
+          <span className={isMobileMenuOpen ? 'hamburger open' : 'hamburger'}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+      </div>
+
+      <nav className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
+        <NavLink
+          to="/"
+          className={({ isActive }) => (isActive ? 'active' : '')}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          {t('nav.home', 'Accueil')}
+        </NavLink>
+
+        <NavLink
+          to="/residential-projects"
+          className={({ isActive }) => (isActive ? 'active' : '')}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          {t('nav.projects', 'Projets résidentiels')}
+        </NavLink>
+
+        <NavLink
+          to="/renovations"
+          className={({ isActive }) => (isActive ? 'active' : '')}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          {t('nav.renovation', 'Rénovation')}
+        </NavLink>
+
+        <NavLink
+          to="/projectmanagement"
+          className={({ isActive }) => (isActive ? 'active' : '')}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          {t('nav.projectManagement', 'Gestion de projet')}
+        </NavLink>
+
+        <NavLink
+          to="/realisations"
+          className={({ isActive }) => (isActive ? 'active' : '')}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          {t('nav.realisations', 'Réalisations')}
+        </NavLink>
+
+        <NavLink
+          to="/contact"
+          className={({ isActive }) => (isActive ? 'active' : '')}
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          Contact
+        </NavLink>
+
+        <div className="mobile-actions">
+          {!isAuthenticated && (
+            <button type="button" className="btn-portal" onClick={goToPortal}>
+              {t('nav.accessPortal', 'Access Portal')}{' '}
+              <span className="arrow">→</span>
+            </button>
+          )}
+
+          {isAuthenticated && (
+            <button type="button" className="btn-portal" onClick={handleLogout}>
+              {t('nav.logout', 'Logout')}
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="btn-language"
+            onClick={toggleLanguage}
+            aria-label="Toggle language"
+          >
+            {isFrench ? 'FR' : 'EN'}
+          </button>
+        </div>
+      </nav>
+    </header>
   );
 }

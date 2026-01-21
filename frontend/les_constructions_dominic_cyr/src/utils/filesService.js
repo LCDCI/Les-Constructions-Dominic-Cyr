@@ -3,10 +3,15 @@ export function getFilesServiceBase() {
   const env = import.meta.env.VITE_FILES_SERVICE_URL;
 
   // If env provided, return it (don't append /files here)
-  if (env && typeof env === 'string' && env.trim()) return env.replace(/\/$/, '');
+  if (env && typeof env === 'string' && env.trim())
+    return env.replace(/\/$/, '');
 
   // For production on DigitalOcean, use files-service directly
-  if (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))) {
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+  ) {
     return 'https://files-service-app-xubs2.ondigitalocean.app';
   }
 

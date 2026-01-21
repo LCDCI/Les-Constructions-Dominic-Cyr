@@ -27,7 +27,10 @@ export default function ServerError() {
           {t('message', "We're sorry, but something went wrong on our end.")}
         </p>
         <p className="error-description">
-          {t('description', 'Our team has been notified and is working to fix the issue. Please try again later or return to the home page.')}
+          {t(
+            'description',
+            'Our team has been notified and is working to fix the issue. Please try again later or return to the home page.'
+          )}
         </p>
         <Link to="/" className="error-button">
           {t('returnButton', 'Return to Home Page')}
