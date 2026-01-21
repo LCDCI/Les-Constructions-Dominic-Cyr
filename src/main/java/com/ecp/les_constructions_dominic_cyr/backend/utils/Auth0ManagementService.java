@@ -195,4 +195,5 @@ public void updateAuth0UserEmailAndName(String auth0UserId, String newEmail, Str
         throw new RuntimeException("Failed to update user in Auth0: " + e.getMessage(), e);
     }
 }
+// this is a test command to see how it will react
 }
