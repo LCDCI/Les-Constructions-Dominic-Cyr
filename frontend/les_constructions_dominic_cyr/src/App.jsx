@@ -63,17 +63,6 @@ export default function App() {
   const countdownTimerRef = useRef(null);
   const resetIdleTimerRef = useRef(null);
 
-  /* ----------------------------------
-     Theme
-  -----------------------------------*/
-  useEffect(() => {
-    loadTheme();
-    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-    if (measurementId) {
-      ReactGA.initialize(measurementId);
-    }
-  }, []);
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const error = params.get('error');

@@ -172,7 +172,7 @@ export default function InquiryForm({ onSuccess, className }) {
           <PhoneInput
             placeholder={t('inquiryForm.phonePlaceholder', f.phonePlaceholder)}
             value={form.phone}
-            onChange={(value) => setForm({ ...form, phone: value })}
+            onChange={value => setForm({ ...form, phone: value })}
             disabled={loading}
             defaultCountry="CA"
           />
@@ -183,7 +183,10 @@ export default function InquiryForm({ onSuccess, className }) {
             name="message"
             value={form.message}
             onChange={onChange}
-            placeholder={t('inquiryForm.messagePlaceholder', f.messagePlaceholder)}
+            placeholder={t(
+              'inquiryForm.messagePlaceholder',
+              f.messagePlaceholder
+            )}
             rows={5}
             disabled={loading}
             required

@@ -19,7 +19,7 @@
 /* Hero Banner Section */
 .pm-hero-banner {
   width: 100%;
-  background: linear-gradient(145deg, #AAB2A6, #8A9287);
+  background: linear-gradient(145deg, #aab2a6, #8a9287);
   height: auto;
   min-height: auto;
   padding: var(--spacing-section) var(--spacing-lg);
@@ -126,7 +126,9 @@
 .pm-image-card {
   width: 100%;
   position: relative;
-  transition: transform 0.3s var(--easing), box-shadow 0.3s var(--easing);
+  transition:
+    transform 0.3s var(--easing),
+    box-shadow 0.3s var(--easing);
   z-index: 1;
 }
 
@@ -225,7 +227,10 @@
   background: var(--color-white);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
   position: relative;
-  transition: transform 0.25s var(--easing), box-shadow 0.25s var(--easing), border-color 0.25s var(--easing);
+  transition:
+    transform 0.25s var(--easing),
+    box-shadow 0.25s var(--easing),
+    border-color 0.25s var(--easing);
 }
 
 .pm-advantages-list li::before {
@@ -234,7 +239,7 @@
 
 .pm-advantages-list li:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
   border-color: rgba(12, 61, 45, 0.2);
 }
 
@@ -287,12 +292,12 @@
   background-color: var(--color-primary);
   color: var(--color-white);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .pm-contact-link:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(76,77,79,0.2);
+  box-shadow: 0 0 0 3px rgba(76, 77, 79, 0.2);
 }
 
 /* Gallery Section */
@@ -328,12 +333,14 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  transition: transform 0.3s var(--easing), box-shadow 0.3s var(--easing);
+  transition:
+    transform 0.3s var(--easing),
+    box-shadow 0.3s var(--easing);
 }
 
 .pm-gallery-card:hover {
   transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .pm-gallery-image-container {
@@ -347,7 +354,9 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s var(--easing), border-color 0.3s var(--easing);
+  transition:
+    box-shadow 0.3s var(--easing),
+    border-color 0.3s var(--easing);
 }
 
 .pm-gallery-card:hover .pm-gallery-image-container {

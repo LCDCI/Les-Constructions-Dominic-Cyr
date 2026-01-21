@@ -5,10 +5,14 @@ import '../../../styles/Project/create-project.css';
 const LanguageSwitcher = ({ currentLanguage }) => {
   return (
     <div className="language-switcher">
-      <span className={`lang-indicator ${currentLanguage === 'fr' ? 'active' : ''}`}>
+      <span
+        className={`lang-indicator ${currentLanguage === 'fr' ? 'active' : ''}`}
+      >
         Français
       </span>
-      <span className={`lang-indicator ${currentLanguage === 'en' ? 'active' : ''}`}>
+      <span
+        className={`lang-indicator ${currentLanguage === 'en' ? 'active' : ''}`}
+      >
         English
       </span>
     </div>
@@ -20,4 +24,3 @@ LanguageSwitcher.propTypes = {
 };
 
 export default LanguageSwitcher;
-

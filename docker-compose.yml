@@ -120,7 +120,7 @@ services:
     ports:
       - "8082:8080"   # external 8082 -> internal 8080
     environment:
-      DB_URL: "${FILES_DB_URL}"
+      DB_URL: "${FILES_DB_URL:-postgresql://files-db:5432/files_db?sslmode=disable}"
       # S3-compatible storage configuration (works with MinIO or DigitalOcean Spaces)
       MINIO_ENDPOINT: "${SPACES_ENDPOINT:-minio:9000}"
       MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY:-${MINIO_ROOT_USER}}"

@@ -6,7 +6,12 @@ export default function GlobalPhotoUpload({ onUploaded }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const filesServiceBase =
-    import.meta.env.VITE_FILES_SERVICE_URL ?? `${window.location.origin}/files`;
+    import.meta.env.VITE_FILES_SERVICE_URL ??
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : `${window.location.origin}/files`);
 
   async function uploadPhoto() {
     if (!file) {
