@@ -131,7 +131,7 @@ const ProjectMetadata = () => {
         {metadata.imageIdentifier && (
           <div className="hero-image">
             <img
-              src={`${import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082'}/files/${metadata.imageIdentifier}`}
+              src={`${import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`)}/files/${metadata.imageIdentifier}`}
               alt={metadata.projectName}
             />
           </div>
