@@ -66,13 +66,7 @@ export default function App() {
   /* ----------------------------------
      Theme
   -----------------------------------*/
-  useEffect(() => {
-    loadTheme();
-    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-    if (measurementId) {
-      ReactGA.initialize(measurementId);
-    }
-  }, []);
+
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
