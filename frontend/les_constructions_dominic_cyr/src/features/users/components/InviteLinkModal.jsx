@@ -26,25 +26,22 @@ export default function InviteLinkModal({ isOpen, inviteLink, onClose }) {
       <div className="modal">
         <h2>User Invite Link</h2>
         <p>
-          Send this link to the client so they can set their password and access the portal.
+          Send this link to the client so they can set their password and access
+          the portal.
         </p>
         <div className="invite-link-row">
           <input
             type="text"
             value={inviteLink}
             readOnly
-            onFocus={(e) => e.target.select()}
+            onFocus={e => e.target.select()}
           />
           <button type="button" onClick={handleCopy}>
             Copy
           </button>
         </div>
 
-        {copyStatus && (
-          <p className="copy-status">
-            {copyStatus}
-          </p>
-        )}
+        {copyStatus && <p className="copy-status">{copyStatus}</p>}
 
         <div className="modal-actions">
           <button type="button" onClick={handleClose}>

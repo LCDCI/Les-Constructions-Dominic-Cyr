@@ -1,168 +1,167 @@
-
 .photos-page {
-    display: flex;
-    flex-direction: column;
-    padding: 16px 18px 32px;
-    margin-top: 0;
-    background-color: var(--background-color);
-    min-height: 100vh;
-    max-width: 1200px;
-    margin: 0 auto;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 32px;
+  margin-top: 0;
+  background-color: var(--background-color);
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 .photos-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #E5E5E5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .photos-actions {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    flex-wrap: nowrap;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: nowrap;
 }
 
 .photos-actions button {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .photos-header h1 {
-    color: var(--secondary-color);
-    font-size: 2rem;
-    font-weight: 700;
+  color: var(--secondary-color);
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .btn-upload {
-    background-color: var(--primary-color);
-    color: var(--white);
-    padding: 10px 18px;
-    border-radius: 9999px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: var(--primary-color);
+  color: var(--white);
+  padding: 10px 18px;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .btn-upload:hover {
-    background-color: var(--accent-color);
+  background-color: var(--accent-color);
 }
 
 /* Photo Grid Layout */
 .photo-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .photo-card {
-    position: relative;
-    background-color: var(--white);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: var(--box-shadow);
-    transition: transform 0.2s ease;
+  position: relative;
+  background-color: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+  transition: transform 0.2s ease;
 }
 
 .photo-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
 .photo-image {
-    width: 100%;
-    height: 200px; 
-    object-fit: cover;
-    display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
 }
 
 .photo-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    color: var(--white);
-    padding: 10px 15px;
-    transition: opacity 0.2s;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--white);
+  padding: 10px 15px;
+  transition: opacity 0.2s;
 }
 
 .photo-filename {
-    font-weight: 600;
-    margin: 0;
-    font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  font-size: 0.95rem;
 }
 
 .photo-meta {
-    font-size: 0.75rem;
-    color: #CCCCCC;
-    margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: #cccccc;
+  margin: 2px 0 0;
 }
 
 .photo-card .btn-delete {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(239, 68, 68, 0.8);
-    color: var(--white);
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(239, 68, 68, 0.8);
+  color: var(--white);
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
 }
 
 .photo-card:hover .btn-delete {
-    opacity: 1;
+  opacity: 1;
 }
 
 .photo-card .btn-unarchive {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(16, 185, 129, 0.9);
-    color: var(--white);
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(16, 185, 129, 0.9);
+  color: var(--white);
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
 }
 
 .photo-card:hover .btn-unarchive {
-    opacity: 1;
+  opacity: 1;
 }
 
 /* Make unarchive visible by default when photo is archived */
 .photo-card.archived .btn-unarchive {
-    opacity: 1;
+  opacity: 1;
 }
 
 @media (max-width: 768px) {
-    .photo-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 15px;
-    }
-    .photo-image {
-        height: 150px;
-    }
+  .photo-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  .photo-image {
+    height: 150px;
+  }
 }
 
 @media (max-width: 480px) {
-    .photo-grid {
-        grid-template-columns: 1fr;
-    }
-    .photos-page {
-        padding: 20px;
-    }
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+  .photos-page {
+    padding: 20px;
+  }
 }

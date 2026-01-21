@@ -1,13 +1,20 @@
 import React from 'react';
 import '../../../styles/users.css';
 
-export default function UsersTable({ users, onEditUser, onManageStatus, currentUser }) {
+export default function UsersTable({
+  users,
+  onEditUser,
+  onManageStatus,
+  currentUser,
+}) {
   const isOwner = currentUser?.userRole === 'OWNER';
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = status => {
     const statusClass = status ? status.toLowerCase() : 'active';
     const statusText = status || 'ACTIVE';
-    return <span className={`status-badge status-${statusClass}`}>{statusText}</span>;
+    return (
+      <span className={`status-badge status-${statusClass}`}>{statusText}</span>
+    );
   };
 
   if (!users || users.length === 0) {
@@ -29,11 +36,11 @@ export default function UsersTable({ users, onEditUser, onManageStatus, currentU
         </tr>
       </thead>
       <tbody>
-        {users.map((u) => (
+        {users.map(u => (
           <tr key={u.userIdentifier}>
             <td>{u.firstName}</td>
             <td>{u.lastName}</td>
-            <td>{u. primaryEmail}</td>
+            <td>{u.primaryEmail}</td>
             <td>{u.secondaryEmail || 'N/A'}</td>
             <td>{u.phone || 'N/A'}</td>
             <td>{u.userRole}</td>
@@ -42,7 +49,7 @@ export default function UsersTable({ users, onEditUser, onManageStatus, currentU
               <button className="btn-edit" onClick={() => onEditUser(u)}>
                 Edit
               </button>
-              {isOwner && u. userRole !== 'OWNER' && (
+              {isOwner && u.userRole !== 'OWNER' && (
                 <button
                   className="btn-manage-status"
                   onClick={() => onManageStatus(u)}

@@ -21,7 +21,9 @@ export class RenovationsPage {
   async waitForRenovationsToLoad() {
     await this.page.waitForLoadState('networkidle');
     try {
-      await this.loadingSkeletons.first().waitFor({ state: 'hidden', timeout: 15000 });
+      await this.loadingSkeletons
+        .first()
+        .waitFor({ state: 'hidden', timeout: 15000 });
     } catch (err) {
       // Log so CI doesn't silently swallow load problems
       // eslint-disable-next-line no-console

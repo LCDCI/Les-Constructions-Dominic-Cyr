@@ -57,7 +57,8 @@ const translations = {
       },
       messages: {
         fillOutEnglish: 'Please fill out the English version of the form',
-        missingFields: 'Some required fields are missing. Please complete the highlighted fields.',
+        missingFields:
+          'Some required fields are missing. Please complete the highlighted fields.',
       },
     },
   },
@@ -105,11 +106,13 @@ const translations = {
       validation: {
         required: 'Ce champ est requis',
         endDateAfterStart: 'La date de fin doit être après la date de début',
-        invalidImageType: "Type d'image invalide. Autorisés: PNG, JPG, JPEG, WEBP",
+        invalidImageType:
+          "Type d'image invalide. Autorisés: PNG, JPG, JPEG, WEBP",
       },
       messages: {
         fillOutEnglish: 'Veuillez remplir la version anglaise du formulaire',
-        missingFields: 'Des champs obligatoires sont manquants. Veuillez compléter les champs en surbrillance.',
+        missingFields:
+          'Des champs obligatoires sont manquants. Veuillez compléter les champs en surbrillance.',
       },
     },
   },
@@ -119,9 +122,9 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
   const { getAccessTokenSilently } = useAuth0();
   // Start with French form first
   const [currentLanguage, setCurrentLanguage] = useState('fr');
-  
+
   // Get translations based on current language
-  const t = (key) => {
+  const t = key => {
     const keys = key.split('.');
     let value = translations[currentLanguage];
     for (const k of keys) {
@@ -129,19 +132,19 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     }
     return value || key;
   };
-  
+
   // Bilingual form state
   const [formData, setFormData] = useState({
     // English fields
     projectNameEn: '',
     projectDescriptionEn: '',
     // buyerNameEn removed
-    
+
     // French fields
     projectNameFr: '',
     projectDescriptionFr: '',
     // buyerNameFr removed
-    
+
     // Common fields
     status: 'PLANNED',
     startDate: '',
@@ -162,7 +165,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
   const [animateLangSwitch, setAnimateLangSwitch] = useState(false);
   const formContentRef = useRef(null);
   const [validationAlert, setValidationAlert] = useState(null);
-  
+
   // Lot creation form state - lifted to parent to persist across language switches
   const [lotFormData, setLotFormData] = useState({
     location: '',
@@ -180,7 +183,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
     // Clear error for this field
     if (errors[field]) {
@@ -193,41 +196,41 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
   };
 
   const handleBilingualInputChange = (field, value) => {
-    const fieldName = currentLanguage === 'en' 
-      ? `${field}En` 
-      : `${field}Fr`;
+    const fieldName = currentLanguage === 'en' ? `${field}En` : `${field}Fr`;
     handleInputChange(fieldName, value);
   };
 
-  const getBilingualValue = (field) => {
-    const fieldName = currentLanguage === 'en' 
-      ? `${field}En` 
-      : `${field}Fr`;
+  const getBilingualValue = field => {
+    const fieldName = currentLanguage === 'en' ? `${field}En` : `${field}Fr`;
     return formData[fieldName] || '';
   };
 
   // Check if French form is complete - ALL required fields must be filled
   const isFrenchComplete = () => {
-    return formData.projectNameFr.trim() !== '' && 
-           formData.projectDescriptionFr.trim() !== '' &&
-           formData.status !== '' &&
-           formData.startDate !== '' &&
-           formData.endDate !== '' &&
-           formData.primaryColor !== '' &&
-           formData.tertiaryColor !== '' &&
-           formData.buyerColor !== '';
+    return (
+      formData.projectNameFr.trim() !== '' &&
+      formData.projectDescriptionFr.trim() !== '' &&
+      formData.status !== '' &&
+      formData.startDate !== '' &&
+      formData.endDate !== '' &&
+      formData.primaryColor !== '' &&
+      formData.tertiaryColor !== '' &&
+      formData.buyerColor !== ''
+    );
   };
 
   // Check if English form is complete - ALL required fields must be filled
   const isEnglishComplete = () => {
-    return formData.projectNameEn.trim() !== '' && 
-           formData.projectDescriptionEn.trim() !== '' &&
-           formData.status !== '' &&
-           formData.startDate !== '' &&
-           formData.endDate !== '' &&
-           formData.primaryColor !== '' &&
-           formData.tertiaryColor !== '' &&
-           formData.buyerColor !== '';
+    return (
+      formData.projectNameEn.trim() !== '' &&
+      formData.projectDescriptionEn.trim() !== '' &&
+      formData.status !== '' &&
+      formData.startDate !== '' &&
+      formData.endDate !== '' &&
+      formData.primaryColor !== '' &&
+      formData.tertiaryColor !== '' &&
+      formData.buyerColor !== ''
+    );
   };
 
   const validateForm = () => {
@@ -254,7 +257,11 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     if (!formData.endDate) {
       newErrors.endDate = t('form.validation.required');
     }
-    if (formData.endDate && formData.startDate && formData.endDate < formData.startDate) {
+    if (
+      formData.endDate &&
+      formData.startDate &&
+      formData.endDate < formData.startDate
+    ) {
       newErrors.endDate = t('form.validation.endDateAfterStart');
     }
     if (!formData.primaryColor) {
@@ -272,7 +279,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleCoverImageChange = (file) => {
+  const handleCoverImageChange = file => {
     if (!file) {
       setCoverImageFile(null);
       setCoverImagePreviewUrl(null);
@@ -281,7 +288,10 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
     const validTypes = ['image/png', 'image/jpeg', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      setErrors(prev => ({ ...prev, coverImage: t('form.validation.invalidImageType') }));
+      setErrors(prev => ({
+        ...prev,
+        coverImage: t('form.validation.invalidImageType'),
+      }));
       setCoverImageFile(null);
       setCoverImagePreviewUrl(null);
       return;
@@ -298,10 +308,10 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     setCoverImagePreviewUrl(url);
   };
 
-  const uploadTranslationFiles = async (projectIdentifier) => {
+  const uploadTranslationFiles = async projectIdentifier => {
     // Use project identifier for filenames as requested
     const baseName = projectIdentifier;
-    
+
     // Create translation JSON files
     const translationEn = {
       projectName: formData.projectNameEn,
@@ -324,8 +334,12 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     const blobFr = new Blob([jsonFr], { type: 'application/json' });
 
     // Create File objects
-    const fileEn = new File([blobEn], `${baseName}_en.json`, { type: 'application/json' });
-    const fileFr = new File([blobFr], `${baseName}_fr.json`, { type: 'application/json' });
+    const fileEn = new File([blobEn], `${baseName}_en.json`, {
+      type: 'application/json',
+    });
+    const fileFr = new File([blobFr], `${baseName}_fr.json`, {
+      type: 'application/json',
+    });
 
     // Upload to file service
     // Store as DOCUMENT under the project's folder in MinIO
@@ -342,7 +356,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     try {
       const [resultEn, resultFr] = await Promise.all([
         uploadFile(formDataEn),
-        uploadFile(formDataFr)
+        uploadFile(formDataFr),
       ]);
 
       return {
@@ -359,16 +373,19 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     // Start animation, then switch language so the new content mounts with the class
     setAnimateLangSwitch(true);
     setCurrentLanguage('en');
-    // Scroll the form content into view (closest scrollable ancestor - overlay) 
+    // Scroll the form content into view (closest scrollable ancestor - overlay)
     // after the content mounts in EN. Use a microtask to ensure DOM updated.
     setTimeout(() => {
       // Find closest scrollable ancestor and scroll it to top for a clear "move to top"
-      const getScrollableParent = (node) => {
+      const getScrollableParent = node => {
         let el = node;
         while (el && el !== document.body) {
           const style = window.getComputedStyle(el);
           const oy = style.overflowY;
-          if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) {
+          if (
+            (oy === 'auto' || oy === 'scroll') &&
+            el.scrollHeight > el.clientHeight
+          ) {
             return el;
           }
           el = el.parentElement;
@@ -404,19 +421,22 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     }, 0);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       setValidationAlert(t('form.messages.missingFields'));
       // Scroll the form to top so the alert is visible
       setTimeout(() => {
-        const getScrollableParent = (node) => {
+        const getScrollableParent = node => {
           let el = node;
           while (el && el !== document.body) {
             const style = window.getComputedStyle(el);
             const oy = style.overflowY;
-            if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) {
+            if (
+              (oy === 'auto' || oy === 'scroll') &&
+              el.scrollHeight > el.clientHeight
+            ) {
               return el;
             }
             el = el.parentElement;
@@ -460,7 +480,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
       // TODO: Translation file upload will be implemented later
       // For now, we'll skip translation file upload and focus on project creation
       // Translation files can be uploaded separately after project is created
-      
+
       // Prepare project data for backend
       // TODO: Backend needs to be updated to accept bilingual fields
       // For now, we'll send only the fields the backend expects (using English as default)
@@ -475,22 +495,24 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         primaryColor: formData.primaryColor,
         tertiaryColor: formData.tertiaryColor,
         buyerColor: formData.buyerColor,
-      // buyerName removed
+        // buyerName removed
         imageIdentifier: null,
-      // customerId removed
+        // customerId removed
         lotIdentifiers: formData.lotIdentifiers || [],
         progressPercentage: formData.progressPercentage,
       };
-      
+
       console.log('Submitting project data:', projectData);
-      
+
       // Note: Translation files will be uploaded separately after project creation
       // Backend will need to be updated to store references to translation files
 
       // Get auth token
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://construction-api.loca',
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
         },
       });
 
@@ -509,9 +531,13 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
           const uploadedId = uploadResult.fileId || uploadResult.id;
 
           if (uploadedId) {
-            await projectApi.updateProject(createdProject.projectIdentifier, {
-              imageIdentifier: uploadedId,
-            }, token);
+            await projectApi.updateProject(
+              createdProject.projectIdentifier,
+              {
+                imageIdentifier: uploadedId,
+              },
+              token
+            );
           }
         } catch (uploadErr) {
           console.error('Cover image upload failed:', uploadErr);
@@ -535,11 +561,14 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
       if (onSuccess && createdProject && createdProject.projectIdentifier) {
         onSuccess(createdProject.projectIdentifier);
       } else {
-        throw new Error('Invalid response from server: missing projectIdentifier');
+        throw new Error(
+          'Invalid response from server: missing projectIdentifier'
+        );
       }
     } catch (error) {
       console.error('Error creating project:', error);
-      const errorMessage = error.message || 'Failed to create project. Please try again.';
+      const errorMessage =
+        error.message || 'Failed to create project. Please try again.';
       if (onError) {
         onError(errorMessage);
       }
@@ -552,10 +581,8 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
   return (
     <form className="create-project-form" onSubmit={handleSubmit}>
-      <LanguageSwitcher
-        currentLanguage={currentLanguage}
-      />
-      
+      <LanguageSwitcher currentLanguage={currentLanguage} />
+
       {validationAlert && (
         <div className="validation-alert" role="alert">
           {validationAlert}
@@ -563,315 +590,343 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
       )}
 
       {/* Show message when French is complete and on English form */}
-      {currentLanguage === 'en' && isFrenchComplete() && !isEnglishComplete() && (
-        <div className="language-switch-message">
-          {t('form.messages.fillOutEnglish')}
-        </div>
-      )}
+      {currentLanguage === 'en' &&
+        isFrenchComplete() &&
+        !isEnglishComplete() && (
+          <div className="language-switch-message">
+            {t('form.messages.fillOutEnglish')}
+          </div>
+        )}
 
       <div
         key={`lang-${currentLanguage}-${animateLangSwitch ? 'anim' : 'static'}`}
-        className={animateLangSwitch && currentLanguage === 'en' ? 'slide-up-enter' : ''}
+        className={
+          animateLangSwitch && currentLanguage === 'en' ? 'slide-up-enter' : ''
+        }
         ref={formContentRef}
         onAnimationEnd={() => setAnimateLangSwitch(false)}
       >
-      {/* Basic Information Section */}
-      <div className="form-section">
-        <h2>{t('form.sections.basicInfo')}</h2>
-        
-        <div className="form-group">
-          <label htmlFor="projectName">
-            {t('form.fields.projectName')} *
-          </label>
-          <input
-            type="text"
-            id="projectName"
-            value={getBilingualValue('projectName')}
-            onChange={(e) => handleBilingualInputChange('projectName', e.target.value)}
-            placeholder={t('form.placeholders.projectName')}
-            className={errors.projectNameEn || errors.projectNameFr ? 'error' : ''}
-          />
-          {(errors.projectNameEn || errors.projectNameFr) && (
-            <span className="error-message">
-              {currentLanguage === 'en' ? errors.projectNameEn : errors.projectNameFr}
-            </span>
-          )}
-        </div>
+        {/* Basic Information Section */}
+        <div className="form-section">
+          <h2>{t('form.sections.basicInfo')}</h2>
 
-        <div className="form-group">
-          <label htmlFor="projectDescription">
-            {t('form.fields.projectDescription')} *
-          </label>
-          <textarea
-            id="projectDescription"
-            value={getBilingualValue('projectDescription')}
-            onChange={(e) => handleBilingualInputChange('projectDescription', e.target.value)}
-            placeholder={t('form.placeholders.projectDescription')}
-            rows={5}
-            className={errors.projectDescriptionEn || errors.projectDescriptionFr ? 'error' : ''}
-          />
-          {(errors.projectDescriptionEn || errors.projectDescriptionFr) && (
-            <span className="error-message">
-              {currentLanguage === 'en' ? errors.projectDescriptionEn : errors.projectDescriptionFr}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Status & Dates Section */}
-      <div className="form-section">
-        <h2>{t('form.sections.statusDates')}</h2>
-        
-        <div className="form-group">
-          <label htmlFor="status">
-            {t('form.fields.status')} *
-          </label>
-          <select
-            id="status"
-            value={formData.status}
-            onChange={(e) => handleInputChange('status', e.target.value)}
-          >
-            <option value="PLANNED">PLANNED</option>
-            <option value="IN_PROGRESS">IN_PROGRESS</option>
-            <option value="DELAYED">DELAYED</option>
-            <option value="COMPLETED">COMPLETED</option>
-            <option value="CANCELLED">CANCELLED</option>
-          </select>
-        </div>
-
-        <div className="form-row">
           <div className="form-group">
-            <label htmlFor="startDate">
-              {t('form.fields.startDate')} *
+            <label htmlFor="projectName">
+              {t('form.fields.projectName')} *
             </label>
             <input
-              type="date"
-              id="startDate"
-              value={formData.startDate}
-              onChange={(e) => handleInputChange('startDate', e.target.value)}
-              className={errors.startDate ? 'error' : ''}
+              type="text"
+              id="projectName"
+              value={getBilingualValue('projectName')}
+              onChange={e =>
+                handleBilingualInputChange('projectName', e.target.value)
+              }
+              placeholder={t('form.placeholders.projectName')}
+              className={
+                errors.projectNameEn || errors.projectNameFr ? 'error' : ''
+              }
             />
-            {errors.startDate && (
-              <span className="error-message">{errors.startDate}</span>
+            {(errors.projectNameEn || errors.projectNameFr) && (
+              <span className="error-message">
+                {currentLanguage === 'en'
+                  ? errors.projectNameEn
+                  : errors.projectNameFr}
+              </span>
             )}
           </div>
 
           <div className="form-group">
-            <label htmlFor="endDate">
-              {t('form.fields.endDate')} *
+            <label htmlFor="projectDescription">
+              {t('form.fields.projectDescription')} *
             </label>
-            <input
-              type="date"
-              id="endDate"
-              value={formData.endDate}
-              onChange={(e) => handleInputChange('endDate', e.target.value)}
-              min={formData.startDate}
-              className={errors.endDate ? 'error' : ''}
+            <textarea
+              id="projectDescription"
+              value={getBilingualValue('projectDescription')}
+              onChange={e =>
+                handleBilingualInputChange('projectDescription', e.target.value)
+              }
+              placeholder={t('form.placeholders.projectDescription')}
+              rows={5}
+              className={
+                errors.projectDescriptionEn || errors.projectDescriptionFr
+                  ? 'error'
+                  : ''
+              }
             />
-            {errors.endDate && (
-              <span className="error-message">{errors.endDate}</span>
+            {(errors.projectDescriptionEn || errors.projectDescriptionFr) && (
+              <span className="error-message">
+                {currentLanguage === 'en'
+                  ? errors.projectDescriptionEn
+                  : errors.projectDescriptionFr}
+              </span>
             )}
           </div>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="completionDate">
-            {t('form.fields.completionDate')}
-          </label>
-          <input
-            type="date"
-            id="completionDate"
-            value={formData.completionDate}
-            onChange={(e) => handleInputChange('completionDate', e.target.value)}
-            min={formData.startDate}
-          />
-        </div>
-      </div>
+        {/* Status & Dates Section */}
+        <div className="form-section">
+          <h2>{t('form.sections.statusDates')}</h2>
 
-      {/* Colors Section */}
-      <div className="form-section">
-        <h2>{t('form.sections.colors')}</h2>
-        
-        <div className="form-row">
           <div className="form-group">
-            <label htmlFor="primaryColor">
-              {t('form.fields.primaryColor')} *
-            </label>
-            <input
-              type="color"
-              id="primaryColor"
-              value={formData.primaryColor}
-              onChange={(e) => handleInputChange('primaryColor', e.target.value)}
-              className={errors.primaryColor ? 'error' : ''}
-            />
-            {errors.primaryColor && (
-              <span className="error-message">{errors.primaryColor}</span>
-            )}
+            <label htmlFor="status">{t('form.fields.status')} *</label>
+            <select
+              id="status"
+              value={formData.status}
+              onChange={e => handleInputChange('status', e.target.value)}
+            >
+              <option value="PLANNED">PLANNED</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="DELAYED">DELAYED</option>
+              <option value="COMPLETED">COMPLETED</option>
+              <option value="CANCELLED">CANCELLED</option>
+            </select>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="tertiaryColor">
-              {t('form.fields.tertiaryColor')} *
-            </label>
-            <input
-              type="color"
-              id="tertiaryColor"
-              value={formData.tertiaryColor}
-              onChange={(e) => handleInputChange('tertiaryColor', e.target.value)}
-              className={errors.tertiaryColor ? 'error' : ''}
-            />
-            {errors.tertiaryColor && (
-              <span className="error-message">{errors.tertiaryColor}</span>
-            )}
-          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="startDate">{t('form.fields.startDate')} *</label>
+              <input
+                type="date"
+                id="startDate"
+                value={formData.startDate}
+                onChange={e => handleInputChange('startDate', e.target.value)}
+                className={errors.startDate ? 'error' : ''}
+              />
+              {errors.startDate && (
+                <span className="error-message">{errors.startDate}</span>
+              )}
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="buyerColor">
-              {t('form.fields.buyerColor')} *
-            </label>
-            <input
-              type="color"
-              id="buyerColor"
-              value={formData.buyerColor}
-              onChange={(e) => handleInputChange('buyerColor', e.target.value)}
-              className={errors.buyerColor ? 'error' : ''}
-            />
-            {errors.buyerColor && (
-              <span className="error-message">{errors.buyerColor}</span>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Customer & Buyer Section removed */}
-
-      {/* Progress Section */}
-      <div className="form-section">
-        <h2>{t('form.sections.progress')}</h2>
-        
-        <div className="form-group">
-          <label htmlFor="progressPercentage">
-            {t('form.fields.progressPercentage')}
-          </label>
-          <input
-            type="number"
-            id="progressPercentage"
-            value={formData.progressPercentage}
-            onChange={(e) => handleInputChange('progressPercentage', parseInt(e.target.value) || 0)}
-            min="0"
-            max="100"
-          />
-        </div>
-      </div>
-
-      {/* Cover Image Section */}
-      <div className="form-section">
-        <h2>{t('form.sections.coverImage')}</h2>
-        <div className="form-group">
-          <label htmlFor="coverImage">
-            {t('form.fields.coverPhoto')}
-          </label>
-          <input
-            type="file"
-            id="coverImage"
-            accept="image/png, image/jpeg, image/webp"
-            onChange={(e) => handleCoverImageChange(e.target.files?.[0])}
-          />
-          {errors.coverImage && (
-            <span className="error-message">{errors.coverImage}</span>
-          )}
-        </div>
-        {coverImagePreviewUrl && (
-          <div className="form-group">
-            <img
-              src={coverImagePreviewUrl}
-              alt="Cover preview"
-              style={{ width: '100%', maxWidth: '400px', borderRadius: '6px', border: '1px solid #e0e0e0' }}
-            />
-            <div style={{ marginTop: '0.5rem' }}>
-              <button
-                type="button"
-                className="btn-cancel"
-                onClick={() => {
-                  setCoverImageFile(null);
-                  setCoverImagePreviewUrl(null);
-                }}
-                disabled={isSubmitting}
-              >
-                {t('form.buttons.removeImage')}
-              </button>
+            <div className="form-group">
+              <label htmlFor="endDate">{t('form.fields.endDate')} *</label>
+              <input
+                type="date"
+                id="endDate"
+                value={formData.endDate}
+                onChange={e => handleInputChange('endDate', e.target.value)}
+                min={formData.startDate}
+                className={errors.endDate ? 'error' : ''}
+              />
+              {errors.endDate && (
+                <span className="error-message">{errors.endDate}</span>
+              )}
             </div>
           </div>
-        )}
-      </div>
 
-      {/* Lots Section */}
-      <div className="form-section">
-        <h2>{t('form.sections.lots')}</h2>
-        <LotSelector
-          currentLanguage={currentLanguage}
-          selectedLots={formData.lotIdentifiers || []}
-          onChange={(lotIds) => {
-            handleInputChange('lotIdentifiers', lotIds || []);
-          }}
-          onLotCreated={(newLotId) => {
-            // The onChange should have already updated the state, but ensure it's added
-            setFormData(prev => {
-              const current = prev.lotIdentifiers || [];
-              if (newLotId && !current.includes(newLotId)) {
-                return { ...prev, lotIdentifiers: [...current, newLotId] };
+          <div className="form-group">
+            <label htmlFor="completionDate">
+              {t('form.fields.completionDate')}
+            </label>
+            <input
+              type="date"
+              id="completionDate"
+              value={formData.completionDate}
+              onChange={e =>
+                handleInputChange('completionDate', e.target.value)
               }
-              return prev;
-            });
-          }}
-          // Pass lot form state from parent to persist across language switches
-          lotFormData={lotFormData}
-          onLotFormDataChange={setLotFormData}
-          lotFormImageFile={lotFormImageFile}
-          onLotFormImageFileChange={setLotFormImageFile}
-          lotFormImagePreviewUrl={lotFormImagePreviewUrl}
-          onLotFormImagePreviewUrlChange={setLotFormImagePreviewUrl}
-          showLotCreateForm={showLotCreateForm}
-          onShowLotCreateFormChange={setShowLotCreateForm}
-        />
-      </div>
+              min={formData.startDate}
+            />
+          </div>
+        </div>
 
-      {/* Form Actions */}
-      <div className="form-actions">
-        <button
-          type="button"
-          className="btn-cancel"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
-          {t('form.buttons.cancel')}
-        </button>
-        {currentLanguage === 'fr' ? (
+        {/* Colors Section */}
+        <div className="form-section">
+          <h2>{t('form.sections.colors')}</h2>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="primaryColor">
+                {t('form.fields.primaryColor')} *
+              </label>
+              <input
+                type="color"
+                id="primaryColor"
+                value={formData.primaryColor}
+                onChange={e =>
+                  handleInputChange('primaryColor', e.target.value)
+                }
+                className={errors.primaryColor ? 'error' : ''}
+              />
+              {errors.primaryColor && (
+                <span className="error-message">{errors.primaryColor}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="tertiaryColor">
+                {t('form.fields.tertiaryColor')} *
+              </label>
+              <input
+                type="color"
+                id="tertiaryColor"
+                value={formData.tertiaryColor}
+                onChange={e =>
+                  handleInputChange('tertiaryColor', e.target.value)
+                }
+                className={errors.tertiaryColor ? 'error' : ''}
+              />
+              {errors.tertiaryColor && (
+                <span className="error-message">{errors.tertiaryColor}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="buyerColor">
+                {t('form.fields.buyerColor')} *
+              </label>
+              <input
+                type="color"
+                id="buyerColor"
+                value={formData.buyerColor}
+                onChange={e => handleInputChange('buyerColor', e.target.value)}
+                className={errors.buyerColor ? 'error' : ''}
+              />
+              {errors.buyerColor && (
+                <span className="error-message">{errors.buyerColor}</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Customer & Buyer Section removed */}
+
+        {/* Progress Section */}
+        <div className="form-section">
+          <h2>{t('form.sections.progress')}</h2>
+
+          <div className="form-group">
+            <label htmlFor="progressPercentage">
+              {t('form.fields.progressPercentage')}
+            </label>
+            <input
+              type="number"
+              id="progressPercentage"
+              value={formData.progressPercentage}
+              onChange={e =>
+                handleInputChange(
+                  'progressPercentage',
+                  parseInt(e.target.value) || 0
+                )
+              }
+              min="0"
+              max="100"
+            />
+          </div>
+        </div>
+
+        {/* Cover Image Section */}
+        <div className="form-section">
+          <h2>{t('form.sections.coverImage')}</h2>
+          <div className="form-group">
+            <label htmlFor="coverImage">{t('form.fields.coverPhoto')}</label>
+            <input
+              type="file"
+              id="coverImage"
+              accept="image/png, image/jpeg, image/webp"
+              onChange={e => handleCoverImageChange(e.target.files?.[0])}
+            />
+            {errors.coverImage && (
+              <span className="error-message">{errors.coverImage}</span>
+            )}
+          </div>
+          {coverImagePreviewUrl && (
+            <div className="form-group">
+              <img
+                src={coverImagePreviewUrl}
+                alt="Cover preview"
+                style={{
+                  width: '100%',
+                  maxWidth: '400px',
+                  borderRadius: '6px',
+                  border: '1px solid #e0e0e0',
+                }}
+              />
+              <div style={{ marginTop: '0.5rem' }}>
+                <button
+                  type="button"
+                  className="btn-cancel"
+                  onClick={() => {
+                    setCoverImageFile(null);
+                    setCoverImagePreviewUrl(null);
+                  }}
+                  disabled={isSubmitting}
+                >
+                  {t('form.buttons.removeImage')}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Lots Section */}
+        <div className="form-section">
+          <h2>{t('form.sections.lots')}</h2>
+          <LotSelector
+            currentLanguage={currentLanguage}
+            selectedLots={formData.lotIdentifiers || []}
+            onChange={lotIds => {
+              handleInputChange('lotIdentifiers', lotIds || []);
+            }}
+            onLotCreated={newLotId => {
+              // The onChange should have already updated the state, but ensure it's added
+              setFormData(prev => {
+                const current = prev.lotIdentifiers || [];
+                if (newLotId && !current.includes(newLotId)) {
+                  return { ...prev, lotIdentifiers: [...current, newLotId] };
+                }
+                return prev;
+              });
+            }}
+            // Pass lot form state from parent to persist across language switches
+            lotFormData={lotFormData}
+            onLotFormDataChange={setLotFormData}
+            lotFormImageFile={lotFormImageFile}
+            onLotFormImageFileChange={setLotFormImageFile}
+            lotFormImagePreviewUrl={lotFormImagePreviewUrl}
+            onLotFormImagePreviewUrlChange={setLotFormImagePreviewUrl}
+            showLotCreateForm={showLotCreateForm}
+            onShowLotCreateFormChange={setShowLotCreateForm}
+          />
+        </div>
+
+        {/* Form Actions */}
+        <div className="form-actions">
           <button
             type="button"
-            className="btn-submit"
-            onClick={() => {
-              if (isFrenchComplete()) {
-                // Switch to English form
-                handleSwitchToEnglish();
+            className="btn-cancel"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            {t('form.buttons.cancel')}
+          </button>
+          {currentLanguage === 'fr' ? (
+            <button
+              type="button"
+              className="btn-submit"
+              onClick={() => {
+                if (isFrenchComplete()) {
+                  // Switch to English form
+                  handleSwitchToEnglish();
+                }
+              }}
+              disabled={isSubmitting || !isFrenchComplete()}
+            >
+              {t('form.buttons.fillOutEnglish')}
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={
+                isSubmitting || !isEnglishComplete() || !isFrenchComplete()
               }
-            }}
-            disabled={isSubmitting || !isFrenchComplete()}
-          >
-            {t('form.buttons.fillOutEnglish')}
-          </button>
-        ) : (
-          <button
-            type="submit"
-            className="btn-submit"
-            disabled={isSubmitting || !isEnglishComplete() || !isFrenchComplete()}
-          >
-            {isSubmitting 
-              ? t('form.buttons.submitting') 
-              : t('form.buttons.createProject')}
-          </button>
-        )}
-      </div>
+            >
+              {isSubmitting
+                ? t('form.buttons.submitting')
+                : t('form.buttons.createProject')}
+            </button>
+          )}
+        </div>
       </div>
     </form>
   );
@@ -884,4 +939,3 @@ CreateProjectForm.propTypes = {
 };
 
 export default CreateProjectForm;
-

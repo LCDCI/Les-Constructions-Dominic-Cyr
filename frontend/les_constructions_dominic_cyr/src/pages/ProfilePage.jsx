@@ -4,7 +4,11 @@ import { fetchUserByAuth0Id, updateUser } from '../features/users/api/usersApi';
 import '../styles/profile.css';
 
 export default function ProfilePage() {
-  const { user: auth0User, isLoading: auth0Loading, getAccessTokenSilently } = useAuth0();
+  const {
+    user: auth0User,
+    isLoading: auth0Loading,
+    getAccessTokenSilently,
+  } = useAuth0();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -43,7 +47,9 @@ export default function ProfilePage() {
           return;
         }
         const token = await getAccessTokenSilently({
-          authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          },
         });
         const currentUser = await fetchUserByAuth0Id(auth0UserId, token);
         setUser(currentUser);
@@ -58,7 +64,9 @@ export default function ProfilePage() {
         if (err.response?.status === 404) {
           setError('Your user profile was not found. Please contact support.');
         } else {
-          setError('Failed to load profile information. Please try again later.');
+          setError(
+            'Failed to load profile information. Please try again later.'
+          );
         }
       } finally {
         setLoading(false);
@@ -68,9 +76,9 @@ export default function ProfilePage() {
     loadUser();
   }, [auth0User, auth0Loading]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
@@ -85,7 +93,11 @@ export default function ProfilePage() {
       const token = await getAccessTokenSilently({
         authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
       });
-      const updatedUser = await updateUser(user.userIdentifier, formData, token);
+      const updatedUser = await updateUser(
+        user.userIdentifier,
+        formData,
+        token
+      );
       setUser(updatedUser);
       setIsEditing(false);
     } catch (err) {
@@ -145,15 +157,11 @@ export default function ProfilePage() {
       </div>
 
       <div className="profile-content">
-        {saveError && (
-          <div className="save-error-message">
-            {saveError}
-          </div>
-        )}
-        
+        {saveError && <div className="save-error-message">{saveError}</div>}
+
         <div className="profile-section">
           <h2>Personal Information</h2>
-          
+
           <div className="profile-field">
             <label>First Name</label>
             {isEditing ? (
@@ -220,7 +228,9 @@ export default function ProfilePage() {
                 className="profile-input"
               />
             ) : (
-              <div className="profile-value">{user.phone || 'Not provided'}</div>
+              <div className="profile-value">
+                {user.phone || 'Not provided'}
+              </div>
             )}
           </div>
 
