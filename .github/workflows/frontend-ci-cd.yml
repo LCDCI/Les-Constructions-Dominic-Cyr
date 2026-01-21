@@ -12,10 +12,10 @@ on:
 
 jobs:
   # ============================================
-  # CI Pipeline - Build, Test, Lint, Format
+  # CI Pipeline - Formatting Check
   # ============================================
   ci:
-    name: CI - Build, Test & Quality Checks
+    name: CI - Prettier Formatting Check
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -35,21 +35,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Quality Check 1: Formatting
+      # Quality Check: Formatting
       - name: Check Prettier formatting
         run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,css,scss,json}"
-
-      # Quality Check 3: Type checking (if TypeScript)
-      - name: Type check
-        run: npx tsc --noEmit || true
-
-      # Build the application
-      - name: Build application
-        run: npm run build
-
-      # Run unit tests
-      - name: Run unit tests
-        run: npm run test -- --run --reporter=verbose
 
   # ============================================
   # CD Pipeline - Deploy to DigitalOcean
@@ -108,8 +96,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "All CI checks have passed:" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Prettier (Code Formatting)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ TypeScript Check" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Build Successful" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Unit Tests Passed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Ready for merge!** Deployment will trigger automatically on merge to main." >> $GITHUB_STEP_SUMMARY

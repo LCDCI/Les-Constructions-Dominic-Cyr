@@ -86,9 +86,9 @@ jobs:
       - name: Check code formatting with Spotless
         run: ./gradlew spotlessCheck || true
 
-      # Build and run tests
-      - name: Build project (tests use Postgres via test profile)
-        run: ./gradlew clean build --info
+      # Build and run tests (exclude tests that require real network calls)
+      - name: Build project
+        run: ./gradlew clean build --info -PexcludeTests="**/Auth0ManagementServiceTest*"
 
       # Generate test report summary
       - name: Test Summary
