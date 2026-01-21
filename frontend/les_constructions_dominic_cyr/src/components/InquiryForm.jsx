@@ -112,7 +112,8 @@ export default function InquiryForm({ onSuccess, className }) {
       });
       if (res.ok) {
         const data = await res.json();
-        const message = data.message || 'Thank you! Your inquiry has been received.';
+        const message =
+          data.message || 'Thank you! Your inquiry has been received.';
         setStatus({ message, type: 'success' });
         setForm({ name: '', email: '', phone: '', message: '' });
         onSuccess && onSuccess(message);

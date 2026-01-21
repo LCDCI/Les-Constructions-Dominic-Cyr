@@ -9,7 +9,13 @@ import { ROLES } from '../../utils/permissions';
 import EditTaskModal from '../../components/Modals/EditTaskModal';
 import '../../styles/Project/ProjectSchedule.css';
 
-const TASK_STATUSES = ['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'ON_HOLD', 'CANCELLED'];
+const TASK_STATUSES = [
+  'TO_DO',
+  'IN_PROGRESS',
+  'COMPLETED',
+  'ON_HOLD',
+  'CANCELLED',
+];
 const TASK_PRIORITIES = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'];
 
 const TaskDetailsPage = () => {
