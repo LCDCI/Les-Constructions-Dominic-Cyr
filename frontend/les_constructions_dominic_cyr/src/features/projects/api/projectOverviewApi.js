@@ -1,5 +1,4 @@
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
 

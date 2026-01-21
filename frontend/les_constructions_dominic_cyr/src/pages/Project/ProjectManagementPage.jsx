@@ -13,14 +13,19 @@ export default function ProjectManagementPage() {
   const PM_IMAGE_IDS = {
     professionals: '1659ff85-b160-4111-b419-84834eb4375a',
     floorPlan: '48f50cea-f368-41d6-91c3-ae55157bd868',
-    tools: 'bb6dd250-ed32-4041-8b4e-020e2ef45e2f'
+    tools: 'bb6dd250-ed32-4041-8b4e-020e2ef45e2f',
   };
 
   const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || 
-    (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))
-      ? 'https://files-service-app-xubs2.ondigitalocean.app' 
-      : (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`));
+    import.meta.env.VITE_FILES_SERVICE_URL ||
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : typeof window !== 'undefined' &&
+          window.location.hostname === 'localhost'
+        ? 'http://localhost:8082'
+        : `${window.location.origin}/files`);
 
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) return '';
@@ -54,8 +59,11 @@ export default function ProjectManagementPage() {
         setIsLoading(true);
         setError(null);
         const currentLanguage = i18n.language || 'en';
-        const normalizedLanguage = currentLanguage.startsWith('fr') ? 'fr' : 'en';
-        const fetchedContent = await fetchProjectManagementContent(normalizedLanguage);
+        const normalizedLanguage = currentLanguage.startsWith('fr')
+          ? 'fr'
+          : 'en';
+        const fetchedContent =
+          await fetchProjectManagementContent(normalizedLanguage);
         setContent(fetchedContent);
       } catch (err) {
         console.error('Failed to fetch project management content:', err);
@@ -98,7 +106,10 @@ export default function ProjectManagementPage() {
             {/* Heading Section */}
             <div className="pm-heading-section">
               <h2 className="pm-main-heading">
-                {getContent('intro.heading.title', 'Planning, organization, and site follow-up without the friction')}
+                {getContent(
+                  'intro.heading.title',
+                  'Planning, organization, and site follow-up without the friction'
+                )}
               </h2>
               <div className="pm-pill-row">
                 {pillars.map((label, index) => (
@@ -107,16 +118,20 @@ export default function ProjectManagementPage() {
                   </span>
                 ))}
               </div>
-              <p className="pm-tagline">{getContent('intro.tagline', 'We handle it for you!')}</p>
+              <p className="pm-tagline">
+                {getContent('intro.tagline', 'We handle it for you!')}
+              </p>
             </div>
 
-         
             <div className="pm-images-grid">
               <div className="pm-image-card">
                 <div className="pm-image-container">
                   <img
                     src={getImageUrl(PM_IMAGE_IDS.professionals)}
-                    alt={getContent('intro.image1.alt', 'Professionals collaborating on project')}
+                    alt={getContent(
+                      'intro.image1.alt',
+                      'Professionals collaborating on project'
+                    )}
                     className="pm-image"
                   />
                 </div>
@@ -125,7 +140,10 @@ export default function ProjectManagementPage() {
                 <div className="pm-image-container">
                   <img
                     src={getImageUrl(PM_IMAGE_IDS.floorPlan)}
-                    alt={getContent('intro.image2.alt', '3D floor plan rendering')}
+                    alt={getContent(
+                      'intro.image2.alt',
+                      '3D floor plan rendering'
+                    )}
                     className="pm-image"
                   />
                 </div>
@@ -134,7 +152,10 @@ export default function ProjectManagementPage() {
                 <div className="pm-image-container">
                   <img
                     src={getImageUrl(PM_IMAGE_IDS.tools)}
-                    alt={getContent('intro.image3.alt', 'Construction tools and materials')}
+                    alt={getContent(
+                      'intro.image3.alt',
+                      'Construction tools and materials'
+                    )}
                     className="pm-image"
                   />
                 </div>
@@ -166,9 +187,15 @@ export default function ProjectManagementPage() {
 
           <ul className="pm-advantages-list">
             <li>{getContent('advantages.item1', 'Advisory services')}</li>
-            <li>{getContent('advantages.item2', 'Compliance with building codes')}</li>
-            <li>{getContent('advantages.item3', 'Planning with all stakeholders')}</li>
-            <li>{getContent('advantages.item4', 'Work schedule development')}</li>
+            <li>
+              {getContent('advantages.item2', 'Compliance with building codes')}
+            </li>
+            <li>
+              {getContent('advantages.item3', 'Planning with all stakeholders')}
+            </li>
+            <li>
+              {getContent('advantages.item4', 'Work schedule development')}
+            </li>
             <li>{getContent('advantages.item5', 'Cost control')}</li>
             <li>{getContent('advantages.item6', 'Rigorous follow-up')}</li>
           </ul>

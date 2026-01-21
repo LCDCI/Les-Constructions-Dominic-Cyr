@@ -23,12 +23,14 @@
 }
 
 .dashboard-card {
-  background:  #E5EDF5;
+  background: #e5edf5;
   border-radius: 0.75rem;
   padding: 6% 4%;
   text-align: center;
   box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   min-height: 180px;
   display: flex;
   flex-direction: column;
@@ -55,7 +57,7 @@
 }
 
 .card-button {
-  background-color: #4D85B9;
+  background-color: #4d85b9;
   color: white;
   border: none;
   padding: 2.5% 6%;
@@ -63,7 +65,9 @@
   cursor: pointer;
   font-size: clamp(0.8rem, 2vw, 0.875rem);
   font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
   white-space: nowrap;
   min-width: 60%;
 }
@@ -78,7 +82,7 @@
 }
 
 .schedule-section {
-  background: #E5EDF5;
+  background: #e5edf5;
   border-radius: 0.75rem;
   padding: 4%;
   box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
@@ -112,7 +116,7 @@
 
 .schedule-task {
   font-weight: 600;
-  color: #4D85B9;
+  color: #4d85b9;
 }
 
 .schedule-lot {
@@ -125,7 +129,7 @@
 }
 
 .see-more-button {
-  background-color: #4D85B9;
+  background-color: #4d85b9;
   color: white;
   border: none;
   padding: 2% 5%;
@@ -133,7 +137,9 @@
   cursor: pointer;
   font-size: clamp(0.8rem, 2vw, 0.875rem);
   font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
   display: block;
   margin: 0 auto;
   min-width: 120px;
@@ -169,7 +175,7 @@
     max-width: 1600px;
     padding: 2% 5%;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 2%;
@@ -181,7 +187,7 @@
     max-width: 1400px;
     padding: 2.5% 4%;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 2%;
@@ -193,7 +199,7 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 2.5%;
   }
-  
+
   .dashboard-card {
     padding: 5% 3%;
     min-height: 160px;
@@ -204,17 +210,17 @@
   .customer-dashboard {
     padding: 3% 2%;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 3%;
   }
-  
+
   .dashboard-card {
     padding: 6% 4%;
     min-height: 170px;
   }
-  
+
   .schedule-section {
     padding: 5%;
   }
@@ -224,50 +230,50 @@
   .customer-dashboard {
     padding: 4% 3%;
   }
-  
+
   .dashboard-title {
     margin-bottom: 6%;
   }
-  
+
   .dashboard-grid {
     grid-template-columns: 1fr;
     gap: 4%;
     margin-bottom: 6%;
   }
-  
+
   .dashboard-card {
     padding: 8% 5%;
     min-height: 160px;
   }
-  
+
   .card-icon {
     margin-bottom: 5%;
   }
-  
+
   .dashboard-card h3 {
     margin-bottom: 6%;
   }
-  
+
   .card-button {
     padding: 3.5% 8%;
     min-width: 70%;
   }
-  
+
   .schedule-section {
     padding: 6%;
     margin: 0;
   }
-  
+
   .schedule-section h2 {
     margin-bottom: 5%;
   }
-  
+
   .schedule-item {
     padding: 4%;
     margin-bottom: 3%;
     font-size: 0.9rem;
   }
-  
+
   .see-more-button {
     padding: 3.5% 8%;
     width: 80%;
@@ -279,16 +285,16 @@
   .customer-dashboard {
     padding: 5% 2%;
   }
-  
+
   .dashboard-card {
     padding: 10% 6%;
   }
-  
+
   .schedule-item {
     padding: 5%;
     font-size: 0.85rem;
   }
-  
+
   .card-button,
   .see-more-button {
     font-size: 0.8rem;
@@ -301,7 +307,7 @@
   .see-more-button {
     transition: none;
   }
-  
+
   .dashboard-card:hover {
     transform: none;
   }
@@ -311,13 +317,13 @@
   .customer-dashboard {
     padding: 2%;
   }
-  
+
   .dashboard-card,
   .schedule-section {
     box-shadow: none;
     break-inside: avoid;
   }
-  
+
   .card-button,
   .see-more-button {
     display: none;
