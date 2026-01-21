@@ -50,7 +50,7 @@ public class SecurityConfig {
         http
             .securityMatcher("/api/inquiries/**")
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/inquiries/**"))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(inquiriesRateLimitFilter(), BearerTokenAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
