@@ -38,9 +38,9 @@ COPY --from=backend-build /app/build/libs/les_constructions_dominic_cyr-0.0.1-SN
 # Install nginx
 RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
-# Copy built frontend and nginx config
+# Copy built frontend and nginx config for COMBINED deployment
 COPY --from=frontend-build /frontend/dist/ /usr/share/nginx/html/
-COPY frontend/les_constructions_dominic_cyr/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY frontend/les_constructions_dominic_cyr/nginx/default-combined.conf /etc/nginx/conf.d/default.conf
 
 # Expose ports
 EXPOSE 8080 80
