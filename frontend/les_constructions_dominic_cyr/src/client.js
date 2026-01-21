@@ -2,7 +2,8 @@ import axios from 'axios';
 import { navigate } from './utils/navigation';
 
 // Read base from Vite env var or default to API root
-const RAW_BASE = import.meta.env.VITE_API_BASE || '/api/v1';
+// When served on localhost (developer machine), prefer the host backend
+const RAW_BASE = import.meta.env.VITE_API_BASE || (typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost' ? 'http://localhost:8080/api/v1' : '/api/v1');
 
 function normalizeBase(raw) {
   if (!raw) return '/api/v1';
