@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { FaTrashAlt, FaExpand, FaArchive, FaBoxOpen } from 'react-icons/fa'; 
 import '../../../styles/PhotosPage.css';
 
-const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
 
 export default function PhotoCard({ file, onDelete, canDelete = false, onArchive, onUnarchive, canArchive = false, canUnarchive = false }) {
     
