@@ -10,13 +10,13 @@ services:
     container_name: backend
     ports:
       - "8080:8080"
-    command: [ "/bin/bash", "-c", "./wait-for-it.sh postgres1:5432 --timeout=30 --strict -- java -jar app.jar" ]
+    command: [ "java", "-jar", "app.jar" ]
     environment:
       FILES_SERVICE_BASE_URL: "http://files-service:8080"
       FILE_SERVICE_URL: "${FILE_SERVICE_URL}"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres1/cdc-db"
-      SPRING_DATASOURCE_USERNAME: "user"
-      SPRING_DATASOURCE_PASSWORD: "pwd"
+      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
+      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
+      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
       SPRING_PROFILES_ACTIVE: "docker"
       SERVER_TOMCAT_RELAXED_PATH_CHARS: "|,%,[,]"
@@ -42,6 +42,7 @@ services:
         condition: service_started
       postgres1:
         condition: service_healthy
+        required: false
     networks:
       - app-network
 
@@ -74,6 +75,8 @@ services:
   # POSTGRES (database)
   #######################################################################
   postgres1:
+    profiles:
+      - local-only
     image: postgres:16
     container_name: postgres1-cdc
     hostname: postgres1
@@ -103,8 +106,6 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
       - 9005:80
-    depends_on:
-      - postgres1
     networks:
       - app-network
   #######################################################################
