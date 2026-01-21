@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { FaDownload } from 'react-icons/fa6';
 import '../../../styles/FilesPage.css';
 
-const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+const BASE_API_URL = import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
 
 const getFileIcon = (contentType = '') => {
     if (contentType.includes('pdf')) return <span className="file-icon" style={{ color: '#E53935' }}>&#128441;</span>;
