@@ -20,11 +20,13 @@ export default function OwnerInquiriesPage() {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [redirecting, setRedirecting] = useState(false);
   const { isAuthenticated, isLoading, getAccessTokenSilently, loginWithRedirect } = useAuth0();
 
   useEffect(() => {
     if (isLoading) return;
-    if (!isAuthenticated) {
+    if (!isAuthenticated && !redirecting) {
+      setRedirecting(true);
       setLoading(false);
       loginWithRedirect({ appState: { returnTo: "/inquiries" } });
       return;
@@ -43,9 +45,9 @@ export default function OwnerInquiriesPage() {
 
   const unescapeHtml = (str) => {
     if (!str) return str;
-    const textarea = document.createElement("textarea");
-    textarea.innerHTML = str;
-    return textarea.value;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(str, "text/html");
+    return doc.documentElement.textContent || str;
   };
 
   return (

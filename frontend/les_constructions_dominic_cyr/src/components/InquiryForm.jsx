@@ -111,21 +111,22 @@ export default function InquiryForm({ onSuccess, className }) {
         credentials: 'omit', // prevent sending cookies that could trigger auth on the public endpoint
       });
       if (res.ok) {
-        const text = await res.text();
-        setStatus({ message: text, type: 'success' });
+        const data = await res.json();
+        const message = data.message || 'Thank you! Your inquiry has been received.';
+        setStatus({ message, type: 'success' });
         setForm({ name: '', email: '', phone: '', message: '' });
-        onSuccess && onSuccess(text);
+        onSuccess && onSuccess(message);
       } else {
         let errorMessage = 'Submission failed.';
-        const text = await res.text();
         try {
-          const data = JSON.parse(text);
+          const data = await res.json();
           if (data && typeof data.message === 'string') {
             errorMessage = data.message;
+          } else if (data && typeof data.error === 'string') {
+            errorMessage = data.error;
           }
         } catch {
-          // If not JSON, use the text directly
-          if (text) errorMessage = text;
+          errorMessage = 'Submission failed.';
         }
         setStatus({ message: errorMessage, type: 'error' });
       }
