@@ -40,10 +40,15 @@ RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
 # Copy built frontend and nginx config
 COPY --from=frontend-build /frontend/dist/ /usr/share/nginx/html/
-COPY frontend/les_constructions_dominic_cyr/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY frontend/les_constructions_dominic_cyr/nginx/default.conf /etc/nginx/conf.d/default.conf.template
+COPY frontend/les_constructions_dominic_cyr/nginx/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Expose ports
 EXPOSE 8080 80
 
+# Set default backend URL (override with env var)
+ENV BACKEND_API_URL=http://localhost:8080
+
 # Start both backend and nginx
-CMD service nginx start && java -jar /app/app.jar
+CMD /docker-entrypoint.sh & java -jar /app/app.jar
