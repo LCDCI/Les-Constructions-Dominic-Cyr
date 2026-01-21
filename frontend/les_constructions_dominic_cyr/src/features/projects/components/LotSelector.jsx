@@ -54,10 +54,10 @@ const lotTranslations = {
   },
 };
 
-const LotSelector = ({ 
-  currentLanguage, 
-  selectedLots, 
-  onChange, 
+const LotSelector = ({
+  currentLanguage,
+  selectedLots,
+  onChange,
   onLotCreated,
   projectIdentifier,
   // Props to persist lot form state across language switches
@@ -70,14 +70,14 @@ const LotSelector = ({
   showLotCreateForm,
   onShowLotCreateFormChange,
 }) => {
-  const t = (key) => lotTranslations[currentLanguage]?.[key] || key;
+  const t = key => lotTranslations[currentLanguage]?.[key] || key;
   const [availableLots, setAvailableLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState(null);
-  
+
   // Local state fallback (for backward compatibility when props not provided)
   const [localLotFormData, setLocalLotFormData] = useState({
     location: '',
@@ -89,18 +89,24 @@ const LotSelector = ({
   const [localLotImageFile, setLocalLotImageFile] = useState(null);
   const [localLotImagePreviewUrl, setLocalLotImagePreviewUrl] = useState(null);
   const [localShowCreateForm, setLocalShowCreateForm] = useState(false);
-  
+
   // Use props if provided, otherwise use local state
   const newLotData = lotFormData !== undefined ? lotFormData : localLotFormData;
   const setNewLotData = onLotFormDataChange || setLocalLotFormData;
-  
-  const newLotImageFile = lotFormImageFile !== undefined ? lotFormImageFile : localLotImageFile;
+
+  const newLotImageFile =
+    lotFormImageFile !== undefined ? lotFormImageFile : localLotImageFile;
   const setNewLotImageFile = onLotFormImageFileChange || setLocalLotImageFile;
-  
-  const newLotImagePreviewUrl = lotFormImagePreviewUrl !== undefined ? lotFormImagePreviewUrl : localLotImagePreviewUrl;
-  const setNewLotImagePreviewUrl = onLotFormImagePreviewUrlChange || setLocalLotImagePreviewUrl;
-  
-  const showCreateForm = showLotCreateForm !== undefined ? showLotCreateForm : localShowCreateForm;
+
+  const newLotImagePreviewUrl =
+    lotFormImagePreviewUrl !== undefined
+      ? lotFormImagePreviewUrl
+      : localLotImagePreviewUrl;
+  const setNewLotImagePreviewUrl =
+    onLotFormImagePreviewUrlChange || setLocalLotImagePreviewUrl;
+
+  const showCreateForm =
+    showLotCreateForm !== undefined ? showLotCreateForm : localShowCreateForm;
   const setShowCreateForm = onShowLotCreateFormChange || setLocalShowCreateForm;
 
   useEffect(() => {
@@ -121,7 +127,7 @@ const LotSelector = ({
     }
   };
 
-  const handleLotImageChange = (file) => {
+  const handleLotImageChange = file => {
     if (!file) {
       // Revoke object URL before clearing
       if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
@@ -140,12 +146,15 @@ const LotSelector = ({
     }
     // Additional validation: check file is a real image by loading with FileReader and Image
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       const img = new window.Image();
       img.onload = () => {
         setCreateError(null);
         // Revoke previous object URL if it exists
-        if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+        if (
+          newLotImagePreviewUrl &&
+          newLotImagePreviewUrl.startsWith('blob:')
+        ) {
           URL.revokeObjectURL(newLotImagePreviewUrl);
         }
         setNewLotImageFile(file);
@@ -155,7 +164,10 @@ const LotSelector = ({
       img.onerror = () => {
         setCreateError('Uploaded file is not a valid image.');
         // Revoke object URL if it was created
-        if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+        if (
+          newLotImagePreviewUrl &&
+          newLotImagePreviewUrl.startsWith('blob:')
+        ) {
           URL.revokeObjectURL(newLotImagePreviewUrl);
         }
         setNewLotImageFile(null);
@@ -175,16 +187,17 @@ const LotSelector = ({
     reader.readAsDataURL(file);
   };
 
-  const filteredLots = availableLots.filter(lot =>
-    lot.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lot.lotId?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredLots = availableLots.filter(
+    lot =>
+      lot.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lot.lotId?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleToggleLot = (lotId) => {
+  const handleToggleLot = lotId => {
     if (!lotId) {
       return;
     }
-    
+
     if (selectedLots.includes(lotId)) {
       // Remove lot
       onChange(selectedLots.filter(id => id !== lotId));
@@ -194,15 +207,15 @@ const LotSelector = ({
     }
   };
 
-  const handleRemoveLot = (lotId) => {
+  const handleRemoveLot = lotId => {
     onChange(selectedLots.filter(id => id !== lotId));
   };
 
-  const getSelectedLotDetails = (lotId) => {
+  const getSelectedLotDetails = lotId => {
     return availableLots.find(lot => lot.lotId === lotId);
   };
 
-  const handleCreateLot = async (e) => {
+  const handleCreateLot = async e => {
     if (e && typeof e.preventDefault === 'function') {
       e.preventDefault();
     }
@@ -247,13 +260,13 @@ const LotSelector = ({
         projectIdentifier,
         lotData,
       });
-      
+
       if (!createdLot || !createdLot.lotId) {
         throw new Error('Lot was created but no lotId was returned');
       }
-      
+
       const newLotId = createdLot.lotId;
-      
+
       // Add to available lots
       setAvailableLots(prev => {
         if (prev.some(lot => lot.lotId === newLotId)) {
@@ -261,7 +274,7 @@ const LotSelector = ({
         }
         return [...prev, createdLot];
       });
-      
+
       // Add to selected lots
       if (!selectedLots.includes(newLotId)) {
         onChange([...selectedLots, newLotId]);
@@ -290,7 +303,10 @@ const LotSelector = ({
       setCreateError(null);
       setSearchTerm(''); // Clear search so newly created lot is visible
     } catch (err) {
-      const errorMessage = err.message || err.toString() || 'Failed to create lot. Please try again.';
+      const errorMessage =
+        err.message ||
+        err.toString() ||
+        'Failed to create lot. Please try again.';
       setCreateError(errorMessage);
       // Keep form open so user can see the error and try again
     } finally {
@@ -308,8 +324,8 @@ const LotSelector = ({
       <div className="lot-selector">
         <div className="lot-selector-error">
           {error}
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={loadLots}
             style={{ marginTop: '10px', padding: '5px 10px' }}
           >
@@ -328,84 +344,80 @@ const LotSelector = ({
           className="btn-create-lot"
           onClick={() => setShowCreateForm(!showCreateForm)}
         >
-          {showCreateForm 
-            ? t('cancelCreate') 
-            : t('createNew')}
+          {showCreateForm ? t('cancelCreate') : t('createNew')}
         </button>
       </div>
 
       {showCreateForm && (
         <div className="create-lot-form">
           <h3>{t('createLotTitle')}</h3>
-            <div className="form-group">
-              <label htmlFor="newLotLocation">
-                {t('location')} *
-              </label>
-              <input
-                type="text"
-                id="newLotLocation"
-                value={newLotData.location}
-                onChange={(e) => setNewLotData({ ...newLotData, location: e.target.value })}
-                placeholder={t('locationPlaceholder')}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="newLotDimensions">
-                {t('dimensions')} *
-              </label>
-              <input
-                type="text"
-                id="newLotDimensions"
-                value={newLotData.dimensions}
-                onChange={(e) => setNewLotData({ ...newLotData, dimensions: e.target.value })}
-                placeholder={t('dimensionsPlaceholder')}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="newLotPrice">
-                {t('price')} *
-              </label>
-              <input
-                type="number"
-                id="newLotPrice"
-                value={newLotData.price}
-                onChange={(e) => setNewLotData({ ...newLotData, price: e.target.value })}
-                placeholder={t('pricePlaceholder')}
-                min="0"
-                step="0.01"
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="newLotStatus">
-                {t('status')} *
-              </label>
-              <select
-                id="newLotStatus"
-                value={newLotData.lotStatus}
-                onChange={(e) => setNewLotData({ ...newLotData, lotStatus: e.target.value })}
-                required
-              >
-                <option value="AVAILABLE">AVAILABLE</option>
-                <option value="SOLD">SOLD</option>
-                <option value="PENDING">PENDING</option>
-              </select>
-            </div>
+          <div className="form-group">
+            <label htmlFor="newLotLocation">{t('location')} *</label>
+            <input
+              type="text"
+              id="newLotLocation"
+              value={newLotData.location}
+              onChange={e =>
+                setNewLotData({ ...newLotData, location: e.target.value })
+              }
+              placeholder={t('locationPlaceholder')}
+              required
+            />
+          </div>
 
           <div className="form-group">
-            <label htmlFor="newLotPhoto">
-              {t('photo') || 'Photo'}
-            </label>
+            <label htmlFor="newLotDimensions">{t('dimensions')} *</label>
+            <input
+              type="text"
+              id="newLotDimensions"
+              value={newLotData.dimensions}
+              onChange={e =>
+                setNewLotData({ ...newLotData, dimensions: e.target.value })
+              }
+              placeholder={t('dimensionsPlaceholder')}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="newLotPrice">{t('price')} *</label>
+            <input
+              type="number"
+              id="newLotPrice"
+              value={newLotData.price}
+              onChange={e =>
+                setNewLotData({ ...newLotData, price: e.target.value })
+              }
+              placeholder={t('pricePlaceholder')}
+              min="0"
+              step="0.01"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="newLotStatus">{t('status')} *</label>
+            <select
+              id="newLotStatus"
+              value={newLotData.lotStatus}
+              onChange={e =>
+                setNewLotData({ ...newLotData, lotStatus: e.target.value })
+              }
+              required
+            >
+              <option value="AVAILABLE">AVAILABLE</option>
+              <option value="SOLD">SOLD</option>
+              <option value="PENDING">PENDING</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="newLotPhoto">{t('photo') || 'Photo'}</label>
             <input
               type="file"
               id="newLotPhoto"
               accept="image/png, image/jpeg, image/webp"
-              onChange={(e) => handleLotImageChange(e.target.files?.[0])}
+              onChange={e => handleLotImageChange(e.target.files?.[0])}
             />
           </div>
 
@@ -414,7 +426,12 @@ const LotSelector = ({
               <img
                 src={newLotImagePreviewUrl}
                 alt="Lot preview"
-                style={{ width: '100%', maxWidth: '400px', borderRadius: '6px', border: '1px solid #e0e0e0' }}
+                style={{
+                  width: '100%',
+                  maxWidth: '400px',
+                  borderRadius: '6px',
+                  border: '1px solid #e0e0e0',
+                }}
               />
               <div style={{ marginTop: '0.5rem' }}>
                 <button
@@ -422,7 +439,10 @@ const LotSelector = ({
                   className="btn-cancel"
                   onClick={() => {
                     // Revoke object URL before clearing
-                    if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
+                    if (
+                      newLotImagePreviewUrl &&
+                      newLotImagePreviewUrl.startsWith('blob:')
+                    ) {
                       URL.revokeObjectURL(newLotImagePreviewUrl);
                     }
                     setNewLotImageFile(null);
@@ -436,55 +456,59 @@ const LotSelector = ({
             </div>
           )}
 
-            {createError && (
-              <div className="error-message" style={{ 
-                color: '#d32f2f', 
-                backgroundColor: '#ffebee', 
-                padding: '10px', 
-                borderRadius: '4px', 
+          {createError && (
+            <div
+              className="error-message"
+              style={{
+                color: '#d32f2f',
+                backgroundColor: '#ffebee',
+                padding: '10px',
+                borderRadius: '4px',
                 marginBottom: '10px',
-                border: '1px solid #d32f2f'
-              }}>
-                <strong>Error:</strong> {createError}
-              </div>
-            )}
-
-            <div className="create-lot-actions">
-              <button
-                type="button"
-                className="btn-cancel"
-                onClick={() => {
-                  // Revoke object URL before clearing
-                  if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
-                    URL.revokeObjectURL(newLotImagePreviewUrl);
-                  }
-                  setShowCreateForm(false);
-                  setCreateError(null);
-                  setNewLotData({
-                    location: '',
-                    dimensions: '',
-                    price: '',
-                    lotStatus: 'AVAILABLE',
-                    imageIdentifier: null,
-                  });
-                  setNewLotImageFile(null);
-                  setNewLotImagePreviewUrl(null);
-                }}
-                disabled={isCreating}
-              >
-                {t('cancel')}
-              </button>
-              <button
-                type="button"
-                className="btn-submit"
-                disabled={isCreating}
-                onClick={handleCreateLot}
-              >
-                {isCreating 
-                  ? t('creating') 
-                  : t('createButton')}
-              </button>
+                border: '1px solid #d32f2f',
+              }}
+            >
+              <strong>Error:</strong> {createError}
             </div>
+          )}
+
+          <div className="create-lot-actions">
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={() => {
+                // Revoke object URL before clearing
+                if (
+                  newLotImagePreviewUrl &&
+                  newLotImagePreviewUrl.startsWith('blob:')
+                ) {
+                  URL.revokeObjectURL(newLotImagePreviewUrl);
+                }
+                setShowCreateForm(false);
+                setCreateError(null);
+                setNewLotData({
+                  location: '',
+                  dimensions: '',
+                  price: '',
+                  lotStatus: 'AVAILABLE',
+                  imageIdentifier: null,
+                });
+                setNewLotImageFile(null);
+                setNewLotImagePreviewUrl(null);
+              }}
+              disabled={isCreating}
+            >
+              {t('cancel')}
+            </button>
+            <button
+              type="button"
+              className="btn-submit"
+              disabled={isCreating}
+              onClick={handleCreateLot}
+            >
+              {isCreating ? t('creating') : t('createButton')}
+            </button>
+          </div>
         </div>
       )}
 
@@ -493,7 +517,7 @@ const LotSelector = ({
           type="text"
           placeholder={t('searchPlaceholder')}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           className="lot-search-input"
         />
       </div>
@@ -515,10 +539,12 @@ const LotSelector = ({
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => handleToggleLot(lot.lotId)}
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={e => e.stopPropagation()}
                 />
                 <div className="lot-item-details">
-                  <div className="lot-item-location">{lot.location || 'Unknown Location'}</div>
+                  <div className="lot-item-location">
+                    {lot.location || 'Unknown Location'}
+                  </div>
                   <div className="lot-item-info">
                     <span>Dimensions: {lot.dimensions || 'N/A'}</span>
                     {lot.price && (

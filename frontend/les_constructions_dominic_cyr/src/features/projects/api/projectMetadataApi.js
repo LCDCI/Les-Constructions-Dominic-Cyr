@@ -5,8 +5,11 @@ export const getProjectMetadata = async (projectIdentifier, token = null) => {
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  const response = await apiClient.get(`/projects/${projectIdentifier}/metadata`, {
-    headers,
-  });
+  const response = await apiClient.get(
+    `/projects/${projectIdentifier}/metadata`,
+    {
+      headers,
+    }
+  );
   return response.data;
 };

@@ -10,7 +10,7 @@
 /* Hero Banner Section */
 .real-hero-banner {
   width: 100%;
-  background: linear-gradient(145deg, #AAB2A6, #8A9287);
+  background: linear-gradient(145deg, #aab2a6, #8a9287);
   height: auto;
   min-height: auto;
   padding: var(--spacing-section) var(--spacing-lg);
@@ -103,7 +103,9 @@
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s var(--easing), box-shadow 0.3s var(--easing);
+  transition:
+    transform 0.3s var(--easing),
+    box-shadow 0.3s var(--easing);
 }
 
 .gallery-image-item:hover {

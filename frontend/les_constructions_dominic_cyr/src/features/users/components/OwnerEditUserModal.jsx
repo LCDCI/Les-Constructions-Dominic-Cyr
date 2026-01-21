@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
-export default function OwnerEditUserModal({ isOpen, user, onClose, onSave, isSaving }) {
+export default function OwnerEditUserModal({
+  isOpen,
+  user,
+  onClose,
+  onSave,
+  isSaving,
+}) {
   const [formValues, setFormValues] = useState({
     firstName: '',
     lastName: '',
     primaryEmail: '',
     phone: '',
-    secondaryEmail: ''
+    secondaryEmail: '',
   });
 
   useEffect(() => {
@@ -16,17 +22,17 @@ export default function OwnerEditUserModal({ isOpen, user, onClose, onSave, isSa
         lastName: user.lastName || '',
         primaryEmail: user.primaryEmail || '',
         phone: user.phone || '',
-        secondaryEmail: user.secondaryEmail || ''
+        secondaryEmail: user.secondaryEmail || '',
       });
     }
   }, [user]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
+    setFormValues(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     onSave(formValues);
   };
@@ -35,7 +41,10 @@ export default function OwnerEditUserModal({ isOpen, user, onClose, onSave, isSa
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal owner-edit-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal owner-edit-modal"
+        onClick={e => e.stopPropagation()}
+      >
         <h2>Edit User Details (Owner)</h2>
         <p>As an owner, you can edit all fields for this user.</p>
 
@@ -46,7 +55,7 @@ export default function OwnerEditUserModal({ isOpen, user, onClose, onSave, isSa
               <input
                 type="text"
                 name="firstName"
-                value={formValues. firstName}
+                value={formValues.firstName}
                 onChange={handleChange}
                 required
               />
@@ -70,7 +79,7 @@ export default function OwnerEditUserModal({ isOpen, user, onClose, onSave, isSa
               <input
                 type="email"
                 name="primaryEmail"
-                value={formValues. primaryEmail}
+                value={formValues.primaryEmail}
                 onChange={handleChange}
                 required
               />
@@ -83,7 +92,7 @@ export default function OwnerEditUserModal({ isOpen, user, onClose, onSave, isSa
               <input
                 type="email"
                 name="secondaryEmail"
-                value={formValues. secondaryEmail}
+                value={formValues.secondaryEmail}
                 onChange={handleChange}
                 placeholder="example@email.com"
               />

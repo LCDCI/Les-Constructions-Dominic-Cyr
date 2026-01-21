@@ -172,7 +172,9 @@
   border-top: 1px solid #e6e6e6;
   overflow: hidden;
   max-height: 0;
-  transition: max-height 0.3s ease, padding 0.3s ease;
+  transition:
+    max-height 0.3s ease,
+    padding 0.3s ease;
 }
 
 .mobile-nav.open {

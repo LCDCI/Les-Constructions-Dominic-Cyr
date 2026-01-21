@@ -32,8 +32,8 @@ export default function Unauthorized() {
         <h1>🚫 Access Denied</h1>
         <p>You do not have permission to access this page or feature.</p>
         <p className="error-hint">
-          This area is restricted based on your role. If you believe this is an error, 
-          please contact your administrator.
+          This area is restricted based on your role. If you believe this is an
+          error, please contact your administrator.
         </p>
         <div className="error-actions">
           <Link to={getHomePath()} className="btn-primary">
