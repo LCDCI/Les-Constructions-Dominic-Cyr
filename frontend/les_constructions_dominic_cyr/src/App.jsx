@@ -63,10 +63,6 @@ export default function App() {
   const countdownTimerRef = useRef(null);
   const resetIdleTimerRef = useRef(null);
 
-  /* ----------------------------------
-     Theme
-  -----------------------------------*/
-
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
