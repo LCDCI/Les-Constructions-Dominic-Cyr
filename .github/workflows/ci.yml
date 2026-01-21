@@ -3,12 +3,6 @@ name: Backend CI/CD
 on:
   push:
     branches: ["main"]
-    paths:
-      - 'src/**'
-      - 'build.gradle'
-      - 'settings.gradle'
-      - 'gradle/**'
-      - '.github/workflows/ci.yml'
   pull_request:
     branches: ["main"]
   workflow_dispatch:
