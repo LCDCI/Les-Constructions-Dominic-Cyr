@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import HomeFooter from "../components/Footers/HomeFooter";
 
-const fetchInquiries = async () => {
+const fetchInquiries = async (getAccessTokenSilently) => {
+  const token = await getAccessTokenSilently();
   const res = await fetch("/api/inquiries", {
-    credentials: "include",
+    method: "GET",
+    credentials: "omit",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   });
   if (!res.ok) throw new Error("Failed to fetch inquiries");
@@ -16,13 +20,21 @@ export default function OwnerInquiriesPage() {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { isAuthenticated, isLoading, getAccessTokenSilently, loginWithRedirect } = useAuth0();
 
   useEffect(() => {
-    fetchInquiries()
+    if (isLoading) return;
+    if (!isAuthenticated) {
+      setLoading(false);
+      loginWithRedirect({ appState: { returnTo: "/inquiries" } });
+      return;
+    }
+
+    fetchInquiries(getAccessTokenSilently)
       .then(setInquiries)
       .catch(setError)
       .finally(() => setLoading(false));
-  }, []);
+  }, [isAuthenticated, isLoading, getAccessTokenSilently, loginWithRedirect]);
 
   const formatDate = (value) => {
     const d = value ? new Date(value) : null;
