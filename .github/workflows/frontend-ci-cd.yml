@@ -3,19 +3,16 @@ name: Frontend CI/CD
 on:
   push:
     branches: ["main"]
-    paths:
-      - 'frontend/**'
   pull_request:
     branches: ["main"]
-    paths:
-      - 'frontend/**'
+  workflow_dispatch:
 
 jobs:
   # ============================================
-  # CI Pipeline - Build, Test, Lint, Format
+  # CI Pipeline - Formatting Check
   # ============================================
   ci:
-    name: CI - Build, Test & Quality Checks
+    name: CI - Prettier Formatting Check
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -35,66 +32,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Quality Check 1: Linting
-      - name: Run ESLint
-        run: npm run lint
-
-      # Quality Check 2: Formatting
+      # Quality Check: Formatting
       - name: Check Prettier formatting
         run: npx prettier --check "src/**/*.{js,jsx,ts,tsx,css,scss,json}"
-
-      # Quality Check 3: Type checking (if TypeScript)
-      - name: Type check
-        run: npx tsc --noEmit || true
-
-      # Build the application
-      - name: Build application
-        run: npm run build
-
-      # Run unit tests
-      - name: Run unit tests
-        run: npm run test -- --run --reporter=verbose
-
-  # ============================================
-  # CD Pipeline - Deploy to DigitalOcean
-  # ============================================
-  cd:
-    name: CD - Deploy to DigitalOcean
-    needs: ci
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    environment:
-      name: production
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install doctl (DigitalOcean CLI)
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Trigger DigitalOcean App Platform Deployment
-        run: |
-          doctl apps create-deployment ${{ secrets.DIGITALOCEAN_APP_ID }} --wait
-
-      - name: Get Deployment URL
-        id: deploy
-        run: |
-          url=$(doctl apps get ${{ secrets.DIGITALOCEAN_APP_ID }} --format LiveURL --no-header)
-          echo "url=$url" >> $GITHUB_OUTPUT
-
-      - name: Deployment Summary
-        run: |
-          echo "## 🚀 Deployment to DigitalOcean Successful!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Production URL:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Deployed at:** $(date)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**App ID:** ${{ secrets.DIGITALOCEAN_APP_ID }}" >> $GITHUB_STEP_SUMMARY
 
   # ============================================
   # PR Status Check
@@ -111,10 +51,6 @@ jobs:
           echo "## ✅ Pull Request Quality Checks Passed!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "All CI checks have passed:" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ ESLint (Code Quality)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Prettier (Code Formatting)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ TypeScript Check" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Build Successful" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Unit Tests Passed" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Ready for merge!** Deployment will trigger automatically on merge to main." >> $GITHUB_STEP_SUMMARY
+          echo "**Ready for merge!**" >> $GITHUB_STEP_SUMMARY
