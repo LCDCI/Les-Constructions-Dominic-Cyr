@@ -37,9 +37,11 @@
   },
   "nav": {
     "home": "Accueil",
-    "projects": "Projets",
-    "realizations": "Réalisations",
+    "projects": "Projets résidentiels",
+    "renovation": "Rénovations",
     "renovations": "Rénovations",
+    "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
     "contact": "Contact"
   },
   "footer": {
