@@ -1,6 +1,11 @@
 import React from 'react';
 
-export default function ErrorModal({ isOpen, title = 'Error', message, onClose }) {
+export default function ErrorModal({
+  isOpen,
+  title = 'Error',
+  message,
+  onClose,
+}) {
   if (!isOpen) return null;
 
   return (

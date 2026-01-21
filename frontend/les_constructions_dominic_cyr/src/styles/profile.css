@@ -1,5 +1,5 @@
-:root{
-  --accent-1:#5A7D8C;
+:root {
+  --accent-1: #5a7d8c;
 }
 
 .profile-page {
@@ -36,7 +36,7 @@
 }
 
 .edit-button:hover {
-  background-color: #4A90A4;
+  background-color: #4a90a4;
 }
 
 .profile-content {

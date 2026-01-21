@@ -3,7 +3,12 @@ import React, { useState, useEffect } from 'react';
 
 const USER_ROLES = ['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER'];
 
-export default function AddUserModal({ isOpen, onClose, onCreate, isSubmitting }) {
+export default function AddUserModal({
+  isOpen,
+  onClose,
+  onCreate,
+  isSubmitting,
+}) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [primaryEmail, setPrimaryEmail] = useState('');
@@ -25,7 +30,7 @@ export default function AddUserModal({ isOpen, onClose, onCreate, isSubmitting }
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     onCreate({
       firstName,
@@ -48,7 +53,7 @@ export default function AddUserModal({ isOpen, onClose, onCreate, isSubmitting }
               <input
                 type="text"
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={e => setFirstName(e.target.value)}
                 required
               />
             </label>
@@ -57,7 +62,7 @@ export default function AddUserModal({ isOpen, onClose, onCreate, isSubmitting }
               <input
                 type="text"
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={e => setLastName(e.target.value)}
                 required
               />
             </label>
@@ -69,7 +74,7 @@ export default function AddUserModal({ isOpen, onClose, onCreate, isSubmitting }
               <input
                 type="email"
                 value={primaryEmail}
-                onChange={(e) => setPrimaryEmail(e.target.value)}
+                onChange={e => setPrimaryEmail(e.target.value)}
                 required
               />
             </label>
@@ -78,7 +83,7 @@ export default function AddUserModal({ isOpen, onClose, onCreate, isSubmitting }
               <input
                 type="email"
                 value={secondaryEmail}
-                onChange={(e) => setSecondaryEmail(e.target.value)}
+                onChange={e => setSecondaryEmail(e.target.value)}
               />
             </label>
           </div>
@@ -89,7 +94,7 @@ export default function AddUserModal({ isOpen, onClose, onCreate, isSubmitting }
               <input
                 type="tel"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={e => setPhone(e.target.value)}
               />
             </label>
 
@@ -97,9 +102,9 @@ export default function AddUserModal({ isOpen, onClose, onCreate, isSubmitting }
               Role
               <select
                 value={userRole}
-                onChange={(e) => setUserRole(e.target.value)}
+                onChange={e => setUserRole(e.target.value)}
               >
-                {USER_ROLES.map((role) => (
+                {USER_ROLES.map(role => (
                   <option key={role} value={role}>
                     {role}
                   </option>

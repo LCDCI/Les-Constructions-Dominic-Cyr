@@ -13,11 +13,20 @@ export default function AppFooter() {
           <div className="footer-icon">
             <FaUser />
           </div>
-          <h3 className="footer-title">{t('footer.contactTitle', 'Contact')}</h3>
+          <h3 className="footer-title">
+            {t('footer.contactTitle', 'Contact')}
+          </h3>
           <div className="footer-content">
-            <p className="footer-item">{t('footer.contactName', 'Isabelle Misiazeck')}</p>
-            <p className="footer-item">{t('footer.contactPhone', '514-123-4567')}</p>
-            <a href={`mailto:${t('footer.contactEmail', 'isabelle.misiazeck@foresta.ca')}`} className="footer-link">
+            <p className="footer-item">
+              {t('footer.contactName', 'Isabelle Misiazeck')}
+            </p>
+            <p className="footer-item">
+              {t('footer.contactPhone', '514-123-4567')}
+            </p>
+            <a
+              href={`mailto:${t('footer.contactEmail', 'isabelle.misiazeck@foresta.ca')}`}
+              className="footer-link"
+            >
               {t('footer.contactEmail', 'isabelle.misiazeck@foresta.ca')}
             </a>
           </div>
@@ -27,10 +36,19 @@ export default function AppFooter() {
           <div className="footer-icon">
             <FaClock />
           </div>
-          <h3 className="footer-title">{t('footer.hoursTitle', 'Opening Hours')}</h3>
+          <h3 className="footer-title">
+            {t('footer.hoursTitle', 'Opening Hours')}
+          </h3>
           <div className="footer-content">
-            <p className="footer-item">{t('footer.hoursWeekdays', 'Monday to Wednesday: 1 p.m to 7 p.m')}</p>
-            <p className="footer-item">{t('footer.hoursWeekend', 'Saturday and Sunday: 11 a.m. to 5 p.m.')}</p>
+            <p className="footer-item">
+              {t('footer.hoursWeekdays', 'Monday to Wednesday: 1 p.m to 7 p.m')}
+            </p>
+            <p className="footer-item">
+              {t(
+                'footer.hoursWeekend',
+                'Saturday and Sunday: 11 a.m. to 5 p.m.'
+              )}
+            </p>
           </div>
         </div>
 
@@ -41,15 +59,24 @@ export default function AppFooter() {
           </div>
           <h3 className="footer-title">{t('footer.officeTitle', 'Office')}</h3>
           <div className="footer-content">
-            <p className="footer-item">{t('footer.officeAddress1', '104 rue du Boisé')}</p>
-            <p className="footer-item">{t('footer.officeAddress2', 'St-Alphonse de Granby')}</p>
-            <p className="footer-item">{t('footer.officeAddress3', 'Granby, QC J2J 2X4')}</p>
+            <p className="footer-item">
+              {t('footer.officeAddress1', '104 rue du Boisé')}
+            </p>
+            <p className="footer-item">
+              {t('footer.officeAddress2', 'St-Alphonse de Granby')}
+            </p>
+            <p className="footer-item">
+              {t('footer.officeAddress3', 'Granby, QC J2J 2X4')}
+            </p>
           </div>
         </div>
       </div>
       <div className="footer-bottom">
         <p className="footer-copyright">
-          {t('footer.copyright', '© 2025 Les Constructions Dominic Cyr. All rights reserved.')}
+          {t(
+            'footer.copyright',
+            '© 2025 Les Constructions Dominic Cyr. All rights reserved.'
+          )}
         </p>
       </div>
     </footer>

@@ -1,325 +1,331 @@
 .salesperson-dashboard {
-    padding: 3%;
-    max-width: 100%;
-    margin: 0 auto;
-    font-family: 'Arial', sans-serif;
-    min-height: 100vh;
+  padding: 3%;
+  max-width: 100%;
+  margin: 0 auto;
+  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
 }
 
 .dashboard-title {
-    text-align: center;
-    font-size: clamp(1.5rem, 4vw, 2rem);
-    margin-bottom: 3%;
-    color: #333;
-    padding: 0 2%;
+  text-align: center;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: 3%;
+  color: #333;
+  padding: 0 2%;
 }
 
 .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-    gap: 2.5%;
-    margin-bottom: 4%;
-    padding: 0 1%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 2.5%;
+  margin-bottom: 4%;
+  padding: 0 1%;
 }
 
 .dashboard-card {
-    background:  #E5EDF5;
-    border-radius: 0.75rem;
-    padding: 6% 4%;
-    text-align: center;
-    box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    min-height: 180px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
+  background: #e5edf5;
+  border-radius: 0.75rem;
+  padding: 6% 4%;
+  text-align: center;
+  box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .dashboard-card:hover {
-    transform: translateY(-0.3125rem);
-    box-shadow: 0 0.5rem 0.75rem rgba(0, 0, 0, 0.15);
+  transform: translateY(-0.3125rem);
+  box-shadow: 0 0.5rem 0.75rem rgba(0, 0, 0, 0.15);
 }
 
 .card-icon {
-    font-size: clamp(2rem, 6vw, 3rem);
-    margin-bottom: 4%;
+  font-size: clamp(2rem, 6vw, 3rem);
+  margin-bottom: 4%;
 }
 
 .dashboard-card h3 {
-    font-size: clamp(0.9rem, 2.5vw, 1.125rem);
-    margin-bottom: 5%;
-    color: #333;
-    line-height: 1.4;
-    padding: 0 2%;
+  font-size: clamp(0.9rem, 2.5vw, 1.125rem);
+  margin-bottom: 5%;
+  color: #333;
+  line-height: 1.4;
+  padding: 0 2%;
 }
 
 .card-button {
-    background-color: #4D85B9;
-    color: white;
-    border: none;
-    padding: 2.5% 6%;
-    border-radius: 1.25rem;
-    cursor: pointer;
-    font-size: clamp(0.8rem, 2vw, 0.875rem);
-    font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    white-space: nowrap;
-    min-width: 60%;
+  background-color: #4d85b9;
+  color: white;
+  border: none;
+  padding: 2.5% 6%;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 2vw, 0.875rem);
+  font-weight: 500;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+  white-space: nowrap;
+  min-width: 60%;
 }
 
 .card-button:hover {
-    background-color: #1565c0;
-    transform: scale(1.05);
+  background-color: #1565c0;
+  transform: scale(1.05);
 }
 
 .card-button:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
 
 .schedule-section {
-    background: #E5EDF5;
-    border-radius: 0.75rem;
-    padding: 4%;
-    box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
-    margin: 0 1%;
+  background: #e5edf5;
+  border-radius: 0.75rem;
+  padding: 4%;
+  box-shadow: 0 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+  margin: 0 1%;
 }
 
 .schedule-section h2 {
-    font-size: clamp(1.2rem, 3.5vw, 1.5rem);
-    margin-bottom: 3%;
-    color: #333;
+  font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+  margin-bottom: 3%;
+  color: #333;
 }
 
 .schedule-list {
-    margin-bottom: 3%;
+  margin-bottom: 3%;
 }
 
 .schedule-item {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 3%;
-    margin-bottom: 2%;
-    border-radius: 0.5rem;
-    font-size: clamp(0.85rem, 2.2vw, 1rem);
-    color: #333;
-    line-height: 1.6;
-    word-wrap: break-word;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 3%;
+  margin-bottom: 2%;
+  border-radius: 0.5rem;
+  font-size: clamp(0.85rem, 2.2vw, 1rem);
+  color: #333;
+  line-height: 1.6;
+  word-wrap: break-word;
 }
 
 .schedule-date {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 .schedule-task {
-    font-weight: 600;
-    color: #4D85B9;
+  font-weight: 600;
+  color: #4d85b9;
 }
 
 .schedule-lot {
-    font-style: italic;
-    color: #555;
+  font-style: italic;
+  color: #555;
 }
 
 .schedule-separator {
-    margin: 0 0.2em;
+  margin: 0 0.2em;
 }
 
 .see-more-button {
-    background-color: #4D85B9;
-    color: white;
-    border: none;
-    padding: 2% 5%;
-    border-radius: 1.25rem;
-    cursor: pointer;
-    font-size: clamp(0.8rem, 2vw, 0.875rem);
-    font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    display: block;
-    margin: 0 auto;
-    min-width: 120px;
+  background-color: #4d85b9;
+  color: white;
+  border: none;
+  padding: 2% 5%;
+  border-radius: 1.25rem;
+  cursor: pointer;
+  font-size: clamp(0.8rem, 2vw, 0.875rem);
+  font-weight: 500;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+  display: block;
+  margin: 0 auto;
+  min-width: 120px;
 }
 
 .see-more-button:hover {
-    background-color: #1565c0;
-    transform: scale(1.05);
+  background-color: #1565c0;
+  transform: scale(1.05);
 }
 
 .see-more-button:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
 
 .error {
-    color: #d32f2f;
-    font-weight: 500;
-    text-align: center;
-    padding: 2%;
-    font-size: clamp(0.9rem, 2.2vw, 1rem);
+  color: #d32f2f;
+  font-weight: 500;
+  text-align: center;
+  padding: 2%;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
 }
 
 .schedule-loading,
 .schedule-empty {
-    text-align: center;
-    padding: 3%;
-    color: #666;
-    font-size: clamp(0.9rem, 2.2vw, 1rem);
+  text-align: center;
+  padding: 3%;
+  color: #666;
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
 }
 
 @media (min-width: 1600px) {
-    .salesperson-dashboard {
-        max-width: 1600px;
-        padding: 2% 5%;
-    }
+  .salesperson-dashboard {
+    max-width: 1600px;
+    padding: 2% 5%;
+  }
 
-    .dashboard-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2%;
-    }
+  .dashboard-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2%;
+  }
 }
 
 @media (min-width: 1200px) and (max-width: 1599px) {
-    .salesperson-dashboard {
-        max-width: 1400px;
-        padding: 2.5% 4%;
-    }
+  .salesperson-dashboard {
+    max-width: 1400px;
+    padding: 2.5% 4%;
+  }
 
-    .dashboard-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2%;
-    }
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2%;
+  }
 }
 
 @media (min-width: 900px) and (max-width: 1199px) {
-    .dashboard-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2.5%;
-    }
+  .dashboard-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5%;
+  }
 
-    .dashboard-card {
-        padding: 5% 3%;
-        min-height: 160px;
-    }
+  .dashboard-card {
+    padding: 5% 3%;
+    min-height: 160px;
+  }
 }
 
 @media (min-width: 600px) and (max-width: 899px) {
-    .salesperson-dashboard {
-        padding: 3% 2%;
-    }
+  .salesperson-dashboard {
+    padding: 3% 2%;
+  }
 
-    .dashboard-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 3%;
-    }
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3%;
+  }
 
-    .dashboard-card {
-        padding: 6% 4%;
-        min-height: 170px;
-    }
+  .dashboard-card {
+    padding: 6% 4%;
+    min-height: 170px;
+  }
 
-    .schedule-section {
-        padding: 5%;
-    }
+  .schedule-section {
+    padding: 5%;
+  }
 }
 
 @media (max-width: 599px) {
-    .salesperson-dashboard {
-        padding: 4% 3%;
-    }
+  .salesperson-dashboard {
+    padding: 4% 3%;
+  }
 
-    .dashboard-title {
-        margin-bottom: 6%;
-    }
+  .dashboard-title {
+    margin-bottom: 6%;
+  }
 
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-        gap: 4%;
-        margin-bottom: 6%;
-    }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 4%;
+    margin-bottom: 6%;
+  }
 
-    .dashboard-card {
-        padding: 8% 5%;
-        min-height: 160px;
-    }
+  .dashboard-card {
+    padding: 8% 5%;
+    min-height: 160px;
+  }
 
-    .card-icon {
-        margin-bottom: 5%;
-    }
+  .card-icon {
+    margin-bottom: 5%;
+  }
 
-    .dashboard-card h3 {
-        margin-bottom: 6%;
-    }
+  .dashboard-card h3 {
+    margin-bottom: 6%;
+  }
 
-    .card-button {
-        padding: 3.5% 8%;
-        min-width: 70%;
-    }
+  .card-button {
+    padding: 3.5% 8%;
+    min-width: 70%;
+  }
 
-    .schedule-section {
-        padding: 6%;
-        margin: 0;
-    }
+  .schedule-section {
+    padding: 6%;
+    margin: 0;
+  }
 
-    .schedule-section h2 {
-        margin-bottom: 5%;
-    }
+  .schedule-section h2 {
+    margin-bottom: 5%;
+  }
 
-    .schedule-item {
-        padding: 4%;
-        margin-bottom: 3%;
-        font-size: 0.9rem;
-    }
+  .schedule-item {
+    padding: 4%;
+    margin-bottom: 3%;
+    font-size: 0.9rem;
+  }
 
-    .see-more-button {
-        padding: 3.5% 8%;
-        width: 80%;
-        max-width: 200px;
-    }
+  .see-more-button {
+    padding: 3.5% 8%;
+    width: 80%;
+    max-width: 200px;
+  }
 }
 
 @media (max-width: 400px) {
-    .salesperson-dashboard {
-        padding: 5% 2%;
-    }
+  .salesperson-dashboard {
+    padding: 5% 2%;
+  }
 
-    .dashboard-card {
-        padding: 10% 6%;
-    }
+  .dashboard-card {
+    padding: 10% 6%;
+  }
 
-    .schedule-item {
-        padding: 5%;
-        font-size: 0.85rem;
-    }
+  .schedule-item {
+    padding: 5%;
+    font-size: 0.85rem;
+  }
 
-    .card-button,
-    .see-more-button {
-        font-size: 0.8rem;
-    }
+  .card-button,
+  .see-more-button {
+    font-size: 0.8rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .dashboard-card,
-    .card-button,
-    .see-more-button {
-        transition: none;
-    }
+  .dashboard-card,
+  .card-button,
+  .see-more-button {
+    transition: none;
+  }
 
-    .dashboard-card:hover {
-        transform: none;
-    }
+  .dashboard-card:hover {
+    transform: none;
+  }
 }
 
 @media print {
-    .salesperson-dashboard {
-        padding: 2%;
-    }
+  .salesperson-dashboard {
+    padding: 2%;
+  }
 
-    .dashboard-card,
-    .schedule-section {
-        box-shadow: none;
-        break-inside: avoid;
-    }
+  .dashboard-card,
+  .schedule-section {
+    box-shadow: none;
+    break-inside: avoid;
+  }
 
-    .card-button,
-    .see-more-button {
-        display: none;
-    }
+  .card-button,
+  .see-more-button {
+    display: none;
+  }
 }

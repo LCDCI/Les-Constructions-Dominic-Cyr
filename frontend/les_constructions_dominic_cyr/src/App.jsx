@@ -63,7 +63,6 @@ export default function App() {
   const countdownTimerRef = useRef(null);
   const resetIdleTimerRef = useRef(null);
 
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const error = params.get('error');

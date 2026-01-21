@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-export default function EditUserModal({ isOpen, user, onClose, onSave, isSaving }) {
+export default function EditUserModal({
+  isOpen,
+  user,
+  onClose,
+  onSave,
+  isSaving,
+}) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -21,19 +27,19 @@ export default function EditUserModal({ isOpen, user, onClose, onSave, isSaving 
 
   if (!isOpen) return null;
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     onSave(formData);
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
         <h2>Edit User</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">

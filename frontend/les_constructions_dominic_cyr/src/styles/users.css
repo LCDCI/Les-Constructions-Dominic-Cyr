@@ -15,7 +15,7 @@
   gap: 12px;
   margin-bottom: 16px;
   /* Keep everything on one line to match screenshot 2 */
-  flex-wrap: nowrap; 
+  flex-wrap: nowrap;
   /* Enable horizontal scroll for the header items if they collide */
   overflow-x: auto;
   padding-bottom: 8px;
@@ -307,23 +307,23 @@
   font-size: 0.85rem;
 }
 
-.modal-actions button[type="submit"],
+.modal-actions button[type='submit'],
 .modal-actions button:not([type]) {
   background-color: #2563eb;
   color: #ffffff;
 }
 
-.modal-actions button[type="submit"]:hover,
+.modal-actions button[type='submit']:hover,
 .modal-actions button:not([type]):hover {
   background-color: #1e40af;
 }
 
-.modal-actions button[type="button"] {
+.modal-actions button[type='button'] {
   background-color: #e5e7eb;
   color: #111827;
 }
 
-.modal-actions button[type="button"]:hover {
+.modal-actions button[type='button']:hover {
   background-color: #d1d5db;
 }
 
@@ -674,13 +674,15 @@
   .modal-actions {
     justify-content: stretch;
   }
-  .modal-actions button, .modal-footer button {
+  .modal-actions button,
+  .modal-footer button {
     width: 100%;
   }
   .modal-footer {
     flex-direction: column;
   }
-  .invite-link-row input, .invite-link-row button {
+  .invite-link-row input,
+  .invite-link-row button {
     width: 100%;
   }
   .info-item {
