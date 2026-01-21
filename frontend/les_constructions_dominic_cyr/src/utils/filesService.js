@@ -5,7 +5,12 @@ export function getFilesServiceBase() {
   // If env provided, return it (don't append /files here)
   if (env && typeof env === 'string' && env.trim()) return env.replace(/\/$/, '');
 
-  // Always use env or relative path; never fallback to localhost in production
+  // For production on DigitalOcean, use files-service directly
+  if (typeof window !== 'undefined' && window.location.hostname.includes('ondigitalocean')) {
+    return 'https://files-service-app-xubs2.ondigitalocean.app';
+  }
+
+  // For local development, use relative path
   return `${window.location.origin}/files`;
 }
 
