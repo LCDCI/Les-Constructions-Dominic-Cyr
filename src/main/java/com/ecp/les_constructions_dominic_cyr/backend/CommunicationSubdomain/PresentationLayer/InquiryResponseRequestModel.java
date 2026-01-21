@@ -1,13 +1,12 @@
 package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.PresentationLayer;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+/**
+ * Placeholder class retained to preserve the type name.
+ * This class is not used as a request model anymore.
+ */
+public final class InquiryResponseRequestModel {
 
-public class InquiryResponseRequestModel {
-    @NotBlank(message = "Response is required")
-    @Size(max = 2000, message = "Response must not exceed 2000 characters")
-    private String response;
-
-    public String getResponse() { return response; }
-    public void setResponse(String response) { this.response = response; }
+    private InquiryResponseRequestModel() {
+        throw new UnsupportedOperationException("InquiryResponseRequestModel is no longer used as a request model.");
+    }
 }
