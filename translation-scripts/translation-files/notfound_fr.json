@@ -1,8 +1,11 @@
 {
   "nav": {
+    "home": "Accueil",
     "projects": "Projets résidentiels",
-    "renovation": "Rénovation",
+    "renovation": "Rénovations",
+    "renovations": "Rénovations",
     "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
     "realisations": "Réalisations",
     "signIn": "Se connecter",
     "getStarted": "Commencer"

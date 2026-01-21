@@ -2,8 +2,10 @@
   "nav": {
     "home": "Accueil",
     "projects": "Projets résidentiels",
-    "realizations": "Réalisations",
+    "renovation": "Rénovations",
     "renovations": "Rénovations",
+    "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
     "contact": "Contact"
   },
   "footer": {

@@ -1,8 +1,11 @@
 {
   "nav": {
+    "home": "Home",
     "projects": "Residential Projects",
-    "renovation": "Renovation",
+    "renovation": "Renovations",
+    "renovations": "Renovations",
     "projectManagement": "Project Management",
+    "realizations": "Realizations",
     "realisations": "Achievements",
     "signIn": "Sign in",
     "getStarted": "Get Started"
