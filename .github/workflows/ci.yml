@@ -49,40 +49,6 @@ jobs:
           echo "The project compiles successfully." >> $GITHUB_STEP_SUMMARY
 
   # ============================================
-  # CD Pipeline - Deploy to DigitalOcean
-  # ============================================
-  cd:
-    name: CD - Deploy to DigitalOcean
-    needs: ci
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
-    environment:
-      name: production
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Trigger DigitalOcean App Platform Deployment
-        run: |
-          doctl apps create-deployment ${{ secrets.DIGITALOCEAN_BACKEND_APP_ID }} --wait
-
-      - name: Get Deployment URL
-        id: deploy
-        run: |
-          url=$(doctl apps get ${{ secrets.DIGITALOCEAN_BACKEND_APP_ID }} --format LiveURL --no-header)
-          echo "url=$url" >> $GITHUB_OUTPUT
-
-      - name: Deployment Summary
-        run: |
-          echo "## 🚀 Backend Deployment to DigitalOcean Successful!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Production URL:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Deployed at:** $(date)" >> $GITHUB_STEP_SUMMARY
-
-  # ============================================
   # PR Status Check
   # ============================================
   pr-check:
