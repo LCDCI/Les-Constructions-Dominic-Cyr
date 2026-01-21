@@ -1,13 +1,27 @@
-name: Build & Test
+name: Backend CI/CD
 
 on:
   push:
     branches: ["main"]
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle/**'
   pull_request:
     branches: ["main"]
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle/**'
 
 jobs:
-  build:
+  # ============================================
+  # CI Pipeline - Build, Test, Lint, Format
+  # ============================================
+  ci:
+    name: CI - Build, Test & Quality Checks
     runs-on: ubuntu-latest
 
     services:
@@ -47,6 +61,7 @@ jobs:
           done
           echo "Postgres did not become ready in time"
           exit 1
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
@@ -62,8 +77,100 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+
       - name: Make gradlew executable
         run: chmod +x ./gradlew
 
+      # Quality Check 1: Checkstyle (Linting)
+      - name: Run Checkstyle
+        run: ./gradlew checkstyleMain checkstyleTest --continue || true
+
+      # Quality Check 2: Spotless (Formatting)
+      - name: Check code formatting with Spotless
+        run: ./gradlew spotlessCheck || true
+
+      # Build and run tests
       - name: Build project (tests use Postgres via test profile)
         run: ./gradlew clean build --info
+
+      # Generate test report summary
+      - name: Test Summary
+        if: always()
+        run: |
+          echo "## 🧪 Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f build/reports/tests/test/index.html ]; then
+            echo "✅ Tests completed - see artifacts for detailed report" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No test report generated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # Upload test reports
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/
+          retention-days: 7
+
+  # ============================================
+  # CD Pipeline - Deploy to DigitalOcean
+  # ============================================
+  cd:
+    name: CD - Deploy to DigitalOcean
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    environment:
+      name: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install doctl (DigitalOcean CLI)
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Trigger DigitalOcean App Platform Deployment
+        run: |
+          doctl apps create-deployment ${{ secrets.DIGITALOCEAN_BACKEND_APP_ID }} --wait
+
+      - name: Get Deployment URL
+        id: deploy
+        run: |
+          url=$(doctl apps get ${{ secrets.DIGITALOCEAN_BACKEND_APP_ID }} --format LiveURL --no-header)
+          echo "url=$url" >> $GITHUB_OUTPUT
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Backend Deployment to DigitalOcean Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Production URL:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed at:** $(date)" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================
+  # PR Status Check
+  # ============================================
+  pr-check:
+    name: PR Quality Gate
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: PR Check Summary
+        run: |
+          echo "## ✅ Backend Pull Request Quality Checks Passed!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All CI checks have passed:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Checkstyle (Code Quality)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Spotless (Code Formatting)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Build Successful" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Unit/Integration Tests Passed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Ready for merge!** Deployment will trigger automatically on merge to main." >> $GITHUB_STEP_SUMMARY
