@@ -6,7 +6,7 @@ export function getFilesServiceBase() {
   if (env && typeof env === 'string' && env.trim()) return env.replace(/\/$/, '');
 
   // For production on DigitalOcean, use files-service directly
-  if (typeof window !== 'undefined' && window.location.hostname.includes('ondigitalocean')) {
+  if (typeof window !== 'undefined' && (window.location.hostname.includes('lcdci-portal') || window.location.hostname.includes('lcdci-frontend'))) {
     return 'https://files-service-app-xubs2.ondigitalocean.app';
   }
 
