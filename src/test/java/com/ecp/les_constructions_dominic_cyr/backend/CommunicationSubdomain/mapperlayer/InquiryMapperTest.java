@@ -28,7 +28,6 @@ public class InquiryMapperTest {
         requestModel.setEmail("john.doe@example.com");
         requestModel.setPhone("555-1234");
         requestModel.setMessage("I am interested in your construction services.");
-        requestModel.setRecaptchaToken("test-token");
 
         // Act
         Inquiry result = inquiryMapper.requestModelToEntity(requestModel);
@@ -185,24 +184,6 @@ public class InquiryMapperTest {
         assertEquals(specificTime, result.getCreatedAt());
     }
 
-    @Test
-    void requestModelToEntity_DoesNotCopyRecaptchaToken() {
-        // Arrange
-        InquiryRequestModel requestModel = new InquiryRequestModel();
-        requestModel.setName("Test User");
-        requestModel.setEmail("test@example.com");
-        requestModel.setMessage("Test message");
-        requestModel.setRecaptchaToken("some-captcha-token");
-
-        // Act
-        Inquiry result = inquiryMapper.requestModelToEntity(requestModel);
-
-        // Assert
-        assertNotNull(result);
-        // Verify the recaptcha token is not mapped (entity doesn't have this field)
-        assertEquals("Test User", result.getName());
-        assertEquals("test@example.com", result.getEmail());
-    }
 
     @Test
     void roundTrip_RequestToEntityToResponse_PreservesData() {

@@ -14,8 +14,11 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.config.http.SessionCreationPolicy;
+
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -44,6 +47,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(inquiriesRateLimitFilter(), BearerTokenAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         // --- 1. PUBLIC ENDPOINTS (Originals + New Public Lots) ---
                         .requestMatchers("/actuator/**", "/api/theme").permitAll()
@@ -53,6 +58,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/project-management/**").permitAll()
                         .requestMatchers("/api/v1/realizations/**").permitAll()
                         .requestMatchers("/api/v1/contact/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/inquiries").hasAuthority("ROLE_OWNER")
 
                         // Project Public Endpoints (From your original list)
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
@@ -104,8 +111,12 @@ public class SecurityConfig {
                         )
                 );
 
-
         return http.build();
+    }
+
+    @Bean
+    public InquiriesRateLimitFilter inquiriesRateLimitFilter() {
+        return new InquiriesRateLimitFilter();
     }
 
     @Bean
