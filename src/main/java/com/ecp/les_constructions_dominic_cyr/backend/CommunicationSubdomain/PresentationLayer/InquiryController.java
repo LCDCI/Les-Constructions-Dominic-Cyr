@@ -2,27 +2,11 @@ package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Pre
 
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.InquiryService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpServletRequest;
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
-import io.github.bucket4j.Refill;
 import org.springframework.web.util.HtmlUtils;
-import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.http.HttpStatus;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/inquiries")
@@ -30,53 +14,13 @@ import java.util.List;
 public class InquiryController {
     private final InquiryService service;
     private static final int MAX_MESSAGE_LENGTH = 1000;
-    private static final String OWNER_KEY = "dev-owner-key";
-    private static final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
-
-    @Value("${recaptcha.secret}")
-    private String recaptchaSecret;
 
     public InquiryController(InquiryService service) {
         this.service = service;
     }
 
-    private Bucket resolveBucket(String ip) {
-        return buckets.computeIfAbsent(ip, k -> Bucket4j.builder()
-                .addLimit(Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1))))
-                .build());
-    }
-
-    private boolean verifyRecaptcha(String token) {
-        try {
-            HttpClient client = HttpClient.newHttpClient();
-            String body = "secret=" + recaptchaSecret + "&response=" + token;
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://www.google.com/recaptcha/api/siteverify"))
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .POST(HttpRequest.BodyPublishers.ofString(body))
-                    .build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, Object> result = mapper.readValue(response.body(), HashMap.class);
-            return Boolean.TRUE.equals(result.get("success"));
-        } catch (IOException | InterruptedException e) {
-            return false;
-        }
-    }
-
     @PostMapping
-    public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequestModel request, HttpServletRequest httpRequest) {
-        String ip = httpRequest.getRemoteAddr();
-        Bucket bucket = resolveBucket(ip);
-        if (!bucket.tryConsume(1)) {
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Too many requests. Please try again later.");
-        }
-
-        // CAPTCHA validation (optional if token is not provided - for testing purposes)
-        if (request.getRecaptchaToken() != null && !verifyRecaptcha(request.getRecaptchaToken())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CAPTCHA validation failed.");
-        }
-
+    public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequestModel request) {
         // Message length validation
         if (request.getMessage() != null && request.getMessage().length() > MAX_MESSAGE_LENGTH) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Message is too long.");
@@ -95,12 +39,7 @@ public class InquiryController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllInquiries(@RequestHeader(value = "X-OWNER-KEY", required = false) String ownerKey) {
-        // Validate owner key
-        if (ownerKey == null || !ownerKey.equals(OWNER_KEY)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access.");
-        }
-
+    public ResponseEntity<?> getAllInquiries() {
         List<InquiryResponseModel> inquiries = service.getAllInquiries();
         return ResponseEntity.ok(inquiries);
     }
