@@ -108,6 +108,7 @@ export default function InquiryForm({ onSuccess, className }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
+        credentials: 'omit', // prevent sending cookies that could trigger auth on the public endpoint
       });
       if (res.ok) {
         const text = await res.text();

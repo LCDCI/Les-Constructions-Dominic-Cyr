@@ -46,6 +46,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(inquiriesRateLimitFilter(), BearerTokenAuthenticationFilter.class)
@@ -58,8 +59,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/project-management/**").permitAll()
                         .requestMatchers("/api/v1/realizations/**").permitAll()
                         .requestMatchers("/api/v1/contact/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/inquiries").hasAuthority("ROLE_OWNER")
+                        // Inquiries: allow public submissions and owner-only reads (match trailing slash too)
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/inquiries", "/api/inquiries/**").permitAll()
+                        .requestMatchers(HttpMethod.HEAD, "/api/inquiries", "/api/inquiries/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/inquiries", "/api/inquiries/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/inquiries", "/api/inquiries/**").hasAuthority("ROLE_OWNER")
 
                         // Project Public Endpoints (From your original list)
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
