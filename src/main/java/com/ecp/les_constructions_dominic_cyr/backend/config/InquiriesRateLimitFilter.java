@@ -41,16 +41,16 @@ public class InquiriesRateLimitFilter extends OncePerRequestFilter {
             int comma = forwarded.indexOf(',');
             return comma > 0 ? forwarded.substring(0, comma).trim() : forwarded.trim();
         }
+        return request.getRemoteAddr();
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         if ("POST".equalsIgnoreCase(request.getMethod()) && "/api/inquiries".equals(request.getRequestURI())) {
             String key = extractClientIp(request);
             Bucket bucket = resolveBucket(key);
             if (!bucket.tryConsume(1)) {
-            response.setStatus(HttpServletResponse.SC_TOO_MANY_REQUESTS);
-            response.setStatus(429);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"error\":\"Too many requests. Please try again later.\"}");
-            return;
                 response.setStatus(429);
                 response.setContentType("application/json");
                 response.getWriter().write("{\"error\":\"Too many requests. Please try again later.\"}");
