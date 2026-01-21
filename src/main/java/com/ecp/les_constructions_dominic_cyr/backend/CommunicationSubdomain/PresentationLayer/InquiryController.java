@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 
 @RestController
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 @CrossOrigin(origins = "http://localhost:3000")
 public class InquiryController {
     private final InquiryService service;
-    private static final int MAX_MESSAGE_LENGTH = 1000;
 
     public InquiryController(InquiryService service) {
         this.service = service;
@@ -21,11 +21,6 @@ public class InquiryController {
 
     @PostMapping
     public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequestModel request) {
-        // Message length validation
-        if (request.getMessage() != null && request.getMessage().length() > MAX_MESSAGE_LENGTH) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Message is too long.");
-        }
-
         // Input sanitization
         request.setName(HtmlUtils.htmlEscape(request.getName()));
         request.setEmail(HtmlUtils.htmlEscape(request.getEmail()));
@@ -35,7 +30,7 @@ public class InquiryController {
         request.setMessage(HtmlUtils.htmlEscape(request.getMessage()));
         
         service.submitInquiry(request);
-        return ResponseEntity.ok().body("Thank you! Your inquiry has been received.");
+        return ResponseEntity.ok(Map.of("message", "Thank you! Your inquiry has been received."));
     }
 
     @GetMapping
