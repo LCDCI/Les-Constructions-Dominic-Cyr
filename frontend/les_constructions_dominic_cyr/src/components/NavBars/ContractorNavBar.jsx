@@ -8,21 +8,27 @@ import {
   GoArrowUp,
   GoFile,
   GoGear,
-  GoHome
+  GoHome,
 } from 'react-icons/go';
-import { MdOutlineRequestQuote } from "react-icons/md";
+import { MdOutlineRequestQuote } from 'react-icons/md';
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
-import { CgProfile } from "react-icons/cg";
-
-
+import { CgProfile } from 'react-icons/cg';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
   const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
+    import.meta.env.VITE_FILES_SERVICE_URL ||
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : typeof window !== 'undefined' &&
+          window.location.hostname === 'localhost'
+        ? 'http://localhost:8082'
+        : `${window.location.origin}/files`);
   const logoId = import.meta.env.VITE_LOGO_ID;
 
   const toggleMenu = () => {
@@ -93,14 +99,16 @@ const Navbar = () => {
                 </Link>
               </li>
               <li className="navbar-item">
-                    <Link
-                        to="/"
-                        className={`navbar-link ${isActive('/')}`}
-                        onClick={closeMenu}
-                    >
-                        <span className="navbar-icon"><GoHome /></span>
-                        <span className="navbar-text">Home</span>
-                    </Link>
+                <Link
+                  to="/"
+                  className={`navbar-link ${isActive('/')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoHome />
+                  </span>
+                  <span className="navbar-text">Home</span>
+                </Link>
               </li>
             </ul>
           </div>
@@ -164,14 +172,14 @@ const Navbar = () => {
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">
-                    < GoArrowUp />
+                    <GoArrowUp />
                   </span>
                   <span className="navbar-text">Uploads</span>
                 </Link>
               </li>
             </ul>
           </div>
-         
+
           {/* Settings Section */}
           <div className="navbar-section">
             <h3 className="navbar-section-title">Settings</h3>

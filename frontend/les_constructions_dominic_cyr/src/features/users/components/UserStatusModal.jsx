@@ -1,15 +1,24 @@
 import React, { useState } from 'react';
 import '../../../styles/users.css';
 
-export default function UserStatusModal({ isOpen, user, onClose, onConfirm, isSubmitting, currentUser }) {
+export default function UserStatusModal({
+  isOpen,
+  user,
+  onClose,
+  onConfirm,
+  isSubmitting,
+  currentUser,
+}) {
   const [action, setAction] = useState('');
 
   if (!isOpen || !user) return null;
 
   const isOwner = currentUser?.userRole === 'OWNER';
-  const canDeactivate = user.userStatus === 'ACTIVE' || user.userStatus === 'INACTIVE';
+  const canDeactivate =
+    user.userStatus === 'ACTIVE' || user.userStatus === 'INACTIVE';
   const canSetInactive = user.userStatus === 'ACTIVE';
-  const canReactivate = user.userStatus === 'INACTIVE' || user.userStatus === 'DEACTIVATED';
+  const canReactivate =
+    user.userStatus === 'INACTIVE' || user.userStatus === 'DEACTIVATED';
 
   const handleConfirm = () => {
     if (action) {
@@ -21,7 +30,7 @@ export default function UserStatusModal({ isOpen, user, onClose, onConfirm, isSu
     switch (action) {
       case 'deactivate':
         return 'Deactivating this user will prevent them from logging in and they will not appear in active assignment lists.  Historical data will remain available. ';
-      case 'inactive': 
+      case 'inactive':
         return 'Setting this user as inactive will keep them visible in the dashboard but signal the end of their current project.  They can still log in. ';
       case 'reactivate':
         return 'Reactivating this user will restore their full access to the system. ';
@@ -32,7 +41,7 @@ export default function UserStatusModal({ isOpen, user, onClose, onConfirm, isSu
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Manage User Status</h2>
           <button className="modal-close" onClick={onClose}>
@@ -50,7 +59,9 @@ export default function UserStatusModal({ isOpen, user, onClose, onConfirm, isSu
             </p>
             <p>
               <strong>Current Status:</strong>{' '}
-              <span className={`status-badge status-${user.userStatus?. toLowerCase()}`}>
+              <span
+                className={`status-badge status-${user.userStatus?.toLowerCase()}`}
+              >
                 {user.userStatus || 'ACTIVE'}
               </span>
             </p>
@@ -97,13 +108,19 @@ export default function UserStatusModal({ isOpen, user, onClose, onConfirm, isSu
             </div>
           )}
 
-          {! isOwner && (
-            <p className="error-text">You do not have permission to change user status.</p>
+          {!isOwner && (
+            <p className="error-text">
+              You do not have permission to change user status.
+            </p>
           )}
         </div>
 
         <div className="modal-footer">
-          <button className="btn-secondary" onClick={onClose} disabled={isSubmitting}>
+          <button
+            className="btn-secondary"
+            onClick={onClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </button>
           {isOwner && (

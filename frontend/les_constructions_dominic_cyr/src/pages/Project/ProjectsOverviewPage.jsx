@@ -30,8 +30,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const DEFAULT_COORDS = [45.31941496688032, -72.79945127353109];
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE || '/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
 
 export const projectOverviewApi = {
   getProjectOverview: async projectIdentifier => {
@@ -213,7 +212,13 @@ const ProjectOverviewPage = () => {
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
 
-  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || `${window.location.origin}/files`;
+  const filesServiceUrl =
+    import.meta.env.VITE_FILES_SERVICE_URL ||
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : `${window.location.origin}/files`);
 
   useEffect(() => {
     const fetchOverview = async () => {

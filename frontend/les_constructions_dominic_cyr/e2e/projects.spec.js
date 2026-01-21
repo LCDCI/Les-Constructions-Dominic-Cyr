@@ -45,7 +45,9 @@ test.describe('Projects Page', () => {
 
       const btnCount = await firstCard.locator('.project-button').count();
       if (btnCount > 0) {
-        await expect(firstCard.locator('.project-button').first()).toBeVisible();
+        await expect(
+          firstCard.locator('.project-button').first()
+        ).toBeVisible();
       }
     }
   });

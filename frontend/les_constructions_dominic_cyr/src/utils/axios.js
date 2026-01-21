@@ -11,7 +11,10 @@ const axiosInstance = axios.create({
 });
 
 // Export the function that App.jsx is expecting
-export const setupAxiosInterceptors = (getAccessTokenSilently, onUnauthorized) => {
+export const setupAxiosInterceptors = (
+  getAccessTokenSilently,
+  onUnauthorized
+) => {
   axiosInstance.interceptors.request.use(
     async config => {
       try {

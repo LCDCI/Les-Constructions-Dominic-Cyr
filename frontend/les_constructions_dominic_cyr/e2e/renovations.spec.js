@@ -16,9 +16,15 @@ test.describe('Renovations Page', () => {
     if (renovationCount > 0) {
       const firstCard = renovationsPage.renovationCards.first();
       await expect(firstCard).toBeVisible();
-      await expect(firstCard.locator('.renovation-card__image--before')).toBeVisible();
-      await expect(firstCard.locator('.renovation-card__image--after')).toBeVisible();
-      await expect(firstCard.locator('.renovation-card__description')).toBeVisible();
+      await expect(
+        firstCard.locator('.renovation-card__image--before')
+      ).toBeVisible();
+      await expect(
+        firstCard.locator('.renovation-card__image--after')
+      ).toBeVisible();
+      await expect(
+        firstCard.locator('.renovation-card__description')
+      ).toBeVisible();
     }
   });
 

@@ -41,7 +41,9 @@ test.describe('Realizations Page', () => {
     const buttonCount = await realizationsPage.viewRealizationButtons.count();
 
     if (buttonCount > 0) {
-      await expect(realizationsPage.viewRealizationButtons.first()).toBeEnabled();
+      await expect(
+        realizationsPage.viewRealizationButtons.first()
+      ).toBeEnabled();
       await expect(realizationsPage.viewRealizationButtons.first()).toHaveText(
         'View this realization'
       );

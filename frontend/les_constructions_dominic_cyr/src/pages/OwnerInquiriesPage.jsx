@@ -12,7 +12,7 @@ const fetchInquiries = async (getAccessTokenSilently) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  if (!res.ok) throw new Error("Failed to fetch inquiries");
+  if (!res.ok) throw new Error('Failed to fetch inquiries');
   return res.json();
 };
 
@@ -38,12 +38,12 @@ export default function OwnerInquiriesPage() {
       .finally(() => setLoading(false));
   }, [isAuthenticated, isLoading, getAccessTokenSilently, loginWithRedirect]);
 
-  const formatDate = (value) => {
+  const formatDate = value => {
     const d = value ? new Date(value) : null;
-    return d && !Number.isNaN(d.getTime()) ? d.toLocaleString() : "N/A";
+    return d && !Number.isNaN(d.getTime()) ? d.toLocaleString() : 'N/A';
   };
 
-  const unescapeHtml = (str) => {
+  const unescapeHtml = str => {
     if (!str) return str;
     const parser = new DOMParser();
     const doc = parser.parseFromString(str, "text/html");

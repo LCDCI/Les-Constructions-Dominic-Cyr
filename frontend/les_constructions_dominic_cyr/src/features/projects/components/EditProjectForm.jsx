@@ -79,7 +79,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -93,7 +93,9 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
       // Get auth token
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://construction-api.loca',
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
         },
       });
 
@@ -113,7 +115,11 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
         progressPercentage: parseInt(formData.progressPercentage) || 0,
       };
 
-      await projectApi.updateProject(project.projectIdentifier, updateData, token);
+      await projectApi.updateProject(
+        project.projectIdentifier,
+        updateData,
+        token
+      );
       onSuccess?.(project.projectIdentifier);
     } catch (error) {
       console.error('Failed to update project:', error);
@@ -139,7 +145,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
             type="text"
             id="projectName"
             value={formData.projectName}
-            onChange={(e) => handleInputChange('projectName', e.target.value)}
+            onChange={e => handleInputChange('projectName', e.target.value)}
             className={errors.projectName ? 'error' : ''}
             disabled={isSubmitting}
           />
@@ -153,21 +159,21 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
           <textarea
             id="projectDescription"
             value={formData.projectDescription}
-            onChange={(e) => handleInputChange('projectDescription', e.target.value)}
+            onChange={e =>
+              handleInputChange('projectDescription', e.target.value)
+            }
             rows={4}
             disabled={isSubmitting}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="location">
-            Location
-          </label>
+          <label htmlFor="location">Location</label>
           <input
             type="text"
             id="location"
             value={formData.location}
-            onChange={(e) => handleInputChange('location', e.target.value)}
+            onChange={e => handleInputChange('location', e.target.value)}
             placeholder="Enter project location"
             className={errors.location ? 'error' : ''}
             disabled={isSubmitting}
@@ -187,7 +193,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
           <select
             id="status"
             value={formData.status}
-            onChange={(e) => handleInputChange('status', e.target.value)}
+            onChange={e => handleInputChange('status', e.target.value)}
             disabled={isSubmitting}
           >
             <option value="PLANNED">Planned</option>
@@ -207,7 +213,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
               type="date"
               id="startDate"
               value={formData.startDate}
-              onChange={(e) => handleInputChange('startDate', e.target.value)}
+              onChange={e => handleInputChange('startDate', e.target.value)}
               className={errors.startDate ? 'error' : ''}
               disabled={isSubmitting}
             />
@@ -222,7 +228,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
               type="date"
               id="endDate"
               value={formData.endDate}
-              onChange={(e) => handleInputChange('endDate', e.target.value)}
+              onChange={e => handleInputChange('endDate', e.target.value)}
               min={formData.startDate}
               className={errors.endDate ? 'error' : ''}
               disabled={isSubmitting}
@@ -239,7 +245,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
             type="date"
             id="completionDate"
             value={formData.completionDate}
-            onChange={(e) => handleInputChange('completionDate', e.target.value)}
+            onChange={e => handleInputChange('completionDate', e.target.value)}
             min={formData.startDate}
             disabled={isSubmitting}
           />
@@ -258,7 +264,12 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
             type="number"
             id="progressPercentage"
             value={formData.progressPercentage}
-            onChange={(e) => handleInputChange('progressPercentage', Math.min(100, Math.max(0, parseInt(e.target.value) || 0)))}
+            onChange={e =>
+              handleInputChange(
+                'progressPercentage',
+                Math.min(100, Math.max(0, parseInt(e.target.value) || 0))
+              )
+            }
             min="0"
             max="100"
             disabled={isSubmitting}
@@ -277,7 +288,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
               type="color"
               id="primaryColor"
               value={formData.primaryColor}
-              onChange={(e) => handleInputChange('primaryColor', e.target.value)}
+              onChange={e => handleInputChange('primaryColor', e.target.value)}
               disabled={isSubmitting}
             />
           </div>
@@ -288,7 +299,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
               type="color"
               id="tertiaryColor"
               value={formData.tertiaryColor}
-              onChange={(e) => handleInputChange('tertiaryColor', e.target.value)}
+              onChange={e => handleInputChange('tertiaryColor', e.target.value)}
               disabled={isSubmitting}
             />
           </div>
@@ -299,7 +310,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
               type="color"
               id="buyerColor"
               value={formData.buyerColor}
-              onChange={(e) => handleInputChange('buyerColor', e.target.value)}
+              onChange={e => handleInputChange('buyerColor', e.target.value)}
               disabled={isSubmitting}
             />
           </div>
@@ -316,7 +327,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
             type="text"
             id="buyerName"
             value={formData.buyerName}
-            onChange={(e) => handleInputChange('buyerName', e.target.value)}
+            onChange={e => handleInputChange('buyerName', e.target.value)}
             placeholder="Enter buyer name (optional)"
             disabled={isSubmitting}
           />
@@ -333,11 +344,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
         >
           Cancel
         </button>
-        <button
-          type="submit"
-          className="btn-submit"
-          disabled={isSubmitting}
-        >
+        <button type="submit" className="btn-submit" disabled={isSubmitting}>
           {isSubmitting ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
