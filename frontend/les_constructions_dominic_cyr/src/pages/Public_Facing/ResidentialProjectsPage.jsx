@@ -12,7 +12,7 @@ const ResidentialProjectsPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const pageSize = 6; // two rows of three cards or three rows of two cards
+  const pageSize = 6;
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
@@ -37,7 +37,6 @@ const ResidentialProjectsPage = () => {
       setFilteredProjects(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching projects:', error);
       setLoading(false);
     }
   };

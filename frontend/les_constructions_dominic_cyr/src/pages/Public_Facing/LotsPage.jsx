@@ -7,7 +7,6 @@ import {
 } from '../../features/lots/api/lots';
 import { projectApi } from '../../features/projects/api/projectApi';
 import LotList from '../../features/lots/components/LotList';
-import Footer from '../../components/Footers/ProjectsFooter';
 import '../../styles/lots.css';
 
 const LotsPage = () => {
@@ -180,7 +179,6 @@ const LotsPage = () => {
           )}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };
