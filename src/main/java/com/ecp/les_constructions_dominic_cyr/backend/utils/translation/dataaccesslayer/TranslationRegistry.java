@@ -22,36 +22,40 @@ public class TranslationRegistry {
     
     public TranslationRegistry() {
         // Home page translations
-        fileIdMap.put("en.home", "f129c133-d8e3-4c4f-95b4-47d06d4635ad");
-        fileIdMap.put("fr.home", "34da3a9d-fa77-4687-8233-a26ee24eab5e");
+        fileIdMap.put("en.home", "f2d54860-30af-48fb-8cfb-dde6b93ce847");
+        fileIdMap.put("fr.home", "a86149c0-452e-4dce-890a-989fe6659f00");
         
         // Contact page translations
-        fileIdMap.put("en.contact", "de84e96b-4477-48e3-a643-68f622533285");
-        fileIdMap.put("fr.contact", "e9563bff-cd4b-4621-9d1c-502b9047bd09");
+        fileIdMap.put("en.contact", "54897f58-2f88-4e2a-81b2-cced943541bb");
+        fileIdMap.put("fr.contact", "bb7203b2-975a-43be-9d69-5a2847543cec");
         
         // Renovations page translations
-        fileIdMap.put("en.renovations", "485cb6a4-ed37-4229-8555-e21d2d47493c");
-        fileIdMap.put("fr.renovations", "3d6e56d3-758a-4f44-8045-b71b64ffcbd2");
+        fileIdMap.put("en.renovations", "c73f88fc-934c-4634-a523-917d88ec7dc9");
+        fileIdMap.put("fr.renovations", "64d36b39-21d4-4d6a-b5b4-cf1dd670eb0a");
         
         // Realizations page translations
-        fileIdMap.put("en.realizations", "879ef57b-ea47-4083-9239-49e5eb2e98e9");
-        fileIdMap.put("fr.realizations", "6f8e3efa-d5ca-4c7a-934d-85ac58c5537e");
+        fileIdMap.put("en.realizations", "cbb6c67a-bd74-4c07-8a04-95706446183a");
+        fileIdMap.put("fr.realizations", "8fa54390-8e3c-4bcc-a409-f729572e2bde");
         
         // Residential Projects page translations
-        fileIdMap.put("en.residentialProjects", "93633f9e-9008-4b82-8eac-2db3cd9e7b4e");
-        fileIdMap.put("fr.residentialProjects", "8395870d-96f5-4c70-abf3-87c7efd96118");
+        fileIdMap.put("en.residentialprojects", "2323ba44-a51f-4385-b102-5559f04ef0c0");
+        fileIdMap.put("fr.residentialprojects", "edc7a148-3150-48e5-b20f-e399f0d9911c");
+        
+        // Project Management page translations
+        fileIdMap.put("en.projectmanagement", "94942154-b27b-4b48-a830-8623cd1275a8");
+        fileIdMap.put("fr.projectmanagement", "a33e3eb0-83f0-4af6-8691-5684d9253298");
         
         // 404 Not Found page translations
-        fileIdMap.put("en.notfound", "3f3f44c5-0f84-4fe3-839e-2b009ace7dea");
-        fileIdMap.put("fr.notfound", "40385af1-5824-4811-8781-048b4d001272");
+        fileIdMap.put("en.notfound", "c0e10c2b-51e6-4ac3-9802-81f8b5ed7686");
+        fileIdMap.put("fr.notfound", "995a0589-e141-40b0-b87e-a895273442c7");
         
         // 500 Server Error page translations
-        fileIdMap.put("en.servererror", "881cfbd7-86cb-45cd-a118-ffa819c4f824");
-        fileIdMap.put("fr.servererror", "2dbfa250-fd3e-4cdf-9a40-651b21adb8ab");
+        fileIdMap.put("en.servererror", "befe6470-56ab-4e41-ae87-72e7f02a20eb");
+        fileIdMap.put("fr.servererror", "f54a08b1-b0f6-4fda-9469-dac983b1ef42");
         
         // Project Overview page translations
-        fileIdMap.put("en.projectOverview", "02c23091-2191-49a8-9d47-59329a7e90f7");
-        fileIdMap.put("fr.projectOverview", "adf40514-e136-4fc3-b2bf-323d363bcf8f");
+        fileIdMap.put("en.projectoverview", "b690c9f9-a2ee-4a49-9e28-2d87cb3dc15e");
+        fileIdMap.put("fr.projectoverview", "78c97b4d-2cdd-45e7-93b9-0e5e9d23d668");
     }
     
     /**
