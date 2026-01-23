@@ -6,7 +6,9 @@ export class PortalLoginPage {
     this.description = page.locator('.portal-card p');
     this.loginButton = page.locator('.portal-card button');
     this.loadingMessage = page.locator('text=Loading...');
-    this.alreadyLoggedInMessage = page.locator('text=You are already logged in');
+    this.alreadyLoggedInMessage = page.locator(
+      'text=You are already logged in'
+    );
   }
 
   async goto() {

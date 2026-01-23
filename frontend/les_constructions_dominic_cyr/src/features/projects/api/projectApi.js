@@ -202,7 +202,11 @@ export const projectApi = {
     return response.json();
   },
 
-  assignSalespersonToProject: async (projectIdentifier, salespersonId, token) => {
+  assignSalespersonToProject: async (
+    projectIdentifier,
+    salespersonId,
+    token
+  ) => {
     const response = await fetch(
       `${API_BASE_URL}/projects/${projectIdentifier}/salesperson?salespersonId=${salespersonId}`,
       {

@@ -13,7 +13,12 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
   const { t } = usePageTranslations('renovations');
 
   const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || 'http://localhost:8082';
+    import.meta.env.VITE_FILES_SERVICE_URL ||
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : `${window.location.origin}/files`);
 
   const getImageUrl = identifier => {
     if (!identifier) return '';
@@ -95,11 +100,22 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
         <div className="hero-container">
           <div className="hero-content" data-animate>
             <p className="hero-label">{t('hero.label', 'RENOVATIONS')}</p>
-            <h1 className="hero-heading">{t('hero.heading', 'Custom renovations, delivered with care')}</h1>
-            <p className="hero-description">{t('hero.lede', 'Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity.')}</p>
+            <h1 className="hero-heading">
+              {t('hero.heading', 'Custom renovations, delivered with care')}
+            </h1>
+            <p className="hero-description">
+              {t(
+                'hero.lede',
+                'Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity.'
+              )}
+            </p>
             <div className="hero-buttons">
-              <Link to="/realizations" className="btn btn-primary">{t('cta.discover', 'Discover')}</Link>
-              <Link to="/contact" className="btn btn-secondary">{t('cta.contact', 'Contact')}</Link>
+              <Link to="/realizations" className="btn btn-primary">
+                {t('cta.discover', 'Discover')}
+              </Link>
+              <Link to="/contact" className="btn btn-secondary">
+                {t('cta.contact', 'Contact')}
+              </Link>
             </div>
           </div>
         </div>
@@ -109,10 +125,22 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
       <section className="content-section featured-section single-column">
         <div className="section-text-wrapper" data-animate>
           <div className="section-header center renovations-feature-card">
-            <span className="section-kicker">{t('kicker.renovations', 'Renovations')}</span>
-            <h2 className="section-title"><em>{t('intro.emphasis', 'Modernize')}</em> {t('intro.rest', 'your space with style')}</h2>
-            <p className="section-subtitle">{t('intro.description', 'Whether you want to refresh your kitchen, rethink your basement, open up spaces, or enhance your façade, we deliver with precision, rigor, and creativity.')}</p>
-            <Link to="/contact" className="link-arrow">{t('intro.cta', 'Talk to an expert')}</Link>
+            <span className="section-kicker">
+              {t('kicker.renovations', 'Renovations')}
+            </span>
+            <h2 className="section-title">
+              <em>{t('intro.emphasis', 'Modernize')}</em>{' '}
+              {t('intro.rest', 'your space with style')}
+            </h2>
+            <p className="section-subtitle">
+              {t(
+                'intro.description',
+                'Whether you want to refresh your kitchen, rethink your basement, open up spaces, or enhance your façade, we deliver with precision, rigor, and creativity.'
+              )}
+            </p>
+            <Link to="/contact" className="link-arrow">
+              {t('intro.cta', 'Talk to an expert')}
+            </Link>
           </div>
         </div>
       </section>
@@ -171,21 +199,32 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
         <section className="portfolio-section">
           <div className="container">
             <div className="section-header center" data-animate>
-              <span className="section-kicker">{t('grid.kicker', 'Our Work')}</span>
-              <h2 className="section-title">{t('grid.title', 'Recent Renovations')}</h2>
+              <span className="section-kicker">
+                {t('grid.kicker', 'Our Work')}
+              </span>
+              <h2 className="section-title">
+                {t('grid.title', 'Recent Renovations')}
+              </h2>
             </div>
             <div className="renovations-page__grid">
-              {renovations.map(({ renovationId, beforeImageIdentifier, afterImageIdentifier, description }) => (
-                <RenovationCard
-                  key={renovationId}
-                  renovationIdentifier={renovationId}
-                  beforeImageIdentifier={''}
-                  afterImageIdentifier={''}
-                  description={description}
-                  resolveAssetUrl={() => ''}
-                  showTitle={false}
-                />
-              ))}
+              {renovations.map(
+                ({
+                  renovationId,
+                  beforeImageIdentifier,
+                  afterImageIdentifier,
+                  description,
+                }) => (
+                  <RenovationCard
+                    key={renovationId}
+                    renovationIdentifier={renovationId}
+                    beforeImageIdentifier={''}
+                    afterImageIdentifier={''}
+                    description={description}
+                    resolveAssetUrl={() => ''}
+                    showTitle={false}
+                  />
+                )
+              )}
             </div>
           </div>
         </section>
@@ -195,10 +234,21 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
       <section className="contact-cta">
         <div className="contact-wrapper single-column">
           <div className="contact-content" data-animate>
-            <span className="section-kicker">{t('cta.kicker', 'Where to start?')}</span>
-            <h2 className="contact-title">{t('cta.title', "Let's talk about your project")}</h2>
-            <p className="contact-description">{t('cta.subtitle', 'Get tailored support to transform your space into a place that reflects you.')}</p>
-            <Link to="/contact" className="btn btn-primary">{t('cta.button', 'Contact Us')}</Link>
+            <span className="section-kicker">
+              {t('cta.kicker', 'Where to start?')}
+            </span>
+            <h2 className="contact-title">
+              {t('cta.title', "Let's talk about your project")}
+            </h2>
+            <p className="contact-description">
+              {t(
+                'cta.subtitle',
+                'Get tailored support to transform your space into a place that reflects you.'
+              )}
+            </p>
+            <Link to="/contact" className="btn btn-primary">
+              {t('cta.button', 'Contact Us')}
+            </Link>
           </div>
           {/* Image removed intentionally */}
         </div>

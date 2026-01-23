@@ -82,11 +82,13 @@ export default function ContactPage() {
       <section className="contact-body">
         <div className="contact-grid">
           <InquiryForm className="contact-form-wrapper" />
-          
+
           <div className="contact-card">
             <h2>{t('contactInfo.title', f.contactInfo.title)}</h2>
             <div className="info-item">
-              <strong>{t('contactInfo.companyName', f.contactInfo.companyName)}</strong>
+              <strong>
+                {t('contactInfo.companyName', f.contactInfo.companyName)}
+              </strong>
               <p>{t('contactInfo.addressLine1', f.contactInfo.addressLine1)}</p>
               <p>{t('contactInfo.addressLine2', f.contactInfo.addressLine2)}</p>
               <p>{t('contactInfo.addressLine3', f.contactInfo.addressLine3)}</p>
@@ -103,13 +105,19 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="info-item">
-              <strong>{t('contactInfo.phoneLabel', f.contactInfo.phoneLabel)}</strong>
+              <strong>
+                {t('contactInfo.phoneLabel', f.contactInfo.phoneLabel)}
+              </strong>
               <p>
-                <a href="tel:+15141234567">{t('contactInfo.phone', f.contactInfo.phone)}</a>
+                <a href="tel:+15141234567">
+                  {t('contactInfo.phone', f.contactInfo.phone)}
+                </a>
               </p>
             </div>
             <div className="info-item">
-              <strong>{t('contactInfo.emailLabel', f.contactInfo.emailLabel)}</strong>
+              <strong>
+                {t('contactInfo.emailLabel', f.contactInfo.emailLabel)}
+              </strong>
               <p>
                 <a href="mailto:constructions.dcyr@gmail.com">
                   {t('contactInfo.email', f.contactInfo.email)}
@@ -117,7 +125,9 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="info-item">
-              <strong>{t('contactInfo.rbqLabel', f.contactInfo.rbqLabel)}</strong>
+              <strong>
+                {t('contactInfo.rbqLabel', f.contactInfo.rbqLabel)}
+              </strong>
               <p>{t('contactInfo.rbqLicense', f.contactInfo.rbqLicense)}</p>
               <p>
                 <a
@@ -130,8 +140,15 @@ export default function ContactPage() {
               </p>
             </div>
             <div className="info-item">
-              <strong>{t('contactInfo.gcqLabel', f.contactInfo.gcqLabel)}</strong>
-              <p>{t('contactInfo.gcqAccreditation', f.contactInfo.gcqAccreditation)}</p>
+              <strong>
+                {t('contactInfo.gcqLabel', f.contactInfo.gcqLabel)}
+              </strong>
+              <p>
+                {t(
+                  'contactInfo.gcqAccreditation',
+                  f.contactInfo.gcqAccreditation
+                )}
+              </p>
               <p>
                 <a
                   href="https://www.garantiegcr.com"

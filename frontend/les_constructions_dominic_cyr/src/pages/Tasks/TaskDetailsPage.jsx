@@ -9,7 +9,13 @@ import { ROLES } from '../../utils/permissions';
 import EditTaskModal from '../../components/Modals/EditTaskModal';
 import '../../styles/Project/ProjectSchedule.css';
 
-const TASK_STATUSES = ['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'ON_HOLD'];
+const TASK_STATUSES = [
+  'TO_DO',
+  'IN_PROGRESS',
+  'COMPLETED',
+  'ON_HOLD',
+  'CANCELLED',
+];
 const TASK_PRIORITIES = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'];
 
 const TaskDetailsPage = () => {
@@ -48,9 +54,7 @@ const TaskDetailsPage = () => {
               },
             });
           } catch (tokenErr) {
-            console.warn(
-              'Could not get token for task fetch, proceeding without auth'
-            );
+            //no error message
           }
         }
 
@@ -70,7 +74,7 @@ const TaskDetailsPage = () => {
               token
             );
             const contractorIds = projectData.contractorIds || [];
-            console.log('Project contractor IDs:', contractorIds);
+            //no error message
 
             if (contractorIds.length > 0) {
               const allContractors = await fetchAllContractors(token);
@@ -79,21 +83,15 @@ const TaskDetailsPage = () => {
                   contractor.userId || contractor.userIdentifier
                 )
               );
-              console.log(
-                'Filtered project contractors:',
-                projectContractorsList
-              );
               setProjectContractors(projectContractorsList);
             } else {
               setProjectContractors([]);
             }
           } catch (projectErr) {
-            console.warn('Could not load project contractors:', projectErr);
             setProjectContractors([]);
           }
         }
       } catch (err) {
-        console.error('Error loading task:', err);
         const status = err?.response?.status;
 
         if (status === 403 && stateTask) {
@@ -281,7 +279,6 @@ const TaskDetailsPage = () => {
       }
 
       setEditError(msg);
-      console.error('Task update error:', err);
     } finally {
       setIsSavingEdit(false);
     }

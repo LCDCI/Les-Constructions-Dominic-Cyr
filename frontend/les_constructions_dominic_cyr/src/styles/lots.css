@@ -1,71 +1,71 @@
 .lots-page {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: #f8fafc;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8fafc;
 }
 
 .lots-content {
-    flex: 1;
-    width: 100%;
-    padding: 60px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  flex: 1;
+  width: 100%;
+  padding: 60px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Master alignment for Header, Toolbar, and List */
 .lots-header-section,
 .toolbar-section,
 .list-section {
-    width: 90vw;
-    max-width: 1600px;
-    margin-bottom: 20px;
+  width: 90vw;
+  max-width: 1600px;
+  margin-bottom: 20px;
 }
 
 /* Toolbar Layout */
 .toolbar-section {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .search-box {
-    flex: 1; /* Search takes remaining space */
+  flex: 1; /* Search takes remaining space */
 }
 
 .search-input {
-    width: 100%;
-    padding: 0.8rem 1.2rem;
-    font-size: 1rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .filter-group {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .filter-select {
-    padding: 0.8rem 1rem;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
-    background-color: white;
-    font-size: 0.9rem;
-    color: #334155;
-    cursor: pointer;
-    min-width: 150px;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background-color: white;
+  font-size: 0.9rem;
+  color: #334155;
+  cursor: pointer;
+  min-width: 150px;
 }
 
 .filter-select:focus {
-    outline: none;
-    border-color: #3b82f6;
-    ring: 2px rgba(59, 130, 246, 0.2);
+  outline: none;
+  border-color: #3b82f6;
+  ring: 2px rgba(59, 130, 246, 0.2);
 }
 
 .list-section {
-    margin-top: 10px;
+  margin-top: 10px;
 }

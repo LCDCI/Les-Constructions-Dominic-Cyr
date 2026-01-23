@@ -14,9 +14,14 @@ const ResidentialProjectsPage = () => {
 
   const pageSize = 6;
 
-  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
-  const apiBaseUrl =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+  const filesServiceUrl =
+    import.meta.env.VITE_FILES_SERVICE_URL ||
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : `${window.location.origin}/files`);
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
   const FALLBACK_IMAGE = '/fallback.jpg';
 
