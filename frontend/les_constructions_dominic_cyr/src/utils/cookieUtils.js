@@ -19,10 +19,10 @@ export const cookieUtils = {
    * Set language in cookie
    * @param {string} language - Language code (e.g., 'en', 'fr')
    */
-  setLanguage: (language) => {
-    Cookies.set(LANGUAGE_COOKIE_NAME, language, { 
+  setLanguage: language => {
+    Cookies.set(LANGUAGE_COOKIE_NAME, language, {
       expires: COOKIE_EXPIRY_DAYS,
-      sameSite: 'lax'
+      sameSite: 'lax',
     });
   },
 
@@ -31,6 +31,5 @@ export const cookieUtils = {
    */
   removeLanguage: () => {
     Cookies.remove(LANGUAGE_COOKIE_NAME);
-  }
+  },
 };
-

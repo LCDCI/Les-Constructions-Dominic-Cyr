@@ -6,7 +6,12 @@ import { fetchUserByAuth0Id } from '../features/users/api/usersApi';
  * Fetches the backend user profile (including role) using the Auth0 access token.
  */
 export function useBackendUser() {
-  const { user: auth0User, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const {
+    user: auth0User,
+    isAuthenticated,
+    isLoading,
+    getAccessTokenSilently,
+  } = useAuth0();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,7 +42,13 @@ export function useBackendUser() {
     loadProfile();
   }, [loadProfile]);
 
-  return { profile, role: profile?.userRole, loading, error, reload: loadProfile };
+  return {
+    profile,
+    role: profile?.userRole,
+    loading,
+    error,
+    reload: loadProfile,
+  };
 }
 
 export default useBackendUser;

@@ -93,4 +93,9 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
+    
+    // Exclude tests that require real network calls (for CI environments)
+    if (project.hasProperty('excludeTests')) {
+        exclude project.property('excludeTests')
+    }
 }

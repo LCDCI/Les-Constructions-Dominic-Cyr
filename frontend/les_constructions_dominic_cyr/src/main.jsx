@@ -8,8 +8,12 @@ import './styles/global.css';
 import './utils/i18n'; // Initialize i18n
 import './utils/setupImageFallback';
 
-const onRedirectCallback = (appState) => {
-  window.history.replaceState({}, document.title, appState?.returnTo || window.location.pathname);
+const onRedirectCallback = appState => {
+  window.history.replaceState(
+    {},
+    document.title,
+    appState?.returnTo || window.location.pathname
+  );
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(

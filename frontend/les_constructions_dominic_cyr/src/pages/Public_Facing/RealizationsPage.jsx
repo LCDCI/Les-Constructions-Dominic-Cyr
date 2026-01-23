@@ -18,24 +18,29 @@ const RealizationsPage = () => {
     '48f50cea-f368-41d6-91c3-ae55157bd868',
     '55378cf7-c0a0-48be-b5f9-9d2507eff177',
     '610354b2-8a9c-4e87-95a1-3cc63f494c6e',
-    'bb6dd250-ed32-4041-8b4e-020e2ef45e2f'
+    'bb6dd250-ed32-4041-8b4e-020e2ef45e2f',
   ];
 
   const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
+    import.meta.env.VITE_FILES_SERVICE_URL ||
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : `${window.location.origin}/files`);
 
   const getImageUrl = imageIdentifier => {
     return `${filesServiceUrl}/files/${imageIdentifier}`;
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prevIndex) =>
+    setCurrentIndex(prevIndex =>
       prevIndex === 0 ? REALIZATION_IMAGE_IDS.length - 1 : prevIndex - 1
     );
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
+    setCurrentIndex(prevIndex =>
       prevIndex === REALIZATION_IMAGE_IDS.length - 1 ? 0 : prevIndex + 1
     );
   };
@@ -66,7 +71,10 @@ const RealizationsPage = () => {
       <section className="realizations-intro">
         <div className="realizations-intro-content">
           <p className="realizations-intro-text">
-            {t('intro.description', 'Explore our portfolio of completed projects. Each realization represents our commitment to quality craftsmanship, attention to detail, and customer satisfaction. From residential renovations to commercial builds, we bring your vision to life.')}
+            {t(
+              'intro.description',
+              'Explore our portfolio of completed projects. Each realization represents our commitment to quality craftsmanship, attention to detail, and customer satisfaction. From residential renovations to commercial builds, we bring your vision to life.'
+            )}
           </p>
         </div>
       </section>
@@ -74,8 +82,8 @@ const RealizationsPage = () => {
       {/* Gallery Section */}
       <section className="realizations-gallery-section">
         <div className="realizations-gallery-container">
-          <button 
-            className="gallery-arrow gallery-arrow-left" 
+          <button
+            className="gallery-arrow gallery-arrow-left"
             onClick={handlePrevious}
             aria-label={t('gallery.previousAriaLabel', 'Previous image')}
           >
@@ -92,12 +100,14 @@ const RealizationsPage = () => {
                 />
               </div>
             ) : (
-              <p style={{ textAlign: 'center', padding: '5%' }}>{t('gallery.noResults', 'No realizations found')}</p>
+              <p style={{ textAlign: 'center', padding: '5%' }}>
+                {t('gallery.noResults', 'No realizations found')}
+              </p>
             )}
           </div>
 
-          <button 
-            className="gallery-arrow gallery-arrow-right" 
+          <button
+            className="gallery-arrow gallery-arrow-right"
             onClick={handleNext}
             aria-label={t('gallery.nextAriaLabel', 'Next image')}
           >
