@@ -63,8 +63,8 @@
   "footer": {
     "company": "Construction Dominic Cyr Inc.",
     "copyright": "© 2025 Construction Dominic Cyr. Tous droits réservés."
-  }
-}
+  },
+
   "projects": {
     "foresta": {
       "title": "FORESTA",
@@ -98,5 +98,4 @@
     "stackedHouse": "Maison empilée moderne",
     "interior": "Intérieur contemporain"
   }
-}
-
+ }
