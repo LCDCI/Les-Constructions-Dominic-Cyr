@@ -107,7 +107,7 @@ export default function Home() {
             <p className="hero-description">
               {t(
                 'hero.subtitle',
-                'Quality construction, timeless design, since 1990'
+                'Quality construction, timeless design, since 2006'
               )}
             </p>
             <div className="hero-buttons">
