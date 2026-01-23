@@ -13,7 +13,11 @@ export const projectScheduleApi = {
     return response.data;
   },
 
-  getProjectSchedule: async (projectIdentifier, scheduleIdentifier, token = null) => {
+  getProjectSchedule: async (
+    projectIdentifier,
+    scheduleIdentifier,
+    token = null
+  ) => {
     const headers = {};
     if (token) {
       headers.Authorization = `Bearer ${token}`;
@@ -25,7 +29,11 @@ export const projectScheduleApi = {
     return response.data;
   },
 
-  createProjectSchedule: async (projectIdentifier, scheduleData, token = null) => {
+  createProjectSchedule: async (
+    projectIdentifier,
+    scheduleData,
+    token = null
+  ) => {
     const headers = {};
     if (token) {
       headers.Authorization = `Bearer ${token}`;
@@ -38,7 +46,12 @@ export const projectScheduleApi = {
     return response.data;
   },
 
-  updateProjectSchedule: async (projectIdentifier, scheduleIdentifier, scheduleData, token = null) => {
+  updateProjectSchedule: async (
+    projectIdentifier,
+    scheduleIdentifier,
+    scheduleData,
+    token = null
+  ) => {
     const headers = {};
     if (token) {
       headers.Authorization = `Bearer ${token}`;
@@ -51,7 +64,11 @@ export const projectScheduleApi = {
     return response.data;
   },
 
-  deleteProjectSchedule: async (projectIdentifier, scheduleIdentifier, token = null) => {
+  deleteProjectSchedule: async (
+    projectIdentifier,
+    scheduleIdentifier,
+    token = null
+  ) => {
     const headers = {};
     if (token) {
       headers.Authorization = `Bearer ${token}`;

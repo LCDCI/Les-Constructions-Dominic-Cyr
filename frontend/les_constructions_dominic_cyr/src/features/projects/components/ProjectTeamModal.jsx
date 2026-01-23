@@ -4,10 +4,18 @@ import { projectApi } from '../api/projectApi';
 import { fetchActiveContractors } from '../../users/api/usersApi';
 import '../../../styles/Project/project-team-modal.css';
 
-export default function ProjectTeamModal({ isOpen, projectIdentifier, currentContractorId, onClose, onSave }) {
+export default function ProjectTeamModal({
+  isOpen,
+  projectIdentifier,
+  currentContractorId,
+  onClose,
+  onSave,
+}) {
   const { getAccessTokenSilently } = useAuth0();
   const [contractors, setContractors] = useState([]);
-  const [selectedContractorId, setSelectedContractorId] = useState(currentContractorId || '');
+  const [selectedContractorId, setSelectedContractorId] = useState(
+    currentContractorId || ''
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -40,9 +48,16 @@ export default function ProjectTeamModal({ isOpen, projectIdentifier, currentCon
       setError(null);
       const token = await getAccessTokenSilently();
 
-      if (selectedContractorId && selectedContractorId !== currentContractorId) {
+      if (
+        selectedContractorId &&
+        selectedContractorId !== currentContractorId
+      ) {
         // Assign contractor
-        await projectApi.assignContractorToProject(projectIdentifier, selectedContractorId, token);
+        await projectApi.assignContractorToProject(
+          projectIdentifier,
+          selectedContractorId,
+          token
+        );
       } else if (!selectedContractorId && currentContractorId) {
         // Remove contractor
         await projectApi.removeContractorFromProject(projectIdentifier, token);
@@ -64,7 +79,10 @@ export default function ProjectTeamModal({ isOpen, projectIdentifier, currentCon
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content project-team-modal" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-content project-team-modal"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h2>Assign Contractor to Project</h2>
           <button className="modal-close" onClick={onClose} disabled={isSaving}>
@@ -84,14 +102,18 @@ export default function ProjectTeamModal({ isOpen, projectIdentifier, currentCon
                 <select
                   id="contractor-select"
                   value={selectedContractorId}
-                  onChange={(e) => setSelectedContractorId(e.target.value)}
+                  onChange={e => setSelectedContractorId(e.target.value)}
                   disabled={isSaving}
                   className="contractor-select"
                 >
                   <option value="">-- No Contractor --</option>
-                  {contractors.map((contractor) => (
-                    <option key={contractor.userIdentifier} value={contractor.userIdentifier}>
-                      {contractor.firstName} {contractor.lastName} ({contractor.primaryEmail})
+                  {contractors.map(contractor => (
+                    <option
+                      key={contractor.userIdentifier}
+                      value={contractor.userIdentifier}
+                    >
+                      {contractor.firstName} {contractor.lastName} (
+                      {contractor.primaryEmail})
                     </option>
                   ))}
                 </select>
@@ -105,22 +127,21 @@ export default function ProjectTeamModal({ isOpen, projectIdentifier, currentCon
           {selectedContractorId && (
             <div className="contractor-preview">
               {(() => {
-                const selectedContractor = contractors.find((c) => c.userIdentifier === selectedContractorId);
+                const selectedContractor = contractors.find(
+                  c => c.userIdentifier === selectedContractorId
+                );
                 return selectedContractor ? (
                   <>
                     <p>
                       <strong>Selected Contractor:</strong>
                     </p>
                     <p>
-                      {selectedContractor.firstName} {selectedContractor.lastName}
+                      {selectedContractor.firstName}{' '}
+                      {selectedContractor.lastName}
                     </p>
-                    <p className="email">
-                      {selectedContractor.primaryEmail}
-                    </p>
+                    <p className="email">{selectedContractor.primaryEmail}</p>
                     {selectedContractor.phone && (
-                      <p className="phone">
-                        {selectedContractor.phone}
-                      </p>
+                      <p className="phone">{selectedContractor.phone}</p>
                     )}
                   </>
                 ) : null;
@@ -130,10 +151,18 @@ export default function ProjectTeamModal({ isOpen, projectIdentifier, currentCon
         </div>
 
         <div className="modal-footer">
-          <button className="btn-secondary" onClick={onClose} disabled={isSaving}>
+          <button
+            className="btn-secondary"
+            onClick={onClose}
+            disabled={isSaving}
+          >
             Cancel
           </button>
-          <button className="btn-primary" onClick={handleSave} disabled={isSaving}>
+          <button
+            className="btn-primary"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
             {isSaving ? 'Saving...' : 'Save'}
           </button>
         </div>

@@ -48,7 +48,7 @@
 }
 
 .lang-indicator.active {
-  background-color: #4D85B9;
+  background-color: #4d85b9;
   color: white;
 }
 
@@ -71,7 +71,7 @@
   color: var(--text-primary, #333);
   margin: 0 0 1.5rem 0;
   padding-bottom: 0.5rem;
-  border-bottom: 2px solid #4D85B9;
+  border-bottom: 2px solid #4d85b9;
 }
 
 .form-group {
@@ -89,9 +89,9 @@
   color: var(--text-primary, #333);
 }
 
-.form-group input[type="text"],
-.form-group input[type="date"],
-.form-group input[type="number"],
+.form-group input[type='text'],
+.form-group input[type='date'],
+.form-group input[type='number'],
 .form-group textarea,
 .form-group select {
   width: 100%;
@@ -102,7 +102,7 @@
   transition: border-color 0.3s ease;
 }
 
-.form-group input[type="color"] {
+.form-group input[type='color'] {
   width: 100%;
   height: 50px;
   border: 2px solid #d1d5db;
@@ -114,7 +114,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #4D85B9;
+  border-color: #4d85b9;
 }
 
 .form-group input.error,
@@ -176,7 +176,7 @@
 
 .btn-create-lot {
   padding: 0.5rem 1rem;
-  background-color: #4D85B9;
+  background-color: #4d85b9;
   color: white;
   border: none;
   border-radius: 6px;
@@ -194,7 +194,7 @@
   background-color: #f0f8fa;
   padding: 1.5rem;
   border-radius: 8px;
-  border: 2px solid #4D85B9;
+  border: 2px solid #4d85b9;
   margin-bottom: 1rem;
 }
 
@@ -228,7 +228,7 @@
 .create-lot-form .form-group input:focus,
 .create-lot-form .form-group select:focus {
   outline: none;
-  border-color: #4D85B9;
+  border-color: #4d85b9;
 }
 
 .create-lot-actions {
@@ -292,10 +292,10 @@
 
 .lot-item.selected {
   background-color: #e3f2fd;
-  border-color: #4D85B9;
+  border-color: #4d85b9;
 }
 
-.lot-item input[type="checkbox"] {
+.lot-item input[type='checkbox'] {
   width: 20px;
   height: 20px;
   cursor: pointer;
@@ -353,7 +353,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  background-color: #4D85B9;
+  background-color: #4d85b9;
   color: white;
   border-radius: 20px;
   font-size: 0.875rem;
@@ -409,7 +409,7 @@
 }
 
 .btn-submit {
-  background-color: #4D85B9;
+  background-color: #4d85b9;
   color: white;
 }
 
@@ -483,4 +483,3 @@
     width: 100%;
   }
 }
-

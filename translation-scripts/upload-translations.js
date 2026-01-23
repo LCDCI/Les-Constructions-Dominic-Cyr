@@ -36,6 +36,7 @@ async function uploadTranslationFile(filename, language, pageName) {
   formData.append('category', 'DOCUMENT');
   formData.append('projectId', 'translations');
   formData.append('uploadedBy', 'system');
+  formData.append('uploaderRole', 'OWNER');
 
   console.log(`\nUploading ${filename}...`);
   

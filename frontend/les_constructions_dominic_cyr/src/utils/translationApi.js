@@ -8,17 +8,26 @@ import api from '../client';
 export const fetchTranslations = async (language = 'en') => {
   try {
     const response = await api.get(`/translations/${language}`);
-    
+
     const data = response.data;
     console.log(`[TranslationAPI] Fetched ${language} translations:`, data);
-    
+
     const translations = data.translations || {};
-    console.log(`[TranslationAPI] Extracted translations object:`, translations);
-    console.log(`[TranslationAPI] Translation namespaces:`, Object.keys(translations));
-    
+    console.log(
+      `[TranslationAPI] Extracted translations object:`,
+      translations
+    );
+    console.log(
+      `[TranslationAPI] Translation namespaces:`,
+      Object.keys(translations)
+    );
+
     return translations;
   } catch (error) {
-    console.error(`[TranslationAPI] Error fetching ${language} translations:`, error);
+    console.error(
+      `[TranslationAPI] Error fetching ${language} translations:`,
+      error
+    );
     // Return empty object on error - i18next will use fallback
     return {};
   }
@@ -32,18 +41,28 @@ export const fetchTranslations = async (language = 'en') => {
  */
 export const fetchPageTranslations = async (pageName, language = 'en') => {
   try {
-    const response = await api.get(`/translations/${language}/page/${pageName}`);
-    
+    const response = await api.get(
+      `/translations/${language}/page/${pageName}`
+    );
+
     const data = response.data;
-    console.log(`[TranslationAPI] Fetched ${pageName} translations (${language}):`, data);
-    
+    console.log(
+      `[TranslationAPI] Fetched ${pageName} translations (${language}):`,
+      data
+    );
+
     return data.translations || {};
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      console.warn(`[TranslationAPI] Page translations not found: ${pageName} (${language})`);
+      console.warn(
+        `[TranslationAPI] Page translations not found: ${pageName} (${language})`
+      );
       return {};
     }
-    console.error(`[TranslationAPI] Error fetching ${pageName} translations (${language}):`, error);
+    console.error(
+      `[TranslationAPI] Error fetching ${pageName} translations (${language}):`,
+      error
+    );
     // Return empty object on error - i18next will use fallback
     return {};
   }
@@ -55,22 +74,34 @@ export const fetchPageTranslations = async (pageName, language = 'en') => {
  * @param {string} language - Language code (e.g., 'en', 'fr')
  * @returns {Promise<Object>} Translations object for the namespace
  */
-export const fetchNamespaceTranslations = async (namespace, language = 'en') => {
+export const fetchNamespaceTranslations = async (
+  namespace,
+  language = 'en'
+) => {
   try {
-    const response = await api.get(`/translations/${language}/namespace/${namespace}`);
-    
+    const response = await api.get(
+      `/translations/${language}/namespace/${namespace}`
+    );
+
     const data = response.data;
-    console.log(`[TranslationAPI] Fetched ${namespace} namespace translations (${language}):`, data);
-    
+    console.log(
+      `[TranslationAPI] Fetched ${namespace} namespace translations (${language}):`,
+      data
+    );
+
     return data.translations || {};
   } catch (error) {
     if (error.response && error.response.status === 404) {
-      console.warn(`[TranslationAPI] Namespace translations not found: ${namespace} (${language})`);
+      console.warn(
+        `[TranslationAPI] Namespace translations not found: ${namespace} (${language})`
+      );
       return {};
     }
-    console.error(`[TranslationAPI] Error fetching ${namespace} namespace translations (${language}):`, error);
+    console.error(
+      `[TranslationAPI] Error fetching ${namespace} namespace translations (${language}):`,
+      error
+    );
     // Return empty object on error - i18next will use fallback
     return {};
   }
 };
-

@@ -11,7 +11,7 @@ const CreateProjectPage = () => {
     navigate('/projects');
   };
 
-  const handleSuccess = (projectIdentifier) => {
+  const handleSuccess = projectIdentifier => {
     // Redirect to projects list or detail page
     navigate(`/projects/${projectIdentifier}`);
   };
@@ -23,11 +23,7 @@ const CreateProjectPage = () => {
           <h1>Create New Project</h1>
         </div>
 
-        {submitError && (
-          <div className="error-message">
-            {submitError}
-          </div>
-        )}
+        {submitError && <div className="error-message">{submitError}</div>}
 
         <CreateProjectForm
           onCancel={handleCancel}
@@ -40,4 +36,3 @@ const CreateProjectPage = () => {
 };
 
 export default CreateProjectPage;
-
