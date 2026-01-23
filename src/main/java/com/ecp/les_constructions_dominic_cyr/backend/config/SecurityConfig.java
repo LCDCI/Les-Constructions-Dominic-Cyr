@@ -45,7 +45,7 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // --- 1. PUBLIC ENDPOINTS (Originals + New Public Lots) ---
+                        // --- 1. PUBLIC ENDPOINTS ---
                         .requestMatchers("/actuator/**", "/api/theme").permitAll()
                         .requestMatchers("/api/v1/translations/**").permitAll()
                         .requestMatchers("/api/v1/residential-projects/**").permitAll()
@@ -53,7 +53,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/project-management/**").permitAll()
                         .requestMatchers("/api/v1/realizations/**").permitAll()
                         .requestMatchers("/api/v1/contact/**").permitAll()
-
+                        .requestMatchers(HttpMethod.GET, "/api/v1/projects/{id}/lots").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/projects/{id}").permitAll()
                         // Project Public Endpoints (From your original list)
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
                         .requestMatchers("/api/v1/projects/{id}/overview").permitAll()

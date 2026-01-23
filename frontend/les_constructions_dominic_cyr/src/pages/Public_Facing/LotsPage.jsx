@@ -8,6 +8,7 @@ import {
 import { projectApi } from '../../features/projects/api/projectApi';
 import LotList from '../../features/lots/components/LotList';
 import '../../styles/lots.css';
+import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
 
 const LotsPage = () => {
   const { projectIdentifier: urlProjectIdentifier } = useParams();
@@ -17,6 +18,7 @@ const LotsPage = () => {
     getAccessTokenSilently,
     user,
   } = useAuth0();
+  const resolvedProjectId = urlProjectIdentifier || resolveProjectIdentifier();
 
   const [lots, setLots] = useState([]);
   const [filteredLots, setFilteredLots] = useState([]);
@@ -30,67 +32,103 @@ const LotsPage = () => {
     direction: 'asc',
   });
 
+  const [selectedLot, setSelectedLot] = useState(null);
+
+  const mapButtons = {
+    1: { top: '28.5%', left: '24%' },
+    2: { top: '36.5%', left: '24%' },
+    3: { top: '44.5%', left: '24%' },
+    4: { top: '51.5%', left: '24%' },
+    5: { top: '59.5%', left: '24%' },
+    6: { top: '67%', left: '24%' },
+    7: { top: '74.5%', left: '24%' },
+    8: { top: '82.5%', left: '24%' },
+    9: { top: '90.5%', left: '24%' },
+    33: { top: '88%', left: '41%' },
+    34: { top: '88%', left: '51%' },
+    35: { top: '87.5%', left: '61%' },
+    36: { top: '82%', left: '70%' },
+    37: { top: '74%', left: '70%' },
+    38: { top: '66%', left: '70%' },
+    39: { top: '60%', left: '72.5%' },
+    40: { top: '48.5%', left: '72.5%' },
+    41: { top: '45.5%', left: '65.5%' },
+    42: { top: '65.5%', left: '52.5%' },
+    43: { top: '73%', left: '53%' },
+    45: { top: '47%', left: '41.5%' },
+    46: { top: '39%', left: '41.5%' },
+    47: { top: '30.5%', left: '41.5%' },
+    48: { top: '22%', left: '41.5%' },
+    49: { top: '17%', left: '36%' },
+    50: { top: '15.5%', left: '27%' },
+  };
+
   const roles = user?.['https://construction-api.loca/roles'] || [];
   const isOwner =
     isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
 
+  const isPubliclyVisibleId = num => {
+    return (
+      (num >= 1 && num <= 9) ||
+      (num >= 33 && num <= 43) ||
+      (num >= 45 && num <= 50)
+    );
+  };
+
   useEffect(() => {
     let cancelled = false;
-
     const resolveAndFetch = async () => {
       setLoading(true);
       try {
-        const resolved = urlProjectIdentifier || resolveProjectIdentifier();
-        if (!resolved) return;
-
+        if (!resolvedProjectId) return;
         const token = isAuthenticated
           ? await getAccessTokenSilently().catch(() => null)
           : null;
-
         try {
-          const projectData = await projectApi.getProjectById(resolved, token);
+          const projectData = await projectApi.getProjectById(
+            resolvedProjectId,
+            token
+          );
           if (!cancelled) setProjectName(projectData.projectName);
-        } catch (e) {
-          //
-        }
-
-        // --- 2. Fetch Lots (Using the token!) ---
-        const data = await fetchLots({ projectIdentifier: resolved, token });
-
-        if (!cancelled) {
-          setLots(data);
-          setFilteredLots(data);
-        }
+        } catch (e) {}
+        const data = await fetchLots({
+          projectIdentifier: resolvedProjectId,
+          token,
+        });
+        if (!cancelled) setLots(data || []);
       } catch (err) {
         if (!cancelled) setError(err.message || 'Failed to fetch');
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
-
     if (!authLoading) resolveAndFetch();
     return () => {
       cancelled = true;
     };
-  }, [
-    urlProjectIdentifier,
-    isAuthenticated,
-    authLoading,
-    getAccessTokenSilently,
-  ]);
+  }, [resolvedProjectId, isAuthenticated, authLoading, getAccessTokenSilently]);
 
-  // Filtering and Sorting Logic
   useEffect(() => {
     let result = [...lots];
     if (!isOwner) {
-      result = result.filter(
-        lot => lot.lotStatus?.toUpperCase() === 'AVAILABLE'
-      );
+      result = result.filter(lot => {
+        const isAvailable = lot.lotStatus?.toUpperCase() === 'AVAILABLE';
+        const numericId = Number(lot.id);
+        const logicalId = !isNaN(numericId) ? numericId : lots.indexOf(lot) + 1;
+        return isAvailable && isPubliclyVisibleId(logicalId);
+      });
     } else if (statusFilter !== 'all') {
       result = result.filter(
         lot => lot.lotStatus?.toLowerCase() === statusFilter
       );
     }
+
+    result = result.map(lot => {
+      const numericId = Number(lot.id);
+      const displayId = !isNaN(numericId) ? numericId : lots.indexOf(lot) + 1;
+      return { ...lot, lotNumber: displayId.toString() };
+    });
+
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
@@ -99,6 +137,7 @@ const LotsPage = () => {
           lot.lotNumber?.toLowerCase().includes(term)
       );
     }
+
     if (sortConfig.key !== 'none') {
       result.sort((a, b) => {
         const valA = a[sortConfig.key] || 0;
@@ -118,7 +157,7 @@ const LotsPage = () => {
   if (loading)
     return (
       <div className="lots-page">
-        <div className="lots-content">Loading Foresta project data...</div>
+        <div className="lots-content">Loading...</div>
       </div>
     );
 
@@ -128,6 +167,68 @@ const LotsPage = () => {
         <div className="lots-header-section">
           <h1>{projectName ? `${projectName}'s Lots` : 'Project Lots'}</h1>
         </div>
+
+        {resolvedProjectId === 'proj-001-foresta' && (
+          <div className="lots-image-section">
+            <div className="map-wrapper">
+              <img
+                src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/phase1.png"
+                alt="Foresta Phase 1 Map"
+                className="phase-map-image"
+              />
+              {filteredLots.map(lot => {
+                const coords = mapButtons[lot.lotNumber];
+                if (!coords) return null;
+
+                return (
+                  <button
+                    key={lot.id}
+                    className={`lot-map-button status-${lot.lotStatus?.toLowerCase()}`}
+                    style={{ top: coords.top, left: coords.left }}
+                    onClick={() => setSelectedLot(lot)}
+                    title={`Lot ${lot.lotNumber}`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {selectedLot && (
+          <div
+            className="lot-modal-overlay"
+            onClick={() => setSelectedLot(null)}
+          >
+            <div
+              className="lot-modal-content"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                className="close-modal"
+                onClick={() => setSelectedLot(null)}
+              >
+                &times;
+              </button>
+              <h2>Lot {selectedLot.lotNumber}</h2>
+              <hr />
+              <p>
+                <strong>Address:</strong> {selectedLot.civicAddress}
+              </p>
+              <p>
+                <strong>Area:</strong> {selectedLot.dimensionsSquareFeet} sqft (
+                {selectedLot.dimensionsSquareMeters} m²)
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedLot.lotStatus}
+              </p>
+              {isOwner && (
+                <p>
+                  <strong>Price:</strong> ${selectedLot.price?.toLocaleString()}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         <div className="toolbar-section">
           <div className="search-box">
@@ -139,7 +240,6 @@ const LotsPage = () => {
               onChange={e => setSearchTerm(e.target.value)}
             />
           </div>
-
           <div className="filter-group">
             {isOwner && (
               <select
@@ -150,7 +250,7 @@ const LotsPage = () => {
                 <option value="all">All Statuses</option>
                 <option value="available">Available</option>
                 <option value="sold">Sold</option>
-                <option value="pending">Pending</option>
+                <option value="reserved">Reserved</option>
               </select>
             )}
             <select
@@ -162,9 +262,6 @@ const LotsPage = () => {
             >
               <option value="none-asc">Sort By</option>
               {isOwner && <option value="price-asc">Price: Low to High</option>}
-              {isOwner && (
-                <option value="price-desc">Price: High to Low</option>
-              )}
               <option value="dimensionsSquareFeet-asc">Size: Smallest</option>
               <option value="dimensionsSquareFeet-desc">Size: Largest</option>
             </select>
@@ -174,6 +271,8 @@ const LotsPage = () => {
         <div className="list-section">
           {error ? (
             <div className="no-results">{error}</div>
+          ) : filteredLots.length === 0 ? (
+            <div className="no-results">No lots found.</div>
           ) : (
             <LotList lots={filteredLots} isOwner={isOwner} />
           )}

@@ -5,6 +5,26 @@
   background-color: #f8fafc;
 }
 
+.lots-image-section {
+  width: 90vw;
+  max-width: 1600px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.phase-map-image {
+  width: 35%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: contain;
+}
+
 .lots-content {
   flex: 1;
   width: 100%;
