@@ -5,12 +5,27 @@
   }
 }
 
+/* Master Container: Force a vertical stack so legend is beneath the map */
+.lots-image-section {
+  display: flex !important;
+  flex-direction: column !important; /* Forces vertical stacking */
+  align-items: center;
+  width: 90vw;
+  max-width: 1600px;
+  margin-bottom: 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 25px; /* Increased padding for better spacing */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
 /* 1. This wrapper MUST be the same size as your image */
 .map-wrapper {
   position: relative;
   display: inline-block;
-  width: 35%; /* Matches your desired image width */
-  margin: 0 auto;
+  width: 35%; /* Controls map size */
+  min-width: 320px; /* Prevents map from being too small on tablets */
 }
 
 /* 2. Force the image to fill the wrapper exactly */
@@ -32,23 +47,60 @@
   padding: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease;
-  z-index: 100; /* Ensure they are above the image */
+  z-index: 100;
   
-  /* Make sure the button is visible even with text-indent */
   overflow: hidden;
   text-indent: -9999px;
   white-space: nowrap;
 }
 
 .lot-map-button:hover {
-  transform: scale(1.4);
+  transform: scale(1.5);
   z-index: 101;
 }
 
-/* Status Colors - using !important to ensure they override any defaults */
-.status-available { background-color: #4ade80 !important; } 
+/* Pulse animation for Available lots */
+@keyframes pulse-green {
+  0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+}
+
+/* Status Colors */
+.status-available { 
+  background-color: #4ade80 !important; 
+  animation: pulse-green 2s infinite;
+} 
 .status-sold { background-color: #f87171 !important; }      
 .status-reserved { background-color: #fbbf24 !important; }  
+
+/* Legend Styling - Now forced to the bottom */
+.map-legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 30px; /* Space between map and legend */
+  padding-top: 20px;
+  border-top: 1px solid #f1f5f9;
+  width: 100%; /* Spans full width of the section */
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.1);
+  display: inline-block;
+}
 
 /* Modal Styles */
 .lot-modal-overlay {
@@ -80,4 +132,5 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
+  color: #64748b;
 }
