@@ -10,14 +10,22 @@ export const fetchProjectManagementContent = async (language = 'en') => {
     const response = await api.get(`/project-management/content/${language}`);
     return response.data;
   } catch (error) {
-    console.error(`[ProjectManagementAPI] Error fetching content (${language}):`, error);
+    console.error(
+      `[ProjectManagementAPI] Error fetching content (${language}):`,
+      error
+    );
     // Fallback to English if requested language fails
     if (language !== 'en') {
       try {
-        const fallbackResponse = await api.get('/project-management/content/en');
+        const fallbackResponse = await api.get(
+          '/project-management/content/en'
+        );
         return fallbackResponse.data;
       } catch (fallbackError) {
-        console.error('[ProjectManagementAPI] Error fetching fallback content:', fallbackError);
+        console.error(
+          '[ProjectManagementAPI] Error fetching fallback content:',
+          fallbackError
+        );
         throw fallbackError;
       }
     }

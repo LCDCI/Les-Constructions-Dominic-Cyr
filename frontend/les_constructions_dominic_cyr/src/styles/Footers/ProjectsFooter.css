@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #4D85B9;
+  color: #4d85b9;
   margin-bottom: 1%;
 }
 
@@ -92,23 +92,23 @@
   .footer-inner {
     gap: 2.5%;
   }
-  
+
   .footer-icon {
     width: 40px;
     height: 40px;
     margin-bottom: 1.25%;
   }
-  
+
   .footer-icon svg {
     width: 28px;
     height: 28px;
   }
-  
+
   .footer-title {
     font-size: 17px;
     margin-bottom: 1.25%;
   }
-  
+
   .footer-item,
   .footer-link {
     font-size: 14px;
@@ -120,41 +120,41 @@
   .app-footer {
     padding: 2% 2.5%;
   }
-  
+
   .footer-inner {
     grid-template-columns: 1fr;
     gap: 2.5%;
   }
-  
+
   .footer-section {
     width: 100%;
   }
-  
+
   .footer-icon {
     width: 44px;
     height: 44px;
     margin-bottom: 1.5%;
   }
-  
+
   .footer-icon svg {
     width: 30px;
     height: 30px;
   }
-  
+
   .footer-title {
     font-size: 18px;
     margin-bottom: 1.5%;
   }
-  
+
   .footer-content {
     gap: 0.75%;
   }
-  
+
   .footer-bottom {
     margin-top: 2.5%;
     padding-top: 2%;
   }
-  
+
   .footer-item,
   .footer-link {
     font-size: 15px;
@@ -165,22 +165,22 @@
   .app-footer {
     padding: 1.5% 2%;
   }
-  
+
   .footer-inner {
     gap: 2.25%;
   }
-  
+
   .footer-icon {
     width: 40px;
     height: 40px;
     margin-bottom: 1.25%;
   }
-  
+
   .footer-icon svg {
     width: 26px;
     height: 26px;
   }
-  
+
   .footer-title {
     font-size: 17px;
     margin-bottom: 1.25%;
@@ -190,10 +190,9 @@
     margin-top: 2.25%;
     padding-top: 1.75%;
   }
-  
+
   .footer-item,
   .footer-link {
     font-size: 14px;
   }
 }
-

@@ -41,7 +41,7 @@
 
 .project-hero {
   padding: var(--spacing-section, 8rem) var(--spacing-lg);
-  background: linear-gradient(145deg, #AAB2A6, #8A9287) !important;
+  background: linear-gradient(145deg, #aab2a6, #8a9287) !important;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -226,7 +226,11 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-secondary)
+  );
   border-radius: 20px;
   transition: all 0.3s var(--easing, ease);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
@@ -518,11 +522,10 @@
   height: 256px;
 }
 
-
 .back-button-container {
   display: flex;
   /* This pushes the buttons to the far left and right */
-  justify-content: space-between; 
+  justify-content: space-between;
   align-items: center;
   /* Use a max-width so they aren't touching the very edges of huge screens */
   max-width: var(--content-max-width, 1200px);
@@ -530,7 +533,7 @@
   padding: var(--spacing-xxl, 3rem) var(--spacing-lg, 2rem);
   width: 100%;
   /* Prevents wrapping to a second line */
-  flex-wrap: nowrap; 
+  flex-wrap: nowrap;
   box-sizing: border-box;
 }
 
@@ -550,7 +553,7 @@
   transition: all 0.3s ease;
   white-space: nowrap;
   /* REMOVED: min-width: 240px (this was causing the overlap/wrapping) */
-  min-width: 0; 
+  min-width: 0;
 }
 
 /* Mobile Fix: Keeps them side-by-side but shrinks them to fit */
@@ -559,8 +562,8 @@
     padding: 2rem 1rem;
     gap: 0.5rem;
   }
-  
-  .back-button, 
+
+  .back-button,
   .view-lots-button {
     padding: 0 0.75rem;
     font-size: 0.8rem; /* Smaller text ensures they fit on one line */
@@ -593,31 +596,31 @@
   .hero-title {
     font-size: clamp(1.75rem, 5vw, 3rem);
   }
-  
+
   .hero-subtitle {
     font-size: clamp(1rem, 2vw, 1.2rem);
   }
-  
+
   .hero-image-container {
     width: 60px;
     height: 60px;
     top: var(--spacing-md, 1rem);
     left: var(--spacing-md, 1rem);
   }
-  
+
   .section-title {
     font-size: clamp(1.5rem, 3.5vw, 2.2rem);
   }
-  
+
   .location-content {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg, 2rem);
   }
-  
+
   .location-map {
     height: 350px;
   }
-  
+
   .features-grid {
     gap: var(--spacing-xl, 2rem);
   }
@@ -627,33 +630,33 @@
   .project-section {
     padding: var(--spacing-xl, 3rem) var(--spacing-md, 1.5rem);
   }
-  
+
   .project-hero {
     padding: var(--spacing-xxl, 3rem) var(--spacing-md, 1.5rem);
   }
-  
+
   .features-section {
     padding: var(--spacing-xxl, 3rem) var(--spacing-md, 1.5rem);
   }
-  
+
   .features-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg, 2rem);
   }
-  
+
   .hero-image-container {
     width: 50px;
     height: 50px;
     top: var(--spacing-sm, 1rem);
     left: var(--spacing-sm, 1rem);
   }
-  
+
   .feature-icon {
     width: 70px;
     height: 70px;
     font-size: 2.5rem;
   }
-  
+
   .modal-container {
     width: 95%;
   }
@@ -663,32 +666,32 @@
   .project-section {
     padding: var(--spacing-lg, 2rem) var(--spacing-sm, 1rem);
   }
-  
+
   .project-hero {
     padding: var(--spacing-xl, 2rem) var(--spacing-sm, 1rem);
   }
-  
+
   .features-section {
     padding: var(--spacing-xl, 2rem) var(--spacing-sm, 1rem);
   }
-  
+
   .hero-image-container {
     width: 45px;
     height: 45px;
     top: var(--spacing-sm, 0.75rem);
     left: var(--spacing-sm, 0.75rem);
   }
-  
+
   .feature-icon {
     width: 60px;
     height: 60px;
     font-size: 2rem;
   }
-  
+
   .location-map {
     height: 300px;
   }
-  
+
   .back-button-container {
     padding: var(--spacing-xl, 2rem) 0;
   }

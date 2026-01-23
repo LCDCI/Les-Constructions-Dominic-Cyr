@@ -3,16 +3,19 @@ export function getFilesServiceBase() {
   const env = import.meta.env.VITE_FILES_SERVICE_URL;
 
   // If env provided, return it (don't append /files here)
-  if (env && typeof env === 'string' && env.trim()) return env.replace(/\/$/, '');
+  if (env && typeof env === 'string' && env.trim())
+    return env.replace(/\/$/, '');
 
-  // If running locally in dev, use developer files service
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return 'http://localhost:8082';
+  // For production on DigitalOcean, use files-service directly
+  if (
+    typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+  ) {
+    return 'https://files-service-app-xubs2.ondigitalocean.app';
   }
 
-  // For deployed sites, avoid pointing to developer localhost (blocked by browser PNA/CORS).
-  // Use relative `/files` so requests go to the same origin (backend should proxy or serve files),
-  // or configure `VITE_FILES_SERVICE_URL` to a publicly reachable file service.
+  // For local development, use relative path
   return `${window.location.origin}/files`;
 }
 

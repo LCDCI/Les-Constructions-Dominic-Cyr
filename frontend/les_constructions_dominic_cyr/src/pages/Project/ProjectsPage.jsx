@@ -32,7 +32,13 @@ const ProjectsPage = () => {
 
   const filterMenuContainerRef = useRef(null);
 
-  const filesServiceUrl = import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname === 'localhost' ? 'http://localhost:8082' : `${window.location.origin}/files`);
+  const filesServiceUrl =
+    import.meta.env.VITE_FILES_SERVICE_URL ||
+    (typeof window !== 'undefined' &&
+    (window.location.hostname.includes('lcdci-portal') ||
+      window.location.hostname.includes('lcdci-frontend'))
+      ? 'https://files-service-app-xubs2.ondigitalocean.app'
+      : `${window.location.origin}/files`);
   // Use relative path to leverage Vite proxy
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
@@ -45,7 +51,7 @@ const ProjectsPage = () => {
   }, [searchTerm, projects]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (
         isFilterMenuOpen &&
         filterMenuContainerRef.current &&
@@ -75,68 +81,79 @@ const ProjectsPage = () => {
         try {
           const token = await getAccessTokenSilently({
             authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://construction-api.loca',
+              audience:
+                import.meta.env.VITE_AUTH0_AUDIENCE ||
+                'https://construction-api.loca',
             },
           });
           headers.Authorization = `Bearer ${token}`;
         } catch (tokenError) {
-          console.warn('Could not get access token, proceeding without authentication:', tokenError);
+          console.warn(
+            'Could not get access token, proceeding without authentication:',
+            tokenError
+          );
         }
       }
 
-       if (statusFilter === 'ALL') {
-         const [availableResp, archivedResp] = await Promise.all([
-           fetch(baseUrl, { headers }),
-           fetch(`${baseUrl}?status=ARCHIVED`, { headers }),
-         ]);
+      if (statusFilter === 'ALL') {
+        const [availableResp, archivedResp] = await Promise.all([
+          fetch(baseUrl, { headers }),
+          fetch(`${baseUrl}?status=ARCHIVED`, { headers }),
+        ]);
 
-         if (!availableResp.ok) {
-           const errorText = await availableResp.text();
-           throw new Error(`Failed to fetch available: ${availableResp.status} - ${errorText}`);
-         }
-         if (!archivedResp.ok) {
-           const errorText = await archivedResp.text();
-           throw new Error(`Failed to fetch archived: ${archivedResp.status} - ${errorText}`);
-         }
+        if (!availableResp.ok) {
+          const errorText = await availableResp.text();
+          throw new Error(
+            `Failed to fetch available: ${availableResp.status} - ${errorText}`
+          );
+        }
+        if (!archivedResp.ok) {
+          const errorText = await archivedResp.text();
+          throw new Error(
+            `Failed to fetch archived: ${archivedResp.status} - ${errorText}`
+          );
+        }
 
-         const availableAll = await availableResp.json();
-         const archived = await archivedResp.json();
-         const active = (availableAll || []).filter(p => p.status !== 'ARCHIVED');
+        const availableAll = await availableResp.json();
+        const archived = await archivedResp.json();
+        const active = (availableAll || []).filter(
+          p => p.status !== 'ARCHIVED'
+        );
 
-         // Merge, keeping order: active first, then archived; de-duplicate by identifier
-         const seen = new Set();
-         const merged = [];
-         for (const p of [...(active || []), ...(archived || [])]) {
-           const id = p.projectIdentifier;
-           if (id && !seen.has(id)) {
-             seen.add(id);
-             merged.push(p);
-           }
-         }
+        // Merge, keeping order: active first, then archived; de-duplicate by identifier
+        const seen = new Set();
+        const merged = [];
+        for (const p of [...(active || []), ...(archived || [])]) {
+          const id = p.projectIdentifier;
+          if (id && !seen.has(id)) {
+            seen.add(id);
+            merged.push(p);
+          }
+        }
 
-         setProjects(merged);
-         setFilteredProjects(merged);
-       } else if (statusFilter === 'ARCHIVED') {
-         const response = await fetch(`${baseUrl}?status=ARCHIVED`, { headers });
-         if (!response.ok) {
-           const errorText = await response.text();
-           throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
-         }
-         const data = await response.json();
-         setProjects(data || []);
-         setFilteredProjects(data || []);
-       } else {
-         // ACTIVE (default): explicitly filter out archived in case backend returns both for owners
-         const response = await fetch(baseUrl, { headers });
-         if (!response.ok) {
-           const errorText = await response.text();
-           throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
-         }
-         const data = await response.json();
-         const active = (data || []).filter(p => p.status !== 'ARCHIVED');
-         setProjects(active);
-         setFilteredProjects(active);
-       }
+        setProjects(merged);
+        setFilteredProjects(merged);
+      } else if (statusFilter === 'ARCHIVED') {
+        const response = await fetch(`${baseUrl}?status=ARCHIVED`, { headers });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
+        }
+        const data = await response.json();
+        setProjects(data || []);
+        setFilteredProjects(data || []);
+      } else {
+        // ACTIVE (default): explicitly filter out archived in case backend returns both for owners
+        const response = await fetch(baseUrl, { headers });
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
+        }
+        const data = await response.json();
+        const active = (data || []).filter(p => p.status !== 'ARCHIVED');
+        setProjects(active);
+        setFilteredProjects(active);
+      }
 
       setLoading(false);
     } catch (error) {
@@ -168,7 +185,7 @@ const ProjectsPage = () => {
     window.location.href = `/projects/${projectIdentifier}/metadata`;
   };
 
-  const handleEditProject = (project) => {
+  const handleEditProject = project => {
     setProjectToEdit(project);
     setIsEditOpen(true);
     setSubmitError(null);
@@ -180,21 +197,27 @@ const ProjectsPage = () => {
     fetchProjects();
   };
 
-  const handleArchiveProject = async (project) => {
+  const handleArchiveProject = async project => {
     if (!project || project.status === 'ARCHIVED') return;
-    const confirm = window.confirm(`Archive "${project.projectName}"? You can still view archived projects from the filter.`);
+    const confirm = window.confirm(
+      `Archive "${project.projectName}"? You can still view archived projects from the filter.`
+    );
     if (!confirm) return;
 
     try {
       const headersToken = isAuthenticated
         ? await getAccessTokenSilently({
             authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://construction-api.loca',
+              audience:
+                import.meta.env.VITE_AUTH0_AUDIENCE ||
+                'https://construction-api.loca',
             },
           }).catch(() => null)
         : null;
 
-      await (await import('../../features/projects/api/projectApi')).projectApi.updateProject(
+      await (
+        await import('../../features/projects/api/projectApi')
+      ).projectApi.updateProject(
         project.projectIdentifier,
         { status: 'ARCHIVED' },
         headersToken || null
@@ -213,7 +236,7 @@ const ProjectsPage = () => {
     setSubmitError(null);
   };
 
-  const openArchiveModal = (project) => {
+  const openArchiveModal = project => {
     setProjectToArchive(project);
     setIsArchiveOpen(true);
   };
@@ -280,87 +303,121 @@ const ProjectsPage = () => {
             )}
           </div>
 
-           <div className="admin-projects-filter">
-             <div className="admin-search-container">
-               <input
-                 type="text"
-                 className="admin-search-input"
-                 placeholder="Search projects by name..."
-                 value={searchTerm}
-                 onChange={e => setSearchTerm(e.target.value)}
-               />
-             </div>
-             {role === 'OWNER' && (
-               <div ref={filterMenuContainerRef} style={{ position: 'relative', marginLeft: '20px' }}>
-                 <button
-                   aria-haspopup="menu"
-                   aria-expanded={isFilterMenuOpen}
-                   className="filter-trigger"
-                   onClick={() => setIsFilterMenuOpen(prev => !prev)}
-                   title="Filter projects"
-                   style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-                 >
-                   <span className="filter-icon" aria-hidden="true" style={{ display: 'inline-block', lineHeight: 1 }}>
-                     <span style={{ display: 'block', width: '18px', height: '2px', background: 'currentColor', marginBottom: '3px' }}></span>
-                     <span style={{ display: 'block', width: '18px', height: '2px', background: 'currentColor', marginBottom: '3px' }}></span>
-                     <span style={{ display: 'block', width: '18px', height: '2px', background: 'currentColor' }}></span>
-                   </span>
-                   Filters
-                 </button>
+          <div className="admin-projects-filter">
+            <div className="admin-search-container">
+              <input
+                type="text"
+                className="admin-search-input"
+                placeholder="Search projects by name..."
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+            </div>
+            {role === 'OWNER' && (
+              <div
+                ref={filterMenuContainerRef}
+                style={{ position: 'relative', marginLeft: '20px' }}
+              >
+                <button
+                  aria-haspopup="menu"
+                  aria-expanded={isFilterMenuOpen}
+                  className="filter-trigger"
+                  onClick={() => setIsFilterMenuOpen(prev => !prev)}
+                  title="Filter projects"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <span
+                    className="filter-icon"
+                    aria-hidden="true"
+                    style={{ display: 'inline-block', lineHeight: 1 }}
+                  >
+                    <span
+                      style={{
+                        display: 'block',
+                        width: '18px',
+                        height: '2px',
+                        background: 'currentColor',
+                        marginBottom: '3px',
+                      }}
+                    ></span>
+                    <span
+                      style={{
+                        display: 'block',
+                        width: '18px',
+                        height: '2px',
+                        background: 'currentColor',
+                        marginBottom: '3px',
+                      }}
+                    ></span>
+                    <span
+                      style={{
+                        display: 'block',
+                        width: '18px',
+                        height: '2px',
+                        background: 'currentColor',
+                      }}
+                    ></span>
+                  </span>
+                  Filters
+                </button>
 
-                 {isFilterMenuOpen && (
-                   <div
-                     role="menu"
-                     aria-label="Project filters"
-                     className="filter-menu"
-                     style={{
-                       position: 'absolute',
-                       top: 'calc(100% + 8px)',
-                       left: 0,
-                       minWidth: '200px'
-                     }}
-                   >
-                     <button
-                       role="menuitemradio"
-                       aria-checked={statusFilter === 'ACTIVE'}
-                       className={`filter-option ${statusFilter === 'ACTIVE' ? 'active' : ''}`}
-                       onClick={() => {
-                         setStatusFilter('ACTIVE');
-                         setSearchTerm('');
-                         setIsFilterMenuOpen(false);
-                       }}
-                     >
-                       Active projects
-                     </button>
-                     <button
-                       role="menuitemradio"
-                       aria-checked={statusFilter === 'ALL'}
-                       className={`filter-option ${statusFilter === 'ALL' ? 'active' : ''}`}
-                       onClick={() => {
-                         setStatusFilter('ALL');
-                         setSearchTerm('');
-                         setIsFilterMenuOpen(false);
-                       }}
-                     >
-                       All projects
-                     </button>
-                     <button
-                       role="menuitemradio"
-                       aria-checked={statusFilter === 'ARCHIVED'}
-                       className={`filter-option ${statusFilter === 'ARCHIVED' ? 'active' : ''}`}
-                       onClick={() => {
-                         setStatusFilter('ARCHIVED');
-                         setSearchTerm('');
-                         setIsFilterMenuOpen(false);
-                       }}
-                     >
-                       Archive projects
-                     </button>
-                   </div>
-                 )}
-               </div>
-             )}
-           </div>
+                {isFilterMenuOpen && (
+                  <div
+                    role="menu"
+                    aria-label="Project filters"
+                    className="filter-menu"
+                    style={{
+                      position: 'absolute',
+                      top: 'calc(100% + 8px)',
+                      left: 0,
+                      minWidth: '200px',
+                    }}
+                  >
+                    <button
+                      role="menuitemradio"
+                      aria-checked={statusFilter === 'ACTIVE'}
+                      className={`filter-option ${statusFilter === 'ACTIVE' ? 'active' : ''}`}
+                      onClick={() => {
+                        setStatusFilter('ACTIVE');
+                        setSearchTerm('');
+                        setIsFilterMenuOpen(false);
+                      }}
+                    >
+                      Active projects
+                    </button>
+                    <button
+                      role="menuitemradio"
+                      aria-checked={statusFilter === 'ALL'}
+                      className={`filter-option ${statusFilter === 'ALL' ? 'active' : ''}`}
+                      onClick={() => {
+                        setStatusFilter('ALL');
+                        setSearchTerm('');
+                        setIsFilterMenuOpen(false);
+                      }}
+                    >
+                      All projects
+                    </button>
+                    <button
+                      role="menuitemradio"
+                      aria-checked={statusFilter === 'ARCHIVED'}
+                      className={`filter-option ${statusFilter === 'ARCHIVED' ? 'active' : ''}`}
+                      onClick={() => {
+                        setStatusFilter('ARCHIVED');
+                        setSearchTerm('');
+                        setIsFilterMenuOpen(false);
+                      }}
+                    >
+                      Archive projects
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {loading && (
             <div className="admin-projects-loading">
@@ -381,8 +438,8 @@ const ProjectsPage = () => {
             <div className="admin-projects-grid">
               {filteredProjects.length > 0 ? (
                 filteredProjects.map(project => (
-                  <div 
-                    key={project.projectIdentifier} 
+                  <div
+                    key={project.projectIdentifier}
                     className={`admin-project-card ${project.status === 'ARCHIVED' ? 'project-card-archived' : ''}`}
                   >
                     {project.status === 'ARCHIVED' && (
@@ -395,7 +452,9 @@ const ProjectsPage = () => {
                         className="admin-project-image"
                       />
                     </div>
-                    <h2 className="admin-project-title">{project.projectName}</h2>
+                    <h2 className="admin-project-title">
+                      {project.projectName}
+                    </h2>
                     <p className="admin-project-description">
                       {project.projectDescription}
                     </p>
@@ -428,7 +487,7 @@ const ProjectsPage = () => {
                           className="admin-project-button archive-button"
                           style={{
                             backgroundColor: '#DC2626',
-                            color: 'white'
+                            color: 'white',
                           }}
                         >
                           Archive
@@ -544,19 +603,31 @@ const ProjectsPage = () => {
           )}
 
           {isArchiveOpen && projectToArchive && (
-            <div className="confirmation-modal-overlay" role="dialog" aria-modal="true">
-              <div className="confirmation-modal-content" onClick={e => e.stopPropagation()}>
+            <div
+              className="confirmation-modal-overlay"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div
+                className="confirmation-modal-content"
+                onClick={e => e.stopPropagation()}
+              >
                 <div className="confirmation-modal-header">
                   <h2>Archive project</h2>
                 </div>
                 <div className="confirmation-modal-body">
                   <p>
-                    Are you sure you want to archive “{projectToArchive.projectName}”?
-                    You can still view archived projects by switching the filter.
+                    Are you sure you want to archive “
+                    {projectToArchive.projectName}”? You can still view archived
+                    projects by switching the filter.
                   </p>
                 </div>
                 <div className="confirmation-modal-footer">
-                  <button type="button" className="btn-cancel" onClick={closeArchiveModal}>
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={closeArchiveModal}
+                  >
                     Cancel
                   </button>
                   <button
@@ -567,22 +638,38 @@ const ProjectsPage = () => {
                         const token = isAuthenticated
                           ? await getAccessTokenSilently({
                               authorizationParams: {
-                                audience: import.meta.env.VITE_AUTH0_AUDIENCE || 'https://construction-api.loca',
+                                audience:
+                                  import.meta.env.VITE_AUTH0_AUDIENCE ||
+                                  'https://construction-api.loca',
                               },
                             }).catch(() => null)
                           : null;
 
-                        await (await import('../../features/projects/api/projectApi')).projectApi.updateProject(
+                        await (
+                          await import('../../features/projects/api/projectApi')
+                        ).projectApi.updateProject(
                           projectToArchive.projectIdentifier,
                           { status: 'ARCHIVED' },
                           token || null
                         );
 
-                         // Optimistic update: if viewing Active, remove it immediately
-                         if (statusFilter === 'ACTIVE') {
-                           setProjects(prev => prev.filter(p => p.projectIdentifier !== projectToArchive.projectIdentifier));
-                           setFilteredProjects(prev => prev.filter(p => p.projectIdentifier !== projectToArchive.projectIdentifier));
-                         }
+                        // Optimistic update: if viewing Active, remove it immediately
+                        if (statusFilter === 'ACTIVE') {
+                          setProjects(prev =>
+                            prev.filter(
+                              p =>
+                                p.projectIdentifier !==
+                                projectToArchive.projectIdentifier
+                            )
+                          );
+                          setFilteredProjects(prev =>
+                            prev.filter(
+                              p =>
+                                p.projectIdentifier !==
+                                projectToArchive.projectIdentifier
+                            )
+                          );
+                        }
 
                         closeArchiveModal();
                         // Refresh list to reflect backend state for all filters

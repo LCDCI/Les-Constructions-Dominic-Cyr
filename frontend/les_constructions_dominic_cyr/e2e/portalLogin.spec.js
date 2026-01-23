@@ -22,7 +22,9 @@ test.describe('Portal Login Page', () => {
 
   test('should display the description text', async () => {
     await expect(portalLoginPage.description).toBeVisible();
-    await expect(portalLoginPage.description).toHaveText('Sign in to access your dashboard');
+    await expect(portalLoginPage.description).toHaveText(
+      'Sign in to access your dashboard'
+    );
   });
 
   test('should display the login button with correct text', async () => {
@@ -57,7 +59,9 @@ test.describe('Portal Login Page - Navigation', () => {
     await expect(page).toHaveURL(/\/$/);
   });
 
-  test('should redirect to Auth0 when login button is clicked', async ({ page }) => {
+  test('should redirect to Auth0 when login button is clicked', async ({
+    page,
+  }) => {
     const portalLoginPage = new PortalLoginPage(page);
     await portalLoginPage.goto();
 
@@ -70,8 +74,11 @@ test.describe('Portal Login Page - Navigation', () => {
 
     // Either opens popup or redirects to Auth0
     const currentUrl = page.url();
-    const hasAuth0Redirect = currentUrl.includes('auth0') || currentUrl.includes('authorize') || popup !== null;
-    
+    const hasAuth0Redirect =
+      currentUrl.includes('auth0') ||
+      currentUrl.includes('authorize') ||
+      popup !== null;
+
     // If no redirect detected, the button was at least clicked (Auth0 may be mocked in test env)
     expect(true).toBeTruthy();
   });
@@ -112,7 +119,7 @@ test.describe('Portal Login Page - Accessibility', () => {
     await page.goto('/portal/login');
 
     const loginButton = page.locator('.portal-card button');
-    
+
     // Button should be focusable
     await loginButton.focus();
     await expect(loginButton).toBeFocused();
@@ -123,7 +130,7 @@ test.describe('Portal Login Page - Accessibility', () => {
 
     const h1 = page.locator('.portal-card h1');
     await expect(h1).toBeVisible();
-    
+
     const h1Count = await h1.count();
     expect(h1Count).toBe(1); // Only one h1 in the card
   });
@@ -133,11 +140,13 @@ test.describe('Portal Login Page - Accessibility', () => {
 
     // Tab to the login button
     await page.keyboard.press('Tab');
-    
+
     const loginButton = page.locator('.portal-card button');
     // After tabbing, the button should be reachable
-    const isFocused = await loginButton.evaluate(el => document.activeElement === el);
-    
+    const isFocused = await loginButton.evaluate(
+      el => document.activeElement === el
+    );
+
     // The button should be keyboard accessible
     await expect(loginButton).toBeEnabled();
   });

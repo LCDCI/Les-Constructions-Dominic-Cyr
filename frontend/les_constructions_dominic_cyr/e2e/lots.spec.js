@@ -12,13 +12,16 @@ test.describe('Lots Page', () => {
 
   test('should filter lots when searching', async () => {
     const initialCount = await lotsPage.getLotCount();
-    
+
     // Skip test if no lots available to search
-    test.skip(initialCount === 0, 'Skipping: no lots available to test search functionality');
+    test.skip(
+      initialCount === 0,
+      'Skipping: no lots available to test search functionality'
+    );
 
     // Perform search for non-existent lot
     await lotsPage.searchInput.fill('nonexistent12345');
-    
+
     // Wait for either the no-results message or for the cards count to update
     try {
       await expect(lotsPage.noResultsMessage).toBeVisible({ timeout: 2000 });
