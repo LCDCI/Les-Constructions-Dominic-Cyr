@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useTranslation } from 'react-i18next';
 import {
   fetchLots,
   resolveProjectIdentifier,
@@ -11,6 +12,7 @@ import '../../styles/lots.css';
 import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
 
 const LotsPage = () => {
+  const { t } = useTranslation(['lots', 'translation']);
   const { projectIdentifier: urlProjectIdentifier } = useParams();
   const {
     isAuthenticated,
@@ -23,6 +25,12 @@ const LotsPage = () => {
   const [lots, setLots] = useState([]);
   const [filteredLots, setFilteredLots] = useState([]);
   const [projectName, setProjectName] = useState('');
+  const [projectColors, setProjectColors] = useState({
+    primary: '#737373',
+    secondary: '#F6F4F1',
+    accent: '#545454',
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -31,7 +39,6 @@ const LotsPage = () => {
     key: 'none',
     direction: 'asc',
   });
-
   const [selectedLot, setSelectedLot] = useState(null);
 
   const mapButtons = {
@@ -66,14 +73,10 @@ const LotsPage = () => {
   const roles = user?.['https://construction-api.loca/roles'] || [];
   const isOwner =
     isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
-
-  const isPubliclyVisibleId = num => {
-    return (
-      (num >= 1 && num <= 9) ||
-      (num >= 33 && num <= 43) ||
-      (num >= 45 && num <= 50)
-    );
-  };
+  const isPubliclyVisibleId = num =>
+    (num >= 1 && num <= 9) ||
+    (num >= 33 && num <= 43) ||
+    (num >= 45 && num <= 50);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,20 +87,25 @@ const LotsPage = () => {
         const token = isAuthenticated
           ? await getAccessTokenSilently().catch(() => null)
           : null;
-        try {
-          const projectData = await projectApi.getProjectById(
-            resolvedProjectId,
-            token
-          );
-          if (!cancelled) setProjectName(projectData.projectName);
-        } catch (e) {}
+        const projectData = await projectApi.getProjectById(
+          resolvedProjectId,
+          token
+        );
+        if (!cancelled && projectData) {
+          setProjectName(projectData.projectName);
+          setProjectColors({
+            primary: projectData.primaryColor || '#737373',
+            secondary: projectData.secondaryColor || '#F6F4F1',
+            accent: projectData.accentColor || '#545454',
+          });
+        }
         const data = await fetchLots({
           projectIdentifier: resolvedProjectId,
           token,
         });
         if (!cancelled) setLots(data || []);
       } catch (err) {
-        if (!cancelled) setError(err.message || 'Failed to fetch');
+        if (!cancelled) setError(err.message || t('errors.fetchFailed'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -106,7 +114,13 @@ const LotsPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [resolvedProjectId, isAuthenticated, authLoading, getAccessTokenSilently]);
+  }, [
+    resolvedProjectId,
+    isAuthenticated,
+    authLoading,
+    getAccessTokenSilently,
+    t,
+  ]);
 
   useEffect(() => {
     let result = [...lots];
@@ -122,13 +136,11 @@ const LotsPage = () => {
         lot => lot.lotStatus?.toLowerCase() === statusFilter
       );
     }
-
     result = result.map(lot => {
       const numericId = Number(lot.id);
       const displayId = !isNaN(numericId) ? numericId : lots.indexOf(lot) + 1;
       return { ...lot, lotNumber: displayId.toString() };
     });
-
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
@@ -137,7 +149,6 @@ const LotsPage = () => {
           lot.lotNumber?.toLowerCase().includes(term)
       );
     }
-
     if (sortConfig.key !== 'none') {
       result.sort((a, b) => {
         const valA = a[sortConfig.key] || 0;
@@ -157,39 +168,70 @@ const LotsPage = () => {
   if (loading)
     return (
       <div className="lots-page">
-        <div className="lots-content">Loading...</div>
+        <div className="lots-content">{t('common.loading')}</div>
       </div>
     );
 
   return (
     <div className="lots-page">
       <div className="lots-content">
-        <div className="lots-header-section">
-          <h1>{projectName ? `${projectName}'s Lots` : 'Project Lots'}</h1>
+        <div
+          className="lots-header-section"
+          style={{ backgroundColor: projectColors.primary }}
+        >
+          <h1 style={{ color: projectColors.secondary }}>
+            {projectName
+              ? t('header.projectLots', { name: projectName })
+              : t('header.defaultTitle')}
+            <span
+              className="header-underline"
+              style={{ backgroundColor: projectColors.accent }}
+            ></span>
+          </h1>
         </div>
+
+        {resolvedProjectId === 'proj-001-foresta' && (
+          <div className="lots-hero-text">
+            <h2 className="exclusive-tag">{t('foresta.exclusiveCount')}</h2>
+            <p className="peace-tag">{t('foresta.peaceTagline')}</p>
+          </div>
+        )}
 
         {resolvedProjectId === 'proj-001-foresta' && (
           <div className="lots-image-section">
             <div className="map-wrapper">
               <img
                 src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/phase1.png"
-                alt="Foresta Phase 1 Map"
+                alt="Map"
                 className="phase-map-image"
               />
               {filteredLots.map(lot => {
                 const coords = mapButtons[lot.lotNumber];
                 if (!coords) return null;
-
                 return (
                   <button
                     key={lot.id}
                     className={`lot-map-button status-${lot.lotStatus?.toLowerCase()}`}
                     style={{ top: coords.top, left: coords.left }}
                     onClick={() => setSelectedLot(lot)}
-                    title={`Lot ${lot.lotNumber}`}
+                    title={`${t('common.lot')} ${lot.lotNumber}`}
                   />
                 );
               })}
+            </div>
+            <div className="map-legend">
+              <div className="legend-item">
+                <span className="legend-dot status-available"></span>
+                <span>{t('status.available')}</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-dot status-reserved"></span>
+                <span>{t('status.reserved')}</span>
+              </div>
+              <div className="legend-item">
+                <span className="legend-dot status-sold"></span>
+                <span>{t('status.sold')}</span>
+              </div>
             </div>
           </div>
         )}
@@ -202,6 +244,7 @@ const LotsPage = () => {
             <div
               className="lot-modal-content"
               onClick={e => e.stopPropagation()}
+              style={{ borderTop: `5px solid ${projectColors.accent}` }}
             >
               <button
                 className="close-modal"
@@ -209,21 +252,27 @@ const LotsPage = () => {
               >
                 &times;
               </button>
-              <h2>Lot {selectedLot.lotNumber}</h2>
+              <h2>
+                {t('common.lot')} {selectedLot.lotNumber}
+              </h2>
               <hr />
               <p>
-                <strong>Address:</strong> {selectedLot.civicAddress}
+                <strong>{t('modal.address')}:</strong>{' '}
+                {selectedLot.civicAddress}
               </p>
               <p>
-                <strong>Area:</strong> {selectedLot.dimensionsSquareFeet} sqft (
+                <strong>{t('modal.area')}:</strong>{' '}
+                {selectedLot.dimensionsSquareFeet} sqft (
                 {selectedLot.dimensionsSquareMeters} m²)
               </p>
               <p>
-                <strong>Status:</strong> {selectedLot.lotStatus}
+                <strong>{t('modal.status')}:</strong>{' '}
+                {t(`status.${selectedLot.lotStatus?.toLowerCase()}`)}
               </p>
               {isOwner && (
                 <p>
-                  <strong>Price:</strong> ${selectedLot.price?.toLocaleString()}
+                  <strong>{t('modal.price')}:</strong> $
+                  {selectedLot.price?.toLocaleString()}
                 </p>
               )}
             </div>
@@ -235,7 +284,7 @@ const LotsPage = () => {
             <input
               type="text"
               className="search-input"
-              placeholder="Search by address or lot..."
+              placeholder={t('toolbar.searchPlaceholder')}
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
             />
@@ -247,10 +296,10 @@ const LotsPage = () => {
                 value={statusFilter}
                 onChange={e => setStatusFilter(e.target.value)}
               >
-                <option value="all">All Statuses</option>
-                <option value="available">Available</option>
-                <option value="sold">Sold</option>
-                <option value="reserved">Reserved</option>
+                <option value="all">{t('filters.allStatuses')}</option>
+                <option value="available">{t('status.available')}</option>
+                <option value="sold">{t('status.sold')}</option>
+                <option value="reserved">{t('status.reserved')}</option>
               </select>
             )}
             <select
@@ -260,10 +309,16 @@ const LotsPage = () => {
                 setSortConfig({ key, direction: dir });
               }}
             >
-              <option value="none-asc">Sort By</option>
-              {isOwner && <option value="price-asc">Price: Low to High</option>}
-              <option value="dimensionsSquareFeet-asc">Size: Smallest</option>
-              <option value="dimensionsSquareFeet-desc">Size: Largest</option>
+              <option value="none-asc">{t('filters.sortBy')}</option>
+              {isOwner && (
+                <option value="price-asc">{t('filters.priceLow')}</option>
+              )}
+              <option value="dimensionsSquareFeet-asc">
+                {t('filters.sizeSmall')}
+              </option>
+              <option value="dimensionsSquareFeet-desc">
+                {t('filters.sizeLarge')}
+              </option>
             </select>
           </div>
         </div>
@@ -272,7 +327,7 @@ const LotsPage = () => {
           {error ? (
             <div className="no-results">{error}</div>
           ) : filteredLots.length === 0 ? (
-            <div className="no-results">No lots found.</div>
+            <div className="no-results">{t('common.noResults')}</div>
           ) : (
             <LotList lots={filteredLots} isOwner={isOwner} />
           )}
