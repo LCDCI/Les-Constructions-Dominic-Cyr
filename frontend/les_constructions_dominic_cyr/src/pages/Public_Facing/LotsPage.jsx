@@ -1,12 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
+import { FiPlus } from 'react-icons/fi';
 import {
   fetchLots,
   resolveProjectIdentifier,
+  createLot,
+  updateLot,
+  deleteLot,
 } from '../../features/lots/api/lots';
 import { projectApi } from '../../features/projects/api/projectApi';
 import LotList from '../../features/lots/components/LotList';
+import LotFormModal from '../../features/lots/components/LotFormModal';
+import ConfirmationModal from '../../features/lots/components/ConfirmationModal';
 import Footer from '../../components/Footers/ProjectsFooter';
 import '../../styles/lots.css';
 
@@ -31,6 +37,14 @@ const LotsPage = () => {
     direction: 'asc',
   });
 
+  // Modal states
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [currentLot, setCurrentLot] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentToken, setCurrentToken] = useState(null);
+
   const roles = user?.['https://construction-api.loca/roles'] || [];
   const isOwner =
     isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
@@ -47,6 +61,8 @@ const LotsPage = () => {
         const token = isAuthenticated
           ? await getAccessTokenSilently().catch(() => null)
           : null;
+
+        setCurrentToken(token);
 
         try {
           const projectData = await projectApi.getProjectById(resolved, token);
@@ -79,6 +95,130 @@ const LotsPage = () => {
     authLoading,
     getAccessTokenSilently,
   ]);
+
+  // Lot management functions
+  const handleAddLot = async () => {
+    setCurrentLot(null);
+    // Get fresh token for modal
+    if (isAuthenticated) {
+      try {
+        const token = await getAccessTokenSilently();
+        setCurrentToken(token);
+      } catch (err) {
+        console.error('Failed to get token:', err);
+      }
+    }
+    setIsAddModalOpen(true);
+  };
+
+  const handleEditLot = async (lot) => {
+    setCurrentLot(lot);
+    // Get fresh token for modal
+    if (isAuthenticated) {
+      try {
+        const token = await getAccessTokenSilently();
+        setCurrentToken(token);
+      } catch (err) {
+        console.error('Failed to get token:', err);
+      }
+    }
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteLot = (lot) => {
+    setCurrentLot(lot);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCreateLot = async (lotData) => {
+    setIsSubmitting(true);
+    setError('');
+    try {
+      const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+      const token = isAuthenticated ? await getAccessTokenSilently() : null;
+
+      await createLot({
+        projectIdentifier: resolved,
+        lotData,
+        token
+      });
+
+      // Refresh lots list
+      const updatedLots = await fetchLots({ projectIdentifier: resolved, token });
+      setLots(updatedLots);
+      setIsAddModalOpen(false);
+    } catch (err) {
+      alert('Error creating lot: ' + (err.message || 'Unknown error'));
+      setError(err.message || 'Failed to create lot');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdateLot = async (lotData) => {
+    if (!currentLot) return;
+
+    setIsSubmitting(true);
+    setError('');
+    try {
+      const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+      const token = isAuthenticated ? await getAccessTokenSilently() : null;
+
+      await updateLot({
+        projectIdentifier: resolved,
+        lotId: currentLot.lotId,
+        lotData,
+        token
+      });
+
+      // Refresh lots list
+      const updatedLots = await fetchLots({ projectIdentifier: resolved, token });
+      setLots(updatedLots);
+      setIsEditModalOpen(false);
+      setCurrentLot(null);
+    } catch (err) {
+      alert('Error updating lot: ' + (err.message || 'Unknown error'));
+      setError(err.message || 'Failed to update lot');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!currentLot) return;
+
+    setIsSubmitting(true);
+    setError('');
+    try {
+      const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+      const token = isAuthenticated ? await getAccessTokenSilently() : null;
+
+      await deleteLot({
+        projectIdentifier: resolved,
+        lotId: currentLot.lotId,
+        token
+      });
+
+      // Refresh lots list
+      const updatedLots = await fetchLots({ projectIdentifier: resolved, token });
+      setLots(updatedLots);
+      setIsDeleteModalOpen(false);
+      setCurrentLot(null);
+    } catch (err) {
+      setError(err.message || 'Failed to delete lot');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCloseModals = () => {
+    if (!isSubmitting) {
+      setIsAddModalOpen(false);
+      setIsEditModalOpen(false);
+      setIsDeleteModalOpen(false);
+      setCurrentLot(null);
+    }
+  };
 
   // Filtering and Sorting Logic
   useEffect(() => {
@@ -127,7 +267,19 @@ const LotsPage = () => {
     <div className="lots-page">
       <div className="lots-content">
         <div className="lots-header-section">
-          <h1>{projectName ? `${projectName}'s Lots` : 'Project Lots'}</h1>
+          <div className="header-content">
+            <h1>{projectName ? `${projectName}'s Lots` : 'Project Lots'}</h1>
+            {isOwner && (
+              <button
+                className="add-lot-btn"
+                onClick={handleAddLot}
+                disabled={loading}
+              >
+                <FiPlus size={18} />
+                Add Lot
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="toolbar-section">
@@ -176,10 +328,52 @@ const LotsPage = () => {
           {error ? (
             <div className="no-results">{error}</div>
           ) : (
-            <LotList lots={filteredLots} isOwner={isOwner} />
+            <LotList
+              lots={filteredLots}
+              isOwner={isOwner}
+              onEdit={isOwner ? handleEditLot : undefined}
+              onDelete={isOwner ? handleDeleteLot : undefined}
+            />
           )}
         </div>
       </div>
+
+      {/* Modals */}
+      {isOwner && (
+        <>
+          <LotFormModal
+            isOpen={isAddModalOpen}
+            onClose={handleCloseModals}
+            onSubmit={handleCreateLot}
+            token={currentToken}
+            isSubmitting={isSubmitting}
+            title="Add New Lot"
+          />
+
+          <LotFormModal
+            isOpen={isEditModalOpen}
+            onClose={handleCloseModals}
+            onSubmit={handleUpdateLot}
+            lot={currentLot}
+            token={currentToken}
+            isSubmitting={isSubmitting}
+            title="Edit Lot"
+          />
+
+          <ConfirmationModal
+            isOpen={isDeleteModalOpen}
+            onClose={handleCloseModals}
+            onConfirm={handleConfirmDelete}
+            title="Delete Lot"
+            message={`Are you sure you want to delete "${currentLot?.lotNumber}"? This action cannot be undone.`}
+            confirmText="Delete"
+            cancelText="Cancel"
+            isDestructive={true}
+            isSubmitting={isSubmitting}
+          />
+        </>
+      )}
+
       <Footer />
     </div>
   );

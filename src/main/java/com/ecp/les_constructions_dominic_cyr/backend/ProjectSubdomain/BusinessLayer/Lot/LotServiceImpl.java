@@ -3,22 +3,32 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
+@Transactional(readOnly = true)
 public class LotServiceImpl implements LotService{
     private final LotRepository lotRepository;
-
-    public LotServiceImpl(LotRepository lotRepository) {
-        this.lotRepository = lotRepository;
-    }
+    private final UsersRepository usersRepository;
+    private final ProjectRepository projectRepository;
 
     @Override
     public List<LotResponseModel> getAllLots() {
@@ -46,6 +56,7 @@ public class LotServiceImpl implements LotService{
     }
 
     @Override
+    @Transactional
     public LotResponseModel addLot(LotRequestModel lotRequestModel) {
         validateLotRequest(lotRequestModel);
 
@@ -59,11 +70,50 @@ public class LotServiceImpl implements LotService{
                 lotRequestModel.getLotStatus()
         );
 
+        // Handle customer assignment
+        if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
+            Users customer = getCustomerAndValidateRole(lotRequestModel.getAssignedCustomerId());
+            lot.setAssignedCustomer(customer);
+        }
+
         Lot savedLot = lotRepository.save(lot);
         return mapToResponse(savedLot);
     }
 
     @Override
+    @Transactional
+    public LotResponseModel addLotToProject(String projectIdentifier, LotRequestModel lotRequestModel) {
+        // Find the project
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+
+        validateLotRequest(lotRequestModel);
+
+        Lot lot = new Lot(
+                new LotIdentifier(),
+                lotRequestModel.getLotNumber(),
+                lotRequestModel.getCivicAddress(),
+                lotRequestModel.getPrice(),
+                lotRequestModel.getDimensionsSquareFeet(),
+                lotRequestModel.getDimensionsSquareMeters(),
+                lotRequestModel.getLotStatus()
+        );
+
+        // Set the project
+        lot.setProject(project);
+
+        // Handle customer assignment
+        if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
+            Users customer = getCustomerAndValidateRole(lotRequestModel.getAssignedCustomerId());
+            lot.setAssignedCustomer(customer);
+        }
+
+        Lot savedLot = lotRepository.save(lot);
+        return mapToResponse(savedLot);
+    }
+
+    @Override
+    @Transactional
     public LotResponseModel updateLot(LotRequestModel lotRequestModel, String lotId) {
         Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotId);
         if(foundLot == null){
@@ -77,17 +127,43 @@ public class LotServiceImpl implements LotService{
         foundLot.setDimensionsSquareFeet(lotRequestModel.getDimensionsSquareFeet());
         foundLot.setDimensionsSquareMeters(lotRequestModel.getDimensionsSquareMeters());
         foundLot.setLotStatus(lotRequestModel.getLotStatus());
+
+        // Handle customer assignment update
+        if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
+            Users customer = getCustomerAndValidateRole(lotRequestModel.getAssignedCustomerId());
+            foundLot.setAssignedCustomer(customer);
+        } else {
+            foundLot.setAssignedCustomer(null); // Allow unassigning
+        }
+
         Lot updatedLot = lotRepository.save(foundLot);
         return mapToResponse(updatedLot);
     }
 
     @Override
+    @Transactional
     public void deleteLot(String lotId) {
         Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotId);
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
         lotRepository.delete(foundLot);
+    }
+
+    private Users getCustomerAndValidateRole(String customerId) {
+        try {
+            UUID customerUuid = UUID.fromString(customerId);
+            Users customer = usersRepository.findByUserIdentifier_UserId(customerUuid)
+                    .orElseThrow(() -> new NotFoundException("Customer not found with ID: " + customerId));
+
+            if (customer.getUserRole() != UserRole.CUSTOMER) {
+                throw new InvalidInputException("User must have CUSTOMER role to be assigned to a lot");
+            }
+
+            return customer;
+        } catch (IllegalArgumentException e) {
+            throw new InvalidInputException("Invalid customer ID format: " + customerId);
+        }
     }
 
     private LotResponseModel mapToResponse(Lot lot) {
@@ -99,6 +175,13 @@ public class LotServiceImpl implements LotService{
         dto.setDimensionsSquareFeet(lot.getDimensionsSquareFeet());
         dto.setDimensionsSquareMeters(lot.getDimensionsSquareMeters());
         dto.setLotStatus(lot.getLotStatus());
+
+        // Map assigned customer
+        if (lot.getAssignedCustomer() != null) {
+            dto.setAssignedCustomerId(lot.getAssignedCustomer().getUserIdentifier().getUserId().toString());
+            dto.setAssignedCustomerName(lot.getAssignedCustomer().getFirstName() + " " + lot.getAssignedCustomer().getLastName());
+        }
+
         return dto;
     }
 
@@ -117,8 +200,9 @@ public class LotServiceImpl implements LotService{
         if (lotRequestModel.getCivicAddress() == null || lotRequestModel.getCivicAddress().isBlank()) {
             throw new InvalidInputException("Civic address must not be blank");
         }
-        if (lotRequestModel.getPrice() == null || lotRequestModel.getPrice() <= 0) {
-            throw new InvalidInputException("Price must be positive");
+        // Price is optional - only validate if provided
+        if (lotRequestModel.getPrice() != null && lotRequestModel.getPrice() < 0) {
+            throw new InvalidInputException("Price cannot be negative");
         }
         if (lotRequestModel.getDimensionsSquareFeet() == null || lotRequestModel.getDimensionsSquareFeet().isBlank()) {
             throw new InvalidInputException("Dimensions in square feet must not be blank");

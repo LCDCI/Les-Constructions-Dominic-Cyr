@@ -70,3 +70,109 @@
   background-color: #fef9c3;
   color: #854d0e;
 }
+
+.status-pill.reserved {
+  background-color: #e0e7ff;
+  color: #3730a3;
+}
+
+/* Customer column styles */
+.customer-cell {
+  padding: 12px 15px !important;
+}
+
+.customer-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-name {
+  font-weight: 500;
+  color: #334155;
+  font-size: 0.875rem;
+}
+
+.no-customer {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+/* Action buttons styles */
+.actions-cell {
+  text-align: center;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.fixed-table .action-btn {
+  padding: 8px !important;
+  border: none !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: auto !important;
+  font-size: inherit !important;
+  font-weight: normal !important;
+  text-align: center !important;
+}
+
+/* Remove the circle pseudo-element from users.css */
+.fixed-table .action-btn::after {
+  display: none !important;
+  content: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  border: none !important;
+}
+
+.fixed-table .action-btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.fixed-table .action-btn:focus-visible {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px;
+}
+
+.fixed-table .action-btn svg {
+  display: block;
+}
+
+.fixed-table .edit-btn {
+  color: #0ea5e9 !important;
+  background-color: transparent !important;
+  border: 1px solid #e0f2fe !important;
+}
+
+.fixed-table .edit-btn:hover {
+  background-color: #f0f9ff !important;
+  color: #0284c7 !important;
+  transform: none !important;
+}
+
+.fixed-table .delete-btn {
+  color: white !important;
+  background-color: #ef4444 !important;
+  border: none !important;
+}
+
+.fixed-table .delete-btn:hover {
+  background-color: #dc2626 !important;
+  transform: none !important;
+}
+

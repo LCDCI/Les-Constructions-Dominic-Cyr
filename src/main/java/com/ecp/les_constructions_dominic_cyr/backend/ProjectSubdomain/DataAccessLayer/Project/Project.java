@@ -14,6 +14,7 @@ import java.util.List;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "project_id")
     private Long projectId;
 
     @Column(name = "project_identifier", nullable = false, unique = true) // Add name here
