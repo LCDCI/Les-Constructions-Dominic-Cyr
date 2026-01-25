@@ -176,8 +176,6 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     lotStatus: 'AVAILABLE',
     assignedCustomerId: '',
   });
-  const [lotFormImageFile, setLotFormImageFile] = useState(null);
-  const [lotFormImagePreviewUrl, setLotFormImagePreviewUrl] = useState(null);
   const [showLotCreateForm, setShowLotCreateForm] = useState(false);
 
   // Language is auto-switched, no manual change needed
@@ -882,10 +880,6 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
             // Pass lot form state from parent to persist across language switches
             lotFormData={lotFormData}
             onLotFormDataChange={setLotFormData}
-            lotFormImageFile={lotFormImageFile}
-            onLotFormImageFileChange={setLotFormImageFile}
-            lotFormImagePreviewUrl={lotFormImagePreviewUrl}
-            onLotFormImagePreviewUrlChange={setLotFormImagePreviewUrl}
             showLotCreateForm={showLotCreateForm}
             onShowLotCreateFormChange={setShowLotCreateForm}
           />

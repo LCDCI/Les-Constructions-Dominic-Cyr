@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { fetchLots, createLot } from '../../lots/api/lots';
-import { uploadFile } from '../../files/api/filesApi';
 import { fetchActiveCustomers } from '../../users/api/usersApi';
 import PropTypes from 'prop-types';
 import '../../../styles/Project/create-project.css';
@@ -79,10 +78,6 @@ const LotSelector = ({
   // Props to persist lot form state across language switches
   lotFormData,
   onLotFormDataChange,
-  lotFormImageFile,
-  onLotFormImageFileChange,
-  lotFormImagePreviewUrl,
-  onLotFormImagePreviewUrlChange,
   showLotCreateForm,
   onShowLotCreateFormChange,
 }) => {
@@ -108,24 +103,11 @@ const LotSelector = ({
     lotStatus: 'AVAILABLE',
     assignedCustomerId: '',
   });
-  const [localLotImageFile, setLocalLotImageFile] = useState(null);
-  const [localLotImagePreviewUrl, setLocalLotImagePreviewUrl] = useState(null);
   const [localShowCreateForm, setLocalShowCreateForm] = useState(false);
 
   // Use props if provided, otherwise use local state
   const newLotData = lotFormData !== undefined ? lotFormData : localLotFormData;
   const setNewLotData = onLotFormDataChange || setLocalLotFormData;
-
-  const newLotImageFile =
-    lotFormImageFile !== undefined ? lotFormImageFile : localLotImageFile;
-  const setNewLotImageFile = onLotFormImageFileChange || setLocalLotImageFile;
-
-  const newLotImagePreviewUrl =
-    lotFormImagePreviewUrl !== undefined
-      ? lotFormImagePreviewUrl
-      : localLotImagePreviewUrl;
-  const setNewLotImagePreviewUrl =
-    onLotFormImagePreviewUrlChange || setLocalLotImagePreviewUrl;
 
   const showCreateForm =
     showLotCreateForm !== undefined ? showLotCreateForm : localShowCreateForm;
@@ -172,71 +154,13 @@ const LotSelector = ({
     }
   };
 
-  const handleLotImageChange = file => {
-    if (!file) {
-      // Revoke object URL before clearing
-      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(newLotImagePreviewUrl);
-      }
-      setNewLotImageFile(null);
-      setNewLotImagePreviewUrl(null);
-      return;
-    }
-    const validTypes = ['image/png', 'image/jpeg', 'image/webp'];
-    if (!validTypes.includes(file.type)) {
-      setCreateError(t('invalidImageType') || 'Invalid image type');
-      setNewLotImageFile(null);
-      setNewLotImagePreviewUrl(null);
-      return;
-    }
-    // Additional validation: check file is a real image by loading with FileReader and Image
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new window.Image();
-      img.onload = () => {
-        setCreateError(null);
-        // Revoke previous object URL if it exists
-        if (
-          newLotImagePreviewUrl &&
-          newLotImagePreviewUrl.startsWith('blob:')
-        ) {
-          URL.revokeObjectURL(newLotImagePreviewUrl);
-        }
-        setNewLotImageFile(file);
-        const url = URL.createObjectURL(file);
-        setNewLotImagePreviewUrl(url);
-      };
-      img.onerror = () => {
-        setCreateError('Uploaded file is not a valid image.');
-        // Revoke object URL if it was created
-        if (
-          newLotImagePreviewUrl &&
-          newLotImagePreviewUrl.startsWith('blob:')
-        ) {
-          URL.revokeObjectURL(newLotImagePreviewUrl);
-        }
-        setNewLotImageFile(null);
-        setNewLotImagePreviewUrl(null);
-      };
-      img.src = e.target.result;
-    };
-    reader.onerror = () => {
-      setCreateError('Failed to read image file.');
-      // Revoke object URL if it was created
-      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(newLotImagePreviewUrl);
-      }
-      setNewLotImageFile(null);
-      setNewLotImagePreviewUrl(null);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const filteredLots = availableLots.filter(
-    lot =>
-      lot.civicAddress?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lot.lotId?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLots = availableLots.filter(lot => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      lot.civicAddress?.toLowerCase().includes(searchTermLower) ||
+      lot.lotId?.toLowerCase().includes(searchTermLower)
+    );
+  });
 
   const handleToggleLot = lotId => {
     if (!lotId) {
@@ -330,10 +254,6 @@ const LotSelector = ({
       }
 
       // Reset form and clear search so new lot is visible
-      // Revoke object URL before clearing
-      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(newLotImagePreviewUrl);
-      }
       setNewLotData({
         lotNumber: '',
         civicAddress: '',
@@ -343,8 +263,6 @@ const LotSelector = ({
         lotStatus: 'AVAILABLE',
         assignedCustomerId: '',
       });
-      setNewLotImageFile(null);
-      setNewLotImagePreviewUrl(null);
       setShowCreateForm(false);
       setCreateError(null);
       setSearchTerm(''); // Clear search so newly created lot is visible
@@ -509,50 +427,7 @@ const LotSelector = ({
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="newLotPhoto">{t('photo') || 'Photo'}</label>
-            <input
-              type="file"
-              id="newLotPhoto"
-              accept="image/png, image/jpeg, image/webp"
-              onChange={e => handleLotImageChange(e.target.files?.[0])}
-            />
-          </div>
-
-          {newLotImagePreviewUrl && (
-            <div className="form-group">
-              <img
-                src={newLotImagePreviewUrl}
-                alt="Lot preview"
-                style={{
-                  width: '100%',
-                  maxWidth: '400px',
-                  borderRadius: '6px',
-                  border: '1px solid #e0e0e0',
-                }}
-              />
-              <div style={{ marginTop: '0.5rem' }}>
-                <button
-                  type="button"
-                  className="btn-cancel"
-                  onClick={() => {
-                    // Revoke object URL before clearing
-                    if (
-                      newLotImagePreviewUrl &&
-                      newLotImagePreviewUrl.startsWith('blob:')
-                    ) {
-                      URL.revokeObjectURL(newLotImagePreviewUrl);
-                    }
-                    setNewLotImageFile(null);
-                    setNewLotImagePreviewUrl(null);
-                  }}
-                  disabled={isCreating}
-                >
-                  {t('removeImage') || 'Remove Image'}
-                </button>
-              </div>
-            </div>
-          )}
+          {/* Image upload removed - not supported by backend Lot entity */}
 
           {createError && (
             <div
@@ -575,13 +450,6 @@ const LotSelector = ({
               type="button"
               className="btn-cancel"
               onClick={() => {
-                // Revoke object URL before clearing
-                if (
-                  newLotImagePreviewUrl &&
-                  newLotImagePreviewUrl.startsWith('blob:')
-                ) {
-                  URL.revokeObjectURL(newLotImagePreviewUrl);
-                }
                 setShowCreateForm(false);
                 setCreateError(null);
                 setNewLotData({
@@ -593,8 +461,6 @@ const LotSelector = ({
                   lotStatus: 'AVAILABLE',
                   assignedCustomerId: '',
                 });
-                setNewLotImageFile(null);
-                setNewLotImagePreviewUrl(null);
               }}
               disabled={isCreating}
             >
@@ -701,10 +567,6 @@ LotSelector.propTypes = {
   // Optional props for persisting lot form state across language switches
   lotFormData: PropTypes.object,
   onLotFormDataChange: PropTypes.func,
-  lotFormImageFile: PropTypes.object,
-  onLotFormImageFileChange: PropTypes.func,
-  lotFormImagePreviewUrl: PropTypes.string,
-  onLotFormImagePreviewUrlChange: PropTypes.func,
   showLotCreateForm: PropTypes.bool,
   onShowLotCreateFormChange: PropTypes.func,
 };
