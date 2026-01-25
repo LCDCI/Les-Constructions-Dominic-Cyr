@@ -168,11 +168,13 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
   // Lot creation form state - lifted to parent to persist across language switches
   const [lotFormData, setLotFormData] = useState({
-    location: '',
-    dimensions: '',
+    lotNumber: '',
+    civicAddress: '',
+    dimensionsSquareFeet: '',
+    dimensionsSquareMeters: '',
     price: '',
     lotStatus: 'AVAILABLE',
-    imageIdentifier: null,
+    assignedCustomerId: '',
   });
   const [lotFormImageFile, setLotFormImageFile] = useState(null);
   const [lotFormImagePreviewUrl, setLotFormImagePreviewUrl] = useState(null);
