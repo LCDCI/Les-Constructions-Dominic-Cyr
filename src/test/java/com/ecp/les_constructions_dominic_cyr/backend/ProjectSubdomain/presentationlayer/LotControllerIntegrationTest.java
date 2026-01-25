@@ -5,6 +5,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotRequestModel;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.*;
 import com.ecp.les_constructions_dominic_cyr.backend.config.TestcontainersPostgresConfig;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +45,9 @@ class LotControllerIntegrationTest {
     private ProjectRepository projectRepository;
 
     @Autowired
+    private UsersRepository usersRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @MockitoBean
@@ -54,12 +58,14 @@ class LotControllerIntegrationTest {
 
     private final SimpleGrantedAuthority ADMIN_ROLE = new SimpleGrantedAuthority("ROLE_OWNER");
     private Project testProject;
+    private Users testCustomer;
     private String BASE_URI;
 
     @BeforeEach
     void setup() {
         lotRepository.deleteAll();
         projectRepository.deleteAll();
+        // Clean up users but preserve any that might be needed for auth
         
         // Create a test project
         testProject = new Project();
@@ -73,6 +79,16 @@ class LotControllerIntegrationTest {
         testProject.setBuyerColor("#FFFFFF");
         testProject.setImageIdentifier("test-image-id");
         testProject = projectRepository.save(testProject);
+        
+        // Create a test customer
+        testCustomer = new Users();
+        testCustomer.setUserIdentifier(UserIdentifier.newId());
+        testCustomer.setFirstName("Test");
+        testCustomer.setLastName("Customer");
+        testCustomer.setPrimaryEmail("test.customer@example.com");
+        testCustomer.setUserRole(UserRole.CUSTOMER);
+        testCustomer.setUserStatus(UserStatus.ACTIVE);
+        testCustomer = usersRepository.save(testCustomer);
         
         BASE_URI = "/api/v1/projects/" + testProject.getProjectIdentifier() + "/lots";
     }
@@ -119,5 +135,57 @@ class LotControllerIntegrationTest {
                 .andExpect(status().isNoContent());
 
         assertNull(lotRepository.findByLotIdentifier_LotId(idVal));
+    }
+
+    @Test
+    void whenCreateLotWithValidRequest_thenReturnCreated() throws Exception {
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-INT-CREATE-001");
+        req.setCivicAddress("123 Test Street");
+        req.setPrice(250000.0f);
+        req.setDimensionsSquareFeet("5000");
+        req.setDimensionsSquareMeters("465");
+        req.setLotStatus(LotStatus.AVAILABLE);
+
+        String requestJson = objectMapper.writeValueAsString(req);
+
+        mockMvc.perform(post(BASE_URI)
+                        .with(jwt().authorities(ADMIN_ROLE))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.lotNumber").value("Lot-INT-CREATE-001"))
+                .andExpect(jsonPath("$.civicAddress").value("123 Test Street"))
+                .andExpect(jsonPath("$.price").value(250000.0))
+                .andExpect(jsonPath("$.dimensionsSquareFeet").value("5000"))
+                .andExpect(jsonPath("$.dimensionsSquareMeters").value("465"))
+                .andExpect(jsonPath("$.lotStatus").value("AVAILABLE"))
+                .andExpect(jsonPath("$.lotId").exists());
+    }
+
+    @Test
+    void whenCreateLotWithCustomerAssignment_thenReturnCreatedWithCustomer() throws Exception {
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-INT-CREATE-002");
+        req.setCivicAddress("456 Customer Avenue");
+        req.setPrice(300000.0f);
+        req.setDimensionsSquareFeet("6000");
+        req.setDimensionsSquareMeters("558");
+        req.setLotStatus(LotStatus.SOLD);
+        req.setAssignedCustomerId(testCustomer.getUserIdentifier().getUserId().toString());
+
+        String requestJson = objectMapper.writeValueAsString(req);
+
+        mockMvc.perform(post(BASE_URI)
+                        .with(jwt().authorities(ADMIN_ROLE))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.lotNumber").value("Lot-INT-CREATE-002"))
+                .andExpect(jsonPath("$.civicAddress").value("456 Customer Avenue"))
+                .andExpect(jsonPath("$.price").value(300000.0))
+                .andExpect(jsonPath("$.lotStatus").value("SOLD"))
+                .andExpect(jsonPath("$.assignedCustomerId").value(testCustomer.getUserIdentifier().getUserId().toString()))
+                .andExpect(jsonPath("$.assignedCustomerName").value("Test Customer"));
     }
 }
