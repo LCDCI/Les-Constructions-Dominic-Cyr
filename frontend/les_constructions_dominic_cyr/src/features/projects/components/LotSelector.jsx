@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { fetchLots, createLot } from '../../lots/api/lots';
-import { uploadFile } from '../../files/api/filesApi';
+import { fetchActiveCustomers } from '../../users/api/usersApi';
 import PropTypes from 'prop-types';
 import '../../../styles/Project/create-project.css';
 
@@ -13,13 +14,19 @@ const lotTranslations = {
     photo: 'Photo',
     cancelCreate: 'Cancel',
     createLotTitle: 'Create New Lot',
-    location: 'Location',
-    locationPlaceholder: 'Enter lot location',
-    dimensions: 'Dimensions',
-    dimensionsPlaceholder: 'e.g., 50x100ft',
+    lotNumber: 'Lot Number',
+    lotNumberPlaceholder: 'e.g., Lot-001',
+    civicAddress: 'Civic Address',
+    civicAddressPlaceholder: 'Enter civic address',
+    dimensionsSquareFeet: 'Dimensions (sq ft)',
+    dimensionsSquareFeetPlaceholder: 'e.g., 5000',
+    dimensionsSquareMeters: 'Dimensions (sq m)',
+    dimensionsSquareMetersPlaceholder: 'e.g., 465',
     price: 'Price',
     pricePlaceholder: 'Enter price',
     status: 'Status',
+    assignedCustomer: 'Assigned Customer',
+    assignedCustomerPlaceholder: 'Select a customer (optional)',
     createButton: 'Create Lot',
     creating: 'Creating...',
     cancel: 'Cancel',
@@ -28,6 +35,7 @@ const lotTranslations = {
     noLotsAvailable: 'No lots available',
     removeImage: 'Remove Image',
     invalidImageType: 'Invalid image type. Allowed: PNG, JPG, JPEG, WEBP',
+    loadingCustomers: 'Loading customers...',
   },
   fr: {
     searchPlaceholder: 'Rechercher des lots par emplacement...',
@@ -36,13 +44,19 @@ const lotTranslations = {
     photo: 'Photo',
     cancelCreate: 'Annuler',
     createLotTitle: 'Créer un nouveau lot',
-    location: 'Emplacement',
-    locationPlaceholder: "Entrez l'emplacement du lot",
-    dimensions: 'Dimensions',
-    dimensionsPlaceholder: 'ex: 50x100pi',
+    lotNumber: 'Numéro de lot',
+    lotNumberPlaceholder: 'ex: Lot-001',
+    civicAddress: 'Adresse civique',
+    civicAddressPlaceholder: "Entrez l'adresse civique",
+    dimensionsSquareFeet: 'Dimensions (pi²)',
+    dimensionsSquareFeetPlaceholder: 'ex: 5000',
+    dimensionsSquareMeters: 'Dimensions (m²)',
+    dimensionsSquareMetersPlaceholder: 'ex: 465',
     price: 'Prix',
     pricePlaceholder: 'Entrez le prix',
     status: 'Statut',
+    assignedCustomer: 'Client assigné',
+    assignedCustomerPlaceholder: 'Sélectionner un client (optionnel)',
     createButton: 'Créer le lot',
     creating: 'Création en cours...',
     cancel: 'Annuler',
@@ -51,6 +65,7 @@ const lotTranslations = {
     noLotsAvailable: 'Aucun lot disponible',
     removeImage: "Supprimer l'image",
     invalidImageType: "Type d'image invalide. Autorisés: PNG, JPG, JPEG, WEBP",
+    loadingCustomers: 'Chargement des clients...',
   },
 };
 
@@ -63,47 +78,36 @@ const LotSelector = ({
   // Props to persist lot form state across language switches
   lotFormData,
   onLotFormDataChange,
-  lotFormImageFile,
-  onLotFormImageFileChange,
-  lotFormImagePreviewUrl,
-  onLotFormImagePreviewUrlChange,
   showLotCreateForm,
   onShowLotCreateFormChange,
 }) => {
   const t = key => lotTranslations[currentLanguage]?.[key] || key;
+  const { user, getAccessTokenSilently } = useAuth0();
   const [availableLots, setAvailableLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState(null);
+  const [customers, setCustomers] = useState([]);
+  const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   // Local state fallback (for backward compatibility when props not provided)
   const [localLotFormData, setLocalLotFormData] = useState({
-    location: '',
-    dimensions: '',
+    lotNumber: '',
+    civicAddress: '',
+    dimensionsSquareFeet: '',
+    dimensionsSquareMeters: '',
     price: '',
     lotStatus: 'AVAILABLE',
-    imageIdentifier: null,
+    assignedCustomerId: '',
   });
-  const [localLotImageFile, setLocalLotImageFile] = useState(null);
-  const [localLotImagePreviewUrl, setLocalLotImagePreviewUrl] = useState(null);
   const [localShowCreateForm, setLocalShowCreateForm] = useState(false);
 
   // Use props if provided, otherwise use local state
   const newLotData = lotFormData !== undefined ? lotFormData : localLotFormData;
   const setNewLotData = onLotFormDataChange || setLocalLotFormData;
-
-  const newLotImageFile =
-    lotFormImageFile !== undefined ? lotFormImageFile : localLotImageFile;
-  const setNewLotImageFile = onLotFormImageFileChange || setLocalLotImageFile;
-
-  const newLotImagePreviewUrl =
-    lotFormImagePreviewUrl !== undefined
-      ? lotFormImagePreviewUrl
-      : localLotImagePreviewUrl;
-  const setNewLotImagePreviewUrl =
-    onLotFormImagePreviewUrlChange || setLocalLotImagePreviewUrl;
 
   const showCreateForm =
     showLotCreateForm !== undefined ? showLotCreateForm : localShowCreateForm;
@@ -111,7 +115,30 @@ const LotSelector = ({
 
   useEffect(() => {
     loadLots();
+    loadCustomersAndRole();
   }, []);
+
+  const loadCustomersAndRole = async () => {
+    try {
+      // Get user role from Auth0 user object
+      const roles = user?.['https://app.lcdci.ca/roles'] || [];
+      const isOwner = roles.includes('OWNER');
+      setUserRole(isOwner ? 'OWNER' : null);
+
+      // Only load customers if user is OWNER
+      if (isOwner) {
+        setIsLoadingCustomers(true);
+        const token = await getAccessTokenSilently();
+        const customerList = await fetchActiveCustomers(token);
+        setCustomers(customerList || []);
+      }
+    } catch (err) {
+      console.error('Failed to load customers:', err);
+      // Don't block lot creation if customer loading fails
+    } finally {
+      setIsLoadingCustomers(false);
+    }
+  };
 
   const loadLots = async () => {
     try {
@@ -127,71 +154,13 @@ const LotSelector = ({
     }
   };
 
-  const handleLotImageChange = file => {
-    if (!file) {
-      // Revoke object URL before clearing
-      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(newLotImagePreviewUrl);
-      }
-      setNewLotImageFile(null);
-      setNewLotImagePreviewUrl(null);
-      return;
-    }
-    const validTypes = ['image/png', 'image/jpeg', 'image/webp'];
-    if (!validTypes.includes(file.type)) {
-      setCreateError(t('invalidImageType') || 'Invalid image type');
-      setNewLotImageFile(null);
-      setNewLotImagePreviewUrl(null);
-      return;
-    }
-    // Additional validation: check file is a real image by loading with FileReader and Image
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new window.Image();
-      img.onload = () => {
-        setCreateError(null);
-        // Revoke previous object URL if it exists
-        if (
-          newLotImagePreviewUrl &&
-          newLotImagePreviewUrl.startsWith('blob:')
-        ) {
-          URL.revokeObjectURL(newLotImagePreviewUrl);
-        }
-        setNewLotImageFile(file);
-        const url = URL.createObjectURL(file);
-        setNewLotImagePreviewUrl(url);
-      };
-      img.onerror = () => {
-        setCreateError('Uploaded file is not a valid image.');
-        // Revoke object URL if it was created
-        if (
-          newLotImagePreviewUrl &&
-          newLotImagePreviewUrl.startsWith('blob:')
-        ) {
-          URL.revokeObjectURL(newLotImagePreviewUrl);
-        }
-        setNewLotImageFile(null);
-        setNewLotImagePreviewUrl(null);
-      };
-      img.src = e.target.result;
-    };
-    reader.onerror = () => {
-      setCreateError('Failed to read image file.');
-      // Revoke object URL if it was created
-      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(newLotImagePreviewUrl);
-      }
-      setNewLotImageFile(null);
-      setNewLotImagePreviewUrl(null);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const filteredLots = availableLots.filter(
-    lot =>
-      lot.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      lot.lotId?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLots = availableLots.filter(lot => {
+    const searchTermLower = searchTerm.toLowerCase();
+    return (
+      lot.civicAddress?.toLowerCase().includes(searchTermLower) ||
+      lot.lotId?.toLowerCase().includes(searchTermLower)
+    );
+  });
 
   const handleToggleLot = lotId => {
     if (!lotId) {
@@ -222,12 +191,20 @@ const LotSelector = ({
     setCreateError(null);
 
     // Validate
-    if (!newLotData.location.trim()) {
-      setCreateError(t('location') + ' is required');
+    if (!newLotData.lotNumber.trim()) {
+      setCreateError(t('lotNumber') + ' is required');
       return;
     }
-    if (!newLotData.dimensions.trim()) {
-      setCreateError(t('dimensions') + ' is required');
+    if (!newLotData.civicAddress.trim()) {
+      setCreateError(t('civicAddress') + ' is required');
+      return;
+    }
+    if (!newLotData.dimensionsSquareFeet.trim()) {
+      setCreateError(t('dimensionsSquareFeet') + ' is required');
+      return;
+    }
+    if (!newLotData.dimensionsSquareMeters.trim()) {
+      setCreateError(t('dimensionsSquareMeters') + ' is required');
       return;
     }
     if (!newLotData.price || parseFloat(newLotData.price) <= 0) {
@@ -237,23 +214,14 @@ const LotSelector = ({
 
     setIsCreating(true);
     try {
-      // Upload image first if provided to obtain imageIdentifier
-      let imageIdentifier = null;
-      if (newLotImageFile) {
-        const formData = new FormData();
-        formData.append('file', newLotImageFile);
-        formData.append('category', 'PHOTO');
-        // No projectId for lots; stored as global photo
-        const uploadResp = await uploadFile(formData);
-        imageIdentifier = uploadResp.fileId || uploadResp.id || null;
-      }
-
       const lotData = {
-        location: newLotData.location.trim(),
-        dimensions: newLotData.dimensions.trim(),
+        lotNumber: newLotData.lotNumber.trim(),
+        civicAddress: newLotData.civicAddress.trim(),
+        dimensionsSquareFeet: newLotData.dimensionsSquareFeet.trim(),
+        dimensionsSquareMeters: newLotData.dimensionsSquareMeters.trim(),
         price: parseFloat(newLotData.price),
         lotStatus: newLotData.lotStatus,
-        imageIdentifier: imageIdentifier || newLotData.imageIdentifier || null,
+        assignedCustomerId: newLotData.assignedCustomerId || null,
       };
 
       const createdLot = await createLot({
@@ -286,19 +254,15 @@ const LotSelector = ({
       }
 
       // Reset form and clear search so new lot is visible
-      // Revoke object URL before clearing
-      if (newLotImagePreviewUrl && newLotImagePreviewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(newLotImagePreviewUrl);
-      }
       setNewLotData({
-        location: '',
-        dimensions: '',
+        lotNumber: '',
+        civicAddress: '',
+        dimensionsSquareFeet: '',
+        dimensionsSquareMeters: '',
         price: '',
         lotStatus: 'AVAILABLE',
-        imageIdentifier: null,
+        assignedCustomerId: '',
       });
-      setNewLotImageFile(null);
-      setNewLotImagePreviewUrl(null);
       setShowCreateForm(false);
       setCreateError(null);
       setSearchTerm(''); // Clear search so newly created lot is visible
@@ -352,29 +316,57 @@ const LotSelector = ({
         <div className="create-lot-form">
           <h3>{t('createLotTitle')}</h3>
           <div className="form-group">
-            <label htmlFor="newLotLocation">{t('location')} *</label>
+            <label htmlFor="newLotNumber">{t('lotNumber')} *</label>
             <input
               type="text"
-              id="newLotLocation"
-              value={newLotData.location}
+              id="newLotNumber"
+              value={newLotData.lotNumber}
               onChange={e =>
-                setNewLotData({ ...newLotData, location: e.target.value })
+                setNewLotData({ ...newLotData, lotNumber: e.target.value })
               }
-              placeholder={t('locationPlaceholder')}
+              placeholder={t('lotNumberPlaceholder')}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="newLotDimensions">{t('dimensions')} *</label>
+            <label htmlFor="newLotCivicAddress">{t('civicAddress')} *</label>
             <input
               type="text"
-              id="newLotDimensions"
-              value={newLotData.dimensions}
+              id="newLotCivicAddress"
+              value={newLotData.civicAddress}
               onChange={e =>
-                setNewLotData({ ...newLotData, dimensions: e.target.value })
+                setNewLotData({ ...newLotData, civicAddress: e.target.value })
               }
-              placeholder={t('dimensionsPlaceholder')}
+              placeholder={t('civicAddressPlaceholder')}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="newLotDimensionsSquareFeet">{t('dimensionsSquareFeet')} *</label>
+            <input
+              type="text"
+              id="newLotDimensionsSquareFeet"
+              value={newLotData.dimensionsSquareFeet}
+              onChange={e =>
+                setNewLotData({ ...newLotData, dimensionsSquareFeet: e.target.value })
+              }
+              placeholder={t('dimensionsSquareFeetPlaceholder')}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="newLotDimensionsSquareMeters">{t('dimensionsSquareMeters')} *</label>
+            <input
+              type="text"
+              id="newLotDimensionsSquareMeters"
+              value={newLotData.dimensionsSquareMeters}
+              onChange={e =>
+                setNewLotData({ ...newLotData, dimensionsSquareMeters: e.target.value })
+              }
+              placeholder={t('dimensionsSquareMetersPlaceholder')}
               required
             />
           </div>
@@ -411,50 +403,31 @@ const LotSelector = ({
             </select>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="newLotPhoto">{t('photo') || 'Photo'}</label>
-            <input
-              type="file"
-              id="newLotPhoto"
-              accept="image/png, image/jpeg, image/webp"
-              onChange={e => handleLotImageChange(e.target.files?.[0])}
-            />
-          </div>
-
-          {newLotImagePreviewUrl && (
+          {userRole === 'OWNER' && (
             <div className="form-group">
-              <img
-                src={newLotImagePreviewUrl}
-                alt="Lot preview"
-                style={{
-                  width: '100%',
-                  maxWidth: '400px',
-                  borderRadius: '6px',
-                  border: '1px solid #e0e0e0',
-                }}
-              />
-              <div style={{ marginTop: '0.5rem' }}>
-                <button
-                  type="button"
-                  className="btn-cancel"
-                  onClick={() => {
-                    // Revoke object URL before clearing
-                    if (
-                      newLotImagePreviewUrl &&
-                      newLotImagePreviewUrl.startsWith('blob:')
-                    ) {
-                      URL.revokeObjectURL(newLotImagePreviewUrl);
-                    }
-                    setNewLotImageFile(null);
-                    setNewLotImagePreviewUrl(null);
-                  }}
-                  disabled={isCreating}
+              <label htmlFor="newLotAssignedCustomer">{t('assignedCustomer')}</label>
+              {isLoadingCustomers ? (
+                <div>{t('loadingCustomers')}</div>
+              ) : (
+                <select
+                  id="newLotAssignedCustomer"
+                  value={newLotData.assignedCustomerId}
+                  onChange={e =>
+                    setNewLotData({ ...newLotData, assignedCustomerId: e.target.value })
+                  }
                 >
-                  {t('removeImage') || 'Remove Image'}
-                </button>
-              </div>
+                  <option value="">{t('assignedCustomerPlaceholder')}</option>
+                  {customers.map(customer => (
+                    <option key={customer.userId} value={customer.userId}>
+                      {customer.firstName} {customer.lastName} ({customer.primaryEmail})
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
           )}
+
+          {/* Image upload removed - not supported by backend Lot entity */}
 
           {createError && (
             <div
@@ -477,24 +450,17 @@ const LotSelector = ({
               type="button"
               className="btn-cancel"
               onClick={() => {
-                // Revoke object URL before clearing
-                if (
-                  newLotImagePreviewUrl &&
-                  newLotImagePreviewUrl.startsWith('blob:')
-                ) {
-                  URL.revokeObjectURL(newLotImagePreviewUrl);
-                }
                 setShowCreateForm(false);
                 setCreateError(null);
                 setNewLotData({
-                  location: '',
-                  dimensions: '',
+                  lotNumber: '',
+                  civicAddress: '',
+                  dimensionsSquareFeet: '',
+                  dimensionsSquareMeters: '',
                   price: '',
                   lotStatus: 'AVAILABLE',
-                  imageIdentifier: null,
+                  assignedCustomerId: '',
                 });
-                setNewLotImageFile(null);
-                setNewLotImagePreviewUrl(null);
               }}
               disabled={isCreating}
             >
@@ -543,10 +509,11 @@ const LotSelector = ({
                 />
                 <div className="lot-item-details">
                   <div className="lot-item-location">
-                    {lot.location || 'Unknown Location'}
+                    {lot.civicAddress || 'Unknown Location'}
                   </div>
                   <div className="lot-item-info">
-                    <span>Dimensions: {lot.dimensions || 'N/A'}</span>
+                    <span>Lot #: {lot.lotNumber || 'N/A'}</span>
+                    <span>Dimensions: {lot.dimensionsSquareFeet || 'N/A'} sq ft / {lot.dimensionsSquareMeters || 'N/A'} sq m</span>
                     {lot.price && (
                       <span>Price: ${lot.price.toLocaleString()}</span>
                     )}
@@ -572,7 +539,7 @@ const LotSelector = ({
               const lot = getSelectedLotDetails(lotId);
               return (
                 <div key={lotId} className="lot-chip">
-                  <span>{lot?.location || lotId}</span>
+                  <span>{lot?.civicAddress || lotId}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveLot(lotId)}
@@ -600,10 +567,6 @@ LotSelector.propTypes = {
   // Optional props for persisting lot form state across language switches
   lotFormData: PropTypes.object,
   onLotFormDataChange: PropTypes.func,
-  lotFormImageFile: PropTypes.object,
-  onLotFormImageFileChange: PropTypes.func,
-  lotFormImagePreviewUrl: PropTypes.string,
-  onLotFormImagePreviewUrlChange: PropTypes.func,
   showLotCreateForm: PropTypes.bool,
   onShowLotCreateFormChange: PropTypes.func,
 };
