@@ -65,7 +65,7 @@ class LotControllerIntegrationTest {
     void setup() {
         lotRepository.deleteAll();
         projectRepository.deleteAll();
-        // Clean up users but preserve any that might be needed for auth
+        // Users repository cleanup is intentionally skipped to preserve any users needed for authentication
         
         // Create a test project
         testProject = new Project();
