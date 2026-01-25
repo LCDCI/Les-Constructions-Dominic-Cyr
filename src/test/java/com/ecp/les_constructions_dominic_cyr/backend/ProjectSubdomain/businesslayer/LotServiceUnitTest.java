@@ -5,9 +5,14 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.*;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -25,8 +32,29 @@ public class LotServiceUnitTest {
     @Mock
     private LotRepository lotRepository;
 
+    @Mock
+    private UsersRepository usersRepository;
+
+    @Mock
+    private ProjectRepository projectRepository;
+
     @InjectMocks
     private LotServiceImpl lotService;
+
+    private Users testCustomer;
+    private String testCustomerId;
+
+    @BeforeEach
+    void setUp() {
+        testCustomerId = UUID.randomUUID().toString();
+        testCustomer = new Users();
+        testCustomer.setUserIdentifier(UserIdentifier.fromString(testCustomerId));
+        testCustomer.setFirstName("John");
+        testCustomer.setLastName("Customer");
+        testCustomer.setPrimaryEmail("john.customer@test.com");
+        testCustomer.setUserRole(UserRole.CUSTOMER);
+        testCustomer.setUserStatus(UserStatus.ACTIVE);
+    }
 
     private Lot buildLotEntity(String lotId, String lotNumber, String civicAddress, float price, String dimsSqFt, String dimsSqM, LotStatus status) {
         var id = new LotIdentifier(lotId);
@@ -87,6 +115,21 @@ public class LotServiceUnitTest {
         verify(lotRepository, times(1)).findByLotIdentifier_LotId(id);
     }
 
+    @Test
+    public void whenGetByIdWithAssignedCustomer_thenReturnDtoWithCustomerInfo() {
+        String id = "found-id-2";
+        var entity = buildLotEntity(id, "Lot-124", "CustomerLoc", 200f, "2000", "185.8", LotStatus.SOLD);
+        entity.setAssignedCustomer(testCustomer);
+        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(entity);
+
+        LotResponseModel resp = lotService.getLotById(id);
+
+        assertNotNull(resp);
+        assertEquals(id, resp.getLotId());
+        assertEquals(testCustomerId, resp.getAssignedCustomerId());
+        assertEquals("John Customer", resp.getAssignedCustomerName());
+    }
+
     // ==== CREATE ====
     @Test
     public void whenValidCreate_thenReturnCreatedDto() {
@@ -116,6 +159,56 @@ public class LotServiceUnitTest {
         assertEquals("CreateLoc", resp.getCivicAddress());
         assertNotNull(resp.getLotId());
         verify(lotRepository, times(1)).save(any(Lot.class));
+    }
+
+    @Test
+    public void whenCreateWithCustomer_thenReturnCreatedDtoWithCustomer() {
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-457");
+        req.setCivicAddress("CustomerCreateLoc");
+        req.setPrice(150f);
+        req.setDimensionsSquareFeet("1500");
+        req.setDimensionsSquareMeters("139.4");
+        req.setLotStatus(LotStatus.SOLD);
+        req.setAssignedCustomerId(testCustomerId);
+
+        when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(testCustomerId)))
+                .thenReturn(Optional.of(testCustomer));
+        when(lotRepository.save(any(Lot.class))).thenAnswer(invocation -> {
+            Lot arg = invocation.getArgument(0);
+            if (arg.getLotIdentifier() == null) {
+                arg.setLotIdentifier(new LotIdentifier("gen-id-2"));
+            }
+            return arg;
+        });
+
+        LotResponseModel resp = lotService.addLot(req);
+
+        assertNotNull(resp);
+        assertEquals("CustomerCreateLoc", resp.getCivicAddress());
+        assertEquals(testCustomerId, resp.getAssignedCustomerId());
+        assertEquals("John Customer", resp.getAssignedCustomerName());
+    }
+
+    @Test
+    public void whenCreateWithNonCustomerRole_thenThrowInvalidInput() {
+        Users contractor = new Users();
+        contractor.setUserIdentifier(UserIdentifier.fromString(testCustomerId));
+        contractor.setUserRole(UserRole.CONTRACTOR);
+
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-458");
+        req.setCivicAddress("ContractorLoc");
+        req.setPrice(100f);
+        req.setDimensionsSquareFeet("1000");
+        req.setDimensionsSquareMeters("92.9");
+        req.setLotStatus(LotStatus.AVAILABLE);
+        req.setAssignedCustomerId(testCustomerId);
+
+        when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(testCustomerId)))
+                .thenReturn(Optional.of(contractor));
+
+        assertThrows(InvalidInputException.class, () -> lotService.addLot(req));
     }
 
     @Test
@@ -151,6 +244,57 @@ public class LotServiceUnitTest {
     }
 
     @Test
+    public void whenUpdateWithCustomerAssignment_thenReturnUpdatedDtoWithCustomer() {
+        String id = "upd-id-2";
+        var stored = buildLotEntity(id, "Lot-800", "OldLoc2", 70f, "700", "65.0", LotStatus.AVAILABLE);
+
+        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
+        when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(testCustomerId)))
+                .thenReturn(Optional.of(testCustomer));
+        when(lotRepository.save(stored)).thenReturn(stored);
+
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-800");
+        req.setCivicAddress("OldLoc2");
+        req.setPrice(70f);
+        req.setDimensionsSquareFeet("700");
+        req.setDimensionsSquareMeters("65.0");
+        req.setLotStatus(LotStatus.SOLD);
+        req.setAssignedCustomerId(testCustomerId);
+
+        LotResponseModel resp = lotService.updateLot(req, id);
+
+        assertNotNull(resp);
+        assertEquals(testCustomerId, resp.getAssignedCustomerId());
+        assertEquals("John Customer", resp.getAssignedCustomerName());
+    }
+
+    @Test
+    public void whenUpdateRemoveCustomerAssignment_thenReturnDtoWithoutCustomer() {
+        String id = "upd-id-3";
+        var stored = buildLotEntity(id, "Lot-801", "OldLoc3", 80f, "800", "74.3", LotStatus.SOLD);
+        stored.setAssignedCustomer(testCustomer);
+
+        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
+        when(lotRepository.save(stored)).thenReturn(stored);
+
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-801");
+        req.setCivicAddress("OldLoc3");
+        req.setPrice(80f);
+        req.setDimensionsSquareFeet("800");
+        req.setDimensionsSquareMeters("74.3");
+        req.setLotStatus(LotStatus.AVAILABLE);
+        req.setAssignedCustomerId(null); // Remove assignment
+
+        LotResponseModel resp = lotService.updateLot(req, id);
+
+        assertNotNull(resp);
+        assertNull(resp.getAssignedCustomerId());
+        assertNull(resp.getAssignedCustomerName());
+    }
+
+    @Test
     public void whenUpdateNonExisting_thenThrowNotFound() {
         String id = "missing-id";
         when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(null);
@@ -176,5 +320,38 @@ public class LotServiceUnitTest {
         when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(null);
         assertThrows(NotFoundException.class, () -> lotService.deleteLot(id));
         verify(lotRepository, times(1)).findByLotIdentifier_LotId(id);
+    }
+
+    // ==== CUSTOMER VALIDATION ====
+    @Test
+    public void whenAssignCustomerNotFound_thenThrowNotFound() {
+        String nonExistentCustomerId = UUID.randomUUID().toString();
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-460");
+        req.setCivicAddress("NotFoundLoc");
+        req.setPrice(100f);
+        req.setDimensionsSquareFeet("1000");
+        req.setDimensionsSquareMeters("92.9");
+        req.setLotStatus(LotStatus.AVAILABLE);
+        req.setAssignedCustomerId(nonExistentCustomerId);
+
+        when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(nonExistentCustomerId)))
+                .thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> lotService.addLot(req));
+    }
+
+    @Test
+    public void whenAssignInvalidCustomerId_thenThrowInvalidInput() {
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-461");
+        req.setCivicAddress("InvalidIdLoc");
+        req.setPrice(100f);
+        req.setDimensionsSquareFeet("1000");
+        req.setDimensionsSquareMeters("92.9");
+        req.setLotStatus(LotStatus.AVAILABLE);
+        req.setAssignedCustomerId("invalid-uuid-format");
+
+        assertThrows(InvalidInputException.class, () -> lotService.addLot(req));
     }
 }

@@ -31,18 +31,18 @@ class LotControllerUnitTest {
     private final String FOUND_ID = UUID.randomUUID().toString();
     private final String NOT_FOUND_ID = UUID.randomUUID().toString();
     private final String INVALID_ID = "short-id";
+    private final String PROJECT_ID = "proj-001-test";
 
     @Test
     void whenNoLotsExist_thenReturnEmptyList() {
-        String projectIdentifier = "proj-001-test";
-        when(lotService.getAllLotsByProject(projectIdentifier)).thenReturn(List.of());
+        when(lotService.getAllLotsByProject(PROJECT_ID)).thenReturn(List.of());
 
-        ResponseEntity<List<LotResponseModel>> resp = lotController.getAllLotsByProject(projectIdentifier);
+        ResponseEntity<List<LotResponseModel>> resp = lotController.getAllLotsByProject(PROJECT_ID);
 
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         assertNotNull(resp.getBody());
         assertTrue(resp.getBody().isEmpty());
-        verify(lotService, times(1)).getAllLotsByProject(projectIdentifier);
+        verify(lotService, times(1)).getAllLotsByProject(PROJECT_ID);
     }
 
     // ==== GET ONE ====
@@ -86,22 +86,22 @@ class LotControllerUnitTest {
         LotResponseModel created = new LotResponseModel();
         created.setLotId(FOUND_ID);
 
-        when(lotService.addLot(req)).thenReturn(created);
+        when(lotService.addLotToProject(PROJECT_ID, req)).thenReturn(created);
 
-        ResponseEntity<LotResponseModel> resp = lotController.addLot(req);
+        ResponseEntity<LotResponseModel> resp = lotController.addLot(PROJECT_ID, req);
 
         assertEquals(HttpStatus.CREATED, resp.getStatusCode());
         assertSame(created, resp.getBody());
-        verify(lotService, times(1)).addLot(req);
+        verify(lotService, times(1)).addLotToProject(PROJECT_ID, req);
     }
 
     @Test
     void whenServiceThrowsOnCreate_thenPropagate() {
         LotRequestModel req = new LotRequestModel();
-        doThrow(new RuntimeException("boom")).when(lotService).addLot(req);
+        doThrow(new RuntimeException("boom")).when(lotService).addLotToProject(PROJECT_ID, req);
 
-        assertThrows(RuntimeException.class, () -> lotController.addLot(req));
-        verify(lotService, times(1)).addLot(req);
+        assertThrows(RuntimeException.class, () -> lotController.addLot(PROJECT_ID, req));
+        verify(lotService, times(1)).addLotToProject(PROJECT_ID, req);
     }
 
     // ==== PUT ====
@@ -147,5 +147,75 @@ class LotControllerUnitTest {
     void whenDeleteWithInvalidId_thenThrowInvalidInputException() {
         assertThrows(InvalidInputException.class, () -> lotController.deleteLot(INVALID_ID));
         verify(lotService, never()).deleteLot(anyString());
+    }
+
+    // ==== CUSTOMER ASSIGNMENT ====
+    @Test
+    void whenGetLotWithAssignedCustomer_thenReturnLotWithCustomerInfo() {
+        String customerId = UUID.randomUUID().toString();
+        LotResponseModel lotWithCustomer = new LotResponseModel();
+        lotWithCustomer.setLotId(FOUND_ID);
+        lotWithCustomer.setLotNumber("Lot-100");
+        lotWithCustomer.setAssignedCustomerId(customerId);
+        lotWithCustomer.setAssignedCustomerName("John Customer");
+
+        when(lotService.getLotById(FOUND_ID)).thenReturn(lotWithCustomer);
+
+        ResponseEntity<LotResponseModel> resp = lotController.getLotById(FOUND_ID);
+
+        assertEquals(HttpStatus.OK, resp.getStatusCode());
+        assertNotNull(resp.getBody());
+        assertEquals(customerId, resp.getBody().getAssignedCustomerId());
+        assertEquals("John Customer", resp.getBody().getAssignedCustomerName());
+    }
+
+    @Test
+    void whenCreateLotWithCustomer_thenReturnCreatedWithCustomer() {
+        String customerId = UUID.randomUUID().toString();
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-TEST-003");
+        req.setCivicAddress("CustomerLoc");
+        req.setPrice(150f);
+        req.setDimensionsSquareFeet("1500");
+        req.setDimensionsSquareMeters("139.4");
+        req.setAssignedCustomerId(customerId);
+
+        LotResponseModel created = new LotResponseModel();
+        created.setLotId(FOUND_ID);
+        created.setAssignedCustomerId(customerId);
+        created.setAssignedCustomerName("Jane Customer");
+
+        when(lotService.addLotToProject(PROJECT_ID, req)).thenReturn(created);
+
+        ResponseEntity<LotResponseModel> resp = lotController.addLot(PROJECT_ID, req);
+
+        assertEquals(HttpStatus.CREATED, resp.getStatusCode());
+        assertNotNull(resp.getBody());
+        assertEquals(customerId, resp.getBody().getAssignedCustomerId());
+    }
+
+    @Test
+    void whenUpdateLotWithCustomer_thenReturnUpdatedWithCustomer() {
+        String customerId = UUID.randomUUID().toString();
+        LotRequestModel req = new LotRequestModel();
+        req.setLotNumber("Lot-TEST-004");
+        req.setCivicAddress("UpdatedCustomerLoc");
+        req.setPrice(200f);
+        req.setDimensionsSquareFeet("2000");
+        req.setDimensionsSquareMeters("185.8");
+        req.setAssignedCustomerId(customerId);
+
+        LotResponseModel updated = new LotResponseModel();
+        updated.setLotId(FOUND_ID);
+        updated.setAssignedCustomerId(customerId);
+        updated.setAssignedCustomerName("Updated Customer");
+
+        when(lotService.updateLot(req, FOUND_ID)).thenReturn(updated);
+
+        ResponseEntity<LotResponseModel> resp = lotController.updateLot(req, FOUND_ID);
+
+        assertEquals(HttpStatus.OK, resp.getStatusCode());
+        assertNotNull(resp.getBody());
+        assertEquals(customerId, resp.getBody().getAssignedCustomerId());
     }
 }

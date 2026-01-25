@@ -3,7 +3,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;//piscine municipale de sperme
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -18,4 +18,6 @@ public class LotResponseModel {
     private String dimensionsSquareFeet;
     private String dimensionsSquareMeters;
     private LotStatus lotStatus;
+    private String assignedCustomerId;
+    private String assignedCustomerName;
 }

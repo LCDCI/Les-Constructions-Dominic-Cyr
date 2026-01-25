@@ -56,22 +56,85 @@ export async function fetchLotById({ projectIdentifier, lotId }) {
   return response.json();
 }
 
-export async function createLot({ projectIdentifier, lotData }) {
+export async function createLot({ projectIdentifier, lotData, token }) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
   const url = projectId
     ? `${API_BASE_URL}/projects/${projectId}/lots`
     : `${API_BASE_URL}/lots`;
 
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const response = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers,
     body: JSON.stringify(lotData),
   });
+
   if (!response.ok) {
     const message = await parseErrorMessage(response, 'Failed to create lot');
     throw new Error(message);
   }
   return response.json();
 }
+
+export async function updateLot({ projectIdentifier, lotId, lotData, token }) {
+  const projectId = resolveProjectIdentifier(projectIdentifier);
+  const url = projectId
+    ? `${API_BASE_URL}/projects/${projectId}/lots/${lotId}`
+    : `${API_BASE_URL}/lots/${lotId}`;
+
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(lotData),
+  });
+
+  if (!response.ok) {
+    const message = await parseErrorMessage(response, 'Failed to update lot');
+    throw new Error(message);
+  }
+  return response.json();
+}
+
+export async function deleteLot({ projectIdentifier, lotId, token }) {
+  const projectId = resolveProjectIdentifier(projectIdentifier);
+  const url = projectId
+    ? `${API_BASE_URL}/projects/${projectId}/lots/${lotId}`
+    : `${API_BASE_URL}/lots/${lotId}`;
+
+  const headers = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers,
+  });
+
+  if (!response.ok) {
+    const message = await parseErrorMessage(response, 'Failed to delete lot');
+    throw new Error(message);
+  }
+
+  // DELETE typically returns no content (204) or empty response
+  if (response.status !== 204) {
+    return response.json();
+  }
+}
+

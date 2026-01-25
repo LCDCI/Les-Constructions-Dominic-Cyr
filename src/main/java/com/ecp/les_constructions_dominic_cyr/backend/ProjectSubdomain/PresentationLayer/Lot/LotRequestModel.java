@@ -13,4 +13,5 @@ public class LotRequestModel {
     private String dimensionsSquareFeet;
     private String dimensionsSquareMeters;
     private LotStatus lotStatus;
+    private String assignedCustomerId; // User UUID for customer assignment
 }
