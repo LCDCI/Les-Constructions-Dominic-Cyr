@@ -5,8 +5,7 @@ import axios from 'axios';
 const BASE_API_URL =
   import.meta.env.VITE_FILES_SERVICE_URL ||
   (typeof window !== 'undefined' &&
-  (window.location.hostname.includes('lcdci-portal') ||
-    window.location.hostname.includes('lcdci-frontend'))
+  window.location.hostname.includes('constructions-dominiccyr')
     ? 'https://files-service-app-xubs2.ondigitalocean.app'
     : `${window.location.origin}/files`);
 
