@@ -8,8 +8,7 @@ export default function Home() {
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
     (typeof window !== 'undefined' &&
-    (window.location.hostname.includes('lcdci-portal') ||
-      window.location.hostname.includes('lcdci-frontend'))
+    window.location.hostname.includes('constructions-dominiccyr')
       ? 'https://files-service-app-xubs2.ondigitalocean.app'
       : typeof window !== 'undefined' &&
           window.location.hostname === 'localhost'
@@ -19,7 +18,7 @@ export default function Home() {
 
   const photos = useMemo(
     () => ({
-      hero: '2186d36c-4dc7-400b-8d9e-824a5b06f7ba',
+      hero: '0313008f-b07c-4392-824f-45ff11a2d7a3',
       think: '1634e9ee-2680-41d1-b28a-47353f842d9c',
       build: '1659ff85-b160-4111-b419-84834eb4375a',
       live: '1681b3d5-8f0a-4daf-9590-53a1ce37cf20',
@@ -107,7 +106,7 @@ export default function Home() {
             <p className="hero-description">
               {t(
                 'hero.subtitle',
-                'Quality construction, timeless design, since 1990'
+                'Quality construction, timeless design, since 2006.'
               )}
             </p>
             <div className="hero-buttons">
