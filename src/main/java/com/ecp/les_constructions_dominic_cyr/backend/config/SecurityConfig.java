@@ -89,7 +89,6 @@ public class SecurityConfig {
                         "/api/v1/projects/{id}/overview"
                 ))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(inquiriesRateLimitFilter(), BearerTokenAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         // --- 1. PUBLIC ENDPOINTS (Originals + New Public Lots) ---
                         .requestMatchers("/actuator/**", "/api/theme").permitAll()
