@@ -112,25 +112,25 @@ export default function OwnerInquiriesPage() {
                 inquiries.map(inq => (
                   <tr key={inq.id}>
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {unescapeHtml(inq.name)}
+                      {inq.name}
                     </td>
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
                       <a
-                        href={`mailto:${unescapeHtml(inq.email)}`}
+                        href={`mailto:${encodeURIComponent(inq.email || '')}`}
                         style={{
                           color: '#0066cc',
                           textDecoration: 'underline',
                           cursor: 'pointer',
                         }}
                       >
-                        {unescapeHtml(inq.email)}
+                        {inq.email}
                       </a>
                     </td>
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {inq.phone ? unescapeHtml(inq.phone) : '-'}
+                      {inq.phone ? inq.phone : '-'}
                     </td>
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {unescapeHtml(inq.message)}
+                      {inq.message}
                     </td>
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
                       {formatDate(inq.createdAt)}
