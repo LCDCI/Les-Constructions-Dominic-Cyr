@@ -18,7 +18,7 @@ export default function Home() {
 
   const photos = useMemo(
     () => ({
-      hero: '2186d36c-4dc7-400b-8d9e-824a5b06f7ba',
+      hero: 'ad03c806-f9c3-42d9-9186-575a0239989b',
       think: '1634e9ee-2680-41d1-b28a-47353f842d9c',
       build: '1659ff85-b160-4111-b419-84834eb4375a',
       live: '1681b3d5-8f0a-4daf-9590-53a1ce37cf20',
