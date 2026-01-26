@@ -9,8 +9,7 @@ export function getFilesServiceBase() {
   // For production on DigitalOcean, use files-service directly
   if (
     typeof window !== 'undefined' &&
-    (window.location.hostname.includes('lcdci-portal') ||
-      window.location.hostname.includes('lcdci-frontend'))
+    window.location.hostname.includes('constructions-dominiccyr')
   ) {
     return 'https://files-service-app-xubs2.ondigitalocean.app';
   }
