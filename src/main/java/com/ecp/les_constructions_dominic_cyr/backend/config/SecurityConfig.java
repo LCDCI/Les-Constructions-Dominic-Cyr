@@ -76,7 +76,6 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // Enable CSRF by default; ignore only known public/stateless endpoints
                 .csrf(csrf -> csrf.ignoringRequestMatchers(
-                        "/api/inquiries/**",
                         "/api/theme",
                         "/api/v1/translations/**",
                         "/api/v1/residential-projects/**",
