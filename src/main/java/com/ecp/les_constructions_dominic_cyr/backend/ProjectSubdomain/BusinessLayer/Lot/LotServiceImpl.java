@@ -182,6 +182,13 @@ public class LotServiceImpl implements LotService{
         dto.setDimensionsSquareMeters(lot.getDimensionsSquareMeters());
         dto.setLotStatus(lot.getLotStatus());
 
+        // Map project information (like Schedule does)
+        if (lot.getProject() != null) {
+            dto.setProjectId(lot.getProject().getProjectId());
+            dto.setProjectIdentifier(lot.getProject().getProjectIdentifier());
+            dto.setProjectName(lot.getProject().getProjectName());
+        }
+
         // Map assigned customer
         if (lot.getAssignedCustomer() != null) {
             dto.setAssignedCustomerId(lot.getAssignedCustomer().getUserIdentifier().getUserId().toString());
