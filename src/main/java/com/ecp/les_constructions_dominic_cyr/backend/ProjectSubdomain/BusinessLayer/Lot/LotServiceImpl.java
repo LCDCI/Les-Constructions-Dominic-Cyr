@@ -41,7 +41,7 @@ public class LotServiceImpl implements LotService{
         if (projectIdentifier == null || projectIdentifier.isBlank()) {
             throw new InvalidInputException("Project identifier must not be blank");
         }
-        List<Lot> lots = lotRepository.findByProjectId(projectIdentifier);
+        List<Lot> lots = lotRepository.findByProject_ProjectIdentifier(projectIdentifier);
         return mapLotsToResponses(lots);
     }
 
@@ -103,10 +103,10 @@ public class LotServiceImpl implements LotService{
                 lotRequestModel.getLotStatus()
         );
 
-        // Set the project_id directly from the URL path parameter
-        lot.setProjectId(project.getProjectIdentifier());
+        // Set the project entity reference (like Schedule does)
+        lot.setProject(project);
 
-        log.info("Set projectId on lot: {}", lot.getProjectId());
+        log.info("Set project on lot: {}", project.getProjectIdentifier());
 
         // Handle customer assignment
         if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
