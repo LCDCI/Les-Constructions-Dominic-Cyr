@@ -43,6 +43,8 @@ public class LotServiceUnitTest {
 
     private Users testCustomer;
     private String testCustomerId;
+    private Project testProject;
+    private String testProjectIdentifier;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +56,12 @@ public class LotServiceUnitTest {
         testCustomer.setPrimaryEmail("john.customer@test.com");
         testCustomer.setUserRole(UserRole.CUSTOMER);
         testCustomer.setUserStatus(UserStatus.ACTIVE);
+
+        // Setup test project
+        testProjectIdentifier = "test-project-001";
+        testProject = new Project();
+        testProject.setProjectIdentifier(testProjectIdentifier);
+        testProject.setProjectName("Test Project");
     }
 
     private Lot buildLotEntity(String lotId, String lotNumber, String civicAddress, float price, String dimsSqFt, String dimsSqM, LotStatus status) {
@@ -142,6 +150,10 @@ public class LotServiceUnitTest {
         req.setDimensionsSquareMeters("114.3");
         req.setLotStatus(LotStatus.AVAILABLE);
 
+        // Mock project repository to return test project
+        when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
+                .thenReturn(Optional.of(testProject));
+
         // repository.save should return the entity (service sets LotIdentifier before save)
         when(lotRepository.save(any(Lot.class))).thenAnswer(invocation -> {
             Lot arg = invocation.getArgument(0);
@@ -152,13 +164,14 @@ public class LotServiceUnitTest {
         });
 
         // act
-        LotResponseModel resp = lotService.addLot(req);
+        LotResponseModel resp = lotService.addLotToProject(testProjectIdentifier, req);
 
         // assert
         assertNotNull(resp);
         assertEquals("CreateLoc", resp.getCivicAddress());
         assertNotNull(resp.getLotId());
         verify(lotRepository, times(1)).save(any(Lot.class));
+        verify(projectRepository, times(1)).findByProjectIdentifier(testProjectIdentifier);
     }
 
     @Test
@@ -172,6 +185,8 @@ public class LotServiceUnitTest {
         req.setLotStatus(LotStatus.SOLD);
         req.setAssignedCustomerId(testCustomerId);
 
+        when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
+                .thenReturn(Optional.of(testProject));
         when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(testCustomerId)))
                 .thenReturn(Optional.of(testCustomer));
         when(lotRepository.save(any(Lot.class))).thenAnswer(invocation -> {
@@ -182,7 +197,7 @@ public class LotServiceUnitTest {
             return arg;
         });
 
-        LotResponseModel resp = lotService.addLot(req);
+        LotResponseModel resp = lotService.addLotToProject(testProjectIdentifier, req);
 
         assertNotNull(resp);
         assertEquals("CustomerCreateLoc", resp.getCivicAddress());
@@ -205,16 +220,18 @@ public class LotServiceUnitTest {
         req.setLotStatus(LotStatus.AVAILABLE);
         req.setAssignedCustomerId(testCustomerId);
 
+        when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
+                .thenReturn(Optional.of(testProject));
         when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(testCustomerId)))
                 .thenReturn(Optional.of(contractor));
 
-        assertThrows(InvalidInputException.class, () -> lotService.addLot(req));
+        assertThrows(InvalidInputException.class, () -> lotService.addLotToProject(testProjectIdentifier, req));
     }
 
     @Test
     public void whenCreateWithNullReq_thenThrowsNPEorIllegalArg() {
         // Negative: if caller passes null, behavior depends on implementation - assert it throws
-        assertThrows(Exception.class, () -> lotService.addLot(null));
+        assertThrows(Exception.class, () -> lotService.addLotToProject(testProjectIdentifier, null));
     }
 
     // ==== UPDATE ====
@@ -335,10 +352,12 @@ public class LotServiceUnitTest {
         req.setLotStatus(LotStatus.AVAILABLE);
         req.setAssignedCustomerId(nonExistentCustomerId);
 
+        when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
+                .thenReturn(Optional.of(testProject));
         when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(nonExistentCustomerId)))
                 .thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> lotService.addLot(req));
+        assertThrows(NotFoundException.class, () -> lotService.addLotToProject(testProjectIdentifier, req));
     }
 
     @Test
@@ -352,6 +371,9 @@ public class LotServiceUnitTest {
         req.setLotStatus(LotStatus.AVAILABLE);
         req.setAssignedCustomerId("invalid-uuid-format");
 
-        assertThrows(InvalidInputException.class, () -> lotService.addLot(req));
+        when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
+                .thenReturn(Optional.of(testProject));
+
+        assertThrows(InvalidInputException.class, () -> lotService.addLotToProject(testProjectIdentifier, req));
     }
 }
