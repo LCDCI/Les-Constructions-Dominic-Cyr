@@ -2,6 +2,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAcces
 
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import jakarta.persistence.*;
 import lombok.Data;

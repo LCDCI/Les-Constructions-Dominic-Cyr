@@ -7,7 +7,7 @@ const LOT_STATUSES = [
   { value: 'AVAILABLE', label: 'Available' },
   { value: 'SOLD', label: 'Sold' },
   { value: 'PENDING', label: 'Pending' },
-  { value: 'RESERVED', label: 'Reserved' }
+  { value: 'RESERVED', label: 'Reserved' },
 ];
 
 const LotFormModal = ({
@@ -17,7 +17,7 @@ const LotFormModal = ({
   lot = null,
   token,
   isSubmitting = false,
-  title = "Add Lot"
+  title = 'Add Lot',
 }) => {
   const [formData, setFormData] = useState({
     lotNumber: '',
@@ -26,7 +26,7 @@ const LotFormModal = ({
     dimensionsSquareFeet: '',
     dimensionsSquareMeters: '',
     lotStatus: 'AVAILABLE',
-    assignedCustomerId: ''
+    assignedCustomerId: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -40,7 +40,7 @@ const LotFormModal = ({
         dimensionsSquareFeet: lot.dimensionsSquareFeet || '',
         dimensionsSquareMeters: lot.dimensionsSquareMeters || '',
         lotStatus: lot.lotStatus || 'AVAILABLE',
-        assignedCustomerId: lot.assignedCustomerId || ''
+        assignedCustomerId: lot.assignedCustomerId || '',
       });
     } else {
       setFormData({
@@ -50,7 +50,7 @@ const LotFormModal = ({
         dimensionsSquareFeet: '',
         dimensionsSquareMeters: '',
         lotStatus: 'AVAILABLE',
-        assignedCustomerId: ''
+        assignedCustomerId: '',
       });
     }
     setErrors({});
@@ -59,14 +59,14 @@ const LotFormModal = ({
   const handleChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
 
     // Clear error for this field when user starts typing
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
-        [field]: ''
+        [field]: '',
       }));
     }
   };
@@ -99,7 +99,7 @@ const LotFormModal = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -113,9 +113,8 @@ const LotFormModal = ({
       dimensionsSquareFeet: formData.dimensionsSquareFeet,
       dimensionsSquareMeters: formData.dimensionsSquareMeters,
       lotStatus: formData.lotStatus,
-      assignedCustomerId: formData.assignedCustomerId || null
+      assignedCustomerId: formData.assignedCustomerId || null,
     };
-
 
     onSubmit(submitData);
   };
@@ -130,7 +129,7 @@ const LotFormModal = ({
 
   return (
     <div className="lot-modal-overlay" onClick={handleClose}>
-      <div className="lot-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="lot-modal" onClick={e => e.stopPropagation()}>
         <div className="lot-modal-header">
           <h2>{title}</h2>
           <button
@@ -152,12 +151,14 @@ const LotFormModal = ({
                 id="lotNumber"
                 type="text"
                 value={formData.lotNumber}
-                onChange={(e) => handleChange('lotNumber', e.target.value)}
+                onChange={e => handleChange('lotNumber', e.target.value)}
                 placeholder="e.g., Lot 53"
                 disabled={isSubmitting}
                 className={errors.lotNumber ? 'error' : ''}
               />
-              {errors.lotNumber && <span className="error-text">{errors.lotNumber}</span>}
+              {errors.lotNumber && (
+                <span className="error-text">{errors.lotNumber}</span>
+              )}
             </div>
 
             <div className="form-group">
@@ -167,7 +168,7 @@ const LotFormModal = ({
               <select
                 id="lotStatus"
                 value={formData.lotStatus}
-                onChange={(e) => handleChange('lotStatus', e.target.value)}
+                onChange={e => handleChange('lotStatus', e.target.value)}
                 disabled={isSubmitting}
               >
                 {LOT_STATUSES.map(status => (
@@ -187,25 +188,25 @@ const LotFormModal = ({
               id="civicAddress"
               type="text"
               value={formData.civicAddress}
-              onChange={(e) => handleChange('civicAddress', e.target.value)}
+              onChange={e => handleChange('civicAddress', e.target.value)}
               placeholder="e.g., 123 Main Street, City, QC"
               disabled={isSubmitting}
               className={errors.civicAddress ? 'error' : ''}
             />
-            {errors.civicAddress && <span className="error-text">{errors.civicAddress}</span>}
+            {errors.civicAddress && (
+              <span className="error-text">{errors.civicAddress}</span>
+            )}
           </div>
 
           <div className="form-group">
-            <label htmlFor="price">
-              Price (CAD)
-            </label>
+            <label htmlFor="price">Price (CAD)</label>
             <input
               id="price"
               type="number"
               step="0.01"
               min="0"
               value={formData.price}
-              onChange={(e) => handleChange('price', e.target.value)}
+              onChange={e => handleChange('price', e.target.value)}
               placeholder="e.g., 150000"
               disabled={isSubmitting}
               className={errors.price ? 'error' : ''}
@@ -222,12 +223,18 @@ const LotFormModal = ({
                 id="dimensionsSquareFeet"
                 type="text"
                 value={formData.dimensionsSquareFeet}
-                onChange={(e) => handleChange('dimensionsSquareFeet', e.target.value)}
+                onChange={e =>
+                  handleChange('dimensionsSquareFeet', e.target.value)
+                }
                 placeholder="e.g., 5000"
                 disabled={isSubmitting}
                 className={errors.dimensionsSquareFeet ? 'error' : ''}
               />
-              {errors.dimensionsSquareFeet && <span className="error-text">{errors.dimensionsSquareFeet}</span>}
+              {errors.dimensionsSquareFeet && (
+                <span className="error-text">
+                  {errors.dimensionsSquareFeet}
+                </span>
+              )}
             </div>
 
             <div className="form-group">
@@ -238,22 +245,26 @@ const LotFormModal = ({
                 id="dimensionsSquareMeters"
                 type="text"
                 value={formData.dimensionsSquareMeters}
-                onChange={(e) => handleChange('dimensionsSquareMeters', e.target.value)}
+                onChange={e =>
+                  handleChange('dimensionsSquareMeters', e.target.value)
+                }
                 placeholder="e.g., 464.5"
                 disabled={isSubmitting}
                 className={errors.dimensionsSquareMeters ? 'error' : ''}
               />
-              {errors.dimensionsSquareMeters && <span className="error-text">{errors.dimensionsSquareMeters}</span>}
+              {errors.dimensionsSquareMeters && (
+                <span className="error-text">
+                  {errors.dimensionsSquareMeters}
+                </span>
+              )}
             </div>
           </div>
 
           <div className="form-group">
-            <label htmlFor="assignedCustomer">
-              Assigned Customer
-            </label>
+            <label htmlFor="assignedCustomer">Assigned Customer</label>
             <UserSelector
               value={formData.assignedCustomerId}
-              onChange={(value) => handleChange('assignedCustomerId', value)}
+              onChange={value => handleChange('assignedCustomerId', value)}
               token={token}
               placeholder="Select a customer (optional)..."
             />
@@ -273,7 +284,7 @@ const LotFormModal = ({
               disabled={isSubmitting}
               className="btn-primary"
             >
-              {isSubmitting ? 'Saving...' : (lot ? 'Update Lot' : 'Create Lot')}
+              {isSubmitting ? 'Saving...' : lot ? 'Update Lot' : 'Create Lot'}
             </button>
           </div>
         </form>

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 import './LotList.css';
@@ -15,7 +16,12 @@ function formatPrice(p, isOwner) {
 }
 
 // eslint-disable-next-line react/prop-types
-export default function LotList({ lots = [], isOwner = false, onEdit, onDelete }) {
+export default function LotList({
+  lots = [],
+  isOwner = false,
+  onEdit,
+  onDelete,
+}) {
   if (!lots || lots.length === 0) {
     return (
       <div className="no-results">
@@ -49,7 +55,9 @@ export default function LotList({ lots = [], isOwner = false, onEdit, onDelete }
                 <td className="customer-cell">
                   {l.assignedCustomerName ? (
                     <div className="customer-info">
-                      <div className="customer-name">{l.assignedCustomerName}</div>
+                      <div className="customer-name">
+                        {l.assignedCustomerName}
+                      </div>
                     </div>
                   ) : (
                     <span className="no-customer">No customer assigned</span>

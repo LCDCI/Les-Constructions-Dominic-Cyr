@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -13,7 +14,6 @@ import { projectApi } from '../../features/projects/api/projectApi';
 import LotList from '../../features/lots/components/LotList';
 import LotFormModal from '../../features/lots/components/LotFormModal';
 import ConfirmationModal from '../../features/lots/components/ConfirmationModal';
-import Footer from '../../components/Footers/ProjectsFooter';
 import '../../styles/lots.css';
 
 const LotsPage = () => {
@@ -111,7 +111,7 @@ const LotsPage = () => {
     setIsAddModalOpen(true);
   };
 
-  const handleEditLot = async (lot) => {
+  const handleEditLot = async lot => {
     setCurrentLot(lot);
     // Get fresh token for modal
     if (isAuthenticated) {
@@ -125,26 +125,34 @@ const LotsPage = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleDeleteLot = (lot) => {
+  const handleDeleteLot = lot => {
     setCurrentLot(lot);
     setIsDeleteModalOpen(true);
   };
 
-  const handleCreateLot = async (lotData) => {
+  const handleCreateLot = async lotData => {
     setIsSubmitting(true);
     setError('');
     try {
       const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+      if (!resolved) {
+        throw new Error(
+          'Project identifier is missing. Please reopen this page from a project.'
+        );
+      }
       const token = isAuthenticated ? await getAccessTokenSilently() : null;
 
       await createLot({
         projectIdentifier: resolved,
         lotData,
-        token
+        token,
       });
 
       // Refresh lots list
-      const updatedLots = await fetchLots({ projectIdentifier: resolved, token });
+      const updatedLots = await fetchLots({
+        projectIdentifier: resolved,
+        token,
+      });
       setLots(updatedLots);
       setIsAddModalOpen(false);
     } catch (err) {
@@ -155,24 +163,32 @@ const LotsPage = () => {
     }
   };
 
-  const handleUpdateLot = async (lotData) => {
+  const handleUpdateLot = async lotData => {
     if (!currentLot) return;
 
     setIsSubmitting(true);
     setError('');
     try {
       const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+      if (!resolved) {
+        throw new Error(
+          'Project identifier is missing. Please reopen this page from a project.'
+        );
+      }
       const token = isAuthenticated ? await getAccessTokenSilently() : null;
 
       await updateLot({
         projectIdentifier: resolved,
         lotId: currentLot.lotId,
         lotData,
-        token
+        token,
       });
 
       // Refresh lots list
-      const updatedLots = await fetchLots({ projectIdentifier: resolved, token });
+      const updatedLots = await fetchLots({
+        projectIdentifier: resolved,
+        token,
+      });
       setLots(updatedLots);
       setIsEditModalOpen(false);
       setCurrentLot(null);
@@ -191,16 +207,24 @@ const LotsPage = () => {
     setError('');
     try {
       const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+      if (!resolved) {
+        throw new Error(
+          'Project identifier is missing. Please reopen this page from a project.'
+        );
+      }
       const token = isAuthenticated ? await getAccessTokenSilently() : null;
 
       await deleteLot({
         projectIdentifier: resolved,
         lotId: currentLot.lotId,
-        token
+        token,
       });
 
       // Refresh lots list
-      const updatedLots = await fetchLots({ projectIdentifier: resolved, token });
+      const updatedLots = await fetchLots({
+        projectIdentifier: resolved,
+        token,
+      });
       setLots(updatedLots);
       setIsDeleteModalOpen(false);
       setCurrentLot(null);
@@ -373,8 +397,6 @@ const LotsPage = () => {
           />
         </>
       )}
-
-      <Footer />
     </div>
   );
 };

@@ -213,10 +213,17 @@ const LotSelector = ({
       return;
     }
 
+    if (!projectIdentifier) {
+      setCreateError(
+        'Project identifier is missing. Save or select a project before creating lots.'
+      );
+      return;
+    }
+
     setIsCreating(true);
     try {
       const token = await getAccessTokenSilently();
-      
+
       const lotData = {
         lotNumber: newLotData.lotNumber.trim(),
         civicAddress: newLotData.civicAddress.trim(),
@@ -348,13 +355,18 @@ const LotSelector = ({
           </div>
 
           <div className="form-group">
-            <label htmlFor="newLotDimensionsSquareFeet">{t('dimensionsSquareFeet')} *</label>
+            <label htmlFor="newLotDimensionsSquareFeet">
+              {t('dimensionsSquareFeet')} *
+            </label>
             <input
               type="text"
               id="newLotDimensionsSquareFeet"
               value={newLotData.dimensionsSquareFeet}
               onChange={e =>
-                setNewLotData({ ...newLotData, dimensionsSquareFeet: e.target.value })
+                setNewLotData({
+                  ...newLotData,
+                  dimensionsSquareFeet: e.target.value,
+                })
               }
               placeholder={t('dimensionsSquareFeetPlaceholder')}
               required
@@ -362,13 +374,18 @@ const LotSelector = ({
           </div>
 
           <div className="form-group">
-            <label htmlFor="newLotDimensionsSquareMeters">{t('dimensionsSquareMeters')} *</label>
+            <label htmlFor="newLotDimensionsSquareMeters">
+              {t('dimensionsSquareMeters')} *
+            </label>
             <input
               type="text"
               id="newLotDimensionsSquareMeters"
               value={newLotData.dimensionsSquareMeters}
               onChange={e =>
-                setNewLotData({ ...newLotData, dimensionsSquareMeters: e.target.value })
+                setNewLotData({
+                  ...newLotData,
+                  dimensionsSquareMeters: e.target.value,
+                })
               }
               placeholder={t('dimensionsSquareMetersPlaceholder')}
               required
@@ -409,7 +426,9 @@ const LotSelector = ({
 
           {userRole === 'OWNER' && (
             <div className="form-group">
-              <label htmlFor="newLotAssignedCustomer">{t('assignedCustomer')}</label>
+              <label htmlFor="newLotAssignedCustomer">
+                {t('assignedCustomer')}
+              </label>
               {isLoadingCustomers ? (
                 <div>{t('loadingCustomers')}</div>
               ) : (
@@ -417,13 +436,17 @@ const LotSelector = ({
                   id="newLotAssignedCustomer"
                   value={newLotData.assignedCustomerId}
                   onChange={e =>
-                    setNewLotData({ ...newLotData, assignedCustomerId: e.target.value })
+                    setNewLotData({
+                      ...newLotData,
+                      assignedCustomerId: e.target.value,
+                    })
                   }
                 >
                   <option value="">{t('assignedCustomerPlaceholder')}</option>
                   {customers.map(customer => (
                     <option key={customer.userId} value={customer.userId}>
-                      {customer.firstName} {customer.lastName} ({customer.primaryEmail})
+                      {customer.firstName} {customer.lastName} (
+                      {customer.primaryEmail})
                     </option>
                   ))}
                 </select>
@@ -517,7 +540,10 @@ const LotSelector = ({
                   </div>
                   <div className="lot-item-info">
                     <span>Lot #: {lot.lotNumber || 'N/A'}</span>
-                    <span>Dimensions: {lot.dimensionsSquareFeet || 'N/A'} sq ft / {lot.dimensionsSquareMeters || 'N/A'} sq m</span>
+                    <span>
+                      Dimensions: {lot.dimensionsSquareFeet || 'N/A'} sq ft /{' '}
+                      {lot.dimensionsSquareMeters || 'N/A'} sq m
+                    </span>
                     {lot.price && (
                       <span>Price: ${lot.price.toLocaleString()}</span>
                     )}
