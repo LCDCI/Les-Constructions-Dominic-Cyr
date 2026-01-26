@@ -47,7 +47,9 @@ public class InquiriesRateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        if ("POST".equalsIgnoreCase(request.getMethod()) && "/api/inquiries".equals(request.getRequestURI())) {
+        String uri = request.getRequestURI();
+        if ("POST".equalsIgnoreCase(request.getMethod())
+                && ("/api/inquiries".equals(uri) || uri.startsWith("/api/inquiries/"))) {
             String key = extractClientIp(request);
             Bucket bucket = resolveBucket(key);
             if (!bucket.tryConsume(1)) {
