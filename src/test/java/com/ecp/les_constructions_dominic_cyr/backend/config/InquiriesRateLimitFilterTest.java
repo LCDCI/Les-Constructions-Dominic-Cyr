@@ -43,7 +43,8 @@ class InquiriesRateLimitFilterTest {
         // First 5 requests should pass
         for (int i = 0; i < 5; i++) {
             filter.doFilterInternal(request, response, mockFilterChain);
-            assertEquals(200, response.getStatus(), "Request " + (i + 1) + " should succeed");
+            verify(mockFilterChain, times(i + 1)).doFilter(request, response);
+            assertNotEquals(429, response.getStatus(), "Request " + (i + 1) + " should not be rate limited");
         }
 
         // 6th request should be rate limited
