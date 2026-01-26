@@ -3,7 +3,12 @@ import { fetchAllCustomers } from '../../users/api/usersApi';
 import PropTypes from 'prop-types';
 import './UserSelector.css';
 
-const UserSelector = ({ value, onChange, token, placeholder = "Select a customer..." }) => {
+const UserSelector = ({
+  value,
+  onChange,
+  token,
+  placeholder = 'Select a customer...',
+}) => {
   const [users, setUsers] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,7 +34,7 @@ const UserSelector = ({ value, onChange, token, placeholder = "Select a customer
   }, [token]);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -46,9 +51,11 @@ const UserSelector = ({ value, onChange, token, placeholder = "Select a customer
     return fullName.includes(search) || email.includes(search);
   });
 
-  const selectedUser = value ? users.find(user => user.userIdentifier === value) : null;
+  const selectedUser = value
+    ? users.find(user => user.userIdentifier === value)
+    : null;
 
-  const handleSelectUser = (userId) => {
+  const handleSelectUser = userId => {
     onChange(userId);
     setIsOpen(false);
     setSearchTerm('');
@@ -74,7 +81,7 @@ const UserSelector = ({ value, onChange, token, placeholder = "Select a customer
             <button
               type="button"
               className="clear-button"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 handleClearSelection();
               }}
@@ -95,7 +102,7 @@ const UserSelector = ({ value, onChange, token, placeholder = "Select a customer
               type="text"
               placeholder="Search by name or email..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="search-input"
               autoFocus
             />
@@ -106,7 +113,9 @@ const UserSelector = ({ value, onChange, token, placeholder = "Select a customer
               <div className="loading">Loading customers...</div>
             ) : filteredUsers.length === 0 ? (
               <div className="no-results">
-                {searchTerm ? 'No customers found matching search' : 'No customers available'}
+                {searchTerm
+                  ? 'No customers found matching search'
+                  : 'No customers available'}
               </div>
             ) : (
               filteredUsers.map(user => (
@@ -119,9 +128,7 @@ const UserSelector = ({ value, onChange, token, placeholder = "Select a customer
                     <div className="user-name">
                       {user.firstName} {user.lastName}
                     </div>
-                    <div className="user-email">
-                      {user.primaryEmail}
-                    </div>
+                    <div className="user-email">{user.primaryEmail}</div>
                   </div>
                 </div>
               ))

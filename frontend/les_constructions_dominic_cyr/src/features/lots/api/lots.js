@@ -58,9 +58,11 @@ export async function fetchLotById({ projectIdentifier, lotId }) {
 
 export async function createLot({ projectIdentifier, lotData, token }) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
-  const url = projectId
-    ? `${API_BASE_URL}/projects/${projectId}/lots`
-    : `${API_BASE_URL}/lots`;
+  if (!projectId) {
+    throw new Error('Project identifier is required to create a lot');
+  }
+
+  const url = `${API_BASE_URL}/projects/${projectId}/lots`;
 
   const headers = {
     'Content-Type': 'application/json',
@@ -70,10 +72,17 @@ export async function createLot({ projectIdentifier, lotData, token }) {
     headers.Authorization = `Bearer ${token}`;
   }
 
+  const payload = {
+    ...lotData,
+    assignedCustomerId: lotData?.assignedCustomerId || null,
+    projectId,
+    projectIdentifier: projectId,
+  };
+
   const response = await fetch(url, {
     method: 'POST',
     headers,
-    body: JSON.stringify(lotData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -85,9 +94,10 @@ export async function createLot({ projectIdentifier, lotData, token }) {
 
 export async function updateLot({ projectIdentifier, lotId, lotData, token }) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
-  const url = projectId
-    ? `${API_BASE_URL}/projects/${projectId}/lots/${lotId}`
-    : `${API_BASE_URL}/lots/${lotId}`;
+  if (!projectId) {
+    throw new Error('Project identifier is required to update a lot');
+  }
+  const url = `${API_BASE_URL}/projects/${projectId}/lots/${lotId}`;
 
   const headers = {
     'Content-Type': 'application/json',
@@ -97,10 +107,17 @@ export async function updateLot({ projectIdentifier, lotId, lotData, token }) {
     headers.Authorization = `Bearer ${token}`;
   }
 
+  const payload = {
+    ...lotData,
+    assignedCustomerId: lotData?.assignedCustomerId || null,
+    projectId,
+    projectIdentifier: projectId,
+  };
+
   const response = await fetch(url, {
     method: 'PUT',
     headers,
-    body: JSON.stringify(lotData),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -112,6 +129,9 @@ export async function updateLot({ projectIdentifier, lotId, lotData, token }) {
 
 export async function deleteLot({ projectIdentifier, lotId, token }) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
+  if (!projectId) {
+    throw new Error('Project identifier is required to delete a lot');
+  }
   const url = projectId
     ? `${API_BASE_URL}/projects/${projectId}/lots/${lotId}`
     : `${API_BASE_URL}/lots/${lotId}`;
@@ -137,4 +157,3 @@ export async function deleteLot({ projectIdentifier, lotId, token }) {
     return response.json();
   }
 }
-

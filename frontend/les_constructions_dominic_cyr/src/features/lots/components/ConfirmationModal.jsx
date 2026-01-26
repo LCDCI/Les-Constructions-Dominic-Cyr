@@ -6,12 +6,12 @@ const ConfirmationModal = ({
   isOpen,
   onClose,
   onConfirm,
-  title = "Confirm Action",
-  message = "Are you sure you want to proceed?",
-  confirmText = "Confirm",
-  cancelText = "Cancel",
+  title = 'Confirm Action',
+  message = 'Are you sure you want to proceed?',
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
   isDestructive = false,
-  isSubmitting = false
+  isSubmitting = false,
 }) => {
   const handleConfirm = () => {
     if (!isSubmitting) {
@@ -29,7 +29,7 @@ const ConfirmationModal = ({
 
   return (
     <div className="confirmation-modal-overlay" onClick={handleClose}>
-      <div className="confirmation-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="confirmation-modal" onClick={e => e.stopPropagation()}>
         <div className="confirmation-modal-header">
           <h3>{title}</h3>
           <button
