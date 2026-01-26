@@ -1,6 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot;
 
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -37,10 +38,14 @@ public class Lot {
     @Enumerated(EnumType.STRING)
     private LotStatus lotStatus;
 
-    // Direct column for project_id - stores the project_identifier (VARCHAR)
-    @Column(name = "project_id", nullable = false)
-    private String projectId;
-
+    // ManyToOne relationship with Project entity (like Schedule does)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "project_id",                          // The FK column in 'lots' table
+            referencedColumnName = "project_identifier",   // The column in 'projects' table
+            nullable = false
+    )
+    private Project project;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "assigned_customer_id", referencedColumnName = "user_id")

@@ -20,4 +20,9 @@ public class LotResponseModel {
     private LotStatus lotStatus;
     private String assignedCustomerId;
     private String assignedCustomerName;
+    
+    // Project information (like Schedule does)
+    private Long projectId;
+    private String projectIdentifier;
+    private String projectName;
 }
