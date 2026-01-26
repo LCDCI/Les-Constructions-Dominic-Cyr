@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/inquiries")
-@CrossOrigin(origins = "http://localhost:3000")
 public class InquiryController {
     private final InquiryService service;
 
