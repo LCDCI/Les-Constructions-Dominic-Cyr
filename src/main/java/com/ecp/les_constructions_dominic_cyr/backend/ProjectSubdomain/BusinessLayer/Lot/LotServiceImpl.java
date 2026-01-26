@@ -57,31 +57,6 @@ public class LotServiceImpl implements LotService{
 
     @Override
     @Transactional
-    public LotResponseModel addLot(LotRequestModel lotRequestModel) {
-        validateLotRequest(lotRequestModel);
-
-        Lot lot = new Lot(
-                new LotIdentifier(),  // always generate new ID
-                lotRequestModel.getLotNumber(),
-                lotRequestModel.getCivicAddress(),
-                lotRequestModel.getPrice(),
-                lotRequestModel.getDimensionsSquareFeet(),
-                lotRequestModel.getDimensionsSquareMeters(),
-                lotRequestModel.getLotStatus()
-        );
-
-        // Handle customer assignment
-        if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
-            Users customer = getCustomerAndValidateRole(lotRequestModel.getAssignedCustomerId());
-            lot.setAssignedCustomer(customer);
-        }
-
-        Lot savedLot = lotRepository.save(lot);
-        return mapToResponse(savedLot);
-    }
-
-    @Override
-    @Transactional
     public LotResponseModel addLotToProject(String projectIdentifier, LotRequestModel lotRequestModel) {
         log.info("Creating lot for project identifier: {}", projectIdentifier);
 
