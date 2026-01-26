@@ -144,7 +144,8 @@ const LotSelector = ({
     try {
       setIsLoading(true);
       setError(null);
-      const lots = await fetchLots({ projectIdentifier });
+      const token = await getAccessTokenSilently();
+      const lots = await fetchLots({ projectIdentifier, token });
       setAvailableLots(lots || []);
     } catch (err) {
       setError(err.message || 'Failed to load lots');
@@ -214,6 +215,8 @@ const LotSelector = ({
 
     setIsCreating(true);
     try {
+      const token = await getAccessTokenSilently();
+      
       const lotData = {
         lotNumber: newLotData.lotNumber.trim(),
         civicAddress: newLotData.civicAddress.trim(),
@@ -227,6 +230,7 @@ const LotSelector = ({
       const createdLot = await createLot({
         projectIdentifier,
         lotData,
+        token,
       });
 
       if (!createdLot || !createdLot.lotId) {
