@@ -10,7 +10,7 @@ import java.util.UUID;
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Integer> {
     Lot findByLotIdentifier_LotId(String lotId);
-    List<Lot> findByProject_ProjectIdentifier(String projectIdentifier);
+    List<Lot> findByProjectId(String projectId);
     List<Lot> findByAssignedCustomer(Users customer);
     List<Lot> findByAssignedCustomer_UserIdentifier_UserId(UUID userId);
 }

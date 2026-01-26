@@ -41,7 +41,7 @@ public class LotServiceImpl implements LotService{
         if (projectIdentifier == null || projectIdentifier.isBlank()) {
             throw new InvalidInputException("Project identifier must not be blank");
         }
-        List<Lot> lots = lotRepository.findByProject_ProjectIdentifier(projectIdentifier);
+        List<Lot> lots = lotRepository.findByProjectId(projectIdentifier);
         return mapLotsToResponses(lots);
     }
 
@@ -83,9 +83,13 @@ public class LotServiceImpl implements LotService{
     @Override
     @Transactional
     public LotResponseModel addLotToProject(String projectIdentifier, LotRequestModel lotRequestModel) {
+        log.info("Creating lot for project identifier: {}", projectIdentifier);
+
         // Find the project
         Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+
+        log.info("Found project: {} with projectId: {}", project.getProjectName(), project.getProjectIdentifier());
 
         validateLotRequest(lotRequestModel);
 
@@ -99,8 +103,10 @@ public class LotServiceImpl implements LotService{
                 lotRequestModel.getLotStatus()
         );
 
-        // Set the project
-        lot.setProject(project);
+        // Set the project_id directly from the URL path parameter
+        lot.setProjectId(project.getProjectIdentifier());
+
+        log.info("Set projectId on lot: {}", lot.getProjectId());
 
         // Handle customer assignment
         if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {

@@ -1,7 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot;
 
 
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -38,12 +37,13 @@ public class Lot {
     @Enumerated(EnumType.STRING)
     private LotStatus lotStatus;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
+    // Direct column for project_id - stores the project_identifier (VARCHAR)
+    @Column(name = "project_id", nullable = false)
+    private String projectId;
+
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "assigned_customer_id")
+    @JoinColumn(name = "assigned_customer_id", referencedColumnName = "user_id")
     private Users assignedCustomer;
 
     @CreationTimestamp
