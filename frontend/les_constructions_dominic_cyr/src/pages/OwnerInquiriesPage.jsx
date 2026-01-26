@@ -3,7 +3,11 @@ import { useAuth0 } from '@auth0/auth0-react';
 import HomeFooter from '../components/Footers/HomeFooter';
 
 const fetchInquiries = async getAccessTokenSilently => {
-  const token = await getAccessTokenSilently();
+  const token = await getAccessTokenSilently({
+    authorizationParams: {
+      audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+    },
+  });
   const res = await fetch('/api/inquiries', {
     method: 'GET',
     credentials: 'omit',
