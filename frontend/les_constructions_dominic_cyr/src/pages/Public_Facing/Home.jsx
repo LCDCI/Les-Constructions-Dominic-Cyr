@@ -5,6 +5,8 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 export default function Home() {
   const { t } = usePageTranslations('home');
+  const isLocalHost =
+    typeof window !== 'undefined' && window.location.hostname === 'localhost';
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
     (typeof window !== 'undefined' &&
@@ -78,23 +80,33 @@ export default function Home() {
       {/* HERO SECTION */}
       <section className="hero">
         <div className="hero-background">
-          <video
-            src={`${filesServiceUrl}/files/${photos.hero}`}
-            className="hero-image"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            onCanPlay={() => setVideoLoaded(true)}
-            onLoadedData={() => setVideoLoaded(true)}
-            onPlaying={() => setVideoLoaded(true)}
-            onLoadStart={() => {
-              if (typeof window !== 'undefined' && window.innerWidth > 768) {
-                setVideoLoaded(false);
-              }
-            }}
-          />
+          {isLocalHost ? (
+            <img
+              src="/fallback.jpg"
+              alt="Hero placeholder"
+              className="hero-image"
+              onLoad={() => setVideoLoaded(true)}
+              onError={() => setVideoLoaded(true)}
+            />
+          ) : (
+            <video
+              src={`${filesServiceUrl}/files/${photos.hero}`}
+              className="hero-image"
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              onCanPlay={() => setVideoLoaded(true)}
+              onLoadedData={() => setVideoLoaded(true)}
+              onPlaying={() => setVideoLoaded(true)}
+              onLoadStart={() => {
+                if (typeof window !== 'undefined' && window.innerWidth > 768) {
+                  setVideoLoaded(false);
+                }
+              }}
+            />
+          )}
           <div className="hero-overlay" />
         </div>
         <div className="hero-container">
