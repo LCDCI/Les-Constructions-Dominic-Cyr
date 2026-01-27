@@ -18,7 +18,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
-      FILES_SERVICE_BASE_URL: http://files-service:8080
+      FILES_SERVICE_BASE_URL: ${FILES_SERVICE_BASE_URL:-http://files-service:8080}
 
       AUTH0_DOMAIN: ${AUTH0_DOMAIN}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
@@ -29,8 +29,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      files-service:
-        condition: service_started
     networks:
       - app-network
 
@@ -43,7 +41,7 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_API_BASE_URL: http://localhost:8080/api/v1
-        VITE_FILES_SERVICE_URL: http://localhost:8082
+        VITE_FILES_SERVICE_URL: ${VITE_FILES_SERVICE_URL:-http://localhost:8082}
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
         VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
