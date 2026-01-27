@@ -39,11 +39,14 @@ RUN rm /etc/nginx/conf.d/default.conf
 RUN apk add --no-cache gettext
 COPY --from=build /app/nginx/default.conf /etc/nginx/conf.d/default.conf.template
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Ensure script is executable and has Unix line endings (fixes Windows CRLF)
+RUN chmod +x /entrypoint.sh \
+    && sed -i 's/\r$//' /entrypoint.sh
 
 # Copy built assets
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-ENTRYPOINT ["/entrypoint.sh"]
+# Execute via shell to avoid shebang/line-ending issues
+ENTRYPOINT ["/bin/sh","/entrypoint.sh"]
