@@ -1,0 +1,161 @@
+services:
+  #######################################################################
+  # BACKEND (Spring Boot)
+  #######################################################################
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    command: ["java", "-jar", "app.jar"]
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+      FILES_SERVICE_BASE_URL: ${FILES_SERVICE_BASE_URL:-http://files-service:8080}
+
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://${AUTH0_DOMAIN}/
+
+      SERVER_TOMCAT_RELAXED_PATH_CHARS: "|,%,[,]"
+      SERVER_TOMCAT_RELAXED_QUERY_CHARS: "|,%,[,]"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  #######################################################################
+  # FRONTEND (Vite + Nginx)
+  #######################################################################
+  frontend:
+    build:
+      context: ./frontend/les_constructions_dominic_cyr
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080/api/v1
+        VITE_FILES_SERVICE_URL: ${VITE_FILES_SERVICE_URL:-http://localhost:8082}
+        VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
+        VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+    container_name: lcdci-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  #######################################################################
+  # BACKEND DATABASE
+  #######################################################################
+  postgres:
+    image: postgres:16
+    container_name: postgres-backend
+    environment:
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      POSTGRES_DB: lcdci
+    ports:
+      - "5434:5432"
+    volumes:
+        - backend-db-data:/var/lib/postgresql/data
+        # Mount schema.sql and data.sql for local dev initialization
+        - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+        - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d lcdci"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  #######################################################################
+  # FILES-SERVICE (Go)
+  #######################################################################
+  files-service:
+    build:
+      context: ./files-service
+      dockerfile: Dockerfile
+    container_name: files-service
+    ports:
+      - "8082:8080"
+    environment:
+      DB_URL: ${FILES_DB_URL}
+
+      FILES_STORAGE_TYPE: minio
+
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_USE_SSL: "false"
+      MINIO_REGION: us-east-1
+    depends_on:
+      files-db:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    networks:
+      - app-network
+
+  #######################################################################
+  # FILES DATABASE
+  #######################################################################
+  files-db:
+    image: postgres:16
+    container_name: postgres-files
+    environment:
+      POSTGRES_USER: ${FILES_DB_USER}
+      POSTGRES_PASSWORD: ${FILES_DB_PASSWORD}
+      POSTGRES_DB: ${FILES_DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - files-db-data:/var/lib/postgresql/data
+        # Files-service manages its own schema via migrations
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${FILES_DB_USER} -d ${FILES_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  #######################################################################
+  # MINIO (LOCAL STORAGE)
+  #######################################################################
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio-data:/data
+    networks:
+      - app-network
+
+#######################################################################
+# VOLUMES & NETWORK
+#######################################################################
+volumes:
+  backend-db-data:
+  files-db-data:
+  minio-data:
+
+networks:
+  app-network:
+    driver: bridge
