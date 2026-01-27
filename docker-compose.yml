@@ -55,7 +55,7 @@ services:
 
     depends_on:
       files-service:
-        condition: service_starte
+        condition: service_started
 
     networks:
       - app-network
