@@ -1,5 +1,6 @@
-services:
+version: "3.9"
 
+services:
   #######################################################################
   # BACKEND (Spring Boot)
   #######################################################################
@@ -10,43 +11,56 @@ services:
     container_name: backend
     ports:
       - "8080:8080"
-    command: [ "java", "-jar", "app.jar" ]
+    command: ["java", "-jar", "app.jar"]
     environment:
+      # Service-to-service communication inside the Docker network
       FILES_SERVICE_BASE_URL: "http://files-service:8080"
-      FILE_SERVICE_URL: "${FILE_SERVICE_URL}"
+
+      # Database (managed Postgres in DigitalOcean)
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+
+      # Profile
       SPRING_PROFILES_ACTIVE: "docker"
+
+      # Tomcat relaxed chars
       SERVER_TOMCAT_RELAXED_PATH_CHARS: "|,%,[,]"
       SERVER_TOMCAT_RELAXED_QUERY_CHARS: "|,%,[,]"
+      
+      # Auth0 / JWT
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "https://${AUTH0_DOMAIN}/"
-      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
-      AUTH0_MGMT_CLIENT_ID: ${AUTH0_MGMT_CLIENT_ID}
-      AUTH0_MGMT_CLIENT_SECRET: ${AUTH0_MGMT_CLIENT_SECRET}
-      AUTH0_DB_CONNECTION: ${AUTH0_DB_CONNECTION}
-      AUTH0_ROLE_CONTRACTOR: ${AUTH0_ROLE_CONTRACTOR}
-      AUTH0_ROLE_CUSTOMER: ${AUTH0_ROLE_CUSTOMER}
-      AUTH0_ROLE_SALESPERSON: ${AUTH0_ROLE_SALESPERSON}
-      AUTH0_ROLE_OWNER: ${AUTH0_ROLE_OWNER}
-      APP_INVITE_RESULT_URL: ${APP_INVITE_RESULT_URL}
-      GOOGLE_ANALYTICS_PROPERTY_ID: ${GA_PROPERTY_ID}
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
+
+      # Auth0 mgmt (only if backend really needs it in prod)
+      AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
+      AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
+      AUTH0_DB_CONNECTION: "${AUTH0_DB_CONNECTION}"
+      AUTH0_ROLE_CONTRACTOR: "${AUTH0_ROLE_CONTRACTOR}"
+      AUTH0_ROLE_CUSTOMER: "${AUTH0_ROLE_CUSTOMER}"
+      AUTH0_ROLE_SALESPERSON: "${AUTH0_ROLE_SALESPERSON}"
+      AUTH0_ROLE_OWNER: "${AUTH0_ROLE_OWNER}"
+
+      # App links
+      APP_INVITE_RESULT_URL: "${APP_INVITE_RESULT_URL}"
+
+      # Google Analytics (server side)
+      GOOGLE_ANALYTICS_PROPERTY_ID: "${GA_PROPERTY_ID}"
       GOOGLE_ANALYTICS_CREDENTIALS_PATH: "/app/config/google-analytics-credentials.json"
 
     volumes:
       - ${GA_CREDENTIALS_PATH}:/app/config/google-analytics-credentials.json:ro
-    
+
     depends_on:
       files-service:
         condition: service_started
-      postgres1:
-        condition: service_healthy
-        required: false
+
     networks:
       - app-network
 
-    #######################################################################
+  #######################################################################
   # FRONTEND (Vite built + nginx)
   #######################################################################
   frontend:
@@ -58,59 +72,17 @@ services:
         - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN:-${AUTH0_DOMAIN}}
         - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID:-${AUTH0_CLIENT_ID}}
         - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE:-${AUTH0_AUDIENCE}}
+        - VITE_FILES_SERVICE_URL=${VITE_FILES_SERVICE_URL:-/files}
     container_name: lcdci-frontend
     ports:
       - "3000:80"
-    environment:
-      - BACKEND_URL=http://backend:8080
-      - VITE_API_BASE=${VITE_API_BASE:-/api/v1}
-      - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN:-${AUTH0_DOMAIN}}
-      - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID:-${AUTH0_CLIENT_ID}}
-      - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE:-${AUTH0_AUDIENCE}}
     depends_on:
       - backend
     networks:
       - app-network
-  #######################################################################
-  # POSTGRES (database)
-  #######################################################################
-  postgres1:
-    profiles:
-      - local-only
-    image: postgres:16
-    container_name: postgres1-cdc
-    hostname: postgres1
-    environment:
-      - POSTGRES_USER=user
-      - PGUSER=user
-      - POSTGRES_PASSWORD=pwd
-      - POSTGRES_DB=cdc-db
-    ports:
-      - "5434:5432"
-    volumes:
-      - cdc-db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d cdc-db"]
-      interval: 3s
-      timeout: 5s
-      retries: 5
-    networks:
-      - app-network
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin-cdc
-    restart: always
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=constructions.dcyr@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-    ports:
-      - 9005:80
-    networks:
-      - app-network
   #######################################################################
-  # FILES-SERVICE (Go + Gin + Postgres + S3-compatible storage)
-  # Supports both local MinIO and DigitalOcean Spaces
+  # FILES-SERVICE (Go + Gin + Spaces)
   #######################################################################
   files-service:
     build:
@@ -120,81 +92,41 @@ services:
     ports:
       - "8082:8080"   # external 8082 -> internal 8080
     environment:
-      DB_URL: "${FILES_DB_URL:-postgresql://files-db:5432/files_db?sslmode=disable}"
-      # S3-compatible storage configuration (works with MinIO or DigitalOcean Spaces)
-      MINIO_ENDPOINT: "${SPACES_ENDPOINT:-minio:9000}"
-      MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY:-${MINIO_ROOT_USER}}"
-      MINIO_SECRET_KEY: "${SPACES_SECRET_KEY:-${MINIO_ROOT_PASSWORD}}"
-      MINIO_BUCKET: "${SPACES_BUCKET:-project-files}"
-      MINIO_USE_SSL: "${MINIO_USE_SSL:-false}"
-      MINIO_REGION: "${SPACES_REGION:-us-east-1}"
-    healthcheck:
-      test: [ "CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/health || exit 1" ]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-      start_period: 10s
-    networks:
-      - app-network
+      # Managed Postgres for files-service
+      DB_URL: "${FILES_DB_URL}"
 
-  #######################################################################
-  # POSTGRES (files database)
-  #######################################################################
-  files-db:
-    profiles:
-      - local-db
-    image: postgres:16
-    container_name: files-db
-    restart: always
-    environment:
-      POSTGRES_USER: "${FILES_DB_USER}"
-      POSTGRES_PASSWORD: "${FILES_DB_PASSWORD}"
-      POSTGRES_DB: "${FILES_DB_NAME}"
-    ports:
-      - "5433:5432"
-    volumes:
-      - ./files-service/migrations:/docker-entrypoint-initdb.d
-      - ./data/files-db:/var/lib/postgresql/data
+      # Explicit storage selection (no magic fallbacks)
+      FILES_STORAGE_TYPE: "spaces"
+
+      # DigitalOcean Spaces credentials
+      SPACES_ENDPOINT: "${SPACES_ENDPOINT}"
+      SPACES_BUCKET: "${SPACES_BUCKET}"
+      SPACES_REGION: "${SPACES_REGION}"
+      SPACES_ACCESS_KEY: "${SPACES_ACCESS_KEY}"
+      SPACES_SECRET_KEY: "${SPACES_SECRET_KEY}"
+
+      # Optional: if your files-service internally still uses MINIO_* naming,
+      # you can map them too, but it's better to update code to read SPACES_*
+      # MINIO_ENDPOINT: "${SPACES_ENDPOINT}"
+      # MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY}"
+      # MINIO_SECRET_KEY: "${SPACES_SECRET_KEY}"
+      # MINIO_BUCKET: "${SPACES_BUCKET}"
+      # MINIO_USE_SSL: "true"
+      # MINIO_REGION: "${SPACES_REGION}"
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${FILES_DB_USER} -d ${FILES_DB_NAME}"]
-      interval: 5s
+      test: ["CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/health || exit 1"]
+      interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 25s
-    networks:
-      - app-network
+      retries: 5
+      start_period: 15s
 
-  #######################################################################
-  # MINIO (S3-compatible object storage) - LOCAL DEVELOPMENT ONLY
-  # Use 'docker compose --profile local-minio up' to start with MinIO
-  # For production, use DigitalOcean Spaces with SPACES_* env vars
-  #######################################################################
-  minio:
-    profiles:
-      - local-minio
-    image: minio/minio:latest
-    container_name: minio
-    environment:
-      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
-      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
-    command: server /data --console-address ":9001"
-    ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # MinIO dashboard
-    volumes:
-      - ./data/minio:/data
-      #- "${ONEDRIVE_MINIO_PATH}:/data"
     networks:
       - app-network
 
 #######################################################################
-# VOLUMES & NETWORK
+# NETWORK
 #######################################################################
-volumes:
-  cdc-db-data:
-  files-db-data:
-  minio-data:
-
 networks:
   app-network:
     driver: bridge
