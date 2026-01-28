@@ -251,3 +251,17 @@ CREATE TABLE IF NOT EXISTS analytics_reports (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- schema for inquiries
+DROP TABLE IF EXISTS inquiries CASCADE;
+CREATE TABLE inquiries (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    email VARCHAR(200) NOT NULL,
+    phone VARCHAR(30),
+    message VARCHAR(1000) NOT NULL,
+
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_inquiries_created_at ON inquiries(created_at DESC);
