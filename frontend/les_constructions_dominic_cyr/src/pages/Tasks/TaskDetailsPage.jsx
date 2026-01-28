@@ -283,7 +283,7 @@ const TaskDetailsPage = () => {
       }
 
       setEditError(msg);
-    } finally{
+    } finally {
       setIsSavingEdit(false);
     }
   };
@@ -310,10 +310,11 @@ const TaskDetailsPage = () => {
       await taskApi.deleteTask(taskId, token);
 
       // Navigate back to the previous page or project schedule
-      const projectId = task.projectId || task.projectIdentifier || location.state?.projectId;
+      const projectId =
+        task.projectId || task.projectIdentifier || location.state?.projectId;
       if (projectId) {
         navigate(`/projects/${projectId}/schedule`, {
-          state: { message: 'Task deleted successfully' }
+          state: { message: 'Task deleted successfully' },
         });
       } else {
         navigate(-1);
@@ -324,7 +325,8 @@ const TaskDetailsPage = () => {
         err?.response?.data?.message || err.message || 'Failed to delete task.';
 
       if (status === 403) {
-        msg = 'You do not have permission to delete this task. Only owners can delete tasks.';
+        msg =
+          'You do not have permission to delete this task. Only owners can delete tasks.';
       }
 
       setDeleteError(msg);
