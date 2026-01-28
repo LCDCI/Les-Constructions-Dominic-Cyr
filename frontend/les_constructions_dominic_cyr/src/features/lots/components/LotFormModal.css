@@ -18,7 +18,8 @@
   width: 100%;
   max-width: 600px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
@@ -28,6 +29,7 @@
   align-items: center;
   padding: 24px;
   border-bottom: 1px solid #eee;
+  flex-shrink: 0;
 }
 
 .lot-modal-header h2 {
@@ -64,6 +66,8 @@
 
 .lot-form {
   padding: 24px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .form-row {
@@ -120,6 +124,19 @@
   color: #e74c3c;
   font-size: 12px;
   margin-top: 4px;
+}
+
+.info-message {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: 8px;
+  border-left: 3px solid #1976d2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .form-actions {
