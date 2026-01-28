@@ -3,6 +3,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotRequestModel;
@@ -83,10 +84,17 @@ public class LotServiceImpl implements LotService{
 
         log.info("Set project on lot: {}", project.getProjectIdentifier());
 
-        // Handle customer assignment
+        // Handle customer assignment and automatically set status
         if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
             Users customer = getCustomerAndValidateRole(lotRequestModel.getAssignedCustomerId());
             lot.setAssignedCustomer(customer);
+
+            // Automatically set status to RESERVED when customer is assigned
+            // If status was explicitly set to SOLD in the request, keep it as SOLD
+            if (lot.getLotStatus() != LotStatus.SOLD) {
+                lot.setLotStatus(LotStatus.RESERVED);
+                log.info("Lot status automatically set to RESERVED due to customer assignment");
+            }
         }
 
         Lot savedLot = lotRepository.save(lot);
@@ -109,12 +117,24 @@ public class LotServiceImpl implements LotService{
         foundLot.setDimensionsSquareMeters(lotRequestModel.getDimensionsSquareMeters());
         foundLot.setLotStatus(lotRequestModel.getLotStatus());
 
-        // Handle customer assignment update
+        // Handle customer assignment update and automatically manage status
         if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
             Users customer = getCustomerAndValidateRole(lotRequestModel.getAssignedCustomerId());
             foundLot.setAssignedCustomer(customer);
+
+            // Automatically set status to RESERVED when customer is assigned
+            // If status was explicitly set to SOLD in the request, keep it as SOLD
+            if (foundLot.getLotStatus() != LotStatus.SOLD) {
+                foundLot.setLotStatus(LotStatus.RESERVED);
+                log.info("Lot status automatically set to RESERVED due to customer assignment");
+            }
         } else {
-            foundLot.setAssignedCustomer(null); // Allow unassigning
+            // When unassigning customer, revert to AVAILABLE unless it's SOLD
+            foundLot.setAssignedCustomer(null);
+            if (foundLot.getLotStatus() == LotStatus.RESERVED) {
+                foundLot.setLotStatus(LotStatus.AVAILABLE);
+                log.info("Lot status automatically set to AVAILABLE due to customer unassignment");
+            }
         }
 
         Lot updatedLot = lotRepository.save(foundLot);

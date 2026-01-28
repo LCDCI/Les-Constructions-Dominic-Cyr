@@ -199,6 +199,22 @@ const LotFormModal = ({
           </div>
 
           <div className="form-group">
+            <label htmlFor="assignedCustomer">Assigned Customer</label>
+            <UserSelector
+              value={formData.assignedCustomerId}
+              onChange={value => handleChange('assignedCustomerId', value)}
+              token={token}
+              placeholder="Select a customer (optional)..."
+            />
+            {formData.assignedCustomerId && formData.lotStatus !== 'SOLD' && (
+              <div className="info-message">
+                ℹ️ Lot status will automatically be set to "Reserved" when a
+                customer is assigned
+              </div>
+            )}
+          </div>
+
+          <div className="form-group">
             <label htmlFor="price">Price (CAD)</label>
             <input
               id="price"
@@ -258,16 +274,6 @@ const LotFormModal = ({
                 </span>
               )}
             </div>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="assignedCustomer">Assigned Customer</label>
-            <UserSelector
-              value={formData.assignedCustomerId}
-              onChange={value => handleChange('assignedCustomerId', value)}
-              token={token}
-              placeholder="Select a customer (optional)..."
-            />
           </div>
 
           <div className="form-actions">
