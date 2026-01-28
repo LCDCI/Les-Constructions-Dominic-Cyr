@@ -6,7 +6,7 @@
   padding: 2.5% 5%;
   width: 100%;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--color-white, #ffffff);
   margin: 0;
   position: relative;
   text-align: center;
@@ -24,7 +24,7 @@
 .error-icon {
   font-size: 120px;
   font-weight: 700;
-  color: #034f84;
+  color: var(--color-secondary, #aab2a6);
   line-height: 1;
   margin-bottom: 1.5%;
   opacity: 1;
@@ -35,19 +35,19 @@
   font-size: 32px;
   font-weight: 600;
   margin: 0 0 1% 0;
-  color: #222;
+  color: var(--color-primary, #4c4d4f);
 }
 
 .error-message {
   font-size: 18px;
-  color: #222;
+  color: var(--color-text, #333333);
   margin: 0 0 0.75% 0;
   font-weight: 500;
 }
 
 .error-description {
   font-size: 16px;
-  color: #555;
+  color: var(--color-text-muted, #6b7280);
   margin: 0 0 2% 0;
   line-height: 1.6;
 }
@@ -55,8 +55,8 @@
 .error-button {
   display: inline-block;
   padding: 12px 24px;
-  background: #034f84;
-  color: #fff;
+  background: var(--color-secondary, #aab2a6);
+  color: var(--color-white, #ffffff);
   text-decoration: none;
   border-radius: 6px;
   font-weight: 500;
@@ -64,12 +64,14 @@
 }
 
 .error-button:hover {
-  background: #023a63;
-  color: #fff;
+  background: var(--color-secondary, #aab2a6);
+  filter: brightness(0.85);
+  color: var(--color-white, #ffffff);
 }
 
 .error-button:active {
-  background: #012a4a;
+  background: var(--color-secondary, #aab2a6);
+  filter: brightness(0.75);
 }
 
 /* Mobile responsive styles */
@@ -152,18 +154,18 @@
 .error-content h1 {
   font-size: 36px;
   margin-bottom: 16px;
-  color: #dc3545;
+  color: var(--color-primary, #4c4d4f);
 }
 
 .error-content p {
   font-size: 18px;
-  color: #333;
+  color: var(--color-text, #333333);
   margin-bottom: 12px;
 }
 
 .error-hint {
   font-size: 14px;
-  color: #666;
+  color: var(--color-text-muted, #6b7280);
   margin-bottom: 24px;
 }
 
@@ -177,8 +179,8 @@
 .error-actions .btn-primary {
   display: inline-block;
   padding: 12px 24px;
-  background: #034f84;
-  color: #fff;
+  background: var(--color-secondary, #aab2a6);
+  color: var(--color-white, #ffffff);
   text-decoration: none;
   border-radius: 6px;
   font-weight: 500;
@@ -186,14 +188,15 @@
 }
 
 .error-actions .btn-primary:hover {
-  background: #023a63;
+  background: var(--color-secondary, #aab2a6);
+  filter: brightness(0.85);
 }
 
 .error-actions .btn-secondary {
   display: inline-block;
   padding: 12px 24px;
-  background: #f0f0f0;
-  color: #333;
+  background: var(--color-light, #e6e7e8);
+  color: var(--color-text, #333333);
   text-decoration: none;
   border-radius: 6px;
   font-weight: 500;
@@ -201,7 +204,8 @@
 }
 
 .error-actions .btn-secondary:hover {
-  background: #e0e0e0;
+  background: var(--color-light, #e6e7e8);
+  filter: brightness(0.9);
 }
 
 @media (max-width: 480px) {
