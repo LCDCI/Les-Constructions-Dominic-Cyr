@@ -199,19 +199,19 @@ const LotFormModal = ({
           </div>
 
           <div className="form-group">
-            <label htmlFor="assignedCustomer">Assigned Customer</label>
-            <UserSelector
-              value={formData.assignedCustomerId}
-              onChange={value => handleChange('assignedCustomerId', value)}
-              token={token}
-              placeholder="Select a customer (optional)..."
+            <label htmlFor="price">Price (CAD)</label>
+            <input
+              id="price"
+              type="number"
+              step="0.01"
+              min="0"
+              value={formData.price}
+              onChange={e => handleChange('price', e.target.value)}
+              placeholder="e.g., 150000"
+              disabled={isSubmitting}
+              className={errors.price ? 'error' : ''}
             />
-            {formData.assignedCustomerId && formData.lotStatus !== 'SOLD' && (
-              <div className="info-message">
-                ℹ️ Lot status will automatically be set
-                to&quot;Reserved&quot;when a customer is assigned
-              </div>
-            )}
+            {errors.price && <span className="error-text">{errors.price}</span>}
           </div>
 
           <div className="form-row">
@@ -261,19 +261,13 @@ const LotFormModal = ({
           </div>
 
           <div className="form-group">
-            <label htmlFor="price">Price (CAD)</label>
-            <input
-              id="price"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.price}
-              onChange={e => handleChange('price', e.target.value)}
-              placeholder="e.g., 150000"
-              disabled={isSubmitting}
-              className={errors.price ? 'error' : ''}
+            <label htmlFor="assignedCustomer">Assigned Customer</label>
+            <UserSelector
+              value={formData.assignedCustomerId}
+              onChange={value => handleChange('assignedCustomerId', value)}
+              token={token}
+              placeholder="Select a customer (optional)..."
             />
-            {errors.price && <span className="error-text">{errors.price}</span>}
           </div>
 
           <div className="form-actions">
