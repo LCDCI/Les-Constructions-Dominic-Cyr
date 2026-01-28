@@ -74,9 +74,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers("/api/v1/users/**").hasAuthority("ROLE_OWNER")
 
-                        // Task updates (allow contractor and owner) — placed before the broader owners/** rule
+                        // Task Management - Allow OWNER and CONTRACTOR to view/edit all tasks, only OWNER can delete
+                        .requestMatchers(HttpMethod.GET, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/tasks/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
 
