@@ -3,6 +3,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Pre
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.InquiryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 import java.util.List;
@@ -33,6 +34,7 @@ public class InquiryController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public ResponseEntity<?> getAllInquiries() {
         List<InquiryResponseModel> inquiries = service.getAllInquiries();
         return ResponseEntity.ok(inquiries);
