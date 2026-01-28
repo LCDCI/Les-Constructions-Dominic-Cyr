@@ -1,0 +1,31 @@
+{
+  "header": {
+    "foresta": "FÖRESTA, UN",
+    "livingEnvironment": "MILIEU DE VIE",
+    "exceptional": "EXCEPTIONNEL",
+    "tagline": "Au rythme de la nature"
+  },
+  "description": {
+    "main": "Un milieu de vie exceptionnel pour ceux qui rêvent de s'évader du quotidien et de se reconnecter à l'essentiel, le projet Fõresta offre l'opportunité d'habiter une demeure au cœur de la nature. Ce nouveau quartier est situé à 5 km de l'autoroute 10 (A-10), à 15 minutes du centre-ville de Granby et à portée de main d'une panoplie de services et d'activités. Les adeptes de plein air seront comblés."
+  },
+  "proximity": {
+    "title": "À PROXIMITÉ DE TOUT !"
+  },
+  "amenities": {
+    "ski": "Ski",
+    "golf": "Golf",
+    "bike": "Vélo",
+    "bromont": "Bromont",
+    "yamaska": "Parc National de la Yamaska",
+    "vineyards": "Vergers & Vignobles",
+    "restaurants": "Restaurants",
+    "groceries": "Épiceries",
+    "stores": "Magasins",
+    "hospitals": "Hôpitaux",
+    "schools": "Écoles",
+    "spas": "Spas"
+  },
+  "footer": {
+    "signature": "FÖRESTA est un projet signé Les Constructions Dominic Cyr inc."
+  }
+}
