@@ -2,14 +2,12 @@
 .app-footer[data-project='proj-001-foresta'] {
   --icon-primary: #003663;
   --icon-secondary: #a9b3aa;
-  --icon-tertiary: #dfe1df;
 }
 
 /* Panorama Project Colors */
 .app-footer[data-project='proj-002-panorama'] {
   --icon-primary: #545454;
   --icon-secondary: #737373;
-  --icon-tertiary: #b29e84;
 }
 
 .app-footer {
