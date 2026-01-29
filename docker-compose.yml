@@ -93,29 +93,18 @@ services:
       - "8082:8080"   # external 8082 -> internal 8080
     environment:
       # Managed Postgres for files-service
-      DB_URL: "${FILES_DB_URL}"
+      DB_URL: "${DB_URL}"
 
-      # Explicit storage selection (no magic fallbacks)
-      FILES_STORAGE_TYPE: "spaces"
-
-      # DigitalOcean Spaces credentials
-      SPACES_ENDPOINT: "${SPACES_ENDPOINT}"
-      SPACES_BUCKET: "${SPACES_BUCKET}"
-      SPACES_REGION: "${SPACES_REGION}"
-      SPACES_ACCESS_KEY: "${SPACES_ACCESS_KEY}"
-      SPACES_SECRET_KEY: "${SPACES_SECRET_KEY}"
-
-      # Optional: if your files-service internally still uses MINIO_* naming,
-      # you can map them too, but it's better to update code to read SPACES_*
-      # MINIO_ENDPOINT: "${SPACES_ENDPOINT}"
-      # MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY}"
-      # MINIO_SECRET_KEY: "${SPACES_SECRET_KEY}"
-      # MINIO_BUCKET: "${SPACES_BUCKET}"
-      # MINIO_USE_SSL: "true"
-      # MINIO_REGION: "${SPACES_REGION}"
+      # Files-service uses MINIO_* variables (mapped to DigitalOcean Spaces in production)
+      MINIO_ENDPOINT: "${SPACES_ENDPOINT}"
+      MINIO_BUCKET: "${SPACES_BUCKET}"
+      MINIO_REGION: "${SPACES_REGION}"
+      MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY}"
+      MINIO_SECRET_KEY: "${SPACES_SECRET_KEY}"
+      MINIO_USE_SSL: "true"
 
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/health || exit 1"]
+      test: ["CMD-SHELL", "curl --fail --silent --max-time 5 http://files-service:8080/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
