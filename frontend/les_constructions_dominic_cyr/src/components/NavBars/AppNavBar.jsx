@@ -10,6 +10,7 @@ import OwnerNavBar from '../../components/NavBars/OwnerNavBar';
 import SalespersonNavBar from '../../components/NavBars/SalespersonNavBar';
 import ContractorNavBar from '../../components/NavBars/ContractorNavBar';
 import CustomerNavBar from '../../components/NavBars/CustomerNavBar';
+import logoImage from '../../../LOGO_DM.png';
 
 function clearAppSession() {
   const APP_KEYS = [
@@ -86,45 +87,45 @@ export default function AppNavBar() {
 
         <nav className="desktop-nav">
           <NavLink
-            to="/"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            {t('nav.home', 'Accueil')}
-          </NavLink>
-
-          <NavLink
             to="/residential-projects"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.projects', 'Projets résidentiels')}
+            {t('nav.projects', 'Residential Projects')}
           </NavLink>
 
           <NavLink
             to="/renovations"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.renovation', 'Rénovation')}
+            {t('nav.renovation', 'Renovations')}
+          </NavLink>
+
+          <NavLink to="/" className="brand">
+            <img
+              src={logoImage}
+              alt="Les Constructions Dominic Cyr"
+              className="logo-image"
+              onClick={(e) => {
+                if (window.innerWidth <= 768 && !isMobileMenuOpen) {
+                  e.preventDefault();
+                  setIsMobileMenuOpen(true);
+                }
+              }}
+            />
           </NavLink>
 
           <NavLink
             to="/projectmanagement"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.projectManagement', 'Gestion de projet')}
+            {t('nav.projectManagement', 'Project Management')}
           </NavLink>
 
           <NavLink
             to="/realizations"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.realizations', 'Réalisations')}
-          </NavLink>
-
-          <NavLink
-            to="/contact"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            Contact
+            {t('nav.realizations', 'Realizations')}
           </NavLink>
         </nav>
 
@@ -168,19 +169,11 @@ export default function AppNavBar() {
 
       <nav className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
         <NavLink
-          to="/"
-          className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          {t('nav.home', 'Accueil')}
-        </NavLink>
-
-        <NavLink
           to="/residential-projects"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          {t('nav.projects', 'Projets résidentiels')}
+          {t('nav.projects', 'Residential Projects')}
         </NavLink>
 
         <NavLink
@@ -188,7 +181,7 @@ export default function AppNavBar() {
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          {t('nav.renovation', 'Rénovation')}
+          {t('nav.renovation', 'Renovations')}
         </NavLink>
 
         <NavLink
@@ -196,23 +189,15 @@ export default function AppNavBar() {
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          {t('nav.projectManagement', 'Gestion de projet')}
+          {t('nav.projectManagement', 'Project Management')}
         </NavLink>
 
         <NavLink
-          to="/realisations"
+          to="/realizations"
           className={({ isActive }) => (isActive ? 'active' : '')}
           onClick={() => setIsMobileMenuOpen(false)}
         >
-          {t('nav.realisations', 'Réalisations')}
-        </NavLink>
-
-        <NavLink
-          to="/contact"
-          className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Contact
+          {t('nav.realizations', 'Realizations')}
         </NavLink>
 
         <div className="mobile-actions">

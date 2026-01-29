@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaUser, FaClock, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaClock, FaMapMarkerAlt, FaIdCard } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Footers/ProjectsFooter.css';
 
@@ -9,29 +9,6 @@ export default function AppFooter() {
   return (
     <footer className="app-footer">
       <div className="footer-inner">
-        <div className="footer-section">
-          <div className="footer-icon">
-            <FaUser />
-          </div>
-          <h3 className="footer-title">
-            {t('footer.contactTitle', 'Contact')}
-          </h3>
-          <div className="footer-content">
-            <p className="footer-item">
-              {t('footer.contactName', 'Isabelle Misiazeck')}
-            </p>
-            <p className="footer-item">
-              {t('footer.contactPhone', '514-123-4567')}
-            </p>
-            <a
-              href={`mailto:${t('footer.contactEmail', 'isabelle.misiazeck@foresta.ca')}`}
-              className="footer-link"
-            >
-              {t('footer.contactEmail', 'isabelle.misiazeck@foresta.ca')}
-            </a>
-          </div>
-        </div>
-
         <div className="footer-section">
           <div className="footer-icon">
             <FaClock />
@@ -68,6 +45,18 @@ export default function AppFooter() {
             <p className="footer-item">
               {t('footer.officeAddress3', 'Granby, QC J2J 2X4')}
             </p>
+          </div>
+        </div>
+
+        <div className="footer-section">
+          <div className="footer-icon">
+            <FaIdCard />
+          </div>
+          <h3 className="footer-title">{t('footer.contactTitle', 'Contact')}</h3>
+          <div className="footer-content">
+            <a href="/contact" className="footer-link">
+              {t('footer.contactUs', 'Contact Us')}
+            </a>
           </div>
         </div>
       </div>
