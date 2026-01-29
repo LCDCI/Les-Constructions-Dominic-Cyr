@@ -64,6 +64,10 @@ public class TranslationRegistry {
         fileIdMap.put("en.ownerlots", "62178381-21ab-415a-a604-9d80c5d7774a");
         fileIdMap.put("fr.ownerlots", "29509c00-9273-4df9-96ae-6fba61a0d1b4");
 
+        // Living Environment page translations
+        fileIdMap.put("en.livingenvironment", "PLACEHOLDER_EN_LIVINGENVIRONMENT");
+        fileIdMap.put("fr.livingenvironment", "PLACEHOLDER_FR_LIVINGENVIRONMENT");
+
     }
     
     /**
