@@ -175,3 +175,60 @@
   background-color: #dc2626 !important;
   transform: none !important;
 }
+
+/* Assigned users styles for owner lot list */
+.users-cell {
+  padding: 12px 15px !important;
+}
+
+.assigned-users-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assigned-user-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.assigned-user-item .user-name {
+  font-weight: 500;
+  color: #334155;
+  font-size: 0.85rem;
+}
+
+.no-users {
+  color: #94a3b8;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+/* Role badges */
+.role-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.role-badge.customer {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.role-badge.contractor {
+  background: #e5e7eb;
+  color: #4b5563;
+}
+
+.role-badge.salesperson {
+  background: #e5e7eb;
+  color: #4b5563;
+}

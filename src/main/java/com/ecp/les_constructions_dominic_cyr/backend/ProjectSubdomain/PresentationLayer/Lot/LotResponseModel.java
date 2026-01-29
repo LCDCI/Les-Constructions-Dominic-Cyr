@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,11 +20,23 @@ public class LotResponseModel {
     private String dimensionsSquareFeet;
     private String dimensionsSquareMeters;
     private LotStatus lotStatus;
-    private String assignedCustomerId;
-    private String assignedCustomerName;
-    
+
+    // Support multiple assigned users
+    private List<AssignedUserInfo> assignedUsers;
+
     // Project information (like Schedule does)
     private Long projectId;
     private String projectIdentifier;
     private String projectName;
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AssignedUserInfo {
+        private String userId;
+        private String fullName;
+        private String email;
+        private String role;
+    }
 }

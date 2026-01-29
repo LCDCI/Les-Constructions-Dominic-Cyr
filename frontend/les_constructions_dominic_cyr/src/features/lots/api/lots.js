@@ -74,7 +74,7 @@ export async function createLot({ projectIdentifier, lotData, token }) {
 
   const payload = {
     ...lotData,
-    assignedCustomerId: lotData?.assignedCustomerId || null,
+    assignedUserIds: lotData?.assignedUserIds || [],
     projectId,
     projectIdentifier: projectId,
   };
@@ -109,7 +109,7 @@ export async function updateLot({ projectIdentifier, lotId, lotData, token }) {
 
   const payload = {
     ...lotData,
-    assignedCustomerId: lotData?.assignedCustomerId || null,
+    assignedUserIds: lotData?.assignedUserIds || [],
     projectId,
     projectIdentifier: projectId,
   };

@@ -8,7 +8,6 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotResponseModel;
-import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
@@ -21,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -84,16 +84,15 @@ public class LotServiceImpl implements LotService{
 
         log.info("Set project on lot: {}", project.getProjectIdentifier());
 
-        // Handle customer assignment and automatically set status
-        if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
-            Users customer = getCustomerAndValidateRole(lotRequestModel.getAssignedCustomerId());
-            lot.setAssignedCustomer(customer);
+        // Handle multiple user assignments (any role)
+        if (lotRequestModel.getAssignedUserIds() != null && !lotRequestModel.getAssignedUserIds().isEmpty()) {
+            List<Users> assignedUsers = getUsersByIds(lotRequestModel.getAssignedUserIds());
+            lot.setAssignedUsers(assignedUsers);
 
-            // Automatically set status to RESERVED when customer is assigned
-            // If status was explicitly set to SOLD in the request, keep it as SOLD
+            // Automatically set status to RESERVED when users are assigned (if not SOLD)
             if (lot.getLotStatus() != LotStatus.SOLD) {
                 lot.setLotStatus(LotStatus.RESERVED);
-                log.info("Lot status automatically set to RESERVED due to customer assignment");
+                log.info("Lot status automatically set to RESERVED due to user assignment");
             }
         }
 
@@ -117,23 +116,22 @@ public class LotServiceImpl implements LotService{
         foundLot.setDimensionsSquareMeters(lotRequestModel.getDimensionsSquareMeters());
         foundLot.setLotStatus(lotRequestModel.getLotStatus());
 
-        // Handle customer assignment update and automatically manage status
-        if (lotRequestModel.getAssignedCustomerId() != null && !lotRequestModel.getAssignedCustomerId().isBlank()) {
-            Users customer = getCustomerAndValidateRole(lotRequestModel.getAssignedCustomerId());
-            foundLot.setAssignedCustomer(customer);
+        // Handle multiple user assignments update
+        if (lotRequestModel.getAssignedUserIds() != null && !lotRequestModel.getAssignedUserIds().isEmpty()) {
+            List<Users> assignedUsers = getUsersByIds(lotRequestModel.getAssignedUserIds());
+            foundLot.setAssignedUsers(assignedUsers);
 
-            // Automatically set status to RESERVED when customer is assigned
-            // If status was explicitly set to SOLD in the request, keep it as SOLD
+            // Automatically set status to RESERVED when users are assigned (if not SOLD)
             if (foundLot.getLotStatus() != LotStatus.SOLD) {
                 foundLot.setLotStatus(LotStatus.RESERVED);
-                log.info("Lot status automatically set to RESERVED due to customer assignment");
+                log.info("Lot status automatically set to RESERVED due to user assignment");
             }
         } else {
-            // When unassigning customer, revert to AVAILABLE unless it's SOLD
-            foundLot.setAssignedCustomer(null);
+            // When unassigning all users, revert to AVAILABLE unless it's SOLD
+            foundLot.setAssignedUsers(new ArrayList<>());
             if (foundLot.getLotStatus() == LotStatus.RESERVED) {
                 foundLot.setLotStatus(LotStatus.AVAILABLE);
-                log.info("Lot status automatically set to AVAILABLE due to customer unassignment");
+                log.info("Lot status automatically set to AVAILABLE due to user unassignment");
             }
         }
 
@@ -151,20 +149,19 @@ public class LotServiceImpl implements LotService{
         lotRepository.delete(foundLot);
     }
 
-    private Users getCustomerAndValidateRole(String customerId) {
-        try {
-            UUID customerUuid = UUID.fromString(customerId);
-            Users customer = usersRepository.findByUserIdentifier_UserId(customerUuid)
-                    .orElseThrow(() -> new NotFoundException("Customer not found with ID: " + customerId));
-
-            if (customer.getUserRole() != UserRole.CUSTOMER) {
-                throw new InvalidInputException("User must have CUSTOMER role to be assigned to a lot");
+    private List<Users> getUsersByIds(List<String> userIds) {
+        List<Users> users = new ArrayList<>();
+        for (String userId : userIds) {
+            try {
+                UUID userUuid = UUID.fromString(userId);
+                Users user = usersRepository.findByUserIdentifier_UserId(userUuid)
+                        .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
+                users.add(user);
+            } catch (IllegalArgumentException e) {
+                throw new InvalidInputException("Invalid user ID format: " + userId);
             }
-
-            return customer;
-        } catch (IllegalArgumentException e) {
-            throw new InvalidInputException("Invalid customer ID format: " + customerId);
         }
+        return users;
     }
 
     private LotResponseModel mapToResponse(Lot lot) {
@@ -184,10 +181,19 @@ public class LotServiceImpl implements LotService{
             dto.setProjectName(lot.getProject().getProjectName());
         }
 
-        // Map assigned customer
-        if (lot.getAssignedCustomer() != null) {
-            dto.setAssignedCustomerId(lot.getAssignedCustomer().getUserIdentifier().getUserId().toString());
-            dto.setAssignedCustomerName(lot.getAssignedCustomer().getFirstName() + " " + lot.getAssignedCustomer().getLastName());
+        // Map assigned users
+        if (lot.getAssignedUsers() != null && !lot.getAssignedUsers().isEmpty()) {
+            List<LotResponseModel.AssignedUserInfo> assignedUserInfoList = lot.getAssignedUsers().stream()
+                    .map(user -> LotResponseModel.AssignedUserInfo.builder()
+                            .userId(user.getUserIdentifier().getUserId().toString())
+                            .fullName(user.getFirstName() + " " + user.getLastName())
+                            .email(user.getPrimaryEmail())
+                            .role(user.getUserRole() != null ? user.getUserRole().name() : "UNKNOWN")
+                            .build())
+                    .collect(Collectors.toList());
+            dto.setAssignedUsers(assignedUserInfoList);
+        } else {
+            dto.setAssignedUsers(new ArrayList<>());
         }
 
         return dto;
