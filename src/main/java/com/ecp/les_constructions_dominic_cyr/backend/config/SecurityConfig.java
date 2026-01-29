@@ -46,6 +46,21 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origins}")
     private List<String> allowedOrigins;
 
+    // Filter chain for health check endpoint (no authentication required)
+    @Bean
+    @Order(-1)
+    public SecurityFilterChain actuatorHealthFilterChain(HttpSecurity http) throws Exception {
+        RequestMatcher healthMatcher = new AntPathRequestMatcher("/actuator/health");
+        
+        http
+            .securityMatcher(healthMatcher)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            );
+        return http.build();
+    }
+
     // Filter chain for public inquiry submission (POST/OPTIONS only) - with rate limiting
     @Bean
     @Order(0)
