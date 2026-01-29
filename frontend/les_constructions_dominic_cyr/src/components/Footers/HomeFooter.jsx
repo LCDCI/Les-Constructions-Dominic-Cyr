@@ -20,7 +20,7 @@ export default function HomeFooter() {
             </p>
             <div className="footer-item-with-icon">
               <FaPhoneAlt className="footer-mini-icon" />
-              <p className="footer-item">450-536-0169</p>
+              <p className="footer-item">514-705-7848</p>
             </div>
             <div className="footer-item-with-icon">
               <FaEnvelope className="footer-mini-icon" />
