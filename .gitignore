@@ -56,6 +56,6 @@ frontend/les_constructions_dominic_cyr/dist/
 
 google-analytics-credentials.json
 
-# Database initialization scripts
-src/main/resources/data.sql
-src/main/resources/schema.sql
+# Database initialization scripts (ignore both data.sql and schema.sql anywhere)
+**/data.sql
+**/schema.sql
