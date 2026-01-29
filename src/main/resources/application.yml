@@ -38,8 +38,7 @@ spring:
 
   sql:
     init:
-      platform: psql
-      mode: always
+      mode: ${SPRING_SQL_INIT_MODE:never}
 
 server.port: 8080
 
