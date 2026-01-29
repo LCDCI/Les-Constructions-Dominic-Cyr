@@ -71,6 +71,25 @@
   flex-shrink: 0;
 }
 
+.dashboard-toggle {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dashboard-toggle .navbar-toggle {
+  margin-right: 0;
+}
+
+.dashboard-menu {
+  position: relative;
+}
+
+.dashboard-menu .navbar-overlay,
+.dashboard-menu .navbar-sidebar {
+  position: fixed;
+}
+
 .btn-portal {
   background: #aab2a6;
   border: none;
@@ -255,6 +274,24 @@
   right: 20px;
 }
 
+.mobile-logo-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.mobile-logo-menu {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
 .mobile-dashboard-menu {
   display: none;
   background: #ffffff;
@@ -283,11 +320,14 @@
   .site-nav-inner {
     display: flex;
     justify-content: center;
+    align-items: center;
     position: relative;
+    padding: 12px 0;
   }
 
+  /* Hide desktop elements */
   .brand {
-    margin: 0 auto;
+    display: none;
   }
 
   .desktop-nav {
@@ -298,15 +338,38 @@
     display: none;
   }
 
+  .dashboard-toggle {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Show mobile navigation */
   .mobile-nav {
     display: flex;
     padding: 12px 0;
   }
 
-  .mobile-hamburger {
+  /* Dashboard button - left side, only visible when authenticated */
+  .mobile-hamburger.left {
     display: block;
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 
+  /* Logo button - right side, always visible */
+  .mobile-logo-menu-button {
+    display: block;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  /* Dashboard menu dropdown */
   .mobile-dashboard-menu {
     display: block;
   }
