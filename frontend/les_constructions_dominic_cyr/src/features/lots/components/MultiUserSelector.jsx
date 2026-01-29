@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useEffect, useRef } from 'react';
 import { fetchUsers } from '../../users/api/usersApi';
 import { usePageTranslations } from '../../../hooks/usePageTranslations';
@@ -27,7 +28,9 @@ const MultiUserSelector = ({
         const allUsers = await fetchUsers(token);
         // Filter to only include contractors, customers, and salespersons
         const eligibleUsers = (allUsers || []).filter(user =>
-          ['CONTRACTOR', 'CUSTOMER', 'SALESPERSON'].includes(user.userRole?.toUpperCase())
+          ['CONTRACTOR', 'CUSTOMER', 'SALESPERSON'].includes(
+            user.userRole?.toUpperCase()
+          )
         );
         setUsers(eligibleUsers);
       } catch (err) {
@@ -57,7 +60,11 @@ const MultiUserSelector = ({
     const email = (user.primaryEmail || '').toLowerCase();
     const role = (user.userRole || '').toLowerCase();
     const search = searchTerm.toLowerCase();
-    return fullName.includes(search) || email.includes(search) || role.includes(search);
+    return (
+      fullName.includes(search) ||
+      email.includes(search) ||
+      role.includes(search)
+    );
   });
 
   const selectedUsers = users.filter(user =>
@@ -90,7 +97,7 @@ const MultiUserSelector = ({
     }
   };
 
-  const getTranslatedRole = (role) => {
+  const getTranslatedRole = role => {
     switch (role?.toUpperCase()) {
       case 'CUSTOMER':
         return t('roles.customer');
@@ -113,7 +120,9 @@ const MultiUserSelector = ({
           <div className="selected-users-chips">
             {selectedUsers.map(user => (
               <div key={user.userIdentifier} className="user-chip">
-                <span className="chip-name">{user.firstName} {user.lastName}</span>
+                <span className="chip-name">
+                  {user.firstName} {user.lastName}
+                </span>
                 <span className={getRoleBadgeClass(user.userRole)}>
                   {getTranslatedRole(user.userRole)}
                 </span>

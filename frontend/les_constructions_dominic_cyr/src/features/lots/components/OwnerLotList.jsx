@@ -28,15 +28,11 @@ function getRoleBadgeClass(role) {
   }
 }
 
-export default function OwnerLotList({
-  lots = [],
-  onEdit,
-  onDelete,
-}) {
+export default function OwnerLotList({ lots = [], onEdit, onDelete }) {
   const { t, i18n } = usePageTranslations('ownerLots');
   const lang = i18n?.language?.startsWith('fr') ? 'fr' : 'en';
 
-  const getTranslatedRole = (role) => {
+  const getTranslatedRole = role => {
     switch (role?.toUpperCase()) {
       case 'CUSTOMER':
         return t('roles.customer');
@@ -49,7 +45,7 @@ export default function OwnerLotList({
     }
   };
 
-  const getTranslatedStatus = (status) => {
+  const getTranslatedStatus = status => {
     switch (status?.toUpperCase()) {
       case 'AVAILABLE':
         return t('status.available');
@@ -94,7 +90,10 @@ export default function OwnerLotList({
                 {l.assignedUsers && l.assignedUsers.length > 0 ? (
                   <div className="assigned-users-list">
                     {l.assignedUsers.map((user, idx) => (
-                      <div key={user.userId || idx} className="assigned-user-item">
+                      <div
+                        key={user.userId || idx}
+                        className="assigned-user-item"
+                      >
                         <span className="user-name">{user.fullName}</span>
                         <span className={getRoleBadgeClass(user.role)}>
                           {getTranslatedRole(user.role)}

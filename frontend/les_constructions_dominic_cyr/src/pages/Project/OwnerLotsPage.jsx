@@ -20,7 +20,8 @@ import '../../styles/lots.css';
 const OwnerLotsPage = () => {
   const { projectIdentifier: urlProjectIdentifier } = useParams();
   const navigate = useNavigate();
-  const { t, isLoading: translationsLoading } = usePageTranslations('ownerLots');
+  const { t, isLoading: translationsLoading } =
+    usePageTranslations('ownerLots');
 
   const {
     isAuthenticated,
@@ -162,7 +163,9 @@ const OwnerLotsPage = () => {
       setLots(updatedLots);
       setIsAddModalOpen(false);
     } catch (err) {
-      alert(t('errors.errorCreating') + (err.message || t('errors.unknownError')));
+      alert(
+        t('errors.errorCreating') + (err.message || t('errors.unknownError'))
+      );
       setError(err.message || 'Failed to create lot');
     } finally {
       setIsSubmitting(false);
@@ -196,7 +199,9 @@ const OwnerLotsPage = () => {
       setIsEditModalOpen(false);
       setCurrentLot(null);
     } catch (err) {
-      alert(t('errors.errorUpdating') + (err.message || t('errors.unknownError')));
+      alert(
+        t('errors.errorUpdating') + (err.message || t('errors.unknownError'))
+      );
       setError(err.message || 'Failed to update lot');
     } finally {
       setIsSubmitting(false);
@@ -316,7 +321,11 @@ const OwnerLotsPage = () => {
               <FiArrowLeft size={18} />
               {t('backToProjects')}
             </button>
-            <h1>{projectName ? `${projectName} - ${t('pageTitle')}` : t('pageTitle')}</h1>
+            <h1>
+              {projectName
+                ? `${projectName} - ${t('pageTitle')}`
+                : t('pageTitle')}
+            </h1>
             <button
               className="add-lot-btn"
               onClick={handleAddLot}
@@ -361,8 +370,12 @@ const OwnerLotsPage = () => {
               <option value="none-asc">{t('sort.sortBy')}</option>
               <option value="price-asc">{t('sort.priceLowHigh')}</option>
               <option value="price-desc">{t('sort.priceHighLow')}</option>
-              <option value="dimensionsSquareFeet-asc">{t('sort.sizeSmallest')}</option>
-              <option value="dimensionsSquareFeet-desc">{t('sort.sizeLargest')}</option>
+              <option value="dimensionsSquareFeet-asc">
+                {t('sort.sizeSmallest')}
+              </option>
+              <option value="dimensionsSquareFeet-desc">
+                {t('sort.sizeLargest')}
+              </option>
             </select>
           </div>
         </div>
@@ -403,7 +416,10 @@ const OwnerLotsPage = () => {
         onClose={handleCloseModals}
         onConfirm={handleConfirmDelete}
         title={t('modal.deleteLotTitle')}
-        message={t('modal.deleteLotMessage').replace('{{lotNumber}}', currentLot?.lotNumber || '')}
+        message={t('modal.deleteLotMessage').replace(
+          '{{lotNumber}}',
+          currentLot?.lotNumber || ''
+        )}
         confirmText={t('modal.delete')}
         cancelText={t('modal.cancel')}
         isDestructive={true}
@@ -414,4 +430,3 @@ const OwnerLotsPage = () => {
 };
 
 export default OwnerLotsPage;
-

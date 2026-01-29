@@ -153,11 +153,17 @@ class LotControllerUnitTest {
     @Test
     void whenGetLotWithAssignedCustomer_thenReturnLotWithCustomerInfo() {
         String customerId = UUID.randomUUID().toString();
+        LotResponseModel.AssignedUserInfo userInfo = LotResponseModel.AssignedUserInfo.builder()
+                .userId(customerId)
+                .fullName("John Customer")
+                .email("john@test.com")
+                .role("CUSTOMER")
+                .build();
+
         LotResponseModel lotWithCustomer = new LotResponseModel();
         lotWithCustomer.setLotId(FOUND_ID);
         lotWithCustomer.setLotNumber("Lot-100");
-        lotWithCustomer.setAssignedCustomerId(customerId);
-        lotWithCustomer.setAssignedCustomerName("John Customer");
+        lotWithCustomer.setAssignedUsers(List.of(userInfo));
 
         when(lotService.getLotById(FOUND_ID)).thenReturn(lotWithCustomer);
 
@@ -165,8 +171,10 @@ class LotControllerUnitTest {
 
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         assertNotNull(resp.getBody());
-        assertEquals(customerId, resp.getBody().getAssignedCustomerId());
-        assertEquals("John Customer", resp.getBody().getAssignedCustomerName());
+        assertNotNull(resp.getBody().getAssignedUsers());
+        assertEquals(1, resp.getBody().getAssignedUsers().size());
+        assertEquals(customerId, resp.getBody().getAssignedUsers().get(0).getUserId());
+        assertEquals("John Customer", resp.getBody().getAssignedUsers().get(0).getFullName());
     }
 
     @Test
@@ -178,12 +186,18 @@ class LotControllerUnitTest {
         req.setPrice(150f);
         req.setDimensionsSquareFeet("1500");
         req.setDimensionsSquareMeters("139.4");
-        req.setAssignedCustomerId(customerId);
+        req.setAssignedUserIds(List.of(customerId));
+
+        LotResponseModel.AssignedUserInfo userInfo = LotResponseModel.AssignedUserInfo.builder()
+                .userId(customerId)
+                .fullName("Jane Customer")
+                .email("jane@test.com")
+                .role("CUSTOMER")
+                .build();
 
         LotResponseModel created = new LotResponseModel();
         created.setLotId(FOUND_ID);
-        created.setAssignedCustomerId(customerId);
-        created.setAssignedCustomerName("Jane Customer");
+        created.setAssignedUsers(List.of(userInfo));
 
         when(lotService.addLotToProject(PROJECT_ID, req)).thenReturn(created);
 
@@ -191,7 +205,8 @@ class LotControllerUnitTest {
 
         assertEquals(HttpStatus.CREATED, resp.getStatusCode());
         assertNotNull(resp.getBody());
-        assertEquals(customerId, resp.getBody().getAssignedCustomerId());
+        assertNotNull(resp.getBody().getAssignedUsers());
+        assertEquals(customerId, resp.getBody().getAssignedUsers().get(0).getUserId());
     }
 
     @Test
@@ -203,12 +218,18 @@ class LotControllerUnitTest {
         req.setPrice(200f);
         req.setDimensionsSquareFeet("2000");
         req.setDimensionsSquareMeters("185.8");
-        req.setAssignedCustomerId(customerId);
+        req.setAssignedUserIds(List.of(customerId));
+
+        LotResponseModel.AssignedUserInfo userInfo = LotResponseModel.AssignedUserInfo.builder()
+                .userId(customerId)
+                .fullName("Updated Customer")
+                .email("updated@test.com")
+                .role("CUSTOMER")
+                .build();
 
         LotResponseModel updated = new LotResponseModel();
         updated.setLotId(FOUND_ID);
-        updated.setAssignedCustomerId(customerId);
-        updated.setAssignedCustomerName("Updated Customer");
+        updated.setAssignedUsers(List.of(userInfo));
 
         when(lotService.updateLot(req, FOUND_ID)).thenReturn(updated);
 
@@ -216,6 +237,7 @@ class LotControllerUnitTest {
 
         assertEquals(HttpStatus.OK, resp.getStatusCode());
         assertNotNull(resp.getBody());
-        assertEquals(customerId, resp.getBody().getAssignedCustomerId());
+        assertNotNull(resp.getBody().getAssignedUsers());
+        assertEquals(customerId, resp.getBody().getAssignedUsers().get(0).getUserId());
     }
 }
