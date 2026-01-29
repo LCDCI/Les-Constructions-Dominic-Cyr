@@ -45,6 +45,7 @@ services:
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
         VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+        NGINX_CONFIG_FILE: default-combined.conf
     container_name: lcdci-frontend
     ports:
       - "3000:80"
