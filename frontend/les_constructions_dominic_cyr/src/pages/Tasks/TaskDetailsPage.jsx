@@ -5,6 +5,7 @@ import { taskApi } from '../../features/schedules/api/taskApi';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchAllContractors } from '../../features/users/api/usersApi';
 import { useBackendUser } from '../../hooks/useBackendUser';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { ROLES } from '../../utils/permissions';
 import EditTaskModal from '../../components/Modals/EditTaskModal';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
@@ -25,6 +26,7 @@ const TaskDetailsPage = () => {
   const location = useLocation();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const { role, loading: roleLoading } = useBackendUser();
+  const { t } = usePageTranslations('taskDetails');
   const stateTask = location.state?.task;
 
   const [task, setTask] = useState(null);
@@ -350,14 +352,14 @@ const TaskDetailsPage = () => {
           <div className="task-subtle">ID: {taskId}</div>
         </div>
         <div className="task-header-actions">
-          {canEditTask && (
-            <button className="primary" onClick={openEditTaskModal}>
-              Edit Task
-            </button>
-          )}
           {role === ROLES.OWNER && (
             <button className="modal-danger" onClick={handleDeleteTask}>
               Delete Task
+            </button>
+          )}
+          {canEditTask && (
+            <button className="primary" onClick={openEditTaskModal}>
+              Edit Task
             </button>
           )}
           <button className="back-button-small" onClick={goBack}>
@@ -421,6 +423,23 @@ const TaskDetailsPage = () => {
         </div>
       </div>
 
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onCancel={cancelDeleteTask}
+        config={{
+          title: t('deleteModal.title'),
+          message: deleteError
+            ? `Error: ${deleteError}`
+            : t('deleteModal.message'),
+          onConfirm: confirmDeleteTask,
+          confirmText: isDeleting
+            ? t('deleteModal.confirmTextDeleting')
+            : t('deleteModal.confirmText'),
+          cancelText: t('deleteModal.cancelText'),
+          isDestructive: true,
+        }}
+      />
+
       <EditTaskModal
         isOpen={isEditTaskOpen}
         task={taskDraft}
@@ -433,21 +452,6 @@ const TaskDetailsPage = () => {
         onChange={setTaskDraft}
         onSave={handleEditTaskSave}
         scheduleWindow={scheduleWindow}
-      />
-
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onCancel={cancelDeleteTask}
-        config={{
-          title: 'Delete Task',
-          message: deleteError
-            ? `Error: ${deleteError}`
-            : `Are you sure you want to delete this task? This action cannot be undone and will remove the task from all views.`,
-          onConfirm: confirmDeleteTask,
-          confirmText: isDeleting ? 'Deleting...' : 'Delete Task',
-          cancelText: 'Cancel',
-          isDestructive: true,
-        }}
       />
     </div>
   );
