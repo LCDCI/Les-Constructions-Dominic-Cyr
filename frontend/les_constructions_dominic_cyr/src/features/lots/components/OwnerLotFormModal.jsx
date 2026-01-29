@@ -147,7 +147,8 @@ const OwnerLotFormModal = ({
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="lotNumber">
-                {t('form.lotNumber')} <span className="required">{t('form.required')}</span>
+                {t('form.lotNumber')}{' '}
+                <span className="required">{t('form.required')}</span>
               </label>
               <input
                 id="lotNumber"
@@ -165,7 +166,8 @@ const OwnerLotFormModal = ({
 
             <div className="form-group">
               <label htmlFor="lotStatus">
-                {t('form.status')} <span className="required">{t('form.required')}</span>
+                {t('form.status')}{' '}
+                <span className="required">{t('form.required')}</span>
               </label>
               <select
                 id="lotStatus"
@@ -184,7 +186,8 @@ const OwnerLotFormModal = ({
 
           <div className="form-group">
             <label htmlFor="civicAddress">
-              {t('form.civicAddress')} <span className="required">{t('form.required')}</span>
+              {t('form.civicAddress')}{' '}
+              <span className="required">{t('form.required')}</span>
             </label>
             <input
               id="civicAddress"
@@ -208,11 +211,12 @@ const OwnerLotFormModal = ({
               token={token}
               placeholder={t('form.assignedUsersPlaceholder')}
             />
-            {formData.assignedUserIds.length > 0 && formData.lotStatus === 'AVAILABLE' && (
-              <div className="info-message">
-                ℹ️ {t('form.assignedUsersInfo')}
-              </div>
-            )}
+            {formData.assignedUserIds.length > 0 &&
+              formData.lotStatus === 'AVAILABLE' && (
+                <div className="info-message">
+                  ℹ️ {t('form.assignedUsersInfo')}
+                </div>
+              )}
           </div>
 
           <div className="form-group">
@@ -234,7 +238,8 @@ const OwnerLotFormModal = ({
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="dimensionsSquareFeet">
-                {t('form.dimensionsSqFt')} <span className="required">{t('form.required')}</span>
+                {t('form.dimensionsSqFt')}{' '}
+                <span className="required">{t('form.required')}</span>
               </label>
               <input
                 id="dimensionsSquareFeet"
@@ -256,7 +261,8 @@ const OwnerLotFormModal = ({
 
             <div className="form-group">
               <label htmlFor="dimensionsSquareMeters">
-                {t('form.dimensionsSqM')} <span className="required">{t('form.required')}</span>
+                {t('form.dimensionsSqM')}{' '}
+                <span className="required">{t('form.required')}</span>
               </label>
               <input
                 id="dimensionsSquareMeters"
@@ -291,7 +297,11 @@ const OwnerLotFormModal = ({
               disabled={isSubmitting}
               className="btn-primary"
             >
-              {isSubmitting ? t('modal.saving') : lot ? t('modal.updateLot') : t('modal.createLot')}
+              {isSubmitting
+                ? t('modal.saving')
+                : lot
+                  ? t('modal.updateLot')
+                  : t('modal.createLot')}
             </button>
           </div>
         </form>
@@ -310,4 +320,3 @@ OwnerLotFormModal.propTypes = {
 };
 
 export default OwnerLotFormModal;
-

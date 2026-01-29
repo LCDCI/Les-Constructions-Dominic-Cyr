@@ -127,15 +127,17 @@ public class LotServiceUnitTest {
     public void whenGetByIdWithAssignedCustomer_thenReturnDtoWithCustomerInfo() {
         String id = "found-id-2";
         var entity = buildLotEntity(id, "Lot-124", "CustomerLoc", 200f, "2000", "185.8", LotStatus.SOLD);
-        entity.setAssignedCustomer(testCustomer);
+        entity.getAssignedUsers().add(testCustomer);
         when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(entity);
 
         LotResponseModel resp = lotService.getLotById(id);
 
         assertNotNull(resp);
         assertEquals(id, resp.getLotId());
-        assertEquals(testCustomerId, resp.getAssignedCustomerId());
-        assertEquals("John Customer", resp.getAssignedCustomerName());
+        assertNotNull(resp.getAssignedUsers());
+        assertEquals(1, resp.getAssignedUsers().size());
+        assertEquals(testCustomerId, resp.getAssignedUsers().get(0).getUserId());
+        assertEquals("John Customer", resp.getAssignedUsers().get(0).getFullName());
     }
 
     // ==== CREATE ====
@@ -183,7 +185,7 @@ public class LotServiceUnitTest {
         req.setDimensionsSquareFeet("1500");
         req.setDimensionsSquareMeters("139.4");
         req.setLotStatus(LotStatus.SOLD);
-        req.setAssignedCustomerId(testCustomerId);
+        req.setAssignedUserIds(List.of(testCustomerId));
 
         when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
                 .thenReturn(Optional.of(testProject));
@@ -201,8 +203,10 @@ public class LotServiceUnitTest {
 
         assertNotNull(resp);
         assertEquals("CustomerCreateLoc", resp.getCivicAddress());
-        assertEquals(testCustomerId, resp.getAssignedCustomerId());
-        assertEquals("John Customer", resp.getAssignedCustomerName());
+        assertNotNull(resp.getAssignedUsers());
+        assertEquals(1, resp.getAssignedUsers().size());
+        assertEquals(testCustomerId, resp.getAssignedUsers().get(0).getUserId());
+        assertEquals("John Customer", resp.getAssignedUsers().get(0).getFullName());
     }
 
     @Test
@@ -218,14 +222,15 @@ public class LotServiceUnitTest {
         req.setDimensionsSquareFeet("1000");
         req.setDimensionsSquareMeters("92.9");
         req.setLotStatus(LotStatus.AVAILABLE);
-        req.setAssignedCustomerId(testCustomerId);
+        req.setAssignedUserIds(List.of(testCustomerId));
 
         when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
                 .thenReturn(Optional.of(testProject));
         when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(testCustomerId)))
                 .thenReturn(Optional.of(contractor));
 
-        assertThrows(InvalidInputException.class, () -> lotService.addLotToProject(testProjectIdentifier, req));
+        // This should not throw anymore since we support all roles
+        assertDoesNotThrow(() -> lotService.addLotToProject(testProjectIdentifier, req));
     }
 
     @Test
@@ -277,20 +282,22 @@ public class LotServiceUnitTest {
         req.setDimensionsSquareFeet("700");
         req.setDimensionsSquareMeters("65.0");
         req.setLotStatus(LotStatus.SOLD);
-        req.setAssignedCustomerId(testCustomerId);
+        req.setAssignedUserIds(List.of(testCustomerId));
 
         LotResponseModel resp = lotService.updateLot(req, id);
 
         assertNotNull(resp);
-        assertEquals(testCustomerId, resp.getAssignedCustomerId());
-        assertEquals("John Customer", resp.getAssignedCustomerName());
+        assertNotNull(resp.getAssignedUsers());
+        assertEquals(1, resp.getAssignedUsers().size());
+        assertEquals(testCustomerId, resp.getAssignedUsers().get(0).getUserId());
+        assertEquals("John Customer", resp.getAssignedUsers().get(0).getFullName());
     }
 
     @Test
     public void whenUpdateRemoveCustomerAssignment_thenReturnDtoWithoutCustomer() {
         String id = "upd-id-3";
         var stored = buildLotEntity(id, "Lot-801", "OldLoc3", 80f, "800", "74.3", LotStatus.SOLD);
-        stored.setAssignedCustomer(testCustomer);
+        stored.getAssignedUsers().add(testCustomer);
 
         when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
         when(lotRepository.save(stored)).thenReturn(stored);
@@ -302,13 +309,12 @@ public class LotServiceUnitTest {
         req.setDimensionsSquareFeet("800");
         req.setDimensionsSquareMeters("74.3");
         req.setLotStatus(LotStatus.AVAILABLE);
-        req.setAssignedCustomerId(null); // Remove assignment
+        req.setAssignedUserIds(List.of()); // Remove assignment
 
         LotResponseModel resp = lotService.updateLot(req, id);
 
         assertNotNull(resp);
-        assertNull(resp.getAssignedCustomerId());
-        assertNull(resp.getAssignedCustomerName());
+        assertTrue(resp.getAssignedUsers() == null || resp.getAssignedUsers().isEmpty());
     }
 
     @Test
@@ -350,7 +356,7 @@ public class LotServiceUnitTest {
         req.setDimensionsSquareFeet("1000");
         req.setDimensionsSquareMeters("92.9");
         req.setLotStatus(LotStatus.AVAILABLE);
-        req.setAssignedCustomerId(nonExistentCustomerId);
+        req.setAssignedUserIds(List.of(nonExistentCustomerId));
 
         when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
                 .thenReturn(Optional.of(testProject));
@@ -369,7 +375,7 @@ public class LotServiceUnitTest {
         req.setDimensionsSquareFeet("1000");
         req.setDimensionsSquareMeters("92.9");
         req.setLotStatus(LotStatus.AVAILABLE);
-        req.setAssignedCustomerId("invalid-uuid-format");
+        req.setAssignedUserIds(List.of("invalid-uuid-format"));
 
         when(projectRepository.findByProjectIdentifier(testProjectIdentifier))
                 .thenReturn(Optional.of(testProject));
