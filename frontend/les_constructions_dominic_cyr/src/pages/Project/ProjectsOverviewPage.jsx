@@ -12,6 +12,7 @@ import {
 import { IoLeafOutline } from 'react-icons/io5';
 import { HiOutlineHomeModern } from 'react-icons/hi2';
 import { LuMapPinned } from 'react-icons/lu';
+import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import '../../styles/Project/projectOverview.css';
 import '../../styles/Public_Facing/overviewMap.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -480,6 +481,7 @@ const ProjectOverviewPage = () => {
           View Available Lots &rarr;
         </button>
       </div>
+      <ProjectsFooter projectId={projectIdentifier} />
     </div>
   );
 };

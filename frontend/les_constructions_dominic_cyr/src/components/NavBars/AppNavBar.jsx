@@ -10,6 +10,7 @@ import OwnerNavBar from '../../components/NavBars/OwnerNavBar';
 import SalespersonNavBar from '../../components/NavBars/SalespersonNavBar';
 import ContractorNavBar from '../../components/NavBars/ContractorNavBar';
 import CustomerNavBar from '../../components/NavBars/CustomerNavBar';
+import logoImage from '../../../LOGO_DM.png';
 
 function clearAppSession() {
   const APP_KEYS = [
@@ -46,7 +47,8 @@ export default function AppNavBar() {
   const { isAuthenticated, logout } = useAuth0();
   const { role, loading: roleLoading } = useBackendUser();
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isPublicMobileMenuOpen, setIsPublicMobileMenuOpen] = useState(false);
+  const [isDashboardMenuOpen, setIsDashboardMenuOpen] = useState(false);
 
   const currentLanguage = i18n.language || 'en';
   const isFrench = currentLanguage === 'fr';
@@ -56,17 +58,35 @@ export default function AppNavBar() {
     i18n.changeLanguage(newLang);
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
+  const handleMobileLogoClick = () => {
+    // If menu is already open, just close it
+    if (isPublicMobileMenuOpen) {
+      setIsPublicMobileMenuOpen(false);
+    } else {
+      // If menu is closed, open it to show project pages
+      setIsPublicMobileMenuOpen(true);
+      setIsDashboardMenuOpen(false);
+    }
+  };
+
+  const toggleDashboardMenu = () => {
+    setIsDashboardMenuOpen(prev => !prev);
+    setIsPublicMobileMenuOpen(false);
+  };
+
+  const closeDashboardMenu = () => {
+    setIsDashboardMenuOpen(false);
   };
 
   const goToPortal = () => {
-    setIsMobileMenuOpen(false);
+    setIsPublicMobileMenuOpen(false);
+    setIsDashboardMenuOpen(false);
     navigate('/portal/login');
   };
 
   const handleLogout = () => {
-    setIsMobileMenuOpen(false);
+    setIsPublicMobileMenuOpen(false);
+    setIsDashboardMenuOpen(false);
     clearAppSession();
 
     logout({
@@ -79,55 +99,61 @@ export default function AppNavBar() {
   return (
     <header className="site-nav">
       <div className="site-nav-inner">
-        {!roleLoading && role === 'OWNER' && <OwnerNavBar />}
-        {!roleLoading && role === 'SALESPERSON' && <SalespersonNavBar />}
-        {!roleLoading && role === 'CONTRACTOR' && <ContractorNavBar />}
-        {!roleLoading && role === 'CUSTOMER' && <CustomerNavBar />}
+        {isAuthenticated && !roleLoading && (
+          <div className="dashboard-toggle">
+            <button
+              className="navbar-toggle"
+              onClick={toggleDashboardMenu}
+              aria-label="Toggle dashboard menu"
+              aria-expanded={isDashboardMenuOpen}
+            >
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+              <span className="hamburger-line"></span>
+            </button>
+          </div>
+        )}
 
+        {/* Desktop navigation */}
         <nav className="desktop-nav">
-          <NavLink
-            to="/"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            {t('nav.home', 'Accueil')}
-          </NavLink>
-
           <NavLink
             to="/residential-projects"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.projects', 'Projets résidentiels')}
+            {t('nav.projects', 'Residential Projects')}
           </NavLink>
 
           <NavLink
             to="/renovations"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.renovation', 'Rénovation')}
+            {t('nav.renovation', 'Renovations')}
+          </NavLink>
+
+          <NavLink to="/" className="brand">
+            <img
+              src={logoImage}
+              alt="Les Constructions Dominic Cyr"
+              className="logo-image"
+            />
           </NavLink>
 
           <NavLink
             to="/projectmanagement"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.projectManagement', 'Gestion de projet')}
+            {t('nav.projectManagement', 'Project Management')}
           </NavLink>
 
           <NavLink
             to="/realizations"
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            {t('nav.realizations', 'Réalisations')}
-          </NavLink>
-
-          <NavLink
-            to="/contact"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            Contact
+            {t('nav.realizations', 'Realizations')}
           </NavLink>
         </nav>
 
+        {/* Desktop actions */}
         <div className="nav-actions">
           {!isAuthenticated && (
             <button type="button" className="btn-portal" onClick={goToPortal}>
@@ -152,67 +178,97 @@ export default function AppNavBar() {
           </button>
         </div>
 
+        {/* Mobile logo button - right side (acts as home + project pages dropdown) */}
         <button
-          className="mobile-menu-toggle"
-          onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
-          type="button"
+          className="mobile-logo-menu-button"
+          onClick={handleMobileLogoClick}
+          aria-label="Toggle public menu"
         >
-          <span className={isMobileMenuOpen ? 'hamburger open' : 'hamburger'}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
+          <img
+            src={logoImage}
+            alt="Les Constructions Dominic Cyr"
+            className="mobile-logo-menu"
+          />
         </button>
       </div>
 
-      <nav className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
+      {isAuthenticated && !roleLoading && (
+        <div className="dashboard-menu">
+          {role === 'OWNER' && (
+            <OwnerNavBar
+              isOpen={isDashboardMenuOpen}
+              onToggle={toggleDashboardMenu}
+              onClose={closeDashboardMenu}
+              showToggle={false}
+            />
+          )}
+          {role === 'SALESPERSON' && (
+            <SalespersonNavBar
+              isOpen={isDashboardMenuOpen}
+              onToggle={toggleDashboardMenu}
+              onClose={closeDashboardMenu}
+              showToggle={false}
+            />
+          )}
+          {role === 'CONTRACTOR' && (
+            <ContractorNavBar
+              isOpen={isDashboardMenuOpen}
+              onToggle={toggleDashboardMenu}
+              onClose={closeDashboardMenu}
+              showToggle={false}
+            />
+          )}
+          {role === 'CUSTOMER' && (
+            <CustomerNavBar
+              isOpen={isDashboardMenuOpen}
+              onToggle={toggleDashboardMenu}
+              onClose={closeDashboardMenu}
+              showToggle={false}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Project pages menu (mobile only, when logo button is clicked) */}
+      <nav className={`mobile-nav ${isPublicMobileMenuOpen ? 'open' : ''}`}>
         <NavLink
           to="/"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
-          {t('nav.home', 'Accueil')}
+          {t('nav.home', 'Home')}
         </NavLink>
 
         <NavLink
           to="/residential-projects"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
-          {t('nav.projects', 'Projets résidentiels')}
+          {t('nav.projects', 'Residential Projects')}
         </NavLink>
 
         <NavLink
           to="/renovations"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
-          {t('nav.renovation', 'Rénovation')}
+          {t('nav.renovation', 'Renovations')}
         </NavLink>
 
         <NavLink
           to="/projectmanagement"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
-          {t('nav.projectManagement', 'Gestion de projet')}
+          {t('nav.projectManagement', 'Project Management')}
         </NavLink>
 
         <NavLink
-          to="/realisations"
+          to="/realizations"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
-          {t('nav.realisations', 'Réalisations')}
-        </NavLink>
-
-        <NavLink
-          to="/contact"
-          className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          Contact
+          {t('nav.realizations', 'Realizations')}
         </NavLink>
 
         <div className="mobile-actions">
