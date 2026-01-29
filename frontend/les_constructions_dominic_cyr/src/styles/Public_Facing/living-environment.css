@@ -291,3 +291,72 @@
     font-size: 0.85rem;
   }
 }
+
+/* Error Message Styling */
+.error-message {
+  text-align: center;
+  padding: var(--spacing-xl, 4rem) var(--spacing-md, 2rem);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.error-message h2 {
+  color: var(--primary-color, #4c4d4f);
+  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: var(--spacing-md, 2rem);
+}
+
+.error-message p {
+  color: var(--color-text, #333333);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: var(--spacing-sm, 1.25rem);
+}
+
+.error-details {
+  background: #f9f9f9;
+  border-left: 4px solid var(--primary-color, #4c4d4f);
+  padding: var(--spacing-md, 2rem);
+  margin: var(--spacing-md, 2rem) 0;
+  text-align: left;
+}
+
+.error-details ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: var(--spacing-sm, 1.25rem);
+}
+
+.error-details li {
+  padding: 0.5rem 0;
+  color: #555;
+}
+
+.error-details code {
+  background: #e0e0e0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background-color: var(--primary-color, #4c4d4f);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--tertiary-color, #628db5);
+}

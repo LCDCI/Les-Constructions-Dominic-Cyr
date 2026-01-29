@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Public_Facing/living-environment.css';
@@ -22,67 +22,71 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
 
-// Map project identifiers to living environment keys
-const projectKeyMap = {
-  foresta: 'foresta',
-  panorama: 'panorama',
-};
-
 const LivingEnvironmentPage = () => {
-  const { t, i18n } = useTranslation('livingenvironment');
+  const { t, i18n } = useTranslation(['livingEnvironment', 'translation']);
+  const navigate = useNavigate();
   const { projectIdentifier } = useParams();
-  const [projectData, setProjectData] = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [translations, setTranslations] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Get the living environment key based on project identifier
-  const getProjectKey = () => {
-    const lowerProjectId = projectIdentifier?.toLowerCase() || 'foresta';
-    return projectKeyMap[lowerProjectId] || 'foresta';
-  };
-
-  const projectKey = getProjectKey();
-
-  // Fetch project data and translations
+  // Fetch living environment data from the dedicated endpoint
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setError(null);
+        setLoading(true);
+        
         if (!projectIdentifier) {
+          setError('No project identifier provided');
           setLoading(false);
           return;
         }
+
+        const lang = i18n.language || 'en';
+        const url = `${API_BASE_URL}/projects/${projectIdentifier}/living-environment?lang=${lang}`;
         
-        // Fetch project data
-        const projectResponse = await fetch(
-          `${API_BASE_URL}/projects/${projectIdentifier}/overview`
-        );
-        if (projectResponse.ok) {
-          const data = await projectResponse.json();
-          setProjectData(data);
-          
-          // Apply project colors to CSS variables
+        console.log('[LivingEnvironment] Fetching from:', url);
+        
+        const response = await fetch(url, {
+          headers: { 'Accept': 'application/json' },
+          signal: AbortSignal.timeout(10000)
+        });
+
+        console.log('[LivingEnvironment] Response status:', response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Server error (${response.status}): ${errorText || 'Failed to load content'}`);
+        }
+
+        const responseData = await response.json();
+        console.log('[LivingEnvironment] Data loaded:', responseData);
+        
+        setData(responseData);
+
+        // Apply project colors to CSS variables
+        if (responseData) {
           const colors = {
-            '--primary-color': data.primaryColor || '#4c4d4f',
-            '--tertiary-color': data.tertiaryColor || '#628db5',
-            '--buyer-color': data.buyerColor || '#aab2a6',
+            '--primary-color': responseData.primaryColor || '#4c4d4f',
+            '--tertiary-color': responseData.tertiaryColor || '#628db5',
+            '--buyer-color': responseData.buyerColor || '#aab2a6',
           };
           
           Object.keys(colors).forEach(key => {
             document.documentElement.style.setProperty(key, colors[key]);
           });
         }
-
-        // Fetch translations
-        const lang = i18n.language || 'en';
-        const translationResponse = await fetch(
-          `${API_BASE_URL}/translations/${lang}/livingenvironment`
-        );
-        if (translationResponse.ok) {
-          const translationData = await translationResponse.json();
-          setTranslations(translationData);
+      } catch (err) {
+        console.error('[LivingEnvironment] Error:', err);
+        
+        if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+          setError('Request timed out. Please check if the backend server is running.');
+        } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+          setError('Unable to connect to the backend. Please ensure the backend server is running.');
+        } else {
+          setError(err.message || 'Failed to load page content.');
         }
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
@@ -98,7 +102,7 @@ const LivingEnvironmentPage = () => {
     };
   }, [projectIdentifier, i18n.language]);
 
-  // Map amenity keys to icons
+  // Map amenity keys to icons (all from react-icons/fa)
   const getAmenityIcon = (key) => {
     const iconMap = {
       ski: <FaSkiing />,
@@ -122,79 +126,81 @@ const LivingEnvironmentPage = () => {
     return iconMap[key] || <FaTree />;
   };
 
-  const buildAmenities = () => {
-    try {
-      if (!translations) return [];
-      
-      const amenitiesData = translations.amenities?.[projectKey];
-      
-      if (!amenitiesData || typeof amenitiesData === 'string') {
-        return [];
-      }
-
-      return Object.keys(amenitiesData).map(key => ({
-        key,
-        label: amenitiesData[key],
-        icon: getAmenityIcon(key),
-      }));
-    } catch (error) {
-      console.error('Error building amenities:', error);
-      return [];
-    }
-  };
-
-  if (loading || !translations) {
+  if (loading) {
     return (
       <div className="living-environment-page">
         <div className="container">
-          <p>Loading...</p>
+          <div className="loading-spinner">
+            <p>Loading...</p>
+          </div>
         </div>
       </div>
     );
   }
 
-  const amenities = buildAmenities();
-
-  // Get translations using the project key
-  const headerData = translations.header?.[projectKey] || {};
-  const proximityTitle = translations.proximity?.[projectKey] || '';
-  const descriptionText = translations.description?.[projectKey] || '';
-  const footerText = translations.footer?.[projectKey] || '';
+  if (error || !data) {
+    return (
+      <div className="living-environment-page">
+        <div className="container">
+          <div className="error-message">
+            <h2>Unable to Load Content</h2>
+            <p>{error || 'No content available for this project.'}</p>
+            <div className="error-details">
+              <p><strong>Troubleshooting:</strong></p>
+              <ul>
+                <li>Check if the backend server is running</li>
+                <li>Verify Docker containers are up: <code>docker-compose -f docker-compose.local.yml up -d</code></li>
+                <li>Make sure the database has been seeded with living environment data</li>
+                <li>API Endpoint: <code>{API_BASE_URL}/projects/{projectIdentifier}/living-environment</code></li>
+              </ul>
+            </div>
+            <button 
+              onClick={() => window.history.back()} 
+              className="btn btn-secondary"
+              style={{ marginTop: '2rem' }}
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="living-environment-page">
       <div className="container">
         {/* Header Section */}
-        <section className="le-header-section">
-          <h1 className="le-main-title">{headerData?.title || ''}</h1>
-          <h2 className="le-subtitle">
-            {headerData?.subtitle || ''}
-          </h2>
-          <h3 className="le-subtitle-last">
-            {headerData?.subtitleLast || ''}
-          </h3>
-          <p className="le-tagline">
-            {headerData?.tagline || ''}
-          </p>
+        <section
+          className="le-header-section"
+          style={{ background: `var(--primary-color, ${data.primaryColor || '#4c4d4f'})`, borderRadius: '18px', color: '#fff', marginBottom: '3rem' }}
+        >
+          <h1 className="le-main-title" style={{ color: '#fff' }}>{data.headerTitle}</h1>
+          <h2 className="le-subtitle" style={{ color: '#fff' }}>{data.headerSubtitle}</h2>
+          <h3 className="le-subtitle-last" style={{ color: '#fff' }}>{data.headerSubtitleLast}</h3>
+          <p className="le-tagline" style={{ color: 'var(--tertiary-color, #aab2a6)' }}>{data.headerTagline}</p>
+          <button
+            className="btn btn-secondary"
+            style={{ marginTop: '2rem', background: 'var(--tertiary-color, #628db5)', color: '#fff', fontWeight: 600 }}
+            onClick={() => navigate(`/projects/${projectIdentifier}/overview`)}
+          >
+            {t('backToProject', 'Back to Residential Project')}
+          </button>
         </section>
 
         {/* Description Section */}
         <section className="le-description-section">
-          <p className="le-description-text">
-            {descriptionText}
-          </p>
+          <p className="le-description-text">{data.descriptionText}</p>
         </section>
 
         {/* Proximity Section */}
         <section className="le-proximity-section">
-          <h2 className="le-proximity-title">
-            {proximityTitle}
-          </h2>
+          <h2 className="le-proximity-title">{data.proximityTitle}</h2>
 
           <div className="le-amenities-grid">
-            {amenities.map((amenity) => (
+            {data.amenities && data.amenities.map((amenity) => (
               <div key={amenity.key} className="le-amenity-box">
-                <div className="le-amenity-icon">{amenity.icon}</div>
+                <div className="le-amenity-icon">{getAmenityIcon(amenity.key)}</div>
                 <p className="le-amenity-label">{amenity.label}</p>
               </div>
             ))}
@@ -203,9 +209,7 @@ const LivingEnvironmentPage = () => {
 
         {/* Footer Section */}
         <section className="le-footer-section">
-          <p className="le-footer-text">
-            {footerText}
-          </p>
+          <p className="le-footer-text">{data.footerText}</p>
         </section>
       </div>
     </div>

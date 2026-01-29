@@ -141,3 +141,66 @@ INSERT INTO inquiries (name, email, phone, message, created_at) VALUES
     ('Pierre Tremblay', 'pierre.tremblay@email.com', '514-555-0345', 'Quels sont les délais de construction pour un nouveau projet?', CURRENT_TIMESTAMP - INTERVAL '2 days'),
     ('Sophie Martin', 'sophie.martin@email.com', '', 'Can you provide information about your renovation services?', CURRENT_TIMESTAMP - INTERVAL '1 day'),
     ('Luc Gagnon', 'luc.gagnon@email.com', '418-555-0456', 'Je voudrais obtenir un devis pour la construction d''une maison unifamiliale.', CURRENT_TIMESTAMP - INTERVAL '6 hours');
+
+-- Living Environment Content - English
+INSERT INTO living_environment_content (project_identifier, language, header_title, header_subtitle, header_subtitle_last, header_tagline, description_text, proximity_title, footer_text) VALUES
+    ('proj-001-foresta', 'en', 'FÖRESTA, AN', 'EXCEPTIONAL', 'LIVING ENVIRONMENT', 'At the Pace of Nature', 
+     'An exceptional living environment for those who dream of escaping everyday life and reconnecting with what matters most, the Föresta project offers the opportunity to live in a home at the heart of nature. This new neighborhood is located 5 km from Highway 10 (A-10), 15 minutes from downtown Granby, and within reach of a wide range of services and activities. Outdoor enthusiasts will be delighted.',
+     'CLOSE TO EVERYTHING!', 'FÖRESTA is a project by Les Constructions Dominic Cyr inc.'),
+    ('proj-001-foresta', 'fr', 'FÖRESTA, UN', 'MILIEU DE VIE', 'EXCEPTIONNEL', 'Au rythme de la nature',
+     'Un milieu de vie exceptionnel pour ceux qui rêvent de s''évader du quotidien et de se reconnecter à l''essentiel, le projet Föresta offre l''opportunité d''habiter une demeure au cœur de la nature. Ce nouveau quartier est situé à 5 km de l''autoroute 10 (A-10), à 15 minutes du centre-ville de Granby et à portée de main d''une panoplie de services et d''activités. Les adeptes de plein air seront comblés.',
+     'À PROXIMITÉ DE TOUT!', 'FÖRESTA est un projet signé Les Constructions Dominic Cyr inc.'),
+    ('proj-002-panorama', 'en', 'AUTHENTICITY', 'AT THE HEART', 'OF THE MOUNTAIN', 'Mountain Living',
+     'The Panorama project is located in the charming village of Sutton in the Eastern Townships. The region is recognized for its warm atmosphere and exceptional natural setting. It is renowned for skiing, hiking, and outdoor activities in all seasons and attracts both nature lovers and visitors seeking tranquility. Its lively village center, its cafés, galleries, and local shops give it a friendly and authentic atmosphere, where it is good to live all year round!',
+     'FOR OUTDOOR LOVERS!', 'PANORAMA is a project by Les Constructions Dominic Cyr inc.'),
+    ('proj-002-panorama', 'fr', 'L''AUTHENTICITÉ', 'AU COEUR', 'DE LA MONTAGNE', 'La vie en montagne',
+     'Le projet Panorama est situé dans le charmant village de Sutton dans les Cantons-de-l''Est. La région est reconnue pour son ambiance chaleureuse et son cadre naturel exceptionnel. Elle est réputée pour le ski, la randonnée et le plein air en toutes saisons et attire autant les amateurs de nature que les visiteurs en quête de tranquillité. Son cœur villageois animé, ses cafés, galeries et commerces locaux lui donnent une atmosphère conviviale et authentique, où il fait bon vivre toute l''année!',
+     'POUR LES AMATEURS DE PLEIN-AIR!', 'PANORAMA est un projet signé Les Constructions Dominic Cyr inc.');
+
+-- Living Environment Amenities - Foresta English
+INSERT INTO living_environment_amenities (living_environment_content_id, amenity_key, amenity_label, display_order) VALUES
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'ski', 'Skiing', 1),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'golf', 'Golf', 2),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'bike', 'Cycling', 3),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'bromont', 'Bromont', 4),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'yamaska', 'Yamaska National Park', 5),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'vineyards', 'Orchards & Vineyards', 6),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'restaurants', 'Restaurants', 7),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'groceries', 'Groceries', 8),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'stores', 'Shops', 9),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'hospitals', 'Hospitals', 10),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'schools', 'Schools', 11),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'en'), 'spas', 'Spas', 12);
+
+-- Living Environment Amenities - Foresta French
+INSERT INTO living_environment_amenities (living_environment_content_id, amenity_key, amenity_label, display_order) VALUES
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'ski', 'Ski', 1),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'golf', 'Golf', 2),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'bike', 'Vélo', 3),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'bromont', 'Bromont', 4),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'yamaska', 'Parc National de la Yamaska', 5),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'vineyards', 'Vergers & Vignobles', 6),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'restaurants', 'Restaurants', 7),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'groceries', 'Épiceries', 8),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'stores', 'Magasins', 9),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'hospitals', 'Hôpitaux', 10),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'schools', 'Écoles', 11),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-001-foresta' AND language = 'fr'), 'spas', 'Spas', 12);
+
+-- Living Environment Amenities - Panorama English
+INSERT INTO living_environment_amenities (living_environment_content_id, amenity_key, amenity_label, display_order) VALUES
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'en'), 'ski', 'Skiing at Sutton', 1),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'en'), 'golf', 'Golf', 2),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'en'), 'bike', 'Cycling', 3),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'en'), 'vineyards', 'Vineyards', 4),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'en'), 'crosscountry', 'Cross-Country Skiing & Snowshoeing', 5),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'en'), 'hiking', 'Hiking', 6);
+
+-- Living Environment Amenities - Panorama French
+INSERT INTO living_environment_amenities (living_environment_content_id, amenity_key, amenity_label, display_order) VALUES
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'ski', 'Ski à Sutton', 1),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'golf', 'Golf', 2),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'bike', 'Vélo', 3),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'vineyards', 'Vignobles', 4),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'crosscountry', 'Ski de fond et raquette', 5),
+    ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'hiking', 'Randonnées', 6);

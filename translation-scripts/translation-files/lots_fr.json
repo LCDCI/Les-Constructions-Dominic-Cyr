@@ -45,5 +45,7 @@
   },
   "errors": {
     "fetchFailed": "Échec de la récupération des terrains."
+  },
+  "backToProject": "Retour au projet résidentiel"
   }
 }
