@@ -56,6 +56,11 @@ public class TranslationRegistry {
         // Project Overview page translations
         fileIdMap.put("en.projectoverview", "b690c9f9-a2ee-4a49-9e28-2d87cb3dc15e");
         fileIdMap.put("fr.projectoverview", "78c97b4d-2cdd-45e7-93b9-0e5e9d23d668");
+
+        // Owner Lots page translations
+        fileIdMap.put("en.ownerlots", "62178381-21ab-415a-a604-9d80c5d7774a");
+        fileIdMap.put("fr.ownerlots", "29509c00-9273-4df9-96ae-6fba61a0d1b4");
+
     }
     
     /**
