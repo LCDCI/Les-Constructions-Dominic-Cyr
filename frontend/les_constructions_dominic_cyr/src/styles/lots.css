@@ -4,7 +4,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-white); 
+  background-color: var(--color-white);
   font-family: var(--font-body);
 }
 
@@ -12,7 +12,7 @@
   flex: 1;
   width: 100%;
   /* Zero top padding ensures the dynamic header hugs the top */
-  padding: 0 0 var(--spacing-xl) 0; 
+  padding: 0 0 var(--spacing-xl) 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -26,12 +26,12 @@
   margin-bottom: var(--spacing-lg);
   text-align: center;
   /* Background color is now provided by React inline style */
-  padding: var(--spacing-xl) var(--spacing-md); 
+  padding: var(--spacing-xl) var(--spacing-md);
   transition: background-color 0.4s ease;
 }
 
 .lots-header-section h1 {
-  font-family: var(--font-heading); 
+  font-family: var(--font-heading);
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-weight: 400;
   line-height: 1.2;
@@ -53,8 +53,63 @@
   transition: background-color 0.4s ease;
 }
 
-/* ========== THEMED TOOLBAR & SEARCH ========== */
+/* Header content layout */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
 
+.header-content h1 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.add-lot-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.add-lot-btn:hover:not(:disabled) {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
+}
+
+.add-lot-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-lot-btn {
+    align-self: center;
+    width: fit-content;
+  }
+}
+
+/* Toolbar Layout */
 .toolbar-section {
   width: var(--content-width);
   max-width: var(--content-max-width);
@@ -75,7 +130,7 @@
   font-family: var(--font-body);
   font-size: 0.95rem;
   border: 1px solid var(--color-light);
-  border-radius: 0; 
+  border-radius: 0;
   background-color: var(--color-white);
   color: var(--color-text);
   transition: border-color 0.3s var(--easing);
@@ -93,7 +148,7 @@
 
 .filter-select {
   padding: 1rem 1.2rem;
-  border-radius: 0; 
+  border-radius: 0;
   border: 1px solid var(--color-light);
   background-color: var(--color-white);
   font-family: var(--font-body);
@@ -119,7 +174,7 @@
   max-width: var(--content-max-width);
   margin-bottom: var(--spacing-xl);
   display: flex !important;
-  flex-direction: column !important; 
+  flex-direction: column !important;
   align-items: center;
   background-color: var(--color-white);
   border: 1px solid var(--color-tertiary);
@@ -130,7 +185,7 @@
 .map-wrapper {
   position: relative;
   display: inline-block;
-  width: 35%; 
+  width: 35%;
   min-width: 320px;
 }
 
@@ -142,8 +197,8 @@
 }
 
 /* Map Pins & Legend Colors */
-.status-available { background-color: #4ade80 !important; } 
-.status-sold { background-color: #f87171 !important; }      
+.status-available { background-color: #4ade80 !important; }
+.status-sold { background-color: #f87171 !important; }
 .status-reserved { background-color: #fbbf24 !important; }
 
 .status-available {

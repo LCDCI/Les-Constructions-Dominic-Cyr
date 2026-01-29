@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import HomeFooter from '../components/Footers/HomeFooter';
 
-// TODO: Replace with secure retrieval of owner key (e.g., from env, context, or user input)
-const OWNER_KEY = 'dev-owner-key';
-
-const fetchInquiries = async () => {
+const fetchInquiries = async getAccessTokenSilently => {
+  const token = await getAccessTokenSilently({
+    authorizationParams: {
+      audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+    },
+  });
   const res = await fetch('/api/inquiries', {
+    method: 'GET',
+    credentials: 'omit',
     headers: {
-      'X-OWNER-KEY': OWNER_KEY,
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
   });
   if (!res.ok) throw new Error('Failed to fetch inquiries');
@@ -17,13 +24,34 @@ export default function OwnerInquiriesPage() {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [redirecting, setRedirecting] = useState(false);
+  const {
+    isAuthenticated,
+    isLoading,
+    getAccessTokenSilently,
+    loginWithRedirect,
+  } = useAuth0();
 
   useEffect(() => {
-    fetchInquiries()
+    if (isLoading) return;
+    if (!isAuthenticated && !redirecting) {
+      setRedirecting(true);
+      setLoading(false);
+      loginWithRedirect({ appState: { returnTo: '/inquiries' } });
+      return;
+    }
+
+    fetchInquiries(getAccessTokenSilently)
       .then(setInquiries)
       .catch(setError)
       .finally(() => setLoading(false));
-  }, []);
+  }, [
+    isAuthenticated,
+    isLoading,
+    getAccessTokenSilently,
+    loginWithRedirect,
+    redirecting,
+  ]);
 
   const formatDate = value => {
     const d = value ? new Date(value) : null;
@@ -34,79 +62,87 @@ export default function OwnerInquiriesPage() {
     if (!str) return str;
     const textarea = document.createElement('textarea');
     textarea.innerHTML = str;
-    return textarea.value;
+    return textarea.value || str;
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Owner Inquiry Review</h1>
-      <p style={{ color: '#888' }}>
-        This page is hidden and only accessible at <b>/inquiries</b> for
-        demonstration.
-      </p>
-      {loading && <p>Loading inquiries...</p>}
-      {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}
-      {!loading && !error && (
-        <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            marginTop: '2rem',
-          }}
-        >
-          <thead>
-            <tr style={{ background: '#f0f0f0' }}>
-              <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                Name
-              </th>
-              <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                Email
-              </th>
-              <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                Phone
-              </th>
-              <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                Message
-              </th>
-              <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                Timestamp
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {inquiries.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={5}
-                  style={{ textAlign: 'center', padding: '2rem' }}
-                >
-                  No inquiries found.
-                </td>
+    <>
+      <div style={{ padding: '2rem', minHeight: 'calc(100vh - 200px)' }}>
+        <h1>Inquiry Review</h1>
+        {loading && <p>Loading inquiries...</p>}
+        {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}
+        {!loading && !error && (
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              marginTop: '2rem',
+            }}
+          >
+            <thead>
+              <tr style={{ background: '#f0f0f0' }}>
+                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                  Name
+                </th>
+                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                  Email
+                </th>
+                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                  Phone
+                </th>
+                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                  Message
+                </th>
+                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                  Timestamp
+                </th>
               </tr>
-            ) : (
-              inquiries.map(inq => (
-                <tr key={inq.id}>
-                  <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                    {unescapeHtml(inq.name)}
-                  </td>
-                  <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                    {unescapeHtml(inq.email)}
-                  </td>
-                  <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                    {inq.phone ? unescapeHtml(inq.phone) : '-'}
-                  </td>
-                  <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                    {unescapeHtml(inq.message)}
-                  </td>
-                  <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                    {formatDate(inq.createdAt)}
+            </thead>
+            <tbody>
+              {inquiries.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    style={{ textAlign: 'center', padding: '2rem' }}
+                  >
+                    No inquiries found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      )}
-    </div>
+              ) : (
+                inquiries.map(inq => (
+                  <tr key={inq.id}>
+                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
+                      {inq.name}
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
+                      <a
+                        href={`mailto:${encodeURIComponent(inq.email || '')}`}
+                        style={{
+                          color: '#0066cc',
+                          textDecoration: 'underline',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {inq.email}
+                      </a>
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
+                      {inq.phone ? inq.phone : '-'}
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
+                      {inq.message}
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
+                      {formatDate(inq.createdAt)}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+      <HomeFooter />
+    </>
   );
 }
