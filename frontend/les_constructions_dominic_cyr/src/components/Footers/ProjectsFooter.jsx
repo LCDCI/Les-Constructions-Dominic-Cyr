@@ -1,6 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FaClock, FaMapMarkerAlt, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
+import {
+  FaClock,
+  FaMapMarkerAlt,
+  FaPhoneAlt,
+  FaEnvelope,
+} from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Footers/ProjectsFooter.css';
 
@@ -18,7 +23,8 @@ const PROJECT_INFO = {
     location: {
       address1: '104 rue du Boisé',
       address2: 'St-Alphonse de Granby',
-      mapLink: 'https://www.google.com/maps/dir/?api=1&destination=104+rue+du+Boisé+St-Alphonse+de+Granby',
+      mapLink:
+        'https://www.google.com/maps/dir/?api=1&destination=104+rue+du+Boisé+St-Alphonse+de+Granby',
     },
   },
   'proj-002-panorama': {
@@ -34,15 +40,17 @@ const PROJECT_INFO = {
     location: {
       address1: '14 rue du Ruisseau',
       address2: 'Sutton',
-      mapLink: 'https://www.google.com/maps/dir/?api=1&destination=14+rue+du+Ruisseau+Sutton',
+      mapLink:
+        'https://www.google.com/maps/dir/?api=1&destination=14+rue+du+Ruisseau+Sutton',
     },
   },
 };
 
 export default function ProjectsFooter({ projectId }) {
   const { t } = useTranslation();
-  
-  const projectData = PROJECT_INFO[projectId] || PROJECT_INFO['proj-001-foresta'];
+
+  const projectData =
+    PROJECT_INFO[projectId] || PROJECT_INFO['proj-001-foresta'];
 
   return (
     <footer className="app-footer" data-project={projectId}>
@@ -52,15 +60,11 @@ export default function ProjectsFooter({ projectId }) {
             <FaClock />
           </div>
           <h3 className="footer-title">
-            {t('footer.hoursTitle', 'Heures d\'ouverture')}
+            {t('footer.hoursTitle', "Heures d'ouverture")}
           </h3>
           <div className="footer-content">
-            <p className="footer-item">
-              {projectData.hours.weekdays}
-            </p>
-            <p className="footer-item">
-              {projectData.hours.weekend}
-            </p>
+            <p className="footer-item">{projectData.hours.weekdays}</p>
+            <p className="footer-item">{projectData.hours.weekend}</p>
           </div>
         </div>
 
@@ -74,13 +78,13 @@ export default function ProjectsFooter({ projectId }) {
           <div className="footer-content">
             <p className="footer-item">{projectData.location.address1}</p>
             <p className="footer-item">{projectData.location.address2}</p>
-            <a 
+            <a
               href={projectData.location.mapLink}
               target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
             >
-              {t('footer.getDirections', 'Obtenir l\'itinéraire')}
+              {t('footer.getDirections', "Obtenir l'itinéraire")}
             </a>
           </div>
         </div>
@@ -89,18 +93,28 @@ export default function ProjectsFooter({ projectId }) {
           <div className="footer-icon">
             <FaPhoneAlt />
           </div>
-          <h3 className="footer-title">{t('footer.contactTitle', 'Contact')}</h3>
+          <h3 className="footer-title">
+            {t('footer.contactTitle', 'Contact')}
+          </h3>
           <div className="footer-content">
-            <p className="footer-item"><strong>{projectData.contact.name}</strong></p>
+            <p className="footer-item">
+              <strong>{projectData.contact.name}</strong>
+            </p>
             <div className="footer-item-with-icon">
               <FaPhoneAlt className="footer-mini-icon" />
-              <a href={`tel:${projectData.contact.phone.replace(/[^0-9]/g, '')}`} className="footer-link">
+              <a
+                href={`tel:${projectData.contact.phone.replace(/[^0-9]/g, '')}`}
+                className="footer-link"
+              >
                 {projectData.contact.phone}
               </a>
             </div>
             <div className="footer-item-with-icon">
               <FaEnvelope className="footer-mini-icon" />
-              <a href={`mailto:${projectData.contact.email}`} className="footer-link">
+              <a
+                href={`mailto:${projectData.contact.email}`}
+                className="footer-link"
+              >
                 {projectData.contact.email}
               </a>
             </div>

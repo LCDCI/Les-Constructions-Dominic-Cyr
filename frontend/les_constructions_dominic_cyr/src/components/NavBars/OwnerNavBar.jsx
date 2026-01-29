@@ -19,7 +19,12 @@ import { CiLogout } from 'react-icons/ci';
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { CgProfile } from 'react-icons/cg';
 
-const Navbar = ({ isOpen: controlledOpen, onToggle, onClose, showToggle = true }) => {
+const Navbar = ({
+  isOpen: controlledOpen,
+  onToggle,
+  onClose,
+  showToggle = true,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isControlled = typeof controlledOpen === 'boolean';

@@ -15,7 +15,12 @@ import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
 import { CgProfile } from 'react-icons/cg';
 
-const Navbar = ({ isOpen: controlledOpen, onToggle, onClose, showToggle = true }) => {
+const Navbar = ({
+  isOpen: controlledOpen,
+  onToggle,
+  onClose,
+  showToggle = true,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { logout, isAuthenticated } = useAuth0();

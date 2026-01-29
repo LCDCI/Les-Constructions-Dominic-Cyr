@@ -155,7 +155,6 @@ export default function AppNavBar() {
 
         {/* Desktop actions */}
         <div className="nav-actions">
-
           {!isAuthenticated && (
             <button type="button" className="btn-portal" onClick={goToPortal}>
               {t('nav.accessPortal', 'Access Portal')}{' '}

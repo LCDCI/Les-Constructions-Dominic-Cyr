@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, matchPath } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  matchPath,
+} from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
@@ -49,18 +55,18 @@ function PageViewTracker() {
 
 function ConditionalFooter() {
   const location = useLocation();
-  
-  const isProjectPage = 
+
+  const isProjectPage =
     matchPath('/projects/:projectIdentifier/overview', location.pathname) ||
     matchPath('/projects/:projectIdentifier/lots', location.pathname);
-  
+
   const isContactPage = location.pathname === '/contact';
   const isPortalLoginPage = location.pathname === '/portal/login';
-  
+
   if (isProjectPage || isContactPage || isPortalLoginPage) {
     return null;
   }
-  
+
   return <HomeFooter />;
 }
 

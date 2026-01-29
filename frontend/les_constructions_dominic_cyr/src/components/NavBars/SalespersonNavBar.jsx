@@ -12,7 +12,12 @@ import { IoIosNotifications } from 'react-icons/io';
 import { GoHome } from 'react-icons/go';
 import { CgProfile } from 'react-icons/cg';
 
-const Navbar = ({ isOpen: controlledOpen, onToggle, onClose, showToggle = true }) => {
+const Navbar = ({
+  isOpen: controlledOpen,
+  onToggle,
+  onClose,
+  showToggle = true,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isControlled = typeof controlledOpen === 'boolean';

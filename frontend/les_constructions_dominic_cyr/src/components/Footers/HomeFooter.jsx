@@ -1,5 +1,10 @@
 import React from 'react';
-import { FaMapMarkerAlt, FaShieldAlt, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
+import {
+  FaMapMarkerAlt,
+  FaShieldAlt,
+  FaPhoneAlt,
+  FaEnvelope,
+} from 'react-icons/fa';
 import '../../styles/Footers/HomeFooter.css';
 
 export default function HomeFooter() {
@@ -24,7 +29,10 @@ export default function HomeFooter() {
             </div>
             <div className="footer-item-with-icon">
               <FaEnvelope className="footer-mini-icon" />
-              <a href="mailto:constructions.dcyr@gmail.com" className="footer-link">
+              <a
+                href="mailto:constructions.dcyr@gmail.com"
+                className="footer-link"
+              >
                 constructions.dcyr@gmail.com
               </a>
             </div>
@@ -63,7 +71,6 @@ export default function HomeFooter() {
             </a>
           </div>
         </div>
-
       </div>
 
       <div className="footer-bottom">
