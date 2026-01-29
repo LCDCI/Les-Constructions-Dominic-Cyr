@@ -108,6 +108,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/project-management/**").permitAll()
                         .requestMatchers("/api/v1/realizations/**").permitAll()
                         .requestMatchers("/api/v1/contact/**").permitAll()
+                        
+                        // Public inquiry submission (POST only, handled by inquiriesSubmitFilterChain but fallback here)
+                        .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
 
                         // Project Public Endpoints (From your original list)
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
