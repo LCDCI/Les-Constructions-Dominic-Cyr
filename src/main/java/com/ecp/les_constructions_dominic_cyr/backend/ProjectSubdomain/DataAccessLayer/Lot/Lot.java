@@ -2,10 +2,18 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAcces
 
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table(name = "lots")
@@ -33,6 +41,7 @@ public class Lot {
     @Enumerated(EnumType.STRING)
     private LotStatus lotStatus;
 
+    // ManyToOne relationship with Project entity (like Schedule does)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(
             name = "project_id",                          // The FK column in 'lots' table
@@ -41,7 +50,25 @@ public class Lot {
     )
     private Project project;
 
-    public Lot(@NonNull LotIdentifier lotIdentifier, @NonNull String lotNumber, @NonNull String civicAddress, @NonNull Float price, @NonNull String dimensionsSquareFeet, @NonNull String dimensionsSquareMeters, @NonNull LotStatus lotStatus) {
+    // Support multiple assigned users of any role (contractors, customers, salespersons)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "lot_assigned_users",
+            joinColumns = @JoinColumn(name = "lot_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    )
+    @lombok.Getter(lombok.AccessLevel.NONE)
+    private List<Users> assignedUsers = new ArrayList<>();
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    public Lot(@NonNull LotIdentifier lotIdentifier, @NonNull String lotNumber, @NonNull String civicAddress, Float price, @NonNull String dimensionsSquareFeet, @NonNull String dimensionsSquareMeters, @NonNull LotStatus lotStatus) {
         this.lotIdentifier = lotIdentifier;
         this.lotNumber = lotNumber;
         this.civicAddress = civicAddress;
@@ -49,5 +76,10 @@ public class Lot {
         this.dimensionsSquareFeet = dimensionsSquareFeet;
         this.dimensionsSquareMeters = dimensionsSquareMeters;
         this.lotStatus = lotStatus;
+        this.assignedUsers = new ArrayList<>();
+    }
+
+    public List<Users> getAssignedUsers() {
+        return Collections.unmodifiableList(this.assignedUsers);
     }
 }

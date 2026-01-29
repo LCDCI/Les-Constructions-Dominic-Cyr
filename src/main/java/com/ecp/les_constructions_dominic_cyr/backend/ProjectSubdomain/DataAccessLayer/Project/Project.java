@@ -14,6 +14,7 @@ import java.util.List;
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "project_id")
     private Long projectId;
 
     @Column(name = "project_identifier", nullable = false, unique = true) // Add name here
@@ -66,7 +67,9 @@ public class Project {
     @Column(name = "lot_identifier", nullable = false)
     private List<String> lotIdentifiers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Lots are managed separately via LotService - removed CascadeType.ALL to prevent
+    // automatic persistence issues and orphanRemoval to avoid deletion side effects
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
     private List<Lot> lots = new ArrayList<>();
 
     private Integer progressPercentage;

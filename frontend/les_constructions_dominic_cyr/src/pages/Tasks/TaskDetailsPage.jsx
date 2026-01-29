@@ -7,6 +7,7 @@ import { fetchAllContractors } from '../../features/users/api/usersApi';
 import { useBackendUser } from '../../hooks/useBackendUser';
 import { ROLES } from '../../utils/permissions';
 import EditTaskModal from '../../components/Modals/EditTaskModal';
+import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import '../../styles/Project/ProjectSchedule.css';
 
 const TASK_STATUSES = [
@@ -34,6 +35,9 @@ const TaskDetailsPage = () => {
   const [editError, setEditError] = useState('');
   const [isSavingEdit, setIsSavingEdit] = useState(false);
   const [projectContractors, setProjectContractors] = useState([]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
 
   useEffect(() => {
     const loadTask = async () => {
@@ -284,6 +288,57 @@ const TaskDetailsPage = () => {
     }
   };
 
+  const handleDeleteTask = () => {
+    setDeleteError('');
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDeleteTask = async () => {
+    setIsDeleting(true);
+    setDeleteError('');
+
+    try {
+      let token = null;
+      if (isAuthenticated) {
+        token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          },
+        });
+      }
+
+      await taskApi.deleteTask(taskId, token);
+
+      // Navigate back to the previous page or project schedule
+      const projectId =
+        task.projectId || task.projectIdentifier || location.state?.projectId;
+      if (projectId) {
+        navigate(`/projects/${projectId}/schedule`, {
+          state: { message: 'Task deleted successfully' },
+        });
+      } else {
+        navigate(-1);
+      }
+    } catch (err) {
+      const status = err?.response?.status;
+      let msg =
+        err?.response?.data?.message || err.message || 'Failed to delete task.';
+
+      if (status === 403) {
+        msg =
+          'You do not have permission to delete this task. Only owners can delete tasks.';
+      }
+
+      setDeleteError(msg);
+      setIsDeleting(false);
+    }
+  };
+
+  const cancelDeleteTask = () => {
+    setIsDeleteModalOpen(false);
+    setDeleteError('');
+  };
+
   const goBack = () => navigate(-1);
 
   return (
@@ -298,6 +353,11 @@ const TaskDetailsPage = () => {
           {canEditTask && (
             <button className="primary" onClick={openEditTaskModal}>
               Edit Task
+            </button>
+          )}
+          {role === ROLES.OWNER && (
+            <button className="modal-danger" onClick={handleDeleteTask}>
+              Delete Task
             </button>
           )}
           <button className="back-button-small" onClick={goBack}>
@@ -373,6 +433,21 @@ const TaskDetailsPage = () => {
         onChange={setTaskDraft}
         onSave={handleEditTaskSave}
         scheduleWindow={scheduleWindow}
+      />
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onCancel={cancelDeleteTask}
+        config={{
+          title: 'Delete Task',
+          message: deleteError
+            ? `Error: ${deleteError}`
+            : `Are you sure you want to delete this task? This action cannot be undone and will remove the task from all views.`,
+          onConfirm: confirmDeleteTask,
+          confirmText: isDeleting ? 'Deleting...' : 'Delete Task',
+          cancelText: 'Cancel',
+          isDestructive: true,
+        }}
       />
     </div>
   );

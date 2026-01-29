@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -16,7 +17,6 @@ const LotsPage = () => {
     isAuthenticated,
     isLoading: authLoading,
     getAccessTokenSilently,
-    user,
   } = useAuth0();
 
   const [lots, setLots] = useState([]);
@@ -25,15 +25,10 @@ const LotsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({
     key: 'none',
     direction: 'asc',
   });
-
-  const roles = user?.['https://construction-api.loca/roles'] || [];
-  const isOwner =
-    isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
 
   useEffect(() => {
     let cancelled = false;
@@ -55,12 +50,15 @@ const LotsPage = () => {
           //
         }
 
-        // --- 2. Fetch Lots (Using the token!) ---
         const data = await fetchLots({ projectIdentifier: resolved, token });
 
         if (!cancelled) {
-          setLots(data);
-          setFilteredLots(data);
+          // Filter to only show AVAILABLE lots for public view
+          const availableLots = (data || []).filter(
+            lot => lot.lotStatus?.toUpperCase() === 'AVAILABLE'
+          );
+          setLots(availableLots);
+          setFilteredLots(availableLots);
         }
       } catch (err) {
         if (!cancelled) setError(err.message || 'Failed to fetch');
@@ -80,18 +78,10 @@ const LotsPage = () => {
     getAccessTokenSilently,
   ]);
 
-  // Filtering and Sorting Logic
+  // Filtering and Sorting Logic for public view
   useEffect(() => {
     let result = [...lots];
-    if (!isOwner) {
-      result = result.filter(
-        lot => lot.lotStatus?.toUpperCase() === 'AVAILABLE'
-      );
-    } else if (statusFilter !== 'all') {
-      result = result.filter(
-        lot => lot.lotStatus?.toLowerCase() === statusFilter
-      );
-    }
+
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       result = result.filter(
@@ -114,12 +104,12 @@ const LotsPage = () => {
       });
     }
     setFilteredLots(result);
-  }, [searchTerm, statusFilter, sortConfig, lots, isOwner]);
+  }, [searchTerm, sortConfig, lots]);
 
   if (loading)
     return (
       <div className="lots-page">
-        <div className="lots-content">Loading Foresta project data...</div>
+        <div className="lots-content">Loading project data...</div>
       </div>
     );
 
@@ -142,18 +132,6 @@ const LotsPage = () => {
           </div>
 
           <div className="filter-group">
-            {isOwner && (
-              <select
-                className="filter-select"
-                value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value)}
-              >
-                <option value="all">All Statuses</option>
-                <option value="available">Available</option>
-                <option value="sold">Sold</option>
-                <option value="pending">Pending</option>
-              </select>
-            )}
             <select
               className="filter-select"
               onChange={e => {
@@ -162,10 +140,6 @@ const LotsPage = () => {
               }}
             >
               <option value="none-asc">Sort By</option>
-              {isOwner && <option value="price-asc">Price: Low to High</option>}
-              {isOwner && (
-                <option value="price-desc">Price: High to Low</option>
-              )}
               <option value="dimensionsSquareFeet-asc">Size: Smallest</option>
               <option value="dimensionsSquareFeet-desc">Size: Largest</option>
             </select>
@@ -176,7 +150,7 @@ const LotsPage = () => {
           {error ? (
             <div className="no-results">{error}</div>
           ) : (
-            <LotList lots={filteredLots} isOwner={isOwner} />
+            <LotList lots={filteredLots} isOwner={false} />
           )}
         </div>
       </div>

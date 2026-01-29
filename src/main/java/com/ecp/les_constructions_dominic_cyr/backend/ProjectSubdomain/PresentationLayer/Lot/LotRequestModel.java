@@ -4,6 +4,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 public class LotRequestModel {
@@ -13,4 +15,6 @@ public class LotRequestModel {
     private String dimensionsSquareFeet;
     private String dimensionsSquareMeters;
     private LotStatus lotStatus;
+    // Support multiple assigned users of any role
+    private List<String> assignedUserIds;
 }
