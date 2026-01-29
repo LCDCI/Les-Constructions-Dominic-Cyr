@@ -189,13 +189,7 @@ const LotsPage = () => {
               style={{ backgroundColor: projectColors.accent }}
             ></span>
           </h1>
-          <button
-            className="btn btn-secondary"
-            style={{ marginTop: '2rem', background: projectColors.accent, color: '#fff', fontWeight: 600 }}
-            onClick={() => navigate(`/projects/${resolvedProjectId}/overview`)}
-          >
-            {t('backToProject', 'Back to Residential Project')}
-          </button>
+          {/* Button moved below all content */}
         </div>
 
         {resolvedProjectId === 'proj-001-foresta' && (
@@ -339,6 +333,14 @@ const LotsPage = () => {
           ) : (
             <LotList lots={filteredLots} isOwner={isOwner} />
           )}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '2.5rem 0' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate(`/projects/${resolvedProjectId}/overview`)}
+          >
+            {t('backToProject', 'Back to Residential Project')}
+          </button>
         </div>
       </div>
     </div>
