@@ -64,7 +64,24 @@ RUN go mod tidy
 RUN go build -o file-service ./cmd
 
 ############################################################
-# 4) FINAL RUNTIME IMAGE (nginx + backend + files-service)
+# 4) MAILER-SERVICE BUILD (Go)
+############################################################
+FROM golang:1.24-alpine AS mailer-service-build
+WORKDIR /mailer-service
+
+# Copy go module files
+COPY mailer-service/go.mod mailer-service/go.sum* ./
+RUN go mod download || true
+
+# Copy source
+COPY mailer-service/ ./
+RUN go mod tidy
+
+# Build the binary
+RUN go build -o mailer-service ./cmd/mailer
+
+############################################################
+# 5) FINAL RUNTIME IMAGE (backend + files-service + mailer-service)
 ############################################################
 FROM eclipse-temurin:21-jdk AS final
 WORKDIR /app
@@ -76,14 +93,19 @@ COPY --from=backend-build /app/build/libs/les_constructions_dominic_cyr-0.0.1-SN
 COPY --from=files-service-build /files-service/file-service /app/file-service
 COPY --from=files-service-build /files-service/migrations /app/migrations
 
-# Expose ports
-EXPOSE 8080 8082
+# Copy mailer-service binary
+COPY --from=mailer-service-build /mailer-service/mailer-service /app/mailer-service
 
-# Create startup script to run backend and files-service
+# Expose ports
+EXPOSE 8080 8082 8083
+
+# Create startup script to run backend, files-service, and mailer-service
 RUN echo '#!/bin/bash\n\
 set -e\n\
 # Start files-service in background\n\
 cd /app && ./file-service &\n\
+# Start mailer-service in background\n\
+cd /app && ./mailer-service &\n\
 # Start backend (foreground)\n\
 exec java -jar /app/app.jar' > /start.sh && chmod +x /start.sh
 

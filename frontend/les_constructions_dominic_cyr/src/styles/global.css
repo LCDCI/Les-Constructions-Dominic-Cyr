@@ -15,6 +15,40 @@
   --border-radius: 8px;
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
+  
+  /* Brand colors */
+  --brand-primary: #4a90a4;
+  --brand-primary-dark: #3a7a8a;
+  --brand-primary-darker: #2a6a7a;
+  --brand-primary-light: rgba(74, 144, 164, 0.1);
+  --brand-primary-lighter: rgba(74, 144, 164, 0.05);
+  
+  /* Neutral colors */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Border colors */
+  --border-color: #e5e7eb;
+  --border-color-light: #d1d5db;
+  --border-color-dark: #cbd5e1;
+  
+  /* Text colors */
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-muted: #999;
+  
+  /* Background colors */
+  --bg-secondary: #f5f7fa;
+  --bg-tertiary: #e8f4f8;
+  --bg-card: #fafbfc;
 }
 
 body {

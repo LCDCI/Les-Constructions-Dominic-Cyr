@@ -38,6 +38,7 @@ out/
 
 ## ENV ##
 .env
+mailer.env
 
 ## DATA DIRECTORIES (for persistent local data until deployment)
 data/

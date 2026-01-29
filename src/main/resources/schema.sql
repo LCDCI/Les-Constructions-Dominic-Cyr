@@ -145,6 +145,24 @@ CREATE INDEX IF NOT EXISTS idx_task_identifier ON tasks(task_identifier);
 CREATE INDEX IF NOT EXISTS idx_task_status ON tasks(task_status);
 CREATE INDEX IF NOT EXISTS idx_assigned_user_id ON tasks(assigned_user_id);
 
+-- Notifications table
+DROP TABLE IF EXISTS notifications CASCADE;
+CREATE TABLE notifications (
+    notification_id UUID PRIMARY KEY,
+    user_id UUID NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    link VARCHAR(500),
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_user_id ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notification_is_read ON notifications(is_read);
+CREATE INDEX IF NOT EXISTS idx_notification_created_at ON notifications(created_at DESC);
+
 -- Project overview content
 DROP TABLE IF EXISTS project_overview_content CASCADE;
 DROP TABLE IF EXISTS project_features CASCADE;
