@@ -31,7 +31,7 @@
 /* 2. Force the image to fill the wrapper exactly */
 .phase-map-image {
   display: block;
-  width: 100% !important; 
+  width: 100% !important;
   height: auto;
   border-radius: 8px;
 }
@@ -48,7 +48,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s ease;
   z-index: 100;
-  
+
   overflow: hidden;
   text-indent: -9999px;
   white-space: nowrap;
@@ -61,18 +61,28 @@
 
 /* Pulse animation for Available lots */
 @keyframes pulse-green {
-  0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
-  70% { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
 }
 
 /* Status Colors */
-.status-available { 
-  background-color: #4ade80 !important; 
+.status-available {
+  background-color: #4ade80 !important;
   animation: pulse-green 2s infinite;
-} 
-.status-sold { background-color: #f87171 !important; }      
-.status-reserved { background-color: #fbbf24 !important; }  
+}
+.status-sold {
+  background-color: #f87171 !important;
+}
+.status-reserved {
+  background-color: #fbbf24 !important;
+}
 
 /* Legend Styling - Now forced to the bottom */
 .map-legend {
@@ -98,14 +108,17 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   display: inline-block;
 }
 
 /* Modal Styles */
 .lot-modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(15, 23, 42, 0.7);
   backdrop-filter: blur(4px);
   display: flex;

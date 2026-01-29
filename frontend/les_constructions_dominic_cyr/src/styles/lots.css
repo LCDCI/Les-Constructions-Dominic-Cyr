@@ -197,18 +197,30 @@
 }
 
 /* Map Pins & Legend Colors */
-.status-available { background-color: #4ade80 !important; }
-.status-sold { background-color: #f87171 !important; }
-.status-reserved { background-color: #fbbf24 !important; }
+.status-available {
+  background-color: #4ade80 !important;
+}
+.status-sold {
+  background-color: #f87171 !important;
+}
+.status-reserved {
+  background-color: #fbbf24 !important;
+}
 
 .status-available {
   animation: mapPulse 2s infinite;
 }
 
 @keyframes mapPulse {
-  0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
 }
 
 .lots-hero-text {
