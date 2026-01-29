@@ -282,7 +282,7 @@ const OwnerLotsPage = () => {
     setFilteredLots(result);
   }, [searchTerm, statusFilter, sortConfig, lots]);
 
-  if (authLoading || translationsLoading || (!isOwner && !authLoading)) {
+  if (authLoading || translationsLoading || !isOwner) {
     return (
       <div className="lots-page">
         <div className="lots-content">{t('loading')}</div>
