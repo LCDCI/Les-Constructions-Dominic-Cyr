@@ -1,3 +1,17 @@
+/* Foresta Project Colors */
+.app-footer[data-project="proj-001-foresta"] {
+  --icon-primary: #003663;
+  --icon-secondary: #A9B3AA;
+  --icon-tertiary: #DFE1DF;
+}
+
+/* Panorama Project Colors */
+.app-footer[data-project="proj-002-panorama"] {
+  --icon-primary: #545454;
+  --icon-secondary: #737373;
+  --icon-tertiary: #B29E84;
+}
+
 .app-footer {
   background: #ffffff;
   border-top: 1px solid #e6e6e6;
@@ -26,7 +40,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--project-primary, #4a90a4);
+  color: var(--icon-primary, #4a90a4);
   margin-bottom: 1%;
 }
 
@@ -64,21 +78,21 @@
 }
 
 .footer-mini-icon {
-  color: var(--project-primary, #4a90a4);
+  color: var(--icon-primary, #4a90a4);
   font-size: 0.9rem;
   flex-shrink: 0;
 }
 
 .footer-link {
   font-size: 15px;
-  color: var(--project-primary, #4a90a4);
+  color: var(--icon-primary, #4a90a4);
   text-decoration: none;
   transition: color 0.2s ease;
   line-height: 1.5;
 }
 
 .footer-link:hover {
-  color: var(--project-secondary, #3a7a8c);
+  color: var(--icon-secondary, #3a7a8c);
   text-decoration: underline;
 }
 

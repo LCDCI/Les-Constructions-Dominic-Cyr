@@ -45,7 +45,7 @@ export default function ProjectsFooter({ projectId }) {
   const projectData = PROJECT_INFO[projectId] || PROJECT_INFO['proj-001-foresta'];
 
   return (
-    <footer className="app-footer">
+    <footer className="app-footer" data-project={projectId}>
       <div className="footer-inner">
         <div className="footer-section">
           <div className="footer-icon">
