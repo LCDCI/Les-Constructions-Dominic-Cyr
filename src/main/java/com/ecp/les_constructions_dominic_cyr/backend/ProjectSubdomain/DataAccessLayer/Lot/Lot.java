@@ -12,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -56,6 +57,7 @@ public class Lot {
             joinColumns = @JoinColumn(name = "lot_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     )
+    @lombok.Getter(lombok.AccessLevel.NONE)
     private List<Users> assignedUsers = new ArrayList<>();
 
     @CreationTimestamp
@@ -75,5 +77,9 @@ public class Lot {
         this.dimensionsSquareMeters = dimensionsSquareMeters;
         this.lotStatus = lotStatus;
         this.assignedUsers = new ArrayList<>();
+    }
+
+    public List<Users> getAssignedUsers() {
+        return Collections.unmodifiableList(this.assignedUsers);
     }
 }
