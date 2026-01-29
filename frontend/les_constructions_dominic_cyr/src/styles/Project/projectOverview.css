@@ -624,12 +624,14 @@
   width: 80px;
   height: 80px;
   color: var(--color-primary, #4a4a4a);
-  transition: color 0.3s ease, transform 0.3s ease;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
 .feature-item:hover .base-react-icon {
   transform: scale(1.1);
-  color: var(--color-secondary, #8A9287);
+  color: var(--color-secondary, #8a9287);
 }
 
 .feature-label {
