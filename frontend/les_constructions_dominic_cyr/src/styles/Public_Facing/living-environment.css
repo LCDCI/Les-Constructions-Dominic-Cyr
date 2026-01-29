@@ -1,4 +1,4 @@
-/* Living Environment Page Styles - Using Home Page Theme */
+/* Living Environment Page Styles - Using Dynamic Project Colors */
 
 .living-environment-page {
   width: 100%;
@@ -21,7 +21,7 @@
   font-weight: 400;
   letter-spacing: 0.05em;
   margin: 0.5rem 0;
-  color: var(--color-primary, #4c4d4f);
+  color: var(--primary-color, var(--color-primary, #4c4d4f));
   line-height: 1.2;
 }
 
@@ -40,7 +40,7 @@
 
 .le-tagline {
   font-size: clamp(1rem, 2.5vw, 1.5rem);
-  color: var(--color-text-muted, #6b7280);
+  color: var(--tertiary-color, var(--color-text-muted, #6b7280));
   font-style: italic;
   margin-top: var(--spacing-sm, 1.25rem);
   font-weight: 300;
@@ -74,7 +74,7 @@
   font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 400;
-  color: var(--color-primary, #4c4d4f);
+  color: var(--primary-color, var(--color-primary, #4c4d4f));
   margin-bottom: var(--spacing-xl, 4rem);
   letter-spacing: 0.05em;
 }
@@ -89,13 +89,53 @@
 }
 
 .le-amenity-box {
-  background: linear-gradient(135deg, var(--color-accent, #628db5) 0%, var(--color-secondary, #aab2a6) 100%);
+  background: linear-gradient(135deg, var(--primary-color, #628db5) 0%, var(--tertiary-color, #aab2a6) 100%);
   border-radius: 12px;
   padding: var(--spacing-lg, 3rem) var(--spacing-md, 2rem);
   text-align: center;
   transition: all 0.3s var(--easing, cubic-bezier(0.25, 0.46, 0.45, 0.94));
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.le-amenity-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.le-amenity-icon {
+  font-size: 3rem;
+  color: var(--color-white, #ffffff);
+  margin-bottom: var(--spacing-sm, 1.25rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.le-amenity-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-white, #ffffff);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  word-wrap: break-word;
+  font-family: var(--font-body, 'Segoe UI', sans-serif);
+}
+
+/* Footer Section */
+.le-footer-section {
+  text-align: center;
+  padding: var(--spacing-xl, 4rem) var(--spacing-md, 2rem);
+  border-top: 1px solid var(--color-light, #e6e7e8);
+}
+
+.le-footer-text {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--color-text-muted, #6b7280);
+  font-weight: 400;
+  font-style: italic;
+  font-family: var(--font-body, 'Segoe UI', sans-serif);
 }
 
 .le-amenity-box:hover {

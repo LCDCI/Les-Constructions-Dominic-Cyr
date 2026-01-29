@@ -1,31 +1,52 @@
 {
   "header": {
-    "foresta": "FÖRESTA, UN",
-    "livingEnvironment": "MILIEU DE VIE",
-    "exceptional": "EXCEPTIONNEL",
-    "tagline": "Au rythme de la nature"
+    "foresta": {
+      "title": "FÖRESTA, UN",
+      "subtitle": "MILIEU DE VIE",
+      "subtitleLast": "EXCEPTIONNEL",
+      "tagline": "Au rythme de la nature"
+    },
+    "panorama": {
+      "title": "L'AUTHENTICITÉ",
+      "subtitle": "AU COEUR",
+      "subtitleLast": "DE LA MONTAGNE",
+      "tagline": "La vie en montagne"
+    }
   },
   "description": {
-    "main": "Un milieu de vie exceptionnel pour ceux qui rêvent de s'évader du quotidien et de se reconnecter à l'essentiel, le projet Fõresta offre l'opportunité d'habiter une demeure au cœur de la nature. Ce nouveau quartier est situé à 5 km de l'autoroute 10 (A-10), à 15 minutes du centre-ville de Granby et à portée de main d'une panoplie de services et d'activités. Les adeptes de plein air seront comblés."
+    "foresta": "Un milieu de vie exceptionnel pour ceux qui rêvent de s'évader du quotidien et de se reconnecter à l'essentiel, le projet Föresta offre l'opportunité d'habiter une demeure au cœur de la nature. Ce nouveau quartier est situé à 5 km de l'autoroute 10 (A-10), à 15 minutes du centre-ville de Granby et à portée de main d'une panoplie de services et d'activités. Les adeptes de plein air seront comblés.",
+    "panorama": "Le projet Panorama est situé dans le charmant village de Sutton dans les Cantons-de-l'Est. La région est reconnue pour son ambiance chaleureuse et son cadre naturel exceptionnel. Elle est réputée pour le ski, la randonnée et le plein air en toutes saisons et attire autant les amateurs de nature que les visiteurs en quête de tranquillité. Son cœur villageois animé, ses cafés, galeries et commerces locaux lui donnent une atmosphère conviviale et authentique, où il fait bon vivre toute l'année!"
   },
   "proximity": {
-    "title": "À PROXIMITÉ DE TOUT !"
+    "foresta": "À PROXIMITÉ DE TOUT!",
+    "panorama": "POUR LES AMATEURS DE PLEIN-AIR!"
   },
   "amenities": {
-    "ski": "Ski",
-    "golf": "Golf",
-    "bike": "Vélo",
-    "bromont": "Bromont",
-    "yamaska": "Parc National de la Yamaska",
-    "vineyards": "Vergers & Vignobles",
-    "restaurants": "Restaurants",
-    "groceries": "Épiceries",
-    "stores": "Magasins",
-    "hospitals": "Hôpitaux",
-    "schools": "Écoles",
-    "spas": "Spas"
+    "foresta": {
+      "ski": "Ski",
+      "golf": "Golf",
+      "bike": "Vélo",
+      "bromont": "Bromont",
+      "yamaska": "Parc National de la Yamaska",
+      "vineyards": "Vergers & Vignobles",
+      "restaurants": "Restaurants",
+      "groceries": "Épiceries",
+      "stores": "Magasins",
+      "hospitals": "Hôpitaux",
+      "schools": "Écoles",
+      "spas": "Spas"
+    },
+    "panorama": {
+      "ski": "Ski à Sutton",
+      "golf": "Golf",
+      "bike": "Vélo",
+      "vineyards": "Vignobles",
+      "crosscountry": "Ski de fond et raquette",
+      "hiking": "Randonnées"
+    }
   },
   "footer": {
-    "signature": "FÖRESTA est un projet signé Les Constructions Dominic Cyr inc."
+    "foresta": "FÖRESTA est un projet signé Les Constructions Dominic Cyr inc.",
+    "panorama": "PANORAMA est un projet signé Les Constructions Dominic Cyr inc."
   }
 }

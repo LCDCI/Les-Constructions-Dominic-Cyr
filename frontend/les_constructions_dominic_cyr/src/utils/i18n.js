@@ -26,7 +26,7 @@ i18n.use(initReactI18next).init({
   supportedLngs: ['en', 'fr'],
   fallbackLng: 'en',
   lng: initialLanguage,
-  ns: ['translation', 'lots', 'projectoverview'],
+  ns: ['translation', 'lots', 'projectoverview', 'livingEnvironment'],
   defaultNS: 'translation',
   load: 'languageOnly',
   resources: {
@@ -45,9 +45,10 @@ i18n.use(initReactI18next).init({
 const loadTranslations = async (language = null) => {
   try {
     const lang = normalizeLang(language || getInitialLanguage());
-    const [allTranslations, lotsTranslations] = await Promise.all([
+    const [allTranslations, lotsTranslations, livingEnvironmentTranslations] = await Promise.all([
       fetchTranslations(lang),
       fetchPageTranslations('lots', lang),
+      fetchPageTranslations('livingEnvironment', lang),
     ]);
 
     // Add general translations
@@ -60,6 +61,11 @@ const loadTranslations = async (language = null) => {
     // Explicitly add/overwrite the 'lots' namespace
     if (lotsTranslations) {
       i18n.addResourceBundle(lang, 'lots', lotsTranslations, true, true);
+    }
+
+    // Explicitly add/overwrite the 'livingEnvironment' namespace
+    if (livingEnvironmentTranslations) {
+      i18n.addResourceBundle(lang, 'livingEnvironment', livingEnvironmentTranslations, true, true);
     }
 
     // Tell i18next we are done so the UI refreshes
