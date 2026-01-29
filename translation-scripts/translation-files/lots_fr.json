@@ -1,0 +1,49 @@
+{
+  "header": {
+    "projectLots": "Terrains de {{name}}",
+    "defaultTitle": "Terrains du projet"
+  },
+  "foresta": {
+    "exclusiveCount": "26 TERRAINS EXCLUSIFS",
+    "peaceTagline": "Un véritable havre de paix"
+  },
+  "common": {
+    "lot": "Terrain",
+    "loading": "Chargement...",
+    "noResults": "Aucun terrain trouvé."
+  },
+  "table": {
+    "identifier": "Identifiant",
+    "lotNumber": "Lot #",
+    "address": "Adresse civique",
+    "areaSqft": "Superficie (pi²)",
+    "areaSqm": "Superficie (m²)",
+    "price": "Prix",
+    "status": "Statut"
+  },
+  "status": {
+    "available": "Disponible",
+    "reserved": "Réservé",
+    "sold": "Vendu",
+    "unknown": "Inconnu"
+  },
+  "modal": {
+    "address": "Adresse",
+    "area": "Superficie",
+    "status": "Statut",
+    "price": "Prix"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Rechercher..."
+  },
+  "filters": {
+    "allStatuses": "Tous les statuts",
+    "sortBy": "Trier par",
+    "priceLow": "Prix : Du plus bas au plus haut",
+    "sizeSmall": "Taille : Plus petit",
+    "sizeLarge": "Taille : Plus grand"
+  },
+  "errors": {
+    "fetchFailed": "Échec de la récupération des terrains."
+  }
+}

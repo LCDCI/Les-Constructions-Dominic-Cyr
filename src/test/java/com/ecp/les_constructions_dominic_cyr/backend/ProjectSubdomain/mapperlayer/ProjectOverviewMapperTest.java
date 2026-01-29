@@ -324,7 +324,7 @@ class ProjectOverviewMapperTest {
                 350000.0f,
                 "4000",
                 "371.6",
-                LotStatus.PENDING
+                LotStatus.RESERVED
         );
 
         // Act
@@ -337,7 +337,7 @@ class ProjectOverviewMapperTest {
         assertEquals(350000.0f, result.getPrice());
         assertEquals("4000", result.getDimensionsSquareFeet());
         assertEquals("371.6", result.getDimensionsSquareMeters());
-        assertEquals(LotStatus.PENDING, result.getLotStatus());
+        assertEquals(LotStatus.RESERVED, result.getLotStatus());
     }
 
     @Test
@@ -382,7 +382,7 @@ class ProjectOverviewMapperTest {
                 200000.0f,
                 "2400",
                 "223.0",
-                LotStatus.PENDING
+                LotStatus.RESERVED
         );
 
         Lot lot3 = new Lot(
@@ -470,7 +470,7 @@ class ProjectOverviewMapperTest {
                 200000.0f,
                 "2400",
                 "223.0",
-                LotStatus.PENDING
+                LotStatus.RESERVED
         );
 
         Lot soldLot = new Lot(
@@ -492,7 +492,7 @@ class ProjectOverviewMapperTest {
         assertNotNull(result);
         assertEquals(3, result.size());
         assertEquals(LotStatus.AVAILABLE, result.get(0).getLotStatus());
-        assertEquals(LotStatus.PENDING, result.get(1).getLotStatus());
+        assertEquals(LotStatus.RESERVED, result.get(1).getLotStatus());
         assertEquals(LotStatus.SOLD, result.get(2).getLotStatus());
     }
 

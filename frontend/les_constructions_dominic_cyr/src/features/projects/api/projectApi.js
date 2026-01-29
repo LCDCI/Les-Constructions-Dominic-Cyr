@@ -3,293 +3,220 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 import { getFilesServiceBase } from '../../../utils/filesService';
 const FILES_SERVICE_BASE_URL = getFilesServiceBase();
+
 export const projectApi = {
-  getAllProjects: async (filters = {}, token = null) => {
-    const params = new URLSearchParams();
+    getAllProjects: async (filters = {}, token = null) => {
+        const params = new URLSearchParams();
 
-    if (filters.status) params.append('status', filters.status);
-    if (filters.startDate) params.append('startDate', filters.startDate);
-    if (filters.endDate) params.append('endDate', filters.endDate);
-    if (filters.customerId) params.append('customerId', filters.customerId);
+        if (filters.status) params.append('status', filters.status);
+        if (filters.startDate) params.append('startDate', filters.startDate);
+        if (filters.endDate) params.append('endDate', filters.endDate);
+        if (filters.customerId) params.append('customerId', filters.customerId);
 
-    const queryString = params.toString();
-    const url = `${API_BASE_URL}/projects${queryString ? `?${queryString}` : ''}`;
+        const queryString = params.toString();
+        const url = `${API_BASE_URL}/projects${queryString ? `?${queryString}` : ''}`;
 
-    const headers = {};
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
+        const headers = {};
+        if (token) {
+            headers.Authorization = `Bearer ${token}`;
+        }
 
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-      throw new Error('Failed to fetch projects');
-    }
-    return response.json();
-  },
+        const response = await fetch(url, { headers });
+        if (!response.ok) {
+            throw new Error('Failed to fetch projects');
+        }
+        return response.json();
+    },
 
-  getProjectById: async (projectIdentifier, token) => {
-    const headers = {};
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
+    getProjectById: async (projectIdentifier, token) => {
+        // 1. PROACTIVE CHECK: If no token, go straight to public overview to avoid 401 console error
+        if (!token) {
+            const overviewUrl = `${API_BASE_URL}/projects/${projectIdentifier}/overview`;
+            const response = await fetch(overviewUrl);
+            if (!response.ok) throw new Error('Failed to fetch project overview');
+            return response.json();
+        }
 
-    const url = `${API_BASE_URL}/projects/${projectIdentifier}`;
-    const response = await fetch(url, { headers });
+        const headers = { Authorization: `Bearer ${token}` };
+        const url = `${API_BASE_URL}/projects/${projectIdentifier}`;
 
-    // If the project endpoint is protected (401/403) or not found (404),
-    // try the public overview endpoint as a fallback so public pages
-    // (like the lots or public projects listing) can still render.
-    if (!response.ok) {
-      const status = response.status;
-      if (status === 401 || status === 403 || status === 404) {
-        const overviewUrl = `${API_BASE_URL}/projects/${projectIdentifier}/overview`;
         try {
-          const overviewResp = await fetch(overviewUrl);
-          if (overviewResp.ok) {
-            return overviewResp.json();
-          }
-        } catch (e) {
-          // swallow and rethrow below
-        }
-      }
-      throw new Error(`Failed to fetch project (${response.status})`);
-    }
-    return response.json();
-  },
+            const response = await fetch(url, { headers });
 
-  createProject: async (projectData, token) => {
-    try {
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
-      const response = await fetch(`${API_BASE_URL}/projects`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(projectData),
-      });
+            if (!response.ok) {
+                // 2. FALLBACK: If token is expired or unauthorized, try overview
+                const overviewUrl = `${API_BASE_URL}/projects/${projectIdentifier}/overview`;
+                const overviewResp = await fetch(overviewUrl);
+                if (overviewResp.ok) return overviewResp.json();
 
-      if (!response.ok) {
-        let errorMessage = `Failed to create project (${response.status})`;
-        // Read response as text first, then try to parse as JSON
-        const errorText = await response.text();
-        if (errorText) {
-          try {
-            const errorData = JSON.parse(errorText);
-            if (errorData.message) {
-              errorMessage = errorData.message;
-            } else if (errorData.error) {
-              errorMessage = errorData.error;
-            } else {
-              errorMessage = errorText;
+                throw new Error(`Failed to fetch project (${response.status})`);
             }
-          } catch (e) {
-            // If not valid JSON, use the text as error message
-            errorMessage = errorText;
-          }
+            return response.json();
+        } catch (error) {
+            // 3. LAST RESORT FALLBACK
+            const overviewUrl = `${API_BASE_URL}/projects/${projectIdentifier}/overview`;
+            const lastResort = await fetch(overviewUrl);
+            if (lastResort.ok) return lastResort.json();
+            throw error;
         }
-        const error = new Error(errorMessage);
-        error.status = response.status;
-        throw error;
-      }
-      return response.json();
-    } catch (error) {
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error(
-          'Network error: Could not connect to server. Please check if the backend is running.'
-        );
-      }
-      throw error;
-    }
-  },
+    },
 
-  updateProject: async (projectIdentifier, projectData, token) => {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}`,
-      {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify(projectData),
-      }
-    );
-    if (!response.ok) {
-      throw new Error('Failed to update project');
-    }
-    return response.json();
-  },
+    createProject: async (projectData, token) => {
+        try {
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers.Authorization = `Bearer ${token}`;
 
-  deleteProject: async (projectIdentifier, token) => {
-    const headers = {};
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}`,
-      {
-        method: 'DELETE',
-        headers,
-      }
-    );
-    if (!response.ok) {
-      throw new Error('Failed to delete project');
-    }
-  },
+            const response = await fetch(`${API_BASE_URL}/projects`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify(projectData),
+            });
 
-  uploadProjectImage: async (file, userId = 'demo-user') => {
-    const formData = new FormData();
-    formData.append('file', file);
+            if (!response.ok) {
+                let errorMessage = `Failed to create project (${response.status})`;
+                const errorText = await response.text();
+                if (errorText) {
+                    try {
+                        const errorData = JSON.parse(errorText);
+                        errorMessage = errorData.message || errorData.error || errorText;
+                    } catch (e) {
+                        errorMessage = errorText;
+                    }
+                }
+                const error = new Error(errorMessage);
+                error.status = response.status;
+                throw error;
+            }
+            return response.json();
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Network error: Could not connect to server.');
+            }
+            throw error;
+        }
+    },
 
-    const response = await fetch(`${API_BASE_URL}/photos/upload`, {
-      method: 'POST',
-      headers: {
-        'X-User': userId,
-      },
-      body: formData,
-    });
+    updateProject: async (projectIdentifier, projectData, token) => {
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers.Authorization = `Bearer ${token}`;
 
-    if (!response.ok) {
-      throw new Error('Failed to upload image');
-    }
-    return response.json();
-  },
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}`, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify(projectData),
+        });
+        if (!response.ok) throw new Error('Failed to update project');
+        return response.json();
+    },
 
-  getImageUrl: imageIdentifier => {
-    if (!imageIdentifier) return null;
-    return `${FILES_SERVICE_BASE_URL}/files/${imageIdentifier}`;
-  },
+    deleteProject: async (projectIdentifier, token) => {
+        const headers = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
 
-  assignContractorToProject: async (projectIdentifier, contractorId, token) => {
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}/contractor?contractorId=${contractorId}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}`, {
+            method: 'DELETE',
+            headers,
+        });
+        if (!response.ok) throw new Error('Failed to delete project');
+    },
 
-    if (!response.ok) {
-      throw new Error('Failed to assign contractor to project');
-    }
-    return response.json();
-  },
+    uploadProjectImage: async (file, userId = 'demo-user') => {
+        const formData = new FormData();
+        formData.append('file', file);
 
-  removeContractorFromProject: async (projectIdentifier, token) => {
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}/contractor`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+        const response = await fetch(`${API_BASE_URL}/photos/upload`, {
+            method: 'POST',
+            headers: { 'X-User': userId },
+            body: formData,
+        });
 
-    if (!response.ok) {
-      throw new Error('Failed to remove contractor from project');
-    }
-    return response.json();
-  },
+        if (!response.ok) throw new Error('Failed to upload image');
+        return response.json();
+    },
 
-  assignSalespersonToProject: async (
-    projectIdentifier,
-    salespersonId,
-    token
-  ) => {
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}/salesperson?salespersonId=${salespersonId}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    getImageUrl: (imageIdentifier) => {
+        if (!imageIdentifier) return null;
+        return `${FILES_SERVICE_BASE_URL}/files/${imageIdentifier}`;
+    },
 
-    if (!response.ok) {
-      throw new Error('Failed to assign salesperson to project');
-    }
-    return response.json();
-  },
+    assignContractorToProject: async (projectIdentifier, contractorId, token) => {
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}/contractor?contractorId=${contractorId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error('Failed to assign contractor');
+        return response.json();
+    },
 
-  removeSalespersonFromProject: async (projectIdentifier, token) => {
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}/salesperson`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    removeContractorFromProject: async (projectIdentifier, token) => {
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}/contractor`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error('Failed to remove contractor');
+        return response.json();
+    },
 
-    if (!response.ok) {
-      throw new Error('Failed to remove salesperson from project');
-    }
-    return response.json();
-  },
+    assignSalespersonToProject: async (projectIdentifier, salespersonId, token) => {
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}/salesperson?salespersonId=${salespersonId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error('Failed to assign salesperson');
+        return response.json();
+    },
 
-  assignCustomerToProject: async (projectIdentifier, customerId, token) => {
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}/customer?customerId=${customerId}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    removeSalespersonFromProject: async (projectIdentifier, token) => {
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}/salesperson`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error('Failed to remove salesperson');
+        return response.json();
+    },
 
-    if (!response.ok) {
-      throw new Error('Failed to assign customer to project');
-    }
-    return response.json();
-  },
+    assignCustomerToProject: async (projectIdentifier, customerId, token) => {
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}/customer?customerId=${customerId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error('Failed to assign customer');
+        return response.json();
+    },
 
-  removeCustomerFromProject: async (projectIdentifier, token) => {
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}/customer`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    removeCustomerFromProject: async (projectIdentifier, token) => {
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}/customer`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) throw new Error('Failed to remove customer');
+        return response.json();
+    },
 
-    if (!response.ok) {
-      throw new Error('Failed to remove customer from project');
-    }
-    return response.json();
-  },
+    getProjectActivityLog: async (projectIdentifier, token) => {
+        const headers = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
 
-  getProjectActivityLog: async (projectIdentifier, token) => {
-    const headers = {};
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    const response = await fetch(
-      `${API_BASE_URL}/projects/${projectIdentifier}/activity-log`,
-      { headers }
-    );
-    if (!response.ok) {
-      throw new Error(`Failed to fetch activity log (${response.status})`);
-    }
-    return response.json();
-  },
+        const response = await fetch(`${API_BASE_URL}/projects/${projectIdentifier}/activity-log`, { headers });
+        if (!response.ok) throw new Error(`Failed to fetch activity log (${response.status})`);
+        return response.json();
+    },
 };

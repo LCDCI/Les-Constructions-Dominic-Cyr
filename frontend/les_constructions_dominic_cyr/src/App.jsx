@@ -4,6 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/Public_Facing/LotsPage';
+import LivingEnvironmentPage from './pages/Public_Facing/LivingEnvironmentPage';
 import OwnerLotsPage from './pages/Project/OwnerLotsPage';
 import ProjectsPage from './pages/Project/ProjectsPage';
 import CreateProjectPage from './pages/Project/CreateProjectPage';
@@ -411,6 +412,10 @@ export default function App() {
             <Route
               path="/projects/:projectIdentifier/overview"
               element={<ProjectsOverviewPage />}
+            />
+            <Route
+              path="/projects/:projectIdentifier/living-environment"
+              element={<LivingEnvironmentPage />}
             />
             <Route
               path="/projects/:projectIdentifier/lots"
