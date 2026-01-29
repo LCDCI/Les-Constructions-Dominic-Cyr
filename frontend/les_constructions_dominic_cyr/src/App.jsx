@@ -55,8 +55,9 @@ function ConditionalFooter() {
     matchPath('/projects/:projectIdentifier/lots', location.pathname);
   
   const isContactPage = location.pathname === '/contact';
+  const isPortalLoginPage = location.pathname === '/portal/login';
   
-  if (isProjectPage || isContactPage) {
+  if (isProjectPage || isContactPage || isPortalLoginPage) {
     return null;
   }
   
