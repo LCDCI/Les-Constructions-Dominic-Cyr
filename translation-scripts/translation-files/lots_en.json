@@ -1,0 +1,51 @@
+{
+  "header": {
+    "projectLots": "{{name}}'s Lots",
+    "defaultTitle": "Project Lots"
+  },
+  "foresta": {
+    "exclusiveCount": "26 EXCLUSIVE LOTS",
+    "peaceTagline": "A true haven of peace"
+  },
+  "common": {
+    "lot": "Lot",
+    "loading": "Loading...",
+    "noResults": "No lots found."
+  },
+  "table": {
+    "identifier": "Identifier",
+    "lotNumber": "Lot #",
+    "address": "Civic Address",
+    "areaSqft": "Area (sqft)",
+    "areaSqm": "Area (m²)",
+    "price": "Price",
+    "status": "Status"
+  },
+  "status": {
+    "available": "Available",
+    "reserved": "Reserved",
+    "sold": "Sold",
+    "unknown": "Unknown"
+  },
+  "modal": {
+    "address": "Address",
+    "area": "Area",
+    "status": "Status",
+    "price": "Price"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Search..."
+  },
+  "filters": {
+    "allStatuses": "All Statuses",
+    "sortBy": "Sort By",
+    "priceLow": "Price: Low to High",
+    "sizeSmall": "Size: Smallest",
+    "sizeLarge": "Size: Largest"
+  },
+  "errors": {
+    "fetchFailed": "Failed to fetch lots."
+  },
+  "backToProject": "Back to Residential Project"
+  }
+}
