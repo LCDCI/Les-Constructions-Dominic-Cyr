@@ -123,4 +123,48 @@ public class TaskController {
         List<TaskDetailResponseDTO> tasks = taskService.getTasksForSchedule(scheduleIdentifier);
         return ResponseEntity.ok(tasks);
     }
+
+    // Generic task endpoints - accessible by both owners and contractors for any task
+    @GetMapping("/tasks/{taskId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<?> getTaskById(@PathVariable String taskId) {
+        log.info("Fetching task: {}", taskId);
+        try {
+            TaskDetailResponseDTO task = taskService.getTaskByIdentifier(taskId);
+            return ResponseEntity.ok(task);
+        } catch (NotFoundException ex) {
+            log.error("Task not found: {}", taskId);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/tasks/{taskId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<?> updateTask(@PathVariable String taskId,
+                                        @RequestBody TaskRequestDTO taskRequestDTO) {
+        log.info("Updating task: {}", taskId);
+        try {
+            TaskDetailResponseDTO task = taskService.updateTask(taskId, taskRequestDTO);
+            return ResponseEntity.ok(task);
+        } catch (NotFoundException ex) {
+            log.error("Task not found for update: {}", taskId);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidInputException ex) {
+            log.error("Invalid input for task update: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @DeleteMapping("/tasks/{taskId}")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+    public ResponseEntity<?> deleteTask(@PathVariable String taskId) {
+        log.info("Deleting task: {}", taskId);
+        try {
+            taskService.deleteTask(taskId);
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException ex) {
+            log.error("Task not found for deletion: {}", taskId);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
 }

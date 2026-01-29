@@ -3,5 +3,6 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAcces
 public enum LotStatus {
     AVAILABLE,
     SOLD,
-    PENDING
+    PENDING,
+    RESERVED
 }

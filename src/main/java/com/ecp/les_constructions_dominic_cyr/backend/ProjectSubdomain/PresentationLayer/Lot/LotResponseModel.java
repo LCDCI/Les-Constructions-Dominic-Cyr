@@ -3,8 +3,10 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;//piscine municipale de sperme
+import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -18,4 +20,23 @@ public class LotResponseModel {
     private String dimensionsSquareFeet;
     private String dimensionsSquareMeters;
     private LotStatus lotStatus;
+
+    // Support multiple assigned users
+    private List<AssignedUserInfo> assignedUsers;
+
+    // Project information (like Schedule does)
+    private Long projectId;
+    private String projectIdentifier;
+    private String projectName;
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class AssignedUserInfo {
+        private String userId;
+        private String fullName;
+        private String email;
+        private String role;
+    }
 }

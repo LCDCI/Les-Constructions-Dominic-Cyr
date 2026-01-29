@@ -13,14 +13,7 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/projects/{projectIdentifier}/lots")
-@CrossOrigin(origins = {
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://localhost",
-        "http://127.0.0.1"
-})
+@CrossOrigin(origins = "*")
 public class LotController {
     private final LotService lotService;
     private static final int UUID_LENGTH = 36;
@@ -47,8 +40,12 @@ public class LotController {
     }
 
     @PostMapping
-    public ResponseEntity<LotResponseModel> addLot(@RequestBody LotRequestModel lotRequestModel){
-        return ResponseEntity.status(HttpStatus.CREATED).body(lotService.addLot(lotRequestModel));
+    public ResponseEntity<LotResponseModel> addLot(@PathVariable String projectIdentifier,
+                                                   @RequestBody LotRequestModel lotRequestModel){
+        if(projectIdentifier == null || projectIdentifier.isBlank()){
+            throw new InvalidInputException("Project identifier must not be blank");
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(lotService.addLotToProject(projectIdentifier, lotRequestModel));
     }
 
     @PutMapping("/{lotId}")
