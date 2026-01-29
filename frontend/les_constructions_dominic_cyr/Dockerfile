@@ -37,7 +37,10 @@ RUN rm /etc/nginx/conf.d/default.conf
 
 # Install envsubst and copy nginx template (will be rendered at container start)
 RUN apk add --no-cache gettext
-COPY --from=build /app/nginx/default.conf /etc/nginx/conf.d/default.conf.template
+# Use frontend-only config by default (for standalone DigitalOcean deployment)
+# For local docker-compose, override with NGINX_CONFIG_FILE build arg
+ARG NGINX_CONFIG_FILE=default-frontend-only.conf
+COPY --from=build /app/nginx/${NGINX_CONFIG_FILE} /etc/nginx/conf.d/default.conf.template
 COPY entrypoint.sh /entrypoint.sh
 # Ensure script is executable and has Unix line endings (fixes Windows CRLF)
 RUN chmod +x /entrypoint.sh \

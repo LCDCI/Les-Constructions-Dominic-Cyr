@@ -3,19 +3,25 @@ package com.ecp.les_constructions_dominic_cyr.backend.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -40,7 +46,71 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origins}")
     private List<String> allowedOrigins;
 
+    // Filter chain for health check endpoint (no authentication required)
     @Bean
+    @Order(-1)
+    public SecurityFilterChain actuatorHealthFilterChain(HttpSecurity http) throws Exception {
+        RequestMatcher healthMatcher = new AntPathRequestMatcher("/actuator/health");
+        
+        http
+            .securityMatcher(healthMatcher)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            );
+        return http.build();
+    }
+
+    // Filter chain for public inquiry submission (POST/OPTIONS only) - with rate limiting
+    @Bean
+    @Order(0)
+    public SecurityFilterChain inquiriesSubmitFilterChain(HttpSecurity http) throws Exception {
+        RequestMatcher inquiriesPostMatcher = new OrRequestMatcher(
+            new AntPathRequestMatcher("/api/inquiries", "POST"),
+            new AntPathRequestMatcher("/api/inquiries", "OPTIONS")
+        );
+        
+        http
+            .securityMatcher(inquiriesPostMatcher)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.ignoringRequestMatchers(inquiriesPostMatcher))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            )
+            .addFilterBefore(inquiriesRateLimitFilter(), BearerTokenAuthenticationFilter.class);
+        return http.build();
+    }
+
+    // Filter chain for OWNER inquiry viewing (GET only) - requires authentication
+    @Bean
+    @Order(1)
+    public SecurityFilterChain inquiriesOwnerFilterChain(HttpSecurity http) throws Exception {
+        RequestMatcher inquiriesGetMatcher = new OrRequestMatcher(
+            new AntPathRequestMatcher("/api/inquiries", "GET"),
+            new AntPathRequestMatcher("/api/inquiries/**", "GET")
+        );
+        
+        http
+            .securityMatcher(inquiriesGetMatcher)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.ignoringRequestMatchers(inquiriesGetMatcher))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().hasAuthority("ROLE_OWNER")
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt
+                    .decoder(jwtDecoder())
+                    .jwtAuthenticationConverter(jwtAuthConverter())
+                )
+            );
+        return http.build();
+    }
+
+    // Main security filter chain for all other endpoints
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -53,6 +123,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/project-management/**").permitAll()
                         .requestMatchers("/api/v1/realizations/**").permitAll()
                         .requestMatchers("/api/v1/contact/**").permitAll()
+                        
+                        // Public inquiry submission (POST only, handled by inquiriesSubmitFilterChain but fallback here)
+                        .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
 
                         // Project Public Endpoints (From your original list)
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
@@ -85,6 +158,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
 
+                        // Task Management - Allow viewing, but only owners can delete via /owners/tasks endpoint
+                        .requestMatchers(HttpMethod.GET, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/tasks/**").hasAuthority("ROLE_OWNER")
+
                         // --- 4. OTHER ROLES (From your original list) ---
                         .requestMatchers("/api/v1/projects/**").hasAnyAuthority("ROLE_CONTRACTOR", "ROLE_SALESPERSON", "ROLE_OWNER", "ROLE_CUSTOMER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
@@ -106,6 +184,11 @@ public class SecurityConfig {
 
 
         return http.build();
+    }
+
+    @Bean
+    public InquiriesRateLimitFilter inquiriesRateLimitFilter() {
+        return new InquiriesRateLimitFilter();
     }
 
     @Bean
