@@ -173,19 +173,11 @@ const LivingEnvironmentPage = () => {
         {/* Header Section */}
         <section
           className="le-header-section"
-          style={{ background: `var(--primary-color, ${data.primaryColor || '#4c4d4f'})`, borderRadius: '18px', color: '#fff', marginBottom: '3rem' }}
         >
           <h1 className="le-main-title" style={{ color: '#fff' }}>{data.headerTitle}</h1>
           <h2 className="le-subtitle" style={{ color: '#fff' }}>{data.headerSubtitle}</h2>
           <h3 className="le-subtitle-last" style={{ color: '#fff' }}>{data.headerSubtitleLast}</h3>
           <p className="le-tagline" style={{ color: 'var(--tertiary-color, #aab2a6)' }}>{data.headerTagline}</p>
-          <button
-            className="btn btn-secondary"
-            style={{ marginTop: '2rem', background: 'var(--tertiary-color, #628db5)', color: '#fff', fontWeight: 600 }}
-            onClick={() => navigate(`/projects/${projectIdentifier}/overview`)}
-          >
-            {t('backToProject', 'Back to Residential Project')}
-          </button>
         </section>
 
         {/* Description Section */}
@@ -200,8 +192,8 @@ const LivingEnvironmentPage = () => {
           <div className="le-amenities-grid">
             {data.amenities && data.amenities.map((amenity) => (
               <div key={amenity.key} className="le-amenity-box">
-                <div className="le-amenity-icon">{getAmenityIcon(amenity.key)}</div>
-                <p className="le-amenity-label">{amenity.label}</p>
+                <div className="le-amenity-icon" style={{ color: 'var(--primary-color, #4c4d4f)' }}>{getAmenityIcon(amenity.key)}</div>
+                <p className="le-amenity-label" style={{ color: 'var(--primary-color, #4c4d4f)' }}>{amenity.label}</p>
               </div>
             ))}
           </div>
@@ -211,6 +203,14 @@ const LivingEnvironmentPage = () => {
         <section className="le-footer-section">
           <p className="le-footer-text">{data.footerText}</p>
         </section>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.5rem' }}>
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate(`/projects/${projectIdentifier}/overview`)}
+          >
+            {t('backToProject', 'Back to Residential Project')}
+          </button>
+        </div>
       </div>
     </div>
   );
