@@ -108,7 +108,7 @@ export default function ContactPage() {
                 {t('contactInfo.phoneLabel', f.contactInfo.phoneLabel)}
               </strong>
               <p>
-                <a href="tel:+14505360169">
+                <a href="tel:+15147057848">
                   {t('contactInfo.phone', f.contactInfo.phone)}
                 </a>
               </p>
