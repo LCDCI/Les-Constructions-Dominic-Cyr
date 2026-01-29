@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './LotList.css';
@@ -14,7 +15,6 @@ function formatPrice(p, isOwner) {
     : String(p);
 }
 
-// eslint-disable-next-line react/prop-types
 export default function LotList({ lots = [], isOwner = false }) {
   const { t } = useTranslation('lots');
 

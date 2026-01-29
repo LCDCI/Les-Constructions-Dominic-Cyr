@@ -15,9 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
-import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -40,12 +38,6 @@ public class InquiryControllerUnitTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Clear rate limiting buckets before each test
-        Field bucketsField = InquiryController.class.getDeclaredField("buckets");
-        bucketsField.setAccessible(true);
-        Map<?, ?> buckets = (Map<?, ?>) bucketsField.get(null);
-        buckets.clear();
-
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
@@ -54,7 +46,6 @@ public class InquiryControllerUnitTest {
         testRequestModel.setEmail("john.doe@example.com");
         testRequestModel.setPhone("555-1234");
         testRequestModel.setMessage("I am interested in your construction services.");
-        testRequestModel.setRecaptchaToken(null); // Set to null for testing
 
         testResponseModel = new InquiryResponseModel();
         testResponseModel.setId(1L);
@@ -291,22 +282,6 @@ public class InquiryControllerUnitTest {
         verify(inquiryService, times(1)).submitInquiry(any(InquiryRequestModel.class));
     }
 
-    @Test
-    void submitInquiry_WithNullRecaptchaToken_ReturnsOk() throws Exception {
-        // Arrange
-        testRequestModel.setRecaptchaToken(null);
-        when(inquiryService.submitInquiry(any(InquiryRequestModel.class))).thenReturn(testResponseModel);
-
-        // Act & Assert
-        mockMvc.perform(post("/api/inquiries")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testRequestModel)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=UTF-8"))
-                .andExpect(content().string("Thank you! Your inquiry has been received."));
-
-        verify(inquiryService, times(1)).submitInquiry(any(InquiryRequestModel.class));
-    }
 
     @Test
     void submitInquiry_VerifiesServiceCalledWithCorrectData() throws Exception {
