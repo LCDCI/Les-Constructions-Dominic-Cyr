@@ -478,6 +478,16 @@ const ProjectsPage = () => {
                           >
                             Manage Team
                           </a>
+                          <a
+                            href={`/projects/${project.projectIdentifier}/manage-lots`}
+                            className="admin-project-button admin-lots-button"
+                            style={{
+                              backgroundColor: '#8B5CF6',
+                              color: 'white',
+                            }}
+                          >
+                            View Project Lots
+                          </a>
                         </>
                       )}
                       {canEdit && project.status !== 'ARCHIVED' && (

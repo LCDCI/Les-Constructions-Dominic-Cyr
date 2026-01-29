@@ -133,3 +133,11 @@ INSERT INTO project_management_page_content (language, content_json) VALUES
 -- App theme
 INSERT INTO app_theme (theme_name, primary_color, secondary_color, accent_color, card_background, background_color, text_primary, white) VALUES
     ('default', '#4C4D4F', '#E6E7E8', '#5A7D8C', '#AAB2A6', '#F5F7FA', '#4C4D4F', '#FFFFFF');
+
+-- sample data to test inquiries owner page
+INSERT INTO inquiries (name, email, phone, message, created_at) VALUES
+    ('Jean Dupont', 'jean.dupont@email.com', '514-555-0123', 'Je suis intéressé par le projet Foresta. Pouvez-vous me fournir plus d''informations?', CURRENT_TIMESTAMP - INTERVAL '5 days'),
+    ('Marie Lambert', 'marie.lambert@email.com', '450-555-0234', 'I would like to schedule a visit to see the available lots.', CURRENT_TIMESTAMP - INTERVAL '3 days'),
+    ('Pierre Tremblay', 'pierre.tremblay@email.com', '514-555-0345', 'Quels sont les délais de construction pour un nouveau projet?', CURRENT_TIMESTAMP - INTERVAL '2 days'),
+    ('Sophie Martin', 'sophie.martin@email.com', '', 'Can you provide information about your renovation services?', CURRENT_TIMESTAMP - INTERVAL '1 day'),
+    ('Luc Gagnon', 'luc.gagnon@email.com', '418-555-0456', 'Je voudrais obtenir un devis pour la construction d''une maison unifamiliale.', CURRENT_TIMESTAMP - INTERVAL '6 hours');
