@@ -127,6 +127,9 @@ public class SecurityConfig {
                         // Public inquiry submission (POST only, handled by inquiriesSubmitFilterChain but fallback here)
                         .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
 
+                    // Public Living Environment (GET Only)
+                    .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/living-environment").permitAll()
+
                         // Public Content (GET Only)
                         .requestMatchers(HttpMethod.GET, "/api/v1/residential-projects/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/renovations/**").permitAll()

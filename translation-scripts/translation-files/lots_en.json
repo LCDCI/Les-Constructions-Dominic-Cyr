@@ -45,5 +45,7 @@
   },
   "errors": {
     "fetchFailed": "Failed to fetch lots."
+  },
+  "backToProject": "Back to Residential Project"
   }
 }

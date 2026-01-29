@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -14,6 +14,7 @@ import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
 const LotsPage = () => {
   const { t } = useTranslation(['lots', 'translation']);
   const { projectIdentifier: urlProjectIdentifier } = useParams();
+  const navigate = useNavigate();
   const {
     isAuthenticated,
     isLoading: authLoading,
@@ -188,6 +189,13 @@ const LotsPage = () => {
               style={{ backgroundColor: projectColors.accent }}
             ></span>
           </h1>
+          <button
+            className="btn btn-secondary"
+            style={{ marginTop: '2rem', background: projectColors.accent, color: '#fff', fontWeight: 600 }}
+            onClick={() => navigate(`/projects/${resolvedProjectId}/overview`)}
+          >
+            {t('backToProject', 'Back to Residential Project')}
+          </button>
         </div>
 
         {resolvedProjectId === 'proj-001-foresta' && (

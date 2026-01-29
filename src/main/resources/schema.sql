@@ -265,3 +265,37 @@ CREATE TABLE inquiries (
 );
 
 CREATE INDEX idx_inquiries_created_at ON inquiries(created_at DESC);
+
+-- Living Environment Content
+DROP TABLE IF EXISTS living_environment_amenities CASCADE;
+DROP TABLE IF EXISTS living_environment_content CASCADE;
+
+CREATE TABLE living_environment_content (
+    id BIGSERIAL PRIMARY KEY,
+    project_identifier VARCHAR(255) NOT NULL,
+    language VARCHAR(10) NOT NULL DEFAULT 'en',
+    header_title VARCHAR(255) NOT NULL,
+    header_subtitle VARCHAR(255),
+    header_subtitle_last VARCHAR(255),
+    header_tagline VARCHAR(500),
+    description_text TEXT,
+    proximity_title VARCHAR(255),
+    footer_text VARCHAR(500),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(project_identifier, language),
+    FOREIGN KEY (project_identifier) REFERENCES projects(project_identifier) ON DELETE CASCADE
+);
+
+CREATE TABLE living_environment_amenities (
+    id BIGSERIAL PRIMARY KEY,
+    living_environment_content_id BIGINT NOT NULL,
+    amenity_key VARCHAR(50) NOT NULL,
+    amenity_label VARCHAR(100) NOT NULL,
+    display_order INT NOT NULL DEFAULT 0,
+    FOREIGN KEY (living_environment_content_id) REFERENCES living_environment_content(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_living_env_project ON living_environment_content(project_identifier);
+CREATE INDEX idx_living_env_lang ON living_environment_content(language);
+CREATE INDEX idx_living_env_amenities ON living_environment_amenities(living_environment_content_id);
