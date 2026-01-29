@@ -3,19 +3,25 @@ package com.ecp.les_constructions_dominic_cyr.backend.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.DefaultHttpFirewall;
 import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -40,7 +46,56 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origins}")
     private List<String> allowedOrigins;
 
+    // Filter chain for public inquiry submission (POST/OPTIONS only) - with rate limiting
     @Bean
+    @Order(0)
+    public SecurityFilterChain inquiriesSubmitFilterChain(HttpSecurity http) throws Exception {
+        RequestMatcher inquiriesPostMatcher = new OrRequestMatcher(
+            new AntPathRequestMatcher("/api/inquiries", "POST"),
+            new AntPathRequestMatcher("/api/inquiries", "OPTIONS")
+        );
+        
+        http
+            .securityMatcher(inquiriesPostMatcher)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.ignoringRequestMatchers(inquiriesPostMatcher))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            )
+            .addFilterBefore(inquiriesRateLimitFilter(), BearerTokenAuthenticationFilter.class);
+        return http.build();
+    }
+
+    // Filter chain for OWNER inquiry viewing (GET only) - requires authentication
+    @Bean
+    @Order(1)
+    public SecurityFilterChain inquiriesOwnerFilterChain(HttpSecurity http) throws Exception {
+        RequestMatcher inquiriesGetMatcher = new OrRequestMatcher(
+            new AntPathRequestMatcher("/api/inquiries", "GET"),
+            new AntPathRequestMatcher("/api/inquiries/**", "GET")
+        );
+        
+        http
+            .securityMatcher(inquiriesGetMatcher)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(csrf -> csrf.ignoringRequestMatchers(inquiriesGetMatcher))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().hasAuthority("ROLE_OWNER")
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt
+                    .decoder(jwtDecoder())
+                    .jwtAuthenticationConverter(jwtAuthConverter())
+                )
+            );
+        return http.build();
+    }
+
+    // Main security filter chain for all other endpoints
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -106,6 +161,11 @@ public class SecurityConfig {
 
 
         return http.build();
+    }
+
+    @Bean
+    public InquiriesRateLimitFilter inquiriesRateLimitFilter() {
+        return new InquiriesRateLimitFilter();
     }
 
     @Bean
