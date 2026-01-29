@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import '../../styles/NavBars/ownerNavbar.css';
+import '../../styles/NavBars/salespersonNavbar.css';
 import { GoInbox } from 'react-icons/go';
 import { GoGear } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import '../../styles/Dashboards/ContractorDashboard.css';
+import '../../styles/NavBars/contractorNavbar.css';
 import {
   GoProject,
   GoInbox,
