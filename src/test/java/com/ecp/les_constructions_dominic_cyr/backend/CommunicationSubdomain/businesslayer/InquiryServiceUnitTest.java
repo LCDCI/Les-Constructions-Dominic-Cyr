@@ -44,7 +44,6 @@ public class InquiryServiceUnitTest {
         testRequestModel.setEmail("john.doe@example.com");
         testRequestModel.setPhone("555-1234");
         testRequestModel.setMessage("I am interested in your construction services.");
-        testRequestModel.setRecaptchaToken("test-token");
 
         testInquiry = new Inquiry();
         testInquiry.setName("John Doe");
