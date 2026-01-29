@@ -21,8 +21,6 @@ public class InquiryRequestModel {
     @Size(max = 2000, message = "Message must not exceed 2000 characters")
     private String message;
 
-    private String recaptchaToken;
-
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getEmail() { return email; }
@@ -31,6 +29,4 @@ public class InquiryRequestModel {
     public void setPhone(String phone) { this.phone = phone; }
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
-    public String getRecaptchaToken() { return recaptchaToken; }
-    public void setRecaptchaToken(String recaptchaToken) { this.recaptchaToken = recaptchaToken; }
 }

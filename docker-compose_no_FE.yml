@@ -42,6 +42,7 @@ services:
         condition: service_started
       postgres1:
         condition: service_healthy
+        required: false
     networks:
       - app-network
 
@@ -80,8 +81,6 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=admin
     ports:
       - 9005:80
-    depends_on:
-      - postgres1
     networks:
       - app-network
 

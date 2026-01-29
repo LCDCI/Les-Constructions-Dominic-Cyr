@@ -76,26 +76,17 @@ COPY --from=backend-build /app/build/libs/les_constructions_dominic_cyr-0.0.1-SN
 COPY --from=files-service-build /files-service/file-service /app/file-service
 COPY --from=files-service-build /files-service/migrations /app/migrations
 
-# Install nginx
-RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
-
-# Remove default nginx config and copy our config for COMBINED deployment
-RUN rm -f /etc/nginx/sites-enabled/default
-COPY --from=frontend-build /frontend/dist/ /usr/share/nginx/html/
-COPY frontend/les_constructions_dominic_cyr/nginx/default-combined.conf /etc/nginx/conf.d/default.conf
-
 # Expose ports
-EXPOSE 8080 8082 80
+EXPOSE 8080 8082
 
-# Create startup script to run nginx, backend, and files-service
+# Create startup script to run backend and files-service
 RUN echo '#!/bin/bash\n\
 set -e\n\
-# Start nginx in background\n\
-nginx\n\
 # Start files-service in background\n\
 cd /app && ./file-service &\n\
 # Start backend (foreground)\n\
 exec java -jar /app/app.jar' > /start.sh && chmod +x /start.sh
 
 # Start all services
+ENTRYPOINT ["/start.sh"]
 CMD ["/start.sh"]
