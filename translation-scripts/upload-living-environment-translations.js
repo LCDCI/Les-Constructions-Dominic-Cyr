@@ -26,6 +26,7 @@ async function uploadFile(filepath, filename, language, pageName) {
     form.append('category', 'DOCUMENT');
     form.append('projectId', 'translations');
     form.append('uploadedBy', 'system');
+    form.append('uploaderRole', 'OWNER');
 
     const response = await axios.post(`${fileServiceUrl}/files`, form, {
       headers: form.getHeaders()

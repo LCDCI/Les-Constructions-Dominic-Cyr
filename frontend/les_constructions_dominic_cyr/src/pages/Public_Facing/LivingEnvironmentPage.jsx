@@ -29,10 +29,11 @@ const projectKeyMap = {
 };
 
 const LivingEnvironmentPage = () => {
-  const { t, i18n } = useTranslation('livingEnvironment');
+  const { t, i18n } = useTranslation('livingenvironment');
   const { projectIdentifier } = useParams();
   const [projectData, setProjectData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [translations, setTranslations] = useState(null);
 
   // Get the living environment key based on project identifier
   const getProjectKey = () => {
@@ -42,20 +43,21 @@ const LivingEnvironmentPage = () => {
 
   const projectKey = getProjectKey();
 
-  // Fetch project data from API
+  // Fetch project data and translations
   useEffect(() => {
-    const fetchProjectData = async () => {
+    const fetchData = async () => {
       try {
         if (!projectIdentifier) {
           setLoading(false);
           return;
         }
         
-        const response = await fetch(
+        // Fetch project data
+        const projectResponse = await fetch(
           `${API_BASE_URL}/projects/${projectIdentifier}/overview`
         );
-        if (response.ok) {
-          const data = await response.json();
+        if (projectResponse.ok) {
+          const data = await projectResponse.json();
           setProjectData(data);
           
           // Apply project colors to CSS variables
@@ -69,14 +71,24 @@ const LivingEnvironmentPage = () => {
             document.documentElement.style.setProperty(key, colors[key]);
           });
         }
+
+        // Fetch translations
+        const lang = i18n.language || 'en';
+        const translationResponse = await fetch(
+          `${API_BASE_URL}/translations/${lang}/livingenvironment`
+        );
+        if (translationResponse.ok) {
+          const translationData = await translationResponse.json();
+          setTranslations(translationData);
+        }
       } catch (error) {
-        console.error('Failed to fetch project data:', error);
+        console.error('Failed to fetch data:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProjectData();
+    fetchData();
 
     return () => {
       // Clean up CSS variables
@@ -84,7 +96,7 @@ const LivingEnvironmentPage = () => {
       document.documentElement.style.removeProperty('--tertiary-color');
       document.documentElement.style.removeProperty('--buyer-color');
     };
-  }, [projectIdentifier]);
+  }, [projectIdentifier, i18n.language]);
 
   // Map amenity keys to icons
   const getAmenityIcon = (key) => {
@@ -112,8 +124,9 @@ const LivingEnvironmentPage = () => {
 
   const buildAmenities = () => {
     try {
-      const amenitiesPath = `amenities.${projectKey}`;
-      const amenitiesData = t(amenitiesPath, {}, { returnObjects: true });
+      if (!translations) return [];
+      
+      const amenitiesData = translations.amenities?.[projectKey];
       
       if (!amenitiesData || typeof amenitiesData === 'string') {
         return [];
@@ -130,7 +143,7 @@ const LivingEnvironmentPage = () => {
     }
   };
 
-  if (loading) {
+  if (loading || !translations) {
     return (
       <div className="living-environment-page">
         <div className="container">
@@ -143,10 +156,10 @@ const LivingEnvironmentPage = () => {
   const amenities = buildAmenities();
 
   // Get translations using the project key
-  const headerData = t(`header.${projectKey}`, {}, { returnObjects: true });
-  const proximityTitle = t(`proximity.${projectKey}`);
-  const descriptionText = t(`description.${projectKey}`);
-  const footerText = t(`footer.${projectKey}`);
+  const headerData = translations.header?.[projectKey] || {};
+  const proximityTitle = translations.proximity?.[projectKey] || '';
+  const descriptionText = translations.description?.[projectKey] || '';
+  const footerText = translations.footer?.[projectKey] || '';
 
   return (
     <div className="living-environment-page">
