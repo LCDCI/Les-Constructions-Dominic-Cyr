@@ -334,7 +334,13 @@ const LotsPage = () => {
             <LotList lots={filteredLots} isOwner={isOwner} />
           )}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', margin: '2.5rem 0' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            margin: '2.5rem 0',
+          }}
+        >
           <button
             className="btn btn-secondary"
             onClick={() => navigate(`/projects/${resolvedProjectId}/overview`)}

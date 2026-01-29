@@ -36,7 +36,7 @@ const LivingEnvironmentPage = () => {
       try {
         setError(null);
         setLoading(true);
-        
+
         if (!projectIdentifier) {
           setError('No project identifier provided');
           setLoading(false);
@@ -45,24 +45,21 @@ const LivingEnvironmentPage = () => {
 
         const lang = i18n.language || 'en';
         const url = `${API_BASE_URL}/projects/${projectIdentifier}/living-environment?lang=${lang}`;
-        
-        console.log('[LivingEnvironment] Fetching from:', url);
-        
-        const response = await fetch(url, {
-          headers: { 'Accept': 'application/json' },
-          signal: AbortSignal.timeout(10000)
-        });
 
-        console.log('[LivingEnvironment] Response status:', response.status);
+        const response = await fetch(url, {
+          headers: { Accept: 'application/json' },
+          signal: AbortSignal.timeout(10000),
+        });
 
         if (!response.ok) {
           const errorText = await response.text();
-          throw new Error(`Server error (${response.status}): ${errorText || 'Failed to load content'}`);
+          throw new Error(
+            `Server error (${response.status}): ${errorText || 'Failed to load content'}`
+          );
         }
 
         const responseData = await response.json();
-        console.log('[LivingEnvironment] Data loaded:', responseData);
-        
+
         setData(responseData);
 
         // Apply project colors to CSS variables
@@ -72,18 +69,23 @@ const LivingEnvironmentPage = () => {
             '--tertiary-color': responseData.tertiaryColor || '#628db5',
             '--buyer-color': responseData.buyerColor || '#aab2a6',
           };
-          
+
           Object.keys(colors).forEach(key => {
             document.documentElement.style.setProperty(key, colors[key]);
           });
         }
       } catch (err) {
-        console.error('[LivingEnvironment] Error:', err);
-        
         if (err.name === 'TimeoutError' || err.name === 'AbortError') {
-          setError('Request timed out. Please check if the backend server is running.');
-        } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-          setError('Unable to connect to the backend. Please ensure the backend server is running.');
+          setError(
+            'Request timed out. Please check if the backend server is running.'
+          );
+        } else if (
+          err.message.includes('Failed to fetch') ||
+          err.message.includes('NetworkError')
+        ) {
+          setError(
+            'Unable to connect to the backend. Please ensure the backend server is running.'
+          );
         } else {
           setError(err.message || 'Failed to load page content.');
         }
@@ -103,7 +105,7 @@ const LivingEnvironmentPage = () => {
   }, [projectIdentifier, i18n.language]);
 
   // Map amenity keys to icons (all from react-icons/fa)
-  const getAmenityIcon = (key) => {
+  const getAmenityIcon = key => {
     const iconMap = {
       ski: <FaSkiing />,
       golf: <FaGolfBall />,
@@ -146,16 +148,30 @@ const LivingEnvironmentPage = () => {
             <h2>Unable to Load Content</h2>
             <p>{error || 'No content available for this project.'}</p>
             <div className="error-details">
-              <p><strong>Troubleshooting:</strong></p>
+              <p>
+                <strong>Troubleshooting:</strong>
+              </p>
               <ul>
                 <li>Check if the backend server is running</li>
-                <li>Verify Docker containers are up: <code>docker-compose -f docker-compose.local.yml up -d</code></li>
-                <li>Make sure the database has been seeded with living environment data</li>
-                <li>API Endpoint: <code>{API_BASE_URL}/projects/{projectIdentifier}/living-environment</code></li>
+                <li>
+                  Verify Docker containers are up:{' '}
+                  <code>docker-compose -f docker-compose.local.yml up -d</code>
+                </li>
+                <li>
+                  Make sure the database has been seeded with living environment
+                  data
+                </li>
+                <li>
+                  API Endpoint:{' '}
+                  <code>
+                    {API_BASE_URL}/projects/{projectIdentifier}
+                    /living-environment
+                  </code>
+                </li>
               </ul>
             </div>
-            <button 
-              onClick={() => window.history.back()} 
+            <button
+              onClick={() => window.history.back()}
               className="btn btn-secondary"
               style={{ marginTop: '2rem' }}
             >
@@ -171,13 +187,22 @@ const LivingEnvironmentPage = () => {
     <div className="living-environment-page">
       <div className="container">
         {/* Header Section */}
-        <section
-          className="le-header-section"
-        >
-          <h1 className="le-main-title" style={{ color: '#fff' }}>{data.headerTitle}</h1>
-          <h2 className="le-subtitle" style={{ color: '#fff' }}>{data.headerSubtitle}</h2>
-          <h3 className="le-subtitle-last" style={{ color: '#fff' }}>{data.headerSubtitleLast}</h3>
-          <p className="le-tagline" style={{ color: 'var(--tertiary-color, #aab2a6)' }}>{data.headerTagline}</p>
+        <section className="le-header-section">
+          <h1 className="le-main-title" style={{ color: '#fff' }}>
+            {data.headerTitle}
+          </h1>
+          <h2 className="le-subtitle" style={{ color: '#fff' }}>
+            {data.headerSubtitle}
+          </h2>
+          <h3 className="le-subtitle-last" style={{ color: '#fff' }}>
+            {data.headerSubtitleLast}
+          </h3>
+          <p
+            className="le-tagline"
+            style={{ color: 'var(--tertiary-color, #aab2a6)' }}
+          >
+            {data.headerTagline}
+          </p>
         </section>
 
         {/* Description Section */}
@@ -190,12 +215,23 @@ const LivingEnvironmentPage = () => {
           <h2 className="le-proximity-title">{data.proximityTitle}</h2>
 
           <div className="le-amenities-grid">
-            {data.amenities && data.amenities.map((amenity) => (
-              <div key={amenity.key} className="le-amenity-box">
-                <div className="le-amenity-icon" style={{ color: 'var(--primary-color, #4c4d4f)' }}>{getAmenityIcon(amenity.key)}</div>
-                <p className="le-amenity-label" style={{ color: 'var(--primary-color, #4c4d4f)' }}>{amenity.label}</p>
-              </div>
-            ))}
+            {data.amenities &&
+              data.amenities.map(amenity => (
+                <div key={amenity.key} className="le-amenity-box">
+                  <div
+                    className="le-amenity-icon"
+                    style={{ color: 'var(--primary-color, #4c4d4f)' }}
+                  >
+                    {getAmenityIcon(amenity.key)}
+                  </div>
+                  <p
+                    className="le-amenity-label"
+                    style={{ color: 'var(--primary-color, #4c4d4f)' }}
+                  >
+                    {amenity.label}
+                  </p>
+                </div>
+              ))}
           </div>
         </section>
 
@@ -203,7 +239,13 @@ const LivingEnvironmentPage = () => {
         <section className="le-footer-section">
           <p className="le-footer-text">{data.footerText}</p>
         </section>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.5rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '2.5rem',
+          }}
+        >
           <button
             className="btn btn-secondary"
             onClick={() => navigate(`/projects/${projectIdentifier}/overview`)}
