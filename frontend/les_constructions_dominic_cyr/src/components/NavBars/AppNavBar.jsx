@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
+import { HiMenu } from 'react-icons/hi';
 import axios from 'axios';
 import useBackendUser from '../../hooks/useBackendUser';
 
@@ -47,7 +48,8 @@ export default function AppNavBar() {
   const { isAuthenticated, logout } = useAuth0();
   const { role, loading: roleLoading } = useBackendUser();
 
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isPublicMobileMenuOpen, setIsPublicMobileMenuOpen] = useState(false);
+  const [isDashboardMobileMenuOpen, setIsDashboardMobileMenuOpen] = useState(false);
 
   const currentLanguage = i18n.language || 'en';
   const isFrench = currentLanguage === 'fr';
@@ -57,17 +59,25 @@ export default function AppNavBar() {
     i18n.changeLanguage(newLang);
   };
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(prev => !prev);
+  const togglePublicMobileMenu = () => {
+    setIsPublicMobileMenuOpen(prev => !prev);
+    setIsDashboardMobileMenuOpen(false);
+  };
+
+  const toggleDashboardMobileMenu = () => {
+    setIsDashboardMobileMenuOpen(prev => !prev);
+    setIsPublicMobileMenuOpen(false);
   };
 
   const goToPortal = () => {
-    setIsMobileMenuOpen(false);
+    setIsPublicMobileMenuOpen(false);
+    setIsDashboardMobileMenuOpen(false);
     navigate('/portal/login');
   };
 
   const handleLogout = () => {
-    setIsMobileMenuOpen(false);
+    setIsPublicMobileMenuOpen(false);
+    setIsDashboardMobileMenuOpen(false);
     clearAppSession();
 
     logout({
@@ -84,6 +94,16 @@ export default function AppNavBar() {
         {!roleLoading && role === 'SALESPERSON' && <SalespersonNavBar />}
         {!roleLoading && role === 'CONTRACTOR' && <ContractorNavBar />}
         {!roleLoading && role === 'CUSTOMER' && <CustomerNavBar />}
+
+        {isAuthenticated && (
+          <button
+            className="mobile-hamburger left"
+            onClick={toggleDashboardMobileMenu}
+            aria-label="Toggle dashboard menu"
+          >
+            <HiMenu />
+          </button>
+        )}
 
         <nav className="desktop-nav">
           <NavLink
@@ -105,12 +125,6 @@ export default function AppNavBar() {
               src={logoImage}
               alt="Les Constructions Dominic Cyr"
               className="logo-image"
-              onClick={(e) => {
-                if (window.innerWidth <= 768 && !isMobileMenuOpen) {
-                  e.preventDefault();
-                  setIsMobileMenuOpen(true);
-                }
-              }}
             />
           </NavLink>
 
@@ -154,24 +168,28 @@ export default function AppNavBar() {
         </div>
 
         <button
-          className="mobile-menu-toggle"
-          onClick={toggleMobileMenu}
-          aria-label="Toggle menu"
-          type="button"
+          className="mobile-hamburger right"
+          onClick={togglePublicMobileMenu}
+          aria-label="Toggle public menu"
         >
-          <span className={isMobileMenuOpen ? 'hamburger open' : 'hamburger'}>
-            <span></span>
-            <span></span>
-            <span></span>
-          </span>
+          <HiMenu />
         </button>
       </div>
 
-      <nav className={`mobile-nav ${isMobileMenuOpen ? 'open' : ''}`}>
+      {isDashboardMobileMenuOpen && (
+        <div className="mobile-dashboard-menu">
+          {!roleLoading && role === 'OWNER' && <OwnerNavBar />}
+          {!roleLoading && role === 'SALESPERSON' && <SalespersonNavBar />}
+          {!roleLoading && role === 'CONTRACTOR' && <ContractorNavBar />}
+          {!roleLoading && role === 'CUSTOMER' && <CustomerNavBar />}
+        </div>
+      )}
+
+      <nav className={`mobile-nav ${isPublicMobileMenuOpen ? 'open' : ''}`}>
         <NavLink
           to="/residential-projects"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
           {t('nav.projects', 'Residential Projects')}
         </NavLink>
@@ -179,7 +197,7 @@ export default function AppNavBar() {
         <NavLink
           to="/renovations"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
           {t('nav.renovation', 'Renovations')}
         </NavLink>
@@ -187,7 +205,7 @@ export default function AppNavBar() {
         <NavLink
           to="/projectmanagement"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
           {t('nav.projectManagement', 'Project Management')}
         </NavLink>
@@ -195,7 +213,7 @@ export default function AppNavBar() {
         <NavLink
           to="/realizations"
           className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={() => setIsPublicMobileMenuOpen(false)}
         >
           {t('nav.realizations', 'Realizations')}
         </NavLink>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, matchPath } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
@@ -45,6 +45,22 @@ function PageViewTracker() {
     ReactGA.send({ hitType: 'pageview', page: location.pathname });
   }, [location]);
   return null;
+}
+
+function ConditionalFooter() {
+  const location = useLocation();
+  
+  const isProjectPage = 
+    matchPath('/projects/:projectIdentifier/overview', location.pathname) ||
+    matchPath('/projects/:projectIdentifier/lots', location.pathname);
+  
+  const isContactPage = location.pathname === '/contact';
+  
+  if (isProjectPage || isContactPage) {
+    return null;
+  }
+  
+  return <HomeFooter />;
 }
 
 export default function App() {
@@ -420,7 +436,7 @@ export default function App() {
           </Routes>
         </main>
 
-        <HomeFooter />
+        <ConditionalFooter />
 
         {showIdleModal && (
           <IdleTimeoutModal

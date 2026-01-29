@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaMapMarkerAlt, FaShieldAlt, FaIdCard } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaShieldAlt, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
 import '../../styles/Footers/HomeFooter.css';
 
 export default function HomeFooter() {
@@ -11,13 +11,23 @@ export default function HomeFooter() {
         <div className="footer-section">
           <div className="footer-title-group">
             <FaMapMarkerAlt className="footer-section-icon" />
-            <h3 className="footer-title">Localisation</h3>
+            <h3 className="footer-title">Info</h3>
           </div>
           <div className="footer-content">
             <p className="footer-item">155 rue Bourgeois</p>
             <p className="footer-item">
               St-Mathieu-de-Beloeil (Québec) J3G 0M9
             </p>
+            <div className="footer-item-with-icon">
+              <FaPhoneAlt className="footer-mini-icon" />
+              <p className="footer-item">450-536-0169</p>
+            </div>
+            <div className="footer-item-with-icon">
+              <FaEnvelope className="footer-mini-icon" />
+              <a href="mailto:constructions.dcyr@gmail.com" className="footer-link">
+                constructions.dcyr@gmail.com
+              </a>
+            </div>
           </div>
         </div>
 
@@ -54,17 +64,6 @@ export default function HomeFooter() {
           </div>
         </div>
 
-        <div className="footer-section">
-          <div className="footer-title-group">
-            <FaIdCard className="footer-section-icon" />
-            <h3 className="footer-title">Contact</h3>
-          </div>
-          <div className="footer-content">
-            <a href="/contact" className="footer-link">
-              Contact Us
-            </a>
-          </div>
-        </div>
       </div>
 
       <div className="footer-bottom">

@@ -1,11 +1,9 @@
 .app-footer {
-  background-color: var(
-    --secondary-color
-  ); /* Using your global secondary grey */
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border-top: 1px solid #e6e6e6;
   padding: 40px 0;
   margin-top: auto;
-  color: var(--text-primary);
+  color: #4a4a4a;
 }
 
 .footer-inner {
@@ -13,7 +11,7 @@
   width: 90%;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 40px;
 }
 
@@ -30,14 +28,14 @@
 }
 
 .footer-section-icon {
-  color: var(--accent-color);
+  color: #4a90a4;
   font-size: 1.2rem;
 }
 
 .footer-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #4a4a4a;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -56,25 +54,25 @@
 }
 
 .footer-mini-icon {
-  color: var(--accent-color);
+  color: #4a90a4;
   font-size: 0.9rem;
 }
 
 .footer-item {
   font-size: 14px;
-  color: var(--text-primary);
+  color: #4a4a4a;
   margin: 0;
 }
 
 .footer-link {
   font-size: 14px;
-  color: var(--accent-color);
+  color: #4a90a4;
   text-decoration: none;
-  transition: var(--transition);
+  transition: color 0.2s ease;
 }
 
 .footer-link:hover {
-  color: var(--primary-color);
+  color: #3a7a8c;
   text-decoration: underline;
 }
 

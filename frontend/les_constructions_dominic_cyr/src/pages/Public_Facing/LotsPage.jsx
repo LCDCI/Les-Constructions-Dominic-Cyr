@@ -180,7 +180,7 @@ const LotsPage = () => {
           )}
         </div>
       </div>
-      <Footer />
+      <Footer projectId={urlProjectIdentifier} />
     </div>
   );
 };
