@@ -2,7 +2,6 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAcces
 
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,6 +11,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "lots")
@@ -48,9 +49,14 @@ public class Lot {
     )
     private Project project;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "assigned_customer_id", referencedColumnName = "user_id")
-    private Users assignedCustomer;
+    // Support multiple assigned users of any role (contractors, customers, salespersons)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "lot_assigned_users",
+            joinColumns = @JoinColumn(name = "lot_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    )
+    private List<Users> assignedUsers = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -68,5 +74,6 @@ public class Lot {
         this.dimensionsSquareFeet = dimensionsSquareFeet;
         this.dimensionsSquareMeters = dimensionsSquareMeters;
         this.lotStatus = lotStatus;
+        this.assignedUsers = new ArrayList<>();
     }
 }

@@ -172,7 +172,7 @@ class LotControllerIntegrationTest {
         req.setDimensionsSquareFeet("6000");
         req.setDimensionsSquareMeters("558");
         req.setLotStatus(LotStatus.SOLD);
-        req.setAssignedCustomerId(testCustomer.getUserIdentifier().getUserId().toString());
+        req.setAssignedUserIds(java.util.List.of(testCustomer.getUserIdentifier().getUserId().toString()));
 
         String requestJson = objectMapper.writeValueAsString(req);
 
@@ -185,7 +185,7 @@ class LotControllerIntegrationTest {
                 .andExpect(jsonPath("$.civicAddress").value("456 Customer Avenue"))
                 .andExpect(jsonPath("$.price").value(300000.0))
                 .andExpect(jsonPath("$.lotStatus").value("SOLD"))
-                .andExpect(jsonPath("$.assignedCustomerId").value(testCustomer.getUserIdentifier().getUserId().toString()))
-                .andExpect(jsonPath("$.assignedCustomerName").value("Test Customer"));
+                .andExpect(jsonPath("$.assignedUsers[0].userId").value(testCustomer.getUserIdentifier().getUserId().toString()))
+                .andExpect(jsonPath("$.assignedUsers[0].fullName").value("Test Customer"));
     }
 }

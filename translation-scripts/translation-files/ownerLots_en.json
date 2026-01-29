@@ -1,0 +1,104 @@
+{
+  "nav": {
+    "projects": "Residential Projects",
+    "renovations": "Renovations",
+    "projectManagement": "Project Management",
+    "realizations": "Realizations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois"
+  },
+  "pageTitle": "Lot Management",
+  "backToProjects": "Back to Projects",
+  "addLot": "Add Lot",
+  "searchPlaceholder": "Search by address or lot...",
+  "filters": {
+    "allStatuses": "All Statuses",
+    "available": "Available",
+    "reserved": "Reserved",
+    "sold": "Sold",
+    "pending": "Pending"
+  },
+  "sort": {
+    "sortBy": "Sort By",
+    "priceLowHigh": "Price: Low to High",
+    "priceHighLow": "Price: High to Low",
+    "sizeSmallest": "Size: Smallest",
+    "sizeLargest": "Size: Largest"
+  },
+  "loading": "Loading...",
+  "loadingLots": "Loading project lots data...",
+  "table": {
+    "assignedUsers": "Assigned Users",
+    "lotNumber": "Lot #",
+    "civicAddress": "Civic Address",
+    "areaSqft": "Area (sqft)",
+    "areaSqm": "Area (m²)",
+    "price": "Price",
+    "status": "Status",
+    "actions": "Actions",
+    "noLotsFound": "No lots found.",
+    "noUsersAssigned": "No users assigned",
+    "editLot": "Edit lot",
+    "deleteLot": "Delete lot"
+  },
+  "status": {
+    "available": "AVAILABLE",
+    "reserved": "RESERVED",
+    "sold": "SOLD",
+    "pending": "PENDING"
+  },
+  "roles": {
+    "customer": "CUSTOMER",
+    "contractor": "CONTRACTOR",
+    "salesperson": "SALESPERSON"
+  },
+  "modal": {
+    "addLot": "Add New Lot",
+    "editLot": "Edit Lot",
+    "deleteLotTitle": "Delete Lot",
+    "deleteLotMessage": "Are you sure you want to delete \"{{lotNumber}}\"? This action cannot be undone.",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "updateLot": "Update Lot",
+    "createLot": "Create Lot"
+  },
+  "form": {
+    "lotNumber": "Lot Number",
+    "lotNumberPlaceholder": "e.g., Lot 53",
+    "lotNumberRequired": "Lot number is required",
+    "status": "Status",
+    "civicAddress": "Civic Address",
+    "civicAddressPlaceholder": "e.g., 123 Main Street, City, QC",
+    "civicAddressRequired": "Civic address is required",
+    "assignedUsers": "Assigned Users",
+    "assignedUsersPlaceholder": "Select users to assign (any role)...",
+    "assignedUsersInfo": "Lot status will automatically be set to \"Reserved\" when users are assigned",
+    "price": "Price (CAD)",
+    "pricePlaceholder": "e.g., 150000",
+    "priceNegativeError": "Price cannot be negative",
+    "dimensionsSqFt": "Dimensions (sq ft)",
+    "dimensionsSqFtPlaceholder": "e.g., 5000",
+    "dimensionsSqFtRequired": "Square feet dimension is required",
+    "dimensionsSqM": "Dimensions (sq m)",
+    "dimensionsSqMPlaceholder": "e.g., 464.5",
+    "dimensionsSqMRequired": "Square meters dimension is required",
+    "required": "*"
+  },
+  "userSelector": {
+    "searchPlaceholder": "Search by name, email, or role...",
+    "loadingUsers": "Loading users...",
+    "noUsersFound": "No users found matching search",
+    "noUsersAvailable": "No eligible users available"
+  },
+  "errors": {
+    "errorCreating": "Error creating lot: ",
+    "errorUpdating": "Error updating lot: ",
+    "unknownError": "Unknown error",
+    "projectMissing": "Project identifier is missing. Please reopen this page from a project."
+  }
+}
+
