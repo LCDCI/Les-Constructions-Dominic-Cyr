@@ -369,11 +369,6 @@
     transform: translateY(-50%);
   }
 
-  /* Dashboard menu dropdown */
-  .mobile-dashboard-menu {
-    display: block;
-  }
-
   .logo-image {
     height: 55px;
   }
