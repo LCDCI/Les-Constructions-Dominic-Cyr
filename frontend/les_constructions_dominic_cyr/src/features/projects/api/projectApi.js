@@ -3,6 +3,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 import { getFilesServiceBase } from '../../../utils/filesService';
 const FILES_SERVICE_BASE_URL = getFilesServiceBase();
+
 export const projectApi = {
   getAllProjects: async (filters = {}, token = null) => {
     const params = new URLSearchParams();
@@ -28,43 +29,43 @@ export const projectApi = {
   },
 
   getProjectById: async (projectIdentifier, token) => {
-    const headers = {};
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
+    // 1. PROACTIVE CHECK: If no token, go straight to public overview to avoid 401 console error
+    if (!token) {
+      const overviewUrl = `${API_BASE_URL}/projects/${projectIdentifier}/overview`;
+      const response = await fetch(overviewUrl);
+      if (!response.ok) throw new Error('Failed to fetch project overview');
+      return response.json();
     }
 
+    const headers = { Authorization: `Bearer ${token}` };
     const url = `${API_BASE_URL}/projects/${projectIdentifier}`;
-    const response = await fetch(url, { headers });
 
-    // If the project endpoint is protected (401/403) or not found (404),
-    // try the public overview endpoint as a fallback so public pages
-    // (like the lots or public projects listing) can still render.
-    if (!response.ok) {
-      const status = response.status;
-      if (status === 401 || status === 403 || status === 404) {
+    try {
+      const response = await fetch(url, { headers });
+
+      if (!response.ok) {
+        // 2. FALLBACK: If token is expired or unauthorized, try overview
         const overviewUrl = `${API_BASE_URL}/projects/${projectIdentifier}/overview`;
-        try {
-          const overviewResp = await fetch(overviewUrl);
-          if (overviewResp.ok) {
-            return overviewResp.json();
-          }
-        } catch (e) {
-          // swallow and rethrow below
-        }
+        const overviewResp = await fetch(overviewUrl);
+        if (overviewResp.ok) return overviewResp.json();
+
+        throw new Error(`Failed to fetch project (${response.status})`);
       }
-      throw new Error(`Failed to fetch project (${response.status})`);
+      return response.json();
+    } catch (error) {
+      // 3. LAST RESORT FALLBACK
+      const overviewUrl = `${API_BASE_URL}/projects/${projectIdentifier}/overview`;
+      const lastResort = await fetch(overviewUrl);
+      if (lastResort.ok) return lastResort.json();
+      throw error;
     }
-    return response.json();
   },
 
   createProject: async (projectData, token) => {
     try {
-      const headers = {
-        'Content-Type': 'application/json',
-      };
-      if (token) {
-        headers.Authorization = `Bearer ${token}`;
-      }
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers.Authorization = `Bearer ${token}`;
+
       const response = await fetch(`${API_BASE_URL}/projects`, {
         method: 'POST',
         headers,
@@ -73,20 +74,12 @@ export const projectApi = {
 
       if (!response.ok) {
         let errorMessage = `Failed to create project (${response.status})`;
-        // Read response as text first, then try to parse as JSON
         const errorText = await response.text();
         if (errorText) {
           try {
             const errorData = JSON.parse(errorText);
-            if (errorData.message) {
-              errorMessage = errorData.message;
-            } else if (errorData.error) {
-              errorMessage = errorData.error;
-            } else {
-              errorMessage = errorText;
-            }
+            errorMessage = errorData.message || errorData.error || errorText;
           } catch (e) {
-            // If not valid JSON, use the text as error message
             errorMessage = errorText;
           }
         }
@@ -97,21 +90,16 @@ export const projectApi = {
       return response.json();
     } catch (error) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error(
-          'Network error: Could not connect to server. Please check if the backend is running.'
-        );
+        throw new Error('Network error: Could not connect to server.');
       }
       throw error;
     }
   },
 
   updateProject: async (projectIdentifier, projectData, token) => {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers.Authorization = `Bearer ${token}`;
+
     const response = await fetch(
       `${API_BASE_URL}/projects/${projectIdentifier}`,
       {
@@ -120,17 +108,14 @@ export const projectApi = {
         body: JSON.stringify(projectData),
       }
     );
-    if (!response.ok) {
-      throw new Error('Failed to update project');
-    }
+    if (!response.ok) throw new Error('Failed to update project');
     return response.json();
   },
 
   deleteProject: async (projectIdentifier, token) => {
     const headers = {};
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) headers.Authorization = `Bearer ${token}`;
+
     const response = await fetch(
       `${API_BASE_URL}/projects/${projectIdentifier}`,
       {
@@ -138,9 +123,7 @@ export const projectApi = {
         headers,
       }
     );
-    if (!response.ok) {
-      throw new Error('Failed to delete project');
-    }
+    if (!response.ok) throw new Error('Failed to delete project');
   },
 
   uploadProjectImage: async (file, userId = 'demo-user') => {
@@ -149,15 +132,11 @@ export const projectApi = {
 
     const response = await fetch(`${API_BASE_URL}/photos/upload`, {
       method: 'POST',
-      headers: {
-        'X-User': userId,
-      },
+      headers: { 'X-User': userId },
       body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error('Failed to upload image');
-    }
+    if (!response.ok) throw new Error('Failed to upload image');
     return response.json();
   },
 
@@ -177,10 +156,7 @@ export const projectApi = {
         },
       }
     );
-
-    if (!response.ok) {
-      throw new Error('Failed to assign contractor to project');
-    }
+    if (!response.ok) throw new Error('Failed to assign contractor');
     return response.json();
   },
 
@@ -195,10 +171,7 @@ export const projectApi = {
         },
       }
     );
-
-    if (!response.ok) {
-      throw new Error('Failed to remove contractor from project');
-    }
+    if (!response.ok) throw new Error('Failed to remove contractor');
     return response.json();
   },
 
@@ -217,10 +190,7 @@ export const projectApi = {
         },
       }
     );
-
-    if (!response.ok) {
-      throw new Error('Failed to assign salesperson to project');
-    }
+    if (!response.ok) throw new Error('Failed to assign salesperson');
     return response.json();
   },
 
@@ -235,10 +205,7 @@ export const projectApi = {
         },
       }
     );
-
-    if (!response.ok) {
-      throw new Error('Failed to remove salesperson from project');
-    }
+    if (!response.ok) throw new Error('Failed to remove salesperson');
     return response.json();
   },
 
@@ -253,10 +220,7 @@ export const projectApi = {
         },
       }
     );
-
-    if (!response.ok) {
-      throw new Error('Failed to assign customer to project');
-    }
+    if (!response.ok) throw new Error('Failed to assign customer');
     return response.json();
   },
 
@@ -271,25 +235,20 @@ export const projectApi = {
         },
       }
     );
-
-    if (!response.ok) {
-      throw new Error('Failed to remove customer from project');
-    }
+    if (!response.ok) throw new Error('Failed to remove customer');
     return response.json();
   },
 
   getProjectActivityLog: async (projectIdentifier, token) => {
     const headers = {};
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
+    if (token) headers.Authorization = `Bearer ${token}`;
+
     const response = await fetch(
       `${API_BASE_URL}/projects/${projectIdentifier}/activity-log`,
       { headers }
     );
-    if (!response.ok) {
+    if (!response.ok)
       throw new Error(`Failed to fetch activity log (${response.status})`);
-    }
     return response.json();
   },
 };
