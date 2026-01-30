@@ -1,0 +1,21 @@
+{
+  "hero": {
+    "kicker": "Projects",
+    "title": "Our Projects",
+    "titleOwner": "Manage Projects",
+    "subtitle": "Explore our portfolio of residential projects showcasing quality construction and innovative design.",
+    "subtitleOwner": "View, create, and manage your construction projects."
+  },
+  "search": {
+    "placeholder": "Search projects by name..."
+  },
+  "buttons": {
+    "view": "View this project",
+    "edit": "Edit",
+    "team": "Manage Team",
+    "lots": "View Project Lots",
+    "archive": "Archive"
+  },
+  "noResults": "No projects found matching \"{{searchTerm}}\"",
+  "empty": "Create your first project!"
+}
