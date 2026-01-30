@@ -62,3 +62,5 @@ google-analytics-credentials.json
 # Database initialization scripts (ignore both data.sql and schema.sql anywhere)
 **/data.sql
 **/schema.sql
+/src/main/resources/data.sql
+/src/main/resources/schema.sql
