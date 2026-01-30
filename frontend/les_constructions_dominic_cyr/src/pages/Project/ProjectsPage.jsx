@@ -289,6 +289,18 @@ const ProjectsPage = () => {
       </section>
       <div className="projects-search-container">
         <div className="container">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+            <div />
+            {/* Restore Create Project button for users with permission */}
+            {canCreateProjects(role) && (
+              <button
+                className="admin-create-project-button"
+                onClick={() => setIsCreateOpen(true)}
+              >
+                {t('form.buttons.createProject', 'Create New Project')}
+              </button>
+            )}
+          </div>
           <div className="search-box">
             <input
               type="text"
