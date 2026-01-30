@@ -87,7 +87,7 @@ body {
   transition: background 0.3s var(--easing);
 }
 
- .admin-create-project-button:hover {
+.admin-create-project-button:hover {
   background: var(--color-primary);
 }
 
@@ -274,7 +274,9 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s var(--easing), color 0.2s var(--easing);
+  transition:
+    background 0.2s var(--easing),
+    color 0.2s var(--easing);
   text-decoration: none;
   display: inline-block;
   margin: 0.25rem 0;
@@ -293,7 +295,9 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s var(--easing), color 0.2s var(--easing);
+  transition:
+    background 0.2s var(--easing),
+    color 0.2s var(--easing);
   text-decoration: none;
   display: inline-block;
   margin: 0.25rem 0;
@@ -312,7 +316,9 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s var(--easing), color 0.2s var(--easing);
+  transition:
+    background 0.2s var(--easing),
+    color 0.2s var(--easing);
   text-decoration: none;
   display: inline-block;
   margin: 0.25rem 0;
@@ -331,7 +337,9 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s var(--easing), color 0.2s var(--easing);
+  transition:
+    background 0.2s var(--easing),
+    color 0.2s var(--easing);
   text-decoration: none;
   display: inline-block;
   margin: 0.25rem 0;
@@ -350,7 +358,9 @@ body {
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s var(--easing), color 0.2s var(--easing);
+  transition:
+    background 0.2s var(--easing),
+    color 0.2s var(--easing);
   text-decoration: none;
   display: inline-block;
   margin: 0.25rem 0;
@@ -374,7 +384,9 @@ body {
   overflow: hidden;
 }
 .project-hover-image {
-  transition: filter 0.4s var(--easing), transform 0.4s var(--easing);
+  transition:
+    filter 0.4s var(--easing),
+    transform 0.4s var(--easing);
 }
 .project-hover-overlay {
   transition: background 0.4s var(--easing);
@@ -403,7 +415,7 @@ body {
 }
 .project-hover-card:hover .project-hover-overlay,
 .project-hover-card:focus-within .project-hover-overlay {
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 .project-hover-card:hover .project-hover-content,
 .project-hover-card:focus-within .project-hover-content {
@@ -412,14 +424,14 @@ body {
 }
 .project-hover-content .card-title {
   color: var(--color-primary);
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   margin-bottom: 1rem;
   font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .project-hover-content .admin-project-actions {
   margin-top: 1.5rem;
@@ -562,7 +574,9 @@ body {
   overflow: hidden;
 }
 .project-hover-image {
-  transition: filter 0.4s var(--easing), transform 0.4s var(--easing);
+  transition:
+    filter 0.4s var(--easing),
+    transform 0.4s var(--easing);
 }
 .project-hover-overlay {
   transition: background 0.4s var(--easing);
@@ -591,7 +605,7 @@ body {
 }
 .project-hover-card:hover .project-hover-overlay,
 .project-hover-card:focus-within .project-hover-overlay {
-  background: rgba(0,0,0,0.25);
+  background: rgba(0, 0, 0, 0.25);
 }
 .project-hover-card:hover .project-hover-content,
 .project-hover-card:focus-within .project-hover-content {
@@ -600,14 +614,14 @@ body {
 }
 .project-hover-content .card-title {
   color: var(--color-primary);
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   margin-bottom: 1rem;
   font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 .project-hover-content .admin-project-actions {
   margin-top: 1.5rem;

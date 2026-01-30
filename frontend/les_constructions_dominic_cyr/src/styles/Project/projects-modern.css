@@ -90,7 +90,9 @@
   width: 100%;
   max-width: 350px;
   position: relative;
-  transition: box-shadow 0.3s var(--easing), transform 0.3s var(--easing);
+  transition:
+    box-shadow 0.3s var(--easing),
+    transform 0.3s var(--easing);
 }
 
 .admin-project-card:hover {
@@ -117,7 +119,7 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   z-index: 10;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .admin-project-image-container {
@@ -211,7 +213,8 @@
   background: #b91c1c;
 }
 
-.admin-no-results, .no-projects {
+.admin-no-results,
+.no-projects {
   text-align: center;
   padding: 3rem 0;
   color: var(--color-text-muted);
@@ -288,7 +291,8 @@
   transition: background 0.2s var(--easing);
 }
 
-.filter-option.active, .filter-option:hover {
+.filter-option.active,
+.filter-option:hover {
   background: var(--color-light);
 }
 
@@ -307,7 +311,7 @@
 .confirmation-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -320,7 +324,7 @@
   max-width: 520px;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   padding: 1.5rem;
 }
 
@@ -351,7 +355,8 @@
   background: var(--color-secondary);
 }
 
-.btn-submit, .btn-confirm-destructive {
+.btn-submit,
+.btn-confirm-destructive {
   background: #dc2626;
   color: #fff;
   border: none;
@@ -362,6 +367,7 @@
   transition: background 0.2s var(--easing);
 }
 
-.btn-submit:hover, .btn-confirm-destructive:hover {
+.btn-submit:hover,
+.btn-confirm-destructive:hover {
   background: #b91c1c;
 }
