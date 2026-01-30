@@ -1,7 +1,11 @@
 .inbox-page {
   min-height: calc(100vh - 12.5rem);
   padding: 1.5% 1%;
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--bg-secondary) 0%,
+    var(--bg-tertiary) 100%
+  );
 }
 
 .inbox-container {
@@ -9,7 +13,9 @@
   margin: 0 auto;
   background-color: var(--card-background);
   border-radius: calc(var(--border-radius) * 1.5);
-  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.08), 0 0.125rem 0.5rem var(--brand-primary-light);
+  box-shadow:
+    0 0.25rem 1.25rem rgba(0, 0, 0, 0.08),
+    0 0.125rem 0.5rem var(--brand-primary-light);
   padding: 2.5%;
 }
 
@@ -20,10 +26,15 @@
   margin-bottom: 2%;
   padding-bottom: 1.5%;
   border-bottom: 2px solid var(--border-color);
-  background: linear-gradient(to right, var(--brand-primary-lighter), transparent);
+  background: linear-gradient(
+    to right,
+    var(--brand-primary-lighter),
+    transparent
+  );
   padding: 1.5%;
   margin: -2.5% -2.5% 2% -2.5%;
-  border-radius: calc(var(--border-radius) * 1.5) calc(var(--border-radius) * 1.5) 0 0;
+  border-radius: calc(var(--border-radius) * 1.5)
+    calc(var(--border-radius) * 1.5) 0 0;
 }
 
 .inbox-title-section {
@@ -41,7 +52,11 @@
 .inbox-icon {
   font-size: 2.25rem;
   color: var(--brand-primary);
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary) 0%,
+    var(--brand-primary-dark) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -55,7 +70,11 @@
 }
 
 .inbox-unread-badge {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary) 0%,
+    var(--brand-primary-dark) 100%
+  );
   color: var(--white);
   font-size: 0.8125rem;
   font-weight: 600;
@@ -72,7 +91,11 @@
 }
 
 .btn-mark-all-read {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary) 0%,
+    var(--brand-primary-dark) 100%
+  );
   color: var(--white);
   border: none;
   padding: 0.75rem 1.5rem;
@@ -85,7 +108,11 @@
 }
 
 .btn-mark-all-read:hover {
-  background: linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary-darker) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary-dark) 0%,
+    var(--brand-primary-darker) 100%
+  );
   transform: translateY(-2px);
   box-shadow: 0 0.25rem 0.75rem rgba(74, 144, 164, 0.35);
 }
@@ -272,7 +299,9 @@
   background: var(--card-background);
   border: 2px solid var(--border-color);
   border-radius: 0.625rem;
-  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.08), 0 0.125rem 0.5rem var(--brand-primary-light);
+  box-shadow:
+    0 0.25rem 1.25rem rgba(0, 0, 0, 0.08),
+    0 0.125rem 0.5rem var(--brand-primary-light);
   padding: 0.375rem;
   min-width: 100%;
   max-height: 16rem;
@@ -301,12 +330,20 @@
 }
 
 .inbox-filter-select-option.is-selected {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-dark) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary) 0%,
+    var(--brand-primary-dark) 100%
+  );
   color: var(--white);
 }
 
 .inbox-filter-select-option.is-selected:hover {
-  background: linear-gradient(135deg, var(--brand-primary-dark) 0%, var(--brand-primary-darker) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-primary-dark) 0%,
+    var(--brand-primary-darker) 100%
+  );
   color: var(--white);
 }
 

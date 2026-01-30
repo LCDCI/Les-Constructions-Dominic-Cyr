@@ -17,12 +17,13 @@ const SORT_OPTIONS = [
 ];
 
 const InboxPage = () => {
-  const { notifications, loading, error, markAllAsRead, markAsRead } = useNotifications();
+  const { notifications, loading, error, markAllAsRead, markAsRead } =
+    useNotifications();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'unread', 'read'
   const [sortBy, setSortBy] = useState('newest'); // 'newest', 'oldest'
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   // Filter and sort notifications
   const filteredAndSortedNotifications = useMemo(() => {
@@ -32,7 +33,7 @@ const InboxPage = () => {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        (notif) =>
+        notif =>
           notif.title.toLowerCase().includes(query) ||
           notif.message.toLowerCase().includes(query) ||
           notif.category.toLowerCase().includes(query)
@@ -41,9 +42,9 @@ const InboxPage = () => {
 
     // Apply read/unread filter
     if (filterType === 'unread') {
-      filtered = filtered.filter((notif) => !notif.isRead);
+      filtered = filtered.filter(notif => !notif.isRead);
     } else if (filterType === 'read') {
-      filtered = filtered.filter((notif) => notif.isRead);
+      filtered = filtered.filter(notif => notif.isRead);
     }
 
     // Apply sorting
@@ -78,7 +79,9 @@ const InboxPage = () => {
     return (
       <div className="inbox-page">
         <div className="inbox-container">
-          <div className="inbox-error">Error loading notifications: {error}</div>
+          <div className="inbox-error">
+            Error loading notifications: {error}
+          </div>
         </div>
       </div>
     );
@@ -97,7 +100,10 @@ const InboxPage = () => {
           </div>
           <div className="inbox-header-actions">
             {unreadCount > 0 && (
-              <button className="btn-mark-all-read" onClick={handleMarkAllAsRead}>
+              <button
+                className="btn-mark-all-read"
+                onClick={handleMarkAllAsRead}
+              >
                 Mark all as read
               </button>
             )}
@@ -111,7 +117,7 @@ const InboxPage = () => {
               type="text"
               placeholder="Search notifications..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="search-input"
             />
           </div>
@@ -148,7 +154,7 @@ const InboxPage = () => {
             </div>
           ) : (
             <div className="notifications-list">
-              {filteredAndSortedNotifications.map((notification) => (
+              {filteredAndSortedNotifications.map(notification => (
                 <NotificationItem
                   key={notification.notificationId}
                   notification={notification}
