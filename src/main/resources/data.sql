@@ -67,10 +67,11 @@ INSERT INTO schedules (schedule_identifier, schedule_start_date, schedule_end_da
 
 -- data for users
 INSERT INTO users (user_id, first_name, last_name, email, secondary_email, phone, user_role, user_status, auth0user_id) VALUES
-    ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'ACTIVE', 'auth0|69542f38c08232af729f3d41'),
-    ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor2@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'ACTIVE', 'auth0|6977d410cdd022bbd1f584f9'),
-    ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'salesperson2@test.com', NULL, '514-333-3333', 'SALESPERSON', 'ACTIVE', 'auth0|6977d48d8b4fc0bd0ab74eb9'),
-    ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'ACTIVE', 'auth0|6977d22de574e006790d3752');
+                                                                                                                            ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'ACTIVE', 'auth0|69542f38c08232af729f3d41'),
+                                                                                                                            ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor2@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'ACTIVE', 'auth0|6977d410cdd022bbd1f584f9'),
+                                                                                                                            ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'salesperson2@test.com', NULL, '514-333-3333', 'SALESPERSON', 'ACTIVE', 'auth0|6977d48d8b4fc0bd0ab74eb9'),
+                                                                                                                            ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'ACTIVE', 'auth0|6977d22de574e006790d3752');
+
 -- data for tasks
 INSERT INTO tasks (task_identifier, task_status, task_title, period_start, period_end, task_description, task_priority, estimated_hours, hours_spent, task_progress, assigned_user_id, schedule_id) VALUES
                                                                                                                                                                                                         ('TASK-001', 'TO_DO', 'Install Foundation', '2025-12-05', '2025-12-08', 'Pour concrete foundation for Lot 53', 'HIGH', 16.0, 0.0, 0.0, '22222222-2222-2222-2222-222222222222', 'SCH-001'),
@@ -203,8 +204,3 @@ INSERT INTO living_environment_amenities (living_environment_content_id, amenity
     ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'vineyards', 'Vignobles', 4),
     ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'crosscountry', 'Ski de fond et raquette', 5),
     ((SELECT id FROM living_environment_content WHERE project_identifier = 'proj-002-panorama' AND language = 'fr'), 'hiking', 'Randonnées', 6);
-                                                                    ('Jean Dupont', 'jean.dupont@email.com', '514-555-0123', 'Je suis intéressé par le projet Foresta. Pouvez-vous me fournir plus d''informations?', CURRENT_TIMESTAMP - INTERVAL '5 days'),
-                                                                    ('Marie Lambert', 'marie.lambert@email.com', '450-555-0234', 'I would like to schedule a visit to see the available lots.', CURRENT_TIMESTAMP - INTERVAL '3 days'),
-                                                                    ('Pierre Tremblay', 'pierre.tremblay@email.com', '514-555-0345', 'Quels sont les délais de construction pour un nouveau projet?', CURRENT_TIMESTAMP - INTERVAL '2 days'),
-                                                                    ('Sophie Martin', 'sophie.martin@email.com', '', 'Can you provide information about your renovation services?', CURRENT_TIMESTAMP - INTERVAL '1 day'),
-                                                                    ('Luc Gagnon', 'luc.gagnon@email.com', '418-555-0456', 'Je voudrais obtenir un devis pour la construction d''une maison unifamiliale.', CURRENT_TIMESTAMP - INTERVAL '6 hours');
