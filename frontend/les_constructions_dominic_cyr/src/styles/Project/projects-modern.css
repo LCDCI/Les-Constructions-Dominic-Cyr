@@ -1,0 +1,373 @@
+/* ProjectsPage - Modernized styles inspired by residential-projects.css */
+@import url('../Public_Facing/residential-projects.css');
+
+.admin-projects-page {
+  width: 100%;
+  overflow-x: hidden;
+  background: var(--color-white);
+}
+
+.admin-projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.admin-projects-header h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.admin-create-project-button {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s var(--easing);
+}
+
+.admin-create-project-button:hover {
+  background: var(--color-primary);
+}
+
+.admin-projects-filter {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-md);
+  gap: 20px;
+}
+
+.admin-search-container {
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+}
+
+.admin-search-input {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-secondary);
+  border-radius: 4px;
+  background-color: var(--color-white);
+  color: var(--color-text);
+  transition: all 0.3s var(--easing);
+  box-shadow: none;
+}
+
+.admin-search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(76, 77, 79, 0.1);
+}
+
+.admin-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  justify-items: center;
+}
+
+.admin-project-card {
+  background: var(--color-light);
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(76, 77, 79, 0.08);
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 350px;
+  position: relative;
+  transition:
+    box-shadow 0.3s var(--easing),
+    transform 0.3s var(--easing);
+}
+
+.admin-project-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(76, 77, 79, 0.16);
+}
+
+.project-card-archived {
+  background: #f5f5f5;
+  border: 2px solid #9ca3af;
+  opacity: 0.85;
+}
+
+.archived-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #dc2626;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.admin-project-image-container {
+  width: 100%;
+  height: 180px;
+  margin-bottom: 1.25rem;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.admin-project-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0.5rem 0 0.25rem 0;
+}
+
+.admin-project-description {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+  min-height: 2.5em;
+}
+
+.admin-project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.admin-project-button {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s var(--easing);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.admin-project-button:hover {
+  background: var(--color-primary);
+}
+
+.admin-edit-button {
+  background: #f59e42;
+}
+
+.admin-edit-button:hover {
+  background: #d97706;
+}
+
+.admin-team-button {
+  background: #2563eb;
+}
+
+.admin-team-button:hover {
+  background: #1d4ed8;
+}
+
+.admin-lots-button {
+  background: #8b5cf6;
+}
+
+.admin-lots-button:hover {
+  background: #7c3aed;
+}
+
+.archive-button {
+  background: #dc2626;
+}
+
+.archive-button:hover {
+  background: #b91c1c;
+}
+
+.admin-no-results,
+.no-projects {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--color-text-muted);
+}
+
+.admin-projects-loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-muted);
+}
+
+.admin-projects-error {
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: #c33;
+  text-align: center;
+}
+
+.admin-retry-button {
+  background: #4d85b9;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.admin-retry-button:hover {
+  background: #1565c0;
+}
+
+.filter-trigger {
+  background: var(--color-light);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s var(--easing);
+}
+
+.filter-trigger:hover {
+  background: var(--color-secondary);
+}
+
+.filter-menu {
+  background: #fff;
+  border: 1px solid var(--color-secondary);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(76, 77, 79, 0.08);
+  padding: 0.5rem 0;
+  z-index: 100;
+}
+
+.filter-option {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 1rem;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: background 0.2s var(--easing);
+}
+
+.filter-option.active,
+.filter-option:hover {
+  background: var(--color-light);
+}
+
+.error-message {
+  color: #dc2626;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.create-project-header h1 {
+  font-size: 2rem;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.confirmation-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 1100;
+}
+
+.confirmation-modal-content {
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  padding: 1.5rem;
+}
+
+.confirmation-modal-header h2 {
+  margin-top: 0;
+  color: var(--color-primary);
+}
+
+.confirmation-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel {
+  background: var(--color-light);
+  color: var(--color-primary);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s var(--easing);
+}
+
+.btn-cancel:hover {
+  background: var(--color-secondary);
+}
+
+.btn-submit,
+.btn-confirm-destructive {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s var(--easing);
+}
+
+.btn-submit:hover,
+.btn-confirm-destructive:hover {
+  background: #b91c1c;
+}
