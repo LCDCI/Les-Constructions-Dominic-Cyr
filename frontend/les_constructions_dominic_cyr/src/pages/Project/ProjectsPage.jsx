@@ -289,7 +289,14 @@ const ProjectsPage = () => {
       </section>
       <div className="projects-search-container">
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1.5rem',
+            }}
+          >
             <div />
             {/* Restore Create Project button for users with permission */}
             {canCreateProjects(role) && (
