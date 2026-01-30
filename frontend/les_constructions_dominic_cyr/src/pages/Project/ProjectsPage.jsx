@@ -358,88 +358,84 @@ const ProjectsPage = () => {
                       <div className="card-overlay project-hover-overlay" />
                       <div className="card-content project-hover-content">
                         <h2 className="card-title">{project.projectName}</h2>
-                        {role === 'OWNER' && (
-                          <div className="admin-project-actions">
-                            <a
-                              href={`/projects/${project.projectIdentifier}/metadata`}
-                              className="admin-project-button"
-                            >
-                              {t('buttons.view', 'View this project')}
-                            </a>
-                            {canEdit && (
-                              <>
-                                <button
-                                  onClick={() => handleEditProject(project)}
-                                  className="admin-project-button admin-edit-button"
-                                >
-                                  {t('buttons.edit', 'Edit')}
-                                </button>
-                                {/* Manage Team removed */}
-                                <a
-                                  href={`/projects/${project.projectIdentifier}/manage-lots`}
-                                  className="admin-project-button admin-lots-button"
-                                >
-                                  {t('buttons.lots', 'View Project Lots')}
-                                </a>
-                              </>
-                            )}
-                            {canEdit && project.status !== 'ARCHIVED' && (
+                        <div className="admin-project-actions">
+                          <a
+                            href={`/projects/${project.projectIdentifier}/metadata`}
+                            className="admin-project-button"
+                          >
+                            {t('buttons.view', 'View this project')}
+                          </a>
+
+                          {role === 'OWNER' && canEdit && (
+                            <>
                               <button
-                                onClick={() => openArchiveModal(project)}
-                                className="admin-project-button archive-button"
+                                onClick={() => handleEditProject(project)}
+                                className="admin-project-button admin-edit-button"
                               >
-                                {t('buttons.archive', 'Archive')}
+                                {t('buttons.edit', 'Edit')}
                               </button>
-                            )}
-                          </div>
-                        )}
+                              <a
+                                href={`/projects/${project.projectIdentifier}/manage-lots`}
+                                className="admin-project-button admin-lots-button"
+                              >
+                                {t('buttons.lots', 'View Project Lots')}
+                              </a>
+                            </>
+                          )}
+
+                          {role === 'OWNER' && canEdit && project.status !== 'ARCHIVED' && (
+                            <button
+                              onClick={() => openArchiveModal(project)}
+                              className="admin-project-button archive-button"
+                            >
+                              {t('buttons.archive', 'Archive')}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    {role === 'OWNER' && (
-                      <div
-                        className="mobile-project-actions"
-                        aria-hidden={false}
-                      >
-                        <details className="mobile-actions-dropdown">
-                          <summary className="mobile-actions-btn admin-project-button">
-                            {t('buttons.actions', 'Actions')}
-                          </summary>
-                          <div className="mobile-actions-dropdown-list">
-                            <a
-                              href={`/projects/${project.projectIdentifier}/metadata`}
-                              className="admin-project-button"
-                            >
-                              {t('buttons.view', 'View this project')}
-                            </a>
-                            {canEdit && (
-                              <>
-                                <button
-                                  onClick={() => handleEditProject(project)}
-                                  className="admin-project-button admin-edit-button"
-                                >
-                                  {t('buttons.edit', 'Edit')}
-                                </button>
-                                {/* Manage Team removed */}
-                                <a
-                                  href={`/projects/${project.projectIdentifier}/manage-lots`}
-                                  className="admin-project-button admin-lots-button"
-                                >
-                                  {t('buttons.lots', 'View Project Lots')}
-                                </a>
-                              </>
-                            )}
-                            {canEdit && project.status !== 'ARCHIVED' && (
+                    <div
+                      className="mobile-project-actions"
+                      aria-hidden={false}
+                    >
+                      <details className="mobile-actions-dropdown">
+                        <summary className="mobile-actions-btn admin-project-button">
+                          {t('buttons.actions', 'Actions')}
+                        </summary>
+                        <div className="mobile-actions-dropdown-list">
+                          <a
+                            href={`/projects/${project.projectIdentifier}/metadata`}
+                            className="admin-project-button"
+                          >
+                            {t('buttons.view', 'View this project')}
+                          </a>
+                          {role === 'OWNER' && canEdit && (
+                            <>
                               <button
-                                onClick={() => openArchiveModal(project)}
-                                className="admin-project-button archive-button"
+                                onClick={() => handleEditProject(project)}
+                                className="admin-project-button admin-edit-button"
                               >
-                                {t('buttons.archive', 'Archive')}
+                                {t('buttons.edit', 'Edit')}
                               </button>
-                            )}
-                          </div>
-                        </details>
-                      </div>
-                    )}
+                              <a
+                                href={`/projects/${project.projectIdentifier}/manage-lots`}
+                                className="admin-project-button admin-lots-button"
+                              >
+                                {t('buttons.lots', 'View Project Lots')}
+                              </a>
+                            </>
+                          )}
+                          {role === 'OWNER' && canEdit && project.status !== 'ARCHIVED' && (
+                            <button
+                              onClick={() => openArchiveModal(project)}
+                              className="admin-project-button archive-button"
+                            >
+                              {t('buttons.archive', 'Archive')}
+                            </button>
+                          )}
+                        </div>
+                      </details>
+                    </div>
                   </div>
                 ))
               ) : (

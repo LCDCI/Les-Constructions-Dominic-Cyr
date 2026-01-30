@@ -17,6 +17,9 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import UsersPage from './pages/UsersPage';
 import OwnerDashboard from './pages/Dashboards/OwnerDashboard';
 import ProjectMetadata from './pages/Project/ProjectMetadata';
+import ProjectEntryRouter from './pages/Project/ProjectEntryRouter';
+import LotSelectPage from './pages/Project/LotSelectPage';
+import LotMetadata from './pages/Project/LotMetadata';
 import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
 import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPage';
@@ -280,10 +283,10 @@ export default function App() {
               }
             />
 
-            <Route
-              path="/projects/:projectId/metadata"
-              element={<ProjectMetadata />}
-            />
+            <Route path="/projects/:projectId/metadata" element={<ProjectMetadata />} />
+            <Route path="/projects/:projectIdentifier" element={<ProjectEntryRouter />} />
+            <Route path="/projects/:projectIdentifier/lots/select" element={<LotSelectPage />} />
+            <Route path="/projects/:projectId/lots/:lotId/metadata" element={<LotMetadata />} />
 
             {/* Project team management removed */}
 
