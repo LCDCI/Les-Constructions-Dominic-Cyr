@@ -1,0 +1,89 @@
+/* Mobile-specific styles for ProjectsPage */
+@media (max-width: 768px) {
+  /* Hide desktop hover action area on mobile - show combined mobile actions instead */
+  .project-hover-content .admin-project-actions {
+    display: none !important;
+  }
+
+  .mobile-project-actions {
+    display: block;
+  }
+
+  /* Make sure details summary looks like a button */
+  .mobile-actions-dropdown summary {
+    list-style: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    cursor: pointer;
+  }
+
+  .mobile-actions-dropdown summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .portfolio-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2rem !important;
+  }
+  .portfolio-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+  .mobile-project-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .mobile-actions-dropdown {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .mobile-actions-btn {
+    background: var(--color-primary) !important;
+    color: var(--color-white) !important;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .mobile-actions-dropdown-list {
+    background: var(--color-light);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-top: 0.25rem;
+    padding: 0.5rem 0;
+    width: 100%;
+    z-index: 10;
+    position: relative;
+  }
+  .mobile-actions-dropdown-list button,
+  .mobile-actions-dropdown-list a {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: block;
+  }
+  .mobile-actions-dropdown-list button:hover,
+  .mobile-actions-dropdown-list a:hover {
+    background: var(--color-secondary);
+    color: var(--color-white);
+  }
+}
