@@ -69,9 +69,9 @@ services:
       - "5434:5432"
     volumes:
         - backend-db-data:/var/lib/postgresql/data
-        # Mount schema.sql and data.sql for local dev initialization
-        - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-        - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+        # Mount local-only schema/data for local dev initialization (not included in production)
+        - ./src/main/resources/local/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+        - ./src/main/resources/local/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d lcdci"]
       interval: 5s
