@@ -76,7 +76,7 @@ body {
 }
 
 .admin-create-project-button {
-  background-color: var(--color-accent);
+  background-color: var(--color-primary);
   color: var(--color-white);
   padding: 0.75rem 2rem;
   border: none;
