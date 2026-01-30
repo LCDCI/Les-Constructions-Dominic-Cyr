@@ -35,6 +35,16 @@ func NewService(apiKey string, from string) Service {
 	}
 }
 
+// newServiceWithClient creates a service with a custom HTTP client (for testing)
+func newServiceWithClient(apiKey, from, apiURL string, client *http.Client) Service {
+	return &service{
+		apiKey:     apiKey,
+		from:       from,
+		apiURL:     apiURL,
+		httpClient: client,
+	}
+}
+
 type brevoRequest struct {
 	Sender      brevoSender    `json:"sender"`
 	To          []brevoRecipient `json:"to"`
