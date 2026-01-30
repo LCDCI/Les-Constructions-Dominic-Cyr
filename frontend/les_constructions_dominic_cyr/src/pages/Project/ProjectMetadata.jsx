@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
+import { fetchLots } from '../../features/lots/api/lots';
+import useBackendUser from '../../hooks/useBackendUser';
 import { FiUsers } from 'react-icons/fi';
 import '../../styles/Project/ProjectMetadata.css';
 
@@ -9,7 +11,9 @@ const ProjectMetadata = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { profile, role } = useBackendUser();
   const [metadata, setMetadata] = useState(null);
+  const [lots, setLots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -37,6 +41,15 @@ const ProjectMetadata = () => {
 
         const data = await getProjectMetadata(projectId, token);
         setMetadata(data);
+
+        // Fetch lots for this project (used to show lot list)
+        try {
+          const lotsData = await fetchLots({ projectIdentifier: projectId, token });
+          setLots(lotsData || []);
+        } catch (e) {
+          // ignore lots error
+          setLots([]);
+        }
 
         document.documentElement.style.setProperty(
           '--project-primary',
@@ -105,6 +118,8 @@ const ProjectMetadata = () => {
   if (!metadata) {
     return null;
   }
+
+  const myId = profile?.userId || profile?.userIdentifier || null;
 
   const formatDate = dateString => {
     if (!dateString) return 'Not set';
@@ -211,6 +226,33 @@ const ProjectMetadata = () => {
               {/* Manage Team link removed */}
             </div>
             <div className="team-grid">
+              {/* Lots list: owners see all; others see only lots they're assigned to */}
+              <div style={{ gridColumn: '1 / -1', marginBottom: '16px' }}>
+                <h3 style={{ marginTop: 0 }}>Project Lots</h3>
+                {lots.length === 0 ? (
+                  <p style={{ color: '#777' }}>No lots available for this project.</p>
+                ) : (
+                  <div style={{ display: 'grid', gap: '8px' }}>
+                    {lots.map(l => {
+                      const assignedToMe = l.assignedUsers?.some(u => u.userId === myId || u.userIdentifier === myId);
+                      if (role !== 'OWNER' && !assignedToMe) return null;
+                      return (
+                        <div key={l.lotId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', border: '1px solid #eee', borderRadius: 6 }}>
+                          <div>
+                            <div style={{ fontWeight: 600 }}>{l.lotNumber || 'Lot'}</div>
+                            <div style={{ color: '#666' }}>{l.civicAddress || '—'}</div>
+                          </div>
+                          <div>
+                            <a href={`/projects/${projectId}/lots/${l.lotId}/metadata`} style={{ marginRight: 8 }}>
+                              View lot information
+                            </a>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
               {metadata.assignedUsers.contractors &&
                 metadata.assignedUsers.contractors.length > 0 && (
                   <div
