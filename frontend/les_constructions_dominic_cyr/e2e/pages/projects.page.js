@@ -1,7 +1,8 @@
 export class ProjectsPage {
   constructor(page) {
     this.page = page;
-    this.pageTitle = page.locator('.projects-header h1');
+    // Use the hero h1 as the page title for e2e tests (current design)
+    this.pageTitle = page.locator('.projects-hero h1.projects-title');
     this.searchInput = page.locator(
       'input.search-input, input[placeholder*="Search"]'
     );
