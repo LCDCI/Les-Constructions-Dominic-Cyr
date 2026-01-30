@@ -57,6 +57,9 @@ public class TranslationRegistry {
         fileIdMap.put("en.projectoverview", "b690c9f9-a2ee-4a49-9e28-2d87cb3dc15e");
         fileIdMap.put("fr.projectoverview", "78c97b4d-2cdd-45e7-93b9-0e5e9d23d668");
 
+        fileIdMap.put("en.lots", "dd3ea708-475f-4cef-ab1c-4303331cf803");
+        fileIdMap.put("fr.lots", "9ee50174-382f-467f-b30c-5f64ca470335");
+
         // Owner Lots page translations
         fileIdMap.put("en.ownerlots", "62178381-21ab-415a-a604-9d80c5d7774a");
         fileIdMap.put("fr.ownerlots", "29509c00-9273-4df9-96ae-6fba61a0d1b4");
@@ -64,6 +67,10 @@ public class TranslationRegistry {
         // Task Details page translations
         fileIdMap.put("en.taskdetails", "0d1566a4-ace6-4341-9b8e-e108bd562091");
         fileIdMap.put("fr.taskdetails", "c4a519cf-957b-46d0-a099-0228e0e933cc");
+
+        // Living Environment page translations
+        fileIdMap.put("en.livingenvironment", "99949cf5-8d72-4155-aaea-3df009823664");
+        fileIdMap.put("fr.livingenvironment", "1e49e1c9-1dc8-4ecf-8212-47e51d62abd2");
 
     }
     
