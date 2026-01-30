@@ -51,7 +51,7 @@ public class SecurityConfig {
     @Order(-1)
     public SecurityFilterChain actuatorHealthFilterChain(HttpSecurity http) throws Exception {
         RequestMatcher healthMatcher = new AntPathRequestMatcher("/actuator/health");
-
+        
         http
             .securityMatcher(healthMatcher)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -69,7 +69,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/inquiries", "POST"),
             new AntPathRequestMatcher("/api/inquiries", "OPTIONS")
         );
-
+        
         http
             .securityMatcher(inquiriesPostMatcher)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -90,7 +90,7 @@ public class SecurityConfig {
             new AntPathRequestMatcher("/api/inquiries", "GET"),
             new AntPathRequestMatcher("/api/inquiries/**", "GET")
         );
-
+        
         http
             .securityMatcher(inquiriesGetMatcher)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -123,7 +123,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/project-management/**").permitAll()
                         .requestMatchers("/api/v1/realizations/**").permitAll()
                         .requestMatchers("/api/v1/contact/**").permitAll()
-
+                        
                         // Public inquiry submission (POST only, handled by inquiriesSubmitFilterChain but fallback here)
                         .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
 
@@ -139,6 +139,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/overview").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/lots").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/lots/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/lots/**").permitAll()
+
+                        // --- 2. AUTHENTICATED USER ENDPOINTS (From your original list) ---
+                        .requestMatchers("/api/v1/users/me").authenticated()
+                        .requestMatchers("/api/v1/users/auth0/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").authenticated()
 
                         // =================================================================
                         // 2. SHARED ROLES (Specific Permissions for Multiple Roles)
@@ -146,6 +152,7 @@ public class SecurityConfig {
                         // Task Management (Owners & Contractors)
                         .requestMatchers(HttpMethod.PUT, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/tasks/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers("/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
