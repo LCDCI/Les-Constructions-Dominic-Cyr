@@ -90,6 +90,50 @@ export const taskApi = {
     );
     return response.data;
   },
+
+  // Contractor task view endpoints
+  getAllTasksForContractorView: async (token = null) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get('/contractors/tasks/all', {
+      headers,
+    });
+    return response.data;
+  },
+
+  getAllTasksGroupedByProjectAndLot: async (token = null) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get('/contractors/tasks/grouped', {
+      headers,
+    });
+    return response.data;
+  },
+
+  getTasksForProjectGroupedByLot: async (projectIdentifier, token = null) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get(
+      `/contractors/projects/${projectIdentifier}/tasks`,
+      { headers }
+    );
+    return response.data;
+  },
+
+  getTasksForLot: async (projectIdentifier, lotId, token = null) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get(
+      `/contractors/projects/${projectIdentifier}/lots/${lotId}/tasks`,
+      { headers }
+    );
+    return response.data;
+  },
+
+  getContractorAssignedTasksWithDetails: async (contractorId, token = null) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get(
+      `/contractors/${contractorId}/assigned-tasks`,
+      { headers }
+    );
+    return response.data;
+  },
 };
 
 export default taskApi;

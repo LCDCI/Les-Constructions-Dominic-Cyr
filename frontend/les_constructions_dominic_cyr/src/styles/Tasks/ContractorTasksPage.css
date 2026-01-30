@@ -1,0 +1,394 @@
+.contractor-tasks-page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  margin: 0 0 0.5rem 0;
+}
+
+.page-header .subtitle {
+  color: var(--text-secondary, #666);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Filters */
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--card-background, #fff);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filter-group label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary, #666);
+}
+
+.filter-group select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  background: white;
+  font-size: 0.9rem;
+  min-width: 180px;
+  cursor: pointer;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: var(--primary-color, #4a90a4);
+  box-shadow: 0 0 0 2px rgba(74, 144, 164, 0.1);
+}
+
+.filter-group select:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.checkbox-filter {
+  justify-content: flex-end;
+}
+
+.checkbox-filter label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.checkbox-filter input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Tasks Summary */
+.tasks-summary {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--background-color, #f8f9fa);
+  border-radius: 6px;
+}
+
+.task-count {
+  font-weight: 500;
+  color: var(--text-primary, #333);
+}
+
+/* No Tasks Message */
+.no-tasks-message {
+  text-align: center;
+  padding: 3rem;
+  background: var(--card-background, #fff);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.no-tasks-message p {
+  color: var(--text-secondary, #666);
+  font-size: 1.1rem;
+}
+
+/* Grouped Tasks Container */
+.tasks-grouped-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Project Group */
+.project-group {
+  background: var(--card-background, #fff);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.project-header {
+  background: var(--primary-color, #4a90a4);
+  padding: 1rem 1.5rem;
+}
+
+.project-header h2 {
+  margin: 0;
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Lot Group */
+.lot-group {
+  border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.lot-group:last-child {
+  border-bottom: none;
+}
+
+.lot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--background-color, #f8f9fa);
+}
+
+.lot-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+}
+
+.task-count-badge {
+  background: var(--primary-color, #4a90a4);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Tasks Table */
+.tasks-table-container {
+  overflow-x: auto;
+}
+
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tasks-table th,
+.tasks-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color, #eee);
+}
+
+.tasks-table th {
+  background: var(--background-color, #f8f9fa);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tasks-table td {
+  font-size: 0.9rem;
+  color: var(--text-primary, #333);
+}
+
+.task-row.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.task-row.clickable:hover {
+  background-color: var(--hover-background, #f5f8fa);
+}
+
+.task-title {
+  font-weight: 500;
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-todo {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-in-progress {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.status-completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-on-hold {
+  background: #fce4ec;
+  color: #c2185b;
+}
+
+.status-cancelled {
+  background: #f5f5f5;
+  color: #757575;
+}
+
+/* Priority Badge */
+.priority-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.priority-very-low {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.priority-low {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.priority-medium {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+.priority-high {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.priority-very-high {
+  background: #ffcdd2;
+  color: #b71c1c;
+}
+
+/* Progress Cell */
+.progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-bar-container {
+  width: 60px;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary-color, #4a90a4);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #666);
+  min-width: 35px;
+}
+
+/* Loading & Error States */
+.loading-container,
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color, #eee);
+  border-top-color: var(--primary-color, #4a90a4);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-message {
+  color: #c62828;
+  margin-bottom: 1rem;
+}
+
+.error-container button {
+  padding: 0.5rem 1.5rem;
+  background: var(--primary-color, #4a90a4);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.error-container button:hover {
+  opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .filters-container {
+    flex-direction: column;
+  }
+
+  .filter-group select {
+    width: 100%;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 768px) {
+  .contractor-tasks-page {
+    padding: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .tasks-table th,
+  .tasks-table td {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .lot-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+

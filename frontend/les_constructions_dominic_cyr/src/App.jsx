@@ -27,6 +27,7 @@ import ProjectPhotosPage from './pages/Project/ProjectPhotosPage';
 import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
 import PortalLogin from './pages/PortalLogin';
 import TaskDetailsPage from './pages/Tasks/TaskDetailsPage';
+import ContractorTasksPage from './pages/Tasks/ContractorTasksPage';
 import ProfilePage from './pages/ProfilePage';
 import Unauthorized from './pages/Errors/Unauthorized';
 import NotFound from './pages/Errors/NotFound';
@@ -387,6 +388,16 @@ export default function App() {
                     'CUSTOMER',
                   ]}
                   element={<TaskDetailsPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/contractor/tasks"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
+                  element={<ContractorTasksPage />}
                 />
               }
             />

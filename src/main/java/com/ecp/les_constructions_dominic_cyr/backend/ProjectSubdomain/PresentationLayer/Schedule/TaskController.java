@@ -1,7 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.TaskService;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -165,6 +164,73 @@ public class TaskController {
         } catch (NotFoundException ex) {
             log.error("Task not found for deletion: {}", taskId);
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Contractor task view endpoints - grouped by project and lot
+
+    /**
+     * Get all tasks grouped by project and lot for contractor view
+     */
+    @GetMapping("/contractors/tasks/all")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<List<ContractorTaskViewDTO>> getAllTasksForContractorView() {
+        log.info("Fetching all tasks for contractor view");
+        List<ContractorTaskViewDTO> tasks = taskService.getAllTasksForContractorView();
+        return ResponseEntity.ok(tasks);
+    }
+
+    /**
+     * Get all tasks grouped by project then by lot
+     */
+    @GetMapping("/contractors/tasks/grouped")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<List<ProjectTaskGroupDTO>> getAllTasksGroupedByProjectAndLot() {
+        log.info("Fetching all tasks grouped by project and lot");
+        List<ProjectTaskGroupDTO> groups = taskService.getAllTasksGroupedByProjectAndLot();
+        return ResponseEntity.ok(groups);
+    }
+
+    /**
+     * Get tasks for a specific project grouped by lot
+     */
+    @GetMapping("/contractors/projects/{projectIdentifier}/tasks")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<List<LotTaskGroupDTO>> getTasksForProjectGroupedByLot(
+            @PathVariable String projectIdentifier) {
+        log.info("Fetching tasks for project {} grouped by lot", projectIdentifier);
+        List<LotTaskGroupDTO> lots = taskService.getTasksForProjectGroupedByLot(projectIdentifier);
+        return ResponseEntity.ok(lots);
+    }
+
+    /**
+     * Get tasks for a specific lot in a project
+     */
+    @GetMapping("/contractors/projects/{projectIdentifier}/lots/{lotId}/tasks")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<List<ContractorTaskViewDTO>> getTasksForLot(
+            @PathVariable String projectIdentifier,
+            @PathVariable String lotId) {
+        log.info("Fetching tasks for project {} and lot {}", projectIdentifier, lotId);
+        List<ContractorTaskViewDTO> tasks = taskService.getTasksForLot(projectIdentifier, lotId);
+        return ResponseEntity.ok(tasks);
+    }
+
+    /**
+     * Get all tasks assigned to a specific contractor with project/lot details
+     */
+    @GetMapping("/contractors/{contractorId}/assigned-tasks")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<?> getContractorAssignedTasksWithDetails(
+            @PathVariable String contractorId) {
+        log.info("Fetching assigned tasks for contractor {} with details", contractorId);
+        try {
+            List<ContractorTaskViewDTO> tasks = taskService.getContractorAssignedTasksWithDetails(contractorId);
+            return ResponseEntity.ok(tasks);
+        } catch (NotFoundException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidInputException ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

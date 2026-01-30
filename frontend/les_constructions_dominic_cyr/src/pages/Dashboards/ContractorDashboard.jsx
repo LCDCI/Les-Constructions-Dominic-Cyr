@@ -7,6 +7,7 @@ import '../../styles/Dashboards/ContractorDashboard.css';
 import { GoInbox } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
+import { GoTasklist } from 'react-icons/go';
 import { MdOutlineRequestQuote } from 'react-icons/md';
 
 const ContractorDashboard = () => {
@@ -18,6 +19,12 @@ const ContractorDashboard = () => {
   };
 
   const dashboardCards = [
+    {
+      icon: <GoTasklist />,
+      title: 'All Tasks',
+      buttonText: 'View All Tasks',
+      action: () => navigate('/contractor/tasks'),
+    },
     {
       icon: <MdOutlineRequestQuote />,
       title: 'Quotes',
