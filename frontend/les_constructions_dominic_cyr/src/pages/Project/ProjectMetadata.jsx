@@ -208,25 +208,7 @@ const ProjectMetadata = () => {
               <h2 style={{ color: metadata.primaryColor, margin: 0 }}>
                 Assigned Team
               </h2>
-              <a
-                href={`/projects/${projectId}/team-management`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px 16px',
-                  backgroundColor: metadata.primaryColor,
-                  color: 'white',
-                  textDecoration: 'none',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                }}
-              >
-                <FiUsers size={18} />
-                Manage Team
-              </a>
+              {/* Manage Team link removed */}
             </div>
             <div className="team-grid">
               {metadata.assignedUsers.contractors &&

@@ -374,12 +374,7 @@ const ProjectsPage = () => {
                                 >
                                   {t('buttons.edit', 'Edit')}
                                 </button>
-                                <a
-                                  href={`/projects/${project.projectIdentifier}/team-management`}
-                                  className="admin-project-button admin-team-button"
-                                >
-                                  {t('buttons.team', 'Manage Team')}
-                                </a>
+                                {/* Manage Team removed */}
                                 <a
                                   href={`/projects/${project.projectIdentifier}/manage-lots`}
                                   className="admin-project-button admin-lots-button"
@@ -424,12 +419,7 @@ const ProjectsPage = () => {
                                 >
                                   {t('buttons.edit', 'Edit')}
                                 </button>
-                                <a
-                                  href={`/projects/${project.projectIdentifier}/team-management`}
-                                  className="admin-project-button admin-team-button"
-                                >
-                                  {t('buttons.team', 'Manage Team')}
-                                </a>
+                                {/* Manage Team removed */}
                                 <a
                                   href={`/projects/${project.projectIdentifier}/manage-lots`}
                                   className="admin-project-button admin-lots-button"

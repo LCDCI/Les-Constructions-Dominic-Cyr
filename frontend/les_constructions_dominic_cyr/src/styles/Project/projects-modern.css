@@ -189,13 +189,7 @@
   background: #d97706;
 }
 
-.admin-team-button {
-  background: #2563eb;
-}
-
-.admin-team-button:hover {
-  background: #1d4ed8;
-}
+/* admin-team-button removed */
 
 .admin-lots-button {
   background: #8b5cf6;
