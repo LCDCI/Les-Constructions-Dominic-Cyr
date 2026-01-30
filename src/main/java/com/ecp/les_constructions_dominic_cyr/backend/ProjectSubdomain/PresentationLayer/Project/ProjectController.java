@@ -59,7 +59,7 @@ public class ProjectController {
 
         // Then filter by user role and assigned projects — include projects where the
         // user is assigned to any lot within the project.
-        if (jwt != null && authentication != null) {
+        if (!isOwner && jwt != null && authentication != null) {
             String auth0UserId = jwt.getSubject();
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
@@ -86,12 +86,11 @@ public class ProjectController {
                         .filter(pid -> pid != null)
                         .collect(Collectors.toSet()));
             } catch (IllegalArgumentException e) {
-                // ignore malformed UUIDs
+                log.warn("Invalid UUID for user identifier: {}", userIdentifier);
             }
 
             List<ProjectResponseModel> filtered = projects.stream()
                     .filter(p -> {
-                        // Owner case already excluded earlier
                         boolean matchesProjectLevel = false;
                         if (authorities.contains(ROLE_CUSTOMER)) {
                             matchesProjectLevel = userIdentifier.equals(p.getCustomerId());
