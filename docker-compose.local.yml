@@ -45,11 +45,13 @@ services:
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID}
         VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE}
+        NGINX_CONFIG_FILE: default-combined.conf
     container_name: lcdci-frontend
     ports:
       - "3000:80"
     depends_on:
       - backend
+      - files-service
     networks:
       - app-network
 
@@ -93,7 +95,7 @@ services:
 
       FILES_STORAGE_TYPE: minio
 
-      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
       MINIO_BUCKET: ${MINIO_BUCKET}
       MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}

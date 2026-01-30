@@ -38,10 +38,18 @@ spring:
 
   sql:
     init:
-      platform: psql
-      mode: always
+      mode: ${SPRING_SQL_INIT_MODE:never}
 
 server.port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
 
 spring.datasource.hikari.initializationFailTimeout: 60000
 

@@ -18,11 +18,14 @@ const path = require('path');
 const FormData = require('form-data');
 const axios = require('axios');
 
-const FILE_SERVICE_URL = 'http://localhost:8082/files';
+// Get file service URL from command line or environment, default to production
+const FILE_SERVICE_URL = process.argv[3] || process.env.FILE_SERVICE_URL || 'https://files-service-app-xubs2.ondigitalocean.app/files';
 const TRANSLATIONS_DIR = path.join(__dirname, 'translation-files');
 
 // Get page name from command line argument, default to 'home'
 const pageName = process.argv[2] || 'home';
+
+console.log(`🌐 File Service URL: ${FILE_SERVICE_URL}`);
 
 async function uploadTranslationFile(filename, language, pageName) {
   const filePath = path.join(TRANSLATIONS_DIR, filename);
@@ -63,7 +66,7 @@ async function uploadTranslationFile(filename, language, pageName) {
 async function main() {
   console.log('🚀 Starting translation file upload...\n');
   console.log(`📄 Page: ${pageName}`);
-  console.log('Make sure the file service is running on http://localhost:8082\n');
+  console.log(`🌐 File Service: ${FILE_SERVICE_URL}\n`);
 
   const results = [];
 
