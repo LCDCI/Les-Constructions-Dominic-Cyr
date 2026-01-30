@@ -22,13 +22,16 @@ export default function ProtectedRoute({ allowedRoles, element }) {
     );
   }
 
-  if (
-    allowedRoles &&
-    allowedRoles.length > 0 &&
-    role &&
-    !allowedRoles.includes(role)
-  ) {
-    return <Navigate to="/unauthorized" replace />;
+  // If allowedRoles is specified, we need a valid role to proceed
+  if (allowedRoles && allowedRoles.length > 0) {
+    // If role is not loaded/found, redirect to unauthorized
+    if (!role) {
+      return <Navigate to="/unauthorized" replace />;
+    }
+    // If role doesn't match allowed roles, redirect to unauthorized
+    if (!allowedRoles.includes(role)) {
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
 
   return element;
