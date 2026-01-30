@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useNavigate } from 'react-router-dom';
 import '../../styles/Project/projects.css';
 import '../../styles/Project/create-project.css';
 import '../../styles/Project/edit-project.css';
@@ -8,12 +9,14 @@ import CreateProjectForm from '../../features/projects/components/CreateProjectF
 import EditProjectForm from '../../features/projects/components/EditProjectForm';
 import useBackendUser from '../../hooks/useBackendUser';
 import { canCreateProjects, canEditProjects } from '../../utils/permissions';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const ProjectsPage = () => {
+  const { t } = usePageTranslations('projects');
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ACTIVE'); // ACTIVE | ARCHIVED | ALL
+  const [statusFilter] = useState('ACTIVE'); // ACTIVE | ARCHIVED | ALL
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -27,7 +30,7 @@ const ProjectsPage = () => {
 
   const { role } = useBackendUser();
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
-  const canCreate = canCreateProjects(role);
+  // const canCreate = canCreateProjects(role); // Removed unused variable
   const canEdit = canEditProjects(role);
 
   const filterMenuContainerRef = useRef(null);
@@ -40,6 +43,17 @@ const ProjectsPage = () => {
       : `${window.location.origin}/files`);
   // Use relative path to leverage Vite proxy
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+
+  const navigate = useNavigate();
+
+  // Helper for error redirection
+  const redirectToError = (status = 500) => {
+    if (status === 404) {
+      navigate('/404', { replace: true });
+    } else {
+      navigate('/error', { replace: true });
+    }
+  };
 
   useEffect(() => {
     fetchProjects();
@@ -87,10 +101,7 @@ const ProjectsPage = () => {
           });
           headers.Authorization = `Bearer ${token}`;
         } catch (tokenError) {
-          console.warn(
-            'Could not get access token, proceeding without authentication:',
-            tokenError
-          );
+          // Could not get access token, proceeding without authentication
         }
       }
 
@@ -156,11 +167,11 @@ const ProjectsPage = () => {
 
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching projects:', error);
-      setError(error.message || 'Failed to load projects. Please try again.');
-      setProjects([]);
-      setFilteredProjects([]);
-      setLoading(false);
+      if (error?.response?.status === 404) {
+        redirectToError(404);
+      } else {
+        redirectToError();
+      }
     }
   };
 
@@ -180,9 +191,7 @@ const ProjectsPage = () => {
     return `${filesServiceUrl}/files/${imageIdentifier}`;
   };
 
-  const handleViewProject = projectIdentifier => {
-    window.location.href = `/projects/${projectIdentifier}/metadata`;
-  };
+  // Removed unused handleViewProject
 
   const handleEditProject = project => {
     setProjectToEdit(project);
@@ -196,38 +205,7 @@ const ProjectsPage = () => {
     fetchProjects();
   };
 
-  const handleArchiveProject = async project => {
-    if (!project || project.status === 'ARCHIVED') return;
-    const confirm = window.confirm(
-      `Archive "${project.projectName}"? You can still view archived projects from the filter.`
-    );
-    if (!confirm) return;
-
-    try {
-      const headersToken = isAuthenticated
-        ? await getAccessTokenSilently({
-            authorizationParams: {
-              audience:
-                import.meta.env.VITE_AUTH0_AUDIENCE ||
-                'https://construction-api.loca',
-            },
-          }).catch(() => null)
-        : null;
-
-      await (
-        await import('../../features/projects/api/projectApi')
-      ).projectApi.updateProject(
-        project.projectIdentifier,
-        { status: 'ARCHIVED' },
-        headersToken || null
-      );
-
-      await fetchProjects();
-    } catch (e) {
-      console.error('Failed to archive project:', e);
-      setError(e.message || 'Failed to archive project.');
-    }
-  };
+  // Removed unused handleArchiveProject
 
   const handleEditCancel = () => {
     setIsEditOpen(false);
@@ -287,143 +265,53 @@ const ProjectsPage = () => {
   };
 
   return (
-    <div className="admin-projects-page">
-      <div className="admin-projects-content">
-        <div className="admin-projects-container">
-          <div className="admin-projects-header">
-            <h1>Projects</h1>
-            {canCreate && (
-              <button
-                className="admin-create-project-button"
-                onClick={() => setIsCreateOpen(true)}
-              >
-                Create New Project
-              </button>
-            )}
-          </div>
-
-          <div className="admin-projects-filter">
-            <div className="admin-search-container">
-              <input
-                type="text"
-                className="admin-search-input"
-                placeholder="Search projects by name..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-              />
-            </div>
-            {role === 'OWNER' && (
-              <div
-                ref={filterMenuContainerRef}
-                style={{ position: 'relative', marginLeft: '20px' }}
-              >
-                <button
-                  aria-haspopup="menu"
-                  aria-expanded={isFilterMenuOpen}
-                  className="filter-trigger"
-                  onClick={() => setIsFilterMenuOpen(prev => !prev)}
-                  title="Filter projects"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                  }}
-                >
-                  <span
-                    className="filter-icon"
-                    aria-hidden="true"
-                    style={{ display: 'inline-block', lineHeight: 1 }}
-                  >
-                    <span
-                      style={{
-                        display: 'block',
-                        width: '18px',
-                        height: '2px',
-                        background: 'currentColor',
-                        marginBottom: '3px',
-                      }}
-                    ></span>
-                    <span
-                      style={{
-                        display: 'block',
-                        width: '18px',
-                        height: '2px',
-                        background: 'currentColor',
-                        marginBottom: '3px',
-                      }}
-                    ></span>
-                    <span
-                      style={{
-                        display: 'block',
-                        width: '18px',
-                        height: '2px',
-                        background: 'currentColor',
-                      }}
-                    ></span>
-                  </span>
-                  Filters
-                </button>
-
-                {isFilterMenuOpen && (
-                  <div
-                    role="menu"
-                    aria-label="Project filters"
-                    className="filter-menu"
-                    style={{
-                      position: 'absolute',
-                      top: 'calc(100% + 8px)',
-                      left: 0,
-                      minWidth: '200px',
-                    }}
-                  >
-                    <button
-                      role="menuitemradio"
-                      aria-checked={statusFilter === 'ACTIVE'}
-                      className={`filter-option ${statusFilter === 'ACTIVE' ? 'active' : ''}`}
-                      onClick={() => {
-                        setStatusFilter('ACTIVE');
-                        setSearchTerm('');
-                        setIsFilterMenuOpen(false);
-                      }}
-                    >
-                      Active projects
-                    </button>
-                    <button
-                      role="menuitemradio"
-                      aria-checked={statusFilter === 'ALL'}
-                      className={`filter-option ${statusFilter === 'ALL' ? 'active' : ''}`}
-                      onClick={() => {
-                        setStatusFilter('ALL');
-                        setSearchTerm('');
-                        setIsFilterMenuOpen(false);
-                      }}
-                    >
-                      All projects
-                    </button>
-                    <button
-                      role="menuitemradio"
-                      aria-checked={statusFilter === 'ARCHIVED'}
-                      className={`filter-option ${statusFilter === 'ARCHIVED' ? 'active' : ''}`}
-                      onClick={() => {
-                        setStatusFilter('ARCHIVED');
-                        setSearchTerm('');
-                        setIsFilterMenuOpen(false);
-                      }}
-                    >
-                      Archive projects
-                    </button>
-                  </div>
+    <div className="admin-projects-page projects-page">
+      <section className="projects-hero">
+        <div className="projects-hero-content">
+          <span className="section-kicker">{t('hero.kicker', 'Projects')}</span>
+          <h1 className="projects-title">
+            {role === 'OWNER'
+              ? t('hero.titleOwner', 'Manage Projects')
+              : t('hero.title', 'Our Projects')}
+          </h1>
+          <p className="projects-subtitle">
+            {role === 'OWNER'
+              ? t(
+                  'hero.subtitleOwner',
+                  'View, create, and manage your construction projects.'
+                )
+              : t(
+                  'hero.subtitle',
+                  'Explore our portfolio of residential projects showcasing quality construction and innovative design.'
                 )}
-              </div>
-            )}
+          </p>
+        </div>
+      </section>
+      <div className="projects-search-container">
+        <div className="container">
+          <div className="search-box">
+            <input
+              type="text"
+              className="search-input admin-search-input"
+              placeholder={t(
+                'search.placeholder',
+                'Search projects by name...'
+              )}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+            />
           </div>
-
+        </div>
+      </div>
+      <section className="portfolio-section">
+        <div className="container">
           {loading && (
-            <div className="admin-projects-loading">
-              <p>Loading projects...</p>
+            <div className="projects-page loading-state">
+              <div className="page-loader">
+                <div className="loader-spinner"></div>
+              </div>
             </div>
           )}
-
           {error && (
             <div className="admin-projects-error">
               <p>{error}</p>
@@ -432,272 +320,250 @@ const ProjectsPage = () => {
               </button>
             </div>
           )}
-
           {!loading && !error && (
-            <div className="admin-projects-grid">
+            <div className="portfolio-grid">
               {filteredProjects.length > 0 ? (
                 filteredProjects.map(project => (
                   <div
                     key={project.projectIdentifier}
-                    className={`admin-project-card ${project.status === 'ARCHIVED' ? 'project-card-archived' : ''}`}
+                    className={`portfolio-card${project.status === 'ARCHIVED' ? ' project-card-archived' : ''} project-hover-card`}
+                    data-animate
                   >
-                    {project.status === 'ARCHIVED' && (
-                      <div className="archived-badge">ARCHIVED</div>
-                    )}
-                    <div className="admin-project-image-container">
-                      <img
-                        src={getImageUrl(project.imageIdentifier)}
-                        alt={project.projectName}
-                        className="admin-project-image"
-                      />
-                    </div>
-                    <h2 className="admin-project-title">
-                      {project.projectName}
-                    </h2>
-                    <p className="admin-project-description">
-                      {project.projectDescription}
-                    </p>
-                    <div className="admin-project-actions">
-                      <a
-                        href={`/projects/${project.projectIdentifier}/metadata`}
-                        className="admin-project-button"
-                      >
-                        View this project
-                      </a>
-                      {canEdit && (
-                        <>
-                          <button
-                            onClick={() => handleEditProject(project)}
-                            className="admin-project-button admin-edit-button"
-                          >
-                            Edit
-                          </button>
+                    <img
+                      src={getImageUrl(project.imageIdentifier)}
+                      alt={project.projectName}
+                      loading="lazy"
+                      className="card-image-bg project-hover-image"
+                    />
+                    <div className="card-overlay project-hover-overlay" />
+                    <div className="card-content project-hover-content">
+                      <h2 className="card-title">{project.projectName}</h2>
+                      {role === 'OWNER' && (
+                        <div className="admin-project-actions">
                           <a
-                            href={`/projects/${project.projectIdentifier}/team-management`}
-                            className="admin-project-button admin-team-button"
+                            href={`/projects/${project.projectIdentifier}/metadata`}
+                            className="admin-project-button"
                           >
-                            Manage Team
+                            {t('buttons.view', 'View this project')}
                           </a>
-                          <a
-                            href={`/projects/${project.projectIdentifier}/manage-lots`}
-                            className="admin-project-button admin-lots-button"
-                            style={{
-                              backgroundColor: '#8B5CF6',
-                              color: 'white',
-                            }}
-                          >
-                            View Project Lots
-                          </a>
-                        </>
-                      )}
-                      {canEdit && project.status !== 'ARCHIVED' && (
-                        <button
-                          onClick={() => openArchiveModal(project)}
-                          className="admin-project-button archive-button"
-                          style={{
-                            backgroundColor: '#DC2626',
-                            color: 'white',
-                          }}
-                        >
-                          Archive
-                        </button>
+                          {canEdit && (
+                            <>
+                              <button
+                                onClick={() => handleEditProject(project)}
+                                className="admin-project-button admin-edit-button"
+                              >
+                                {t('buttons.edit', 'Edit')}
+                              </button>
+                              <a
+                                href={`/projects/${project.projectIdentifier}/team-management`}
+                                className="admin-project-button admin-team-button"
+                              >
+                                {t('buttons.team', 'Manage Team')}
+                              </a>
+                              <a
+                                href={`/projects/${project.projectIdentifier}/manage-lots`}
+                                className="admin-project-button admin-lots-button"
+                              >
+                                {t('buttons.lots', 'View Project Lots')}
+                              </a>
+                            </>
+                          )}
+                          {canEdit && project.status !== 'ARCHIVED' && (
+                            <button
+                              onClick={() => openArchiveModal(project)}
+                              className="admin-project-button archive-button"
+                            >
+                              {t('buttons.archive', 'Archive')}
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="admin-no-results">
-                  <p>No projects found matching &quot;{searchTerm}&quot;</p>
+                <div className="no-results">
+                  <p>
+                    {t(
+                      'noResults',
+                      `No projects found matching "${searchTerm}"`
+                    )}
+                  </p>
                 </div>
               )}
             </div>
           )}
-
-          {!loading &&
-            !error &&
-            filteredProjects.length === 0 &&
-            searchTerm === '' && (
-              <div className="no-projects">
-                <p>No projects available. Create your first project!</p>
-              </div>
-            )}
-
-          {isCreateOpen && (
-            <div
-              style={overlayStyle}
-              role="dialog"
-              aria-modal="true"
-              onClick={e => {
-                if (showConfirmClose) return;
-                if (e.target === e.currentTarget) setShowConfirmClose(true);
-              }}
-            >
-              <div style={modalStyle}>
-                <div className="create-project-header">
-                  <h1>Create New Project</h1>
-                </div>
-                {submitError && (
-                  <div className="error-message">{submitError}</div>
-                )}
-                <CreateProjectForm
-                  onCancel={() => setShowConfirmClose(true)}
-                  onSuccess={projectIdentifier => {
-                    setIsCreateOpen(false);
-                    fetchProjects();
-                  }}
-                  onError={setSubmitError}
-                />
-              </div>
-            </div>
-          )}
-
-          {isCreateOpen && showConfirmClose && (
-            <div style={confirmOverlayStyle} role="dialog" aria-modal="true">
-              <div style={confirmBoxStyle} onClick={e => e.stopPropagation()}>
-                <h2 style={{ marginTop: 0 }}>Leave form?</h2>
-                <p style={{ margin: '0.5rem 0 1rem 0' }}>
-                  If you exit now, any information you’ve entered will be lost.
-                </p>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                  }}
-                >
-                  <button
-                    type="button"
-                    className="btn-cancel"
-                    onClick={() => setShowConfirmClose(false)}
-                  >
-                    Stay on form
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-submit"
-                    onClick={() => {
-                      setShowConfirmClose(false);
-                      setIsCreateOpen(false);
-                      setSubmitError(null);
-                    }}
-                  >
-                    Leave form
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isEditOpen && projectToEdit && (
-            <div
-              style={overlayStyle}
-              role="dialog"
-              aria-modal="true"
-              onClick={e => {
-                if (e.target === e.currentTarget) handleEditCancel();
-              }}
-            >
-              <div style={modalStyle}>
-                {submitError && (
-                  <div className="error-message">{submitError}</div>
-                )}
-                <EditProjectForm
-                  project={projectToEdit}
-                  onCancel={handleEditCancel}
-                  onSuccess={handleEditSuccess}
-                  onError={setSubmitError}
-                />
-              </div>
-            </div>
-          )}
-
-          {isArchiveOpen && projectToArchive && (
-            <div
-              className="confirmation-modal-overlay"
-              role="dialog"
-              aria-modal="true"
-            >
-              <div
-                className="confirmation-modal-content"
-                onClick={e => e.stopPropagation()}
-              >
-                <div className="confirmation-modal-header">
-                  <h2>Archive project</h2>
-                </div>
-                <div className="confirmation-modal-body">
-                  <p>
-                    Are you sure you want to archive “
-                    {projectToArchive.projectName}”? You can still view archived
-                    projects by switching the filter.
-                  </p>
-                </div>
-                <div className="confirmation-modal-footer">
-                  <button
-                    type="button"
-                    className="btn-cancel"
-                    onClick={closeArchiveModal}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-confirm-destructive"
-                    onClick={async () => {
-                      try {
-                        const token = isAuthenticated
-                          ? await getAccessTokenSilently({
-                              authorizationParams: {
-                                audience:
-                                  import.meta.env.VITE_AUTH0_AUDIENCE ||
-                                  'https://construction-api.loca',
-                              },
-                            }).catch(() => null)
-                          : null;
-
-                        await (
-                          await import('../../features/projects/api/projectApi')
-                        ).projectApi.updateProject(
-                          projectToArchive.projectIdentifier,
-                          { status: 'ARCHIVED' },
-                          token || null
-                        );
-
-                        // Optimistic update: if viewing Active, remove it immediately
-                        if (statusFilter === 'ACTIVE') {
-                          setProjects(prev =>
-                            prev.filter(
-                              p =>
-                                p.projectIdentifier !==
-                                projectToArchive.projectIdentifier
-                            )
-                          );
-                          setFilteredProjects(prev =>
-                            prev.filter(
-                              p =>
-                                p.projectIdentifier !==
-                                projectToArchive.projectIdentifier
-                            )
-                          );
-                        }
-
-                        closeArchiveModal();
-                        // Refresh list to reflect backend state for all filters
-                        await fetchProjects();
-                      } catch (e) {
-                        console.error('Failed to archive project:', e);
-                        setError(e.message || 'Failed to archive project.');
-                        closeArchiveModal();
-                      }
-                    }}
-                  >
-                    Archive
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
-      </div>
+      </section>
+      {isCreateOpen && (
+        <div
+          style={overlayStyle}
+          role="dialog"
+          aria-modal="true"
+          onClick={e => {
+            if (showConfirmClose) return;
+            if (e.target === e.currentTarget) setShowConfirmClose(true);
+          }}
+        >
+          <div style={modalStyle}>
+            <div className="create-project-header">
+              <h1>Create New Project</h1>
+            </div>
+            {submitError && <div className="error-message">{submitError}</div>}
+            <CreateProjectForm
+              onCancel={() => setShowConfirmClose(true)}
+              onSuccess={() => {
+                setIsCreateOpen(false);
+                fetchProjects();
+              }}
+              onError={setSubmitError}
+            />
+          </div>
+        </div>
+      )}
+      {isCreateOpen && showConfirmClose && (
+        <div style={confirmOverlayStyle} role="dialog" aria-modal="true">
+          <div style={confirmBoxStyle} onClick={e => e.stopPropagation()}>
+            <h2 style={{ marginTop: 0 }}>Leave form?</h2>
+            <p style={{ margin: '0.5rem 0 1rem 0' }}>
+              If you exit now, any information you’ve entered will be lost.
+            </p>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={() => setShowConfirmClose(false)}
+              >
+                Stay on form
+              </button>
+              <button
+                type="button"
+                className="btn-submit"
+                onClick={() => {
+                  setShowConfirmClose(false);
+                  setIsCreateOpen(false);
+                  setSubmitError(null);
+                }}
+              >
+                Leave form
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {isEditOpen && projectToEdit && (
+        <div
+          style={overlayStyle}
+          role="dialog"
+          aria-modal="true"
+          onClick={e => {
+            if (e.target === e.currentTarget) handleEditCancel();
+          }}
+        >
+          <div style={modalStyle}>
+            {submitError && <div className="error-message">{submitError}</div>}
+            <EditProjectForm
+              project={projectToEdit}
+              onCancel={handleEditCancel}
+              onSuccess={handleEditSuccess}
+              onError={setSubmitError}
+            />
+          </div>
+        </div>
+      )}
+      {isArchiveOpen && projectToArchive && (
+        <div
+          className="confirmation-modal-overlay"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="confirmation-modal-content"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="confirmation-modal-header">
+              <h2>Archive project</h2>
+            </div>
+            <div className="confirmation-modal-body">
+              <p>
+                Are you sure you want to archive “{projectToArchive.projectName}
+                ”? You can still view archived projects by switching the filter.
+              </p>
+            </div>
+            <div className="confirmation-modal-footer">
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={closeArchiveModal}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn-confirm-destructive"
+                onClick={async () => {
+                  try {
+                    const token = isAuthenticated
+                      ? await getAccessTokenSilently({
+                          authorizationParams: {
+                            audience:
+                              import.meta.env.VITE_AUTH0_AUDIENCE ||
+                              'https://construction-api.loca',
+                          },
+                        }).catch(() => null)
+                      : null;
+
+                    await (
+                      await import('../../features/projects/api/projectApi')
+                    ).projectApi.updateProject(
+                      projectToArchive.projectIdentifier,
+                      { status: 'ARCHIVED' },
+                      token || null
+                    );
+
+                    // Optimistic update: if viewing Active, remove it immediately
+                    if (statusFilter === 'ACTIVE') {
+                      setProjects(prev =>
+                        prev.filter(
+                          p =>
+                            p.projectIdentifier !==
+                            projectToArchive.projectIdentifier
+                        )
+                      );
+                      setFilteredProjects(prev =>
+                        prev.filter(
+                          p =>
+                            p.projectIdentifier !==
+                            projectToArchive.projectIdentifier
+                        )
+                      );
+                    }
+
+                    closeArchiveModal();
+                    // Refresh list to reflect backend state for all filters
+                    await fetchProjects();
+                  } catch (e) {
+                    if (e?.response?.status === 404) {
+                      redirectToError(404);
+                    } else {
+                      redirectToError();
+                    }
+                    closeArchiveModal();
+                  }
+                }}
+              >
+                Archive
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
