@@ -62,7 +62,7 @@
   .mobile-actions-dropdown-list {
     background: var(--color-light);
     border-radius: 6px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     margin-top: 0.25rem;
     padding: 0.5rem 0;
     width: 100%;
