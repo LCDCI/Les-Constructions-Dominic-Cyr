@@ -37,7 +37,7 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
     }
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     const date = new Date(dateString);
     const now = new Date();
     const diffInSeconds = Math.floor((now - date) / 1000);
@@ -58,10 +58,10 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
     }
   };
 
-  const getCategoryIcon = (category) => {
+  const getCategoryIcon = category => {
     // Returns appropriate icon component based on notification category
     const iconProps = { size: 24, className: 'category-icon' };
-    
+
     switch (category) {
       case 'TASK_ASSIGNED':
       case 'TASK_COMPLETED':
@@ -100,16 +100,24 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
       className={`notification-item ${notification.isRead ? 'read' : 'unread'}`}
       onClick={handleClick}
     >
-      <div className="notification-icon">{getCategoryIcon(notification.category)}</div>
+      <div className="notification-icon">
+        {getCategoryIcon(notification.category)}
+      </div>
       <div className="notification-content">
         <div className="notification-header">
           <h3 className="notification-title">{notification.title}</h3>
-          {!notification.isRead && <span className="notification-badge">New</span>}
+          {!notification.isRead && (
+            <span className="notification-badge">New</span>
+          )}
         </div>
         <p className="notification-message">{notification.message}</p>
         <div className="notification-footer">
-          <span className="notification-category">{notification.category.replace(/_/g, ' ')}</span>
-          <span className="notification-time">{formatDate(notification.createdAt)}</span>
+          <span className="notification-category">
+            {notification.category.replace(/_/g, ' ')}
+          </span>
+          <span className="notification-time">
+            {formatDate(notification.createdAt)}
+          </span>
         </div>
       </div>
     </div>

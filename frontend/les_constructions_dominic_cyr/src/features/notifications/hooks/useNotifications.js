@@ -56,33 +56,36 @@ export const useNotifications = () => {
     }
   }, [isAuthenticated, getAccessTokenSilently]);
 
-  const markAsRead = useCallback(async (notificationId) => {
-    if (!isAuthenticated) {
-      return;
-    }
+  const markAsRead = useCallback(
+    async notificationId => {
+      if (!isAuthenticated) {
+        return;
+      }
 
-    try {
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        },
-      });
-      await markNotificationAsRead(notificationId, token);
-      // Update local state
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif.notificationId === notificationId
-            ? { ...notif, isRead: true }
-            : notif
-        )
-      );
-      // Update unread count
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (err) {
-      console.error('Error marking notification as read:', err);
-      throw err;
-    }
-  }, [isAuthenticated, getAccessTokenSilently]);
+      try {
+        const token = await getAccessTokenSilently({
+          authorizationParams: {
+            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+          },
+        });
+        await markNotificationAsRead(notificationId, token);
+        // Update local state
+        setNotifications(prev =>
+          prev.map(notif =>
+            notif.notificationId === notificationId
+              ? { ...notif, isRead: true }
+              : notif
+          )
+        );
+        // Update unread count
+        setUnreadCount(prev => Math.max(0, prev - 1));
+      } catch (err) {
+        console.error('Error marking notification as read:', err);
+        throw err;
+      }
+    },
+    [isAuthenticated, getAccessTokenSilently]
+  );
 
   const markAllAsRead = useCallback(async () => {
     if (!isAuthenticated) {
@@ -97,9 +100,7 @@ export const useNotifications = () => {
       });
       await markAllNotificationsAsRead(token);
       // Update local state
-      setNotifications((prev) =>
-        prev.map((notif) => ({ ...notif, isRead: true }))
-      );
+      setNotifications(prev => prev.map(notif => ({ ...notif, isRead: true })));
       setUnreadCount(0);
     } catch (err) {
       console.error('Error marking all notifications as read:', err);

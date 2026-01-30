@@ -33,7 +33,10 @@ export const fetchUnreadNotifications = async (token = null) => {
     const response = await api.get('/notifications/unread', config);
     return response.data;
   } catch (error) {
-    console.error('[NotificationsAPI] Error fetching unread notifications:', error);
+    console.error(
+      '[NotificationsAPI] Error fetching unread notifications:',
+      error
+    );
     throw error;
   }
 };
@@ -71,7 +74,10 @@ export const markNotificationAsRead = async (notificationId, token = null) => {
     }
     await api.put(`/notifications/${notificationId}/read`, {}, config);
   } catch (error) {
-    console.error('[NotificationsAPI] Error marking notification as read:', error);
+    console.error(
+      '[NotificationsAPI] Error marking notification as read:',
+      error
+    );
     throw error;
   }
 };
@@ -89,7 +95,10 @@ export const markAllNotificationsAsRead = async (token = null) => {
     }
     await api.put('/notifications/read-all', {}, config);
   } catch (error) {
-    console.error('[NotificationsAPI] Error marking all notifications as read:', error);
+    console.error(
+      '[NotificationsAPI] Error marking all notifications as read:',
+      error
+    );
     throw error;
   }
 };

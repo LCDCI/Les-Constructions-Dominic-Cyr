@@ -1,14 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoChevronDown } from 'react-icons/go';
 
-const InboxFilterSelect = ({ value, onChange, options, icon: Icon, className = '' }) => {
+const InboxFilterSelect = ({
+  value,
+  onChange,
+  options,
+  icon: Icon,
+  className = '',
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
-  const selectedLabel = options.find((o) => o.value === value)?.label ?? value;
+  const selectedLabel = options.find(o => o.value === value)?.label ?? value;
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = e => {
       if (containerRef.current && !containerRef.current.contains(e.target)) {
         setIsOpen(false);
       }
@@ -17,7 +23,7 @@ const InboxFilterSelect = ({ value, onChange, options, icon: Icon, className = '
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSelect = (option) => {
+  const handleSelect = option => {
     onChange(option.value);
     setIsOpen(false);
   };
@@ -27,7 +33,7 @@ const InboxFilterSelect = ({ value, onChange, options, icon: Icon, className = '
       <button
         type="button"
         className="inbox-filter-select-trigger"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => setIsOpen(prev => !prev)}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label={selectedLabel}
@@ -45,7 +51,7 @@ const InboxFilterSelect = ({ value, onChange, options, icon: Icon, className = '
           role="listbox"
           aria-activedescendant={value}
         >
-          {options.map((option) => (
+          {options.map(option => (
             <button
               key={option.value}
               type="button"
