@@ -40,7 +40,7 @@
 .inbox-title-section {
   display: flex;
   align-items: center;
-  gap: 1%;
+  gap: 1rem;
 }
 
 .inbox-header-actions {
