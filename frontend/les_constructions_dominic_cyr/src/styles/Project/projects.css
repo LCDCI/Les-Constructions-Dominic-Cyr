@@ -263,6 +263,7 @@ body {
   gap: 1rem;
   width: 100%;
   align-items: center;
+  justify-content: center;
 }
 
 .admin-project-button {
@@ -279,11 +280,16 @@ body {
     color 0.2s var(--easing);
   text-decoration: none;
   display: inline-block;
-  margin: 0.25rem 0;
+  margin: 0.25rem auto;
   text-align: center;
   justify-content: center;
   align-items: center;
   display: flex;
+}
+
+/* Mobile combined actions - hidden by default on desktop */
+.mobile-project-actions {
+  display: none;
 }
 
 .admin-edit-button {
@@ -439,6 +445,7 @@ body {
   flex-direction: column;
   align-items: center;
   width: 100%;
+  justify-content: center;
 }
 .project-hover-content .admin-project-button,
 .project-hover-content .admin-edit-button,

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/Project/projects.css';
+import '../../styles/Project/projects.mobile.css';
 import '../../styles/Project/create-project.css';
 import '../../styles/Project/edit-project.css';
 import '../../styles/Modals/ConfirmationModal.css';
@@ -343,61 +344,112 @@ const ProjectsPage = () => {
             <div className="portfolio-grid">
               {filteredProjects.length > 0 ? (
                 filteredProjects.map(project => (
-                  <div
-                    key={project.projectIdentifier}
-                    className={`portfolio-card${project.status === 'ARCHIVED' ? ' project-card-archived' : ''} project-hover-card`}
-                    data-animate
-                  >
-                    <img
-                      src={getImageUrl(project.imageIdentifier)}
-                      alt={project.projectName}
-                      loading="lazy"
-                      className="card-image-bg project-hover-image"
-                    />
-                    <div className="card-overlay project-hover-overlay" />
-                    <div className="card-content project-hover-content">
-                      <h2 className="card-title">{project.projectName}</h2>
-                      {role === 'OWNER' && (
-                        <div className="admin-project-actions">
-                          <a
-                            href={`/projects/${project.projectIdentifier}/metadata`}
-                            className="admin-project-button"
-                          >
-                            {t('buttons.view', 'View this project')}
-                          </a>
-                          {canEdit && (
-                            <>
-                              <button
-                                onClick={() => handleEditProject(project)}
-                                className="admin-project-button admin-edit-button"
-                              >
-                                {t('buttons.edit', 'Edit')}
-                              </button>
-                              <a
-                                href={`/projects/${project.projectIdentifier}/team-management`}
-                                className="admin-project-button admin-team-button"
-                              >
-                                {t('buttons.team', 'Manage Team')}
-                              </a>
-                              <a
-                                href={`/projects/${project.projectIdentifier}/manage-lots`}
-                                className="admin-project-button admin-lots-button"
-                              >
-                                {t('buttons.lots', 'View Project Lots')}
-                              </a>
-                            </>
-                          )}
-                          {canEdit && project.status !== 'ARCHIVED' && (
-                            <button
-                              onClick={() => openArchiveModal(project)}
-                              className="admin-project-button archive-button"
+                  <div className="project-item" key={project.projectIdentifier}>
+                    <div
+                      className={`portfolio-card${project.status === 'ARCHIVED' ? ' project-card-archived' : ''} project-hover-card`}
+                      data-animate
+                    >
+                      <img
+                        src={getImageUrl(project.imageIdentifier)}
+                        alt={project.projectName}
+                        loading="lazy"
+                        className="card-image-bg project-hover-image"
+                      />
+                      <div className="card-overlay project-hover-overlay" />
+                      <div className="card-content project-hover-content">
+                        <h2 className="card-title">{project.projectName}</h2>
+                        {role === 'OWNER' && (
+                          <div className="admin-project-actions">
+                            <a
+                              href={`/projects/${project.projectIdentifier}/metadata`}
+                              className="admin-project-button"
                             >
-                              {t('buttons.archive', 'Archive')}
-                            </button>
-                          )}
-                        </div>
-                      )}
+                              {t('buttons.view', 'View this project')}
+                            </a>
+                            {canEdit && (
+                              <>
+                                <button
+                                  onClick={() => handleEditProject(project)}
+                                  className="admin-project-button admin-edit-button"
+                                >
+                                  {t('buttons.edit', 'Edit')}
+                                </button>
+                                <a
+                                  href={`/projects/${project.projectIdentifier}/team-management`}
+                                  className="admin-project-button admin-team-button"
+                                >
+                                  {t('buttons.team', 'Manage Team')}
+                                </a>
+                                <a
+                                  href={`/projects/${project.projectIdentifier}/manage-lots`}
+                                  className="admin-project-button admin-lots-button"
+                                >
+                                  {t('buttons.lots', 'View Project Lots')}
+                                </a>
+                              </>
+                            )}
+                            {canEdit && project.status !== 'ARCHIVED' && (
+                              <button
+                                onClick={() => openArchiveModal(project)}
+                                className="admin-project-button archive-button"
+                              >
+                                {t('buttons.archive', 'Archive')}
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
+                    {role === 'OWNER' && (
+                      <div
+                        className="mobile-project-actions"
+                        aria-hidden={false}
+                      >
+                        <details className="mobile-actions-dropdown">
+                          <summary className="mobile-actions-btn admin-project-button">
+                            {t('buttons.actions', 'Actions')}
+                          </summary>
+                          <div className="mobile-actions-dropdown-list">
+                            <a
+                              href={`/projects/${project.projectIdentifier}/metadata`}
+                              className="admin-project-button"
+                            >
+                              {t('buttons.view', 'View this project')}
+                            </a>
+                            {canEdit && (
+                              <>
+                                <button
+                                  onClick={() => handleEditProject(project)}
+                                  className="admin-project-button admin-edit-button"
+                                >
+                                  {t('buttons.edit', 'Edit')}
+                                </button>
+                                <a
+                                  href={`/projects/${project.projectIdentifier}/team-management`}
+                                  className="admin-project-button admin-team-button"
+                                >
+                                  {t('buttons.team', 'Manage Team')}
+                                </a>
+                                <a
+                                  href={`/projects/${project.projectIdentifier}/manage-lots`}
+                                  className="admin-project-button admin-lots-button"
+                                >
+                                  {t('buttons.lots', 'View Project Lots')}
+                                </a>
+                              </>
+                            )}
+                            {canEdit && project.status !== 'ARCHIVED' && (
+                              <button
+                                onClick={() => openArchiveModal(project)}
+                                className="admin-project-button archive-button"
+                              >
+                                {t('buttons.archive', 'Archive')}
+                              </button>
+                            )}
+                          </div>
+                        </details>
+                      </div>
+                    )}
                   </div>
                 ))
               ) : (
