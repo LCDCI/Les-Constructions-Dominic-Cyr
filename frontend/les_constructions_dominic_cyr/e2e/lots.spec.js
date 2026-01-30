@@ -143,7 +143,7 @@ test.describe('Project Lots Page', () => {
         location: '123 Test Street',
         dimensions: '5000',
         price: 250000,
-        status: 'AVAILABLE'
+        status: 'AVAILABLE',
       };
 
       await lotsPage.fillLotForm(testLotData);
@@ -151,8 +151,12 @@ test.describe('Project Lots Page', () => {
       // Verify fields are filled
       await expect(lotsPage.lotNumberInput).toHaveValue(testLotData.lotNumber);
       await expect(lotsPage.lotLocationInput).toHaveValue(testLotData.location);
-      await expect(lotsPage.lotDimensionsInput).toHaveValue(testLotData.dimensions);
-      await expect(lotsPage.lotPriceInput).toHaveValue(testLotData.price.toString());
+      await expect(lotsPage.lotDimensionsInput).toHaveValue(
+        testLotData.dimensions
+      );
+      await expect(lotsPage.lotPriceInput).toHaveValue(
+        testLotData.price.toString()
+      );
     }
   });
 
@@ -174,7 +178,9 @@ test.describe('Project Lots Page', () => {
     if (buttonCount > 0) {
       await lotsPage.clickCreateLot();
 
-      const options = await lotsPage.lotStatusSelect.locator('option').allTextContents();
+      const options = await lotsPage.lotStatusSelect
+        .locator('option')
+        .allTextContents();
       expect(options.length).toBeGreaterThan(0);
 
       // Common lot statuses should be available
@@ -204,7 +210,7 @@ test.describe('Lot Creation - Form Validation', () => {
       await lotsPage.fillLotForm({
         location: '123 Test Street',
         dimensions: '5000',
-        price: 250000
+        price: 250000,
       });
 
       await lotsPage.submitLotButton.click();
@@ -227,7 +233,7 @@ test.describe('Lot Creation - Form Validation', () => {
       await lotsPage.fillLotForm({
         lotNumber: `TEST-${Date.now()}`,
         dimensions: '5000',
-        price: 250000
+        price: 250000,
       });
 
       await lotsPage.submitLotButton.click();
@@ -249,7 +255,7 @@ test.describe('Lot Creation - Form Validation', () => {
         lotNumber: `TEST-${Date.now()}`,
         location: '123 Test Street',
         dimensions: '5000',
-        price: -1000 // Invalid negative price
+        price: -1000, // Invalid negative price
       });
 
       await lotsPage.submitLotButton.click();
@@ -270,7 +276,7 @@ test.describe('Lot Creation - Form Validation', () => {
       await lotsPage.fillLotForm({
         lotNumber: `TEST-${Date.now()}`,
         location: '123 Test Street',
-        price: 250000
+        price: 250000,
         // dimensions omitted
       });
 
@@ -331,4 +337,3 @@ test.describe('Lot Search and Filter', () => {
     }
   });
 });
-
