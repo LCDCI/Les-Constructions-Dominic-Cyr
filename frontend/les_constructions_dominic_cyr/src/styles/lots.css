@@ -1,26 +1,56 @@
+/* ========== LOTS PAGE BASE ========== */
+
 .lots-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f8fafc;
+  background-color: var(--color-white);
+  font-family: var(--font-body);
 }
 
 .lots-content {
   flex: 1;
   width: 100%;
-  padding: 60px 0;
+  /* Zero top padding ensures the dynamic header hugs the top */
+  padding: 0 0 var(--spacing-xl) 0;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Master alignment for Header, Toolbar, and List */
-.lots-header-section,
-.toolbar-section,
-.list-section {
-  width: 90vw;
-  max-width: 1600px;
-  margin-bottom: 20px;
+/* ========== THEMED HEADER SECTION ========== */
+
+.lots-header-section {
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+  /* Background color is now provided by React inline style */
+  padding: var(--spacing-xl) var(--spacing-md);
+  transition: background-color 0.4s ease;
+}
+
+.lots-header-section h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  line-height: 1.2;
+  /* Color is now provided by React inline style */
+  margin: 0;
+  position: relative;
+  padding-bottom: var(--spacing-sm);
+  display: inline-block;
+}
+
+/* Dynamic Underline (Replaced ::after to allow JS color injection) */
+.header-underline {
+  position: absolute;
+  bottom: 0;
+  left: 25%;
+  width: 50%;
+  height: 2px;
+  /* Color is provided by React inline style */
+  transition: background-color 0.4s ease;
 }
 
 /* Header content layout */
@@ -81,6 +111,9 @@
 
 /* Toolbar Layout */
 .toolbar-section {
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin-bottom: var(--spacing-md);
   display: flex;
   gap: 15px;
   align-items: center;
@@ -88,16 +121,24 @@
 }
 
 .search-box {
-  flex: 1; /* Search takes remaining space */
+  flex: 1;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.8rem 1.2rem;
-  font-size: 1rem;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  box-sizing: border-box;
+  padding: 1rem 1.2rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  border: 1px solid var(--color-light);
+  border-radius: 0;
+  background-color: var(--color-white);
+  color: var(--color-text);
+  transition: border-color 0.3s var(--easing);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
 }
 
 .filter-group {
@@ -106,22 +147,126 @@
 }
 
 .filter-select {
-  padding: 0.8rem 1rem;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  background-color: white;
-  font-size: 0.9rem;
-  color: #334155;
+  padding: 1rem 1.2rem;
+  border-radius: 0;
+  border: 1px solid var(--color-light);
+  background-color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary);
   cursor: pointer;
-  min-width: 150px;
+  min-width: 160px;
+  transition: all 0.3s var(--easing);
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  ring: 2px rgba(59, 130, 246, 0.2);
+.filter-select:hover {
+  background-color: var(--color-light);
+  border-color: var(--color-secondary);
+}
+
+/* ========== MAP SECTION ========== */
+
+.lots-image-section {
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin-bottom: var(--spacing-xl);
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center;
+  background-color: var(--color-white);
+  border: 1px solid var(--color-tertiary);
+  padding: var(--spacing-lg);
+  box-sizing: border-box;
+}
+
+.map-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 35%;
+  min-width: 320px;
+}
+
+.phase-map-image {
+  display: block;
+  width: 100% !important;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* Map Pins & Legend Colors */
+.status-available {
+  background-color: #4ade80 !important;
+}
+.status-sold {
+  background-color: #f87171 !important;
+}
+.status-reserved {
+  background-color: #fbbf24 !important;
+}
+
+.status-available {
+  animation: mapPulse 2s infinite;
+}
+
+@keyframes mapPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+.lots-hero-text {
+  text-align: center;
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exclusive-tag {
+  font-family: var(--font-body); /* Sans-serif */
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.25em; /* Spaced out for luxury feel */
+  color: var(--color-primary);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.peace-tag {
+  font-family: var(--font-heading); /* Georgia/Serif */
+  font-size: 1.8rem;
+  font-style: italic;
+  color: var(--color-text);
+  margin: 0;
+  opacity: 0.85;
 }
 
 .list-section {
-  margin-top: 10px;
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin-top: var(--spacing-sm);
+}
+
+/* Mobile responsive */
+@media (max-width: 767px) {
+  .lots-image-section {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .toolbar-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

@@ -83,9 +83,9 @@ services:
       - 9005:80
     networks:
       - app-network
-
   #######################################################################
   # FILES-SERVICE (Go + Gin + Postgres + S3-compatible storage)
+  # Supports both local MinIO and DigitalOcean Spaces
   #######################################################################
   files-service:
     build:
@@ -93,9 +93,10 @@ services:
       dockerfile: Dockerfile
     container_name: files-service
     ports:
-      - "8082:8080"
+      - "8082:8080"   # external 8082 -> internal 8080
     environment:
-      DB_URL: "${FILES_DB_URL}"
+      DB_URL: "${FILES_DB_URL:-postgresql://files-db:5432/files_db?sslmode=disable}"
+      # S3-compatible storage configuration (works with MinIO or DigitalOcean Spaces)
       MINIO_ENDPOINT: "${SPACES_ENDPOINT:-minio:9000}"
       MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY:-${MINIO_ROOT_USER}}"
       MINIO_SECRET_KEY: "${SPACES_SECRET_KEY:-${MINIO_ROOT_PASSWORD}}"
@@ -139,7 +140,9 @@ services:
       - app-network
 
   #######################################################################
-  # MINIO (S3-compatible object storage)
+  # MINIO (S3-compatible object storage) - LOCAL DEVELOPMENT ONLY
+  # Use 'docker compose --profile local-minio up' to start with MinIO
+  # For production, use DigitalOcean Spaces with SPACES_* env vars
   #######################################################################
   minio:
     profiles:
@@ -151,10 +154,11 @@ services:
       MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
     command: server /data --console-address ":9001"
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # MinIO dashboard
     volumes:
       - ./data/minio:/data
+      #- "${ONEDRIVE_MINIO_PATH}:/data"
     networks:
       - app-network
 
