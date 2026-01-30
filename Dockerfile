@@ -89,6 +89,10 @@ WORKDIR /app
 # Copy backend JAR
 COPY --from=backend-build /app/build/libs/les_constructions_dominic_cyr-0.0.1-SNAPSHOT.jar /app/app.jar
 
+# wait-for-it.sh for docker-compose (backend waits for postgres)
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /app/wait-for-it.sh
+RUN chmod +x /app/wait-for-it.sh
+
 # Copy files-service binary and migrations
 COPY --from=files-service-build /files-service/file-service /app/file-service
 COPY --from=files-service-build /files-service/migrations /app/migrations

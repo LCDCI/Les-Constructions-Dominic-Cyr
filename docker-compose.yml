@@ -1,5 +1,10 @@
-services:
+# Combined docker-compose: supports full local stack (postgres, pgadmin, mailer, minio)
+# and production-style (managed DB via env; mailer/files optional).
+# Default: all services. For managed DB only, set SPRING_DATASOURCE_* and use
+# docker-compose.override.yml to override backend command to: ["java", "-jar", "app.jar"]
+version: "3.9"
 
+services:
   #######################################################################
   # BACKEND (Spring Boot)
   #######################################################################
@@ -14,25 +19,31 @@ services:
     environment:
       FILES_SERVICE_BASE_URL: "http://files-service:8080"
       MAILER_SERVICE_BASE_URL: "http://mailer-service:8080"
-      FILE_SERVICE_URL: "${FILE_SERVICE_URL}"
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres1/cdc-db"
-      SPRING_DATASOURCE_USERNAME: "user"
-      SPRING_DATASOURCE_PASSWORD: "pwd"
+      FILE_SERVICE_URL: "${FILE_SERVICE_URL:-}"
+      # Database: use env for managed DB, or defaults for local postgres1
+      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres1/cdc-db}"
+      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME:-user}"
+      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD:-pwd}"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
       SPRING_PROFILES_ACTIVE: "docker"
       SERVER_TOMCAT_RELAXED_PATH_CHARS: "|,%,[,]"
       SERVER_TOMCAT_RELAXED_QUERY_CHARS: "|,%,[,]"
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "https://${AUTH0_DOMAIN}/"
-      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
-      AUTH0_MGMT_CLIENT_ID: ${AUTH0_MGMT_CLIENT_ID}
-      AUTH0_MGMT_CLIENT_SECRET: ${AUTH0_MGMT_CLIENT_SECRET}
-      AUTH0_DB_CONNECTION: ${AUTH0_DB_CONNECTION}
-      AUTH0_ROLE_CONTRACTOR: ${AUTH0_ROLE_CONTRACTOR}
-      AUTH0_ROLE_CUSTOMER: ${AUTH0_ROLE_CUSTOMER}
-      AUTH0_ROLE_SALESPERSON: ${AUTH0_ROLE_SALESPERSON}
-      AUTH0_ROLE_OWNER: ${AUTH0_ROLE_OWNER}
-      APP_INVITE_RESULT_URL: ${APP_INVITE_RESULT_URL}
-
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE:-}"
+      AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
+      AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
+      AUTH0_DB_CONNECTION: "${AUTH0_DB_CONNECTION}"
+      AUTH0_ROLE_CONTRACTOR: "${AUTH0_ROLE_CONTRACTOR}"
+      AUTH0_ROLE_CUSTOMER: "${AUTH0_ROLE_CUSTOMER}"
+      AUTH0_ROLE_SALESPERSON: "${AUTH0_ROLE_SALESPERSON}"
+      AUTH0_ROLE_OWNER: "${AUTH0_ROLE_OWNER}"
+      APP_INVITE_RESULT_URL: "${APP_INVITE_RESULT_URL}"
+      # Google Analytics (server side)
+      GOOGLE_ANALYTICS_PROPERTY_ID: "${GA_PROPERTY_ID:-}"
+      GOOGLE_ANALYTICS_CREDENTIALS_PATH: "/app/config/google-analytics-credentials.json"
+    volumes:
+      - ${GA_CREDENTIALS_PATH}:/app/config/google-analytics-credentials.json:ro
     depends_on:
       files-service:
         condition: service_started
@@ -51,7 +62,11 @@ services:
       context: ./frontend/les_constructions_dominic_cyr
       dockerfile: Dockerfile
       args:
-        - VITE_API_BASE=/api/v1
+        - VITE_API_BASE=${VITE_API_BASE:-/api/v1}
+        - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN:-${AUTH0_DOMAIN}}
+        - VITE_AUTH0_CLIENT_ID=${VITE_AUTH0_CLIENT_ID:-${AUTH0_CLIENT_ID}}
+        - VITE_AUTH0_AUDIENCE=${VITE_AUTH0_AUDIENCE:-${AUTH0_AUDIENCE}}
+        - VITE_FILES_SERVICE_URL=${VITE_FILES_SERVICE_URL:-/files}
     container_name: lcdci-frontend
     ports:
       - "3000:80"
@@ -59,8 +74,9 @@ services:
       - backend
     networks:
       - app-network
+
   #######################################################################
-  # POSTGRES (database)
+  # POSTGRES (main app database - local dev)
   #######################################################################
   postgres1:
     image: postgres:16
@@ -96,6 +112,7 @@ services:
       - postgres1
     networks:
       - app-network
+
   #######################################################################
   # MAILER-SERVICE (Go + Gin + SMTP)
   #######################################################################
@@ -105,16 +122,14 @@ services:
       dockerfile: Dockerfile
     container_name: mailer-service
     ports:
-      - "8083:8080"   # external 8083 -> internal 8080
+      - "8083:8080"
     env_file:
       - .env
       - mailer.env
     environment:
-      BREVO_API_KEY: "${BREVO_API_KEY}"  # Brevo API v3 key (from .env or mailer.env)
-      BREVO_FROM_EMAIL: "${BREVO_FROM_EMAIL:-noreply@constructions-dominiccyr.com}"  # Sender email address (from .env or mailer.env)
-      MAILER_PORT: "8080"  # Internal port (matches Dockerfile EXPOSE)
-    # Note: Healthcheck removed because scratch base image has no shell/tools
-    # Service will be considered healthy once it starts listening on port 8080
+      BREVO_API_KEY: "${BREVO_API_KEY}"
+      BREVO_FROM_EMAIL: "${BREVO_FROM_EMAIL:-noreply@constructions-dominiccyr.com}"
+      MAILER_PORT: "8080"
     networks:
       - app-network
 
@@ -128,10 +143,9 @@ services:
       dockerfile: Dockerfile
     container_name: files-service
     ports:
-      - "8082:8080"   # external 8082 -> internal 8080
+      - "8082:8080"
     environment:
-      DB_URL: "${FILES_DB_URL}"
-      # S3-compatible storage configuration (works with MinIO or DigitalOcean Spaces)
+      DB_URL: "${DB_URL:-${FILES_DB_URL}}"
       MINIO_ENDPOINT: "${SPACES_ENDPOINT:-minio:9000}"
       MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY:-${MINIO_ROOT_USER}}"
       MINIO_SECRET_KEY: "${SPACES_SECRET_KEY:-${MINIO_ROOT_PASSWORD}}"
@@ -148,7 +162,7 @@ services:
       - app-network
 
   #######################################################################
-  # POSTGRES (files database)
+  # POSTGRES (files database - optional, profile: local-db)
   #######################################################################
   files-db:
     profiles:
@@ -175,9 +189,9 @@ services:
       - app-network
 
   #######################################################################
-  # MINIO (S3-compatible object storage) - LOCAL DEVELOPMENT ONLY
-  # Use 'docker compose --profile local-minio up' to start with MinIO
-  # For production, use DigitalOcean Spaces with SPACES_* env vars
+  # MINIO (S3-compatible object storage - optional, profile: local-minio)
+  # Use 'docker compose --profile local-minio up' to start with MinIO.
+  # For production, use DigitalOcean Spaces with SPACES_* env vars.
   #######################################################################
   minio:
     profiles:
@@ -189,11 +203,10 @@ services:
       MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
     command: server /data --console-address ":9001"
     ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # MinIO dashboard
+      - "9000:9000"
+      - "9001:9001"
     volumes:
       - ./data/minio:/data
-      #- "${ONEDRIVE_MINIO_PATH}:/data"
     networks:
       - app-network
 

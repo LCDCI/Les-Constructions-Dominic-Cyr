@@ -1,8 +1,20 @@
 import React, { useState, useMemo } from 'react';
 import { useNotifications } from '../../features/notifications/hooks/useNotifications';
 import NotificationItem from '../../features/notifications/components/NotificationItem';
+import InboxFilterSelect from './InboxFilterSelect';
 import '../../styles/Inbox/InboxPage.css';
 import { GoInbox, GoSearch, GoFilter } from 'react-icons/go';
+
+const FILTER_OPTIONS = [
+  { value: 'all', label: 'All Notifications' },
+  { value: 'unread', label: 'Unread Only' },
+  { value: 'read', label: 'Read Only' },
+];
+
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest First' },
+  { value: 'oldest', label: 'Oldest First' },
+];
 
 const InboxPage = () => {
   const { notifications, loading, error, markAllAsRead, markAsRead } = useNotifications();
@@ -106,27 +118,20 @@ const InboxPage = () => {
 
           <div className="inbox-filters">
             <div className="filter-group">
-              <GoFilter className="filter-icon" />
-              <select
+              <InboxFilterSelect
                 value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="filter-select"
-              >
-                <option value="all">All Notifications</option>
-                <option value="unread">Unread Only</option>
-                <option value="read">Read Only</option>
-              </select>
+                onChange={setFilterType}
+                options={FILTER_OPTIONS}
+                icon={GoFilter}
+              />
             </div>
 
             <div className="filter-group">
-              <select
+              <InboxFilterSelect
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="filter-select"
-              >
-                <option value="newest">Newest First</option>
-                <option value="oldest">Oldest First</option>
-              </select>
+                onChange={setSortBy}
+                options={SORT_OPTIONS}
+              />
             </div>
           </div>
         </div>
