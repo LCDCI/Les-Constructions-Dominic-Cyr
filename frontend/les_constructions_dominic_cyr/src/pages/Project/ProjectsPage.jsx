@@ -6,6 +6,7 @@ import '../../styles/Project/projects.mobile.css';
 import '../../styles/Project/create-project.css';
 import '../../styles/Project/edit-project.css';
 import '../../styles/Modals/ConfirmationModal.css';
+import '../../styles/Public_Facing/residential-projects.css';
 import CreateProjectForm from '../../features/projects/components/CreateProjectForm';
 import EditProjectForm from '../../features/projects/components/EditProjectForm';
 import useBackendUser from '../../hooks/useBackendUser';
@@ -168,6 +169,7 @@ const ProjectsPage = () => {
 
       setLoading(false);
     } catch (error) {
+      console.error('[ProjectsPage] fetchProjects failed', error);
       if (error?.response?.status === 404) {
         redirectToError(404);
       } else {
@@ -177,15 +179,21 @@ const ProjectsPage = () => {
   };
 
   const filterProjects = () => {
-    if (!searchTerm.trim()) {
-      setFilteredProjects(projects);
-      return;
-    }
+    try {
+      if (!searchTerm.trim()) {
+        setFilteredProjects(projects);
+        return;
+      }
 
-    const filtered = projects.filter(project =>
-      project.projectName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredProjects(filtered);
+      const filtered = projects.filter(project => {
+        const name = project?.projectName || '';
+        return name.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      setFilteredProjects(filtered);
+    } catch (err) {
+      console.error('[ProjectsPage] filterProjects error', err);
+      setFilteredProjects([]);
+    }
   };
 
   const getImageUrl = imageIdentifier => {
