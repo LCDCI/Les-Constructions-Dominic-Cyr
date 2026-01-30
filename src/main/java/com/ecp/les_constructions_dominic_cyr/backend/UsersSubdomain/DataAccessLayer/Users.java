@@ -28,6 +28,7 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Column(name = "auth0user_id")
     private String auth0UserId;
 
     @Enumerated(EnumType.STRING)
