@@ -194,18 +194,20 @@ const ProjectMetadata = () => {
                       width: `${metadata.progressPercentage}%`,
                       backgroundColor: metadata.buyerColor,
                     }}
-                  >
-                    {metadata.progressPercentage}%
-                  </div>
+                  ></div>
+                  <span className="progress-text">{metadata.progressPercentage}%</span>
                 </div>
               </div>
             )}
           </div>
-          {metadata.projectDescription && (
-            <div className="project-description">
-              <p>{metadata.projectDescription}</p>
-            </div>
-          )}
+          <div className="schedule-button-container" style={{ marginTop: '20px' }}>
+            <a
+              href={`/projects/${projectId}/schedule`}
+              className="project-metadata-schedule"
+            >
+              View Project Schedule
+            </a>
+          </div>
         </section>
 
         {role === 'OWNER' && lots.length > 0 && (
@@ -237,12 +239,6 @@ const ProjectMetadata = () => {
       </div>
 
       <div className="button-container">
-        <a
-          href={`/projects/${projectId}/schedule`}
-          className="project-metadata-schedule"
-        >
-          View Project Schedule
-        </a>
         <a href={`/projects`} className="project-metadata-back">
           Back to projects
         </a>

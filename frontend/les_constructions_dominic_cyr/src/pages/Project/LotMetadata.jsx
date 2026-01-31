@@ -78,6 +78,21 @@ const LotMetadata = () => {
               <span className="metadata-label">Price</span>
               <span className="metadata-value">{formatPrice(lot.price)}</span>
             </div>
+            {lot.progressPercentage !== null && (
+              <div className="metadata-item full-width">
+                <span className="metadata-label">Progress</span>
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${lot.progressPercentage}%`,
+                      backgroundColor: lot.primaryColor || '#27ae60',
+                    }}
+                  ></div>
+                  <span className="progress-text">{lot.progressPercentage}%</span>
+                </div>
+              </div>
+            )}
           </div>
           {lot.lotDescription && (
             <div className="project-description">

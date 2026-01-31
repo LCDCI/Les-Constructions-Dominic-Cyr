@@ -34,6 +34,8 @@ public class LotResponseModel {
     private String projectIdentifier;
     private String projectName;
 
+    private Integer progressPercentage;
+
     @Data
     @Builder
     @AllArgsConstructor
