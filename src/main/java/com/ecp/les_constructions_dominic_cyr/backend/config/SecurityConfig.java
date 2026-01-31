@@ -168,6 +168,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
 
+                        // Notifications - All authenticated users can access their own notifications
+                        .requestMatchers("/api/v1/notifications/**").authenticated()
+
                         // Task Management - Allow viewing, but only owners can delete via /owners/tasks endpoint
                         .requestMatchers(HttpMethod.GET, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
