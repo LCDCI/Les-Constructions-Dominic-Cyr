@@ -197,6 +197,12 @@ public class LotServiceImpl implements LotService{
             dto.setAssignedUsers(new ArrayList<>());
         }
 
+        // Calculate progress percentage
+        int totalUpcomingWork = 59;
+        int remaining = lot.getRemainingUpcomingWork() != null ? lot.getRemainingUpcomingWork() : totalUpcomingWork;
+        int completed = totalUpcomingWork - remaining;
+        dto.setProgressPercentage((int) Math.round((double) completed / totalUpcomingWork * 100));
+
         return dto;
     }
 

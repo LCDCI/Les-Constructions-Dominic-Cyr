@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Project;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
@@ -63,6 +64,22 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectResponseModel getProjectByIdentifier(String projectIdentifier) {
         Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
+
+        // Calculate progress based on lots
+        List<Lot> lots = lotRepository.findByProject_ProjectIdentifier(projectIdentifier);
+        if (!lots.isEmpty()) {
+            int totalUpcomingWork = 59;
+            int totalCompleted = lots.stream()
+                    .mapToInt(lot -> {
+                        int remaining = lot.getRemainingUpcomingWork() != null ? lot.getRemainingUpcomingWork() : totalUpcomingWork;
+                        return totalUpcomingWork - remaining;
+                    })
+                    .sum();
+            int maxPossible = lots.size() * totalUpcomingWork;
+            int progress = maxPossible > 0 ? (int) Math.round((double) totalCompleted / maxPossible * 100) : 0;
+            project.setProgressPercentage(progress);
+        }
+
         return projectMapper.entityToResponseModel(project);
     }
 
