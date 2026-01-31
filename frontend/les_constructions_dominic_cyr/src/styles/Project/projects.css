@@ -313,27 +313,6 @@ body {
   display: flex;
 }
 
-.admin-team-button {
-  background: var(--color-light) !important;
-  color: var(--color-primary) !important;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1.25rem;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    background 0.2s var(--easing),
-    color 0.2s var(--easing);
-  text-decoration: none;
-  display: inline-block;
-  margin: 0.25rem 0;
-  text-align: center;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-
 .admin-lots-button {
   background: var(--color-light) !important;
   color: var(--color-primary) !important;
@@ -378,7 +357,6 @@ body {
 
 .admin-project-button:hover,
 .admin-edit-button:hover,
-.admin-team-button:hover,
 .admin-lots-button:hover,
 .archive-button:hover {
   background: var(--color-secondary) !important;
@@ -449,7 +427,6 @@ body {
 }
 .project-hover-content .admin-project-button,
 .project-hover-content .admin-edit-button,
-.project-hover-content .admin-team-button,
 .project-hover-content .admin-lots-button,
 .project-hover-content .archive-button {
   min-width: 180px;
@@ -635,7 +612,6 @@ body {
 }
 .project-hover-content .admin-project-button,
 .project-hover-content .admin-edit-button,
-.project-hover-content .admin-team-button,
 .project-hover-content .admin-lots-button,
 .project-hover-content .archive-button {
   min-width: 180px;

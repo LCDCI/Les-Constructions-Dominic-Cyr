@@ -12,7 +12,6 @@
   "buttons": {
     "view": "Voir ce projet",
     "edit": "Modifier",
-    "team": "Gérer l'équipe",
     "lots": "Voir les lots du projet",
     "archive": "Archiver"
   },
