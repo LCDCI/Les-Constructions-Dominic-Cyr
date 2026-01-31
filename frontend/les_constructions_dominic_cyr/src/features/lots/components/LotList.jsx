@@ -79,7 +79,7 @@ export default function LotList({ lots = [], isOwner = false }) {
               {/* Hide ID Cell */}
               {isOwner && (
                 <td className="id-cell" title={l.lotId}>
-                  {l.lotId}
+                  {l.lotNumber || l.lotId}
                 </td>
               )}
 

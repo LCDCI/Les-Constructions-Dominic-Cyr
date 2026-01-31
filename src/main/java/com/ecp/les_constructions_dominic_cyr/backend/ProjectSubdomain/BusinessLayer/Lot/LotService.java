@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Lot;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotResponseModel;
 
@@ -12,4 +13,5 @@ public interface LotService {
     LotResponseModel addLotToProject(String projectIdentifier, LotRequestModel lotRequestModel);
     LotResponseModel updateLot(LotRequestModel lotRequestModel, String lotId);
     void deleteLot(String lotId);
+    List<LotResponseModel> mapLotsToResponses(List<Lot> lots);
 }
