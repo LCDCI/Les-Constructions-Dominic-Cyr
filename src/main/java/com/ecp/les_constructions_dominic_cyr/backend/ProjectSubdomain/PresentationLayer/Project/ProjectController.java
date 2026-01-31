@@ -119,7 +119,60 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectIdentifier}")
-    public ResponseEntity<ProjectResponseModel> getProjectByIdentifier(@PathVariable String projectIdentifier) {
+    public ResponseEntity<ProjectResponseModel> getProjectByIdentifier(
+            @PathVariable String projectIdentifier,
+            @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication
+    ) {
+        // Check if user is authorized to view this project
+        boolean isOwner = isOwner(authentication);
+
+        if (!isOwner && jwt != null && authentication != null) {
+            String auth0UserId = jwt.getSubject();
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+            // Get the user's identifier for filtering
+            UserResponseModel currentUser = null;
+            try {
+                currentUser = userService.getUserByAuth0Id(auth0UserId);
+            } catch (Exception e) {
+                log.warn("Authenticated user not found in database. Auth0 ID: {}", auth0UserId, e);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            final String userIdentifier = currentUser.getUserIdentifier();
+
+            // Check if user has project-level access or lot-level access
+            ProjectResponseModel project = projectService.getProjectByIdentifier(projectIdentifier);
+
+            boolean hasAccess = false;
+
+            // Check project-level assignments
+            if (authorities.contains(ROLE_CUSTOMER)) {
+                hasAccess = userIdentifier.equals(project.getCustomerId());
+            } else if (authorities.contains(ROLE_CONTRACTOR)) {
+                hasAccess = project.getContractorIds() != null && project.getContractorIds().contains(userIdentifier);
+            } else if (authorities.contains(ROLE_SALESPERSON)) {
+                hasAccess = project.getSalespersonIds() != null && project.getSalespersonIds().contains(userIdentifier);
+            }
+
+            // If no project-level access, check lot-level access
+            if (!hasAccess) {
+                try {
+                    UUID userUuid = UUID.fromString(userIdentifier);
+                    var lots = lotRepository.findByAssignedUserId(userUuid);
+                    hasAccess = lots.stream()
+                            .anyMatch(lot -> projectIdentifier.equals(lot.getProject().getProjectIdentifier()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid UUID for user identifier: {}", userIdentifier);
+                }
+            }
+
+            if (!hasAccess) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+
         ProjectResponseModel project = projectService.getProjectByIdentifier(projectIdentifier);
         return ResponseEntity.ok(project);
     }

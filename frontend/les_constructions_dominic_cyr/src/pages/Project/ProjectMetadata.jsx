@@ -208,208 +208,32 @@ const ProjectMetadata = () => {
           )}
         </section>
 
-        {metadata.assignedUsers && (
+        {role === 'OWNER' && lots.length > 0 && (
           <section className="metadata-section">
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '20px',
-                flexWrap: 'wrap',
-                gap: '12px',
-              }}
-            >
-              <h2 style={{ color: metadata.primaryColor, margin: 0 }}>
-                Assigned Team
-              </h2>
-              {/* Manage Team link removed */}
-            </div>
-            <div className="team-grid">
-              {/* Lots list: owners see all; others see only lots they're assigned to */}
-              <div style={{ gridColumn: '1 / -1', marginBottom: '16px' }}>
-                <h3 style={{ marginTop: 0 }}>Project Lots</h3>
-                {lots.length === 0 ? (
-                  <p style={{ color: '#777' }}>No lots available for this project.</p>
-                ) : (
-                  <div style={{ display: 'grid', gap: '8px' }}>
-                    {lots.map(l => {
-                      const assignedToMe = l.assignedUsers?.some(u => u.userId === myId || u.userIdentifier === myId);
-                      if (role !== 'OWNER' && !assignedToMe) return null;
-                      return (
-                        <div key={l.lotId} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', border: '1px solid #eee', borderRadius: 6 }}>
-                          <div>
-                            <div style={{ fontWeight: 600 }}>{l.lotNumber || 'Lot'}</div>
-                            <div style={{ color: '#666' }}>{l.civicAddress || '—'}</div>
-                          </div>
-                          <div>
-                            <a href={`/projects/${projectId}/lots/${l.lotId}/metadata`} style={{ marginRight: 8 }}>
-                              View lot information
-                            </a>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-              {metadata.assignedUsers.contractors &&
-                metadata.assignedUsers.contractors.length > 0 && (
-                  <div
-                    className="team-member"
-                    style={{ borderColor: metadata.tertiaryColor }}
-                  >
-                    <h3>Contractors</h3>
-                    <ul
-                      style={{
-                        listStyle: 'none',
-                        padding: 0,
-                        margin: 0,
-                        display: 'grid',
-                        gap: '10px',
-                      }}
-                    >
-                      {metadata.assignedUsers.contractors.map(contractor => (
-                        <li
-                          key={contractor.userIdentifier}
-                          style={{
-                            borderBottom: '1px solid rgba(0,0,0,0.08)',
-                            paddingBottom: '8px',
-                          }}
-                        >
-                          <p
-                            className="member-name"
-                            style={{ marginBottom: '4px' }}
-                          >
-                            {contractor.firstName} {contractor.lastName}
-                          </p>
-                          <p
-                            className="member-contact"
-                            style={{
-                              marginBottom: contractor.phone ? '2px' : 0,
-                            }}
-                          >
-                            {contractor.primaryEmail}
-                          </p>
-                          {contractor.phone && (
-                            <p
-                              className="member-contact"
-                              style={{ marginBottom: 0 }}
-                            >
-                              {contractor.phone}
-                            </p>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-              {metadata.assignedUsers.salespersons &&
-                metadata.assignedUsers.salespersons.length > 0 && (
-                  <div
-                    className="team-member"
-                    style={{ borderColor: metadata.tertiaryColor }}
-                  >
-                    <h3>Salespersons</h3>
-                    <ul
-                      style={{
-                        listStyle: 'none',
-                        padding: 0,
-                        margin: 0,
-                        display: 'grid',
-                        gap: '10px',
-                      }}
-                    >
-                      {metadata.assignedUsers.salespersons.map(salesperson => (
-                        <li
-                          key={salesperson.userIdentifier}
-                          style={{
-                            borderBottom: '1px solid rgba(0,0,0,0.08)',
-                            paddingBottom: '8px',
-                          }}
-                        >
-                          <p
-                            className="member-name"
-                            style={{ marginBottom: '4px' }}
-                          >
-                            {salesperson.firstName} {salesperson.lastName}
-                          </p>
-                          <p
-                            className="member-contact"
-                            style={{
-                              marginBottom: salesperson.phone ? '2px' : 0,
-                            }}
-                          >
-                            {salesperson.primaryEmail}
-                          </p>
-                          {salesperson.phone && (
-                            <p
-                              className="member-contact"
-                              style={{ marginBottom: 0 }}
-                            >
-                              {salesperson.phone}
-                            </p>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-              {metadata.assignedUsers.customer && (
+            <h2 style={{ color: metadata.primaryColor }}>Project Lots</h2>
+            <div className="lots-grid">
+              {lots.map(lot => (
                 <div
-                  className="team-member"
-                  style={{ borderColor: metadata.tertiaryColor }}
+                  key={lot.lotId}
+                  className="lot-card"
+                  style={{ borderColor: metadata.primaryColor }}
+                  onClick={() => navigate(`/projects/${projectId}/lots/${lot.lotId}/metadata`)}
                 >
-                  <h3>Customer</h3>
-                  <p className="member-name">
-                    {metadata.assignedUsers.customer.firstName}{' '}
-                    {metadata.assignedUsers.customer.lastName}
-                  </p>
-                  <p className="member-contact">
-                    {metadata.assignedUsers.customer.primaryEmail}
-                  </p>
-                  {metadata.assignedUsers.customer.phone && (
-                    <p className="member-contact">
-                      {metadata.assignedUsers.customer.phone}
-                    </p>
+                  <h3>Lot {lot.id}</h3>
+                  {lot.civicAddress && (
+                    <p className="lot-address">{lot.civicAddress}</p>
+                  )}
+                  {lot.lotStatus && (
+                    <span className={`lot-status status-${lot.lotStatus.toLowerCase()}`}>
+                      {lot.lotStatus}
+                    </span>
                   )}
                 </div>
-              )}
-
-              {(!metadata.assignedUsers.contractors ||
-                metadata.assignedUsers.contractors.length === 0) &&
-                (!metadata.assignedUsers.salespersons ||
-                  metadata.assignedUsers.salespersons.length === 0) &&
-                !metadata.assignedUsers.customer && (
-                  <div
-                    style={{
-                      gridColumn: '1 / -1',
-                      textAlign: 'center',
-                      padding: '40px 20px',
-                    }}
-                  >
-                    <p style={{ color: '#999', fontSize: '14px' }}>
-                      No team members assigned yet.
-                    </p>
-                  </div>
-                )}
+              ))}
             </div>
           </section>
         )}
 
-        {metadata.buyerName && (
-          <section className="metadata-section">
-            <h2 style={{ color: metadata.primaryColor }}>Buyer Information</h2>
-            <div
-              className="buyer-info"
-              style={{ backgroundColor: metadata.tertiaryColor }}
-            >
-              <p className="buyer-name">{metadata.buyerName}</p>
-            </div>
-          </section>
-        )}
       </div>
 
       <div className="button-container">

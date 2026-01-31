@@ -6,7 +6,7 @@ export const getProjectMetadata = async (projectIdentifier, token = null) => {
     headers.Authorization = `Bearer ${token}`;
   }
   const response = await apiClient.get(
-    `/projects/${projectIdentifier}/metadata`,
+    `/projects/${projectIdentifier}`,
     {
       headers,
     }
