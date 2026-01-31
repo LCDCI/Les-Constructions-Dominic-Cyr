@@ -1,0 +1,68 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - navigation [ref=e6]:
+        - link "Accueil" [ref=e7] [cursor=pointer]:
+          - /url: /
+        - link "Projets résidentiels" [ref=e8] [cursor=pointer]:
+          - /url: /residential-projects
+        - link "Rénovation" [ref=e9] [cursor=pointer]:
+          - /url: /renovations
+        - link "Gestion de projet" [ref=e10] [cursor=pointer]:
+          - /url: /projectmanagement
+        - link "Réalisations" [ref=e11] [cursor=pointer]:
+          - /url: /realizations
+        - link "Contact" [ref=e12] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=e13]:
+        - button "Access Portal →" [ref=e14] [cursor=pointer]:
+          - text: Access Portal
+          - generic [ref=e15]: →
+        - button "Toggle language" [ref=e16] [cursor=pointer]: FR
+  - main [ref=e17]:
+    - generic [ref=e19]:
+      - generic [ref=e20]: "500"
+      - heading "Server Error" [level=1] [ref=e21]
+      - paragraph [ref=e22]: We're sorry, but something went wrong on our end.
+      - paragraph [ref=e23]: Our team has been notified and is working to fix the issue. Please try again later or return to the home page.
+      - link "Return to Home Page" [ref=e24] [cursor=pointer]:
+        - /url: /
+  - contentinfo [ref=e25]:
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - heading "Contact" [level=3] [ref=e28]
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - img [ref=e31]
+            - paragraph [ref=e33]: 514-123-4567
+          - generic [ref=e34]:
+            - img [ref=e35]
+            - link "constructions.dcyr@gmail.com" [ref=e37] [cursor=pointer]:
+              - /url: mailto:constructions.dcyr@gmail.com
+      - generic [ref=e38]:
+        - generic [ref=e39]:
+          - img [ref=e40]
+          - heading "Localisation" [level=3] [ref=e42]
+        - generic [ref=e43]:
+          - paragraph [ref=e44]: 155 rue Bourgeois
+          - paragraph [ref=e45]: St-Mathieu-de-Beloeil (Québec) J3G 0M9
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - img [ref=e48]
+          - heading "Accréditations" [level=3] [ref=e50]
+        - generic [ref=e51]:
+          - paragraph [ref=e52]:
+            - strong [ref=e53]: "RBQ:"
+            - text: 8356-0169-03
+          - link "rbq.gouv.qc.ca" [ref=e54] [cursor=pointer]:
+            - /url: https://www.pes.rbq.gouv.qc.ca/RegistreLicences/Recherche/Resultats/FicheDetenteur?mode=Entreprise&crit=r1TSc6INGEWKtcUK6jcX9%2FEByYB22EJQyiTukjrpiNiBdLFBdmxsUQD5hDhRnpniSWRgQPOq4Oq7AYd4UqvduXNoxS7GrtZarAE5%2FQv2Tj9k9EtXsKZODcycaRS2vCDNPQ6XfEMFITtraZrvf%2BgSWYCujnyk5pjSv%2Bn4i4fIsPKcf%2BPb8Z5RSbvKvHajTbuyX5Dvx9GsimL%2FOHlp6DxDoJ5FP8q94u2ewsoBsQq0VhthO9VtsuE1wYESAcFhyiUIbnNiMS6dBHk2XPVhhCVXDs93MtpN4cuBS%2B3XvsKTj7ZIHNuYwyiYsaYFfpuOofJulS3vTsVihLb7898tOi0SsOtAnfY2%2BFYerzER6TO4TIM7Fwh25dHZC5AARA6k0Q1JFPckDujovDNBflrWPX6ipKRRisQTIjkNwowf0MZXpEs%2F9t2hOEjx29qd%2Fp%2FgVVXh0pnV%2BAcmHQdRVcT0Ib9L2OKI53F4OEdOzktVpYlvF5e%2Byd4pInDRrybDEWGQd2tXuL8EwlgAwkwSYbbVXhT%2BGvjvvD%2B%2BOAeNLHpvnyGWvd%2BqyeTv%2Bxap7%2FwaThYJmcMvtrVpO3LhkjxCVdyyhvZ4rR6L%2BGVoit76HJclXqBxW4HyXwZOY7DMXlaBZFEJt2JcrKLEn5aHNyjOPYVKcq9qorx7obYiAyJ57dVpEs8BqXg645HMfZqPMSmTQPiCBoHL&ent=Dfp5TGXsmaSEEtcnF555TQ%3D%3D
+          - paragraph [ref=e55]:
+            - strong [ref=e56]: "GCR:"
+            - text: "11084"
+          - link "garantiegcr.com" [ref=e57] [cursor=pointer]:
+            - /url: "https://repertoire.garantiegcr.com/entrepreneurs/8356-0169-03.html\r\n"
+    - paragraph [ref=e59]: © 2026 Les Constructions Dominic Cyr Inc. Tous droits réservés.
+```

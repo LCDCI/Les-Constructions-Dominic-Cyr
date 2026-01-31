@@ -11,14 +11,14 @@ test.describe('Contractor Dashboard', () => {
     await expect(title).toHaveText('Contractor Dashboard');
   });
 
-  test('should display all 4 dashboard cards', async ({ page }) => {
+  test('should display all 5 dashboard cards', async ({ page }) => {
     const cards = page.locator('.dashboard-card');
-    await expect(cards).toHaveCount(4);
+    await expect(cards).toHaveCount(5);
   });
 
   test('should display buttons on all cards', async ({ page }) => {
     const buttons = page.locator('.card-button');
-    await expect(buttons).toHaveCount(4);
+    await expect(buttons).toHaveCount(5);
   });
 
   test('should display schedule section', async ({ page }) => {
@@ -33,6 +33,24 @@ test.describe('Contractor Dashboard', () => {
     const seeMoreButton = page.locator('.see-more-button');
     await expect(seeMoreButton).toBeVisible();
     await expect(seeMoreButton).toHaveText('See more');
+  });
+
+  test('should navigate to all tasks page when clicking see more button', async ({
+    page,
+  }) => {
+    const seeMoreButton = page.locator('.see-more-button');
+    await seeMoreButton.click();
+    await expect(page).toHaveURL('/contractor/tasks');
+  });
+
+  test('should navigate to all tasks when clicking All Tasks card button', async ({
+    page,
+  }) => {
+    const allTasksButton = page
+      .locator('.dashboard-card', { hasText: 'All Tasks' })
+      .locator('.card-button');
+    await allTasksButton.click();
+    await expect(page).toHaveURL('/contractor/tasks');
   });
 
   test('should navigate to projects when clicking projects card button', async ({

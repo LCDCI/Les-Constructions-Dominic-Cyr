@@ -15,7 +15,7 @@ const ContractorDashboard = () => {
   const navigate = useNavigate();
 
   const handleSeeMore = () => {
-    navigate('/contractors/schedules/all');
+    navigate('/contractor/tasks');
   };
 
   const dashboardCards = [
