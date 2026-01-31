@@ -50,6 +50,13 @@ services:
       GOOGLE_ANALYTICS_PROPERTY_ID: "${GA_PROPERTY_ID}"
       GOOGLE_ANALYTICS_CREDENTIALS_PATH: "/app/config/google-analytics-credentials.json"
 
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
     volumes:
       - ${GA_CREDENTIALS_PATH}:/app/config/google-analytics-credentials.json:ro
 

@@ -64,9 +64,17 @@ public class TranslationRegistry {
         fileIdMap.put("en.ownerlots", "62178381-21ab-415a-a604-9d80c5d7774a");
         fileIdMap.put("fr.ownerlots", "29509c00-9273-4df9-96ae-6fba61a0d1b4");
 
+        // Task Details page translations
+        fileIdMap.put("en.taskdetails", "0d1566a4-ace6-4341-9b8e-e108bd562091");
+        fileIdMap.put("fr.taskdetails", "c4a519cf-957b-46d0-a099-0228e0e933cc");
+
         // Living Environment page translations
         fileIdMap.put("en.livingenvironment", "99949cf5-8d72-4155-aaea-3df009823664");
         fileIdMap.put("fr.livingenvironment", "1e49e1c9-1dc8-4ecf-8212-47e51d62abd2");
+
+        // Projects page translations
+        fileIdMap.put("en.projects", "e1fb2a05-f1c0-4509-9ae5-016df6de7629");
+        fileIdMap.put("fr.projects", "67fc5df5-4ab5-4747-9077-296157d342ad");
 
     }
     
