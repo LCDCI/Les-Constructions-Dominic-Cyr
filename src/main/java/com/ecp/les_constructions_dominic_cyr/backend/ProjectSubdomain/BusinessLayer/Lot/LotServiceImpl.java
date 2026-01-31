@@ -166,7 +166,8 @@ public class LotServiceImpl implements LotService{
 
     private LotResponseModel mapToResponse(Lot lot) {
         LotResponseModel dto = new LotResponseModel();
-        dto.setLotId(lot.getLotIdentifier().getLotId());
+        dto.setId(lot.getId());
+        dto.setLotId(lot.getLotIdentifier() != null ? lot.getLotIdentifier().getLotId() : UUID.randomUUID().toString());
         dto.setLotNumber(lot.getLotNumber());
         dto.setCivicAddress(lot.getCivicAddress());
         dto.setPrice(lot.getPrice());
@@ -199,7 +200,7 @@ public class LotServiceImpl implements LotService{
         return dto;
     }
 
-    private List<LotResponseModel> mapLotsToResponses(List<Lot> lots) {
+    public List<LotResponseModel> mapLotsToResponses(List<Lot> lots) {
         List<LotResponseModel> responseList = new ArrayList<>();
         for (Lot lot : lots) {
             responseList.add(mapToResponse(lot));

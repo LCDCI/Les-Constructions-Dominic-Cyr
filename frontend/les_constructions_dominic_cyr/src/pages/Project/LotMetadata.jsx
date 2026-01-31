@@ -86,21 +86,20 @@ const LotMetadata = () => {
           )}
         </section>
 
-        {lot.assignedUsers && (
-          <section className="metadata-section">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ color: lot.primaryColor, margin: 0 }}>Assigned Team</h2>
-            </div>
-            <div className="team-grid">
-              {lot.assignedUsers.map(u => (
-                <div key={u.userId || u.userIdentifier} className="team-member">
-                  <h3>{u.fullName || `${u.firstName || ''} ${u.lastName || ''}`}</h3>
-                  <p className="member-contact">{u.primaryEmail || u.email}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        {lot.assignedUsers && (() => {
+          const customer = lot.assignedUsers.find(u => u.role === 'CUSTOMER');
+          return customer ? (
+            <section className="metadata-section">
+              <h2 style={{ color: lot.primaryColor }}>Buyer Information</h2>
+              <div
+                className="buyer-info"
+                style={{ backgroundColor: lot.buyerColor || '#27ae60' }}
+              >
+                <p className="buyer-name">{customer.fullName || `${customer.firstName || ''} ${customer.lastName || ''}`.trim()}</p>
+              </div>
+            </section>
+          ) : null;
+        })()}
       </div>
 
       <div className="button-container">
