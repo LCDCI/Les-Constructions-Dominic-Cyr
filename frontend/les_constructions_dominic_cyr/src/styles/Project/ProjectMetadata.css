@@ -478,6 +478,45 @@
   color: #c62828;
 }
 
+/* Small dot + label style for project lot cards (matches public landing lots) */
+.lot-status-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.status-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-transform: none;
+}
+
+/* Dot color variants (kept separate so other badge styles are unaffected) */
+.status-dot.status-available { background-color: #4ade80; }
+.status-dot.status-reserved { background-color: #fbbf24; }
+.status-dot.status-sold { background-color: #f87171; }
+
+/* Ensure the label stays transparent and inherits the card background
+  (scoped to .lot-card to avoid affecting other pages) */
+.lot-card .lot-status-inline,
+.lot-card .status-label {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Stronger specificity for the dot so global `.status-available` rules
+  that set var(--color-primary) won't color the label or dot incorrectly. */
+.lot-card .status-dot.status-available { background-color: #4ade80 !important; }
+.lot-card .status-dot.status-reserved { background-color: #fbbf24 !important; }
+.lot-card .status-dot.status-sold { background-color: #f87171 !important; }
+
 @media (max-width: 768px) {
   .lots-grid {
     grid-template-columns: 1fr;

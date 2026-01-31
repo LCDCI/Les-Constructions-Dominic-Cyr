@@ -239,11 +239,15 @@ const ProjectMetadata = () => {
                     <p className="lot-address">{lot.civicAddress}</p>
                   )}
                   {lot.lotStatus && (
-                    <span
-                      className={`lot-status status-${lot.lotStatus.toLowerCase()}`}
-                    >
-                      {lot.lotStatus}
-                    </span>
+                    <div className="lot-status-inline">
+                      <span
+                        className={`status-dot status-${lot.lotStatus.toLowerCase()}`}
+                        aria-hidden="true"
+                      ></span>
+                      <span className="status-label">
+                        {lot.lotStatus.replace('_', ' ')}
+                      </span>
+                    </div>
                   )}
                 </div>
               ))}
