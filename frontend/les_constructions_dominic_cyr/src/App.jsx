@@ -283,10 +283,22 @@ export default function App() {
               }
             />
 
-            <Route path="/projects/:projectId/metadata" element={<ProjectMetadata />} />
-            <Route path="/projects/:projectIdentifier" element={<ProjectEntryRouter />} />
-            <Route path="/projects/:projectIdentifier/lots/select" element={<LotSelectPage />} />
-            <Route path="/projects/:projectId/lots/:lotId/metadata" element={<LotMetadata />} />
+            <Route
+              path="/projects/:projectId/metadata"
+              element={<ProjectMetadata />}
+            />
+            <Route
+              path="/projects/:projectIdentifier"
+              element={<ProjectEntryRouter />}
+            />
+            <Route
+              path="/projects/:projectIdentifier/lots/select"
+              element={<LotSelectPage />}
+            />
+            <Route
+              path="/projects/:projectId/lots/:lotId/metadata"
+              element={<LotMetadata />}
+            />
 
             {/* Project team management removed */}
 

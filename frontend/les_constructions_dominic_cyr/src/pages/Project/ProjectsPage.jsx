@@ -204,7 +204,7 @@ const ProjectsPage = () => {
     return `${filesServiceUrl}/files/${imageIdentifier}`;
   };
 
-  const handleViewProject = async (project) => {
+  const handleViewProject = async project => {
     // Owners always go to project metadata page
     if (role === 'OWNER') {
       navigate(`/projects/${project.projectIdentifier}/metadata`);
@@ -228,7 +228,7 @@ const ProjectsPage = () => {
 
       const lotsData = await fetchLots({
         projectIdentifier: project.projectIdentifier,
-        token
+        token,
       });
 
       // Filter lots to only those assigned to current user
@@ -240,7 +240,9 @@ const ProjectsPage = () => {
         setIsLotSelectionOpen(true);
       } else if (lotsData && lotsData.length === 1) {
         // Go directly to the lot's metadata page
-        navigate(`/projects/${project.projectIdentifier}/lots/${lotsData[0].lotId}/metadata`);
+        navigate(
+          `/projects/${project.projectIdentifier}/lots/${lotsData[0].lotId}/metadata`
+        );
       } else {
         // No lots found, go to project metadata directly
         navigate(`/projects/${project.projectIdentifier}/metadata`);
@@ -252,7 +254,7 @@ const ProjectsPage = () => {
     }
   };
 
-  const handleLotSelection = (lot) => {
+  const handleLotSelection = lot => {
     setIsLotSelectionOpen(false);
     setProjectForLotSelection(null);
     setUserLotsForProject([]);
@@ -454,21 +456,20 @@ const ProjectsPage = () => {
                             </>
                           )}
 
-                          {role === 'OWNER' && canEdit && project.status !== 'ARCHIVED' && (
-                            <button
-                              onClick={() => openArchiveModal(project)}
-                              className="admin-project-button archive-button"
-                            >
-                              {t('buttons.archive', 'Archive')}
-                            </button>
-                          )}
+                          {role === 'OWNER' &&
+                            canEdit &&
+                            project.status !== 'ARCHIVED' && (
+                              <button
+                                onClick={() => openArchiveModal(project)}
+                                className="admin-project-button archive-button"
+                              >
+                                {t('buttons.archive', 'Archive')}
+                              </button>
+                            )}
                         </div>
                       </div>
                     </div>
-                    <div
-                      className="mobile-project-actions"
-                      aria-hidden={false}
-                    >
+                    <div className="mobile-project-actions" aria-hidden={false}>
                       <details className="mobile-actions-dropdown">
                         <summary className="mobile-actions-btn admin-project-button">
                           {t('buttons.actions', 'Actions')}
@@ -496,14 +497,16 @@ const ProjectsPage = () => {
                               </a>
                             </>
                           )}
-                          {role === 'OWNER' && canEdit && project.status !== 'ARCHIVED' && (
-                            <button
-                              onClick={() => openArchiveModal(project)}
-                              className="admin-project-button archive-button"
-                            >
-                              {t('buttons.archive', 'Archive')}
-                            </button>
-                          )}
+                          {role === 'OWNER' &&
+                            canEdit &&
+                            project.status !== 'ARCHIVED' && (
+                              <button
+                                onClick={() => openArchiveModal(project)}
+                                className="admin-project-button archive-button"
+                              >
+                                {t('buttons.archive', 'Archive')}
+                              </button>
+                            )}
                         </div>
                       </details>
                     </div>
@@ -707,8 +710,9 @@ const ProjectsPage = () => {
             </div>
             <div className="confirmation-modal-body">
               <p>
-                You are assigned to multiple lots in "{projectForLotSelection.projectName}".
-                Please select which lot you want to view:
+                You are assigned to multiple lots in "
+                {projectForLotSelection.projectName}". Please select which lot
+                you want to view:
               </p>
               <div style={{ marginTop: '1rem' }}>
                 {userLotsForProject.map(lot => (
@@ -716,7 +720,11 @@ const ProjectsPage = () => {
                     key={lot.lotId}
                     onClick={() => handleLotSelection(lot)}
                     className="admin-project-button"
-                    style={{ display: 'block', marginBottom: '0.5rem', width: '100%' }}
+                    style={{
+                      display: 'block',
+                      marginBottom: '0.5rem',
+                      width: '100%',
+                    }}
                   >
                     Lot {lot.id}
                   </button>
