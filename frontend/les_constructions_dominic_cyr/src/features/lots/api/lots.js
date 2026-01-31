@@ -42,13 +42,16 @@ export async function fetchLots({ projectIdentifier, token } = {}) {
   return response.json();
 }
 
-export async function fetchLotById({ projectIdentifier, lotId }) {
+export async function fetchLotById({ projectIdentifier, lotId, token } = {}) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
   const url = projectId
     ? `${API_BASE_URL}/projects/${projectId}/lots/${lotId}`
     : `${API_BASE_URL}/lots/${lotId}`;
 
-  const response = await fetch(url);
+  const headers = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const response = await fetch(url, { headers });
   if (!response.ok) {
     const message = await parseErrorMessage(response, 'Failed to fetch lot');
     throw new Error(message);
