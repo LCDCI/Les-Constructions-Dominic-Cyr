@@ -15,7 +15,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
   z-index: 1;
   pointer-events: none;
 }
@@ -97,7 +97,7 @@
   background: var(--color-white);
   border-radius: 8px;
   padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid #e6e6e6;
   display: flex;
   flex-direction: column;
@@ -109,7 +109,10 @@
   color: var(--color-text);
 }
 
-.lot-card p { margin: 0 0 0.75rem 0; color: var(--color-text-muted); }
+.lot-card p {
+  margin: 0 0 0.75rem 0;
+  color: var(--color-text-muted);
+}
 
 /* Unified button styles using global variables */
 .btn-primary {
@@ -136,18 +139,23 @@
   transition: all 0.3s ease;
 }
 
-.btn-primary:hover, .btn-secondary:hover {
+.btn-primary:hover,
+.btn-secondary:hover {
   background-color: var(--color-primary);
   color: var(--color-white);
   border-color: var(--color-primary);
   filter: brightness(0.9);
 }
 
-.btn-primary:focus, .btn-secondary:focus {
-  outline: 3px solid rgba(44,123,229,0.18);
+.btn-primary:focus,
+.btn-secondary:focus {
+  outline: 3px solid rgba(44, 123, 229, 0.18);
 }
 
-.no-results { text-align: center; padding: 2rem; }
+.no-results {
+  text-align: center;
+  padding: 2rem;
+}
 
 .metadata-section {
   background: var(--color-white);
@@ -405,7 +413,9 @@
     grid-template-columns: 1fr;
   }
 
-  .lot-selector-list { grid-template-columns: 1fr; }
+  .lot-selector-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Lots Grid */

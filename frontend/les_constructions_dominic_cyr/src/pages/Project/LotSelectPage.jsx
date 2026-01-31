@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { fetchLots, resolveProjectIdentifier } from '../../features/lots/api/lots';
+import {
+  fetchLots,
+  resolveProjectIdentifier,
+} from '../../features/lots/api/lots';
 import useBackendUser from '../../hooks/useBackendUser';
 import '../../styles/Project/ProjectMetadata.css';
 
@@ -25,7 +28,9 @@ export default function LotSelectPage() {
         const all = await fetchLots({ projectIdentifier: resolved, token });
         const myId = profile?.userId || profile?.userIdentifier || null;
         const assigned = (all || []).filter(l =>
-          l.assignedUsers?.some(u => u.userId === myId || u.userIdentifier === myId)
+          l.assignedUsers?.some(
+            u => u.userId === myId || u.userIdentifier === myId
+          )
         );
         if (!cancelled) setLots(assigned);
       } catch (err) {
@@ -70,7 +75,12 @@ export default function LotSelectPage() {
           <div className="no-results">
             <p>No lots assigned to you for this project.</p>
             <div style={{ marginTop: '1rem' }}>
-              <button className="btn-secondary" onClick={() => navigate('/projects')}>Back to projects</button>
+              <button
+                className="btn-secondary"
+                onClick={() => navigate('/projects')}
+              >
+                Back to projects
+              </button>
             </div>
           </div>
         ) : (
@@ -82,8 +92,19 @@ export default function LotSelectPage() {
                   <p>{l.civicAddress || '—'}</p>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                  <button className="btn-primary" onClick={() => navigate(`/projects/${projectIdentifier}/lots/${l.lotId}/metadata`)}>View lot information</button>
-                  <button className="btn-secondary" onClick={handleBack}>Back to projects</button>
+                  <button
+                    className="btn-primary"
+                    onClick={() =>
+                      navigate(
+                        `/projects/${projectIdentifier}/lots/${l.lotId}/metadata`
+                      )
+                    }
+                  >
+                    View lot information
+                  </button>
+                  <button className="btn-secondary" onClick={handleBack}>
+                    Back to projects
+                  </button>
                 </div>
               </div>
             ))}

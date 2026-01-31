@@ -313,7 +313,6 @@ body {
   display: flex;
 }
 
-
 .admin-lots-button {
   background: var(--color-light) !important;
   color: var(--color-primary) !important;

@@ -27,7 +27,8 @@ export default function ProtectedRoute({ allowedRoles, element }) {
   if (allowedRoles && allowedRoles.length > 0) {
     // Prefer backend role when available
     if (role) {
-      if (!allowedRoles.includes(role)) return <Navigate to="/unauthorized" replace />;
+      if (!allowedRoles.includes(role))
+        return <Navigate to="/unauthorized" replace />;
       return element;
     }
 
