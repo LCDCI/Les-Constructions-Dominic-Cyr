@@ -63,7 +63,16 @@ async function loginAsOwner(page) {
     await continueToLoginBtn.waitFor({ state: 'visible', timeout: 5000 });
     await continueToLoginBtn.click();
     // Wait for Auth0 redirect with shorter timeout - if it doesn't happen, that's okay
-    await page.waitForURL(url => url.toString().includes('auth0.com'), {
+    await page.waitForURL(url => {
+      const urlStr = url.toString();
+      try {
+        const parsed = new URL(urlStr);
+        const host = parsed.hostname;
+        return host === 'auth0.com' || host.endsWith('.auth0.com');
+      } catch {
+        return false;
+      }
+    }, {
       timeout: 3000,
     }).catch(() => {
       // Auth0 not available in test environment - that's fine, we'll handle it below
@@ -75,7 +84,16 @@ async function loginAsOwner(page) {
   await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
   currentUrl = page.url();
 
-  if (currentUrl.includes('auth0.com')) {
+  let isAuth0 = false;
+  try {
+    const parsedAuth0 = new URL(currentUrl);
+    const host = parsedAuth0.hostname;
+    isAuth0 = host === 'auth0.com' || host.endsWith('.auth0.com');
+  } catch {
+    isAuth0 = false;
+  }
+
+  if (isAuth0) {
     await page.getByLabel('Email address').fill('owner@test.com');
     await page.locator('input[type="password"]').fill('Password123');
     await page.getByRole('button', { name: /Continue/i }).click();
@@ -83,9 +101,19 @@ async function loginAsOwner(page) {
     await page.waitForURL(
       url => {
         const urlStr = url.toString();
-        return (
-          urlStr.includes('localhost:3000') && !urlStr.includes('auth0.com')
-        );
+        try {
+          const parsed = new URL(urlStr);
+          const host = parsed.hostname;
+          const port = parsed.port;
+          const protocol = parsed.protocol;
+          const isLocalhost =
+            host === 'localhost' &&
+            (port === '3000' || (port === '' && protocol === 'http:' && urlStr.includes('localhost:3000')));
+          const isAuth0Host = host === 'auth0.com' || host.endsWith('.auth0.com');
+          return isLocalhost && !isAuth0Host;
+        } catch {
+          return false;
+        }
       },
       { timeout: 15000 }
     );
@@ -99,7 +127,19 @@ async function loginAsOwner(page) {
 
   currentUrl = page.url();
   // Allow being on any localhost:3000 page, not just the root
-  if (!currentUrl.includes('localhost:3000')) {
+  let isOnLocalhost3000 = false;
+  try {
+    const parsedFinal = new URL(currentUrl);
+    const host = parsedFinal.hostname;
+    const port = parsedFinal.port;
+    const protocol = parsedFinal.protocol;
+    isOnLocalhost3000 =
+      host === 'localhost' &&
+      (port === '3000' || (port === '' && protocol === 'http:' && currentUrl.includes('localhost:3000')));
+  } catch {
+    isOnLocalhost3000 = false;
+  }
+  if (!isOnLocalhost3000) {
     throw new Error(
       `Login failed. Expected to be at localhost:3000, but at: ${currentUrl}.`
     );
