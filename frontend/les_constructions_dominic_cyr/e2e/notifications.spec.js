@@ -63,7 +63,10 @@ async function loginAsOwner(page) {
     await continueToLoginBtn.waitFor({ state: 'visible', timeout: 5000 });
     await continueToLoginBtn.click();
     // Wait for Auth0 redirect with shorter timeout - if it doesn't happen, that's okay
-    await page.waitForURL(url => url.toString().includes('auth0.com'), {
+    await page.waitForURL(url => {
+      // Playwright passes a URL object; check hostname instead of substring
+      return url.hostname === 'auth0.com' || url.hostname.endsWith('.auth0.com');
+    }, {
       timeout: 3000,
     }).catch(() => {
       // Auth0 not available in test environment - that's fine, we'll handle it below
@@ -75,22 +78,37 @@ async function loginAsOwner(page) {
   await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
   currentUrl = page.url();
 
-  if (currentUrl.includes('auth0.com')) {
+  let currentParsedUrl;
+  try {
+    currentParsedUrl = new URL(currentUrl);
+  } catch {
+    currentParsedUrl = null;
+  }
+
+  if (currentParsedUrl && (currentParsedUrl.hostname === 'auth0.com' || currentParsedUrl.hostname.endsWith('.auth0.com'))) {
     await page.getByLabel('Email address').fill('owner@test.com');
     await page.locator('input[type="password"]').fill('Password123');
     await page.getByRole('button', { name: /Continue/i }).click();
 
     await page.waitForURL(
       url => {
-        const urlStr = url.toString();
-        return (
-          urlStr.includes('localhost:3000') && !urlStr.includes('auth0.com')
-        );
+        // Ensure we have navigated back to localhost:3000 and are no longer on Auth0
+        const isLocalhost =
+          url.hostname === 'localhost' &&
+          (url.port === '3000' || url.port === '' /* default dev port may be implied */);
+        const isAuth0 =
+          url.hostname === 'auth0.com' || url.hostname.endsWith('.auth0.com');
+        return isLocalhost && !isAuth0;
       },
       { timeout: 15000 }
     );
     await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
-  } else if (currentUrl.includes('login')) {
+  } else if (currentParsedUrl && currentParsedUrl.pathname.includes('login')) {
+  try {
+    currentParsedUrl = new URL(currentUrl);
+  } catch {
+    currentParsedUrl = null;
+  }
     // If we're still on login page and Auth0 didn't redirect, try navigating directly
     // This handles the case where Auth0 is mocked or not available
     await page.goto('/');
@@ -99,7 +117,11 @@ async function loginAsOwner(page) {
 
   currentUrl = page.url();
   // Allow being on any localhost:3000 page, not just the root
-  if (!currentUrl.includes('localhost:3000')) {
+  const onExpectedHost =
+    currentParsedUrl &&
+    currentParsedUrl.hostname === 'localhost' &&
+    (currentParsedUrl.port === '3000' || currentParsedUrl.port === '' /* implicit port */);
+  if (!onExpectedHost) {
     throw new Error(
       `Login failed. Expected to be at localhost:3000, but at: ${currentUrl}.`
     );
