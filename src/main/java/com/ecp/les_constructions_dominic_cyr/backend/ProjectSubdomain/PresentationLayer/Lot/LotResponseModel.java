@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -12,7 +14,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class LotResponseModel {
+    private Integer id;
+    @JsonProperty("lotId")
     private String lotId;
     private String lotNumber;
     private String civicAddress;
@@ -28,6 +33,8 @@ public class LotResponseModel {
     private Long projectId;
     private String projectIdentifier;
     private String projectName;
+
+    private Integer progressPercentage;
 
     @Data
     @Builder

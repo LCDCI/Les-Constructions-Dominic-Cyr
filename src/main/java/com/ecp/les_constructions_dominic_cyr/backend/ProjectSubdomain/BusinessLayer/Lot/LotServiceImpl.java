@@ -166,7 +166,8 @@ public class LotServiceImpl implements LotService{
 
     private LotResponseModel mapToResponse(Lot lot) {
         LotResponseModel dto = new LotResponseModel();
-        dto.setLotId(lot.getLotIdentifier().getLotId());
+        dto.setId(lot.getId());
+        dto.setLotId(lot.getLotIdentifier() != null ? lot.getLotIdentifier().getLotId() : UUID.randomUUID().toString());
         dto.setLotNumber(lot.getLotNumber());
         dto.setCivicAddress(lot.getCivicAddress());
         dto.setPrice(lot.getPrice());
@@ -196,10 +197,16 @@ public class LotServiceImpl implements LotService{
             dto.setAssignedUsers(new ArrayList<>());
         }
 
+        // Calculate progress percentage
+        int totalUpcomingWork = 59;
+        int remaining = lot.getRemainingUpcomingWork() != null ? lot.getRemainingUpcomingWork() : totalUpcomingWork;
+        int completed = totalUpcomingWork - remaining;
+        dto.setProgressPercentage((int) Math.round((double) completed / totalUpcomingWork * 100));
+
         return dto;
     }
 
-    private List<LotResponseModel> mapLotsToResponses(List<Lot> lots) {
+    public List<LotResponseModel> mapLotsToResponses(List<Lot> lots) {
         List<LotResponseModel> responseList = new ArrayList<>();
         for (Lot lot : lots) {
             responseList.add(mapToResponse(lot));

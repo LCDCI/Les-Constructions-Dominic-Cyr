@@ -5,8 +5,9 @@ import useBackendUser from '../hooks/useBackendUser';
 
 export default function ProtectedRoute({ allowedRoles, element }) {
   const location = useLocation();
-  const { isAuthenticated, isLoading } = useAuth0();
+  const { isAuthenticated, isLoading, user } = useAuth0();
   const { role, loading: roleLoading } = useBackendUser();
+  const auth0Roles = user?.['https://construction-api.loca/roles'] || [];
 
   if (isLoading || roleLoading) {
     return <div>Loading...</div>;
@@ -24,14 +25,22 @@ export default function ProtectedRoute({ allowedRoles, element }) {
 
   // If allowedRoles is specified, we need a valid role to proceed
   if (allowedRoles && allowedRoles.length > 0) {
-    // If role is not loaded/found, redirect to unauthorized
-    if (!role) {
-      return <Navigate to="/unauthorized" replace />;
+    // Prefer backend role when available
+    if (role) {
+      if (!allowedRoles.includes(role))
+        return <Navigate to="/unauthorized" replace />;
+      return element;
     }
-    // If role doesn't match allowed roles, redirect to unauthorized
-    if (!allowedRoles.includes(role)) {
-      return <Navigate to="/unauthorized" replace />;
+
+    // Fallback: check Auth0 role claim (useful if backend profile hasn't loaded yet)
+    if (auth0Roles && auth0Roles.length > 0) {
+      const has = auth0Roles.some(r => allowedRoles.includes(r));
+      if (!has) return <Navigate to="/unauthorized" replace />;
+      return element;
     }
+
+    // No role information at all -> unauthorized
+    return <Navigate to="/unauthorized" replace />;
   }
 
   return element;

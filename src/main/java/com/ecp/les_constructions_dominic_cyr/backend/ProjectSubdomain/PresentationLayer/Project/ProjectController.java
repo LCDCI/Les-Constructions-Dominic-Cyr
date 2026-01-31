@@ -15,6 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import java.util.UUID;
+import java.util.Set;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -29,6 +32,7 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final UserService userService;
+    private final LotRepository lotRepository;
     private static final SimpleGrantedAuthority ROLE_OWNER = new SimpleGrantedAuthority("ROLE_OWNER");
     private static final SimpleGrantedAuthority ROLE_CUSTOMER = new SimpleGrantedAuthority("ROLE_CUSTOMER");
     private static final SimpleGrantedAuthority ROLE_CONTRACTOR = new SimpleGrantedAuthority("ROLE_CONTRACTOR");
@@ -53,42 +57,54 @@ public class ProjectController {
             projects = projectService.getAllProjects(isOwner);
         }
 
-        // Then filter by user role and assigned projects
-        if (jwt != null && authentication != null) {
+        // Then filter by user role and assigned projects — include projects where the
+        // user is assigned to any lot within the project.
+        if (!isOwner && jwt != null && authentication != null) {
             String auth0UserId = jwt.getSubject();
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            
+
             // Get the user's identifier for filtering
             UserResponseModel currentUser = null;
             try {
                 currentUser = userService.getUserByAuth0Id(auth0UserId);
             } catch (Exception e) {
-                // Authenticated user not found in database indicates data integrity issue
                 log.warn("Authenticated user not found in database. Auth0 ID: {}", auth0UserId, e);
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(List.of());
             }
-            
+
             final String userIdentifier = currentUser.getUserIdentifier();
-            
-            // Filter projects based on role
-            if (authorities.contains(ROLE_CUSTOMER)) {
-                // Customers only see projects where they are assigned
-                projects = projects.stream()
-                        .filter(p -> userIdentifier.equals(p.getCustomerId()))
-                        .collect(Collectors.toList());
-            } else if (authorities.contains(ROLE_CONTRACTOR)) {
-                // Contractors only see projects where they are assigned
-                projects = projects.stream()
-                        .filter(p -> p.getContractorIds() != null && p.getContractorIds().contains(userIdentifier))
-                        .collect(Collectors.toList());
-            } else if (authorities.contains(ROLE_SALESPERSON)) {
-                // Salespersons only see projects where they are assigned
-                projects = projects.stream()
-                        .filter(p -> p.getSalespersonIds() != null && p.getSalespersonIds().contains(userIdentifier))
-                        .collect(Collectors.toList());
+
+            // Build a filtered list that only contains projects where the user is
+            // explicitly assigned (project-level) or assigned to a lot inside the project.
+            final java.util.Set<String> projectIdsFromLots = new java.util.HashSet<>();
+            try {
+                UUID userUuid = UUID.fromString(userIdentifier);
+                var lots = lotRepository.findByAssignedUserId(userUuid);
+                projectIdsFromLots.addAll(lots.stream()
+                        .map(l -> l.getProject().getProjectIdentifier())
+                        .filter(pid -> pid != null)
+                        .collect(Collectors.toSet()));
+            } catch (IllegalArgumentException e) {
+                log.warn("Invalid UUID for user identifier: {}", userIdentifier);
             }
-            // OWNERS see all projects (no additional filtering needed)
+
+            List<ProjectResponseModel> filtered = projects.stream()
+                    .filter(p -> {
+                        boolean matchesProjectLevel = false;
+                        if (authorities.contains(ROLE_CUSTOMER)) {
+                            matchesProjectLevel = userIdentifier.equals(p.getCustomerId());
+                        } else if (authorities.contains(ROLE_CONTRACTOR)) {
+                            matchesProjectLevel = p.getContractorIds() != null && p.getContractorIds().contains(userIdentifier);
+                        } else if (authorities.contains(ROLE_SALESPERSON)) {
+                            matchesProjectLevel = p.getSalespersonIds() != null && p.getSalespersonIds().contains(userIdentifier);
+                        }
+                        boolean matchesLotAssignment = projectIdsFromLots.contains(p.getProjectIdentifier());
+                        return matchesProjectLevel || matchesLotAssignment;
+                    })
+                    .collect(Collectors.toList());
+
+            projects = filtered;
         }
 
         return ResponseEntity.ok(projects);
@@ -103,7 +119,60 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectIdentifier}")
-    public ResponseEntity<ProjectResponseModel> getProjectByIdentifier(@PathVariable String projectIdentifier) {
+    public ResponseEntity<ProjectResponseModel> getProjectByIdentifier(
+            @PathVariable String projectIdentifier,
+            @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication
+    ) {
+        // Check if user is authorized to view this project
+        boolean isOwner = isOwner(authentication);
+
+        if (!isOwner && jwt != null && authentication != null) {
+            String auth0UserId = jwt.getSubject();
+            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+
+            // Get the user's identifier for filtering
+            UserResponseModel currentUser = null;
+            try {
+                currentUser = userService.getUserByAuth0Id(auth0UserId);
+            } catch (Exception e) {
+                log.warn("Authenticated user not found in database. Auth0 ID: {}", auth0UserId, e);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+
+            final String userIdentifier = currentUser.getUserIdentifier();
+
+            // Check if user has project-level access or lot-level access
+            ProjectResponseModel project = projectService.getProjectByIdentifier(projectIdentifier);
+
+            boolean hasAccess = false;
+
+            // Check project-level assignments
+            if (authorities.contains(ROLE_CUSTOMER)) {
+                hasAccess = userIdentifier.equals(project.getCustomerId());
+            } else if (authorities.contains(ROLE_CONTRACTOR)) {
+                hasAccess = project.getContractorIds() != null && project.getContractorIds().contains(userIdentifier);
+            } else if (authorities.contains(ROLE_SALESPERSON)) {
+                hasAccess = project.getSalespersonIds() != null && project.getSalespersonIds().contains(userIdentifier);
+            }
+
+            // If no project-level access, check lot-level access
+            if (!hasAccess) {
+                try {
+                    UUID userUuid = UUID.fromString(userIdentifier);
+                    var lots = lotRepository.findByAssignedUserId(userUuid);
+                    hasAccess = lots.stream()
+                            .anyMatch(lot -> projectIdentifier.equals(lot.getProject().getProjectIdentifier()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid UUID for user identifier: {}", userIdentifier);
+                }
+            }
+
+            if (!hasAccess) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+        }
+
         ProjectResponseModel project = projectService.getProjectByIdentifier(projectIdentifier);
         return ResponseEntity.ok(project);
     }
