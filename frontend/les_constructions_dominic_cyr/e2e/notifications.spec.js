@@ -104,11 +104,11 @@ async function loginAsOwner(page) {
     );
     await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
   } else if (currentParsedUrl && currentParsedUrl.pathname.includes('login')) {
-  try {
-    currentParsedUrl = new URL(currentUrl);
-  } catch {
-    currentParsedUrl = null;
-  }
+    try {
+      currentParsedUrl = new URL(currentUrl);
+    } catch {
+      currentParsedUrl = null;
+    }
     // If we're still on login page and Auth0 didn't redirect, try navigating directly
     // This handles the case where Auth0 is mocked or not available
     await page.goto('/');
