@@ -38,6 +38,9 @@ out/
 
 ## ENV ##
 .env
+mailer.env
+env.go
+env_test.go
 
 ## DATA DIRECTORIES (for persistent local data until deployment)
 data/
