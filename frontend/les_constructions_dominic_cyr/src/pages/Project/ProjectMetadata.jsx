@@ -5,6 +5,7 @@ import { getProjectMetadata } from '../../features/projects/api/projectMetadataA
 import { fetchLots } from '../../features/lots/api/lots';
 import useBackendUser from '../../hooks/useBackendUser';
 import { FiUsers } from 'react-icons/fi';
+import '../../styles/Public_Facing/home.css';
 import '../../styles/Project/ProjectMetadata.css';
 
 const ProjectMetadata = () => {
@@ -44,7 +45,10 @@ const ProjectMetadata = () => {
 
         // Fetch lots for this project (used to show lot list)
         try {
-          const lotsData = await fetchLots({ projectIdentifier: projectId, token });
+          const lotsData = await fetchLots({
+            projectIdentifier: projectId,
+            token,
+          });
           setLots(lotsData || []);
         } catch (e) {
           // ignore lots error
@@ -195,12 +199,17 @@ const ProjectMetadata = () => {
                       backgroundColor: metadata.buyerColor,
                     }}
                   ></div>
-                  <span className="progress-text">{metadata.progressPercentage}%</span>
+                  <span className="progress-text">
+                    {metadata.progressPercentage}%
+                  </span>
                 </div>
               </div>
             )}
           </div>
-          <div className="schedule-button-container" style={{ marginTop: '20px' }}>
+          <div
+            className="schedule-button-container"
+            style={{ marginTop: '20px' }}
+          >
             <a
               href={`/projects/${projectId}/schedule`}
               className="project-metadata-schedule"
@@ -219,14 +228,20 @@ const ProjectMetadata = () => {
                   key={lot.lotId}
                   className="lot-card"
                   style={{ borderColor: metadata.primaryColor }}
-                  onClick={() => navigate(`/projects/${projectId}/lots/${lot.lotId}/metadata`)}
+                  onClick={() =>
+                    navigate(
+                      `/projects/${projectId}/lots/${lot.lotId}/metadata`
+                    )
+                  }
                 >
                   <h3>Lot {lot.id}</h3>
                   {lot.civicAddress && (
                     <p className="lot-address">{lot.civicAddress}</p>
                   )}
                   {lot.lotStatus && (
-                    <span className={`lot-status status-${lot.lotStatus.toLowerCase()}`}>
+                    <span
+                      className={`lot-status status-${lot.lotStatus.toLowerCase()}`}
+                    >
                       {lot.lotStatus}
                     </span>
                   )}
@@ -235,7 +250,6 @@ const ProjectMetadata = () => {
             </div>
           </section>
         )}
-
       </div>
 
       <div className="button-container">

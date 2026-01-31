@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { fetchLotById } from '../../features/lots/api/lots';
+import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
+import '../../styles/Public_Facing/home.css';
 import '../../styles/Project/ProjectMetadata.css';
 
 const LotMetadata = () => {
@@ -20,6 +22,22 @@ const LotMetadata = () => {
         const token = isAuthenticated
           ? await getAccessTokenSilently().catch(() => null)
           : null;
+        
+        // Fetch project metadata to set colors
+        const projectData = await getProjectMetadata(projectId, token);
+        document.documentElement.style.setProperty(
+          '--project-primary',
+          projectData.primaryColor
+        );
+        document.documentElement.style.setProperty(
+          '--project-tertiary',
+          projectData.tertiaryColor
+        );
+        document.documentElement.style.setProperty(
+          '--project-buyer',
+          projectData.buyerColor
+        );
+        
         const data = await fetchLotById({ projectIdentifier: projectId, lotId, token });
         if (!cancelled) setLot(data);
       } catch (err) {
@@ -32,6 +50,10 @@ const LotMetadata = () => {
     if (!authLoading) load();
     return () => {
       cancelled = true;
+      // Clean up project colors
+      document.documentElement.style.removeProperty('--project-primary');
+      document.documentElement.style.removeProperty('--project-tertiary');
+      document.documentElement.style.removeProperty('--project-buyer');
     };
   }, [projectId, lotId, isAuthenticated, authLoading, getAccessTokenSilently]);
 
