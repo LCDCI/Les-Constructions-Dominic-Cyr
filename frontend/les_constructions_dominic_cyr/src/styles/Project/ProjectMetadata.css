@@ -1,6 +1,6 @@
 .project-metadata {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: var(--color-light);
 }
 
 .metadata-hero {
@@ -15,7 +15,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.15));
+  background: rgba(0,0,0,0.05);
   z-index: 1;
   pointer-events: none;
 }
@@ -77,7 +77,7 @@
 .hero-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .metadata-content {
@@ -94,7 +94,7 @@
 }
 
 .lot-card {
-  background: white;
+  background: var(--color-white);
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
@@ -106,37 +106,51 @@
 
 .lot-card h3 {
   margin: 0 0 0.5rem 0;
-  color: #222;
+  color: var(--color-text);
 }
 
-.lot-card p { margin: 0 0 0.75rem 0; color: #555; }
+.lot-card p { margin: 0 0 0.75rem 0; color: var(--color-text-muted); }
 
-/* Unified button styles using project accent variables */
+/* Unified button styles using global variables */
 .btn-primary {
-  background-color: var(--project-primary, #2c7be5);
-  color: #fff;
+  background-color: var(--color-primary);
+  color: var(--color-white);
   border: none;
-  padding: 0.6rem 1rem;
-  border-radius: 6px;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background 0.3s ease;
 }
 
 .btn-secondary {
   background: transparent;
-  color: var(--project-primary, #2c7be5);
-  border: 1px solid rgba(0,0,0,0.08);
-  padding: 0.5rem 0.85rem;
-  border-radius: 6px;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
   cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
-.btn-primary:focus, .btn-secondary:focus { outline: 3px solid rgba(44,123,229,0.18); }
+.btn-primary:hover, .btn-secondary:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+  filter: brightness(0.9);
+}
+
+.btn-primary:focus, .btn-secondary:focus {
+  outline: 3px solid rgba(44,123,229,0.18);
+}
 
 .no-results { text-align: center; padding: 2rem; }
 
 .metadata-section {
-  background: white;
+  background: var(--color-white);
   border-radius: 8px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -148,6 +162,11 @@
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 3px solid currentColor;
+}
+
+.schedule-button-container {
+  text-align: center;
+  margin-top: 20px;
 }
 
 .metadata-grid {
@@ -169,7 +188,7 @@
 .metadata-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #666;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -177,13 +196,13 @@
 .metadata-value {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #333;
+  color: var(--color-text);
 }
 
 .progress-bar {
   width: 100%;
   height: 40px;
-  background-color: #e0e0e0;
+  background-color: var(--color-light);
   border-radius: 20px;
   overflow: hidden;
   position: relative;
@@ -277,30 +296,40 @@
 }
 
 .project-metadata-back {
-  background-color: var(--project-primary);
-  color: white;
-  padding: 0.8%;
-  border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
   text-decoration: none;
-}
-
-.project-metadata-back:hover {
-  background-color: var(--project-buyer);
-  color: white;
-}
-
-.project-metadata-schedule {
-  background-color: #27ae60;
-  color: white;
-  padding: 0.8%;
-  border-radius: 5px;
-  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
+.project-metadata-back:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  filter: brightness(0.9);
+}
+
+.project-metadata-schedule {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
 .project-metadata-schedule:hover {
-  background-color: #229954;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  filter: brightness(0.9);
 }
 
 .view-files-link {
@@ -321,7 +350,7 @@
   width: 3.5rem;
   height: 3.5rem;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--project-primary, #3498db);
+  border-top: 4px solid var(--color-accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -346,12 +375,12 @@
 }
 
 .metadata-error h2 {
-  color: #e74c3c;
+  color: var(--color-primary);
   margin-bottom: 1rem;
 }
 
 .metadata-error p {
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 1.1rem;
 }
 
@@ -388,7 +417,7 @@
 }
 
 .lot-card {
-  background: white;
+  background: var(--color-white);
   border: 2px solid;
   border-radius: 8px;
   padding: 1.5rem;
@@ -410,17 +439,18 @@
 
 .lot-address {
   margin: 0.5rem 0;
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
 }
 
 .lot-status {
   display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
+  padding: 0.03125rem 0.0625rem;
+  border-radius: 2px;
+  font-size: 0.5rem;
   font-weight: 500;
   text-transform: uppercase;
+  line-height: 1;
 }
 
 .status-available {
@@ -449,7 +479,7 @@
   position: relative;
   width: 100%;
   height: 24px;
-  background-color: #e0e0e0;
+  background-color: var(--color-light);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -467,6 +497,6 @@
   transform: translate(-50%, -50%);
   font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: var(--color-text);
   z-index: 1;
 }

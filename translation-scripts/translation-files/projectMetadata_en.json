@@ -1,0 +1,11 @@
+{
+  "projectOverview": "Project Overview",
+  "location": "Location",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "completionDate": "Completion Date",
+  "progress": "Progress",
+  "projectLots": "Project Lots",
+  "viewProjectSchedule": "View Project Schedule",
+  "backToProjects": "Back to projects"
+}
