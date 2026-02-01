@@ -27,6 +27,14 @@ i18n.use(initReactI18next).init({
   fallbackLng: 'en',
   lng: initialLanguage,
   ns: ['translation', 'lots', 'projectoverview', 'livingenvironment'],
+  ns: [
+    'translation',
+    'lots',
+    'projectoverview',
+    'livingenvironment',
+    'lotMetadata',
+    'projectMetadata',
+  ],
   defaultNS: 'translation',
   load: 'languageOnly',
   resources: {
@@ -118,8 +126,12 @@ i18n.changeLanguage = async (lng, callback) => {
   const lang = normalizeLang(lng);
   cookieUtils.setLanguage(lang);
 
-  // Always reload translations when language changes to ensure nav/footer are updated
-  await loadTranslations(lang);
+  const hasResources = i18n.hasResourceBundle(lang, 'translation');
+  const bundle = i18n.getResourceBundle(lang, 'translation');
+
+  if (!hasResources || !bundle || Object.keys(bundle).length === 0) {
+    await loadTranslations(lang);
+  }
 
   return originalChangeLanguage(lang, callback);
 };

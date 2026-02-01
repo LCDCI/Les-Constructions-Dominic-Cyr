@@ -4,13 +4,12 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
 import { fetchLots } from '../../features/lots/api/lots';
 import useBackendUser from '../../hooks/useBackendUser';
-import { usePageTranslations } from '../../hooks/usePageTranslations';
+import usePageTranslations from '../../hooks/usePageTranslations';
 import { FiUsers } from 'react-icons/fi';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Project/ProjectMetadata.css';
 
 const ProjectMetadata = () => {
-  const { t } = usePageTranslations('projectMetadata');
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
@@ -19,6 +18,7 @@ const ProjectMetadata = () => {
   const [lots, setLots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = usePageTranslations('projectMetadata');
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -71,8 +71,7 @@ const ProjectMetadata = () => {
         );
       } catch (err) {
         const message =
-          err.response?.data?.message ||
-          t('errors.loadFailed', 'Failed to load project metadata');
+          err.response?.data?.message || 'Failed to load project metadata';
         setError(message);
         if (err.response?.status === 403) {
           navigate('/unauthorized', { replace: true });
@@ -108,7 +107,7 @@ const ProjectMetadata = () => {
     return (
       <div className="metadata-loading">
         <div className="spinner"></div>
-        <p>{t('loading', 'Loading project information...')}</p>
+        <p>{t('loadingProject') || 'Loading project information...'}</p>
       </div>
     );
   }
@@ -116,7 +115,7 @@ const ProjectMetadata = () => {
   if (error) {
     return (
       <div className="metadata-error">
-        <h2>{t('errors.accessDenied', 'Access Denied')}</h2>
+        <h2>{t('accessDeniedTitle') || 'Access Denied'}</h2>
         <p>{error}</p>
       </div>
     );
@@ -129,7 +128,7 @@ const ProjectMetadata = () => {
   const myId = profile?.userId || profile?.userIdentifier || null;
 
   const formatDate = dateString => {
-    if (!dateString) return t('notSet', 'Not set');
+    if (!dateString) return t('notSet') || 'Not set';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -137,9 +136,7 @@ const ProjectMetadata = () => {
     });
   };
 
-  const getStatusClass = status => {
-    return `status-badge status-${status.toLowerCase().replace('_', '-')}`;
-  };
+  // Status badge removed for compact mobile view
 
   return (
     <div className="project-metadata">
@@ -149,9 +146,6 @@ const ProjectMetadata = () => {
       >
         <div className="hero-content">
           <h1 className="project-title">{metadata.projectName}</h1>
-          <span className={getStatusClass(metadata.status)}>
-            {metadata.status.replace('_', ' ')}
-          </span>
         </div>
         {metadata.imageIdentifier && (
           <div className="hero-image">
@@ -166,25 +160,27 @@ const ProjectMetadata = () => {
       <div className="metadata-content">
         <section className="metadata-section">
           <h2 style={{ color: metadata.primaryColor }}>
-            {t('projectOverview', 'Project Overview')}
+            {t('projectOverview') || 'Project Overview'}
           </h2>
           <div className="metadata-grid">
             <div className="metadata-item">
               <span className="metadata-label">
-                {t('location', 'Location')}
+                {t('location') || 'Location'}
               </span>
               <span className="metadata-value">{metadata.location}</span>
             </div>
             <div className="metadata-item">
               <span className="metadata-label">
-                {t('startDate', 'Start Date')}
+                {t('startDate') || 'Start Date'}
               </span>
               <span className="metadata-value">
                 {formatDate(metadata.startDate)}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">{t('endDate', 'End Date')}</span>
+              <span className="metadata-label">
+                {t('endDate') || 'End Date'}
+              </span>
               <span className="metadata-value">
                 {formatDate(metadata.endDate)}
               </span>
@@ -192,7 +188,7 @@ const ProjectMetadata = () => {
             {metadata.completionDate && (
               <div className="metadata-item">
                 <span className="metadata-label">
-                  {t('completionDate', 'Completion Date')}
+                  {t('completionDate') || 'Completion Date'}
                 </span>
                 <span className="metadata-value">
                   {formatDate(metadata.completionDate)}
@@ -202,7 +198,7 @@ const ProjectMetadata = () => {
             {metadata.progressPercentage !== null && (
               <div className="metadata-item full-width">
                 <span className="metadata-label">
-                  {t('progress', 'Progress')}
+                  {t('progress') || 'Progress'}
                 </span>
                 <div className="progress-bar">
                   <div
@@ -227,7 +223,7 @@ const ProjectMetadata = () => {
               href={`/projects/${projectId}/schedule`}
               className="project-metadata-schedule"
             >
-              {t('viewProjectSchedule', 'View Project Schedule')}
+              {t('viewProjectSchedule') || 'View Project Schedule'}
             </a>
           </div>
         </section>
@@ -235,35 +231,44 @@ const ProjectMetadata = () => {
         {role === 'OWNER' && lots.length > 0 && (
           <section className="metadata-section">
             <h2 style={{ color: metadata.primaryColor }}>
-              {t('projectLots', 'Project Lots')}
+              {t('projectLots') || 'Project Lots'}
             </h2>
             <div className="lots-grid">
-              {lots.map(lot => (
-                <div
-                  key={lot.lotId}
-                  className="lot-card"
-                  style={{ borderColor: metadata.primaryColor }}
-                  onClick={() =>
-                    navigate(
-                      `/projects/${projectId}/lots/${lot.lotId}/metadata`
-                    )
-                  }
-                >
-                  <h3>
-                    {t('lot', 'Lot')} {lot.id}
-                  </h3>
-                  {lot.civicAddress && (
-                    <p className="lot-address">{lot.civicAddress}</p>
-                  )}
-                  {lot.lotStatus && (
-                    <span
-                      className={`lot-status status-${lot.lotStatus.toLowerCase()}`}
-                    >
-                      {lot.lotStatus}
-                    </span>
-                  )}
-                </div>
-              ))}
+              {[...lots]
+                .sort((a, b) => {
+                  // Sort by lot.id or lot.lotId (fallback)
+                  const idA = a.id ?? a.lotId;
+                  const idB = b.id ?? b.lotId;
+                  return idA - idB;
+                })
+                .map(lot => (
+                  <div
+                    key={lot.lotId}
+                    className="lot-card"
+                    style={{ borderColor: metadata.primaryColor }}
+                    onClick={() =>
+                      navigate(
+                        `/projects/${projectId}/lots/${lot.lotId}/metadata`
+                      )
+                    }
+                  >
+                    <h3>{`${t('lot') || 'Lot'} ${lot.id}`}</h3>
+                    {lot.civicAddress && (
+                      <p className="lot-address">{lot.civicAddress}</p>
+                    )}
+                    {lot.lotStatus && (
+                      <div className="lot-status-inline">
+                        <span
+                          className={`status-dot status-${lot.lotStatus.toLowerCase()}`}
+                          aria-hidden="true"
+                        ></span>
+                        <span className="status-label">
+                          {lot.lotStatus.replace('_', ' ')}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
             </div>
           </section>
         )}
@@ -271,7 +276,7 @@ const ProjectMetadata = () => {
 
       <div className="button-container">
         <a href={`/projects`} className="project-metadata-back">
-          {t('backToProjects', 'Back to projects')}
+          {t('backToProjects') || 'Back to projects'}
         </a>
       </div>
     </div>
