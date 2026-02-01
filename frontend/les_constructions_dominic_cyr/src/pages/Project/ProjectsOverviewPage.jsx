@@ -353,16 +353,18 @@ const ProjectOverviewPage = () => {
   return (
     <div className={`project-overview-page`}>
       <section className="project-hero">
-        <div className="hero-image-container">
-          <img
-            src={getImageUrl(overview.imageIdentifier)}
-            alt={overview.projectName}
-            className="hero-image"
-            onError={e => {
-              e.target.onerror = null;
-              e.target.src = '/fallback.jpg';
-            }}
-          />
+        <div className="hero-logo-container">
+          {overview.imageIdentifier && (
+            <img
+              src={getImageUrl(overview.imageIdentifier)}
+              alt={overview.projectName}
+              className="project-logo"
+              onError={e => {
+                e.target.onerror = null;
+                e.target.src = '/fallback.jpg';
+              }}
+            />
+          )}
         </div>
         <div className="hero-content projects-hero-content">
           <h1 className="hero-title projects-title">
