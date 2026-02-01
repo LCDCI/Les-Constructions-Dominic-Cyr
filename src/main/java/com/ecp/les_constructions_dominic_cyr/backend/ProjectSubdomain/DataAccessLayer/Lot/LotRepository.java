@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Integer> {
-    Lot findByLotIdentifier_LotId(String lotId);
+    Lot findByLotIdentifier_LotId(UUID lotId);
     List<Lot> findByProject_ProjectIdentifier(String projectIdentifier);
 
     // Find lots by assigned user (using the ManyToMany relationship)

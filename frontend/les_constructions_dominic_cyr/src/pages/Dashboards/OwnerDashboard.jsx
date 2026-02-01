@@ -47,12 +47,6 @@ const OwnerDashboard = () => {
       action: () => navigate('/owner/inbox'),
     },
     {
-      icon: <GoFile />,
-      title: 'Documents',
-      buttonText: 'View Documents',
-      action: () => navigate('/owner/documents'),
-    },
-    {
       icon: <GoPeople />,
       title: 'Users',
       buttonText: 'View Users',
@@ -66,9 +60,9 @@ const OwnerDashboard = () => {
     },
     {
       icon: <FaMapLocationDot />,
-      title: 'Lots',
-      buttonText: 'Add',
-      action: () => navigate('/lots'),
+      title: 'Lot Documents',
+      buttonText: 'View Documents',
+      action: () => navigate('/owner/documents'),
     },
   ];
 

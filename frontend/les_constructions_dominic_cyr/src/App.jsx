@@ -24,6 +24,8 @@ import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
 import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPage';
 import ContractorDashboard from './pages/Dashboards/ContractorDashboard';
+import LotDocumentsPage from './features/lots/components/LotDocumentsPage';
+import LotsListDashboard from './features/lots/components/LotsListDashboard';
 import ProjectFilesPage from './pages/Project/ProjectFilesPage';
 import ProjectPhotosPage from './pages/Project/ProjectPhotosPage';
 import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
@@ -43,6 +45,7 @@ import ReactGA from 'react-ga4';
 // import { loadTheme } from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
+import useBackendUser from './hooks/useBackendUser';
 
 function PageViewTracker() {
   const location = useLocation();
@@ -50,6 +53,16 @@ function PageViewTracker() {
     ReactGA.send({ hitType: 'pageview', page: location.pathname });
   }, [location]);
   return null;
+}
+
+function ContractorLotsDocuments() {
+  const { profile, loading } = useBackendUser();
+
+  if (loading || !profile) {
+    return <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>;
+  }
+
+  return <LotsListDashboard userId={profile.userId} />;
 }
 
 export default function App() {
@@ -334,6 +347,51 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['CONTRACTOR']}
                   element={<ContractorDashboard />}
+                />
+              }
+            />
+
+            <Route
+              path="/contractors/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CONTRACTOR', 'OWNER']}
+                  element={
+                    <ContractorLotsDocuments />
+                  }
+                />
+              }
+            />
+
+            <Route
+              path="/owner/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={
+                    <ContractorLotsDocuments />
+                  }
+                />
+              }
+            />
+
+            <Route
+              path="/dashboard/lots/:lotId/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
+                  element={<LotDocumentsPage />}
+                />
+              }
+            />
+
+            {/* Project-based lot documents route */}
+            <Route
+              path="/projects/:projectIdentifier/lots/:lotId/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR', 'CUSTOMER']}
+                  element={<LotDocumentsPage />}
                 />
               }
             />

@@ -160,3 +160,26 @@ export async function deleteLot({ projectIdentifier, lotId, token }) {
     return response.json();
   }
 }
+
+/**
+ * Fetch all lots assigned to a specific user
+ * Note: Backend should filter lots by user assignment
+ */
+export async function fetchLotsByUserId(userId, token) {
+  const headers = {};
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  // For now, fetch all lots the user has access to
+  // The backend will filter based on user's lot assignments
+  const url = `${API_BASE_URL}/lots`;
+
+  const response = await fetch(url, { headers });
+
+  if (!response.ok) {
+    const message = await parseErrorMessage(response, 'Failed to fetch user lots');
+    throw new Error(message);
+  }
+  return response.json();
+}
