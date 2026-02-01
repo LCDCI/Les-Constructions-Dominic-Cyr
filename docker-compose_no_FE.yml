@@ -1,5 +1,4 @@
 services:
-
   #######################################################################
   # BACKEND (Spring Boot)
   #######################################################################
@@ -8,84 +7,58 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: backend
+    command: ["java", "-jar", "app.jar"]
     ports:
       - "8080:8080"
-    command: [ "java", "-jar", "app.jar" ]
     environment:
-      FILES_SERVICE_BASE_URL: "http://files-service:8080"
-      FILE_SERVICE_URL: "${FILE_SERVICE_URL}"
-      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
-      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
-      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
-      SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
-      SPRING_PROFILES_ACTIVE: "docker"
+      SPRING_PROFILES_ACTIVE: local
+
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+      FILES_SERVICE_BASE_URL: ${FILES_SERVICE_BASE_URL:-http://files-service:8080}
+
+      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
+      AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: https://${AUTH0_DOMAIN}/
+
       SERVER_TOMCAT_RELAXED_PATH_CHARS: "|,%,[,]"
       SERVER_TOMCAT_RELAXED_QUERY_CHARS: "|,%,[,]"
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "https://${AUTH0_DOMAIN}/"
-      AUTH0_DOMAIN: ${AUTH0_DOMAIN}
-      AUTH0_MGMT_CLIENT_ID: ${AUTH0_MGMT_CLIENT_ID}
-      AUTH0_MGMT_CLIENT_SECRET: ${AUTH0_MGMT_CLIENT_SECRET}
-      AUTH0_DB_CONNECTION: ${AUTH0_DB_CONNECTION}
-      AUTH0_ROLE_CONTRACTOR: ${AUTH0_ROLE_CONTRACTOR}
-      AUTH0_ROLE_CUSTOMER: ${AUTH0_ROLE_CUSTOMER}
-      AUTH0_ROLE_SALESPERSON: ${AUTH0_ROLE_SALESPERSON}
-      AUTH0_ROLE_OWNER: ${AUTH0_ROLE_OWNER}
-      APP_INVITE_RESULT_URL: ${APP_INVITE_RESULT_URL}
-      GOOGLE_ANALYTICS_PROPERTY_ID: ${GA_PROPERTY_ID}
-      GOOGLE_ANALYTICS_CREDENTIALS_PATH: "/app/config/google-analytics-credentials.json"
-
-    volumes:
-      - ${GA_CREDENTIALS_PATH}:/app/config/google-analytics-credentials.json:ro
-
     depends_on:
-      files-service:
-        condition: service_started
-      postgres1:
+      postgres:
         condition: service_healthy
-        required: false
     networks:
       - app-network
 
   #######################################################################
-  # POSTGRES (database)
+  # BACKEND DATABASE
   #######################################################################
-  postgres1:
-    profiles:
-      - local-only
+  postgres:
     image: postgres:16
-    container_name: postgres1-cdc
-    hostname: postgres1
+    container_name: postgres-backend
     environment:
-      - POSTGRES_USER=user
-      - PGUSER=user
-      - POSTGRES_PASSWORD=pwd
-      - POSTGRES_DB=cdc-db
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      POSTGRES_DB: lcdci
     ports:
       - "5434:5432"
     volumes:
-      - cdc-db-data:/var/lib/postgresql/data
+        - backend-db-data:/var/lib/postgresql/data
+        # Mount individual SQL files from resources to ensure deterministic order
+        - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+        - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d cdc-db"]
-      interval: 3s
+      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d lcdci"]
+      interval: 5s
       timeout: 5s
       retries: 5
     networks:
       - app-network
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: pgadmin-cdc
-    restart: always
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=constructions.dcyr@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-    ports:
-      - 9005:80
-    networks:
-      - app-network
-
   #######################################################################
-  # FILES-SERVICE (Go + Gin + Postgres + S3-compatible storage)
+  # FILES-SERVICE (Go)
   #######################################################################
   files-service:
     build:
@@ -95,66 +68,62 @@ services:
     ports:
       - "8082:8080"
     environment:
-      DB_URL: "${FILES_DB_URL}"
-      MINIO_ENDPOINT: "${SPACES_ENDPOINT:-minio:9000}"
-      MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY:-${MINIO_ROOT_USER}}"
-      MINIO_SECRET_KEY: "${SPACES_SECRET_KEY:-${MINIO_ROOT_PASSWORD}}"
-      MINIO_BUCKET: "${SPACES_BUCKET:-project-files}"
-      MINIO_USE_SSL: "${MINIO_USE_SSL:-false}"
-      MINIO_REGION: "${SPACES_REGION:-us-east-1}"
-    healthcheck:
-      test: [ "CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/health || exit 1" ]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-      start_period: 10s
+      DB_URL: ${FILES_DB_URL}
+
+      FILES_STORAGE_TYPE: minio
+
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_BUCKET: ${MINIO_BUCKET}
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_USE_SSL: "false"
+      MINIO_REGION: us-east-1
+    depends_on:
+      files-db:
+        condition: service_healthy
+      minio:
+        condition: service_started
     networks:
       - app-network
 
   #######################################################################
-  # POSTGRES (files database)
+  # FILES DATABASE
   #######################################################################
   files-db:
-    profiles:
-      - local-db
     image: postgres:16
-    container_name: files-db
-    restart: always
+    container_name: postgres-files
     environment:
-      POSTGRES_USER: "${FILES_DB_USER}"
-      POSTGRES_PASSWORD: "${FILES_DB_PASSWORD}"
-      POSTGRES_DB: "${FILES_DB_NAME}"
+      POSTGRES_USER: ${FILES_DB_USER}
+      POSTGRES_PASSWORD: ${FILES_DB_PASSWORD}
+      POSTGRES_DB: ${FILES_DB_NAME}
     ports:
       - "5433:5432"
     volumes:
-      - ./files-service/migrations:/docker-entrypoint-initdb.d
-      - ./data/files-db:/var/lib/postgresql/data
+      - files-db-data:/var/lib/postgresql/data
+        # Files-service manages its own schema via migrations
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${FILES_DB_USER} -d ${FILES_DB_NAME}"]
       interval: 5s
       timeout: 5s
-      retries: 10
-      start_period: 25s
+      retries: 5
     networks:
       - app-network
 
   #######################################################################
-  # MINIO (S3-compatible object storage)
+  # MINIO (LOCAL STORAGE)
   #######################################################################
   minio:
-    profiles:
-      - local-minio
     image: minio/minio:latest
     container_name: minio
-    environment:
-      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
-      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
     command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - ./data/minio:/data
+      - minio-data:/data
     networks:
       - app-network
 
@@ -162,7 +131,7 @@ services:
 # VOLUMES & NETWORK
 #######################################################################
 volumes:
-  cdc-db-data:
+  backend-db-data:
   files-db-data:
   minio-data:
 

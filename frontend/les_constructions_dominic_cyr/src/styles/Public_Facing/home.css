@@ -3,7 +3,7 @@
 :root {
   --color-primary: #4c4d4f;
   --color-secondary: #aab2a6;
-  --color-tertiary: #d9e6f2; /* light blue (not white/grey) */
+  --color-tertiary: #d9e6f2;
   --color-light: #e6e7e8;
   --color-white: #ffffff;
   --color-accent: #628db5;
@@ -68,7 +68,7 @@ body {
   min-height: 700px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  margin-bottom: calc(var(--spacing-xxl) * 0.6667); /* reduce by ~1/3 */
   overflow: hidden;
   margin-bottom: 8rem;
 }
@@ -82,18 +82,9 @@ body {
   z-index: 0;
 }
 
-.hero-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  transform: scale(1.3);
-}
-
 .hero-overlay {
   position: absolute;
-  top: 0;
+  margin-bottom: calc(var(--spacing-md) * 0.6667); /* reduce by ~1/3 */
   left: 0;
   width: 100%;
   height: 100%;
@@ -367,6 +358,37 @@ body {
   overflow: hidden;
 }
 
+/* Reduce size of featured content sections (Think / Build / Live) by 25% */
+.content-section.featured-section {
+  padding: calc(var(--spacing-section) * 0.75) 0;
+  gap: calc(var(--spacing-xxl) * 0.75);
+}
+
+.content-section.featured-section .section-image-container,
+.content-section.featured-section .section-image {
+  min-height: calc(500px * 0.75); /* reduce 500px -> 375px */
+}
+
+.content-section.featured-section .featured-section {
+  padding: calc(var(--spacing-xl) * 0.75);
+}
+
+/* Further reduce featured sections by another 25% (apply on top of previous change) */
+.content-section.featured-section {
+  padding: calc(var(--spacing-section) * 0.5625) 0; /* 0.75 * 0.75 = 0.5625 */
+  gap: calc(var(--spacing-xxl) * 0.5625);
+  padding-inline: clamp(0.75rem, 4vw, 1.5rem);
+}
+
+.content-section.featured-section .section-image-container,
+.content-section.featured-section .section-image {
+  min-height: calc(500px * 0.5625); /* ~281px */
+}
+
+.content-section.featured-section .section-text-wrapper {
+  padding: clamp(0.75rem, 2vw, 1rem);
+}
+
 .featured-section .section-title,
 .featured-section .section-subtitle {
   color: var(--color-white);
@@ -418,8 +440,13 @@ body {
 .section-header {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: calc(0.65rem * 0.6667); /* reduce vertical gap by ~1/3 */
   margin-bottom: 0;
+}
+
+/* Specific lowered title for individual sections (shift down ~1/3) */
+.section-header.lowered-title {
+  margin-top: calc(var(--spacing-md) * 0.3333);
 }
 
 .section-header[data-animate] {
@@ -437,7 +464,7 @@ body {
   font-family: var(--font-heading);
   font-size: clamp(1.8rem, 3.5vw, 2.5rem);
   font-weight: 400;
-  margin: 0.35rem 0 0.25rem;
+  margin: 0.35rem 0 calc(0.25rem * 0.6667); /* move title closer to following text */
   letter-spacing: -0.01em;
   color: var(--color-primary);
   line-height: 1.35;
@@ -556,6 +583,48 @@ body {
   gap: var(--spacing-lg);
 }
 
+/* Reduce each portfolio box on large screens (smaller, tighter grid) */
+@media (min-width: 1001px) {
+  /* Use fixed column widths so columns don't stretch to fill container
+     and so the horizontal space between left/right columns is controlled. */
+  .portfolio-grid {
+    /* 2 columns x 2 rows using the same fixed card width and tight spacing */
+    grid-template-columns: repeat(2, 275px) !important; /* two columns */
+    grid-auto-rows: 1fr;
+    grid-auto-flow: row;
+    /* increase current tight gap by 25% */
+    gap: calc(0.25rem * 1.375) !important; /* 0.25rem * 1.1 * 1.25 */
+    column-gap: calc(0.25rem * 1.375) !important;
+    row-gap: calc(0.25rem * 1.375) !important;
+    justify-content: center !important; /* center the group */
+    justify-items: center;
+    align-items: start;
+  }
+
+  .portfolio-card {
+    width: 275px !important; /* fixed card width matching columns */
+    max-width: none !important;
+    aspect-ratio: 1 / 1;
+    margin: 0 !important;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .card-content {
+    /* increase inner padding by 25% to match larger cards */
+    padding: calc(var(--spacing-md) * 0.625) !important;
+  }
+
+  .card-title {
+    font-size: 1.25rem; /* 25% larger */
+  }
+
+  .card-subtitle {
+    font-size: 1rem; /* 25% larger */
+  }
+}
+
 .portfolio-card {
   position: relative;
   aspect-ratio: 1;
@@ -629,6 +698,40 @@ body {
   z-index: 1;
 }
 
+/* Replace image with white background for specific portfolio cards */
+.portfolio-card.no-image {
+  background: var(--color-white) !important;
+  color: var(--color-primary);
+  box-shadow: none;
+}
+
+.portfolio-card.no-image .card-image-bg,
+.portfolio-card.no-image .card-overlay {
+  display: none !important;
+}
+
+.portfolio-card.no-image .card-content {
+  position: relative;
+  z-index: 2;
+  padding: var(--spacing-lg) var(--spacing-md) !important;
+  color: var(--color-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.portfolio-card.no-image .card-title {
+  color: var(--color-primary) !important;
+}
+
+.portfolio-card.no-image .card-subtitle {
+  color: var(--color-text-muted) !important;
+}
+
 .card-content {
   position: relative;
   z-index: 2;
@@ -645,6 +748,22 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--color-white) !important;
+}
+
+/* Stack icon above title for portfolio cards that show text */
+.portfolio-card .card-content .card-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+/* Increase icon size by ~15% and center it */
+.portfolio-card .card-content .card-title svg {
+  font-size: 1.72rem; /* 1.5rem * 1.15 */
+  line-height: 1;
+  display: block;
 }
 
 .card-subtitle {
@@ -682,26 +801,20 @@ body {
   animation: fadeIn var(--duration) var(--easing) forwards;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-lg);
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
 .feature-card {
-  padding: var(--spacing-lg);
   text-align: center;
   background: var(--color-light);
   transition: all 0.4s var(--easing);
   opacity: 0;
-  transform: translateY(20px);
-  min-height: 180px;
+  transform: translateY(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid transparent;
+  width: auto;
+  margin: 0;
+  padding: 0.5rem 0.6rem 0.9rem;
+  min-width: 0;
 }
 
 /* Ensure feature card content is strictly centered (horizontal + vertical) */
@@ -720,6 +833,22 @@ body {
 .feature-card.animated {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (min-width: 1001px) {
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.25rem !important;
+    max-width: 720px !important;
+  }
+  .feature-card {
+    min-height: 56px !important;
+    padding: 0.75rem 0.6rem 1rem !important;
+  }
+  .feature-title {
+    font-size: 0.26rem !important;
+    font-weight: 200 !important;
+  }
 }
 
 .feature-card:nth-child(1) {
@@ -748,13 +877,13 @@ body {
 
 .feature-title {
   font-family: var(--font-heading);
-  font-size: 1.2rem !important;
-  font-weight: 400;
+  font-size: 0.245rem !important;
+  font-weight: 200;
   margin: 0;
   color: var(--color-primary);
   letter-spacing: 0.02em;
-  line-height: 1.4;
-  transition: color 0.4s var(--easing);
+  line-height: 1.2;
+  transition: color 0.25s var(--easing);
   word-break: break-word;
   overflow-wrap: anywhere;
   hyphens: auto;
@@ -763,11 +892,21 @@ body {
 /* Ensure feature title is centered inside the card both horizontally and vertically */
 .feature-card .feature-title {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.6rem;
   text-align: center;
   width: 100%;
   height: 100%;
+}
+
+.feature-card .feature-title svg {
+  display: block;
+  font-size: 1.32rem !important;
+  line-height: 1;
+  margin: 0 auto 6% auto;
+  align-self: center;
 }
 
 /* ========== CONTACT SECTION ========== */
@@ -901,7 +1040,7 @@ body {
 
 /* ========== RESPONSIVE DESIGN ========== */
 
-@media (max-width: 1200px) {
+@media (max-width: 1000px) {
   :root {
     --content-width: 90%;
   }
@@ -917,7 +1056,7 @@ body {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1000px) {
   :root {
     --content-width: 90%;
     --spacing-section: 5rem;
@@ -1004,7 +1143,7 @@ body {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1000px) {
   :root {
     --content-width: 90%;
     --spacing-section: 5rem;
@@ -1246,8 +1385,9 @@ body {
 
   /* Feature title sizing for mobile to avoid overflow */
   .feature-title {
-    font-size: clamp(0.95rem, 3.8vw, 1.1rem) !important;
+    font-size: clamp(0.355rem, 1.425vw, 0.4125rem) !important;
     line-height: 1.35;
+    font-weight: 200 !important;
   }
 
   /* Remove offsets on mobile for clean stacking */
@@ -1349,8 +1489,9 @@ body {
   }
 
   .feature-title {
-    font-size: clamp(0.9rem, 4.5vw, 1rem);
+    font-size: clamp(0.3375rem, 1.6875vw, 0.375rem);
     line-height: 1.35;
+    font-weight: 200 !important;
   }
 
   /* Ensure feature card content is strictly centered (highest specificity) */
@@ -1398,4 +1539,55 @@ body {
 
 [data-animate] {
   /* Base class for elements to animate */
+}
+
+/* Strong override: increase portfolio spacing and card size on large screens
+   This uses high specificity and !important to ensure it takes effect. */
+@media (min-width: 1001px) {
+  .portfolio-section .container .portfolio-grid {
+    grid-template-columns: repeat(
+      2,
+      316px
+    ) !important; /* 275px * 1.15 ≈ 316px */
+    gap: 1rem !important; /* increase spacing between boxes */
+    column-gap: 1rem !important;
+    row-gap: 1rem !important;
+    justify-content: center !important;
+    justify-items: center !important;
+  }
+
+  .portfolio-section .container .portfolio-grid .portfolio-card {
+    width: 316px !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .portfolio-section .container .portfolio-grid .portfolio-card .card-content {
+    padding: calc(
+      var(--spacing-md) * 0.75
+    ) !important; /* slightly larger inner padding */
+  }
+}
+
+/* Force smallest portfolio gaps on large screens (highest specificity + important)
+   This overrides any other .portfolio-grid rules loaded elsewhere. */
+@media (min-width: 1001px) {
+  /* Reduce horizontal space between the two columns by ~90% */
+  .portfolio-section .container .portfolio-grid {
+    /* Use spacing-lg as the baseline for visual gaps; set to 10% of that */
+    gap: calc(var(--spacing-lg) * 0.1) !important;
+    column-gap: calc(var(--spacing-lg) * 0.1) !important;
+    row-gap: calc(var(--spacing-lg) * 0.1) !important;
+    justify-content: center !important;
+  }
+
+  .portfolio-section .container .portfolio-grid .portfolio-card {
+    margin: 0 !important;
+  }
+
+  /* Ensure cards don't expand the gap via internal padding */
+  .portfolio-section .container .portfolio-grid .portfolio-card .card-content {
+    padding-left: calc(var(--spacing-xs) * 0.5) !important;
+    padding-right: calc(var(--spacing-xs) * 0.5) !important;
+  }
 }

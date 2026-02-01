@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/residential-projects.css';
+import '../../styles/Public_Facing/residential-projects.override.css';
 
 const ResidentialProjectsPage = () => {
   const { t } = usePageTranslations('residentialProjects');
@@ -12,7 +13,7 @@ const ResidentialProjectsPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const pageSize = 6; // two rows of three cards or three rows of two cards
+  const pageSize = 6;
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
@@ -40,7 +41,6 @@ const ResidentialProjectsPage = () => {
       setFilteredProjects(data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching projects:', error);
       setLoading(false);
     }
   };
@@ -114,23 +114,7 @@ const ResidentialProjectsPage = () => {
         </div>
       </section>
 
-      {/* SEARCH SECTION */}
-      <div className="projects-search-container">
-        <div className="container">
-          <div className="search-box">
-            <input
-              type="text"
-              className="search-input"
-              placeholder={t(
-                'search.placeholder',
-                'Search projects by name...'
-              )}
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
+      {/* SEARCH SECTION removed per design, search is hidden on Residential Projects page */}
 
       {/* PORTFOLIO GRID */}
       <section className="portfolio-section">

@@ -1,3 +1,7 @@
+# Combined docker-compose: supports full local stack (postgres, pgadmin, mailer, minio)
+# and production-style (managed DB via env; mailer/files optional).
+# Default: all services. For managed DB only, set SPRING_DATASOURCE_* and use
+# docker-compose.override.yml to override backend command to: ["java", "-jar", "app.jar"]
 version: "3.9"
 
 services:
@@ -11,30 +15,22 @@ services:
     container_name: backend
     ports:
       - "8080:8080"
-    command: ["java", "-jar", "app.jar"]
+    command: [ "/bin/bash", "-c", "./wait-for-it.sh postgres1:5432 --timeout=30 --strict -- java -jar app.jar" ]
     environment:
-      # Service-to-service communication inside the Docker network
       FILES_SERVICE_BASE_URL: "http://files-service:8080"
-
-      # Database (managed Postgres in DigitalOcean)
-      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
-      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
-      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+      MAILER_SERVICE_BASE_URL: "http://mailer-service:8080"
+      FILE_SERVICE_URL: "${FILE_SERVICE_URL:-}"
+      # Database: use env for managed DB, or defaults for local postgres1
+      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres1/cdc-db}"
+      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME:-user}"
+      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD:-pwd}"
       SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
-
-      # Profile
       SPRING_PROFILES_ACTIVE: "docker"
-
-      # Tomcat relaxed chars
       SERVER_TOMCAT_RELAXED_PATH_CHARS: "|,%,[,]"
       SERVER_TOMCAT_RELAXED_QUERY_CHARS: "|,%,[,]"
-      
-      # Auth0 / JWT
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "https://${AUTH0_DOMAIN}/"
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
-      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
-
-      # Auth0 mgmt (only if backend really needs it in prod)
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE:-}"
       AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
       AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
       AUTH0_DB_CONNECTION: "${AUTH0_DB_CONNECTION}"
@@ -42,21 +38,27 @@ services:
       AUTH0_ROLE_CUSTOMER: "${AUTH0_ROLE_CUSTOMER}"
       AUTH0_ROLE_SALESPERSON: "${AUTH0_ROLE_SALESPERSON}"
       AUTH0_ROLE_OWNER: "${AUTH0_ROLE_OWNER}"
-
-      # App links
       APP_INVITE_RESULT_URL: "${APP_INVITE_RESULT_URL}"
-
       # Google Analytics (server side)
-      GOOGLE_ANALYTICS_PROPERTY_ID: "${GA_PROPERTY_ID}"
+      GOOGLE_ANALYTICS_PROPERTY_ID: "${GA_PROPERTY_ID:-}"
       GOOGLE_ANALYTICS_CREDENTIALS_PATH: "/app/config/google-analytics-credentials.json"
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
     volumes:
       - ${GA_CREDENTIALS_PATH}:/app/config/google-analytics-credentials.json:ro
-
     depends_on:
       files-service:
         condition: service_started
-
+      mailer-service:
+        condition: service_started
+      postgres1:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -82,7 +84,66 @@ services:
       - app-network
 
   #######################################################################
-  # FILES-SERVICE (Go + Gin + Spaces)
+  # POSTGRES (main app database - local dev)
+  #######################################################################
+  postgres1:
+    image: postgres:16
+    container_name: postgres1-cdc
+    hostname: postgres1
+    environment:
+      - POSTGRES_USER=user
+      - PGUSER=user
+      - POSTGRES_PASSWORD=pwd
+      - POSTGRES_DB=cdc-db
+    ports:
+      - "5434:5432"
+    volumes:
+      - cdc-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d cdc-db"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin-cdc
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=constructions.dcyr@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - 9005:80
+    depends_on:
+      - postgres1
+    networks:
+      - app-network
+
+  #######################################################################
+  # MAILER-SERVICE (Go + Gin + SMTP)
+  #######################################################################
+  mailer-service:
+    build:
+      context: ./mailer-service
+      dockerfile: Dockerfile
+    container_name: mailer-service
+    ports:
+      - "8083:8080"
+    env_file:
+      - .env
+      - mailer.env
+    environment:
+      BREVO_API_KEY: "${BREVO_API_KEY}"
+      BREVO_FROM_EMAIL: "${BREVO_FROM_EMAIL:-noreply@constructions-dominiccyr.com}"
+      MAILER_PORT: "8080"
+    networks:
+      - app-network
+
+  #######################################################################
+  # FILES-SERVICE (Go + Gin + Postgres + S3-compatible storage)
+  # Supports both local MinIO and DigitalOcean Spaces
   #######################################################################
   files-service:
     build:
@@ -90,7 +151,7 @@ services:
       dockerfile: Dockerfile
     container_name: files-service
     ports:
-      - "8082:8080"   # external 8082 -> internal 8080
+      - "8082:8080"
     environment:
       # Managed Postgres for files-service
       DB_URL: "${DB_URL}"
@@ -103,19 +164,63 @@ services:
       MINIO_SECRET_KEY: "${SPACES_SECRET_KEY}"
       MINIO_USE_SSL: "true"
 
+  #######################################################################
+  # POSTGRES (files database - optional, profile: local-db)
+  #######################################################################
+  files-db:
+    profiles:
+      - local-db
+    image: postgres:16
+    container_name: files-db
+    restart: always
+    environment:
+      POSTGRES_USER: "${FILES_DB_USER}"
+      POSTGRES_PASSWORD: "${FILES_DB_PASSWORD}"
+      POSTGRES_DB: "${FILES_DB_NAME}"
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./files-service/migrations:/docker-entrypoint-initdb.d
+      - ./data/files-db:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail --silent --max-time 5 http://localhost:8080/health || exit 1"]
+      test: ["CMD-SHELL", "curl --fail --silent --max-time 5 http://files-service:8080/health || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 15s
+      retries: 10
+      start_period: 25s
+    networks:
+      - app-network
 
+  #######################################################################
+  # MINIO (S3-compatible object storage - optional, profile: local-minio)
+  # Use 'docker compose --profile local-minio up' to start with MinIO.
+  # For production, use DigitalOcean Spaces with SPACES_* env vars.
+  #######################################################################
+  minio:
+    profiles:
+      - local-minio
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./data/minio:/data
     networks:
       - app-network
 
 #######################################################################
-# NETWORK
+# VOLUMES & NETWORK
 #######################################################################
+volumes:
+  cdc-db-data:
+  files-db-data:
+  minio-data:
+
 networks:
   app-network:
     driver: bridge

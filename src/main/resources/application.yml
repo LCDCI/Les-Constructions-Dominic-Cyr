@@ -38,8 +38,7 @@ spring:
 
   sql:
     init:
-      platform: psql
-      mode: always
+      mode: ${SPRING_SQL_INIT_MODE:never}
 
 server.port: 8080
 
@@ -57,6 +56,10 @@ spring.datasource.hikari.initializationFailTimeout: 60000
 files:
   service:
     base-url: ${FILES_SERVICE_BASE_URL:http://localhost:8082}
+
+mailer:
+  service:
+    base-url: ${MAILER_SERVICE_BASE_URL:http://localhost:8083}
 
 # DeepL API Configuration (for PDF translation)
 deepl:

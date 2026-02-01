@@ -1,6 +1,6 @@
 .project-metadata {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: var(--color-light);
 }
 
 .metadata-hero {
@@ -8,6 +8,16 @@
   padding: 4rem 5%;
   color: white;
   overflow: hidden;
+}
+
+/* make hero more readable on light/dark backgrounds */
+.metadata-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.05);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .hero-content {
@@ -67,7 +77,7 @@
 .hero-image img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .metadata-content {
@@ -76,8 +86,79 @@
   padding: 2rem 0;
 }
 
+/* Lot selector and cards */
+.lot-selector-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.lot-card {
+  background: var(--color-white);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.lot-card h3 {
+  margin: 0 0 0.5rem 0;
+  color: var(--color-text);
+}
+
+.lot-card p {
+  margin: 0 0 0.75rem 0;
+  color: var(--color-text-muted);
+}
+
+/* Unified button styles using global variables */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+  filter: brightness(0.9);
+}
+
+.btn-primary:focus,
+.btn-secondary:focus {
+  outline: 3px solid rgba(44, 123, 229, 0.18);
+}
+
+.no-results {
+  text-align: center;
+  padding: 2rem;
+}
+
 .metadata-section {
-  background: white;
+  background: var(--color-white);
   border-radius: 8px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -89,6 +170,11 @@
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 3px solid currentColor;
+}
+
+.schedule-button-container {
+  text-align: center;
+  margin-top: 20px;
 }
 
 .metadata-grid {
@@ -110,7 +196,7 @@
 .metadata-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #666;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -118,13 +204,13 @@
 .metadata-value {
   font-size: 1.1rem;
   font-weight: 500;
-  color: #333;
+  color: var(--color-text);
 }
 
 .progress-bar {
   width: 100%;
   height: 40px;
-  background-color: #e0e0e0;
+  background-color: var(--color-light);
   border-radius: 20px;
   overflow: hidden;
   position: relative;
@@ -218,30 +304,40 @@
 }
 
 .project-metadata-back {
-  background-color: var(--project-primary);
-  color: white;
-  padding: 0.8%;
-  border-radius: 5px;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
   text-decoration: none;
-}
-
-.project-metadata-back:hover {
-  background-color: var(--project-buyer);
-  color: white;
-}
-
-.project-metadata-schedule {
-  background-color: #27ae60;
-  color: white;
-  padding: 0.8%;
-  border-radius: 5px;
-  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
+.project-metadata-back:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  filter: brightness(0.9);
+}
+
+.project-metadata-schedule {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
 .project-metadata-schedule:hover {
-  background-color: #229954;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  filter: brightness(0.9);
 }
 
 .view-files-link {
@@ -262,7 +358,7 @@
   width: 3.5rem;
   height: 3.5rem;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid var(--project-primary, #3498db);
+  border-top: 4px solid var(--color-accent);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -287,12 +383,12 @@
 }
 
 .metadata-error h2 {
-  color: #e74c3c;
+  color: var(--color-primary);
   margin-bottom: 1rem;
 }
 
 .metadata-error p {
-  color: #666;
+  color: var(--color-text-muted);
   font-size: 1.1rem;
 }
 
@@ -315,5 +411,180 @@
 
   .team-grid {
     grid-template-columns: 1fr;
+  }
+
+  .lot-selector-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Lots Grid: start with 4 columns, reduce to 1 on small screens */
+.project-metadata .lots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 2.5rem;
+  margin-top: 1rem;
+  justify-content: stretch;
+}
+
+.lot-card {
+  background: var(--color-white);
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.lot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.lot-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.lot-address {
+  margin: 0.5rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.lot-status {
+  display: inline-block;
+  padding: 0.03125rem 0.0625rem;
+  border-radius: 2px;
+  font-size: 0.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.status-available {
+  background-color: #e8f5e8;
+  color: #2e7d32;
+}
+
+.status-reserved {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.status-sold {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Small dot + label style for project lot cards (matches public landing lots) */
+.lot-status-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.status-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-transform: none;
+}
+
+/* Dot color variants (kept separate so other badge styles are unaffected) */
+.status-dot.status-available {
+  background-color: #4ade80;
+}
+.status-dot.status-reserved {
+  background-color: #fbbf24;
+}
+.status-dot.status-sold {
+  background-color: #f87171;
+}
+
+/* Ensure the label stays transparent and inherits the card background
+  (scoped to .lot-card to avoid affecting other pages) */
+.lot-card .lot-status-inline,
+.lot-card .status-label {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Stronger specificity for the dot so global `.status-available` rules
+  that set var(--color-primary) won't color the label or dot incorrectly. */
+.lot-card .status-dot.status-available {
+  background-color: #4ade80 !important;
+}
+.lot-card .status-dot.status-reserved {
+  background-color: #fbbf24 !important;
+}
+.lot-card .status-dot.status-sold {
+  background-color: #f87171 !important;
+}
+
+@media (max-width: 768px) {
+  .lots-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Responsive breakpoints for lots grid */
+@media (max-width: 1000px) {
+  .project-metadata .lots-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .project-metadata .lots-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Progress bar styles */
+.progress-bar {
+  position: relative;
+  width: 100%;
+  height: 24px;
+  background-color: var(--color-light);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+  z-index: 1;
+}
+
+/* Hide status badges and lot status labels/dots on smaller screens to reduce clutter */
+@media (max-width: 600px) {
+  .project-metadata .status-badge {
+    display: none !important;
+  }
+
+  .project-metadata .lot-status-inline {
+    display: none !important;
   }
 }

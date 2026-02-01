@@ -1,0 +1,383 @@
+/* Living Environment Page Styles - Using Dynamic Project Colors */
+
+.living-environment-page {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--color-white, #ffffff);
+  padding: 0 0 var(--spacing-xl, 4rem) 0;
+}
+
+/* Header Section */
+.le-header-section {
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin: 0 auto var(--spacing-xxl, 6rem) auto;
+  text-align: center;
+  margin-top: 0;
+  padding: 1.5rem 0 2.5rem 0;
+  background: var(--primary-color, #4c4d4f);
+  border-radius: 1.5rem;
+  color: #fff;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+/* Full width header variant with 5% side gutters */
+.le-header-section.full-width-le {
+  width: calc(100% - 10%);
+  margin: 0 5% var(--spacing-xxl, 6rem);
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.le-main-title,
+.le-subtitle,
+.le-subtitle-last {
+  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  margin: 0.5rem 0;
+  color: var(--primary-color, var(--color-primary, #4c4d4f));
+  line-height: 1.2;
+}
+
+.le-main-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.le-subtitle {
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.le-subtitle-last {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: var(--spacing-md, 2rem);
+}
+
+.le-tagline {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  color: var(--tertiary-color, var(--color-text-muted, #6b7280));
+  font-style: italic;
+  margin-top: var(--spacing-sm, 1.25rem);
+  font-weight: 300;
+  font-family: var(--font-body, 'Segoe UI', sans-serif);
+}
+
+/* Description Section */
+.le-description-section {
+  margin-bottom: var(--spacing-xxl, 6rem);
+  padding: 0 var(--spacing-md, 2rem);
+}
+
+.le-description-text {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.8;
+  color: var(--color-text, #333333);
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: var(--font-body, 'Segoe UI', sans-serif);
+}
+
+/* Proximity Section */
+.le-proximity-section {
+  margin-bottom: var(--spacing-xxl, 6rem);
+  padding: 0 var(--spacing-md, 2rem);
+}
+
+.le-proximity-title {
+  text-align: center;
+  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 400;
+  color: var(--primary-color, var(--color-primary, #4c4d4f));
+  margin-bottom: var(--spacing-xl, 4rem);
+  letter-spacing: 0.05em;
+}
+
+/* Amenities Grid */
+.le-amenities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--spacing-md, 2rem);
+  max-width: var(--content-max-width, 1400px);
+  margin: 0 auto;
+}
+
+.le-amenity-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: var(--spacing-lg, 3rem) var(--spacing-md, 2rem);
+  text-align: center;
+  transition: all 0.3s var(--easing, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1.5px solid var(--primary-color, #628db5);
+}
+
+.le-amenity-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.le-amenity-icon {
+  font-size: 3rem;
+  color: var(--primary-color, #4c4d4f);
+  margin-bottom: var(--spacing-sm, 1.25rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.le-amenity-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-color, #4c4d4f);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  word-wrap: break-word;
+  font-family: var(--font-body, 'Segoe UI', sans-serif);
+}
+
+/* Footer Section */
+.le-footer-section {
+  text-align: center;
+  padding: var(--spacing-xl, 4rem) var(--spacing-md, 2rem);
+  border-top: 1px solid var(--color-light, #e6e7e8);
+  position: relative;
+}
+
+.le-footer-text {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--color-text-muted, #6b7280);
+  font-weight: 400;
+  font-style: italic;
+  font-family: var(--font-body, 'Segoe UI', sans-serif);
+}
+
+.le-amenity-box:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.le-amenity-icon {
+  font-size: 3rem;
+  color: var(--color-white, #ffffff);
+  margin-bottom: var(--spacing-sm, 1.25rem);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.le-amenity-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-white, #ffffff);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+  word-wrap: break-word;
+  font-family: var(--font-body, 'Segoe UI', sans-serif);
+}
+
+/* Footer Section */
+.le-footer-section {
+  text-align: center;
+  padding: var(--spacing-xl, 4rem) var(--spacing-md, 2rem);
+  border-top: 1px solid var(--color-light, #e6e7e8);
+}
+
+.le-footer-text {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--color-text-muted, #6b7280);
+  font-weight: 400;
+  font-style: italic;
+  font-family: var(--font-body, 'Segoe UI', sans-serif);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .living-environment-page {
+    padding: var(--spacing-md, 2rem) 0;
+  }
+
+  .le-header-section {
+    margin-bottom: var(--spacing-lg, 3rem);
+    padding: var(--spacing-md, 2rem) var(--spacing-sm, 1.25rem);
+    width: calc(100% - 4%);
+    margin-left: 2%;
+    margin-right: 2%;
+  }
+
+  .le-main-title,
+  .le-subtitle,
+  .le-subtitle-last {
+    font-size: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  .le-tagline {
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+  }
+
+  .le-description-section,
+  .le-proximity-section {
+    margin-bottom: var(--spacing-lg, 3rem);
+  }
+
+  .le-description-text {
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  .le-proximity-title {
+    font-size: clamp(1.5rem, 5vw, 1.8rem);
+    margin-bottom: var(--spacing-md, 2rem);
+  }
+
+  .le-amenities-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-sm, 1.25rem);
+  }
+
+  .le-amenity-box {
+    padding: var(--spacing-md, 2rem) var(--spacing-sm, 1.25rem);
+  }
+
+  .le-amenity-icon {
+    font-size: 2.5rem;
+  }
+
+  .le-amenity-label {
+    font-size: 0.85rem;
+  }
+
+  .le-footer-section {
+    padding: var(--spacing-md, 2rem) var(--spacing-sm, 1.25rem);
+  }
+
+  .le-footer-text {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .living-environment-page {
+    padding: var(--spacing-sm, 1.25rem) 0;
+  }
+
+  .le-header-section {
+    padding: var(--spacing-sm, 1.25rem);
+  }
+
+  .le-main-title,
+  .le-subtitle,
+  .le-subtitle-last {
+    font-size: clamp(1.3rem, 5vw, 1.5rem);
+    letter-spacing: 0.03em;
+  }
+
+  .le-tagline {
+    font-size: 0.9rem;
+  }
+
+  .le-description-text {
+    font-size: 0.95rem;
+  }
+
+  .le-proximity-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-md, 2rem);
+  }
+
+  .le-amenities-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs, 0.75rem);
+  }
+
+  .le-amenity-box {
+    padding: var(--spacing-sm, 1.25rem) var(--spacing-xs, 0.75rem);
+  }
+
+  .le-amenity-icon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-xs, 0.75rem);
+  }
+
+  .le-amenity-label {
+    font-size: 0.75rem;
+  }
+
+  .le-footer-text {
+    font-size: 0.85rem;
+  }
+}
+
+/* Error Message Styling */
+.error-message {
+  text-align: center;
+  padding: var(--spacing-xl, 4rem) var(--spacing-md, 2rem);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.error-message h2 {
+  color: var(--primary-color, #4c4d4f);
+  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin-bottom: var(--spacing-md, 2rem);
+}
+
+.error-message p {
+  color: var(--color-text, #333333);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: var(--spacing-sm, 1.25rem);
+}
+
+.error-details {
+  background: #f9f9f9;
+  border-left: 4px solid var(--primary-color, #4c4d4f);
+  padding: var(--spacing-md, 2rem);
+  margin: var(--spacing-md, 2rem) 0;
+  text-align: left;
+}
+
+.error-details ul {
+  list-style: none;
+  padding-left: 0;
+  margin-top: var(--spacing-sm, 1.25rem);
+}
+
+.error-details li {
+  padding: 0.5rem 0;
+  color: #555;
+}
+
+.error-details code {
+  background: #e0e0e0;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background-color: var(--primary-color, #4c4d4f);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: var(--tertiary-color, #628db5);
+}

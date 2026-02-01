@@ -1,0 +1,11 @@
+.projects-page .portfolio-grid {
+  /* Increase spacing between project cards on Residential Projects page only */
+  gap: calc(var(--spacing-lg) * 1.8);
+  column-gap: calc(var(--spacing-lg) * 1.8);
+  row-gap: calc(var(--spacing-lg) * 1.2);
+}
+
+.projects-page .portfolio-card {
+  /* Ensure cards keep consistent internal padding without affecting other pages */
+  padding: 0.25rem;
+}

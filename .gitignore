@@ -38,6 +38,9 @@ out/
 
 ## ENV ##
 .env
+mailer.env
+env.go
+env_test.go
 
 ## DATA DIRECTORIES (for persistent local data until deployment)
 data/
@@ -56,6 +59,8 @@ frontend/les_constructions_dominic_cyr/dist/
 
 google-analytics-credentials.json
 
-# Database initialization scripts
-src/main/resources/data.sql
-src/main/resources/schema.sql
+# Database initialization scripts (ignore both data.sql and schema.sql anywhere)
+**/data.sql
+**/schema.sql
+/src/main/resources/data.sql
+/src/main/resources/schema.sql

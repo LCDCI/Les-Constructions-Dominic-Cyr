@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useUnreadCount } from '../../features/notifications/hooks/useUnreadCount';
 import '../../styles/Dashboards/ContractorDashboard.css';
 import {
   GoProject,
@@ -18,6 +19,7 @@ import { CgProfile } from 'react-icons/cg';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { unreadCount } = useUnreadCount();
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
@@ -126,6 +128,9 @@ const Navbar = () => {
                     <GoInbox />
                   </span>
                   <span className="navbar-text">Inbox</span>
+                  {unreadCount > 0 && (
+                    <span className="navbar-badge">{unreadCount}</span>
+                  )}
                 </Link>
               </li>
               <li className="navbar-item">

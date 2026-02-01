@@ -1,0 +1,41 @@
+﻿{
+  "loadingLot": "Loading lot details...",
+  "notSet": "Not set",
+
+  "lot": "Lot",
+  "lotOverview": "Lot Overview",
+  "civicAddress": "Civic Address",
+  "areaSqft": "Area (sqft)",
+  "areaSqm": "Area (sqm)",
+  "price": "Price",
+  "progress": "Progress",
+  "lotDescription": "Description",
+
+  "assignedUsers": "Assigned Users",
+  "unnamedUser": "Unnamed User",
+  "noEmail": "No email",
+
+  "userRole": {
+    "owner": "Owner",
+    "contractor": "Contractor",
+    "salesperson": "Salesperson",
+    "customer": "Customer",
+    "admin": "Admin",
+    "other": "Other"
+  },
+
+  "lotStatus": {
+    "available": "Available",
+    "reserved": "Reserved",
+    "sold": "Sold",
+    "inprogress": "In Progress",
+    "pending": "Pending",
+    "contract": "Under Contract"
+  },
+
+  "backToLotSelection": "Back to lot selection",
+  "backToProjects": "Back to projects",
+  "viewFiles": "View files",
+  "buyerInformation": "Buyer Information",
+  "contactSeller": "Contact seller"
+}

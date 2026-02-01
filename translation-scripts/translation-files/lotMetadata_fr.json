@@ -1,0 +1,41 @@
+{
+  "loadingLot": "Chargement des détails du lot...",
+  "notSet": "Non défini",
+
+  "lot": "Lot",
+  "lotOverview": "Aperçu du lot",
+  "civicAddress": "Adresse civique",
+  "areaSqft": "Superficie (pi²)",
+  "areaSqm": "Superficie (m²)",
+  "price": "Prix",
+  "progress": "Progrès",
+  "lotDescription": "Description",
+
+  "assignedUsers": "Utilisateurs affectés",
+  "unnamedUser": "Utilisateur sans nom",
+  "noEmail": "Pas d'email",
+
+  "userRole": {
+    "owner": "Propriétaire",
+    "contractor": "Entrepreneur",
+    "salesperson": "Vendeur",
+    "customer": "Client",
+    "admin": "Administrateur",
+    "other": "Autre"
+  },
+
+  "lotStatus": {
+    "available": "Disponible",
+    "reserved": "Réservé",
+    "sold": "Vendu",
+    "inprogress": "En cours",
+    "pending": "En attente",
+    "contract": "Sous contrat"
+  },
+
+  "backToLotSelection": "Retour à la sélection de lot",
+  "backToProjects": "Retour aux projets",
+  "viewFiles": "Voir les fichiers",
+  "buyerInformation": "Informations sur l'acheteur",
+  "contactSeller": "Contacter le vendeur"
+}
