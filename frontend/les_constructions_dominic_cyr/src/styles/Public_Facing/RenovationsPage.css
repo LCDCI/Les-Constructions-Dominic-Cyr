@@ -4,6 +4,57 @@
   overflow-x: hidden;
 }
 
+/* Scoped hero overrides to match Residential Projects sizing and typography */
+.renovations-page .projects-hero {
+  width: 100%;
+  padding: var(--spacing-section) 0;
+  /* Use exact Residential Projects gradient so the banner color matches */
+  background: linear-gradient(145deg, #aab2a6, #8a9287);
+  text-align: center;
+}
+
+.renovations-page .projects-hero-content {
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+}
+
+.renovations-page .projects-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 400;
+  color: var(--color-white);
+  margin-bottom: var(--spacing-md);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.renovations-page .projects-subtitle {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: var(--color-white);
+  line-height: 1.7;
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0.95;
+}
+
+/* Remove the decorative hero background element and dark overlay so the
+   section background (projects-hero) controls the color and sizing like
+   Residential Projects. */
+.renovations-page .hero-background,
+.renovations-page .hero-image,
+.renovations-page .hero-overlay,
+.renovations-page .renovations-hero-bg {
+  display: none !important;
+}
+
+/* Constrain the colored banner to the same visual rhythm as Residential Projects */
+.renovations-page .projects-hero {
+  padding-top: var(--spacing-section);
+  padding-bottom: var(--spacing-section);
+}
+
 /* Make hero same size as other pages (project management) */
 .renovations-page .hero {
   background: linear-gradient(145deg, #6b7469, #5a6358);

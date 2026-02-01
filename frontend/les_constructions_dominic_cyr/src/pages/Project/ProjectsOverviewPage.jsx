@@ -12,6 +12,7 @@ import {
 import { IoLeafOutline } from 'react-icons/io5';
 import { LuMapPinned } from 'react-icons/lu';
 import '../../styles/Project/projectOverview.css';
+import '../../styles/Public_Facing/residential-projects.css';
 import '../../styles/Public_Facing/overviewMap.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
@@ -352,23 +353,27 @@ const ProjectOverviewPage = () => {
   return (
     <div className={`project-overview-page`}>
       <section className="project-hero">
-        <div className="hero-image-container">
-          <img
-            src={getImageUrl(overview.imageIdentifier)}
-            alt={overview.projectName}
-            className="hero-image"
-            onError={e => {
-              e.target.onerror = null;
-              e.target.src = '/fallback.jpg';
-            }}
-          />
+        <div className="hero-logo-container">
+          {overview.imageIdentifier && (
+            <img
+              src={getImageUrl(overview.imageIdentifier)}
+              alt={overview.projectName}
+              className="project-logo"
+              onError={e => {
+                e.target.onerror = null;
+                e.target.src = '/fallback.jpg';
+              }}
+            />
+          )}
         </div>
-        <div className="hero-content">
-          <h1 className="hero-title">
+        <div className="hero-content projects-hero-content">
+          <h1 className="hero-title projects-title">
             {overview.heroTitle || overview.projectName}
           </h1>
           {overview.heroSubtitle && (
-            <p className="hero-subtitle">{overview.heroSubtitle}</p>
+            <p className="hero-subtitle projects-subtitle">
+              {overview.heroSubtitle}
+            </p>
           )}
         </div>
       </section>
