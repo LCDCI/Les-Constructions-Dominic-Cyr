@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { fetchLotById } from '../../features/lots/api/lots';
 import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
+import useBackendUser from '../../hooks/useBackendUser';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Project/ProjectMetadata.css';
 
@@ -17,6 +18,8 @@ const LotMetadata = () => {
   const [lot, setLot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { profile, role } = useBackendUser();
+  const [project, setProject] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -27,20 +30,12 @@ const LotMetadata = () => {
           ? await getAccessTokenSilently().catch(() => null)
           : null;
 
-        // Fetch project metadata to set colors
+        // Fetch project metadata to set colors and logo
         const projectData = await getProjectMetadata(projectId, token);
-        document.documentElement.style.setProperty(
-          '--project-primary',
-          projectData.primaryColor
-        );
-        document.documentElement.style.setProperty(
-          '--project-tertiary',
-          projectData.tertiaryColor
-        );
-        document.documentElement.style.setProperty(
-          '--project-buyer',
-          projectData.buyerColor
-        );
+        setProject(projectData);
+        document.documentElement.style.setProperty('--project-primary', projectData.primaryColor);
+        document.documentElement.style.setProperty('--project-tertiary', projectData.tertiaryColor);
+        document.documentElement.style.setProperty('--project-buyer', projectData.buyerColor);
 
         const data = await fetchLotById({
           projectIdentifier: projectId,
@@ -89,18 +84,22 @@ const LotMetadata = () => {
     >
       <div
         className="metadata-hero"
-        style={{ backgroundColor: lot.primaryColor || '#ddd' }}
+        style={{ backgroundColor: project?.primaryColor || lot.primaryColor || '#ddd' }}
       >
         <div className="hero-content">
           <h1 className="project-title">
             {lot.lotNumber || `Lot ${lot.lotId}`}
           </h1>
-          <span
-            className={`status-badge status-${(lot.lotStatus || '').toLowerCase()}`}
-          >
-            {lot.lotStatus}
-          </span>
+          <span className={`status-badge status-${(lot.lotStatus || '').toLowerCase()}`}>{lot.lotStatus}</span>
         </div>
+        {project?.imageIdentifier && (
+          <div className="hero-image">
+            <img
+              src={`${import.meta.env.VITE_FILES_SERVICE_URL || (typeof window !== 'undefined' && window.location.hostname.includes('constructions-dominiccyr') ? 'https://files-service-app-xubs2.ondigitalocean.app' : `${window.location.origin}/files`)}/files/${project.imageIdentifier}`}
+              alt={project.projectName}
+            />
+          </div>
+        )}
       </div>
 
       <div className="metadata-content">
@@ -154,29 +153,36 @@ const LotMetadata = () => {
           )}
         </section>
 
-        {lot.assignedUsers &&
-          (() => {
-            const customer = lot.assignedUsers.find(u => u.role === 'CUSTOMER');
-            return customer ? (
-              <section className="metadata-section">
-                <h2 style={{ color: lot.primaryColor }}>Buyer Information</h2>
-                <div
-                  className="buyer-info"
-                  style={{ backgroundColor: lot.buyerColor || '#27ae60' }}
-                >
-                  <p className="buyer-name">
-                    {customer.fullName ||
-                      `${customer.firstName || ''} ${customer.lastName || ''}`.trim()}
-                  </p>
-                </div>
-              </section>
-            ) : null;
-          })()}
+        {lot.assignedUsers && (
+          <section className="metadata-section">
+            <h2 style={{ color: lot.primaryColor }}>Assigned Users</h2>
+            <div className="lots-grid">
+              {lot.assignedUsers
+                .filter(user => {
+                  // OWNER sees all except themselves and other owners; others see all except OWNER
+                  if (role === 'OWNER') {
+                    return user.role !== 'OWNER' && user.userId !== profile?.userId;
+                  }
+                  return user.role !== 'OWNER';
+                })
+                .map(user => (
+                  <div key={user.userId || user.id} className="lot-card" style={{ borderColor: lot.primaryColor }}>
+                    <h3>{user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unnamed User'}</h3>
+                    <p className="lot-address">{user.email || 'No email'}</p>
+                    <div className="lot-status-inline">
+                      <span className="status-label">{user.role}</span>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </section>
+        )}
       </div>
 
       <div className="button-container">
         <button
-          className="btn-secondary project-metadata-back"
+          className="project-metadata-back"
+          style={{ backgroundColor: lot.primaryColor, color: '#fff' }}
           onClick={() => {
             try {
               if (window.history.length > 1) {
@@ -188,23 +194,18 @@ const LotMetadata = () => {
             }
             navigate(`/projects/${projectId}/lots/select`);
           }}
+          onMouseOver={e => (e.currentTarget.style.filter = 'brightness(0.9)')}
+          onMouseOut={e => (e.currentTarget.style.filter = '')}
         >
           Back to lot selection
         </button>
 
         <button
-          className="btn-primary project-metadata-schedule"
-          onClick={() => {
-            try {
-              if (window.history.length > 1) {
-                navigate(-1);
-                return;
-              }
-            } catch (e) {
-              // ignore
-            }
-            navigate('/projects');
-          }}
+          className="project-metadata-schedule"
+          style={{ backgroundColor: lot.primaryColor, color: '#fff' }}
+          onClick={() => navigate('/projects')}
+          onMouseOver={e => (e.currentTarget.style.filter = 'brightness(0.9)')}
+          onMouseOut={e => (e.currentTarget.style.filter = '')}
         >
           Back to projects
         </button>

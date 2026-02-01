@@ -219,7 +219,12 @@ const ProjectMetadata = () => {
           <section className="metadata-section">
             <h2 style={{ color: metadata.primaryColor }}>Project Lots</h2>
             <div className="lots-grid">
-              {lots.map(lot => (
+              {[...lots].sort((a, b) => {
+                // Sort by lot.id or lot.lotId (fallback)
+                const idA = a.id ?? a.lotId;
+                const idB = b.id ?? b.lotId;
+                return idA - idB;
+              }).map(lot => (
                 <div
                   key={lot.lotId}
                   className="lot-card"
