@@ -1,0 +1,18 @@
+{
+  "title": "Users",
+  "status": "Status:",
+  "addUser": "Add User",
+  "loading": "Loading users...",
+  "error": "Failed to load users.",
+  "statusOptions": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "all": "All"
+  },
+  "errors": {
+    "createFailed": "Failed to create user. Please try again.",
+    "updateFailed": "Failed to update user. Please try again.",
+    "statusFailed": "Failed to update user status. Please try again.",
+    "operationFailed": "User Operation Failed"
+  }
+}

@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { fetchProjectManagementContent } from '../../features/projects/api/projectManagementAPI';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Project/project-management.css';
 
 export default function ProjectManagementPage() {
-  const { i18n } = useTranslation();
-  const [content, setContent] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { t } = usePageTranslations('projectManagement');
 
   const PM_IMAGE_IDS = {
     professionals: '1659ff85-b160-4111-b419-84834eb4375a',
@@ -31,61 +27,11 @@ export default function ProjectManagementPage() {
     return `${filesServiceUrl}/files/${imageIdentifier}`;
   };
 
-  // Helper function to get nested content safely
-  const getContent = (path, defaultValue = '') => {
-    if (!content) return defaultValue;
-    const keys = path.split('.');
-    let value = content;
-    for (const key of keys) {
-      if (value && typeof value === 'object' && key in value) {
-        value = value[key];
-      } else {
-        return defaultValue;
-      }
-    }
-    return value || defaultValue;
-  };
-
   const pillars = [
-    getContent('intro.heading.line1', 'Planning'),
-    getContent('intro.heading.line2', 'Organization'),
-    getContent('intro.heading.line3', 'Site follow-up'),
+    t('intro.heading.line1', 'Planning'),
+    t('intro.heading.line2', 'Organization'),
+    t('intro.heading.line3', 'Site follow-up'),
   ];
-
-  useEffect(() => {
-    const loadContent = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const currentLanguage = i18n.language || 'en';
-        const normalizedLanguage = currentLanguage.startsWith('fr')
-          ? 'fr'
-          : 'en';
-        const fetchedContent =
-          await fetchProjectManagementContent(normalizedLanguage);
-        setContent(fetchedContent);
-      } catch (err) {
-        console.error('Failed to fetch project management content:', err);
-        setError(err.message || 'Failed to load content');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadContent();
-  }, [i18n.language]);
-
-  if (isLoading) {
-    return <div className="project-management-loading">Loading...</div>;
-  }
-
-  if (error || !content) {
-    return (
-      <div className="project-management-error">
-        <p>Error loading content: {error || 'Unknown error'}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="project-management-page">
@@ -93,7 +39,7 @@ export default function ProjectManagementPage() {
       <section className="pm-hero-banner">
         <div className="pm-hero-content">
           <h1 className="pm-hero-title">
-            {`${getContent('hero.line1', 'PROJECT MANAGEMENT,')} ${getContent('hero.line2', 'FOR PEACE OF MIND')}`}
+            {`${t('hero.line1', 'PROJECT MANAGEMENT,')} ${t('hero.line2', 'FOR PEACE OF MIND')}`}
           </h1>
         </div>
       </section>
@@ -105,7 +51,7 @@ export default function ProjectManagementPage() {
             {/* Heading Section */}
             <div className="pm-heading-section">
               <h2 className="pm-main-heading">
-                {getContent(
+                {t(
                   'intro.heading.title',
                   'Planning, organization, and site follow-up without the friction'
                 )}
@@ -118,7 +64,7 @@ export default function ProjectManagementPage() {
                 ))}
               </div>
               <p className="pm-tagline">
-                {getContent('intro.tagline', 'We handle it for you!')}
+                {t('intro.tagline', 'We handle it for you!')}
               </p>
             </div>
 
@@ -127,7 +73,7 @@ export default function ProjectManagementPage() {
                 <div className="pm-image-container">
                   <img
                     src={getImageUrl(PM_IMAGE_IDS.professionals)}
-                    alt={getContent(
+                    alt={t(
                       'intro.image1.alt',
                       'Professionals collaborating on project'
                     )}
@@ -139,7 +85,7 @@ export default function ProjectManagementPage() {
                 <div className="pm-image-container">
                   <img
                     src={getImageUrl(PM_IMAGE_IDS.floorPlan)}
-                    alt={getContent(
+                    alt={t(
                       'intro.image2.alt',
                       '3D floor plan rendering'
                     )}
@@ -151,7 +97,7 @@ export default function ProjectManagementPage() {
                 <div className="pm-image-container">
                   <img
                     src={getImageUrl(PM_IMAGE_IDS.tools)}
-                    alt={getContent(
+                    alt={t(
                       'intro.image3.alt',
                       'Construction tools and materials'
                     )}
@@ -164,7 +110,7 @@ export default function ProjectManagementPage() {
             {/* Bottom Paragraph - Centered */}
             <div className="pm-intro-paragraph">
               <p>
-                {getContent(
+                {t(
                   'intro.paragraph',
                   'You own land and want to entrust project management to a qualified builder? Les Constructions Dominic Cyr Inc. is here for you, whether for specific construction stages or a turnkey project.'
                 )}
@@ -178,25 +124,25 @@ export default function ProjectManagementPage() {
       <section className="pm-advantages-section">
         <div className="pm-advantages-container">
           <h2 className="pm-advantages-heading">
-            {getContent(
+            {t(
               'advantages.heading',
               'Our project management strengths'
             )}
           </h2>
 
           <ul className="pm-advantages-list">
-            <li>{getContent('advantages.item1', 'Advisory services')}</li>
+            <li>{t('advantages.item1', 'Advisory services')}</li>
             <li>
-              {getContent('advantages.item2', 'Compliance with building codes')}
+              {t('advantages.item2', 'Compliance with building codes')}
             </li>
             <li>
-              {getContent('advantages.item3', 'Planning with all stakeholders')}
+              {t('advantages.item3', 'Planning with all stakeholders')}
             </li>
             <li>
-              {getContent('advantages.item4', 'Work schedule development')}
+              {t('advantages.item4', 'Work schedule development')}
             </li>
-            <li>{getContent('advantages.item5', 'Cost control')}</li>
-            <li>{getContent('advantages.item6', 'Rigorous follow-up')}</li>
+            <li>{t('advantages.item5', 'Cost control')}</li>
+            <li>{t('advantages.item6', 'Rigorous follow-up')}</li>
           </ul>
 
           {/* Separator Lines */}
@@ -207,7 +153,7 @@ export default function ProjectManagementPage() {
 
           {/* Pricing/Contact Paragraph */}
           <p className="pm-pricing-text">
-            {getContent(
+            {t(
               'advantages.pricing',
               'Depending on project scope and complexity, pricing may be fixed-fee or cost-plus. Contact us to discuss.'
             )}
@@ -216,7 +162,7 @@ export default function ProjectManagementPage() {
           {/* Contact Link */}
           <div className="pm-contact-link-wrapper">
             <Link to="/contact" className="pm-contact-link">
-              {getContent('advantages.contactLink', 'Contact us')}
+              {t('advantages.contactLink', 'Contact us')}
             </Link>
           </div>
         </div>

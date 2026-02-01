@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import useBackendUser from '../../hooks/useBackendUser';
 import '../../styles/Errors/ErrorPage.css';
-import '../../hooks/usePageTranslations';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 export default function Unauthorized() {
+  const { t } = usePageTranslations('unauthorized');
   const { isAuthenticated } = useAuth0();
   const { role } = useBackendUser();
 
@@ -29,18 +30,20 @@ export default function Unauthorized() {
   return (
     <div className="error-page">
       <div className="error-content">
-        <h1>🚫 Access Denied</h1>
-        <p>You do not have permission to access this page or feature.</p>
+        <h1>{t('title', '🚫 Access Denied')}</h1>
+        <p>{t('message', 'You do not have permission to access this page or feature.')}</p>
         <p className="error-hint">
-          This area is restricted based on your role. If you believe this is an
-          error, please contact your administrator.
+          {t(
+            'hint',
+            'This area is restricted based on your role. If you believe this is an error, please contact your administrator.'
+          )}
         </p>
         <div className="error-actions">
           <Link to={getHomePath()} className="btn-primary">
-            Go to Dashboard
+            {t('goToDashboard', 'Go to Dashboard')}
           </Link>
           <Link to="/" className="btn-secondary">
-            Go Home
+            {t('goHome', 'Go Home')}
           </Link>
         </div>
       </div>

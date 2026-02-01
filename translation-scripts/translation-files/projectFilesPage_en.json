@@ -1,0 +1,22 @@
+{
+  "title": "Project Documents",
+  "uploadDocument": "Upload Document",
+  "refresh": "Refresh",
+  "syncing": "Syncing...",
+  "downloadAll": "Download All as ZIP",
+  "downloading": "Downloading...",
+  "loading": "Loading documents...",
+  "error": "Error loading documents",
+  "refreshError": "Failed to refresh files. Please try again.",
+  "downloadError": "Failed to download file. Please try again.",
+  "zipError": "Failed to download ZIP file. Please try again.",
+  "deleteError": "Failed to delete file. Please try again.",
+  "unknown": "Unknown",
+  "noDocuments": "No documents found.",
+  "deleteConfirm": {
+    "title": "Delete Document",
+    "message": "Are you sure you want to delete this document? This action cannot be undone.",
+    "confirm": "Delete",
+    "cancel": "Cancel"
+  }
+}

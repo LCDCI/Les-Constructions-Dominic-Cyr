@@ -19,11 +19,14 @@ import {
   FaCrosshairs,
   FaHotel,
 } from 'react-icons/fa';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
 
 const LivingEnvironmentPage = () => {
-  const { t, i18n } = useTranslation(['livingEnvironment', 'translation']);
+  const { t: tLivingEnv } = usePageTranslations('livingEnvironment');
+  const { i18n } = useTranslation();
+  const t = (key, defaultValue) => tLivingEnv(key, defaultValue);
   const navigate = useNavigate();
   const { projectIdentifier } = useParams();
   const [data, setData] = useState(null);

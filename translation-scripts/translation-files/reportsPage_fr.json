@@ -1,20 +1,24 @@
 {
-  "projectOverview": "Aperçu du projet",
-  "location": "Emplacement",
-  "startDate": "Date de début",
-  "endDate": "Date de fin",
-  "completionDate": "Date d'achèvement",
-  "progress": "Progrès",
-  "projectLots": "Lots du projet",
-  "viewProjectSchedule": "Voir l'échéancier du projet",
-  "backToProjects": "Retour aux projets",
-  "lot": "Lot",
-  "notSet": "Non défini",
-  "loading": "Chargement des informations du projet...",
-  "errors": {
-    "accessDenied": "Accès refusé",
-    "loadFailed": "Échec du chargement des métadonnées du projet"
+  "title": "Rapports d'analyse",
+  "tabs": {
+    "generate": "Générer nouveau",
+    "myReports": "Mes rapports"
   },
+  "form": {
+    "title": "Générer un rapport d'analyse",
+    "reportType": "Rapport d'analyse",
+    "fileFormat": "Format de fichier",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "generateButton": "Générer le rapport",
+    "processingButton": "Traitement des grandes données...",
+    "errors": {
+      "datesRequired": "Veuillez sélectionner une date de début et une date de fin.",
+      "generateFailed": "Échec de la génération du rapport. Vérifiez la connexion à Digital Ocean."
+    },
+    "success": "Audit maître généré avec succès!"
+  },
+  "noReportsFound": "Aucun rapport trouvé.",
   "nav": {
     "home": "Accueil",
     "projects": "Projets résidentiels",

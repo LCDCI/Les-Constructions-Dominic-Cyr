@@ -7,5 +7,35 @@
   "progress": "Progrès",
   "buyerInformation": "Informations sur l'acheteur",
   "backToLotSelection": "Retour à la sélection de lot",
-  "backToProjects": "Retour aux projets"
+  "backToProjects": "Retour aux projets",
+  "lot": "Lot",
+  "notSet": "Non défini",
+  "loading": "Chargement...",
+  "errors": {
+    "loadFailed": "Échec du chargement du lot"
+  },
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets résidentiels",
+    "renovation": "Rénovations",
+    "renovations": "Rénovations",
+    "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "company": "Construction Dominic Cyr Inc.",
+    "copyright": "© {{year}} Construction Dominic Cyr. Tous droits réservés.",
+    "contact": "Contact",
+    "phone": "514-123-4567",
+    "email": "constructions.dcyr@gmail.com",
+    "location": "Localisation",
+    "address1": "155 rue Bourgeois",
+    "address2": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
+    "accreditations": "Accréditations",
+    "rbq": "8356-0169-03",
+    "rbqLink": "rbq.gouv.qc.ca",
+    "gcr": "11084",
+    "gcrLink": "garantiegcr.com"
+  }
 }

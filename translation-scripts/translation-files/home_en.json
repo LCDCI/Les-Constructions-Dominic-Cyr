@@ -62,7 +62,18 @@
   },
   "footer": {
     "company": "Dominic Cyr Construction Inc.",
-    "copyright": "© 2025 Dominic Cyr Construction. All rights reserved."
+    "copyright": "© {{year}} Dominic Cyr Construction. All rights reserved.",
+    "contact": "Contact",
+    "phone": "514-123-4567",
+    "email": "constructions.dcyr@gmail.com",
+    "location": "Localisation",
+    "address1": "155 rue Bourgeois",
+    "address2": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
+    "accreditations": "Accréditations",
+    "rbq": "8356-0169-03",
+    "rbqLink": "rbq.gouv.qc.ca",
+    "gcr": "11084",
+    "gcrLink": "garantiegcr.com"
   }
 }
 

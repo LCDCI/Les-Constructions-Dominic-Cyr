@@ -1,19 +1,24 @@
 {
-  "lotOverview": "Lot Overview",
-  "civicAddress": "Civic Address",
-  "areaSqft": "Area (sqft)",
-  "areaSqm": "Area (sqm)",
-  "price": "Price",
-  "progress": "Progress",
-  "buyerInformation": "Buyer Information",
-  "backToLotSelection": "Back to lot selection",
-  "backToProjects": "Back to projects",
-  "lot": "Lot",
-  "notSet": "Not set",
-  "loading": "Loading...",
-  "errors": {
-    "loadFailed": "Failed to load lot"
+  "title": "Analytics Reports",
+  "tabs": {
+    "generate": "Generate New",
+    "myReports": "My Reports"
   },
+  "form": {
+    "title": "Generate Analytics Report",
+    "reportType": "Analytics Report",
+    "fileFormat": "File Format",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "generateButton": "Generate Report",
+    "processingButton": "Processing Large Data...",
+    "errors": {
+      "datesRequired": "Please select both a start and end date.",
+      "generateFailed": "Failed to generate report. Check Digital Ocean connection."
+    },
+    "success": "Master Audit generated successfully!"
+  },
+  "noReportsFound": "No reports found.",
   "nav": {
     "home": "Home",
     "projects": "Residential Projects",

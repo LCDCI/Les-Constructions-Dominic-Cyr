@@ -45,11 +45,12 @@ i18n.use(initReactI18next).init({
 const loadTranslations = async (language = null) => {
   try {
     const lang = normalizeLang(language || getInitialLanguage());
-    const [allTranslations, lotsTranslations, livingEnvironmentTranslations] =
+    const [allTranslations, lotsTranslations, livingEnvironmentTranslations, homeTranslations] =
       await Promise.all([
         fetchTranslations(lang),
         fetchPageTranslations('lots', lang),
         fetchPageTranslations('livingenvironment', lang),
+        fetchPageTranslations('home', lang),
       ]);
 
     // Add general translations
@@ -75,6 +76,30 @@ const loadTranslations = async (language = null) => {
       );
     }
 
+    // Always load home translations for nav/footer in global 'translation' namespace
+    // This ensures navbar and footer are always available regardless of current page
+    if (homeTranslations) {
+      i18n.addResourceBundle(lang, 'home', homeTranslations, true, true);
+      
+      // Extract nav and footer from home translations and add to global 'translation' namespace
+      const globalTranslations = {};
+      if (homeTranslations.nav) {
+        globalTranslations.nav = homeTranslations.nav;
+      }
+      if (homeTranslations.footer) {
+        globalTranslations.footer = homeTranslations.footer;
+      }
+      if (Object.keys(globalTranslations).length > 0) {
+        i18n.addResourceBundle(
+          lang,
+          'translation',
+          globalTranslations,
+          true,
+          true
+        );
+      }
+    }
+
     // Tell i18next we are done so the UI refreshes
     i18n.emit('loaded');
   } catch (error) {
@@ -89,12 +114,8 @@ i18n.changeLanguage = async (lng, callback) => {
   const lang = normalizeLang(lng);
   cookieUtils.setLanguage(lang);
 
-  const hasResources = i18n.hasResourceBundle(lang, 'translation');
-  const bundle = i18n.getResourceBundle(lang, 'translation');
-
-  if (!hasResources || !bundle || Object.keys(bundle).length === 0) {
-    await loadTranslations(lang);
-  }
+  // Always reload translations when language changes to ensure nav/footer are updated
+  await loadTranslations(lang);
 
   return originalChangeLanguage(lang, callback);
 };

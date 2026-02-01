@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import HomeFooter from '../components/Footers/HomeFooter';
+import { usePageTranslations } from '../hooks/usePageTranslations';
 
 const fetchInquiries = async getAccessTokenSilently => {
   const token = await getAccessTokenSilently({
@@ -21,6 +22,7 @@ const fetchInquiries = async getAccessTokenSilently => {
 };
 
 export default function OwnerInquiriesPage() {
+  const { t } = usePageTranslations('ownerInquiriesPage');
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,9 +70,9 @@ export default function OwnerInquiriesPage() {
   return (
     <>
       <div style={{ padding: '2rem', minHeight: 'calc(100vh - 200px)' }}>
-        <h1>Inquiry Review</h1>
-        {loading && <p>Loading inquiries...</p>}
-        {error && <p style={{ color: 'red' }}>Error: {error.message}</p>}
+        <h1>{t('title', 'Inquiry Review')}</h1>
+        {loading && <p>{t('loading', 'Loading inquiries...')}</p>}
+        {error && <p style={{ color: 'red' }}>{t('error', 'Error:')} {error.message}</p>}
         {!loading && !error && (
           <table
             style={{
@@ -82,19 +84,19 @@ export default function OwnerInquiriesPage() {
             <thead>
               <tr style={{ background: '#f0f0f0' }}>
                 <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  Name
+                  {t('table.name', 'Name')}
                 </th>
                 <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  Email
+                  {t('table.email', 'Email')}
                 </th>
                 <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  Phone
+                  {t('table.phone', 'Phone')}
                 </th>
                 <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  Message
+                  {t('table.message', 'Message')}
                 </th>
                 <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  Timestamp
+                  {t('table.timestamp', 'Timestamp')}
                 </th>
               </tr>
             </thead>
@@ -105,7 +107,7 @@ export default function OwnerInquiriesPage() {
                     colSpan={5}
                     style={{ textAlign: 'center', padding: '2rem' }}
                   >
-                    No inquiries found.
+                    {t('noInquiries', 'No inquiries found.')}
                   </td>
                 </tr>
               ) : (

@@ -3,10 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { fetchLotById } from '../../features/lots/api/lots';
 import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Project/ProjectMetadata.css';
 
 const LotMetadata = () => {
+  const { t } = usePageTranslations('lotMetadata');
   const { projectId, lotId } = useParams();
   const navigate = useNavigate();
   const {
@@ -49,7 +51,7 @@ const LotMetadata = () => {
         });
         if (!cancelled) setLot(data);
       } catch (err) {
-        if (!cancelled) setError(err.message || 'Failed to load lot');
+        if (!cancelled) setError(err.message || t('errors.loadFailed', 'Failed to load lot'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -75,7 +77,7 @@ const LotMetadata = () => {
     }).format(n);
   };
 
-  if (loading) return <div className="page">Loading...</div>;
+  if (loading) return <div className="page">{t('loading', 'Loading...')}</div>;
   if (error) return <div className="page">{error}</div>;
   if (!lot) return null;
 
@@ -93,7 +95,7 @@ const LotMetadata = () => {
       >
         <div className="hero-content">
           <h1 className="project-title">
-            {lot.lotNumber || `Lot ${lot.lotId}`}
+            {lot.lotNumber || t('lot', 'Lot') + ' ' + lot.lotId}
           </h1>
           <span
             className={`status-badge status-${(lot.lotStatus || '').toLowerCase()}`}
@@ -105,33 +107,33 @@ const LotMetadata = () => {
 
       <div className="metadata-content">
         <section className="metadata-section">
-          <h2 style={{ color: lot.primaryColor }}>Lot Overview</h2>
+          <h2 style={{ color: lot.primaryColor }}>{t('lotOverview', 'Lot Overview')}</h2>
           <div className="metadata-grid">
             <div className="metadata-item">
-              <span className="metadata-label">Civic Address</span>
+              <span className="metadata-label">{t('civicAddress', 'Civic Address')}</span>
               <span className="metadata-value">
-                {lot.civicAddress || 'Not set'}
+                {lot.civicAddress || t('notSet', 'Not set')}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">Area (sqft)</span>
+              <span className="metadata-label">{t('areaSqft', 'Area (sqft)')}</span>
               <span className="metadata-value">
                 {lot.dimensionsSquareFeet || '—'}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">Area (sqm)</span>
+              <span className="metadata-label">{t('areaSqm', 'Area (sqm)')}</span>
               <span className="metadata-value">
                 {lot.dimensionsSquareMeters || '—'}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">Price</span>
+              <span className="metadata-label">{t('price', 'Price')}</span>
               <span className="metadata-value">{formatPrice(lot.price)}</span>
             </div>
             {lot.progressPercentage !== null && (
               <div className="metadata-item full-width">
-                <span className="metadata-label">Progress</span>
+                <span className="metadata-label">{t('progress', 'Progress')}</span>
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
@@ -159,7 +161,7 @@ const LotMetadata = () => {
             const customer = lot.assignedUsers.find(u => u.role === 'CUSTOMER');
             return customer ? (
               <section className="metadata-section">
-                <h2 style={{ color: lot.primaryColor }}>Buyer Information</h2>
+                <h2 style={{ color: lot.primaryColor }}>{t('buyerInformation', 'Buyer Information')}</h2>
                 <div
                   className="buyer-info"
                   style={{ backgroundColor: lot.buyerColor || '#27ae60' }}
@@ -189,7 +191,7 @@ const LotMetadata = () => {
             navigate(`/projects/${projectId}/lots/select`);
           }}
         >
-          Back to lot selection
+          {t('backToLotSelection', 'Back to lot selection')}
         </button>
 
         <button
@@ -206,7 +208,7 @@ const LotMetadata = () => {
             navigate('/projects');
           }}
         >
-          Back to projects
+          {t('backToProjects', 'Back to projects')}
         </button>
       </div>
     </div>

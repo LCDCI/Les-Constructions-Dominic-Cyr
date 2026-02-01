@@ -1,0 +1,23 @@
+{
+  "title": "Tableau de bord entrepreneur",
+  "upcomingTasks": "Voici vos tâches à venir :",
+  "seeMore": "Voir plus",
+  "cards": {
+    "quotes": {
+      "title": "Devis",
+      "button": "Télécharger un devis"
+    },
+    "projects": {
+      "title": "Projets",
+      "button": "Voir les projets"
+    },
+    "inbox": {
+      "title": "Boîte de réception",
+      "button": "Voir la boîte de réception"
+    },
+    "documents": {
+      "title": "Documents",
+      "button": "Voir les documents"
+    }
+  }
+}

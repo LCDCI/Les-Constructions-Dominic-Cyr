@@ -1,0 +1,22 @@
+{
+  "title": "Documents du projet",
+  "uploadDocument": "Télécharger un document",
+  "refresh": "Actualiser",
+  "syncing": "Synchronisation...",
+  "downloadAll": "Télécharger tout en ZIP",
+  "downloading": "Téléchargement...",
+  "loading": "Chargement des documents...",
+  "error": "Erreur lors du chargement des documents",
+  "refreshError": "Échec de l'actualisation des fichiers. Veuillez réessayer.",
+  "downloadError": "Échec du téléchargement du fichier. Veuillez réessayer.",
+  "zipError": "Échec du téléchargement du fichier ZIP. Veuillez réessayer.",
+  "deleteError": "Échec de la suppression du fichier. Veuillez réessayer.",
+  "unknown": "Inconnu",
+  "noDocuments": "Aucun document trouvé.",
+  "deleteConfirm": {
+    "title": "Supprimer le document",
+    "message": "Êtes-vous sûr de vouloir supprimer ce document ? Cette action ne peut pas être annulée.",
+    "confirm": "Supprimer",
+    "cancel": "Annuler"
+  }
+}
