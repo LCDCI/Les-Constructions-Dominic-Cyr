@@ -68,7 +68,7 @@ body {
   min-height: 700px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  margin-bottom: calc(var(--spacing-xxl) * 0.6667); /* reduce by ~1/3 */
   overflow: hidden;
   margin-bottom: 8rem;
 }
@@ -81,19 +81,18 @@ body {
   height: 100%;
   z-index: 0;
 }
-
-.hero-image {
+  margin-bottom: calc(var(--spacing-md) * 0.6667);
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  margin-bottom: calc(var(--spacing-md) * 0.6667);
   display: block;
   transform: scale(1.3);
 }
 
 .hero-overlay {
   position: absolute;
-  top: 0;
+  margin-bottom: calc(var(--spacing-md) * 0.6667); /* reduce by ~1/3 */
   left: 0;
   width: 100%;
   height: 100%;
@@ -367,6 +366,37 @@ body {
   overflow: hidden;
 }
 
+/* Reduce size of featured content sections (Think / Build / Live) by 25% */
+.content-section.featured-section {
+  padding: calc(var(--spacing-section) * 0.75) 0;
+  gap: calc(var(--spacing-xxl) * 0.75);
+}
+
+.content-section.featured-section .section-image-container,
+.content-section.featured-section .section-image {
+  min-height: calc(500px * 0.75); /* reduce 500px -> 375px */
+}
+
+.content-section.featured-section .featured-section {
+  padding: calc(var(--spacing-xl) * 0.75);
+}
+
+/* Further reduce featured sections by another 25% (apply on top of previous change) */
+.content-section.featured-section {
+  padding: calc(var(--spacing-section) * 0.5625) 0; /* 0.75 * 0.75 = 0.5625 */
+  gap: calc(var(--spacing-xxl) * 0.5625);
+  padding-inline: clamp(0.75rem, 4vw, 1.5rem);
+}
+
+.content-section.featured-section .section-image-container,
+.content-section.featured-section .section-image {
+  min-height: calc(500px * 0.5625); /* ~281px */
+}
+
+.content-section.featured-section .section-text-wrapper {
+  padding: clamp(0.75rem, 2vw, 1rem);
+}
+
 .featured-section .section-title,
 .featured-section .section-subtitle {
   color: var(--color-white);
@@ -418,8 +448,13 @@ body {
 .section-header {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: calc(0.65rem * 0.6667); /* reduce vertical gap by ~1/3 */
   margin-bottom: 0;
+}
+
+/* Specific lowered title for individual sections (shift down ~1/3) */
+.section-header.lowered-title {
+  margin-top: calc(var(--spacing-md) * 0.3333);
 }
 
 .section-header[data-animate] {
@@ -437,7 +472,7 @@ body {
   font-family: var(--font-heading);
   font-size: clamp(1.8rem, 3.5vw, 2.5rem);
   font-weight: 400;
-  margin: 0.35rem 0 0.25rem;
+  margin: 0.35rem 0 calc(0.25rem * 0.6667); /* move title closer to following text */
   letter-spacing: -0.01em;
   color: var(--color-primary);
   line-height: 1.35;

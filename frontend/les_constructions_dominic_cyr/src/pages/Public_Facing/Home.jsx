@@ -201,68 +201,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* THINK SECTION */}
-      <section className="content-section featured-section offset-left">
-        <div className="section-image-container" data-animate>
-          <img
-            src={`${filesServiceUrl}/files/${photos.think}`}
-            alt="Design concept"
-            className="section-image"
-            loading="lazy"
-          />
-        </div>
-        <div className="section-text-wrapper" data-animate>
-          <div className="section-header">
-            <h2 className="section-title">
-              {t(
-                'think.title',
-                'intelligent, practical and comfortable spaces'
-              )}
-            </h2>
-            <p className="section-subtitle">
-              {t(
-                'think.subtitle',
-                'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.'
-              )}
-            </p>
-            <Link to="/realizations" className="link-arrow">
-              {t('think.link', 'Discover')}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* BUILD SECTION */}
-      <section className="content-section featured-section alt reverse offset-right">
-        <div className="section-image-container" data-animate>
-          <img
-            src={`${filesServiceUrl}/files/${photos.build}`}
-            alt="Construction"
-            className="section-image"
-            loading="lazy"
-          />
-        </div>
-        <div className="section-text-wrapper" data-animate>
-          <div className="section-header">
-            <h2 className="section-title">
-              {t(
-                'build.title',
-                'a strong relationship and quality partnership'
-              )}
-            </h2>
-            <p className="section-subtitle">
-              {t(
-                'build.subtitle',
-                'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
-              )}
-            </p>
-            <Link to="/contact" className="link-arrow">
-              {t('build.link', 'Contact Us')}
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* LIVE SECTION */}
       <section className="content-section featured-section offset-left">
         <div className="section-image-container" data-animate>
@@ -286,6 +224,68 @@ export default function Home() {
             </p>
             <Link to="/residential-projects" className="link-arrow">
               {t('live.link', 'Explore Projects')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* BUILD SECTION */}
+      <section className="content-section featured-section alt reverse offset-right">
+        <div className="section-image-container" data-animate>
+          <img
+            src={`${filesServiceUrl}/files/${photos.build}`}
+            alt="Construction"
+            className="section-image"
+            loading="lazy"
+          />
+        </div>
+        <div className="section-text-wrapper" data-animate>
+          <div className="section-header lowered-title">
+            <h2 className="section-title">
+              {t(
+                'build.title',
+                'a strong relationship and quality partnership'
+              )}
+            </h2>
+            <p className="section-subtitle">
+              {t(
+                'build.subtitle',
+                'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
+              )}
+            </p>
+            <Link to="/contact" className="link-arrow">
+              {t('build.link', 'Contact Us')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* THINK SECTION */}
+      <section className="content-section featured-section offset-left">
+        <div className="section-image-container" data-animate>
+          <img
+            src={`${filesServiceUrl}/files/${photos.think}`}
+            alt="Design concept"
+            className="section-image"
+            loading="lazy"
+          />
+        </div>
+        <div className="section-text-wrapper" data-animate>
+          <div className="section-header lowered-title">
+            <h2 className="section-title">
+              {t(
+                'think.title',
+                'intelligent, practical and comfortable spaces'
+              )}
+            </h2>
+            <p className="section-subtitle">
+              {t(
+                'think.subtitle',
+                'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.'
+              )}
+            </p>
+            <Link to="/realizations" className="link-arrow">
+              {t('think.link', 'Discover')}
             </Link>
           </div>
         </div>
@@ -385,36 +385,6 @@ export default function Home() {
                   {t('portfolio.achievementsSubtitle', 'Portfolio')}
                 </p>
               </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT CTA */}
-      <section className="contact-cta">
-        <div className="contact-wrapper">
-          <div className="contact-image" data-animate>
-            <img
-              src={`${filesServiceUrl}/files/${photos.contact}`}
-              alt="Contact us"
-              loading="lazy"
-            />
-          </div>
-          <div className="contact-content" data-animate>
-            <span className="section-kicker">
-              {t('contact.kicker', 'Get In Touch')}
-            </span>
-            <h2 className="contact-title">
-              {t('contact.title', "Let's Build Your Dream Home Together")}
-            </h2>
-            <p className="contact-description">
-              {t(
-                'contact.description',
-                "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc."
-              )}
-            </p>
-            <Link to="/contact" className="btn btn-primary">
-              {t('contact.button', 'Contact Us')}
             </Link>
           </div>
         </div>
