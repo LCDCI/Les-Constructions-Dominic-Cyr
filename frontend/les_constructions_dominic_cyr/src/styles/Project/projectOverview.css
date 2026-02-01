@@ -42,7 +42,11 @@
 .project-hero {
   padding: var(--spacing-section, 8rem) var(--spacing-lg);
   /* Use project color CSS variables set by page */
-  background: linear-gradient(145deg, var(--primary-color, #aab2a6), var(--tertiary-color, #8a9287));
+  background: linear-gradient(
+    145deg,
+    var(--primary-color, #aab2a6),
+    var(--tertiary-color, #8a9287)
+  );
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -77,8 +81,8 @@
   height: 240px;
   border-radius: 8px;
   overflow: hidden;
-  background: rgba(255,255,255,0.06);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
   z-index: 2;
   margin-bottom: 1rem;
 }
@@ -272,7 +276,11 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, var(--primary-color, var(--color-primary)), var(--tertiary-color, var(--color-secondary)) );
+  background: linear-gradient(
+    135deg,
+    var(--primary-color, var(--color-primary)),
+    var(--tertiary-color, var(--color-secondary))
+  );
   border-radius: 20px;
   transition: all 0.3s var(--easing, ease);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
