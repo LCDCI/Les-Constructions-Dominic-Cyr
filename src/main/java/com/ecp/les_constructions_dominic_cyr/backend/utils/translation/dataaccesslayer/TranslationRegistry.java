@@ -81,8 +81,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.lotmetadata", "a867f6b6-6337-4309-a6c3-becbdf1b505a");
 
         // Project Metadata translations (keys normalized to lowercase)
-        fileIdMap.put("en.projectmetadata", "b48e4c51-c3e3-4dfa-a5cb-df31b4b98f7f"); 
-        fileIdMap.put("fr.projectmetadata", "2241f13e-32d5-42d4-b322-05fe04cfbfb0"); 
+        fileIdMap.put("en.projectmetadata", "dbe33040-d8d7-4f4d-92cb-1950a62b2452");
+        fileIdMap.put("fr.projectmetadata", "c8bff754-7cf6-4200-bf8a-97e37f01941a");
 
     }
     

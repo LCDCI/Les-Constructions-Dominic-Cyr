@@ -4,6 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
 import { fetchLots } from '../../features/lots/api/lots';
 import useBackendUser from '../../hooks/useBackendUser';
+import usePageTranslations from '../../hooks/usePageTranslations';
 import { FiUsers } from 'react-icons/fi';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Project/ProjectMetadata.css';
@@ -17,6 +18,7 @@ const ProjectMetadata = () => {
   const [lots, setLots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = usePageTranslations('projectMetadata');
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -105,7 +107,7 @@ const ProjectMetadata = () => {
     return (
       <div className="metadata-loading">
         <div className="spinner"></div>
-        <p>Loading project information...</p>
+        <p>{t('loadingProject') || 'Loading project information...'}</p>
       </div>
     );
   }
@@ -113,7 +115,7 @@ const ProjectMetadata = () => {
   if (error) {
     return (
       <div className="metadata-error">
-        <h2>Access Denied</h2>
+        <h2>{t('accessDeniedTitle') || 'Access Denied'}</h2>
         <p>{error}</p>
       </div>
     );
@@ -126,7 +128,7 @@ const ProjectMetadata = () => {
   const myId = profile?.userId || profile?.userIdentifier || null;
 
   const formatDate = dateString => {
-    if (!dateString) return 'Not set';
+    if (!dateString) return t('notSet') || 'Not set';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -158,27 +160,27 @@ const ProjectMetadata = () => {
 
       <div className="metadata-content">
         <section className="metadata-section">
-          <h2 style={{ color: metadata.primaryColor }}>Project Overview</h2>
+            <h2 style={{ color: metadata.primaryColor }}>{t('projectOverview') || 'Project Overview'}</h2>
           <div className="metadata-grid">
             <div className="metadata-item">
-              <span className="metadata-label">Location</span>
+                <span className="metadata-label">{t('location') || 'Location'}</span>
               <span className="metadata-value">{metadata.location}</span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">Start Date</span>
+                <span className="metadata-label">{t('startDate') || 'Start Date'}</span>
               <span className="metadata-value">
                 {formatDate(metadata.startDate)}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">End Date</span>
+                <span className="metadata-label">{t('endDate') || 'End Date'}</span>
               <span className="metadata-value">
                 {formatDate(metadata.endDate)}
               </span>
             </div>
             {metadata.completionDate && (
               <div className="metadata-item">
-                <span className="metadata-label">Completion Date</span>
+                  <span className="metadata-label">{t('completionDate') || 'Completion Date'}</span>
                 <span className="metadata-value">
                   {formatDate(metadata.completionDate)}
                 </span>
@@ -186,7 +188,7 @@ const ProjectMetadata = () => {
             )}
             {metadata.progressPercentage !== null && (
               <div className="metadata-item full-width">
-                <span className="metadata-label">Progress</span>
+                  <span className="metadata-label">{t('progress') || 'Progress'}</span>
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
@@ -210,14 +212,14 @@ const ProjectMetadata = () => {
               href={`/projects/${projectId}/schedule`}
               className="project-metadata-schedule"
             >
-              View Project Schedule
+              {t('viewProjectSchedule') || 'View Project Schedule'}
             </a>
           </div>
         </section>
 
         {role === 'OWNER' && lots.length > 0 && (
           <section className="metadata-section">
-            <h2 style={{ color: metadata.primaryColor }}>Project Lots</h2>
+              <h2 style={{ color: metadata.primaryColor }}>{t('projectLots') || 'Project Lots'}</h2>
             <div className="lots-grid">
               {[...lots].sort((a, b) => {
                 // Sort by lot.id or lot.lotId (fallback)
@@ -235,7 +237,7 @@ const ProjectMetadata = () => {
                     )
                   }
                 >
-                  <h3>Lot {lot.id}</h3>
+                  <h3>{`${t('lot') || 'Lot'} ${lot.id}`}</h3>
                   {lot.civicAddress && (
                     <p className="lot-address">{lot.civicAddress}</p>
                   )}
@@ -259,7 +261,7 @@ const ProjectMetadata = () => {
 
       <div className="button-container">
         <a href={`/projects`} className="project-metadata-back">
-          Back to projects
+          {t('backToProjects') || 'Back to projects'}
         </a>
       </div>
     </div>
