@@ -85,10 +85,7 @@ export default function ProjectManagementPage() {
                 <div className="pm-image-container">
                   <img
                     src={getImageUrl(PM_IMAGE_IDS.floorPlan)}
-                    alt={t(
-                      'intro.image2.alt',
-                      '3D floor plan rendering'
-                    )}
+                    alt={t('intro.image2.alt', '3D floor plan rendering')}
                     className="pm-image"
                   />
                 </div>
@@ -124,23 +121,14 @@ export default function ProjectManagementPage() {
       <section className="pm-advantages-section">
         <div className="pm-advantages-container">
           <h2 className="pm-advantages-heading">
-            {t(
-              'advantages.heading',
-              'Our project management strengths'
-            )}
+            {t('advantages.heading', 'Our project management strengths')}
           </h2>
 
           <ul className="pm-advantages-list">
             <li>{t('advantages.item1', 'Advisory services')}</li>
-            <li>
-              {t('advantages.item2', 'Compliance with building codes')}
-            </li>
-            <li>
-              {t('advantages.item3', 'Planning with all stakeholders')}
-            </li>
-            <li>
-              {t('advantages.item4', 'Work schedule development')}
-            </li>
+            <li>{t('advantages.item2', 'Compliance with building codes')}</li>
+            <li>{t('advantages.item3', 'Planning with all stakeholders')}</li>
+            <li>{t('advantages.item4', 'Work schedule development')}</li>
             <li>{t('advantages.item5', 'Cost control')}</li>
             <li>{t('advantages.item6', 'Rigorous follow-up')}</li>
           </ul>

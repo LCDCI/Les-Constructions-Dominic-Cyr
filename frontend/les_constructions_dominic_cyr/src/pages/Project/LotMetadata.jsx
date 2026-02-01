@@ -51,7 +51,8 @@ const LotMetadata = () => {
         });
         if (!cancelled) setLot(data);
       } catch (err) {
-        if (!cancelled) setError(err.message || t('errors.loadFailed', 'Failed to load lot'));
+        if (!cancelled)
+          setError(err.message || t('errors.loadFailed', 'Failed to load lot'));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -107,22 +108,30 @@ const LotMetadata = () => {
 
       <div className="metadata-content">
         <section className="metadata-section">
-          <h2 style={{ color: lot.primaryColor }}>{t('lotOverview', 'Lot Overview')}</h2>
+          <h2 style={{ color: lot.primaryColor }}>
+            {t('lotOverview', 'Lot Overview')}
+          </h2>
           <div className="metadata-grid">
             <div className="metadata-item">
-              <span className="metadata-label">{t('civicAddress', 'Civic Address')}</span>
+              <span className="metadata-label">
+                {t('civicAddress', 'Civic Address')}
+              </span>
               <span className="metadata-value">
                 {lot.civicAddress || t('notSet', 'Not set')}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">{t('areaSqft', 'Area (sqft)')}</span>
+              <span className="metadata-label">
+                {t('areaSqft', 'Area (sqft)')}
+              </span>
               <span className="metadata-value">
                 {lot.dimensionsSquareFeet || '—'}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">{t('areaSqm', 'Area (sqm)')}</span>
+              <span className="metadata-label">
+                {t('areaSqm', 'Area (sqm)')}
+              </span>
               <span className="metadata-value">
                 {lot.dimensionsSquareMeters || '—'}
               </span>
@@ -133,7 +142,9 @@ const LotMetadata = () => {
             </div>
             {lot.progressPercentage !== null && (
               <div className="metadata-item full-width">
-                <span className="metadata-label">{t('progress', 'Progress')}</span>
+                <span className="metadata-label">
+                  {t('progress', 'Progress')}
+                </span>
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
@@ -161,7 +172,9 @@ const LotMetadata = () => {
             const customer = lot.assignedUsers.find(u => u.role === 'CUSTOMER');
             return customer ? (
               <section className="metadata-section">
-                <h2 style={{ color: lot.primaryColor }}>{t('buyerInformation', 'Buyer Information')}</h2>
+                <h2 style={{ color: lot.primaryColor }}>
+                  {t('buyerInformation', 'Buyer Information')}
+                </h2>
                 <div
                   className="buyer-info"
                   style={{ backgroundColor: lot.buyerColor || '#27ae60' }}

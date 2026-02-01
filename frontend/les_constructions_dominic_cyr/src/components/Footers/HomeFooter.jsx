@@ -38,10 +38,14 @@ export default function HomeFooter() {
         <div className="footer-section">
           <div className="footer-title-group">
             <FaMapMarkerAlt className="footer-section-icon" />
-            <h3 className="footer-title">{t('footer.location', 'Localisation')}</h3>
+            <h3 className="footer-title">
+              {t('footer.location', 'Localisation')}
+            </h3>
           </div>
           <div className="footer-content">
-            <p className="footer-item">{t('footer.address1', '155 rue Bourgeois')}</p>
+            <p className="footer-item">
+              {t('footer.address1', '155 rue Bourgeois')}
+            </p>
             <p className="footer-item">
               {t('footer.address2', 'St-Mathieu-de-Beloeil (Québec) J3G 0M9')}
             </p>
@@ -51,7 +55,9 @@ export default function HomeFooter() {
         <div className="footer-section">
           <div className="footer-title-group">
             <FaShieldAlt className="footer-section-icon" />
-            <h3 className="footer-title">{t('footer.accreditations', 'Accréditations')}</h3>
+            <h3 className="footer-title">
+              {t('footer.accreditations', 'Accréditations')}
+            </h3>
           </div>
           <div className="footer-content">
             <p className="footer-item">
@@ -84,7 +90,11 @@ export default function HomeFooter() {
 
       <div className="footer-bottom">
         <p className="footer-copyright">
-          {t('footer.copyright', '© {{year}} Les Constructions Dominic Cyr Inc. Tous droits réservés.', { year: currentYear })}
+          {t(
+            'footer.copyright',
+            '© {{year}} Les Constructions Dominic Cyr Inc. Tous droits réservés.',
+            { year: currentYear }
+          )}
         </p>
       </div>
     </footer>

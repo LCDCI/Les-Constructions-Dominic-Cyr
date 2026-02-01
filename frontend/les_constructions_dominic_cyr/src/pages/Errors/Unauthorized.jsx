@@ -31,7 +31,12 @@ export default function Unauthorized() {
     <div className="error-page">
       <div className="error-content">
         <h1>{t('title', '🚫 Access Denied')}</h1>
-        <p>{t('message', 'You do not have permission to access this page or feature.')}</p>
+        <p>
+          {t(
+            'message',
+            'You do not have permission to access this page or feature.'
+          )}
+        </p>
         <p className="error-hint">
           {t(
             'hint',

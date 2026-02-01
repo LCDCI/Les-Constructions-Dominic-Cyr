@@ -33,7 +33,9 @@ export default function ProfilePage() {
 
       // Check if user is authenticated
       if (!auth0User) {
-        setError(t('errors.notLoggedIn', 'You must be logged in to view your profile.'));
+        setError(
+          t('errors.notLoggedIn', 'You must be logged in to view your profile.')
+        );
         setLoading(false);
         return;
       }
@@ -44,7 +46,12 @@ export default function ProfilePage() {
         // Fetch user from backend using Auth0 user ID
         const auth0UserId = auth0User.sub;
         if (!auth0UserId || auth0UserId.trim() === '') {
-          setError(t('errors.invalidAuth', 'Invalid authentication data. Please log in again.'));
+          setError(
+            t(
+              'errors.invalidAuth',
+              'Invalid authentication data. Please log in again.'
+            )
+          );
           setLoading(false);
           return;
         }
@@ -64,9 +71,19 @@ export default function ProfilePage() {
       } catch (err) {
         console.error('Failed to load user:', err);
         if (err.response?.status === 404) {
-          setError(t('errors.notFound', 'Your user profile was not found. Please contact support.'));
+          setError(
+            t(
+              'errors.notFound',
+              'Your user profile was not found. Please contact support.'
+            )
+          );
         } else {
-          setError(t('errors.loadFailed', 'Failed to load profile information. Please try again later.'));
+          setError(
+            t(
+              'errors.loadFailed',
+              'Failed to load profile information. Please try again later.'
+            )
+          );
         }
       } finally {
         setLoading(false);
@@ -102,7 +119,9 @@ export default function ProfilePage() {
       setIsEditing(false);
     } catch (err) {
       console.error('Failed to update user:', err);
-      setSaveError(t('errors.updateFailed', 'Failed to update profile. Please try again.'));
+      setSaveError(
+        t('errors.updateFailed', 'Failed to update profile. Please try again.')
+      );
     } finally {
       setIsSaving(false);
     }
@@ -197,7 +216,9 @@ export default function ProfilePage() {
             <div className="profile-value profile-value-readonly">
               {user.primaryEmail}
             </div>
-            <small className="field-note">{t('emailCannotChange', 'Email cannot be changed')}</small>
+            <small className="field-note">
+              {t('emailCannotChange', 'Email cannot be changed')}
+            </small>
           </div>
 
           <div className="profile-field">
@@ -239,7 +260,9 @@ export default function ProfilePage() {
             <div className="profile-value profile-value-readonly">
               {user.userRole}
             </div>
-            <small className="field-note">{t('roleCannotChange', 'Role cannot be changed')}</small>
+            <small className="field-note">
+              {t('roleCannotChange', 'Role cannot be changed')}
+            </small>
           </div>
         </div>
 
@@ -250,7 +273,9 @@ export default function ProfilePage() {
               disabled={isSaving}
               className="save-button"
             >
-              {isSaving ? t('saving', 'Saving...') : t('saveChanges', 'Save Changes')}
+              {isSaving
+                ? t('saving', 'Saving...')
+                : t('saveChanges', 'Save Changes')}
             </button>
             <button
               onClick={handleCancel}

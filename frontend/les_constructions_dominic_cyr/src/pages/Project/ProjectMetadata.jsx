@@ -71,7 +71,8 @@ const ProjectMetadata = () => {
         );
       } catch (err) {
         const message =
-          err.response?.data?.message || t('errors.loadFailed', 'Failed to load project metadata');
+          err.response?.data?.message ||
+          t('errors.loadFailed', 'Failed to load project metadata');
         setError(message);
         if (err.response?.status === 403) {
           navigate('/unauthorized', { replace: true });
@@ -164,14 +165,20 @@ const ProjectMetadata = () => {
 
       <div className="metadata-content">
         <section className="metadata-section">
-          <h2 style={{ color: metadata.primaryColor }}>{t('projectOverview', 'Project Overview')}</h2>
+          <h2 style={{ color: metadata.primaryColor }}>
+            {t('projectOverview', 'Project Overview')}
+          </h2>
           <div className="metadata-grid">
             <div className="metadata-item">
-              <span className="metadata-label">{t('location', 'Location')}</span>
+              <span className="metadata-label">
+                {t('location', 'Location')}
+              </span>
               <span className="metadata-value">{metadata.location}</span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">{t('startDate', 'Start Date')}</span>
+              <span className="metadata-label">
+                {t('startDate', 'Start Date')}
+              </span>
               <span className="metadata-value">
                 {formatDate(metadata.startDate)}
               </span>
@@ -184,7 +191,9 @@ const ProjectMetadata = () => {
             </div>
             {metadata.completionDate && (
               <div className="metadata-item">
-                <span className="metadata-label">{t('completionDate', 'Completion Date')}</span>
+                <span className="metadata-label">
+                  {t('completionDate', 'Completion Date')}
+                </span>
                 <span className="metadata-value">
                   {formatDate(metadata.completionDate)}
                 </span>
@@ -192,7 +201,9 @@ const ProjectMetadata = () => {
             )}
             {metadata.progressPercentage !== null && (
               <div className="metadata-item full-width">
-                <span className="metadata-label">{t('progress', 'Progress')}</span>
+                <span className="metadata-label">
+                  {t('progress', 'Progress')}
+                </span>
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
@@ -223,7 +234,9 @@ const ProjectMetadata = () => {
 
         {role === 'OWNER' && lots.length > 0 && (
           <section className="metadata-section">
-            <h2 style={{ color: metadata.primaryColor }}>{t('projectLots', 'Project Lots')}</h2>
+            <h2 style={{ color: metadata.primaryColor }}>
+              {t('projectLots', 'Project Lots')}
+            </h2>
             <div className="lots-grid">
               {lots.map(lot => (
                 <div
@@ -236,7 +249,9 @@ const ProjectMetadata = () => {
                     )
                   }
                 >
-                  <h3>{t('lot', 'Lot')} {lot.id}</h3>
+                  <h3>
+                    {t('lot', 'Lot')} {lot.id}
+                  </h3>
                   {lot.civicAddress && (
                     <p className="lot-address">{lot.civicAddress}</p>
                   )}

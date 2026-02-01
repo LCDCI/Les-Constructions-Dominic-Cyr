@@ -72,7 +72,11 @@ export default function OwnerInquiriesPage() {
       <div style={{ padding: '2rem', minHeight: 'calc(100vh - 200px)' }}>
         <h1>{t('title', 'Inquiry Review')}</h1>
         {loading && <p>{t('loading', 'Loading inquiries...')}</p>}
-        {error && <p style={{ color: 'red' }}>{t('error', 'Error:')} {error.message}</p>}
+        {error && (
+          <p style={{ color: 'red' }}>
+            {t('error', 'Error:')} {error.message}
+          </p>
+        )}
         {!loading && !error && (
           <table
             style={{

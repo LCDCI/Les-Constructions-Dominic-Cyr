@@ -162,7 +162,10 @@ const InboxPage = () => {
               <GoInbox className="empty-icon" />
               <p>
                 {searchQuery || filterType !== 'all'
-                  ? t('empty.withFilters', 'No notifications match your filters')
+                  ? t(
+                      'empty.withFilters',
+                      'No notifications match your filters'
+                    )
                   : t('empty.noFilters', 'No notifications yet')}
               </p>
             </div>

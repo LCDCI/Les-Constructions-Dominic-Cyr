@@ -27,7 +27,9 @@ export default function PortalLogin() {
         {error?.message === 'verification_pending' && (
           <div className="verification-error-banner">
             <p>
-              <strong>{t('verificationRequired', 'Verification Required:')}</strong>{' '}
+              <strong>
+                {t('verificationRequired', 'Verification Required:')}
+              </strong>{' '}
               {t(
                 'verificationMessage',
                 'Please check your email and click the verification link before logging in.'
