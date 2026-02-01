@@ -9,8 +9,8 @@ export class RenovationsPage {
     this.errorMessage = page.locator('.renovations-page__status--error');
     this.navbar = page.locator('.navbar');
     this.footer = page.locator('.footer');
-    this.beforeImages = page.locator('.renovation-card__image--before');
-    this.afterImages = page.locator('.renovation-card__image--after');
+    this.images = page.locator('.renovation-card__image');
+    this.captions = page.locator('.renovation-card__caption');
     this.descriptions = page.locator('.renovation-card__description');
   }
 
