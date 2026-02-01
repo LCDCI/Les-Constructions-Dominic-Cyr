@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/realizations.css';
+import '../../styles/Public_Facing/residential-projects.css';
 import Footer from '../../components/Footers/ProjectsFooter';
 
 const RealizationsPage = () => {
@@ -58,11 +59,9 @@ const RealizationsPage = () => {
   return (
     <div className="realizations-page">
       {/* Hero Banner Section */}
-      <section className="real-hero-banner">
-        <div className="real-hero-content">
-          <h1 className="real-hero-title">
-            {t('hero.title', 'Our Realizations')}
-          </h1>
+      <section className="projects-hero">
+        <div className="projects-hero-content">
+          <h1 className="projects-title">{t('hero.title', 'Our Realizations')}</h1>
         </div>
       </section>
 

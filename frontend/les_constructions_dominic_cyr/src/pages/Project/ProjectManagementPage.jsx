@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { fetchProjectManagementContent } from '../../features/projects/api/projectManagementAPI';
 import '../../styles/Project/project-management.css';
+import '../../styles/Public_Facing/residential-projects.css';
 
 export default function ProjectManagementPage() {
   const { i18n } = useTranslation();
@@ -75,6 +76,14 @@ export default function ProjectManagementPage() {
     loadContent();
   }, [i18n.language]);
 
+  const toSentenceCase = raw => {
+    if (!raw) return '';
+    // remove commas, collapse whitespace
+    const cleaned = raw.replace(/,/g, ' ').replace(/\s+/g, ' ').trim();
+    const lower = cleaned.toLowerCase();
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+  };
+
   if (isLoading) {
     return <div className="project-management-loading">Loading...</div>;
   }
@@ -90,10 +99,12 @@ export default function ProjectManagementPage() {
   return (
     <div className="project-management-page">
       {/* Hero Banner Section */}
-      <section className="pm-hero-banner">
-        <div className="pm-hero-content">
-          <h1 className="pm-hero-title">
-            {`${getContent('hero.line1', 'PROJECT MANAGEMENT,')} ${getContent('hero.line2', 'FOR PEACE OF MIND')}`}
+      <section className="projects-hero">
+        <div className="projects-hero-content">
+          <h1 className="projects-title">
+            {toSentenceCase(
+              `${getContent('hero.line1', 'PROJECT MANAGEMENT,')} ${getContent('hero.line2', 'FOR PEACE OF MIND')}`
+            )}
           </h1>
         </div>
       </section>

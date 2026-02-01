@@ -12,6 +12,7 @@ import {
 import { IoLeafOutline } from 'react-icons/io5';
 import { LuMapPinned } from 'react-icons/lu';
 import '../../styles/Project/projectOverview.css';
+import '../../styles/Public_Facing/residential-projects.css';
 import '../../styles/Public_Facing/overviewMap.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
@@ -363,12 +364,10 @@ const ProjectOverviewPage = () => {
             }}
           />
         </div>
-        <div className="hero-content">
-          <h1 className="hero-title">
-            {overview.heroTitle || overview.projectName}
-          </h1>
+        <div className="hero-content projects-hero-content">
+          <h1 className="hero-title projects-title">{overview.heroTitle || overview.projectName}</h1>
           {overview.heroSubtitle && (
-            <p className="hero-subtitle">{overview.heroSubtitle}</p>
+            <p className="hero-subtitle projects-subtitle">{overview.heroSubtitle}</p>
           )}
         </div>
       </section>
