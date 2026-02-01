@@ -497,7 +497,9 @@ const ProjectSchedulePage = () => {
 
         setEvents(mappedEvents);
         setSchedules(scheduleWithIds);
-        setProjectName(scheduleWithIds[0]?.projectName || t('project', 'Project'));
+        setProjectName(
+          scheduleWithIds[0]?.projectName || t('project', 'Project')
+        );
 
         // Fetch project data to get contractor IDs
         try {
@@ -522,7 +524,12 @@ const ProjectSchedulePage = () => {
 
         setError(null);
       } catch (err) {
-        setError(t('error', 'Failed to load project schedules. Please try again later.'));
+        setError(
+          t(
+            'error',
+            'Failed to load project schedules. Please try again later.'
+          )
+        );
       } finally {
         setLoading(false);
       }
@@ -650,7 +657,10 @@ const ProjectSchedulePage = () => {
           ? {
               ...prev,
               tasksLoading: false,
-              tasksError: t('errors.loadTasksFailed', 'Failed to load tasks for this schedule.'),
+              tasksError: t(
+                'errors.loadTasksFailed',
+                'Failed to load tasks for this schedule.'
+              ),
             }
           : prev
       );
@@ -849,7 +859,9 @@ const ProjectSchedulePage = () => {
     setFormError('');
 
     if (!newSchedule.scheduleDescription.trim()) {
-      setFormError(t('errors.descriptionRequired', 'Schedule description is required.'));
+      setFormError(
+        t('errors.descriptionRequired', 'Schedule description is required.')
+      );
       return;
     }
 
@@ -905,7 +917,9 @@ const ProjectSchedulePage = () => {
       setSchedules(prev => [...prev, normalized]);
       setEvents(prev => [...prev, newEvent]);
       setSelectedEvent(newEvent);
-      setProjectName(prev => prev || normalized.projectName || t('project', 'Project'));
+      setProjectName(
+        prev => prev || normalized.projectName || t('project', 'Project')
+      );
       setScheduleForTasks(normalized);
       resetTaskDrafts(payload.scheduleStartDate, payload.scheduleEndDate);
       setIsCreateModalOpen(false);
@@ -914,7 +928,9 @@ const ProjectSchedulePage = () => {
       setNewSchedule(buildEmptyScheduleForm());
     } catch (err) {
       const detailed = extractErrorMessage(err);
-      setFormError(`${t('errors.createFailed', 'Failed to create schedule')}: ${detailed}`);
+      setFormError(
+        `${t('errors.createFailed', 'Failed to create schedule')}: ${detailed}`
+      );
     } finally {
       setIsSaving(false);
     }
@@ -978,12 +994,16 @@ const ProjectSchedulePage = () => {
 
     const scheduleIdentifier = editSchedule.scheduleIdentifier;
     if (!scheduleIdentifier) {
-      setEditFormError(t('errors.updateFailed', 'Missing schedule identifier for update.'));
+      setEditFormError(
+        t('errors.updateFailed', 'Missing schedule identifier for update.')
+      );
       return false;
     }
 
     if (!editSchedule.scheduleDescription.trim()) {
-      setEditFormError(t('errors.descriptionRequired', 'Schedule description is required.'));
+      setEditFormError(
+        t('errors.descriptionRequired', 'Schedule description is required.')
+      );
       return false;
     }
 
@@ -1132,7 +1152,9 @@ const ProjectSchedulePage = () => {
       return true;
     } catch (err) {
       const detailed = extractErrorMessage(err);
-      setEditFormError(`${t('errors.updateFailed', 'Failed to update schedule')}: ${detailed}`);
+      setEditFormError(
+        `${t('errors.updateFailed', 'Failed to update schedule')}: ${detailed}`
+      );
       return false;
     } finally {
       setIsSavingEdit(false);
@@ -1194,7 +1216,9 @@ const ProjectSchedulePage = () => {
       setTasksToDelete([]);
     } catch (err) {
       const detailed = extractErrorMessage(err);
-      setEditFormError(`${t('errors.deleteFailed', 'Failed to delete schedule')}: ${detailed}`);
+      setEditFormError(
+        `${t('errors.deleteFailed', 'Failed to delete schedule')}: ${detailed}`
+      );
     } finally {
       setIsDeletingSchedule(false);
     }
@@ -1202,7 +1226,12 @@ const ProjectSchedulePage = () => {
 
   const handleSaveTasks = async () => {
     if (!scheduleForTasks) {
-      setTaskFormError(t('errors.noScheduleSelected', 'No schedule selected. Please create a schedule first.'));
+      setTaskFormError(
+        t(
+          'errors.noScheduleSelected',
+          'No schedule selected. Please create a schedule first.'
+        )
+      );
       return;
     }
 
@@ -1261,7 +1290,9 @@ const ProjectSchedulePage = () => {
 
       const scheduleIdentifier = getScheduleIdentifier(scheduleForTasks);
       if (!scheduleIdentifier) {
-        setTaskFormError(t('errors.noScheduleId', 'Could not determine schedule id for tasks.'));
+        setTaskFormError(
+          t('errors.noScheduleId', 'Could not determine schedule id for tasks.')
+        );
         return;
       }
 
@@ -1324,29 +1355,37 @@ const ProjectSchedulePage = () => {
       const detailed = extractErrorMessage(taskErr);
       const authHint =
         status === 401 || status === 403
-          ? t('errors.authRequired', ' Please make sure you are signed in with a role that can create tasks.')
+          ? t(
+              'errors.authRequired',
+              ' Please make sure you are signed in with a role that can create tasks.'
+            )
           : '';
-      setTaskFormError(`${t('errors.saveTasksFailed', 'Failed to save tasks')}: ${detailed}.${authHint}`);
+      setTaskFormError(
+        `${t('errors.saveTasksFailed', 'Failed to save tasks')}: ${detailed}.${authHint}`
+      );
     } finally {
       setIsSavingTasks(false);
     }
   };
 
   const CustomToolbar = toolbarProps => {
-    const monthNames = useMemo(() => [
-      t('months.january', 'January'),
-      t('months.february', 'February'),
-      t('months.march', 'March'),
-      t('months.april', 'April'),
-      t('months.may', 'May'),
-      t('months.june', 'June'),
-      t('months.july', 'July'),
-      t('months.august', 'August'),
-      t('months.september', 'September'),
-      t('months.october', 'October'),
-      t('months.november', 'November'),
-      t('months.december', 'December'),
-    ], [t]);
+    const monthNames = useMemo(
+      () => [
+        t('months.january', 'January'),
+        t('months.february', 'February'),
+        t('months.march', 'March'),
+        t('months.april', 'April'),
+        t('months.may', 'May'),
+        t('months.june', 'June'),
+        t('months.july', 'July'),
+        t('months.august', 'August'),
+        t('months.september', 'September'),
+        t('months.october', 'October'),
+        t('months.november', 'November'),
+        t('months.december', 'December'),
+      ],
+      [t]
+    );
 
     const currentYear = currentDate.getFullYear();
     const years = Array.from({ length: 11 }, (_, idx) => currentYear - 5 + idx);
@@ -1454,7 +1493,10 @@ const ProjectSchedulePage = () => {
   if (loading) {
     return (
       <div className="schedule-loading">
-        <div className="spinner" aria-label={t('loading', 'Loading schedule')} />
+        <div
+          className="spinner"
+          aria-label={t('loading', 'Loading schedule')}
+        />
         <span>{t('loading', 'Loading schedule…')}</span>
       </div>
     );
@@ -1559,17 +1601,23 @@ const ProjectSchedulePage = () => {
                 <div className="card-top">
                   <div>
                     <div className="card-title">
-                      {schedule.scheduleDescription || t('schedule', 'Schedule')}
+                      {schedule.scheduleDescription ||
+                        t('schedule', 'Schedule')}
                     </div>
                     <div className="card-meta">
                       {lotLabel} ·{' '}
-                      {start ? formatDate(start, 'MMM d, yyyy') : t('startUnknown', 'Start ?')}
+                      {start
+                        ? formatDate(start, 'MMM d, yyyy')
+                        : t('startUnknown', 'Start ?')}
                       {end ? ` → ${formatDate(end, 'MMM d, yyyy')}` : ''}
                       {isToday ? ` · ${t('today', 'Today')}` : ''}
                     </div>
                     <div className="card-meta">
                       <span className="card-chip">
-                        {taskCount} {taskCount === 1 ? t('task', 'task') : t('tasks', 'tasks')}
+                        {taskCount}{' '}
+                        {taskCount === 1
+                          ? t('task', 'task')
+                          : t('tasks', 'tasks')}
                       </span>
                     </div>
                   </div>

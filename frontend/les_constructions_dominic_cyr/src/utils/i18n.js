@@ -45,13 +45,17 @@ i18n.use(initReactI18next).init({
 const loadTranslations = async (language = null) => {
   try {
     const lang = normalizeLang(language || getInitialLanguage());
-    const [allTranslations, lotsTranslations, livingEnvironmentTranslations, homeTranslations] =
-      await Promise.all([
-        fetchTranslations(lang),
-        fetchPageTranslations('lots', lang),
-        fetchPageTranslations('livingenvironment', lang),
-        fetchPageTranslations('home', lang),
-      ]);
+    const [
+      allTranslations,
+      lotsTranslations,
+      livingEnvironmentTranslations,
+      homeTranslations,
+    ] = await Promise.all([
+      fetchTranslations(lang),
+      fetchPageTranslations('lots', lang),
+      fetchPageTranslations('livingenvironment', lang),
+      fetchPageTranslations('home', lang),
+    ]);
 
     // Add general translations
     if (allTranslations) {
@@ -80,7 +84,7 @@ const loadTranslations = async (language = null) => {
     // This ensures navbar and footer are always available regardless of current page
     if (homeTranslations) {
       i18n.addResourceBundle(lang, 'home', homeTranslations, true, true);
-      
+
       // Extract nav and footer from home translations and add to global 'translation' namespace
       const globalTranslations = {};
       if (homeTranslations.nav) {

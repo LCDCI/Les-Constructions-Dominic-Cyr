@@ -101,7 +101,10 @@ export default function UsersPage() {
 
       setIsAddModalOpen(false);
     } catch (err) {
-      let niceMessage = t('errors.createFailed', 'Failed to create user. Please try again.');
+      let niceMessage = t(
+        'errors.createFailed',
+        'Failed to create user. Please try again.'
+      );
       if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
@@ -151,7 +154,10 @@ export default function UsersPage() {
       setIsOwnerEditModalOpen(false);
       setEditingUser(null);
     } catch (err) {
-      let niceMessage = t('errors.updateFailed', 'Failed to update user. Please try again.');
+      let niceMessage = t(
+        'errors.updateFailed',
+        'Failed to update user. Please try again.'
+      );
       if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
@@ -204,7 +210,10 @@ export default function UsersPage() {
       setIsStatusModalOpen(false);
       setManagingUser(null);
     } catch (err) {
-      let niceMessage = t('errors.statusFailed', 'Failed to update user status. Please try again.');
+      let niceMessage = t(
+        'errors.statusFailed',
+        'Failed to update user status. Please try again.'
+      );
       if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
@@ -233,8 +242,12 @@ export default function UsersPage() {
               onChange={e => setStatusFilter(e.target.value)}
               className="status-filter-select"
             >
-              <option value="ACTIVE">{t('statusOptions.active', 'Active')}</option>
-              <option value="INACTIVE">{t('statusOptions.inactive', 'Inactive')}</option>
+              <option value="ACTIVE">
+                {t('statusOptions.active', 'Active')}
+              </option>
+              <option value="INACTIVE">
+                {t('statusOptions.inactive', 'Inactive')}
+              </option>
               <option value="ALL">{t('statusOptions.all', 'All')}</option>
             </select>
           </div>
