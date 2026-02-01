@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
   FaMapMarkerAlt,
   FaShieldAlt,
@@ -70,6 +71,12 @@ export default function HomeFooter() {
               garantiegcr.com
             </a>
           </div>
+        </div>
+
+        <div className="footer-section">
+          <Link to="/contact" className="footer-contact-link">
+            Contact Us
+          </Link>
         </div>
       </div>
 

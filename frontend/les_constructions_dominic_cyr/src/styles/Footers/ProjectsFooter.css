@@ -1,7 +1,7 @@
 /* Foresta Project Colors */
 .app-footer[data-project='proj-001-foresta'] {
-  --icon-primary: #003663;
-  --icon-secondary: #a9b3aa;
+  --icon-primary: #a9b3aa;
+  --icon-secondary: #89938a;
 }
 
 /* Panorama Project Colors */
@@ -20,9 +20,9 @@
 .footer-inner {
   max-width: 1400px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 3%;
+  display: flex;
+  justify-content: center;
+  gap: 120px;
   align-items: start;
 }
 

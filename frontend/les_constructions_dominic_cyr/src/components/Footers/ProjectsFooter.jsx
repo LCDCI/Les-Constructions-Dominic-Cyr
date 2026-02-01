@@ -70,27 +70,6 @@ export default function ProjectsFooter({ projectId }) {
 
         <div className="footer-section">
           <div className="footer-icon">
-            <FaMapMarkerAlt />
-          </div>
-          <h3 className="footer-title">
-            {t('footer.locationTitle', 'Emplacement du projet')}
-          </h3>
-          <div className="footer-content">
-            <p className="footer-item">{projectData.location.address1}</p>
-            <p className="footer-item">{projectData.location.address2}</p>
-            <a
-              href={projectData.location.mapLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="footer-link"
-            >
-              {t('footer.getDirections', "Obtenir l'itinéraire")}
-            </a>
-          </div>
-        </div>
-
-        <div className="footer-section">
-          <div className="footer-icon">
             <FaPhoneAlt />
           </div>
           <h3 className="footer-title">

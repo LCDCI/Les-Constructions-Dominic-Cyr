@@ -1,9 +1,9 @@
 .app-footer {
   background-color: #ffffff;
-  border-top: 1px solid #e6e6e6;
+  border-top: 1px solid #e6e7e8;
   padding: 40px 0;
   margin-top: auto;
-  color: #4a4a4a;
+  color: #4c4d4f;
 }
 
 .footer-inner {
@@ -11,13 +11,16 @@
   width: 90%;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 40px;
+  align-items: start;
 }
 
 .footer-section {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-width: 250px;
 }
 
 .footer-title-group {
@@ -28,14 +31,14 @@
 }
 
 .footer-section-icon {
-  color: #4a90a4;
+  color: #5a7d8c;
   font-size: 1.2rem;
 }
 
 .footer-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #4a4a4a;
+  color: #4c4d4f;
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -54,26 +57,44 @@
 }
 
 .footer-mini-icon {
-  color: #4a90a4;
+  color: #5a7d8c;
   font-size: 0.9rem;
 }
 
 .footer-item {
   font-size: 14px;
-  color: #4a4a4a;
+  color: #4c4d4f;
   margin: 0;
 }
 
 .footer-link {
   font-size: 14px;
-  color: #4a90a4;
+  color: #5a7d8c;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .footer-link:hover {
-  color: #3a7a8c;
+  color: #4c4d4f;
   text-decoration: underline;
+}
+
+.footer-contact-link {
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  color: #5a7d8c;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-contact-link:hover {
+  color: #4c4d4f;
+  background-color: rgba(90, 125, 140, 0.1);
 }
 
 .footer-bottom {
@@ -93,14 +114,19 @@
 /* Responsive Logic */
 @media (max-width: 992px) {
   .footer-inner {
-    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
   }
 }
 
 @media (max-width: 768px) {
   .footer-inner {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+  }
+
+  .footer-section {
+    width: 100%;
   }
 
   .footer-title-group,

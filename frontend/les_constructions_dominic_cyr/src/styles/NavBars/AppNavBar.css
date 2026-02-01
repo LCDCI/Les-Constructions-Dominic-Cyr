@@ -276,7 +276,7 @@
 
 .mobile-logo-menu-button {
   display: none;
-  background: none;
+  background: transparent;
   border: none;
   padding: 8px;
   cursor: pointer;
@@ -284,6 +284,7 @@
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
+  outline: none;
 }
 
 .mobile-logo-menu {
