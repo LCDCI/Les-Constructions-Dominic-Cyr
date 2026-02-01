@@ -4,6 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { fetchProjectManagementContent } from '../../features/projects/api/projectManagementAPI';
 import '../../styles/Project/project-management.css';
 import '../../styles/Public_Facing/residential-projects.css';
+import { FaUserTie } from 'react-icons/fa';
+import { IoIosHammer } from 'react-icons/io';
+import { AiOutlineStock } from 'react-icons/ai';
+import { GrFormSchedule } from 'react-icons/gr';
+import { MdAttachMoney } from 'react-icons/md';
+import { CiStopwatch } from 'react-icons/ci';
 
 export default function ProjectManagementPage() {
   const { i18n } = useTranslation();
@@ -66,7 +72,6 @@ export default function ProjectManagementPage() {
           await fetchProjectManagementContent(normalizedLanguage);
         setContent(fetchedContent);
       } catch (err) {
-        console.error('Failed to fetch project management content:', err);
         setError(err.message || 'Failed to load content');
       } finally {
         setIsLoading(false);
@@ -196,18 +201,60 @@ export default function ProjectManagementPage() {
           </h2>
 
           <ul className="pm-advantages-list">
-            <li>{getContent('advantages.item1', 'Advisory services')}</li>
             <li>
-              {getContent('advantages.item2', 'Compliance with building codes')}
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <FaUserTie />
+              </span>
+              <span className="pm-adv-text">
+                {getContent('advantages.item1', 'Advisory services')}
+              </span>
             </li>
             <li>
-              {getContent('advantages.item3', 'Planning with all stakeholders')}
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <IoIosHammer />
+              </span>
+              <span className="pm-adv-text">
+                {getContent(
+                  'advantages.item2',
+                  'Compliance with building codes'
+                )}
+              </span>
             </li>
             <li>
-              {getContent('advantages.item4', 'Work schedule development')}
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <AiOutlineStock />
+              </span>
+              <span className="pm-adv-text">
+                {getContent(
+                  'advantages.item3',
+                  'Planning with all stakeholders'
+                )}
+              </span>
             </li>
-            <li>{getContent('advantages.item5', 'Cost control')}</li>
-            <li>{getContent('advantages.item6', 'Rigorous follow-up')}</li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <GrFormSchedule />
+              </span>
+              <span className="pm-adv-text">
+                {getContent('advantages.item4', 'Work schedule development')}
+              </span>
+            </li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <MdAttachMoney />
+              </span>
+              <span className="pm-adv-text">
+                {getContent('advantages.item5', 'Cost control')}
+              </span>
+            </li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <CiStopwatch />
+              </span>
+              <span className="pm-adv-text">
+                {getContent('advantages.item6', 'Rigorous follow-up')}
+              </span>
+            </li>
           </ul>
 
           {/* Separator Lines */}
