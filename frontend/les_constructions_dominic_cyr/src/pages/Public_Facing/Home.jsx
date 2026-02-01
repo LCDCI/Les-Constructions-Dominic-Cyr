@@ -8,6 +8,7 @@ import { RiLeafLine } from 'react-icons/ri';
 import { PiSuitcaseSimple } from 'react-icons/pi';
 import { FiPhoneCall } from 'react-icons/fi';
 import { PiMedalThin } from 'react-icons/pi';
+import { GrCatalog } from 'react-icons/gr';
 
 export default function Home() {
   const { t } = usePageTranslations('home');
@@ -309,47 +310,41 @@ export default function Home() {
               data-animate
             >
               <img
-                src={`${filesServiceUrl}/files/${photos.collage1}`}
+                src={`${filesServiceUrl}/files/a93f9fbc-44d6-4c0d-b763-0523ee42656d`}
                 alt="Foresta Project"
                 loading="lazy"
                 className="card-image-bg"
               />
               <div className="card-overlay" />
-              <div className="card-content">
-                <h3 className="card-title">
-                  {t('portfolio.foresta', 'Foresta')}
-                </h3>
-                <p className="card-subtitle">
-                  {t('portfolio.forestaSubtitle', 'Residential Project')}
-                </p>
-              </div>
+              {/* text removed to display image only */}
             </Link>
 
             <Link
-              to="/projects/proj-002-panorama/overview"
-              className="portfolio-card"
+              to="/realizations"
+              className="portfolio-card no-image"
               data-animate
             >
               <img
-                src={`${filesServiceUrl}/files/${photos.collage2}`}
-                alt="Panorama Project"
+                src={`${filesServiceUrl}/files/${photos.project2}`}
+                alt="Our Achievements"
                 loading="lazy"
                 className="card-image-bg"
               />
               <div className="card-overlay" />
               <div className="card-content">
                 <h3 className="card-title">
-                  {t('portfolio.panorama', 'Panorama')}
+                  <GrCatalog />
+                  {t('portfolio.achievements', 'Achievements')}
                 </h3>
                 <p className="card-subtitle">
-                  {t('portfolio.panoramaSubtitle', 'Condominiums')}
+                  {t('portfolio.achievementsSubtitle', 'Portfolio')}
                 </p>
               </div>
             </Link>
 
             <Link
               to="/projectmanagement"
-              className="portfolio-card"
+              className="portfolio-card no-image"
               data-animate
             >
               <img
@@ -361,6 +356,7 @@ export default function Home() {
               <div className="card-overlay" />
               <div className="card-content">
                 <h3 className="card-title">
+                  <PiSuitcaseSimple />
                   {t('portfolio.management', 'Management')}
                 </h3>
                 <p className="card-subtitle">
@@ -369,22 +365,19 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link to="/realizations" className="portfolio-card" data-animate>
+            <Link
+              to="/projects/proj-002-panorama/overview"
+              className="portfolio-card"
+              data-animate
+            >
               <img
-                src={`${filesServiceUrl}/files/${photos.project2}`}
-                alt="Our Achievements"
+                src={`${filesServiceUrl}/files/47d2b619-70cf-460c-b929-605d52ee9eb6`}
+                alt="Panorama Project"
                 loading="lazy"
                 className="card-image-bg"
               />
               <div className="card-overlay" />
-              <div className="card-content">
-                <h3 className="card-title">
-                  {t('portfolio.achievements', 'Achievements')}
-                </h3>
-                <p className="card-subtitle">
-                  {t('portfolio.achievementsSubtitle', 'Portfolio')}
-                </p>
-              </div>
+              {/* text removed to display image only */}
             </Link>
           </div>
         </div>
