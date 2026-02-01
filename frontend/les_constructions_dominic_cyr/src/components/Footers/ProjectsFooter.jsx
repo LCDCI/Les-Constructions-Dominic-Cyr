@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {
   FaClock,
-  FaMapMarkerAlt,
   FaPhoneAlt,
   FaEnvelope,
 } from 'react-icons/fa';
