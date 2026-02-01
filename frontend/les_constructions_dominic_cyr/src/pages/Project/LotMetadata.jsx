@@ -72,6 +72,19 @@ const LotMetadata = () => {
     }).format(n);
   };
 
+  const normalizeStatusKey = raw => {
+    if (!raw) return '';
+    const key = String(raw).toLowerCase().replace(/[^a-z0-9]/g, '');
+    // Map variants to canonical translation keys
+    if (key.includes('contract')) return 'contract';
+    if (key === 'inprogress' || key === 'inprogress') return 'inprogress';
+    if (key === 'available') return 'available';
+    if (key === 'reserved') return 'reserved';
+    if (key === 'sold') return 'sold';
+    if (key === 'pending') return 'pending';
+    return key;
+  };
+
   if (loading) return <div className="page">{t('loadingLot') || 'Loading...'}</div>;
   if (error) return <div className="page">{error}</div>;
   if (!lot) return null;
@@ -90,9 +103,15 @@ const LotMetadata = () => {
       >
         <div className="hero-content">
           <h1 className="project-title">
-            {lot.lotNumber || `${t('lot')} ${lot.lotId}`}
+            {lot.id ? `${t('lot')} ${lot.id}` : (lot.lotNumber || `${t('lot')} ${lot.lotId}`)}
           </h1>
-          <span className={`status-badge status-${(lot.lotStatus || '').toLowerCase()}`}>{t(`lotStatus.${(lot.lotStatus || '').toLowerCase()}`) || lot.lotStatus}</span>
+          {(() => {
+            const statusKey = normalizeStatusKey(lot.lotStatus);
+            const statusLabel = t(`lotStatus.${statusKey}`) || (lot.lotStatus || '');
+            return (
+              <span className={`status-badge status-${statusKey}`}>{statusLabel}</span>
+            );
+          })()}
         </div>
         {project?.imageIdentifier && (
           <div className="hero-image">
