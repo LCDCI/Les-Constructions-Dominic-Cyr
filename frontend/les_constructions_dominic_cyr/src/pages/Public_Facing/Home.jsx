@@ -2,6 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import '../../styles/Public_Facing/home.css';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { TbHomeSearch } from 'react-icons/tb';
+import { PiPaintBrushBroad } from 'react-icons/pi';
+import { RiLeafLine } from 'react-icons/ri';
+import { PiSuitcaseSimple } from 'react-icons/pi';
+import { FiPhoneCall } from 'react-icons/fi';
+import { PiMedalThin } from 'react-icons/pi';
 
 export default function Home() {
   const { t } = usePageTranslations('home');
@@ -134,6 +140,64 @@ export default function Home() {
         <div className="scroll-down" data-animate>
           <div className="scroll-icon"></div>
           <p>{t('hero.scroll', 'Scroll')}</p>
+        </div>
+      </section>
+
+      {/* FEATURES SECTION */}
+      <section className="features-section">
+        <div className="container">
+          <div className="section-header center" data-animate>
+            <span className="section-kicker">
+              {t('features.kicker', 'Why Choose Us')}
+            </span>
+            <h2 className="section-title">
+              {t('features.title', 'Personalized Support')}
+            </h2>
+          </div>
+          <p className="features-intro" data-animate>
+            {t(
+              'features.intro',
+              'Dominic Cyr Construction Inc. is a dynamic family business with over 30 years of experience in residential construction. We are here to support you in realizing your ideas and projects with personalized, professional service built on transparency.'
+            )}
+          </p>
+          <div className="features-grid">
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <PiSuitcaseSimple />
+                {t('features.feature1', 'Passionate & Professional')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <PiPaintBrushBroad />
+                {t('features.feature2', 'Creative Approach')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <TbHomeSearch />
+                {t('features.feature3', 'Attention to Detail')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <RiLeafLine />
+                {t('features.feature4', 'Eco-Friendly Practices')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <PiMedalThin />
+                {t('features.feature5', 'Excellence Standards')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <FiPhoneCall />
+                {t('features.feature6', 'After-Sales Service')}
+              </h3>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -322,58 +386,6 @@ export default function Home() {
                 </p>
               </div>
             </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES SECTION */}
-      <section className="features-section">
-        <div className="container">
-          <div className="section-header center" data-animate>
-            <span className="section-kicker">
-              {t('features.kicker', 'Why Choose Us')}
-            </span>
-            <h2 className="section-title">
-              {t('features.title', 'Personalized Support')}
-            </h2>
-          </div>
-          <p className="features-intro" data-animate>
-            {t(
-              'features.intro',
-              'Dominic Cyr Construction Inc. is a dynamic family business with over 30 years of experience in residential construction. We are here to support you in realizing your ideas and projects with personalized, professional service built on transparency.'
-            )}
-          </p>
-          <div className="features-grid">
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature1', 'Passionate & Professional')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature2', 'Creative Approach')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature3', 'Attention to Detail')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature4', 'Eco-Friendly Practices')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature5', 'Excellence Standards')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature6', 'After-Sales Service')}
-              </h3>
-            </div>
           </div>
         </div>
       </section>

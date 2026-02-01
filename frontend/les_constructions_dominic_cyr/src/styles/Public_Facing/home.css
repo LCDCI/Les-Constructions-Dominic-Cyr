@@ -682,27 +682,22 @@ body {
   animation: fadeIn var(--duration) var(--easing) forwards;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-lg);
-  max-width: 1000px;
-  margin: 0 auto;
-}
-
 .feature-card {
-  padding: var(--spacing-lg);
   text-align: center;
   background: var(--color-light);
   transition: all 0.4s var(--easing);
   opacity: 0;
-  transform: translateY(20px);
-  min-height: 180px;
+  transform: translateY(6px);
   display: flex;
   align-items: center;
   justify-content: center;
   border: 2px solid transparent;
+  width: auto;
+  margin: 0;
+  padding: 0.5rem 0.6rem 0.9rem;
+  min-width: 0;
 }
+
 
 /* Ensure feature card content is strictly centered (horizontal + vertical) */
 .features-grid .feature-card {
@@ -720,6 +715,22 @@ body {
 .feature-card.animated {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (min-width: 1001px) {
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.25rem !important;
+    max-width: 720px !important;
+  }
+  .feature-card {
+    min-height: 56px !important;
+    padding: 0.75rem 0.6rem 1rem !important;
+  }
+  .feature-title {
+    font-size: 0.26rem !important;
+    font-weight: 200 !important;
+  }
 }
 
 .feature-card:nth-child(1) {
@@ -748,26 +759,36 @@ body {
 
 .feature-title {
   font-family: var(--font-heading);
-  font-size: 1.2rem !important;
-  font-weight: 400;
+  font-size: 0.245rem !important;
+  font-weight: 200;
   margin: 0;
   color: var(--color-primary);
   letter-spacing: 0.02em;
-  line-height: 1.4;
-  transition: color 0.4s var(--easing);
+  line-height: 1.2;
+  transition: color 0.25s var(--easing);
   word-break: break-word;
   overflow-wrap: anywhere;
   hyphens: auto;
 }
 
 /* Ensure feature title is centered inside the card both horizontally and vertically */
-.feature-card .feature-title {
+  .feature-card .feature-title {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 0.6rem;
   text-align: center;
   width: 100%;
   height: 100%;
+}
+
+.feature-card .feature-title svg {
+  display: block;
+  font-size: 1.32rem !important;
+  line-height: 1;
+  margin: 0 auto 6% auto;
+  align-self: center;
 }
 
 /* ========== CONTACT SECTION ========== */
@@ -901,7 +922,7 @@ body {
 
 /* ========== RESPONSIVE DESIGN ========== */
 
-@media (max-width: 1200px) {
+@media (max-width: 1000px) {
   :root {
     --content-width: 90%;
   }
@@ -917,7 +938,7 @@ body {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1000px) {
   :root {
     --content-width: 90%;
     --spacing-section: 5rem;
@@ -1004,7 +1025,7 @@ body {
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1000px) {
   :root {
     --content-width: 90%;
     --spacing-section: 5rem;
@@ -1246,8 +1267,9 @@ body {
 
   /* Feature title sizing for mobile to avoid overflow */
   .feature-title {
-    font-size: clamp(0.95rem, 3.8vw, 1.1rem) !important;
+    font-size: clamp(0.355rem, 1.425vw, 0.4125rem) !important;
     line-height: 1.35;
+    font-weight: 200 !important;
   }
 
   /* Remove offsets on mobile for clean stacking */
@@ -1349,8 +1371,9 @@ body {
   }
 
   .feature-title {
-    font-size: clamp(0.9rem, 4.5vw, 1rem);
+    font-size: clamp(0.3375rem, 1.6875vw, 0.375rem);
     line-height: 1.35;
+    font-weight: 200 !important;
   }
 
   /* Ensure feature card content is strictly centered (highest specificity) */
