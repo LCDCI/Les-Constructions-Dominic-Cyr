@@ -1,10 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  FaClock,
-  FaPhoneAlt,
-  FaEnvelope,
-} from 'react-icons/fa';
+import { FaClock, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Footers/ProjectsFooter.css';
 
