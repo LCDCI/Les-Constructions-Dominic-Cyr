@@ -265,3 +265,50 @@ CREATE TABLE inquiries (
 );
 
 CREATE INDEX idx_inquiries_created_at ON inquiries(created_at DESC);
+
+-- ============================================================================
+-- Quote System Schema
+-- ============================================================================
+
+-- Quotes Table
+-- Stores all quotes created by contractors for projects
+DROP TABLE IF EXISTS quote_line_items CASCADE;
+DROP TABLE IF EXISTS quotes CASCADE;
+
+CREATE TABLE quotes (
+    quote_id BIGSERIAL PRIMARY KEY,
+    quote_number VARCHAR(15) NOT NULL UNIQUE,
+    project_identifier VARCHAR(255) NOT NULL,
+    contractor_id VARCHAR(255) NOT NULL,
+    total_amount DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_quote_project 
+        FOREIGN KEY (project_identifier) 
+        REFERENCES projects(project_identifier) 
+        ON DELETE RESTRICT
+);
+
+CREATE INDEX idx_quote_number ON quotes(quote_number);
+CREATE INDEX idx_quote_project ON quotes(project_identifier);
+CREATE INDEX idx_quote_contractor ON quotes(contractor_id);
+CREATE INDEX idx_quote_created_at ON quotes(created_at);
+
+-- Quote Line Items Table
+-- Stores individual line items for each quote
+CREATE TABLE quote_line_items (
+    line_item_id BIGSERIAL PRIMARY KEY,
+    quote_id BIGINT NOT NULL,
+    CONSTRAINT fk_line_item_quote 
+        FOREIGN KEY (quote_id) 
+        REFERENCES quotes(quote_id) 
+        ON DELETE CASCADE,
+    item_description VARCHAR(500) NOT NULL,
+    quantity NUMERIC(10,2) NOT NULL,
+    rate DECIMAL(15,2) NOT NULL,
+    line_total DECIMAL(15,2) NOT NULL,
+    display_order INTEGER NOT NULL
+);
+
+CREATE INDEX idx_line_item_quote ON quote_line_items(quote_id);
+CREATE INDEX idx_line_item_order ON quote_line_items(display_order);

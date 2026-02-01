@@ -1,0 +1,601 @@
+/* Quote Form Page Styles - Premium Design */
+
+.quote-form-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%);
+  padding: 40px 32px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.quote-form-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 48px;
+}
+
+/* Form Header */
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 44px;
+  padding-bottom: 28px;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.header-left h1 {
+  font-size: 36px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.bill-number-label {
+  font-size: 13px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.bill-number-value {
+  font-weight: 700;
+  color: #5dade2;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+}
+
+/* Contractor Card */
+.contractor-card {
+  display: flex;
+  gap: 18px;
+  background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+  color: white;
+  padding: 28px;
+  border-radius: 12px;
+  min-width: 340px;
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+}
+
+.contractor-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5dade2 0%, #3498db 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 0 4px 8px rgba(93, 173, 226, 0.3);
+}
+
+.contractor-details h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.3px;
+}
+
+.contractor-details p {
+  font-size: 14px;
+  margin: 0;
+  opacity: 0.85;
+  font-weight: 500;
+}
+
+.contractor-details .address {
+  margin-top: 10px;
+  line-height: 1.6;
+  font-size: 13px;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+/* Bill Details Section */
+.bill-details-section {
+  margin-bottom: 40px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 36px;
+}
+
+.detail-item label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+.detail-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.3px;
+}
+
+.detail-meta {
+  display: block;
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 4px 0;
+  font-weight: 500;
+}
+
+/* Error Banner */
+.error-banner {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 1px solid #fca5a5;
+  color: #7f1d1d;
+  padding: 16px 18px;
+  border-radius: 10px;
+  margin-bottom: 28px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Item Details Section */
+.item-details-section {
+  margin-bottom: 40px;
+}
+
+.item-details-section h3 {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.5px;
+}
+
+.section-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 24px 0;
+  font-weight: 500;
+}
+
+/* Items Table */
+.items-table-wrapper {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.items-table thead {
+  background: linear-gradient(135deg, #f8f9fa 0%, #f3f4f6 100%);
+}
+
+.items-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.items-table th.col-rate,
+.items-table th.col-total {
+  text-align: right;
+}
+
+.items-table tbody tr {
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.items-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.items-table tbody tr.row-error {
+  background: #fffbf5;
+}
+
+.items-table td {
+  padding: 16px;
+  vertical-align: top;
+}
+
+.col-item { width: 40%; }
+.col-amount { width: 15%; }
+.col-rate { width: 20%; }
+.col-total { width: 15%; }
+.col-actions { width: 10%; text-align: center; }
+
+/* Input Styles */
+.items-table input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: white;
+  transition: all 0.2s;
+}
+
+.items-table input:focus {
+  outline: none;
+  border-color: #5dade2;
+  box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+}
+
+.items-table input.input-error {
+  border-color: #dc3545;
+  background: #fff5f5;
+}
+
+.items-table input::placeholder {
+  color: #adb5bd;
+}
+
+.rate-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rate-input .currency {
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.rate-input input {
+  padding-left: 28px;
+  text-align: right;
+}
+
+.total-value {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.error-hint {
+  display: block;
+  font-size: 11px;
+  color: #dc3545;
+  margin-top: 4px;
+}
+
+/* Delete Button */
+.btn-delete {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #dc3545;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background: #f8d7da;
+  border-color: #dc3545;
+}
+
+.btn-delete:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Add Item Link */
+.add-item-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #5dade2;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  transition: color 0.2s;
+}
+
+.add-item-link:hover {
+  color: #2471a3;
+}
+
+.add-item-link svg {
+  font-size: 18px;
+}
+
+/* Totals Section */
+.totals-section {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 32px;
+  max-width: 500px;
+  margin-left: auto;
+}
+
+.total-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 15px;
+}
+
+.total-row:last-child {
+  border-bottom: none;
+}
+
+.total-row.discount-row {
+  grid-template-columns: 1fr 80px auto;
+  gap: 12px;
+}
+
+.total-row.total {
+  border-top: 2px solid #dee2e6;
+  padding-top: 16px;
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.total-row .label {
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.total-row .value {
+  color: #1a1a1a;
+  font-weight: 600;
+  text-align: right;
+}
+
+.discount-input,
+.tax-input {
+  width: 80px;
+  padding: 8px 10px;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.discount-input:focus,
+.tax-input:focus {
+  outline: none;
+  border-color: #5dade2;
+  box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+}
+
+.discount-amount,
+.tax-amount {
+  color: #6c757d;
+  font-weight: 600;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 24px;
+  border-top: 1px solid #dee2e6;
+}
+
+.btn {
+  padding: 12px 28px;
+  border-radius: 6px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background: #6c757d;
+  color: white;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.btn-preview {
+  background: white;
+  color: #5dade2;
+  border: 2px solid #5dade2;
+}
+
+.btn-preview:hover:not(:disabled) {
+  background: #e8f4f8;
+}
+
+.btn-send {
+  background: #1a1a1a;
+  color: white;
+}
+
+.btn-send:hover:not(:disabled) {
+  background: #2c3e50;
+  box-shadow: 0 4px 12px rgba(26, 26, 26, 0.3);
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+  .quote-form-container {
+    padding: 32px 24px;
+  }
+
+  .form-header {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .contractor-card {
+    min-width: 100%;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .items-table th,
+  .items-table td {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .totals-section {
+    max-width: 100%;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .quote-form-page {
+    padding: 16px 12px;
+  }
+
+  .quote-form-container {
+    padding: 24px 16px;
+    border-radius: 8px;
+  }
+
+  .header-left h1 {
+    font-size: 24px;
+  }
+
+  .contractor-card {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .contractor-avatar {
+    align-self: flex-start;
+  }
+
+  .details-grid {
+    gap: 20px;
+  }
+
+  /* Convert table to vertical layout */
+  .items-table-wrapper {
+    border: none;
+    overflow: visible;
+  }
+
+  .items-table thead {
+    display: none;
+  }
+
+  .items-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .items-table tr {
+    display: flex;
+    flex-direction: column;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .items-table td {
+    padding: 8px 0;
+    width: 100%;
+  }
+
+  .items-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6c757d;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .col-item::before { content: 'ITEM'; }
+  .col-amount::before { content: 'AMOUNT'; }
+  .col-rate::before { content: 'RATE'; }
+  .col-total::before { content: 'TOTAL'; }
+
+  .col-actions {
+    text-align: left;
+  }
+
+  .btn-delete {
+    width: 100%;
+  }
+
+  .rate-input input {
+    text-align: left;
+  }
+
+  .total-row.discount-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .discount-input,
+  .tax-input {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

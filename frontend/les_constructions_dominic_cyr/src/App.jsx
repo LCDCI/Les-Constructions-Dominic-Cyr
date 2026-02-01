@@ -27,6 +27,8 @@ import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
 import PortalLogin from './pages/PortalLogin';
 import TaskDetailsPage from './pages/Tasks/TaskDetailsPage';
 import ProfilePage from './pages/ProfilePage';
+import QuoteListPage from './pages/Quotes/QuoteListPage';
+import QuoteFormPage from './pages/Quotes/QuoteFormPage';
 import Unauthorized from './pages/Errors/Unauthorized';
 import NotFound from './pages/Errors/NotFound';
 import ProjectsOverviewPage from './pages/Project/ProjectsOverviewPage';
@@ -326,6 +328,26 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['CONTRACTOR']}
                   element={<ContractorDashboard />}
+                />
+              }
+            />
+
+            <Route
+              path="/quotes"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
+                  element={<QuoteListPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/quotes/create"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CONTRACTOR']}
+                  element={<QuoteFormPage />}
                 />
               }
             />

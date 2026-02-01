@@ -1,0 +1,53 @@
+{
+  "quote": {
+    "bills": "Factures",
+    "bill": "Facture",
+    "billNumber": "Numéro de facture",
+    "amount": "Montant",
+    "date": "Date",
+    "action": "Action",
+    "view": "Voir",
+    "createNewBill": "Créer une nouvelle facture",
+    "searchBills": "Rechercher dans les factures",
+    "noBills": "Aucune facture trouvée",
+    "noBillsDesc": "Créez votre première facture pour commencer",
+    "estimatedInvoice": "Facture estimée",
+    "finalInvoice": "Facture finale",
+    "sendFinalInvoice": "Envoyer la facture finale",
+    "at": "à",
+    "createBillEstimate": "Créer une estimation de facture",
+    "newBill": "Nouvelle facture",
+    "issuedDate": "Date d'émission",
+    "dueDate": "Date d'échéance",
+    "billedTo": "Facturé à",
+    "itemDetails": "Détails des articles",
+    "materialsLabor": "Matériaux/Main-d'œuvre",
+    "item": "Article",
+    "rate": "Taux",
+    "subtotal": "Sous-total",
+    "discount": "Rabais",
+    "tax": "Taxe",
+    "total": "Total",
+    "addItem": "Ajouter un article",
+    "itemPlaceholder": "Description de l'article",
+    "sendEstimatedBill": "Envoyer la facture estimée",
+    "preview": "Aperçu",
+    "createSuccess": "Soumission créée avec succès!",
+    "errorLoading": "Erreur lors du chargement des données",
+    "errors": {
+      "descriptionRequired": "Description requise",
+      "quantityInvalid": "Doit être > 0",
+      "rateInvalid": "Doit être >= 0",
+      "fixErrors": "Veuillez corriger les erreurs dans le formulaire",
+      "noProject": "Aucun projet sélectionné",
+      "createFailed": "Échec de la création de la soumission"
+    }
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "tryAgain": "Réessayer",
+    "cancel": "Annuler",
+    "saving": "Enregistrement..."
+  }
+}

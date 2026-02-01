@@ -1,0 +1,53 @@
+{
+  "quote": {
+    "bills": "Bills",
+    "bill": "Bill",
+    "billNumber": "Bill Number",
+    "amount": "Amount",
+    "date": "Date",
+    "action": "Action",
+    "view": "View",
+    "createNewBill": "Create New Bill",
+    "searchBills": "Search anything on Bills",
+    "noBills": "No bills found",
+    "noBillsDesc": "Create your first bill to get started",
+    "estimatedInvoice": "Estimated Invoice",
+    "finalInvoice": "Final Invoice",
+    "sendFinalInvoice": "Send Final Invoice",
+    "at": "at",
+    "createBillEstimate": "Create Bill Estimate",
+    "newBill": "New Bill",
+    "issuedDate": "Issued Date",
+    "dueDate": "Due Date",
+    "billedTo": "Billed to",
+    "itemDetails": "Item Details",
+    "materialsLabor": "Materials/Labor",
+    "item": "Item",
+    "rate": "Rate",
+    "subtotal": "Subtotal",
+    "discount": "Discount",
+    "tax": "Tax",
+    "total": "Total",
+    "addItem": "Add Item",
+    "itemPlaceholder": "Item description",
+    "sendEstimatedBill": "Send Estimated Bill",
+    "preview": "Preview",
+    "createSuccess": "Quote created successfully!",
+    "errorLoading": "Error loading data",
+    "errors": {
+      "descriptionRequired": "Description required",
+      "quantityInvalid": "Must be > 0",
+      "rateInvalid": "Must be >= 0",
+      "fixErrors": "Please fix the errors in the form",
+      "noProject": "No project selected",
+      "createFailed": "Failed to create quote"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "tryAgain": "Try Again",
+    "cancel": "Cancel",
+    "saving": "Saving..."
+  }
+}

@@ -66,11 +66,13 @@ INSERT INTO schedules (schedule_identifier, schedule_start_date, schedule_end_da
     ('SCH-010', '2026-01-27', '2026-01-27', 'Foundation - Footings', 'Lot 57', 'proj-002-panorama');
 
 -- data for users
+
+-- data for users
 INSERT INTO users (user_id, first_name, last_name, email, secondary_email, phone, user_role, user_status, auth0user_id) VALUES
-    ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'ACTIVE', 'auth0|69542f38c08232af729f3d41'),
-    ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'ACTIVE', 'auth0|693faa68bf9e92b3d445c4ab'),
-    ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'sales@test.com', NULL, '514-333-3333', 'SALESPERSON', 'ACTIVE', 'auth0|693faa7d743287e135a703e1'),
-    ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'ACTIVE', 'auth0|693faa95743287e135a703e8');
+                                                                                                                            ('11111111-1111-1111-1111-111111111111', 'John', 'Owner', 'owner@test.com', NULL, '514-111-1111', 'OWNER', 'ACTIVE', 'auth0|69542f38c08232af729f3d41'),
+                                                                                                                            ('22222222-2222-2222-2222-222222222222', 'Jane', 'Contractor', 'contractor2@test.com', NULL, '514-222-2222', 'CONTRACTOR', 'ACTIVE', 'auth0|6977d410cdd022bbd1f584f9'),
+                                                                                                                            ('33333333-3333-3333-3333-333333333333', 'Bob', 'Sales', 'salesperson2@test.com', NULL, '514-333-3333', 'SALESPERSON', 'ACTIVE', 'auth0|6977d48d8b4fc0bd0ab74eb9'),
+                                                                                                                            ('44444444-4444-4444-4444-444444444444', 'Alice', 'Customer', 'customer@test.com', NULL, '514-444-4444', 'CUSTOMER', 'ACTIVE', 'auth0|6977d22de574e006790d3752');
 
 -- data for tasks
 INSERT INTO tasks (task_identifier, task_status, task_title, period_start, period_end, task_description, task_priority, estimated_hours, hours_spent, task_progress, assigned_user_id, schedule_id) VALUES
@@ -141,3 +143,21 @@ INSERT INTO inquiries (name, email, phone, message, created_at) VALUES
     ('Pierre Tremblay', 'pierre.tremblay@email.com', '514-555-0345', 'Quels sont les délais de construction pour un nouveau projet?', CURRENT_TIMESTAMP - INTERVAL '2 days'),
     ('Sophie Martin', 'sophie.martin@email.com', '', 'Can you provide information about your renovation services?', CURRENT_TIMESTAMP - INTERVAL '1 day'),
     ('Luc Gagnon', 'luc.gagnon@email.com', '418-555-0456', 'Je voudrais obtenir un devis pour la construction d''une maison unifamiliale.', CURRENT_TIMESTAMP - INTERVAL '6 hours');
+
+-- ============================================================================
+-- Test data for quotes
+-- ============================================================================
+-- Sample quote for project Foresta created by contractor
+INSERT INTO quotes (quote_number, project_identifier, contractor_id, total_amount, created_at, updated_at)
+VALUES ('QT-0000001', 'proj-001-foresta', '22222222-2222-2222-2222-222222222222', 1046.27, CURRENT_TIMESTAMP - INTERVAL '10 days', CURRENT_TIMESTAMP - INTERVAL '10 days');
+
+-- Insert line items for the quote
+INSERT INTO quote_line_items (quote_id, item_description, quantity, rate, line_total, display_order)
+SELECT quote_id, 'Drywall Installation', 10, 65.00, 650.00, 1
+FROM quotes WHERE quote_number = 'QT-0000001'
+UNION ALL
+SELECT quote_id, 'Sanding & Finishing (Labor)', 4, 65.00, 260.00, 2
+FROM quotes WHERE quote_number = 'QT-0000001'
+UNION ALL
+SELECT quote_id, 'Paint and Finish', 2, 68.14, 136.27, 3
+FROM quotes WHERE quote_number = 'QT-0000001';
