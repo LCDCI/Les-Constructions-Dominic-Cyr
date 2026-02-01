@@ -365,9 +365,13 @@ const ProjectOverviewPage = () => {
           />
         </div>
         <div className="hero-content projects-hero-content">
-          <h1 className="hero-title projects-title">{overview.heroTitle || overview.projectName}</h1>
+          <h1 className="hero-title projects-title">
+            {overview.heroTitle || overview.projectName}
+          </h1>
           {overview.heroSubtitle && (
-            <p className="hero-subtitle projects-subtitle">{overview.heroSubtitle}</p>
+            <p className="hero-subtitle projects-subtitle">
+              {overview.heroSubtitle}
+            </p>
           )}
         </div>
       </section>

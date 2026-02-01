@@ -74,9 +74,13 @@ export default function ContactPage() {
     <div className="contact-page">
       <section className="projects-hero">
         <div className="projects-hero-content">
-          <p className="section-kicker eyebrow">{t('hero.eyebrow', f.hero.eyebrow)}</p>
+          <p className="section-kicker eyebrow">
+            {t('hero.eyebrow', f.hero.eyebrow)}
+          </p>
           <h1 className="projects-title">{t('hero.title', f.hero.title)}</h1>
-          <p className="projects-subtitle subhead">{t('hero.subtitle', f.hero.subtitle)}</p>
+          <p className="projects-subtitle subhead">
+            {t('hero.subtitle', f.hero.subtitle)}
+          </p>
         </div>
       </section>
 

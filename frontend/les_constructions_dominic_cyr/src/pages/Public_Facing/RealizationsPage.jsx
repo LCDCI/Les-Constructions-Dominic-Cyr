@@ -61,7 +61,9 @@ const RealizationsPage = () => {
       {/* Hero Banner Section */}
       <section className="projects-hero">
         <div className="projects-hero-content">
-          <h1 className="projects-title">{t('hero.title', 'Our Realizations')}</h1>
+          <h1 className="projects-title">
+            {t('hero.title', 'Our Realizations')}
+          </h1>
         </div>
       </section>
 

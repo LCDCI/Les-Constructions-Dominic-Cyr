@@ -222,13 +222,15 @@ const LivingEnvironmentPage = () => {
         <h3 className="le-subtitle-last" style={{ color: '#fff' }}>
           {toSentenceCase(data.headerSubtitleLast)}
         </h3>
-        <p className="le-tagline" style={{ color: 'var(--tertiary-color, #aab2a6)' }}>
+        <p
+          className="le-tagline"
+          style={{ color: 'var(--tertiary-color, #aab2a6)' }}
+        >
           {toSentenceCase(data.headerTagline)}
         </p>
       </section>
 
       <div className="container">
-
         {/* Description Section */}
         <section className="le-description-section">
           <p className="le-description-text">{data.descriptionText}</p>
