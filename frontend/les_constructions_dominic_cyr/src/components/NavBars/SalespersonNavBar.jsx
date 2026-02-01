@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useUnreadCount } from '../../features/notifications/hooks/useUnreadCount';
 import '../../styles/NavBars/salespersonNavbar.css';
 import { GoInbox } from 'react-icons/go';
 import { GoGear } from 'react-icons/go';
@@ -20,6 +21,7 @@ const Navbar = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { unreadCount } = useUnreadCount();
   const isControlled = typeof controlledOpen === 'boolean';
   const menuOpen = isControlled ? controlledOpen : isOpen;
 
@@ -132,6 +134,9 @@ const Navbar = ({
                     <GoInbox />
                   </span>
                   <span className="navbar-text">Inbox</span>
+                  {unreadCount > 0 && (
+                    <span className="navbar-badge">{unreadCount}</span>
+                  )}
                 </Link>
               </li>
               <li className="navbar-item">

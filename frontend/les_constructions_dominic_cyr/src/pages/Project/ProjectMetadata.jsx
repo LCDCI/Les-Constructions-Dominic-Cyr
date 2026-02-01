@@ -2,16 +2,23 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { getProjectMetadata } from '../../features/projects/api/projectMetadataApi';
+import { fetchLots } from '../../features/lots/api/lots';
+import useBackendUser from '../../hooks/useBackendUser';
+import usePageTranslations from '../../hooks/usePageTranslations';
 import { FiUsers } from 'react-icons/fi';
+import '../../styles/Public_Facing/home.css';
 import '../../styles/Project/ProjectMetadata.css';
 
 const ProjectMetadata = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { profile, role } = useBackendUser();
   const [metadata, setMetadata] = useState(null);
+  const [lots, setLots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { t } = usePageTranslations('projectMetadata');
 
   useEffect(() => {
     const fetchMetadata = async () => {
@@ -37,6 +44,18 @@ const ProjectMetadata = () => {
 
         const data = await getProjectMetadata(projectId, token);
         setMetadata(data);
+
+        // Fetch lots for this project (used to show lot list)
+        try {
+          const lotsData = await fetchLots({
+            projectIdentifier: projectId,
+            token,
+          });
+          setLots(lotsData || []);
+        } catch (e) {
+          // ignore lots error
+          setLots([]);
+        }
 
         document.documentElement.style.setProperty(
           '--project-primary',
@@ -88,7 +107,7 @@ const ProjectMetadata = () => {
     return (
       <div className="metadata-loading">
         <div className="spinner"></div>
-        <p>Loading project information...</p>
+        <p>{t('loadingProject') || 'Loading project information...'}</p>
       </div>
     );
   }
@@ -96,7 +115,7 @@ const ProjectMetadata = () => {
   if (error) {
     return (
       <div className="metadata-error">
-        <h2>Access Denied</h2>
+        <h2>{t('accessDeniedTitle') || 'Access Denied'}</h2>
         <p>{error}</p>
       </div>
     );
@@ -106,8 +125,10 @@ const ProjectMetadata = () => {
     return null;
   }
 
+  const myId = profile?.userId || profile?.userIdentifier || null;
+
   const formatDate = dateString => {
-    if (!dateString) return 'Not set';
+    if (!dateString) return t('notSet') || 'Not set';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -115,9 +136,7 @@ const ProjectMetadata = () => {
     });
   };
 
-  const getStatusClass = status => {
-    return `status-badge status-${status.toLowerCase().replace('_', '-')}`;
-  };
+  // Status badge removed for compact mobile view
 
   return (
     <div className="project-metadata">
@@ -127,9 +146,6 @@ const ProjectMetadata = () => {
       >
         <div className="hero-content">
           <h1 className="project-title">{metadata.projectName}</h1>
-          <span className={getStatusClass(metadata.status)}>
-            {metadata.status.replace('_', ' ')}
-          </span>
         </div>
         {metadata.imageIdentifier && (
           <div className="hero-image">
@@ -143,27 +159,37 @@ const ProjectMetadata = () => {
 
       <div className="metadata-content">
         <section className="metadata-section">
-          <h2 style={{ color: metadata.primaryColor }}>Project Overview</h2>
+          <h2 style={{ color: metadata.primaryColor }}>
+            {t('projectOverview') || 'Project Overview'}
+          </h2>
           <div className="metadata-grid">
             <div className="metadata-item">
-              <span className="metadata-label">Location</span>
+              <span className="metadata-label">
+                {t('location') || 'Location'}
+              </span>
               <span className="metadata-value">{metadata.location}</span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">Start Date</span>
+              <span className="metadata-label">
+                {t('startDate') || 'Start Date'}
+              </span>
               <span className="metadata-value">
                 {formatDate(metadata.startDate)}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">End Date</span>
+              <span className="metadata-label">
+                {t('endDate') || 'End Date'}
+              </span>
               <span className="metadata-value">
                 {formatDate(metadata.endDate)}
               </span>
             </div>
             {metadata.completionDate && (
               <div className="metadata-item">
-                <span className="metadata-label">Completion Date</span>
+                <span className="metadata-label">
+                  {t('completionDate') || 'Completion Date'}
+                </span>
                 <span className="metadata-value">
                   {formatDate(metadata.completionDate)}
                 </span>
@@ -171,7 +197,9 @@ const ProjectMetadata = () => {
             )}
             {metadata.progressPercentage !== null && (
               <div className="metadata-item full-width">
-                <span className="metadata-label">Progress</span>
+                <span className="metadata-label">
+                  {t('progress') || 'Progress'}
+                </span>
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
@@ -179,224 +207,76 @@ const ProjectMetadata = () => {
                       width: `${metadata.progressPercentage}%`,
                       backgroundColor: metadata.buyerColor,
                     }}
-                  >
+                  ></div>
+                  <span className="progress-text">
                     {metadata.progressPercentage}%
-                  </div>
+                  </span>
                 </div>
               </div>
             )}
           </div>
-          {metadata.projectDescription && (
-            <div className="project-description">
-              <p>{metadata.projectDescription}</p>
-            </div>
-          )}
+          <div
+            className="schedule-button-container"
+            style={{ marginTop: '20px' }}
+          >
+            <a
+              href={`/projects/${projectId}/schedule`}
+              className="project-metadata-schedule"
+            >
+              {t('viewProjectSchedule') || 'View Project Schedule'}
+            </a>
+          </div>
         </section>
 
-        {metadata.assignedUsers && (
+        {role === 'OWNER' && lots.length > 0 && (
           <section className="metadata-section">
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '20px',
-                flexWrap: 'wrap',
-                gap: '12px',
-              }}
-            >
-              <h2 style={{ color: metadata.primaryColor, margin: 0 }}>
-                Assigned Team
-              </h2>
-              <a
-                href={`/projects/${projectId}/team-management`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px 16px',
-                  backgroundColor: metadata.primaryColor,
-                  color: 'white',
-                  textDecoration: 'none',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                }}
-              >
-                <FiUsers size={18} />
-                Manage Team
-              </a>
-            </div>
-            <div className="team-grid">
-              {metadata.assignedUsers.contractors &&
-                metadata.assignedUsers.contractors.length > 0 && (
+            <h2 style={{ color: metadata.primaryColor }}>
+              {t('projectLots') || 'Project Lots'}
+            </h2>
+            <div className="lots-grid">
+              {[...lots]
+                .sort((a, b) => {
+                  // Sort by lot.id or lot.lotId (fallback)
+                  const idA = a.id ?? a.lotId;
+                  const idB = b.id ?? b.lotId;
+                  return idA - idB;
+                })
+                .map(lot => (
                   <div
-                    className="team-member"
-                    style={{ borderColor: metadata.tertiaryColor }}
+                    key={lot.lotId}
+                    className="lot-card"
+                    style={{ borderColor: metadata.primaryColor }}
+                    onClick={() =>
+                      navigate(
+                        `/projects/${projectId}/lots/${lot.lotId}/metadata`
+                      )
+                    }
                   >
-                    <h3>Contractors</h3>
-                    <ul
-                      style={{
-                        listStyle: 'none',
-                        padding: 0,
-                        margin: 0,
-                        display: 'grid',
-                        gap: '10px',
-                      }}
-                    >
-                      {metadata.assignedUsers.contractors.map(contractor => (
-                        <li
-                          key={contractor.userIdentifier}
-                          style={{
-                            borderBottom: '1px solid rgba(0,0,0,0.08)',
-                            paddingBottom: '8px',
-                          }}
-                        >
-                          <p
-                            className="member-name"
-                            style={{ marginBottom: '4px' }}
-                          >
-                            {contractor.firstName} {contractor.lastName}
-                          </p>
-                          <p
-                            className="member-contact"
-                            style={{
-                              marginBottom: contractor.phone ? '2px' : 0,
-                            }}
-                          >
-                            {contractor.primaryEmail}
-                          </p>
-                          {contractor.phone && (
-                            <p
-                              className="member-contact"
-                              style={{ marginBottom: 0 }}
-                            >
-                              {contractor.phone}
-                            </p>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
+                    <h3>{`${t('lot') || 'Lot'} ${lot.id}`}</h3>
+                    {lot.civicAddress && (
+                      <p className="lot-address">{lot.civicAddress}</p>
+                    )}
+                    {lot.lotStatus && (
+                      <div className="lot-status-inline">
+                        <span
+                          className={`status-dot status-${lot.lotStatus.toLowerCase()}`}
+                          aria-hidden="true"
+                        ></span>
+                        <span className="status-label">
+                          {lot.lotStatus.replace('_', ' ')}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                )}
-
-              {metadata.assignedUsers.salespersons &&
-                metadata.assignedUsers.salespersons.length > 0 && (
-                  <div
-                    className="team-member"
-                    style={{ borderColor: metadata.tertiaryColor }}
-                  >
-                    <h3>Salespersons</h3>
-                    <ul
-                      style={{
-                        listStyle: 'none',
-                        padding: 0,
-                        margin: 0,
-                        display: 'grid',
-                        gap: '10px',
-                      }}
-                    >
-                      {metadata.assignedUsers.salespersons.map(salesperson => (
-                        <li
-                          key={salesperson.userIdentifier}
-                          style={{
-                            borderBottom: '1px solid rgba(0,0,0,0.08)',
-                            paddingBottom: '8px',
-                          }}
-                        >
-                          <p
-                            className="member-name"
-                            style={{ marginBottom: '4px' }}
-                          >
-                            {salesperson.firstName} {salesperson.lastName}
-                          </p>
-                          <p
-                            className="member-contact"
-                            style={{
-                              marginBottom: salesperson.phone ? '2px' : 0,
-                            }}
-                          >
-                            {salesperson.primaryEmail}
-                          </p>
-                          {salesperson.phone && (
-                            <p
-                              className="member-contact"
-                              style={{ marginBottom: 0 }}
-                            >
-                              {salesperson.phone}
-                            </p>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-              {metadata.assignedUsers.customer && (
-                <div
-                  className="team-member"
-                  style={{ borderColor: metadata.tertiaryColor }}
-                >
-                  <h3>Customer</h3>
-                  <p className="member-name">
-                    {metadata.assignedUsers.customer.firstName}{' '}
-                    {metadata.assignedUsers.customer.lastName}
-                  </p>
-                  <p className="member-contact">
-                    {metadata.assignedUsers.customer.primaryEmail}
-                  </p>
-                  {metadata.assignedUsers.customer.phone && (
-                    <p className="member-contact">
-                      {metadata.assignedUsers.customer.phone}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {(!metadata.assignedUsers.contractors ||
-                metadata.assignedUsers.contractors.length === 0) &&
-                (!metadata.assignedUsers.salespersons ||
-                  metadata.assignedUsers.salespersons.length === 0) &&
-                !metadata.assignedUsers.customer && (
-                  <div
-                    style={{
-                      gridColumn: '1 / -1',
-                      textAlign: 'center',
-                      padding: '40px 20px',
-                    }}
-                  >
-                    <p style={{ color: '#999', fontSize: '14px' }}>
-                      No team members assigned yet.
-                    </p>
-                  </div>
-                )}
-            </div>
-          </section>
-        )}
-
-        {metadata.buyerName && (
-          <section className="metadata-section">
-            <h2 style={{ color: metadata.primaryColor }}>Buyer Information</h2>
-            <div
-              className="buyer-info"
-              style={{ backgroundColor: metadata.tertiaryColor }}
-            >
-              <p className="buyer-name">{metadata.buyerName}</p>
+                ))}
             </div>
           </section>
         )}
       </div>
 
       <div className="button-container">
-        <a
-          href={`/projects/${projectId}/schedule`}
-          className="project-metadata-schedule"
-        >
-          View Project Schedule
-        </a>
         <a href={`/projects`} className="project-metadata-back">
-          Back to projects
+          {t('backToProjects') || 'Back to projects'}
         </a>
       </div>
     </div>

@@ -26,7 +26,9 @@ test.describe('Living Environment Page', () => {
   test('should display the back to project button', async () => {
     await expect(lePage.backButton).toBeVisible();
     await lePage.backButton.click();
-    await expect(lePage.page).toHaveURL(new RegExp(`/projects/${TEST_PROJECT_ID}/overview`));
+    await expect(lePage.page).toHaveURL(
+      new RegExp(`/projects/${TEST_PROJECT_ID}/overview`)
+    );
   });
 
   test('should display the footer section', async () => {

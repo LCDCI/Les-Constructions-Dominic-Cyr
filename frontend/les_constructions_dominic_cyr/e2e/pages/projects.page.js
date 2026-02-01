@@ -1,27 +1,38 @@
 export class ProjectsPage {
   constructor(page) {
     this.page = page;
-    this.pageTitle = page.locator('.projects-header h1');
+    // Use the hero h1 as the page title for e2e tests (current design)
+    this.pageTitle = page.locator('.projects-hero h1.projects-title');
     this.searchInput = page.locator(
       'input.search-input, input[placeholder*="Search"]'
     );
-    this.projectCards = page.locator('.project-card');
-    this.projectGrid = page.locator('.projects-grid');
+    this.projectCards = page.locator('.portfolio-card, .project-hover-card');
+    this.projectGrid = page.locator('.portfolio-grid, .projects-grid');
     this.loadingIndicator = page.locator('text=Loading projects...');
     this.noResultsMessage = page.locator('.no-results');
-    this.viewProjectButtons = page.locator('button:has-text("View")');
+    this.viewProjectButtons = page.locator('a:has-text("View"), button:has-text("View")');
     this.editProjectButtons = page.locator('button:has-text("Edit")');
     this.navbar = page.locator('.navbar');
     this.footer = page.locator('.footer');
-    this.projectTitles = page.locator('.project-title');
-    this.projectDescriptions = page.locator('.project-description');
-    this.projectImages = page.locator('.project-image');
+    this.projectTitles = page.locator('.card-title, .project-title');
+    this.projectDescriptions = page.locator('.admin-project-description, .project-description');
+    this.projectImages = page.locator('.card-image-bg, .project-image');
   }
 
   async goto() {
     await this.page.goto('/projects');
     // Wait for projects to load
     await this.page.waitForLoadState('networkidle');
+
+    // Be tolerant: wait for either the hero title, a project card, or the no-results message
+    try {
+      await this.page.locator('.projects-hero h1.projects-title').waitFor({ state: 'visible', timeout: 5000 });
+    } catch (e) {
+      await Promise.allSettled([
+        this.projectCards.first().waitFor({ state: 'visible', timeout: 10000 }).catch(() => null),
+        this.noResultsMessage.waitFor({ state: 'visible', timeout: 10000 }).catch(() => null),
+      ]);
+    }
   }
 
   async clearSearch() {

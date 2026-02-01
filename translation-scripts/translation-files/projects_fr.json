@@ -1,0 +1,20 @@
+{
+  "hero": {
+    "kicker": "Projets",
+    "title": "Nos projets",
+    "titleOwner": "Gérer les projets",
+    "subtitle": "Découvrez notre portfolio de projets résidentiels mettant en valeur la qualité de construction et l'innovation.",
+    "subtitleOwner": "Consultez, créez et gérez vos projets de construction."
+  },
+  "search": {
+    "placeholder": "Rechercher des projets par nom..."
+  },
+  "buttons": {
+    "view": "Voir ce projet",
+    "edit": "Modifier",
+    "lots": "Voir les lots du projet",
+    "archive": "Archiver"
+  },
+  "noResults": "Aucun projet trouvé correspondant à \"{{searchTerm}}\"",
+  "empty": "Créez votre premier projet!"
+}

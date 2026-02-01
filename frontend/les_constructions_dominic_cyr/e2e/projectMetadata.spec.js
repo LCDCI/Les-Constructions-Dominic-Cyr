@@ -4,8 +4,12 @@ import { ProjectOverviewPage } from '../e2e/pages/projectOverview.page';
 
 test.describe('Project Metadata E2E', () => {
   test('handles metadata API failure', async ({ page }) => {
-    await page.route('**/projects/*/metadata', route =>
-      route.fulfill({ status: 403 })
+    // Intercept the backend project metadata call and return 403
+    await page.route('**/api/v1/projects/*', route =>
+      route.fulfill({
+        status: 403,
+        body: JSON.stringify({ message: 'Forbidden' }),
+      })
     );
 
     const metadata = new ProjectMetadataPage(page);
@@ -31,8 +35,11 @@ test.describe('Project Overview E2E', () => {
   });
 
   test('handles overview API failure', async ({ page }) => {
-    await page.route('**/projects/*/overview', route =>
-      route.fulfill({ status: 500 })
+    await page.route('**/api/v1/projects/*', route =>
+      route.fulfill({
+        status: 500,
+        body: JSON.stringify({ message: 'Server Error' }),
+      })
     );
 
     const overview = new ProjectOverviewPage(page);
