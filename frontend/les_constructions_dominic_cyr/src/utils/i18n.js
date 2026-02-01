@@ -27,7 +27,14 @@ i18n.use(initReactI18next).init({
   fallbackLng: 'en',
   lng: initialLanguage,
   ns: ['translation', 'lots', 'projectoverview', 'livingenvironment'],
-  ns: ['translation', 'lots', 'projectoverview', 'livingenvironment', 'lotMetadata', 'projectMetadata'],
+  ns: [
+    'translation',
+    'lots',
+    'projectoverview',
+    'livingenvironment',
+    'lotMetadata',
+    'projectMetadata',
+  ],
   defaultNS: 'translation',
   load: 'languageOnly',
   resources: {
@@ -46,14 +53,19 @@ i18n.use(initReactI18next).init({
 const loadTranslations = async (language = null) => {
   try {
     const lang = normalizeLang(language || getInitialLanguage());
-    const [allTranslations, lotsTranslations, livingEnvironmentTranslations, lotMetadataTranslations, projectMetadataTranslations] =
-      await Promise.all([
-        fetchTranslations(lang),
-        fetchPageTranslations('lots', lang),
-        fetchPageTranslations('livingenvironment', lang),
-        fetchPageTranslations('lotMetadata', lang),
-        fetchPageTranslations('projectMetadata', lang),
-      ]);
+    const [
+      allTranslations,
+      lotsTranslations,
+      livingEnvironmentTranslations,
+      lotMetadataTranslations,
+      projectMetadataTranslations,
+    ] = await Promise.all([
+      fetchTranslations(lang),
+      fetchPageTranslations('lots', lang),
+      fetchPageTranslations('livingenvironment', lang),
+      fetchPageTranslations('lotMetadata', lang),
+      fetchPageTranslations('projectMetadata', lang),
+    ]);
 
     // Add general translations
     if (allTranslations) {
@@ -69,7 +81,13 @@ const loadTranslations = async (language = null) => {
 
     // Explicitly add/overwrite the 'lotMetadata' namespace
     if (lotMetadataTranslations) {
-      i18n.addResourceBundle(lang, 'lotMetadata', lotMetadataTranslations, true, true);
+      i18n.addResourceBundle(
+        lang,
+        'lotMetadata',
+        lotMetadataTranslations,
+        true,
+        true
+      );
     }
 
     // Explicitly add/overwrite the 'livingenvironment' namespace
@@ -85,7 +103,13 @@ const loadTranslations = async (language = null) => {
 
     // Explicitly add/overwrite the 'projectMetadata' namespace
     if (projectMetadataTranslations) {
-      i18n.addResourceBundle(lang, 'projectMetadata', projectMetadataTranslations, true, true);
+      i18n.addResourceBundle(
+        lang,
+        'projectMetadata',
+        projectMetadataTranslations,
+        true,
+        true
+      );
     }
 
     // Tell i18next we are done so the UI refreshes

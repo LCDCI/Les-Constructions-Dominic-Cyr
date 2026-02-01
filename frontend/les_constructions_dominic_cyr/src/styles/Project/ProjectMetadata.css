@@ -433,7 +433,9 @@
   border-radius: 8px;
   padding: 1rem;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -500,9 +502,15 @@
 }
 
 /* Dot color variants (kept separate so other badge styles are unaffected) */
-.status-dot.status-available { background-color: #4ade80; }
-.status-dot.status-reserved { background-color: #fbbf24; }
-.status-dot.status-sold { background-color: #f87171; }
+.status-dot.status-available {
+  background-color: #4ade80;
+}
+.status-dot.status-reserved {
+  background-color: #fbbf24;
+}
+.status-dot.status-sold {
+  background-color: #f87171;
+}
 
 /* Ensure the label stays transparent and inherits the card background
   (scoped to .lot-card to avoid affecting other pages) */
@@ -514,9 +522,15 @@
 
 /* Stronger specificity for the dot so global `.status-available` rules
   that set var(--color-primary) won't color the label or dot incorrectly. */
-.lot-card .status-dot.status-available { background-color: #4ade80 !important; }
-.lot-card .status-dot.status-reserved { background-color: #fbbf24 !important; }
-.lot-card .status-dot.status-sold { background-color: #f87171 !important; }
+.lot-card .status-dot.status-available {
+  background-color: #4ade80 !important;
+}
+.lot-card .status-dot.status-reserved {
+  background-color: #fbbf24 !important;
+}
+.lot-card .status-dot.status-sold {
+  background-color: #f87171 !important;
+}
 
 @media (max-width: 768px) {
   .lots-grid {

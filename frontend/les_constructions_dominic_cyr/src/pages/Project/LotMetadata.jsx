@@ -35,9 +35,18 @@ const LotMetadata = () => {
         // Fetch project metadata to set colors and logo
         const projectData = await getProjectMetadata(projectId, token);
         setProject(projectData);
-        document.documentElement.style.setProperty('--project-primary', projectData.primaryColor);
-        document.documentElement.style.setProperty('--project-tertiary', projectData.tertiaryColor);
-        document.documentElement.style.setProperty('--project-buyer', projectData.buyerColor);
+        document.documentElement.style.setProperty(
+          '--project-primary',
+          projectData.primaryColor
+        );
+        document.documentElement.style.setProperty(
+          '--project-tertiary',
+          projectData.tertiaryColor
+        );
+        document.documentElement.style.setProperty(
+          '--project-buyer',
+          projectData.buyerColor
+        );
 
         const data = await fetchLotById({
           projectIdentifier: projectId,
@@ -74,7 +83,9 @@ const LotMetadata = () => {
 
   const normalizeStatusKey = raw => {
     if (!raw) return '';
-    const key = String(raw).toLowerCase().replace(/[^a-z0-9]/g, '');
+    const key = String(raw)
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '');
     // Map variants to canonical translation keys
     if (key.includes('contract')) return 'contract';
     if (key === 'inprogress' || key === 'inprogress') return 'inprogress';
@@ -85,7 +96,8 @@ const LotMetadata = () => {
     return key;
   };
 
-  if (loading) return <div className="page">{t('loadingLot') || 'Loading...'}</div>;
+  if (loading)
+    return <div className="page">{t('loadingLot') || 'Loading...'}</div>;
   if (error) return <div className="page">{error}</div>;
   if (!lot) return null;
 
@@ -99,17 +111,24 @@ const LotMetadata = () => {
     >
       <div
         className="metadata-hero"
-        style={{ backgroundColor: project?.primaryColor || lot.primaryColor || '#ddd' }}
+        style={{
+          backgroundColor: project?.primaryColor || lot.primaryColor || '#ddd',
+        }}
       >
         <div className="hero-content">
           <h1 className="project-title">
-            {lot.id ? `${t('lot')} ${lot.id}` : (lot.lotNumber || `${t('lot')} ${lot.lotId}`)}
+            {lot.id
+              ? `${t('lot')} ${lot.id}`
+              : lot.lotNumber || `${t('lot')} ${lot.lotId}`}
           </h1>
           {(() => {
             const statusKey = normalizeStatusKey(lot.lotStatus);
-            const statusLabel = t(`lotStatus.${statusKey}`) || (lot.lotStatus || '');
+            const statusLabel =
+              t(`lotStatus.${statusKey}`) || lot.lotStatus || '';
             return (
-              <span className={`status-badge status-${statusKey}`}>{statusLabel}</span>
+              <span className={`status-badge status-${statusKey}`}>
+                {statusLabel}
+              </span>
             );
           })()}
         </div>
@@ -125,22 +144,30 @@ const LotMetadata = () => {
 
       <div className="metadata-content">
         <section className="metadata-section">
-          <h2 style={{ color: lot.primaryColor }}>{t('lotOverview') || 'Lot Overview'}</h2>
+          <h2 style={{ color: lot.primaryColor }}>
+            {t('lotOverview') || 'Lot Overview'}
+          </h2>
           <div className="metadata-grid">
             <div className="metadata-item">
-              <span className="metadata-label">{t('civicAddress') || 'Civic Address'}</span>
+              <span className="metadata-label">
+                {t('civicAddress') || 'Civic Address'}
+              </span>
               <span className="metadata-value">
                 {lot.civicAddress || t('notSet')}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">{t('areaSqft') || 'Area (sqft)'}</span>
+              <span className="metadata-label">
+                {t('areaSqft') || 'Area (sqft)'}
+              </span>
               <span className="metadata-value">
                 {lot.dimensionsSquareFeet || '—'}
               </span>
             </div>
             <div className="metadata-item">
-              <span className="metadata-label">{t('areaSqm') || 'Area (sqm)'}</span>
+              <span className="metadata-label">
+                {t('areaSqm') || 'Area (sqm)'}
+              </span>
               <span className="metadata-value">
                 {lot.dimensionsSquareMeters || '—'}
               </span>
@@ -151,7 +178,9 @@ const LotMetadata = () => {
             </div>
             {lot.progressPercentage !== null && (
               <div className="metadata-item full-width">
-                <span className="metadata-label">{t('progress') || 'Progress'}</span>
+                <span className="metadata-label">
+                  {t('progress') || 'Progress'}
+                </span>
                 <div className="progress-bar">
                   <div
                     className="progress-fill"
@@ -176,21 +205,36 @@ const LotMetadata = () => {
 
         {lot.assignedUsers && (
           <section className="metadata-section">
-            <h2 style={{ color: lot.primaryColor }}>{t('assignedUsers') || 'Assigned Users'}</h2>
+            <h2 style={{ color: lot.primaryColor }}>
+              {t('assignedUsers') || 'Assigned Users'}
+            </h2>
             <div className="lots-grid">
               {lot.assignedUsers
                 .filter(user => {
                   if (role === 'OWNER') {
-                    return user.role !== 'OWNER' && user.userId !== profile?.userId;
+                    return (
+                      user.role !== 'OWNER' && user.userId !== profile?.userId
+                    );
                   }
                   return user.role !== 'OWNER';
                 })
                 .map(user => (
-                  <div key={user.userId || user.id} className="lot-card" style={{ borderColor: lot.primaryColor }}>
-                    <h3>{user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim() || t('unnamedUser')}</h3>
+                  <div
+                    key={user.userId || user.id}
+                    className="lot-card"
+                    style={{ borderColor: lot.primaryColor }}
+                  >
+                    <h3>
+                      {user.fullName ||
+                        `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
+                        t('unnamedUser')}
+                    </h3>
                     <p className="lot-address">{user.email || t('noEmail')}</p>
                     <div className="lot-status-inline">
-                      <span className="status-label">{t(`userRole.${(user.role || '').toLowerCase()}`) || user.role}</span>
+                      <span className="status-label">
+                        {t(`userRole.${(user.role || '').toLowerCase()}`) ||
+                          user.role}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -216,7 +260,7 @@ const LotMetadata = () => {
           }}
           onMouseOver={e => (e.currentTarget.style.filter = 'brightness(0.9)')}
           onMouseOut={e => (e.currentTarget.style.filter = '')}
-          >
+        >
           {t('backToLotSelection') || 'Back to lot selection'}
         </button>
 
