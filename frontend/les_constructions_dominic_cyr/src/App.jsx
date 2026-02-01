@@ -38,6 +38,7 @@ import HomeFooter from './components/Footers/HomeFooter';
 import NavigationSetter from './components/NavigationSetter';
 import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import ReportsPage from './pages/ReportsPage';
+import InboxPage from './pages/Inbox/InboxPage';
 import ReactGA from 'react-ga4';
 // import { loadTheme } from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
@@ -410,6 +411,61 @@ export default function App() {
                     'CUSTOMER',
                   ]}
                   element={<ProfilePage />}
+                />
+              }
+            />
+
+            <Route
+              path="/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<InboxPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/owner/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<InboxPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/salesperson/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['SALESPERSON']}
+                  element={<InboxPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/contractors/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CONTRACTOR']}
+                  element={<InboxPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/customers/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CUSTOMER']}
+                  element={<InboxPage />}
                 />
               }
             />

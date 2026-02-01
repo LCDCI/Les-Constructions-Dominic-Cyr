@@ -66,8 +66,8 @@ public class InquiryControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRequestModel)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=UTF-8"))
-                .andExpect(content().string("Thank you! Your inquiry has been received."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Thank you! Your inquiry has been received."));
 
         verify(inquiryService, times(1)).submitInquiry(any(InquiryRequestModel.class));
     }
@@ -83,8 +83,8 @@ public class InquiryControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRequestModel)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=UTF-8"))
-                .andExpect(content().string("Thank you! Your inquiry has been received."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Thank you! Your inquiry has been received."));
 
         verify(inquiryService, times(1)).submitInquiry(any(InquiryRequestModel.class));
     }
@@ -250,7 +250,7 @@ public class InquiryControllerUnitTest {
         // Create valid email close to 200 chars: 64 chars local + @ + long domain
         testRequestModel.setEmail("user" + "1".repeat(60) + "@" + "sub".repeat(20) + ".example.com");
         testRequestModel.setPhone("1".repeat(30)); // Max allowed
-        testRequestModel.setMessage("B".repeat(1000)); // Controller MAX_MESSAGE_LENGTH
+        testRequestModel.setMessage("B".repeat(2000)); // Max allowed
         
         when(inquiryService.submitInquiry(any(InquiryRequestModel.class))).thenReturn(testResponseModel);
 
@@ -259,8 +259,8 @@ public class InquiryControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRequestModel)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=UTF-8"))
-                .andExpect(content().string("Thank you! Your inquiry has been received."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Thank you! Your inquiry has been received."));
 
         verify(inquiryService, times(1)).submitInquiry(any(InquiryRequestModel.class));
     }
@@ -276,8 +276,8 @@ public class InquiryControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRequestModel)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=UTF-8"))
-                .andExpect(content().string("Thank you! Your inquiry has been received."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Thank you! Your inquiry has been received."));
 
         verify(inquiryService, times(1)).submitInquiry(any(InquiryRequestModel.class));
     }
@@ -293,7 +293,7 @@ public class InquiryControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRequestModel)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=UTF-8"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         // Assert
         verify(inquiryService).submitInquiry(argThat(request ->
@@ -318,8 +318,8 @@ public class InquiryControllerUnitTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testRequestModel)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("text/plain;charset=UTF-8"))
-                .andExpect(content().string("Thank you! Your inquiry has been received."));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Thank you! Your inquiry has been received."));
 
         verify(inquiryService, times(1)).submitInquiry(any(InquiryRequestModel.class));
     }
