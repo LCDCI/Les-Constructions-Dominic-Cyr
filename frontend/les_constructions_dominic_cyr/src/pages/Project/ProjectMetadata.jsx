@@ -134,9 +134,8 @@ const ProjectMetadata = () => {
     });
   };
 
-  const getStatusClass = status => {
-    return `status-badge status-${status.toLowerCase().replace('_', '-')}`;
-  };
+  // Status badge removed for compact mobile view
+
 
   return (
     <div className="project-metadata">
@@ -146,9 +145,6 @@ const ProjectMetadata = () => {
       >
         <div className="hero-content">
           <h1 className="project-title">{metadata.projectName}</h1>
-          <span className={getStatusClass(metadata.status)}>
-            {metadata.status.replace('_', ' ')}
-          </span>
         </div>
         {metadata.imageIdentifier && (
           <div className="hero-image">

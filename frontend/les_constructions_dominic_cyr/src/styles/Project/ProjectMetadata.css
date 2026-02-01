@@ -549,3 +549,14 @@
   color: var(--color-text);
   z-index: 1;
 }
+
+/* Hide status badges and lot status labels/dots on smaller screens to reduce clutter */
+@media (max-width: 600px) {
+  .project-metadata .status-badge {
+    display: none !important;
+  }
+
+  .project-metadata .lot-status-inline {
+    display: none !important;
+  }
+}
