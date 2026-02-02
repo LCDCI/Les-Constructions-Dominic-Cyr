@@ -127,8 +127,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.lotmetadata", "76f2c2f0-738c-4352-83f2-eff68a82bf0b");
 
         // Contractor Tasks page translations
-        fileIdMap.put("en.contractortasks", "41d7e9bd-7eff-47e7-8295-82bdaec5bfd6");
-        fileIdMap.put("fr.contractortasks", "12c07401-7d32-49db-94ac-7bd639e578bb");
+        fileIdMap.put("en.contractortasks", "30c5add1-5926-40c4-80d9-8e56714e0d74");
+        fileIdMap.put("fr.contractortasks", "a62edee1-b73f-41e6-a727-ab23e29f03a4");
 
         // Navbar translations (for role-specific navbars)
         fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
