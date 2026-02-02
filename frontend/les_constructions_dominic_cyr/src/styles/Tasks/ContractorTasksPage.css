@@ -174,11 +174,31 @@
 /* Tasks Table */
 .tasks-table-container {
   overflow-x: auto;
+  width: 100%;
 }
 
 .tasks-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+}
+
+/* Force native table semantics to avoid cards stacking */
+.tasks-table thead {
+  display: table-header-group;
+}
+
+.tasks-table tbody {
+  display: table-row-group;
+}
+
+.tasks-table tr {
+  display: table-row;
+}
+
+.tasks-table th,
+.tasks-table td {
+  display: table-cell;
 }
 
 .tasks-table th,
@@ -202,11 +222,19 @@
   color: var(--text-primary, #333);
 }
 
+.tasks-table tbody,
+.tasks-table tr {
+  width: 100%;
+}
+
 .task-row.clickable {
   cursor: pointer;
   transition: background-color 0.2s ease;
+  width: 100%;
 }
-
+.task-row.clickable {
+  background: #ffffff; /* Ensure rows are white by default */
+}
 .task-row.clickable:hover {
   background-color: var(--hover-background, #f5f8fa);
 }

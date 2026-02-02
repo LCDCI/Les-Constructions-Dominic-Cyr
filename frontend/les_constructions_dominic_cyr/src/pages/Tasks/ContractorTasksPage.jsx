@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useTranslation } from 'react-i18next';
 import { taskApi } from '../../features/schedules/api/taskApi';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { useBackendUser } from '../../hooks/useBackendUser';
@@ -26,6 +27,7 @@ const ContractorTasksPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const { userId } = useBackendUser();
+  const { t } = useTranslation();
 
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -35,8 +37,8 @@ const ContractorTasksPage = () => {
   // Filters
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedLot, setSelectedLot] = useState('all');
-  const [showMyTasksOnly, setShowMyTasksOnly] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,11 +82,16 @@ const ContractorTasksPage = () => {
     fetchData();
   }, [isAuthenticated, getAccessTokenSilently]);
 
-  // Get unique lots for the selected project
+  // Get unique lots for the selected project (only from tasks assigned to current user)
   const availableLots = useMemo(() => {
+    // Filter tasks assigned to current user first
+    const myTasks = userId
+      ? tasks.filter(task => task.assignedToUserId === userId)
+      : tasks;
+
     if (selectedProject === 'all') {
       const lotSet = new Set();
-      tasks.forEach(task => {
+      myTasks.forEach(task => {
         if (task.lotId) {
           lotSet.add(task.lotId);
         }
@@ -92,7 +99,7 @@ const ContractorTasksPage = () => {
       return Array.from(lotSet).sort();
     }
 
-    const projectTasks = tasks.filter(
+    const projectTasks = myTasks.filter(
       task => task.projectIdentifier === selectedProject
     );
     const lotSet = new Set();
@@ -102,15 +109,22 @@ const ContractorTasksPage = () => {
       }
     });
     return Array.from(lotSet).sort();
-  }, [tasks, selectedProject]);
+  }, [tasks, selectedProject, userId]);
 
   // Filter tasks based on selections
   const filteredTasks = useMemo(() => {
     let result = [...tasks];
 
+    // Filter by assigned to current user (always applied)
+    if (userId) {
+      result = result.filter(task => task.assignedToUserId === userId);
+    }
+
     // Filter by project
     if (selectedProject !== 'all') {
-      result = result.filter(task => task.projectIdentifier === selectedProject);
+      result = result.filter(
+        task => task.projectIdentifier === selectedProject
+      );
     }
 
     // Filter by lot
@@ -118,18 +132,25 @@ const ContractorTasksPage = () => {
       result = result.filter(task => task.lotId === selectedLot);
     }
 
-    // Filter by assigned to me
-    if (showMyTasksOnly && userId) {
-      result = result.filter(task => task.assignedToUserId === userId);
-    }
-
     // Filter by status
     if (statusFilter !== 'all') {
       result = result.filter(task => task.taskStatus === statusFilter);
     }
 
+    // Filter by priority
+    if (priorityFilter !== 'all') {
+      result = result.filter(task => task.taskPriority === priorityFilter);
+    }
+
     return result;
-  }, [tasks, selectedProject, selectedLot, showMyTasksOnly, userId, statusFilter]);
+  }, [
+    tasks,
+    selectedProject,
+    selectedLot,
+    statusFilter,
+    priorityFilter,
+    userId,
+  ]);
 
   // Group filtered tasks by project and lot
   const groupedTasks = useMemo(() => {
@@ -170,7 +191,7 @@ const ContractorTasksPage = () => {
     return groups;
   }, [filteredTasks]);
 
-  const handleTaskClick = (task) => {
+  const handleTaskClick = task => {
     navigate(`/tasks/${task.taskId}`, {
       state: {
         task,
@@ -179,7 +200,7 @@ const ContractorTasksPage = () => {
     });
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     if (!dateString) return '—';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -189,7 +210,7 @@ const ContractorTasksPage = () => {
     });
   };
 
-  const getStatusClass = (status) => {
+  const getStatusClass = status => {
     const statusMap = {
       TO_DO: 'status-todo',
       IN_PROGRESS: 'status-in-progress',
@@ -200,7 +221,7 @@ const ContractorTasksPage = () => {
     return statusMap[status] || '';
   };
 
-  const getPriorityClass = (priority) => {
+  const getPriorityClass = priority => {
     const priorityMap = {
       VERY_LOW: 'priority-very-low',
       LOW: 'priority-low',
@@ -221,7 +242,7 @@ const ContractorTasksPage = () => {
       <div className="contractor-tasks-page">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>Loading tasks...</p>
+          <p>{t('contractorTasks.loading')}</p>
         </div>
       </div>
     );
@@ -232,7 +253,9 @@ const ContractorTasksPage = () => {
       <div className="contractor-tasks-page">
         <div className="error-container">
           <p className="error-message">{error}</p>
-          <button onClick={() => window.location.reload()}>Retry</button>
+          <button onClick={() => window.location.reload()}>
+            {t('contractorTasks.retry')}
+          </button>
         </div>
       </div>
     );
@@ -241,20 +264,27 @@ const ContractorTasksPage = () => {
   return (
     <div className="contractor-tasks-page">
       <div className="page-header">
-        <h1>All Tasks</h1>
-        <p className="subtitle">View all tasks across projects and lots</p>
+        <h1>{t('contractorTasks.title')}</h1>
+        <p className="subtitle">
+          {filteredTasks.length}{' '}
+          {t('contractorTasks.tasksFound', { count: filteredTasks.length })}
+        </p>
       </div>
 
       <div className="filters-container">
         <div className="filter-group">
-          <label htmlFor="project-filter">Project:</label>
+          <label htmlFor="project-filter">
+            {t('contractorTasks.filters.project')}:
+          </label>
           <select
             id="project-filter"
             value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
+            onChange={e => setSelectedProject(e.target.value)}
           >
-            <option value="all">All Projects</option>
-            {projects.map((project) => (
+            <option value="all">
+              {t('contractorTasks.filters.allProjects')}
+            </option>
+            {projects.map(project => (
               <option
                 key={project.projectIdentifier}
                 value={project.projectIdentifier}
@@ -266,59 +296,68 @@ const ContractorTasksPage = () => {
         </div>
 
         <div className="filter-group">
-          <label htmlFor="lot-filter">Lot:</label>
+          <label htmlFor="lot-filter">
+            {t('contractorTasks.filters.lot')}:
+          </label>
           <select
             id="lot-filter"
             value={selectedLot}
-            onChange={(e) => setSelectedLot(e.target.value)}
+            onChange={e => setSelectedLot(e.target.value)}
             disabled={availableLots.length === 0}
           >
-            <option value="all">All Lots</option>
-            {availableLots.map((lot) => (
+            <option value="all">{t('contractorTasks.filters.allLots')}</option>
+            {availableLots.map(lot => (
               <option key={lot} value={lot}>
-                Lot {lot}
+                {t('contractorTasks.filters.lotNumber', { number: lot })}
               </option>
             ))}
           </select>
         </div>
 
         <div className="filter-group">
-          <label htmlFor="status-filter">Status:</label>
+          <label htmlFor="status-filter">
+            {t('contractorTasks.filters.status')}:
+          </label>
           <select
             id="status-filter"
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={e => setStatusFilter(e.target.value)}
           >
-            <option value="all">All Statuses</option>
+            <option value="all">
+              {t('contractorTasks.filters.allStatuses')}
+            </option>
             {Object.entries(STATUS_LABELS).map(([key, label]) => (
               <option key={key} value={key}>
-                {label}
+                {t(`contractorTasks.status.${key}`)}
               </option>
             ))}
           </select>
         </div>
 
-        <div className="filter-group checkbox-filter">
-          <label>
-            <input
-              type="checkbox"
-              checked={showMyTasksOnly}
-              onChange={(e) => setShowMyTasksOnly(e.target.checked)}
-            />
-            My Assigned Tasks Only
+        <div className="filter-group">
+          <label htmlFor="priority-filter">
+            {t('contractorTasks.filters.priority')}:
           </label>
+          <select
+            id="priority-filter"
+            value={priorityFilter}
+            onChange={e => setPriorityFilter(e.target.value)}
+          >
+            <option value="all">
+              {t('contractorTasks.filters.allPriorities')}
+            </option>
+            {Object.entries(PRIORITY_LABELS).map(([key, label]) => (
+              <option key={key} value={key}>
+                {t(`contractorTasks.priority.${key}`)}
+              </option>
+            ))}
+          </select>
         </div>
-      </div>
-
-      <div className="tasks-summary">
-        <span className="task-count">
-          {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''} found
-        </span>
       </div>
 
       {filteredTasks.length === 0 ? (
         <div className="no-tasks-message">
-          <p>No tasks found matching your filters.</p>
+          <p>{t('contractorTasks.noTasks')}</p>
         </div>
       ) : (
         <div className="tasks-grouped-container">
@@ -331,9 +370,16 @@ const ContractorTasksPage = () => {
               {Object.entries(projectData.lots).map(([lotId, lotData]) => (
                 <div key={lotId} className="lot-group">
                   <div className="lot-header">
-                    <h3>Lot {lotData.lotNumber}</h3>
+                    <h3>
+                      {t('contractorTasks.filters.lotNumber', {
+                        number: lotData.lotNumber,
+                      })}
+                    </h3>
                     <span className="task-count-badge">
-                      {lotData.tasks.length} task{lotData.tasks.length !== 1 ? 's' : ''}
+                      {lotData.tasks.length}{' '}
+                      {t('contractorTasks.tasksCount', {
+                        count: lotData.tasks.length,
+                      })}
                     </span>
                   </div>
 
@@ -341,17 +387,17 @@ const ContractorTasksPage = () => {
                     <table className="tasks-table">
                       <thead>
                         <tr>
-                          <th>Title</th>
-                          <th>Status</th>
-                          <th>Priority</th>
-                          <th>Start Date</th>
-                          <th>End Date</th>
-                          <th>Assigned To</th>
-                          <th>Progress</th>
+                          <th>{t('contractorTasks.table.title')}</th>
+                          <th>{t('contractorTasks.table.status')}</th>
+                          <th>{t('contractorTasks.table.priority')}</th>
+                          <th>{t('contractorTasks.table.startDate')}</th>
+                          <th>{t('contractorTasks.table.endDate')}</th>
+                          <th>{t('contractorTasks.table.assignedTo')}</th>
+                          <th>{t('contractorTasks.table.progress')}</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {lotData.tasks.map((task) => (
+                        {lotData.tasks.map(task => (
                           <tr
                             key={task.taskId}
                             onClick={() => handleTaskClick(task)}
@@ -364,7 +410,7 @@ const ContractorTasksPage = () => {
                                   task.taskStatus
                                 )}`}
                               >
-                                {STATUS_LABELS[task.taskStatus] || task.taskStatus}
+                                {t(`contractorTasks.status.${task.taskStatus}`)}
                               </span>
                             </td>
                             <td>
@@ -373,8 +419,9 @@ const ContractorTasksPage = () => {
                                   task.taskPriority
                                 )}`}
                               >
-                                {PRIORITY_LABELS[task.taskPriority] ||
-                                  task.taskPriority}
+                                {t(
+                                  `contractorTasks.priority.${task.taskPriority}`
+                                )}
                               </span>
                             </td>
                             <td>{formatDate(task.periodStart)}</td>
@@ -390,9 +437,6 @@ const ContractorTasksPage = () => {
                                     }}
                                   ></div>
                                 </div>
-                                <span className="progress-text">
-                                  {task.taskProgress || 0}%
-                                </span>
                               </div>
                             </td>
                           </tr>
@@ -411,4 +455,3 @@ const ContractorTasksPage = () => {
 };
 
 export default ContractorTasksPage;
-

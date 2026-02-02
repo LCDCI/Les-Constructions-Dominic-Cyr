@@ -76,6 +76,10 @@ public class TranslationRegistry {
         fileIdMap.put("en.projects", "e1fb2a05-f1c0-4509-9ae5-016df6de7629");
         fileIdMap.put("fr.projects", "67fc5df5-4ab5-4747-9077-296157d342ad");
 
+        // Contractor Tasks page translations
+        fileIdMap.put("en.contractortasks", "87e20c13-6487-471f-ad7a-8f3e1e87355b");
+        fileIdMap.put("fr.contractortasks", "0aabdadd-4702-4aa0-acbe-8c7c552d86ac");
+
     }
     
     /**
