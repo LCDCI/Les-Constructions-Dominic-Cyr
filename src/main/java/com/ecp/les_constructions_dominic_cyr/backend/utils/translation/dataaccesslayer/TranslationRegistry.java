@@ -134,8 +134,8 @@ public class TranslationRegistry {
         fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
         fileIdMap.put("fr.navbar", "c9ed527b-48a8-427f-9248-da9e87efbf24");
         // Quotes page translations
-        fileIdMap.put("en.quotes", "39533b35-d0f6-47c5-af6c-c0b9d98420d9");
-        fileIdMap.put("fr.quotes", "1afe0bac-5e34-4a80-945f-39c0ec990dfb");
+        fileIdMap.put("en.quotes", "946a87c9-b8bb-465e-a463-8d5397c72ab4");
+        fileIdMap.put("fr.quotes", "c6f01f88-86a9-4811-8449-1ac1bd492910");
 
     }
     
