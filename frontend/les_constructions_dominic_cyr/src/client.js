@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { navigate } from './utils/navigation';
+
+const ERROR_PAGE_PATH = '/error.html';
 
 // Read base from Vite env var or default to API root
 // Always use env var or relative path; never fallback to localhost in production
@@ -25,29 +26,33 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-// Response interceptor to handle 500 errors
+// Response interceptor to handle backend failures
+// Redirects to static error.html when backend is unavailable
 api.interceptors.response.use(
-  response => {
-    // If response is successful, return it as-is
-    return response;
-  },
+  response => response,
   error => {
-    // Handle error responses
     if (error.response) {
-      const status = error.response.status;
-
-      // Redirect to error page on 500 status codes
-      if (status >= 500 && status < 600) {
-        navigate('/error', { replace: true });
+      // Handle 502, 503, 504 - Backend unavailable
+      if ([502, 503, 504].includes(error.response.status)) {
+        // eslint-disable-next-line no-console
+        console.error('Backend service unavailable:', error.response.status);
+        // Avoid redirect loop if already on error page
+        if (window.location.pathname !== ERROR_PAGE_PATH) {
+          window.location.href = ERROR_PAGE_PATH;
+        }
       }
-    } else if (error.request) {
-      // Request was made but no response received (network error)
-      // You can handle this differently if needed
-    } else {
-      // Something else happened
+    } else if (
+      error.code !== 'ECONNABORTED' &&
+      !error.message?.includes('timeout')
+    ) {
+      // Network error (not timeout) - backend unreachable
+      // eslint-disable-next-line no-console
+      console.error('Network error - backend is unreachable');
+      // Avoid redirect loop if already on error page
+      if (window.location.pathname !== ERROR_PAGE_PATH) {
+        window.location.href = ERROR_PAGE_PATH;
+      }
     }
-
-    // Reject the promise so components can still handle errors if needed
     return Promise.reject(error);
   }
 );
