@@ -21,6 +21,15 @@
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
 }
 
+/* Full width header variant with 5% side gutters */
+.le-header-section.full-width-le {
+  width: calc(100% - 10%);
+  margin: 0 5% var(--spacing-xxl, 6rem);
+  border-radius: 1rem;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
 .le-main-title,
 .le-subtitle,
 .le-subtitle-last {
@@ -196,6 +205,9 @@
   .le-header-section {
     margin-bottom: var(--spacing-lg, 3rem);
     padding: var(--spacing-md, 2rem) var(--spacing-sm, 1.25rem);
+    width: calc(100% - 4%);
+    margin-left: 2%;
+    margin-right: 2%;
   }
 
   .le-main-title,

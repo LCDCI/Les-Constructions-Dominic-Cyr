@@ -57,6 +57,10 @@ files:
   service:
     base-url: ${FILES_SERVICE_BASE_URL:http://localhost:8082}
 
+mailer:
+  service:
+    base-url: ${MAILER_SERVICE_BASE_URL:http://localhost:8083}
+
 # DeepL API Configuration (for PDF translation)
 deepl:
   api:

@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { FiTool, FiRefreshCw, FiShield } from 'react-icons/fi';
+import { FiRefreshCw } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchRenovations } from '../../features/renovations/api/renovations';
 import RenovationCard from '../../features/renovations/components/RenovationCard';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Public_Facing/RenovationsPage.css';
+import '../../styles/Public_Facing/residential-projects.css';
 
 const RenovationsPage = ({ resolveAssetUrl }) => {
   // Load translations from the root namespace since your JSON is flat
@@ -75,7 +76,6 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
       const data = await fetchRenovations();
       setRenovations(data);
     } catch (error) {
-      console.error('Failed to fetch renovations:', error);
       setIsError(true);
     } finally {
       setIsLoading(false);
@@ -91,18 +91,18 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
   return (
     <div className="renovations-page" aria-live="polite">
       {/* HERO */}
-      <section className="hero">
+      <section className="projects-hero">
         <div className="hero-background">
           <div className="hero-image renovations-hero-bg" />
           <div className="hero-overlay" />
         </div>
-        <div className="hero-container">
+        <div className="hero-container projects-hero-content">
           <div className="hero-content" data-animate>
             <p className="hero-label">{t('hero.label', 'RENOVATIONS')}</p>
-            <h1 className="hero-heading">
+            <h1 className="hero-heading projects-title">
               {t('hero.heading', 'Custom renovations, delivered with care')}
             </h1>
-            <p className="hero-description">
+            <p className="hero-description projects-subtitle">
               {t(
                 'hero.lede',
                 'Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity.'
@@ -206,52 +206,21 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
               </h2>
             </div>
             <div className="renovations-page__grid">
-              {renovations.map(
-                ({
-                  renovationId,
-                  beforeImageIdentifier,
-                  afterImageIdentifier,
-                  description,
-                }) => (
-                  <RenovationCard
-                    key={renovationId}
-                    renovationIdentifier={renovationId}
-                    beforeImageIdentifier={''}
-                    afterImageIdentifier={''}
-                    description={description}
-                    resolveAssetUrl={() => ''}
-                    showTitle={false}
-                  />
-                )
-              )}
+              {renovations.map(({ renovationId, description }) => (
+                <RenovationCard
+                  key={renovationId}
+                  renovationIdentifier={renovationId}
+                  beforeImageIdentifier={''}
+                  afterImageIdentifier={''}
+                  description={description}
+                  resolveAssetUrl={() => ''}
+                  showTitle={false}
+                />
+              ))}
             </div>
           </div>
         </section>
       )}
-
-      {/* CALL TO ACTION */}
-      <section className="contact-cta">
-        <div className="contact-wrapper single-column">
-          <div className="contact-content" data-animate>
-            <span className="section-kicker">
-              {t('cta.kicker', 'Where to start?')}
-            </span>
-            <h2 className="contact-title">
-              {t('cta.title', "Let's talk about your project")}
-            </h2>
-            <p className="contact-description">
-              {t(
-                'cta.subtitle',
-                'Get tailored support to transform your space into a place that reflects you.'
-              )}
-            </p>
-            <Link to="/contact" className="btn btn-primary">
-              {t('cta.button', 'Contact Us')}
-            </Link>
-          </div>
-          {/* Image removed intentionally */}
-        </div>
-      </section>
     </div>
   );
 };

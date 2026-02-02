@@ -7,5 +7,9 @@
   "progress": "Progress",
   "projectLots": "Project Lots",
   "viewProjectSchedule": "View Project Schedule",
-  "backToProjects": "Back to projects"
+  "backToProjects": "Back to projects",
+  "loadingProject": "Loading project information...",
+  "accessDeniedTitle": "Access Denied",
+  "notSet": "Not set",
+  "lot": "Lot"
 }

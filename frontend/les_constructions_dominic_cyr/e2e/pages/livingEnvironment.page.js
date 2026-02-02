@@ -9,7 +9,9 @@ class LivingEnvironmentPage {
     this.subtitle = page.locator('.le-subtitle');
     this.amenitiesGrid = page.locator('.le-amenities-grid');
     this.amenityBoxes = page.locator('.le-amenity-box');
-    this.backButton = page.locator('button:has-text("Back to Residential Project")');
+    this.backButton = page.locator(
+      'button:has-text("Back to Residential Project")'
+    );
     this.footer = page.locator('.le-footer-section');
   }
 
