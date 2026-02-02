@@ -76,7 +76,7 @@ public class LotDocumentServiceImpl implements LotDocumentService {
     @Override
     @Transactional
     public List<LotDocumentResponseModel> uploadDocuments(String lotId, MultipartFile[] files, String uploaderUserId) {
-        log.info("Uploading {} documents to lot: {} by user: {}", files.length, lotId, uploaderUserId);
+        log.info("Uploading {} documents to lot: {} by user: {}", files == null ? 0 : files.length, lotId, uploaderUserId);
 
         // Validate inputs
         if (files == null || files.length == 0) {
