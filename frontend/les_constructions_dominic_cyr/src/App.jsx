@@ -70,6 +70,23 @@ function ContractorLotsDocuments() {
   return <LotsListDashboard userId={profile.userId} />;
 }
 
+function ConditionalFooter() {
+  const location = useLocation();
+
+  const isProjectPage =
+    matchPath('/projects/:projectIdentifier/overview', location.pathname) ||
+    matchPath('/projects/:projectIdentifier/lots', location.pathname);
+
+  const isContactPage = location.pathname === '/contact';
+  const isPortalLoginPage = location.pathname === '/portal/login';
+
+  if (isProjectPage || isContactPage || isPortalLoginPage) {
+    return null;
+  }
+
+  return <HomeFooter />;
+}
+
 export default function App() {
   const { getAccessTokenSilently, isAuthenticated, logout } = useAuth0();
 
@@ -629,7 +646,7 @@ export default function App() {
           </Routes>
         </main>
 
-        <HomeFooter />
+        <ConditionalFooter />
 
         {showIdleModal && (
           <IdleTimeoutModal
