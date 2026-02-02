@@ -62,6 +62,8 @@ axiosInstance.interceptors.response.use(
       else if ([502, 503, 504].includes(error.response.status)) {
         // eslint-disable-next-line no-console
         console.error('Backend service unavailable:', error.response.status);
+        // Redirect to static error page to ensure consistent UX if nginx does not intercept
+        window.location.href = ERROR_PAGE_PATH;
       }
     } else {
       // No response received - could be timeout or network error
