@@ -117,13 +117,7 @@ const loadTranslations = async (language = null) => {
 
     // Explicitly add/overwrite the 'quotes' namespace
     if (quotesTranslations) {
-      i18n.addResourceBundle(
-        lang,
-        'quotes',
-        quotesTranslations,
-        true,
-        true
-      );
+      i18n.addResourceBundle(lang, 'quotes', quotesTranslations, true, true);
     }
 
     // Tell i18next we are done so the UI refreshes
