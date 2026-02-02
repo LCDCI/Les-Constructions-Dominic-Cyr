@@ -76,11 +76,11 @@ public class LotDocumentController {
             @AuthenticationPrincipal Jwt jwt,
             Authentication authentication
     ) {
-        log.info("POST /api/v1/lots/{}/documents - uploading {} files", lotId, files.length);
-
         if (files == null || files.length == 0) {
             throw new InvalidInputException("No files provided");
         }
+
+        log.info("POST /api/v1/lots/{}/documents - uploading {} files", lotId, files.length);
 
         // Get current user
         String auth0UserId = jwt.getSubject();
