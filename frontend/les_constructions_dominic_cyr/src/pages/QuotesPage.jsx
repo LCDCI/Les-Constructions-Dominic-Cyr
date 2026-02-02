@@ -13,7 +13,7 @@ import '../features/quotes/styles/QuotesPage.css';
  * - Owners can view all quotes for all projects
  */
 const QuotesPage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('quotes');
   const { getAccessTokenSilently, user } = useAuth0();
   const navigate = useNavigate();
 
