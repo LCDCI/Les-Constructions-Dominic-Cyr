@@ -1,0 +1,47 @@
+{
+  "contractorTasks": {
+    "title": "My Assigned Tasks",
+    "loading": "Loading tasks...",
+    "retry": "Retry",
+    "tasksFound": "{{count}} task found",
+    "tasksFound_plural": "{{count}} tasks found",
+    "tasksCount": "{{count}} task",
+    "tasksCount_plural": "{{count}} tasks",
+    "noTasks": "No tasks found matching your filters.",
+    "filters": {
+      "project": "Project",
+      "allProjects": "All Projects",
+      "lot": "Lot",
+      "allLots": "All Lots",
+      "lotNumber": "Lot {{number}}",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "priority": "Priority",
+      "allPriorities": "All Priorities"
+    },
+    "status": {
+      "TO_DO": "To Do",
+      "IN_PROGRESS": "In Progress",
+      "COMPLETED": "Completed",
+      "ON_HOLD": "On Hold",
+      "CANCELLED": "Cancelled"
+    },
+    "priority": {
+      "VERY_LOW": "Very Low",
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "VERY_HIGH": "Very High"
+    },
+    "table": {
+      "title": "Title",
+      "status": "Status",
+      "priority": "Priority",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "assignedTo": "Assigned To",
+      "progress": "Progress"
+    }
+  }
+}
+
