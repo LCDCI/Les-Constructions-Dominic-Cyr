@@ -138,8 +138,8 @@ public class TranslationRegistry {
         fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
         fileIdMap.put("fr.navbar", "c9ed527b-48a8-427f-9248-da9e87efbf24");
         // Quotes page translations
-        fileIdMap.put("en.quotes", "9274a2c4-5178-4008-870c-145794588b9f");
-        fileIdMap.put("fr.quotes", "fc34d85b-98e3-4cae-a86d-49ad17b96b60");
+        fileIdMap.put("en.quotes", "9f4db0ae-edff-417f-bab1-ba99b2f6a565");
+        fileIdMap.put("fr.quotes", "1537111d-646f-48b1-bc2d-3362883af729");
 
     }
     
