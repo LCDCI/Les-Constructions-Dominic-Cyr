@@ -41,7 +41,10 @@ api.interceptors.response.use(
           window.location.href = ERROR_PAGE_PATH;
         }
       }
-    } else if (error.code !== 'ECONNABORTED' && !error.message?.includes('timeout')) {
+    } else if (
+      error.code !== 'ECONNABORTED' &&
+      !error.message?.includes('timeout')
+    ) {
       // Network error (not timeout) - backend unreachable
       // eslint-disable-next-line no-console
       console.error('Network error - backend is unreachable');
