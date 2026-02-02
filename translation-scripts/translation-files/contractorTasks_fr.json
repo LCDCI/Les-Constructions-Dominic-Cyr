@@ -1,47 +1,44 @@
 {
-  "contractorTasks": {
-    "title": "Mes tâches assignées",
-    "loading": "Chargement des tâches...",
-    "retry": "Réessayer",
-    "tasksFound": "{{count}} tâche trouvée",
-    "tasksFound_plural": "{{count}} tâches trouvées",
-    "tasksCount": "{{count}} tâche",
-    "tasksCount_plural": "{{count}} tâches",
-    "noTasks": "Aucune tâche trouvée correspondant à vos filtres.",
-    "filters": {
-      "project": "Projet",
-      "allProjects": "Tous les projets",
-      "lot": "Lot",
-      "allLots": "Tous les lots",
-      "lotNumber": "Lot {{number}}",
-      "status": "Statut",
-      "allStatuses": "Tous les statuts",
-      "priority": "Priorité",
-      "allPriorities": "Toutes les priorités"
-    },
-    "status": {
-      "TO_DO": "À faire",
-      "IN_PROGRESS": "En cours",
-      "COMPLETED": "Terminé",
-      "ON_HOLD": "En attente",
-      "CANCELLED": "Annulé"
-    },
-    "priority": {
-      "VERY_LOW": "Très basse",
-      "LOW": "Basse",
-      "MEDIUM": "Moyenne",
-      "HIGH": "Haute",
-      "VERY_HIGH": "Très haute"
-    },
-    "table": {
-      "title": "Titre",
-      "status": "Statut",
-      "priority": "Priorité",
-      "startDate": "Date de début",
-      "endDate": "Date de fin",
-      "assignedTo": "Assigné à",
-      "progress": "Progression"
-    }
+  "title": "Mes tâches assignées",
+  "loading": "Chargement des tâches...",
+  "retry": "Réessayer",
+  "tasksFound": "{{count}} tâche trouvée",
+  "tasksFound_plural": "{{count}} tâches trouvées",
+  "tasksCount": "{{count}} tâche",
+  "tasksCount_plural": "{{count}} tâches",
+  "noTasks": "Aucune tâche trouvée correspondant à vos filtres.",
+  "filters": {
+    "project": "Projet",
+    "allProjects": "Tous les projets",
+    "lot": "Lot",
+    "allLots": "Tous les lots",
+    "lotNumber": "Lot {{number}}",
+    "status": "Statut",
+    "allStatuses": "Tous les statuts",
+    "priority": "Priorité",
+    "allPriorities": "Toutes les priorités"
+  },
+  "status": {
+    "TO_DO": "À faire",
+    "IN_PROGRESS": "En cours",
+    "COMPLETED": "Terminé",
+    "ON_HOLD": "En attente",
+    "CANCELLED": "Annulé"
+  },
+  "priority": {
+    "VERY_LOW": "Très basse",
+    "LOW": "Basse",
+    "MEDIUM": "Moyenne",
+    "HIGH": "Haute",
+    "VERY_HIGH": "Très haute"
+  },
+  "table": {
+    "title": "Titre",
+    "status": "Statut",
+    "priority": "Priorité",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "assignedTo": "Assigné à",
+    "progress": "Progression"
   }
 }
-

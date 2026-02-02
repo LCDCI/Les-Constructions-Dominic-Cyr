@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useTranslation } from 'react-i18next';
 import { taskApi } from '../../features/schedules/api/taskApi';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { useBackendUser } from '../../hooks/useBackendUser';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Tasks/ContractorTasksPage.css';
 
 const STATUS_LABELS = {
@@ -27,7 +27,7 @@ const ContractorTasksPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const { userId } = useBackendUser();
-  const { t } = useTranslation();
+  const { t, isLoading: translationsLoading } = usePageTranslations('contractorTasks');
 
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -242,7 +242,7 @@ const ContractorTasksPage = () => {
       <div className="contractor-tasks-page">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p>{t('contractorTasks.loading')}</p>
+          <p>{t('loading', 'Loading tasks...')}</p>
         </div>
       </div>
     );
@@ -254,7 +254,7 @@ const ContractorTasksPage = () => {
         <div className="error-container">
           <p className="error-message">{error}</p>
           <button onClick={() => window.location.reload()}>
-            {t('contractorTasks.retry')}
+            {t('retry', 'Retry')}
           </button>
         </div>
       </div>
@@ -264,17 +264,17 @@ const ContractorTasksPage = () => {
   return (
     <div className="contractor-tasks-page">
       <div className="page-header">
-        <h1>{t('contractorTasks.title')}</h1>
+        <h1>{t('title', 'My Assigned Tasks')}</h1>
         <p className="subtitle">
           {filteredTasks.length}{' '}
-          {t('contractorTasks.tasksFound', { count: filteredTasks.length })}
+          {t('tasksFound', { count: filteredTasks.length })}
         </p>
       </div>
 
       <div className="filters-container">
         <div className="filter-group">
           <label htmlFor="project-filter">
-            {t('contractorTasks.filters.project')}:
+            {t('filters.project', 'Project')}:
           </label>
           <select
             id="project-filter"
@@ -282,7 +282,7 @@ const ContractorTasksPage = () => {
             onChange={e => setSelectedProject(e.target.value)}
           >
             <option value="all">
-              {t('contractorTasks.filters.allProjects')}
+              {t('filters.allProjects', 'All Projects')}
             </option>
             {projects.map(project => (
               <option
@@ -297,7 +297,7 @@ const ContractorTasksPage = () => {
 
         <div className="filter-group">
           <label htmlFor="lot-filter">
-            {t('contractorTasks.filters.lot')}:
+            {t('filters.lot', 'Lot')}:
           </label>
           <select
             id="lot-filter"
@@ -305,10 +305,10 @@ const ContractorTasksPage = () => {
             onChange={e => setSelectedLot(e.target.value)}
             disabled={availableLots.length === 0}
           >
-            <option value="all">{t('contractorTasks.filters.allLots')}</option>
+            <option value="all">{t('filters.allLots', 'All Lots')}</option>
             {availableLots.map(lot => (
               <option key={lot} value={lot}>
-                {t('contractorTasks.filters.lotNumber', { number: lot })}
+                {t('filters.lotNumber', { number: lot })}
               </option>
             ))}
           </select>
@@ -316,7 +316,7 @@ const ContractorTasksPage = () => {
 
         <div className="filter-group">
           <label htmlFor="status-filter">
-            {t('contractorTasks.filters.status')}:
+            {t('filters.status', 'Status')}:
           </label>
           <select
             id="status-filter"
@@ -324,11 +324,11 @@ const ContractorTasksPage = () => {
             onChange={e => setStatusFilter(e.target.value)}
           >
             <option value="all">
-              {t('contractorTasks.filters.allStatuses')}
+              {t('filters.allStatuses', 'All Statuses')}
             </option>
             {Object.entries(STATUS_LABELS).map(([key, label]) => (
               <option key={key} value={key}>
-                {t(`contractorTasks.status.${key}`)}
+                {t(`status.${key}`, label)}
               </option>
             ))}
           </select>
@@ -336,7 +336,7 @@ const ContractorTasksPage = () => {
 
         <div className="filter-group">
           <label htmlFor="priority-filter">
-            {t('contractorTasks.filters.priority')}:
+            {t('filters.priority', 'Priority')}:
           </label>
           <select
             id="priority-filter"
@@ -344,11 +344,11 @@ const ContractorTasksPage = () => {
             onChange={e => setPriorityFilter(e.target.value)}
           >
             <option value="all">
-              {t('contractorTasks.filters.allPriorities')}
+              {t('filters.allPriorities', 'All Priorities')}
             </option>
             {Object.entries(PRIORITY_LABELS).map(([key, label]) => (
               <option key={key} value={key}>
-                {t(`contractorTasks.priority.${key}`)}
+                {t(`priority.${key}`, label)}
               </option>
             ))}
           </select>
@@ -357,7 +357,7 @@ const ContractorTasksPage = () => {
 
       {filteredTasks.length === 0 ? (
         <div className="no-tasks-message">
-          <p>{t('contractorTasks.noTasks')}</p>
+          <p>{t('noTasks', 'No tasks found matching your filters.')}</p>
         </div>
       ) : (
         <div className="tasks-grouped-container">
@@ -371,13 +371,13 @@ const ContractorTasksPage = () => {
                 <div key={lotId} className="lot-group">
                   <div className="lot-header">
                     <h3>
-                      {t('contractorTasks.filters.lotNumber', {
+                      {t('filters.lotNumber', {
                         number: lotData.lotNumber,
                       })}
                     </h3>
                     <span className="task-count-badge">
                       {lotData.tasks.length}{' '}
-                      {t('contractorTasks.tasksCount', {
+                      {t('tasksCount', {
                         count: lotData.tasks.length,
                       })}
                     </span>
@@ -387,13 +387,13 @@ const ContractorTasksPage = () => {
                     <table className="tasks-table">
                       <thead>
                         <tr>
-                          <th>{t('contractorTasks.table.title')}</th>
-                          <th>{t('contractorTasks.table.status')}</th>
-                          <th>{t('contractorTasks.table.priority')}</th>
-                          <th>{t('contractorTasks.table.startDate')}</th>
-                          <th>{t('contractorTasks.table.endDate')}</th>
-                          <th>{t('contractorTasks.table.assignedTo')}</th>
-                          <th>{t('contractorTasks.table.progress')}</th>
+                          <th>{t('table.title', 'Title')}</th>
+                          <th>{t('table.status', 'Status')}</th>
+                          <th>{t('table.priority', 'Priority')}</th>
+                          <th>{t('table.startDate', 'Start Date')}</th>
+                          <th>{t('table.endDate', 'End Date')}</th>
+                          <th>{t('table.assignedTo', 'Assigned To')}</th>
+                          <th>{t('table.progress', 'Progress')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -410,7 +410,7 @@ const ContractorTasksPage = () => {
                                   task.taskStatus
                                 )}`}
                               >
-                                {t(`contractorTasks.status.${task.taskStatus}`)}
+                                {t(`status.${task.taskStatus}`, STATUS_LABELS[task.taskStatus])}
                               </span>
                             </td>
                             <td>
@@ -419,9 +419,7 @@ const ContractorTasksPage = () => {
                                   task.taskPriority
                                 )}`}
                               >
-                                {t(
-                                  `contractorTasks.priority.${task.taskPriority}`
-                                )}
+                                {t(`priority.${task.taskPriority}`, PRIORITY_LABELS[task.taskPriority])}
                               </span>
                             </td>
                             <td>{formatDate(task.periodStart)}</td>
