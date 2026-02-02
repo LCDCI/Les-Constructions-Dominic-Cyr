@@ -6,6 +6,9 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskController;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +34,9 @@ class TaskControllerUnitTest {
 
     @Mock
     private TaskService taskService;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private TaskController taskController;
@@ -402,10 +409,20 @@ class TaskControllerUnitTest {
 
     @Test
     void getAllTasksForContractorView_shouldReturnAllTasksWithOkStatus() {
+        // Mock JWT for owner user
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|owner123");
+
+        // Mock owner user
+        UserResponseModel ownerUser = new UserResponseModel();
+        ownerUser.setUserIdentifier("owner-123");
+        ownerUser.setUserRole(UserRole.OWNER);
+        when(userService.getUserByAuth0Id("auth0|owner123")).thenReturn(ownerUser);
+
         List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2);
         when(taskService.getAllTasks()).thenReturn(tasks);
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -414,23 +431,44 @@ class TaskControllerUnitTest {
         assertEquals("TASK-002", response.getBody().get(1).getTaskId());
 
         verify(taskService).getAllTasks();
+        verify(userService).getUserByAuth0Id("auth0|owner123");
     }
 
     @Test
     void getAllTasksForContractorView_shouldReturnEmptyListWithOkStatus() {
-        when(taskService.getAllTasks()).thenReturn(Collections.emptyList());
+        // Mock JWT for contractor user
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|contractor123");
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+        // Mock contractor user
+        UserResponseModel contractorUser = new UserResponseModel();
+        contractorUser.setUserIdentifier("contractor-123");
+        contractorUser.setUserRole(UserRole.CONTRACTOR);
+        when(userService.getUserByAuth0Id("auth0|contractor123")).thenReturn(contractorUser);
+        when(taskService.getTasksForContractor("contractor-123")).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertTrue(response.getBody().isEmpty());
 
-        verify(taskService).getAllTasks();
+        verify(taskService).getTasksForContractor("contractor-123");
+        verify(userService).getUserByAuth0Id("auth0|contractor123");
     }
 
     @Test
     void getAllTasksForContractorView_shouldReturnTasksWithDifferentStatuses() {
+        // Mock JWT for contractor user
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|contractor456");
+
+        // Mock contractor user
+        UserResponseModel contractorUser = new UserResponseModel();
+        contractorUser.setUserIdentifier("contractor-456");
+        contractorUser.setUserRole(UserRole.CONTRACTOR);
+        when(userService.getUserByAuth0Id("auth0|contractor456")).thenReturn(contractorUser);
+
         TaskDetailResponseDTO completedTask = TaskDetailResponseDTO.builder()
                 .taskId("TASK-003")
                 .taskStatus(TaskStatus.COMPLETED)
@@ -446,15 +484,16 @@ class TaskControllerUnitTest {
                 .build();
 
         List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2, completedTask, onHoldTask);
-        when(taskService.getAllTasks()).thenReturn(tasks);
+        when(taskService.getTasksForContractor("contractor-456")).thenReturn(tasks);
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(4, response.getBody().size());
 
-        verify(taskService).getAllTasks();
+        verify(taskService).getTasksForContractor("contractor-456");
+        verify(userService).getUserByAuth0Id("auth0|contractor456");
     }
 
     // ========================
@@ -593,16 +632,42 @@ class TaskControllerUnitTest {
 
     @Test
     void getAllTasksForContractorView_shouldHandleSingleTask() {
-        List<TaskDetailResponseDTO> tasks = Collections.singletonList(taskResponseDTO1);
-        when(taskService.getAllTasks()).thenReturn(tasks);
+        // Mock JWT for contractor user
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|contractor789");
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+        // Mock contractor user
+        UserResponseModel contractorUser = new UserResponseModel();
+        contractorUser.setUserIdentifier("contractor-789");
+        contractorUser.setUserRole(UserRole.CONTRACTOR);
+        when(userService.getUserByAuth0Id("auth0|contractor789")).thenReturn(contractorUser);
+
+        List<TaskDetailResponseDTO> tasks = Collections.singletonList(taskResponseDTO1);
+        when(taskService.getTasksForContractor("contractor-789")).thenReturn(tasks);
+
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
 
-        verify(taskService).getAllTasks();
+        verify(taskService).getTasksForContractor("contractor-789");
+        verify(userService).getUserByAuth0Id("auth0|contractor789");
+    }
+
+    @Test
+    void getAllTasksForContractorView_shouldReturnForbiddenWhenUserNotFound() {
+        // Mock JWT for unknown user
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|unknown");
+
+        when(userService.getUserByAuth0Id("auth0|unknown"))
+                .thenThrow(new NotFoundException("User not found"));
+
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        verify(userService).getUserByAuth0Id("auth0|unknown");
     }
 
     @Test

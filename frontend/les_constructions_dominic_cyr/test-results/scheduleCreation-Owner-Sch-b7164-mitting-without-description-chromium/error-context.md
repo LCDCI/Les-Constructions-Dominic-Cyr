@@ -1,0 +1,63 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - navigation [ref=e6]:
+        - link "Residential Projects" [ref=e7] [cursor=pointer]:
+          - /url: /residential-projects
+        - link "Renovations" [ref=e8] [cursor=pointer]:
+          - /url: /renovations
+        - link "Les Constructions Dominic Cyr" [ref=e9] [cursor=pointer]:
+          - /url: /
+          - img "Les Constructions Dominic Cyr"
+        - link "Project Management" [ref=e10] [cursor=pointer]:
+          - /url: /projectmanagement
+        - link "Realizations" [ref=e11] [cursor=pointer]:
+          - /url: /realizations
+      - generic [ref=e12]:
+        - button "Access Portal →" [ref=e13] [cursor=pointer]:
+          - text: Access Portal
+          - generic [ref=e14]: →
+        - button "Toggle language" [ref=e15] [cursor=pointer]: FR
+  - main [ref=e16]:
+    - generic [ref=e18]:
+      - generic [ref=e19]: "404"
+      - heading "Page Not Found" [level=1] [ref=e20]
+      - paragraph [ref=e21]: Loading...
+  - contentinfo [ref=e22]:
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - img [ref=e26]
+          - heading "Information" [level=3] [ref=e28]
+        - generic [ref=e29]:
+          - generic [ref=e30]:
+            - img [ref=e31]
+            - paragraph [ref=e33]: 514-705-7848
+          - generic [ref=e34]:
+            - img [ref=e35]
+            - link "constructions.dcyr@gmail.com" [ref=e37] [cursor=pointer]:
+              - /url: mailto:constructions.dcyr@gmail.com
+          - paragraph [ref=e38]: 155 rue Bourgeois
+          - paragraph [ref=e39]: St-Mathieu-de-Beloeil (Québec) J3G 0M9
+      - link "Contact Us" [ref=e42] [cursor=pointer]:
+        - /url: /contact
+        - text: Contact Us
+        - img [ref=e43]
+      - generic [ref=e45]:
+        - generic [ref=e46]:
+          - img [ref=e47]
+          - heading "Accréditations" [level=3] [ref=e49]
+        - generic [ref=e50]:
+          - 'link "Régie du Bâtiment du Québec: 8356-0169-03" [ref=e51] [cursor=pointer]':
+            - /url: https://www.pes.rbq.gouv.qc.ca/RegistreLicences/Recherche/Resultats/FicheDetenteur?mode=Entreprise&crit=r1TSc6INGEWKtcUK6jcX9%2FEByYB22EJQyiTukjrpiNiBdLFBdmxsUQD5hDhRnpniSWRgQPOq4Oq7AYd4UqvduXNoxS7GrtZarAE5%2FQv2Tj9k9EtXsKZODcycaRS2vCDNPQ6XfEMFITtraZrvf%2BgSWYCujnyk5pjSv%2Bn4i4fIsPKcf%2BPb8Z5RSbvKvHajTbuyX5Dvx9GsimL%2FOHlp6DxDoJ5FP8q94u2ewsoBsQq0VhthO9VtsuE1wYESAcFhyiUIbnNiMS6dBHk2XPVhhCVXDs93MtpN4cuBS%2B3XvsKTj7ZIHNuYwyiYsaYFfpuOofJulS3vTsVihLb7898tOi0SsOtAnfY2%2BFYerzER6TO4TIM7Fwh25dHZC5AARA6k0Q1JFPckDujovDNBflrWPX6ipKRRisQTIjkNwowf0MZXpEs%2F9t2hOEjx29qd%2Fp%2FgVVXh0pnV%2BAcmHQdRVcT0Ib9L2OKI53F4OEdOzktVpYlvF5e%2Byd4pInDRrybDEWGQd2tXuL8EwlgAwkwSYbbVXhT%2BGvjvvD%2B%2BOAeNLHpvnyGWvd%2BqyeTv%2Bxap7%2FwaThYJmcMvtrVpO3LhkjxCVdyyhvZ4rR6L%2BGVoit76HJclXqBxW4HyXwZOY7DMXlaBZFEJt2JcrKLEn5aHNyjOPYVKcq9qorx7obYiAyJ57dVpEs8BqXg645HMfZqPMSmTQPiCBoHL&ent=Dfp5TGXsmaSEEtcnF555TQ%3D%3D
+            - strong [ref=e52]: "Régie du Bâtiment du Québec:"
+            - text: 8356-0169-03
+          - 'link "Garantie Construction Résidentielle: 11084" [ref=e53] [cursor=pointer]':
+            - /url: https://repertoire.garantiegcr.com/entrepreneurs/8356-0169-03.html
+            - strong [ref=e54]: "Garantie Construction Résidentielle:"
+            - text: "11084"
+    - paragraph [ref=e56]: © 2026 Les Constructions Dominic Cyr Inc. Tous droits réservés.
+```

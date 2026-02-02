@@ -2,6 +2,9 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.TaskService;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +26,7 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserService userService;
 
     // Owner endpoints - full CRUD operations
     @GetMapping("/owners/tasks")
@@ -98,10 +104,36 @@ public class TaskController {
     // Contractor endpoints - read-only access to assigned tasks
     @GetMapping("/contractors/tasks/all")
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
-    public ResponseEntity<List<TaskDetailResponseDTO>> getAllTasksForContractorView() {
+    public ResponseEntity<List<TaskDetailResponseDTO>> getAllTasksForContractorView(@AuthenticationPrincipal Jwt jwt) {
         log.info("Fetching all tasks for contractor view");
-        List<TaskDetailResponseDTO> tasks = taskService.getAllTasks();
-        return ResponseEntity.ok(tasks);
+        String auth0UserId = jwt.getSubject();
+
+        try {
+            // Get the authenticated user
+            UserResponseModel user = userService.getUserByAuth0Id(auth0UserId);
+
+            // If user is OWNER, return all tasks
+            if (UserRole.OWNER.equals(user.getUserRole())) {
+                log.info("User is owner, returning all tasks");
+                List<TaskDetailResponseDTO> tasks = taskService.getAllTasks();
+                return ResponseEntity.ok(tasks);
+            }
+
+            // If user is CONTRACTOR, return only their assigned tasks
+            if (UserRole.CONTRACTOR.equals(user.getUserRole())) {
+                log.info("User is contractor, returning assigned tasks only for user: {}", user.getUserIdentifier());
+                List<TaskDetailResponseDTO> tasks = taskService.getTasksForContractor(user.getUserIdentifier());
+                return ResponseEntity.ok(tasks);
+            }
+
+            // For other roles, return empty list
+            log.warn("User has unexpected role: {}", user.getUserRole());
+            return ResponseEntity.ok(List.of());
+
+        } catch (NotFoundException ex) {
+            log.error("User not found for auth0UserId: {}", auth0UserId);
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     @GetMapping("/contractors/tasks")
