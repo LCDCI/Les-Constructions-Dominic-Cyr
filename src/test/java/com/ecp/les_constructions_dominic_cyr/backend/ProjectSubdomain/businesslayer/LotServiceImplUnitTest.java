@@ -55,11 +55,12 @@ public class LotServiceImplUnitTest {
 
     @Test
     void getLotById_WhenNotFound_ThrowsNotFound() {
-        when(lotRepository.findByLotIdentifier_LotId(eq("non-existent"))).thenReturn(null);
+        UUID lotId = UUID.randomUUID();
+        when(lotRepository.findByLotIdentifier_LotId(eq(lotId))).thenReturn(null);
 
-        assertThrows(NotFoundException.class, () -> lotService.getLotById("non-existent"));
+        assertThrows(NotFoundException.class, () -> lotService.getLotById(lotId.toString()));
 
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq("non-existent"));
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq(lotId));
     }
 
     @Test
@@ -91,8 +92,6 @@ public class LotServiceImplUnitTest {
     void mapToResponse_CalculatesProgressPercentage() {
         Lot lot = new Lot(new LotIdentifier(), "L-1", "Addr", 0f, "100", "9", LotStatus.AVAILABLE);
         lot.setRemainingUpcomingWork(30);
-
-        when(lotRepository.findAll()).thenReturn(List.of(lot));
 
         List<LotResponseModel> responses = lotService.mapLotsToResponses(List.of(lot));
         assertEquals(1, responses.size());

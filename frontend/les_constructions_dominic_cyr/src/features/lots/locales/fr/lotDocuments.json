@@ -1,0 +1,33 @@
+{
+  "lotDocuments": {
+    "title": "Documents du Lot",
+    "backToLots": "Retour aux Lots",
+    "searchPlaceholder": "Rechercher des documents...",
+    "filterAll": "Tous",
+    "filterPhotos": "Photos",
+    "filterFiles": "Fichiers",
+    "uploadButton": "Téléverser",
+    "uploading": "Téléversement...",
+    "download": "Télécharger",
+    "delete": "Supprimer",
+    "emptyState": "Aucun document trouvé.",
+    "emptyStateUpload": "Téléversez des fichiers pour commencer.",
+    "loadingState": "Chargement...",
+    "errorState": "Échec du chargement des données",
+    "uploadFailed": "Échec du téléversement des fichiers",
+    "downloadFailed": "Échec du téléchargement du fichier",
+    "deleteFailed": "Échec de la suppression du fichier",
+    "confirmDelete": {
+      "title": "Confirmer la Suppression",
+      "message": "Êtes-vous sûr de vouloir supprimer \"{fileName}\" ?",
+      "warning": "Cette action est irréversible.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "meta": {
+      "uploadedBy": "Téléversé par {name}",
+      "uploadedOn": "le {date}",
+      "fileSize": "{size} KB"
+    }
+  }
+}

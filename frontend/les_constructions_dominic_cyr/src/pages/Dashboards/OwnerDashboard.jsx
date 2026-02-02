@@ -69,9 +69,9 @@ const OwnerDashboard = () => {
       },
       {
         icon: <FaMapLocationDot />,
-        title: t('cards.lots.title', 'Lots'),
-        buttonText: t('cards.lots.button', 'Add'),
-        action: () => navigate('/lots'),
+        title: t('cards.lotDocuments.title', 'Lot Documents'),
+        buttonText: t('cards.lotDocuments.button', 'View Documents'),
+        action: () => navigate('/owner/lot-documents'),
       },
     ],
     [t, navigate]

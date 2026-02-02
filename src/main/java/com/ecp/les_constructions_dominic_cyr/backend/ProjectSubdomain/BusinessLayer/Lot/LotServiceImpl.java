@@ -48,7 +48,8 @@ public class LotServiceImpl implements LotService{
 
     @Override
     public LotResponseModel getLotById(String lotId) {
-        Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
+        UUID lotUuid = UUID.fromString(lotId);
+        Lot lot = lotRepository.findByLotIdentifier_LotId(lotUuid);
 
         if (lot == null)
             throw new NotFoundException("Unknown Lot Id: " + lotId);
@@ -103,7 +104,8 @@ public class LotServiceImpl implements LotService{
     @Override
     @Transactional
     public LotResponseModel updateLot(LotRequestModel lotRequestModel, String lotId) {
-        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotId);
+        UUID lotUuid = UUID.fromString(lotId);
+        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotUuid);
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
@@ -142,7 +144,8 @@ public class LotServiceImpl implements LotService{
     @Override
     @Transactional
     public void deleteLot(String lotId) {
-        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotId);
+        UUID lotUuid = UUID.fromString(lotId);
+        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotUuid);
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
@@ -167,7 +170,7 @@ public class LotServiceImpl implements LotService{
     private LotResponseModel mapToResponse(Lot lot) {
         LotResponseModel dto = new LotResponseModel();
         dto.setId(lot.getId());
-        dto.setLotId(lot.getLotIdentifier() != null ? lot.getLotIdentifier().getLotId() : UUID.randomUUID().toString());
+        dto.setLotId(lot.getLotIdentifier() != null ? lot.getLotIdentifier().getLotId().toString() : UUID.randomUUID().toString());
         dto.setLotNumber(lot.getLotNumber());
         dto.setCivicAddress(lot.getCivicAddress());
         dto.setPrice(lot.getPrice());

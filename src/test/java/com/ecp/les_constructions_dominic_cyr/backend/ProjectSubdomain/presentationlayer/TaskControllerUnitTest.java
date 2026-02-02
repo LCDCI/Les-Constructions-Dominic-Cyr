@@ -395,4 +395,315 @@ class TaskControllerUnitTest {
 
         verify(taskService).getTasksForSchedule(scheduleIdentifier);
     }
+
+    // ========================
+    // Contractor View All Tasks Endpoint Tests
+    // ========================
+
+    @Test
+    void getAllTasksForContractorView_shouldReturnAllTasksWithOkStatus() {
+        List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2);
+        when(taskService.getAllTasks()).thenReturn(tasks);
+
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().size());
+        assertEquals("TASK-001", response.getBody().get(0).getTaskId());
+        assertEquals("TASK-002", response.getBody().get(1).getTaskId());
+
+        verify(taskService).getAllTasks();
+    }
+
+    @Test
+    void getAllTasksForContractorView_shouldReturnEmptyListWithOkStatus() {
+        when(taskService.getAllTasks()).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertTrue(response.getBody().isEmpty());
+
+        verify(taskService).getAllTasks();
+    }
+
+    @Test
+    void getAllTasksForContractorView_shouldReturnTasksWithDifferentStatuses() {
+        TaskDetailResponseDTO completedTask = TaskDetailResponseDTO.builder()
+                .taskId("TASK-003")
+                .taskStatus(TaskStatus.COMPLETED)
+                .taskTitle("Completed Task")
+                .taskProgress(100.0)
+                .build();
+
+        TaskDetailResponseDTO onHoldTask = TaskDetailResponseDTO.builder()
+                .taskId("TASK-004")
+                .taskStatus(TaskStatus.ON_HOLD)
+                .taskTitle("On Hold Task")
+                .taskProgress(25.0)
+                .build();
+
+        List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2, completedTask, onHoldTask);
+        when(taskService.getAllTasks()).thenReturn(tasks);
+
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(4, response.getBody().size());
+
+        verify(taskService).getAllTasks();
+    }
+
+    // ========================
+    // Generic Task Endpoints Tests
+    // ========================
+
+    @Test
+    void getTaskById_shouldReturnTaskWithOkStatus() {
+        String taskId = "TASK-001";
+        when(taskService.getTaskByIdentifier(taskId)).thenReturn(taskResponseDTO1);
+
+        ResponseEntity<?> response = taskController.getTaskById(taskId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(taskResponseDTO1, response.getBody());
+
+        verify(taskService).getTaskByIdentifier(taskId);
+    }
+
+    @Test
+    void getTaskById_shouldReturnNotFoundWhenTaskNotFound() {
+        String taskId = "TASK-999";
+        String errorMessage = "Task not found with identifier: TASK-999";
+        when(taskService.getTaskByIdentifier(taskId)).thenThrow(new NotFoundException(errorMessage));
+
+        ResponseEntity<?> response = taskController.getTaskById(taskId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(taskService).getTaskByIdentifier(taskId);
+    }
+
+    @Test
+    void updateTask_shouldReturnOkWhenSuccessful() {
+        String taskId = "TASK-001";
+        when(taskService.updateTask(taskId, taskRequestDTO)).thenReturn(taskResponseDTO1);
+
+        ResponseEntity<?> response = taskController.updateTask(taskId, taskRequestDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(taskResponseDTO1, response.getBody());
+
+        verify(taskService).updateTask(taskId, taskRequestDTO);
+    }
+
+    @Test
+    void updateTask_shouldReturnNotFoundWhenTaskNotFound() {
+        String taskId = "TASK-999";
+        String errorMessage = "Task not found with identifier: TASK-999";
+        when(taskService.updateTask(taskId, taskRequestDTO)).thenThrow(new NotFoundException(errorMessage));
+
+        ResponseEntity<?> response = taskController.updateTask(taskId, taskRequestDTO);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(taskService).updateTask(taskId, taskRequestDTO);
+    }
+
+    @Test
+    void updateTask_shouldReturnBadRequestWhenInvalidInput() {
+        String taskId = "TASK-001";
+        String errorMessage = "Invalid task data provided";
+        when(taskService.updateTask(taskId, taskRequestDTO)).thenThrow(new InvalidInputException(errorMessage));
+
+        ResponseEntity<?> response = taskController.updateTask(taskId, taskRequestDTO);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(taskService).updateTask(taskId, taskRequestDTO);
+    }
+
+    @Test
+    void deleteTask_shouldReturnNoContentWhenSuccessful() {
+        String taskId = "TASK-001";
+        doNothing().when(taskService).deleteTask(taskId);
+
+        ResponseEntity<?> response = taskController.deleteTask(taskId);
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+
+        verify(taskService).deleteTask(taskId);
+    }
+
+    @Test
+    void deleteTask_shouldReturnNotFoundWhenTaskNotFound() {
+        String taskId = "TASK-999";
+        String errorMessage = "Task not found with identifier: TASK-999";
+        doThrow(new NotFoundException(errorMessage)).when(taskService).deleteTask(taskId);
+
+        ResponseEntity<?> response = taskController.deleteTask(taskId);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(taskService).deleteTask(taskId);
+    }
+
+    // ========================
+    // Contractor Update Task with Exception Tests
+    // ========================
+
+    @Test
+    void updateContractorTask_shouldReturnNotFoundWhenTaskNotFound() {
+        String taskId = "TASK-999";
+        String errorMessage = "Task not found with identifier: TASK-999";
+        when(taskService.updateTask(taskId, taskRequestDTO)).thenThrow(new NotFoundException(errorMessage));
+
+        ResponseEntity<?> response = taskController.updateContractorTask(taskId, taskRequestDTO);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+
+        verify(taskService).updateTask(taskId, taskRequestDTO);
+    }
+
+    @Test
+    void updateContractorTask_shouldReturnInternalServerErrorOnUnexpectedException() {
+        String taskId = "TASK-001";
+        when(taskService.updateTask(taskId, taskRequestDTO)).thenThrow(new RuntimeException("Unexpected error"));
+
+        ResponseEntity<?> response = taskController.updateContractorTask(taskId, taskRequestDTO);
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+        assertEquals("An internal error occurred", response.getBody());
+
+        verify(taskService).updateTask(taskId, taskRequestDTO);
+    }
+
+    // ========================
+    // Edge Cases and Boundary Tests
+    // ========================
+
+    @Test
+    void getAllTasksForContractorView_shouldHandleSingleTask() {
+        List<TaskDetailResponseDTO> tasks = Collections.singletonList(taskResponseDTO1);
+        when(taskService.getAllTasks()).thenReturn(tasks);
+
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+
+        verify(taskService).getAllTasks();
+    }
+
+    @Test
+    void getTaskById_shouldReturnTaskWithAllFields() {
+        String taskId = "TASK-001";
+        TaskDetailResponseDTO fullTask = TaskDetailResponseDTO.builder()
+                .taskId(taskId)
+                .taskStatus(TaskStatus.IN_PROGRESS)
+                .taskTitle("Complete Task")
+                .periodStart(new Date())
+                .periodEnd(new Date())
+                .taskDescription("Full task description")
+                .taskPriority(TaskPriority.VERY_HIGH)
+                .estimatedHours(100.0)
+                .hoursSpent(50.0)
+                .taskProgress(50.0)
+                .assignedToUserId("user-123")
+                .assignedToUserName("Test User")
+                .scheduleId("SCH-001")
+                .build();
+
+        when(taskService.getTaskByIdentifier(taskId)).thenReturn(fullTask);
+
+        ResponseEntity<?> response = taskController.getTaskById(taskId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        TaskDetailResponseDTO responseTask = (TaskDetailResponseDTO) response.getBody();
+        assertNotNull(responseTask);
+        assertEquals(taskId, responseTask.getTaskId());
+        assertEquals(TaskStatus.IN_PROGRESS, responseTask.getTaskStatus());
+        assertEquals(TaskPriority.VERY_HIGH, responseTask.getTaskPriority());
+        assertEquals(100.0, responseTask.getEstimatedHours());
+        assertEquals(50.0, responseTask.getHoursSpent());
+        assertEquals(50.0, responseTask.getTaskProgress());
+        assertEquals("SCH-001", responseTask.getScheduleId());
+
+        verify(taskService).getTaskByIdentifier(taskId);
+    }
+
+    @Test
+    void updateTask_shouldUpdateAllTaskFields() {
+        String taskId = "TASK-001";
+        TaskRequestDTO updateRequest = TaskRequestDTO.builder()
+                .taskStatus(TaskStatus.COMPLETED)
+                .taskTitle("Updated Task Title")
+                .periodStart(new Date())
+                .periodEnd(new Date())
+                .taskDescription("Updated description")
+                .taskPriority(TaskPriority.LOW)
+                .estimatedHours(20.0)
+                .hoursSpent(20.0)
+                .taskProgress(100.0)
+                .assignedToUserId("user-456")
+                .scheduleId("SCH-001")
+                .build();
+
+        TaskDetailResponseDTO updatedTask = TaskDetailResponseDTO.builder()
+                .taskId(taskId)
+                .taskStatus(TaskStatus.COMPLETED)
+                .taskTitle("Updated Task Title")
+                .taskProgress(100.0)
+                .build();
+
+        when(taskService.updateTask(taskId, updateRequest)).thenReturn(updatedTask);
+
+        ResponseEntity<?> response = taskController.updateTask(taskId, updateRequest);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        TaskDetailResponseDTO responseTask = (TaskDetailResponseDTO) response.getBody();
+        assertNotNull(responseTask);
+        assertEquals(TaskStatus.COMPLETED, responseTask.getTaskStatus());
+        assertEquals(100.0, responseTask.getTaskProgress());
+
+        verify(taskService).updateTask(taskId, updateRequest);
+    }
+
+    @Test
+    void getContractorTasks_shouldReturnTasksWithAssigneeInfo() {
+        String contractorId = "contractor-123";
+        TaskDetailResponseDTO taskWithAssigneeInfo = TaskDetailResponseDTO.builder()
+                .taskId("TASK-WITH-ASSIGNEE")
+                .taskStatus(TaskStatus.IN_PROGRESS)
+                .taskTitle("Task with Assignee Info")
+                .scheduleId("SCH-001")
+                .assignedToUserId(contractorId)
+                .assignedToUserName("Contractor Name")
+                .build();
+
+        List<TaskDetailResponseDTO> tasks = Collections.singletonList(taskWithAssigneeInfo);
+        when(taskService.getTasksForContractor(contractorId)).thenReturn(tasks);
+
+        ResponseEntity<?> response = taskController.getContractorTasks(contractorId);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseTasks = (List<TaskDetailResponseDTO>) response.getBody();
+        assertNotNull(responseTasks);
+        assertEquals(1, responseTasks.size());
+        assertEquals("Contractor Name", responseTasks.get(0).getAssignedToUserName());
+        assertEquals(contractorId, responseTasks.get(0).getAssignedToUserId());
+
+        verify(taskService).getTasksForContractor(contractorId);
+    }
 }
