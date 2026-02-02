@@ -107,6 +107,23 @@ const LivingEnvironmentPage = () => {
     };
   }, [projectIdentifier, i18n.language]);
 
+  // Log a warning if key header fields are missing to help diagnose empty banners
+  useEffect(() => {
+    if (!loading && data) {
+      const missing = [];
+      if (!data.headerTitle) missing.push('headerTitle');
+      if (!data.headerSubtitle) missing.push('headerSubtitle');
+      if (!data.headerSubtitleLast) missing.push('headerSubtitleLast');
+      if (!data.headerTagline) missing.push('headerTagline');
+      if (missing.length) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `LivingEnvironmentPage: missing fields for project ${projectIdentifier}: ${missing.join(', ')}`
+        );
+      }
+    }
+  }, [loading, data, projectIdentifier]);
+
   // Map amenity keys to icons (all from react-icons/fa)
   const getAmenityIcon = key => {
     const iconMap = {
@@ -129,6 +146,15 @@ const LivingEnvironmentPage = () => {
       lodging: <FaHotel />,
     };
     return iconMap[key] || <FaTree />;
+  };
+
+  // Convert strings to sentence case (only first letter uppercase)
+  const toSentenceCase = raw => {
+    if (!raw && raw !== 0) return '';
+    const s = String(raw).trim().replace(/\s+/g, ' ');
+    if (!s) return '';
+    const lower = s.toLowerCase();
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
   };
 
   if (loading) {
@@ -188,26 +214,26 @@ const LivingEnvironmentPage = () => {
 
   return (
     <div className="living-environment-page">
-      <div className="container">
-        {/* Header Section */}
-        <section className="le-header-section">
-          <h1 className="le-main-title" style={{ color: '#fff' }}>
-            {data.headerTitle}
-          </h1>
-          <h2 className="le-subtitle" style={{ color: '#fff' }}>
-            {data.headerSubtitle}
-          </h2>
-          <h3 className="le-subtitle-last" style={{ color: '#fff' }}>
-            {data.headerSubtitleLast}
-          </h3>
-          <p
-            className="le-tagline"
-            style={{ color: 'var(--tertiary-color, #aab2a6)' }}
-          >
-            {data.headerTagline}
-          </p>
-        </section>
+      {/* Header Section: full-width with 5% side gutters */}
+      <section className="le-header-section full-width-le">
+        <h1 className="le-main-title" style={{ color: '#fff' }}>
+          {toSentenceCase(data.headerTitle)}
+        </h1>
+        <h2 className="le-subtitle" style={{ color: '#fff' }}>
+          {toSentenceCase(data.headerSubtitle)}
+        </h2>
+        <h3 className="le-subtitle-last" style={{ color: '#fff' }}>
+          {toSentenceCase(data.headerSubtitleLast)}
+        </h3>
+        <p
+          className="le-tagline"
+          style={{ color: 'var(--tertiary-color, #aab2a6)' }}
+        >
+          {toSentenceCase(data.headerTagline)}
+        </p>
+      </section>
 
+      <div className="container">
         {/* Description Section */}
         <section className="le-description-section">
           <p className="le-description-text">{data.descriptionText}</p>

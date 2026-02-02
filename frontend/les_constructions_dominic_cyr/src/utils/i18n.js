@@ -34,6 +34,7 @@ i18n.use(initReactI18next).init({
     'livingenvironment',
     'lotMetadata',
     'projectMetadata',
+    'quotes',
   ],
   defaultNS: 'translation',
   load: 'languageOnly',
@@ -59,12 +60,18 @@ const loadTranslations = async (language = null) => {
       livingEnvironmentTranslations,
       homeTranslations,
       navbarTranslations,
+      lotMetadataTranslations,
+      projectMetadataTranslations,
+      quotesTranslations,
     ] = await Promise.all([
       fetchTranslations(lang),
       fetchPageTranslations('lots', lang),
       fetchPageTranslations('livingenvironment', lang),
       fetchPageTranslations('home', lang),
       fetchPageTranslations('navbar', lang),
+      fetchPageTranslations('lotMetadata', lang),
+      fetchPageTranslations('projectMetadata', lang),
+      fetchPageTranslations('quotes', lang),
     ]);
 
     // Add general translations
@@ -126,6 +133,11 @@ const loadTranslations = async (language = null) => {
         true,
         true
       );
+    }
+
+    // Explicitly add/overwrite the 'quotes' namespace
+    if (quotesTranslations) {
+      i18n.addResourceBundle(lang, 'quotes', quotesTranslations, true, true);
     }
 
     // Tell i18next we are done so the UI refreshes

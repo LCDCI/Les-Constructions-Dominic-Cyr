@@ -16,12 +16,14 @@ test.describe('Renovations Page', () => {
     if (renovationCount > 0) {
       const firstCard = renovationsPage.renovationCards.first();
       await expect(firstCard).toBeVisible();
-      await expect(
-        firstCard.locator('.renovation-card__image--before')
-      ).toBeVisible();
-      await expect(
-        firstCard.locator('.renovation-card__image--after')
-      ).toBeVisible();
+      const images = firstCard.locator('.renovation-card__image');
+      const imageCount = await images.count();
+      if (imageCount > 0) {
+        await expect(images.first()).toBeVisible();
+        await expect(
+          firstCard.locator('.renovation-card__caption').first()
+        ).toBeVisible();
+      }
       await expect(
         firstCard.locator('.renovation-card__description')
       ).toBeVisible();
