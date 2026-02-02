@@ -36,7 +36,7 @@ const QuotesPage = () => {
         // Get access token and extract role
         const accessToken = await getAccessTokenSilently();
         setToken(accessToken);
-        
+
         // Decode JWT to get role
         const tokenParts = accessToken.split('.');
         if (tokenParts.length === 3) {
@@ -63,9 +63,9 @@ const QuotesPage = () => {
         console.error('Error initializing quotes page:', err);
         setError(
           err.response?.data?.message ||
-          err.message ||
-          t('common.errorOccurred') ||
-          'An error occurred while loading projects'
+            err.message ||
+            t('common.errorOccurred') ||
+            'An error occurred while loading projects'
         );
       } finally {
         setLoading(false);
@@ -76,7 +76,7 @@ const QuotesPage = () => {
     initializePage();
   }, [getAccessTokenSilently, t]);
 
-  const handleProjectChange = (e) => {
+  const handleProjectChange = e => {
     const projectId = e.target.value;
     const project = projects.find(p => p.projectIdentifier === projectId);
     setSelectedProject(project);
@@ -103,7 +103,7 @@ const QuotesPage = () => {
             <div className="error-icon">⚠️</div>
             <h2>{t('common.error') || 'Error'}</h2>
             <p>{error}</p>
-            <button 
+            <button
               className="btn btn-primary"
               onClick={() => window.location.reload()}
             >
@@ -124,11 +124,12 @@ const QuotesPage = () => {
             <h2>{t('quote.noProjects') || 'No Projects Found'}</h2>
             <p>
               {userRole === 'CONTRACTOR'
-                ? t('quote.noProjectsContractor') || 'You are not assigned to any projects yet.'
+                ? t('quote.noProjectsContractor') ||
+                  'You are not assigned to any projects yet.'
                 : t('quote.noProjectsOwner') || 'No projects available.'}
             </p>
             {userRole === 'OWNER' && (
-              <button 
+              <button
                 className="btn btn-primary"
                 onClick={() => navigate('/projects/create')}
               >
@@ -151,7 +152,8 @@ const QuotesPage = () => {
             <p className="header-subtitle">
               {userRole === 'CONTRACTOR'
                 ? t('quote.subtitleContractor') || 'View and manage your quotes'
-                : t('quote.subtitleOwner') || 'View all quotes for your projects'}
+                : t('quote.subtitleOwner') ||
+                  'View all quotes for your projects'}
             </p>
           </div>
         </div>
@@ -169,7 +171,10 @@ const QuotesPage = () => {
           >
             <option value="">-- Choose a project --</option>
             {projects.map(project => (
-              <option key={project.projectIdentifier} value={project.projectIdentifier}>
+              <option
+                key={project.projectIdentifier}
+                value={project.projectIdentifier}
+              >
                 {project.projectName || project.projectIdentifier}
               </option>
             ))}
@@ -188,7 +193,10 @@ const QuotesPage = () => {
 
         {!selectedProject && (
           <div className="no-project-selected">
-            <p>{t('quote.selectProjectToView') || 'Select a project to view its quotes'}</p>
+            <p>
+              {t('quote.selectProjectToView') ||
+                'Select a project to view its quotes'}
+            </p>
           </div>
         )}
       </div>

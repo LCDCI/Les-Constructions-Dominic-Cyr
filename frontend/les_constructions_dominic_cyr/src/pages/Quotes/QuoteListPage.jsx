@@ -70,7 +70,10 @@ const QuoteListPage = () => {
                 allLots.push(...mappedLots);
               }
             } catch (err) {
-              console.error(`Error fetching lots for project ${project.projectIdentifier}:`, err);
+              console.error(
+                `Error fetching lots for project ${project.projectIdentifier}:`,
+                err
+              );
             }
           }
 
@@ -85,9 +88,9 @@ const QuoteListPage = () => {
         console.error('Error initializing quotes page:', err);
         setError(
           err.response?.data?.message ||
-          err.message ||
-          t('quote.errorLoading') ||
-          'An error occurred while loading data'
+            err.message ||
+            t('quote.errorLoading') ||
+            'An error occurred while loading data'
         );
       } finally {
         setLoading(false);
@@ -111,20 +114,20 @@ const QuoteListPage = () => {
     }
   };
 
-  const handleLotChange = async (e) => {
+  const handleLotChange = async e => {
     const selectedValue = e.target.value;
-    
+
     if (!selectedValue) return;
-    
+
     const lot = lots.find(l => l.lotIdentifier === selectedValue);
-    
+
     if (!lot) {
       console.error('Lot not found. Selected value:', selectedValue);
       return;
     }
-    
+
     setSelectedLot(lot);
-    
+
     if (token) {
       setLoading(true);
       try {
@@ -138,26 +141,27 @@ const QuoteListPage = () => {
   };
 
   const handleCreateNewBill = () => {
-    navigate(`/quotes/create`, { 
-      state: { 
+    navigate(`/quotes/create`, {
+      state: {
         lotIdentifier: selectedLot?.lotIdentifier,
         lotNumber: selectedLot?.lotNumber,
         projectIdentifier: selectedLot?.projectIdentifier,
         projectName: selectedLot?.projectName,
-      } 
+      },
     });
   };
 
-  const handleViewQuote = (quoteNumber) => {
+  const handleViewQuote = quoteNumber => {
     navigate(`/quotes/${quoteNumber}`);
   };
 
-  const filteredQuotes = quotes.filter(quote =>
-    quote.quoteNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    quote.customerName?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredQuotes = quotes.filter(
+    quote =>
+      quote.quoteNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      quote.customerName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const getStatusLabel = (status) => {
+  const getStatusLabel = status => {
     switch (status) {
       case 'PENDING_OWNER_APPROVAL':
         return t('quote.statusPendingOwner') || 'Waiting for Owner Approval';
@@ -174,7 +178,7 @@ const QuoteListPage = () => {
     }
   };
 
-  const getStatusClass = (status) => {
+  const getStatusClass = status => {
     switch (status) {
       case 'PENDING_OWNER_APPROVAL':
         return 'status-pill status-pending-owner';
@@ -209,7 +213,10 @@ const QuoteListPage = () => {
           <div className="error-icon">⚠️</div>
           <h2>{t('common.error') || 'Error'}</h2>
           <p>{error}</p>
-          <button className="btn btn-primary" onClick={() => window.location.reload()}>
+          <button
+            className="btn btn-primary"
+            onClick={() => window.location.reload()}
+          >
             {t('common.tryAgain') || 'Try Again'}
           </button>
         </div>
@@ -224,7 +231,10 @@ const QuoteListPage = () => {
         <div className="page-header">
           <div className="header-left">
             <div className="project-selector-wrapper">
-              <label htmlFor="project-selector" className="project-selector-label">
+              <label
+                htmlFor="project-selector"
+                className="project-selector-label"
+              >
                 {t('quote.selectLot') || 'Select Lot'}
               </label>
               <select
@@ -235,16 +245,20 @@ const QuoteListPage = () => {
                 disabled={lots.length === 0}
               >
                 <option value="">
-                  {lots.length === 0 ? (t('quote.noLotsAvailable') || 'No lots available') : (t('quote.chooseLot') || 'Choose a lot...')}
+                  {lots.length === 0
+                    ? t('quote.noLotsAvailable') || 'No lots available'
+                    : t('quote.chooseLot') || 'Choose a lot...'}
                 </option>
-                {lots && lots.length > 0 && lots.map((lot) => (
+                {lots &&
+                  lots.length > 0 &&
+                  lots.map(lot => (
                     <option
                       key={lot.lotIdentifier || `lot-${lot.lotNumber}`}
                       value={lot.lotIdentifier}
                     >
                       {lot.projectName} - {lot.lotNumber}
                     </option>
-                ))}
+                  ))}
               </select>
             </div>
           </div>
@@ -261,14 +275,11 @@ const QuoteListPage = () => {
               type="text"
               placeholder={t('quote.searchBills') || 'Search anything on Bills'}
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               className="search-input"
             />
           </div>
-          <button 
-            className="btn btn-create"
-            onClick={handleCreateNewBill}
-          >
+          <button className="btn btn-create" onClick={handleCreateNewBill}>
             {t('quote.createNewBill') || 'Create New Bill'}
           </button>
         </div>
@@ -282,11 +293,11 @@ const QuoteListPage = () => {
           <div className="empty-state">
             <MdOutlineRequestQuote className="empty-icon" />
             <h3>{t('quote.noBills') || 'No bills found'}</h3>
-            <p>{t('quote.noBillsDesc') || 'Create your first bill to get started'}</p>
-            <button 
-              className="btn btn-primary"
-              onClick={handleCreateNewBill}
-            >
+            <p>
+              {t('quote.noBillsDesc') ||
+                'Create your first bill to get started'}
+            </p>
+            <button className="btn btn-primary" onClick={handleCreateNewBill}>
               <MdAdd /> {t('quote.createNewBill') || 'Create New Bill'}
             </button>
           </div>
@@ -295,14 +306,20 @@ const QuoteListPage = () => {
             <table className="quotes-table">
               <thead>
                 <tr>
-                  <th className="col-bill-number">{t('quote.billNumber') || 'BILL NUMBER'}</th>
-                  <th className="col-amount">{t('quote.amount') || 'AMOUNT'}</th>
+                  <th className="col-bill-number">
+                    {t('quote.billNumber') || 'BILL NUMBER'}
+                  </th>
+                  <th className="col-amount">
+                    {t('quote.amount') || 'AMOUNT'}
+                  </th>
                   <th className="col-date">{t('quote.date') || 'DATE'}</th>
-                  <th className="col-action">{t('quote.action') || 'ACTION'}</th>
+                  <th className="col-action">
+                    {t('quote.action') || 'ACTION'}
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {filteredQuotes.map((quote) => (
+                {filteredQuotes.map(quote => (
                   <tr key={quote.quoteNumber}>
                     <td className="col-bill-number">
                       <div className="bill-info">
@@ -319,18 +336,19 @@ const QuoteListPage = () => {
                       {new Date(quote.createdAt).toLocaleDateString('en-US', {
                         day: '2-digit',
                         month: 'short',
-                        year: 'numeric'
+                        year: 'numeric',
                       })}
                       <span className="time">
-                        {t('quote.at') || 'at'} {new Date(quote.createdAt).toLocaleTimeString('en-US', {
+                        {t('quote.at') || 'at'}{' '}
+                        {new Date(quote.createdAt).toLocaleTimeString('en-US', {
                           hour: '2-digit',
-                          minute: '2-digit'
+                          minute: '2-digit',
                         })}
                       </span>
                     </td>
                     <td className="col-action">
                       <div className="action-buttons">
-                        <button 
+                        <button
                           className="btn btn-view"
                           onClick={() => handleViewQuote(quote.quoteNumber)}
                         >
@@ -338,7 +356,8 @@ const QuoteListPage = () => {
                         </button>
                         {quote.status === 'ESTIMATED' && (
                           <button className="btn btn-send">
-                            {t('quote.sendFinalInvoice') || 'Send Final Invoice'}
+                            {t('quote.sendFinalInvoice') ||
+                              'Send Final Invoice'}
                           </button>
                         )}
                       </div>

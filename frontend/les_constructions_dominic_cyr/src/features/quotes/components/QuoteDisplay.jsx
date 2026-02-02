@@ -27,7 +27,10 @@ const QuoteDisplay = ({ projectIdentifier, token, quoteNumber = null }) => {
           setSelectedQuote(quote);
         } else if (projectIdentifier) {
           // Fetch all quotes for project
-          const allQuotes = await quoteApi.getQuotesByProject(projectIdentifier, token);
+          const allQuotes = await quoteApi.getQuotesByProject(
+            projectIdentifier,
+            token
+          );
           setQuotes(allQuotes);
           if (allQuotes.length > 0) {
             setSelectedQuote(allQuotes[0]);
@@ -72,12 +75,14 @@ const QuoteDisplay = ({ projectIdentifier, token, quoteNumber = null }) => {
           <select
             id="quote-select"
             value={selectedQuote?.quoteNumber || ''}
-            onChange={(e) => {
-              const selected = quotes.find((q) => q.quoteNumber === e.target.value);
+            onChange={e => {
+              const selected = quotes.find(
+                q => q.quoteNumber === e.target.value
+              );
               setSelectedQuote(selected);
             }}
           >
-            {quotes.map((q) => (
+            {quotes.map(q => (
               <option key={q.quoteNumber} value={q.quoteNumber}>
                 {q.quoteNumber}
               </option>

@@ -12,7 +12,13 @@ import '../styles/QuoteForm.css';
  * - Dynamic totals and tax calculation
  * - Send/Preview/Download buttons
  */
-const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCancel }) => {
+const QuoteForm = ({
+  projectIdentifier,
+  projectName,
+  token,
+  onQuoteCreated,
+  onCancel,
+}) => {
   const { t } = useTranslation();
   const [lineItems, setLineItems] = useState([
     {
@@ -44,7 +50,7 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
   /**
    * Recalculate total amount from all line items
    */
-  const recalculateTotal = (items) => {
+  const recalculateTotal = items => {
     const subtotal = items.reduce((sum, item) => {
       const lineTotal = calculateLineTotal(item.quantity, item.rate);
       return sum + parseFloat(lineTotal || 0);
@@ -56,11 +62,15 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
    * Update a line item field
    */
   const handleLineItemChange = (id, field, value) => {
-    const updatedItems = lineItems.map((item) => {
+    const updatedItems = lineItems.map(item => {
       if (item.id === id) {
         const updated = { ...item, [field]: value, errors: { ...item.errors } };
 
-        if (field === 'quantity' || field === 'rate' || field === 'itemDescription') {
+        if (
+          field === 'quantity' ||
+          field === 'rate' ||
+          field === 'itemDescription'
+        ) {
           delete updated.errors[field];
         }
 
@@ -76,19 +86,26 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
   /**
    * Validate a single line item
    */
-  const validateLineItem = (item) => {
+  const validateLineItem = item => {
     const errors = {};
 
     if (!item.itemDescription || item.itemDescription.trim() === '') {
-      errors.itemDescription = t('form.validation.itemDescriptionRequired') || 'Required';
+      errors.itemDescription =
+        t('form.validation.itemDescriptionRequired') || 'Required';
     }
 
-    if (!item.quantity || isNaN(item.quantity) || parseFloat(item.quantity) <= 0) {
-      errors.quantity = t('form.validation.quantityMustBePositive') || 'Must be > 0';
+    if (
+      !item.quantity ||
+      isNaN(item.quantity) ||
+      parseFloat(item.quantity) <= 0
+    ) {
+      errors.quantity =
+        t('form.validation.quantityMustBePositive') || 'Must be > 0';
     }
 
     if (item.rate === '' || isNaN(item.rate) || parseFloat(item.rate) < 0) {
-      errors.rate = t('form.validation.rateCannotBeNegative') || 'Cannot be negative';
+      errors.rate =
+        t('form.validation.rateCannotBeNegative') || 'Cannot be negative';
     }
 
     return errors;
@@ -114,14 +131,16 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
   /**
    * Remove a line item
    */
-  const handleRemoveLineItem = (id) => {
+  const handleRemoveLineItem = id => {
     if (lineItems.length === 1) {
-      setSubmitError(t('form.validation.minOneLineItem') || 'At least one item required');
+      setSubmitError(
+        t('form.validation.minOneLineItem') || 'At least one item required'
+      );
       return;
     }
 
     const updatedItems = lineItems
-      .filter((item) => item.id !== id)
+      .filter(item => item.id !== id)
       .map((item, index) => ({
         ...item,
         displayOrder: index + 1,
@@ -137,7 +156,7 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
    */
   const validateAllLineItems = () => {
     let isValid = true;
-    const validatedItems = lineItems.map((item) => {
+    const validatedItems = lineItems.map(item => {
       const errors = validateLineItem(item);
       if (Object.keys(errors).length > 0) {
         isValid = false;
@@ -152,12 +171,14 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
   /**
    * Submit the quote
    */
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setSubmitError(null);
 
     if (!validateAllLineItems()) {
-      setSubmitError(t('form.validation.pleaseFixErrors') || 'Please fix errors');
+      setSubmitError(
+        t('form.validation.pleaseFixErrors') || 'Please fix errors'
+      );
       return;
     }
 
@@ -166,7 +187,7 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
     try {
       const quoteData = {
         projectIdentifier,
-        lineItems: lineItems.map((item) => ({
+        lineItems: lineItems.map(item => ({
           itemDescription: item.itemDescription.trim(),
           quantity: parseFloat(item.quantity),
           rate: parseFloat(item.rate),
@@ -180,7 +201,9 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
         onQuoteCreated(createdQuote);
       }
     } catch (error) {
-      setSubmitError(error.message || t('form.errors.submitFailed') || 'Submit failed');
+      setSubmitError(
+        error.message || t('form.errors.submitFailed') || 'Submit failed'
+      );
       console.error('Quote creation error:', error);
     } finally {
       setIsSubmitting(false);
@@ -195,7 +218,7 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
   const total = subtotalAfterDiscount + tax;
 
   const isFormValid = lineItems.every(
-    (item) =>
+    item =>
       item.itemDescription.trim() !== '' &&
       !isNaN(item.quantity) &&
       parseFloat(item.quantity) > 0 &&
@@ -212,7 +235,10 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
             <h1>{t('quote.createNewQuote') || 'Create Bill Estimate'}</h1>
           </div>
           <div className="header-right">
-            <p className="note">{t('quote.noteQuoteNumberAuto') || 'Quote number will be auto-generated'}</p>
+            <p className="note">
+              {t('quote.noteQuoteNumberAuto') ||
+                'Quote number will be auto-generated'}
+            </p>
           </div>
         </div>
 
@@ -227,27 +253,40 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
               <thead>
                 <tr>
                   <th className="col-item">{t('quote.item') || 'ITEM'}</th>
-                  <th className="col-amount">{t('quote.amount') || 'AMOUNT'}</th>
+                  <th className="col-amount">
+                    {t('quote.amount') || 'AMOUNT'}
+                  </th>
                   <th className="col-rate">{t('quote.rate') || 'RATE'}</th>
                   <th className="col-total">{t('quote.amount') || 'AMOUNT'}</th>
                   <th className="col-actions"></th>
                 </tr>
               </thead>
               <tbody>
-                {lineItems.map((item) => (
-                  <tr key={item.id} className={item.errors.itemDescription ? 'row-error' : ''}>
+                {lineItems.map(item => (
+                  <tr
+                    key={item.id}
+                    className={item.errors.itemDescription ? 'row-error' : ''}
+                  >
                     <td className="col-item">
                       <input
                         type="text"
                         value={item.itemDescription}
-                        onChange={(e) =>
-                          handleLineItemChange(item.id, 'itemDescription', e.target.value)
+                        onChange={e =>
+                          handleLineItemChange(
+                            item.id,
+                            'itemDescription',
+                            e.target.value
+                          )
                         }
                         placeholder="Item name / description"
-                        className={item.errors.itemDescription ? 'input-error' : ''}
+                        className={
+                          item.errors.itemDescription ? 'input-error' : ''
+                        }
                       />
                       {item.errors.itemDescription && (
-                        <span className="error-hint">{item.errors.itemDescription}</span>
+                        <span className="error-hint">
+                          {item.errors.itemDescription}
+                        </span>
                       )}
                     </td>
                     <td className="col-amount">
@@ -256,14 +295,20 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
                         step="0.01"
                         min="0"
                         value={item.quantity}
-                        onChange={(e) =>
-                          handleLineItemChange(item.id, 'quantity', e.target.value)
+                        onChange={e =>
+                          handleLineItemChange(
+                            item.id,
+                            'quantity',
+                            e.target.value
+                          )
                         }
                         placeholder="0"
                         className={item.errors.quantity ? 'input-error' : ''}
                       />
                       {item.errors.quantity && (
-                        <span className="error-hint">{item.errors.quantity}</span>
+                        <span className="error-hint">
+                          {item.errors.quantity}
+                        </span>
                       )}
                     </td>
                     <td className="col-rate">
@@ -274,8 +319,12 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
                           step="0.01"
                           min="0"
                           value={item.rate}
-                          onChange={(e) =>
-                            handleLineItemChange(item.id, 'rate', e.target.value)
+                          onChange={e =>
+                            handleLineItemChange(
+                              item.id,
+                              'rate',
+                              e.target.value
+                            )
                           }
                           placeholder="0.00"
                           className={item.errors.rate ? 'input-error' : ''}
@@ -306,10 +355,14 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
             </table>
           </div>
 
-          <a href="#" className="add-item-link" onClick={(e) => {
-            e.preventDefault();
-            handleAddLineItem();
-          }}>
+          <a
+            href="#"
+            className="add-item-link"
+            onClick={e => {
+              e.preventDefault();
+              handleAddLineItem();
+            }}
+          >
             + {t('quote.addItem') || 'Add Item'}
           </a>
         </div>
@@ -331,7 +384,9 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
                   max="100"
                   step="0.01"
                   value={discountPercentage}
-                  onChange={(e) => setDiscountPercentage(parseFloat(e.target.value) || 0)}
+                  onChange={e =>
+                    setDiscountPercentage(parseFloat(e.target.value) || 0)
+                  }
                   placeholder="0"
                   className="discount-input"
                 />
@@ -351,7 +406,9 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
                   max="100"
                   step="0.01"
                   value={taxPercentage}
-                  onChange={(e) => setTaxPercentage(parseFloat(e.target.value) || 0)}
+                  onChange={e =>
+                    setTaxPercentage(parseFloat(e.target.value) || 0)
+                  }
                   placeholder="0"
                   className="tax-input"
                 />
@@ -389,7 +446,9 @@ const QuoteForm = ({ projectIdentifier, projectName, token, onQuoteCreated, onCa
             className="btn btn-primary"
             disabled={!isFormValid || isSubmitting}
           >
-            {isSubmitting ? t('form.actions.submitting') || 'Sending...' : t('form.actions.submit') || 'Send'}
+            {isSubmitting
+              ? t('form.actions.submitting') || 'Sending...'
+              : t('form.actions.submit') || 'Send'}
           </button>
         </div>
       </form>

@@ -18,7 +18,8 @@ const QuoteFormPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { lotIdentifier, lotNumber, projectIdentifier, projectName } = location.state || {};
+  const { lotIdentifier, lotNumber, projectIdentifier, projectName } =
+    location.state || {};
 
   // Form state
   const [lineItems, setLineItems] = useState([
@@ -52,7 +53,9 @@ const QuoteFormPage = () => {
     category: 'Kitchen',
     description: '',
     paymentTerms: 'Net 30',
-    deliveryDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    deliveryDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split('T')[0],
     notes: '',
   });
 
@@ -81,9 +84,10 @@ const QuoteFormPage = () => {
 
         if (userResponse.data) {
           setContractorInfo({
-            name: userResponse.data.firstName && userResponse.data.lastName 
-              ? `${userResponse.data.firstName} ${userResponse.data.lastName}`
-              : userResponse.data.name || 'Contractor',
+            name:
+              userResponse.data.firstName && userResponse.data.lastName
+                ? `${userResponse.data.firstName} ${userResponse.data.lastName}`
+                : userResponse.data.name || 'Contractor',
             email: userResponse.data.email || '',
             phone: userResponse.data.phone || '',
             address: userResponse.data.address || '',
@@ -97,15 +101,22 @@ const QuoteFormPage = () => {
         if (lotIdentifier && projectIdentifier) {
           try {
             // First, fetch project to get customer ID
-            const projectResponse = await axios.get(`/api/v1/projects/${projectIdentifier}`, {
-              headers: { Authorization: `Bearer ${accessToken}` },
-            });
+            const projectResponse = await axios.get(
+              `/api/v1/projects/${projectIdentifier}`,
+              {
+                headers: { Authorization: `Bearer ${accessToken}` },
+              }
+            );
 
             if (projectResponse.data) {
               setProjectInfo({
-                name: projectName || projectResponse.data.projectName || 'Project',
+                name:
+                  projectName || projectResponse.data.projectName || 'Project',
                 lotNumber: lotNumber,
-                address: projectResponse.data.location || projectResponse.data.address || '',
+                address:
+                  projectResponse.data.location ||
+                  projectResponse.data.address ||
+                  '',
                 city: projectResponse.data.city || '',
                 province: projectResponse.data.province || 'Quebec',
                 country: 'Canada',
@@ -118,12 +129,14 @@ const QuoteFormPage = () => {
                     `/api/v1/users/${projectResponse.data.customerId}`,
                     { headers: { Authorization: `Bearer ${accessToken}` } }
                   );
-                  
+
                   if (customerResponse.data) {
                     setCustomerInfo({
-                      name: customerResponse.data.firstName && customerResponse.data.lastName
-                        ? `${customerResponse.data.firstName} ${customerResponse.data.lastName}`
-                        : customerResponse.data.name || 'Customer',
+                      name:
+                        customerResponse.data.firstName &&
+                        customerResponse.data.lastName
+                          ? `${customerResponse.data.firstName} ${customerResponse.data.lastName}`
+                          : customerResponse.data.name || 'Customer',
                       email: customerResponse.data.email || '',
                       phone: customerResponse.data.phone || '',
                       address: customerResponse.data.address || '',
@@ -153,7 +166,7 @@ const QuoteFormPage = () => {
     if (!hours || !rate || isNaN(hours) || isNaN(rate)) return 0;
     return parseFloat(hours) * parseFloat(rate);
   };
-  
+
   // Calculate totals as derived values
   const subtotal = lineItems.reduce(
     (sum, item) => sum + calculateLineTotal(item.hours, item.rate),
@@ -173,17 +186,28 @@ const QuoteFormPage = () => {
     setLineItems(items =>
       items.map(item =>
         item.id === id
-          ? { ...item, [field]: value, errors: { ...item.errors, [field]: null } }
+          ? {
+              ...item,
+              [field]: value,
+              errors: { ...item.errors, [field]: null },
+            }
           : item
       )
     );
   };
 
-  const showError = (message) => {
+  const showError = message => {
     let formattedMessage = message;
     if (typeof formattedMessage === 'string') {
-      if (formattedMessage.includes('Contractor is not assigned to this project') || formattedMessage.includes('Contractor is not assigned to this lot')) {
-        formattedMessage = t('quote.errors.notAssignedToLot') || 'You are not assigned to this lot.';
+      if (
+        formattedMessage.includes(
+          'Contractor is not assigned to this project'
+        ) ||
+        formattedMessage.includes('Contractor is not assigned to this lot')
+      ) {
+        formattedMessage =
+          t('quote.errors.notAssignedToLot') ||
+          'You are not assigned to this lot.';
       }
     }
     setSubmitError(formattedMessage);
@@ -205,7 +229,7 @@ const QuoteFormPage = () => {
     setNextId(nextId + 1);
   };
 
-  const handleRemoveLineItem = (id) => {
+  const handleRemoveLineItem = id => {
     if (lineItems.length > 1) {
       setLineItems(lineItems.filter(item => item.id !== id));
     }
@@ -213,13 +237,19 @@ const QuoteFormPage = () => {
 
   const validateForm = () => {
     // Filter out empty line items (items with no description, hours, or rate)
-    const validItems = lineItems.filter(item => 
-      item.itemDescription?.trim() || parseFloat(item.hours) > 0 || parseFloat(item.rate) >= 0
+    const validItems = lineItems.filter(
+      item =>
+        item.itemDescription?.trim() ||
+        parseFloat(item.hours) > 0 ||
+        parseFloat(item.rate) >= 0
     );
 
     // Check if we have at least one valid item
     if (validItems.length === 0) {
-      showError(t('quote.errors.atLeastOneItem') || 'Please add at least one item to the quote');
+      showError(
+        t('quote.errors.atLeastOneItem') ||
+          'Please add at least one item to the quote'
+      );
       return false;
     }
 
@@ -233,7 +263,8 @@ const QuoteFormPage = () => {
       }
 
       if (!item.itemDescription || item.itemDescription.trim() === '') {
-        errors.itemDescription = t('quote.errors.descriptionRequired') || 'Description required';
+        errors.itemDescription =
+          t('quote.errors.descriptionRequired') || 'Description required';
         isValid = false;
       }
 
@@ -256,11 +287,13 @@ const QuoteFormPage = () => {
     return isValid;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     if (!validateForm()) {
-      showError(t('quote.errors.fixErrors') || 'Please fix the errors in the form');
+      showError(
+        t('quote.errors.fixErrors') || 'Please fix the errors in the form'
+      );
       return;
     }
 
@@ -286,7 +319,12 @@ const QuoteFormPage = () => {
         gstPercentage,
         qstPercentage,
         lineItems: lineItems
-          .filter(item => item.itemDescription?.trim() || parseFloat(item.hours) > 0 || parseFloat(item.rate) >= 0)
+          .filter(
+            item =>
+              item.itemDescription?.trim() ||
+              parseFloat(item.hours) > 0 ||
+              parseFloat(item.rate) >= 0
+          )
           .map(item => ({
             itemDescription: item.itemDescription,
             quantity: parseFloat(item.hours),
@@ -307,16 +345,18 @@ const QuoteFormPage = () => {
         setGeneratedQuoteNumber(response.data.quoteNumber);
       }
 
-      navigate('/quotes', { 
-        state: { message: t('quote.createSuccess') || 'Quote created successfully!' } 
+      navigate('/quotes', {
+        state: {
+          message: t('quote.createSuccess') || 'Quote created successfully!',
+        },
       });
-
     } catch (error) {
       console.error('Quote creation error:', error);
       showError(
         error.response?.data?.message ||
-        error.message ||
-        t('quote.errors.createFailed') || 'Failed to create quote'
+          error.message ||
+          t('quote.errors.createFailed') ||
+          'Failed to create quote'
       );
     } finally {
       setIsSubmitting(false);
@@ -335,7 +375,8 @@ const QuoteFormPage = () => {
           <div className="header-left">
             <h1>{t('quote.createBillEstimate') || 'Create Bill Estimate'}</h1>
             <p className="bill-number-label">
-              {t('quote.newBill') || 'New Bill'}: <span className="bill-number-value">QT-XXXXXX</span>
+              {t('quote.newBill') || 'New Bill'}:{' '}
+              <span className="bill-number-value">QT-XXXXXX</span>
             </p>
           </div>
           {contractorInfo && (
@@ -348,8 +389,10 @@ const QuoteFormPage = () => {
                 <p>{contractorInfo.email}</p>
                 <p>{contractorInfo.phone}</p>
                 <p className="address">
-                  {contractorInfo.address}<br />
-                  {contractorInfo.city}, {contractorInfo.province}<br />
+                  {contractorInfo.address}
+                  <br />
+                  {contractorInfo.city}, {contractorInfo.province}
+                  <br />
                   {contractorInfo.country}
                 </p>
               </div>
@@ -365,26 +408,40 @@ const QuoteFormPage = () => {
               <div className="details-grid details-grid-3">
                 <div className="detail-item">
                   <label>{t('quote.billNumber') || 'Bill Number'}</label>
-                  <p className="detail-value">{generatedQuoteNumber || 'QT-XXXXXX'}</p>
+                  <p className="detail-value">
+                    {generatedQuoteNumber || 'QT-XXXXXX'}
+                  </p>
                   <span className="detail-meta">
-                    {generatedQuoteNumber ? t('quote.confirmed') || 'Confirmed' : t('quote.auto') || 'Auto-generated'}
+                    {generatedQuoteNumber
+                      ? t('quote.confirmed') || 'Confirmed'
+                      : t('quote.auto') || 'Auto-generated'}
                   </span>
                 </div>
                 <div className="detail-item">
                   <label>{t('quote.category') || 'Category'}</label>
                   <select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
                     className="form-select"
                   >
                     {quoteCategories.map(cat => (
-                      <option key={cat} value={cat}>{cat}</option>
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div className="detail-item">
                   <label>{t('quote.issuedDate') || 'Issued Date'}</label>
-                  <p className="detail-value">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  <p className="detail-value">
+                    {new Date().toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
                 </div>
               </div>
             </div>
@@ -404,8 +461,14 @@ const QuoteFormPage = () => {
                       {customerInfo.phone && <span>{customerInfo.phone}</span>}
                     </p>
                     <p className="address">
-                      {customerInfo.address && <>{customerInfo.address}<br /></>}
-                      {customerInfo.city}, {customerInfo.province}, {customerInfo.country}
+                      {customerInfo.address && (
+                        <>
+                          {customerInfo.address}
+                          <br />
+                        </>
+                      )}
+                      {customerInfo.city}, {customerInfo.province},{' '}
+                      {customerInfo.country}
                     </p>
                   </div>
                 </div>
@@ -421,11 +484,15 @@ const QuoteFormPage = () => {
               <h2 className="section-heading">Quote Details</h2>
               <div className="form-grid form-grid-2">
                 <div className="form-group">
-                  <label htmlFor="description">{t('quote.description') || 'Description'}</label>
+                  <label htmlFor="description">
+                    {t('quote.description') || 'Description'}
+                  </label>
                   <textarea
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     placeholder="Describe the work, materials, or services included in this quote..."
                     rows="4"
                     className="form-textarea"
@@ -436,7 +503,9 @@ const QuoteFormPage = () => {
                   <textarea
                     id="notes"
                     value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, notes: e.target.value })
+                    }
                     placeholder="Add any additional notes or special instructions..."
                     rows="4"
                     className="form-textarea"
@@ -445,11 +514,15 @@ const QuoteFormPage = () => {
               </div>
               <div className="form-grid form-grid-2">
                 <div className="form-group">
-                  <label htmlFor="paymentTerms">{t('quote.paymentTerms') || 'Payment Terms'}</label>
+                  <label htmlFor="paymentTerms">
+                    {t('quote.paymentTerms') || 'Payment Terms'}
+                  </label>
                   <select
                     id="paymentTerms"
                     value={formData.paymentTerms}
-                    onChange={(e) => setFormData({ ...formData, paymentTerms: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, paymentTerms: e.target.value })
+                    }
                     className="form-select"
                   >
                     <option value="Net 15">Net 15</option>
@@ -461,12 +534,16 @@ const QuoteFormPage = () => {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="deliveryDate">{t('quote.deliveryDate') || 'Delivery Date'}</label>
+                  <label htmlFor="deliveryDate">
+                    {t('quote.deliveryDate') || 'Delivery Date'}
+                  </label>
                   <input
                     id="deliveryDate"
                     type="date"
                     value={formData.deliveryDate}
-                    onChange={(e) => setFormData({ ...formData, deliveryDate: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, deliveryDate: e.target.value })
+                    }
                     className="form-input"
                   />
                 </div>
@@ -477,8 +554,12 @@ const QuoteFormPage = () => {
             <div className="item-details-section">
               <div className="item-details-header">
                 <div className="item-details-title">
-                  <h2 className="section-heading">{t('quote.itemDetails') || 'Item Details'}</h2>
-                  <span className="item-summary">{lineItems.length} items • {totalHours.toFixed(2)} hrs</span>
+                  <h2 className="section-heading">
+                    {t('quote.itemDetails') || 'Item Details'}
+                  </h2>
+                  <span className="item-summary">
+                    {lineItems.length} items • {totalHours.toFixed(2)} hrs
+                  </span>
                 </div>
                 <button
                   type="button"
@@ -506,23 +587,43 @@ const QuoteFormPage = () => {
                           <input
                             type="text"
                             value={item.itemDescription}
-                            onChange={(e) => handleLineItemChange(item.id, 'itemDescription', e.target.value)}
+                            onChange={e =>
+                              handleLineItemChange(
+                                item.id,
+                                'itemDescription',
+                                e.target.value
+                              )
+                            }
                             placeholder="e.g., Labor, Consulting, Installation"
                             className={`form-input ${item.errors.itemDescription ? 'error' : ''}`}
                           />
-                          {item.errors.itemDescription && <span className="error-text">{item.errors.itemDescription}</span>}
+                          {item.errors.itemDescription && (
+                            <span className="error-text">
+                              {item.errors.itemDescription}
+                            </span>
+                          )}
                         </td>
                         <td>
                           <input
                             type="number"
                             value={item.hours}
-                            onChange={(e) => handleLineItemChange(item.id, 'hours', e.target.value)}
+                            onChange={e =>
+                              handleLineItemChange(
+                                item.id,
+                                'hours',
+                                e.target.value
+                              )
+                            }
                             placeholder="0"
                             step="0.01"
                             min="0"
                             className={`form-input input-number ${item.errors.hours ? 'error' : ''}`}
                           />
-                          {item.errors.hours && <span className="error-text">{item.errors.hours}</span>}
+                          {item.errors.hours && (
+                            <span className="error-text">
+                              {item.errors.hours}
+                            </span>
+                          )}
                         </td>
                         <td>
                           <div className="input-with-symbol">
@@ -530,7 +631,13 @@ const QuoteFormPage = () => {
                             <input
                               type="number"
                               value={item.rate}
-                              onChange={(e) => handleLineItemChange(item.id, 'rate', e.target.value)}
+                              onChange={e =>
+                                handleLineItemChange(
+                                  item.id,
+                                  'rate',
+                                  e.target.value
+                                )
+                              }
                               placeholder="0.00"
                               step="0.01"
                               min="0"
@@ -538,10 +645,19 @@ const QuoteFormPage = () => {
                             />
                             <span className="currency-suffix">/hr</span>
                           </div>
-                          {item.errors.rate && <span className="error-text">{item.errors.rate}</span>}
+                          {item.errors.rate && (
+                            <span className="error-text">
+                              {item.errors.rate}
+                            </span>
+                          )}
                         </td>
                         <td className="amount-cell">
-                          <span className="amount">${calculateLineTotal(item.hours, item.rate).toFixed(2)}</span>
+                          <span className="amount">
+                            $
+                            {calculateLineTotal(item.hours, item.rate).toFixed(
+                              2
+                            )}
+                          </span>
                         </td>
                         <td>
                           <button
@@ -559,7 +675,6 @@ const QuoteFormPage = () => {
                   </tbody>
                 </table>
               </div>
-
             </div>
           </div>
 
@@ -600,7 +715,9 @@ const QuoteFormPage = () => {
             {/* Totals Section */}
             <div className="totals-section">
               <div className="totals-row">
-                <span className="totals-label">{t('quote.subtotal') || 'Subtotal'}</span>
+                <span className="totals-label">
+                  {t('quote.subtotal') || 'Subtotal'}
+                </span>
                 <span className="totals-value">${subtotal.toFixed(2)}</span>
               </div>
               <div className="totals-row discount-row">
@@ -614,7 +731,14 @@ const QuoteFormPage = () => {
                     min="0"
                     max="100"
                     value={discountPercentage}
-                    onChange={(e) => setDiscountPercentage(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
+                    onChange={e =>
+                      setDiscountPercentage(
+                        Math.max(
+                          0,
+                          Math.min(100, parseFloat(e.target.value) || 0)
+                        )
+                      )
+                    }
                     className="totals-input"
                   />
                 </div>
@@ -636,7 +760,9 @@ const QuoteFormPage = () => {
                 </div>
               </div>
               <div className="totals-row totals-total">
-                <span className="totals-label">{t('quote.total') || 'Total'}</span>
+                <span className="totals-label">
+                  {t('quote.total') || 'Total'}
+                </span>
                 <span className="totals-value">${total.toFixed(2)}</span>
               </div>
             </div>
@@ -646,7 +772,9 @@ const QuoteFormPage = () => {
         {/* Totals Section */}
         <div className="totals-section">
           <div className="totals-row">
-            <span className="totals-label">{t('quote.subtotal') || 'Subtotal'}</span>
+            <span className="totals-label">
+              {t('quote.subtotal') || 'Subtotal'}
+            </span>
             <span className="totals-value">${subtotal.toFixed(2)}</span>
           </div>
           <div className="totals-row discount-row">
@@ -660,7 +788,11 @@ const QuoteFormPage = () => {
                 min="0"
                 max="100"
                 value={discountPercentage}
-                onChange={(e) => setDiscountPercentage(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
+                onChange={e =>
+                  setDiscountPercentage(
+                    Math.max(0, Math.min(100, parseFloat(e.target.value) || 0))
+                  )
+                }
                 className="totals-input"
               />
             </div>
@@ -709,7 +841,9 @@ const QuoteFormPage = () => {
               disabled={isSubmitting}
               className="btn btn-primary"
             >
-              {isSubmitting ? t('common.submitting') || 'Submitting...' : t('quote.createQuote') || 'Create Quote'}
+              {isSubmitting
+                ? t('common.submitting') || 'Submitting...'
+                : t('quote.createQuote') || 'Create Quote'}
             </button>
           </div>
         </div>
@@ -717,8 +851,11 @@ const QuoteFormPage = () => {
 
       {/* Preview Modal */}
       {showPreview && (
-        <div className="preview-modal-overlay" onClick={() => setShowPreview(false)}>
-          <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="preview-modal-overlay"
+          onClick={() => setShowPreview(false)}
+        >
+          <div className="preview-modal" onClick={e => e.stopPropagation()}>
             <div className="preview-header">
               <h2>{t('quote.preview') || 'Preview'}</h2>
               <button
@@ -745,7 +882,9 @@ const QuoteFormPage = () => {
                   </div>
                   <div>
                     <p className="preview-label">Amount</p>
-                    <p className="preview-value preview-amount">${total.toFixed(2)}</p>
+                    <p className="preview-value preview-amount">
+                      ${total.toFixed(2)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -767,7 +906,10 @@ const QuoteFormPage = () => {
                         <td>{item.itemDescription}</td>
                         <td>{item.hours}</td>
                         <td>${parseFloat(item.rate).toFixed(2)}/hr</td>
-                        <td>${calculateLineTotal(item.hours, item.rate).toFixed(2)}</td>
+                        <td>
+                          $
+                          {calculateLineTotal(item.hours, item.rate).toFixed(2)}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

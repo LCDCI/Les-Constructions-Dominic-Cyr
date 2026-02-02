@@ -87,9 +87,9 @@ describe('quoteApi', () => {
       };
 
       // Act & Assert
-      await expect(quoteApi.createQuote(quoteData, 'token-123')).rejects.toThrow(
-        'Invalid quote data'
-      );
+      await expect(
+        quoteApi.createQuote(quoteData, 'token-123')
+      ).rejects.toThrow('Invalid quote data');
     });
 
     /**
@@ -97,9 +97,7 @@ describe('quoteApi', () => {
      */
     it('should throw error when network is unavailable', async () => {
       // Arrange
-      global.fetch = vi.fn(() =>
-        Promise.reject(new TypeError('fetch failed'))
-      );
+      global.fetch = vi.fn(() => Promise.reject(new TypeError('fetch failed')));
 
       const quoteData = {
         projectIdentifier: 'proj-001',
@@ -114,9 +112,9 @@ describe('quoteApi', () => {
       };
 
       // Act & Assert
-      await expect(quoteApi.createQuote(quoteData, 'token-123')).rejects.toThrow(
-        'Network error'
-      );
+      await expect(
+        quoteApi.createQuote(quoteData, 'token-123')
+      ).rejects.toThrow('Network error');
     });
   });
 

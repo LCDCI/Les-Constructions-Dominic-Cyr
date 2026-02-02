@@ -28,7 +28,7 @@ const QuoteDetailPage = () => {
       try {
         setLoading(true);
         const token = await getAccessTokenSilently();
-        
+
         const response = await axios.get(`/api/v1/quotes/${quoteNumber}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -64,9 +64,12 @@ const QuoteDetailPage = () => {
 
         if (quote.projectIdentifier) {
           try {
-            const projectResponse = await axios.get(`/api/v1/projects/${quote.projectIdentifier}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
+            const projectResponse = await axios.get(
+              `/api/v1/projects/${quote.projectIdentifier}`,
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
             if (projectResponse.data) {
               setProjectInfo(projectResponse.data);
             }
@@ -90,7 +93,7 @@ const QuoteDetailPage = () => {
     window.print();
   };
 
-  const getStatusLabel = (status) => {
+  const getStatusLabel = status => {
     switch (status) {
       case 'PENDING_OWNER_APPROVAL':
         return t('quote.statusPendingOwner') || 'Waiting for Owner Approval';
@@ -107,7 +110,7 @@ const QuoteDetailPage = () => {
     }
   };
 
-  const getStatusClass = (status) => {
+  const getStatusClass = status => {
     switch (status) {
       case 'PENDING_OWNER_APPROVAL':
         return 'status-pill status-pending-owner';
@@ -175,11 +178,14 @@ const QuoteDetailPage = () => {
   }
 
   // Calculate totals
-  const subtotal = (quote.lineItems || []).reduce((sum, item) => sum + item.lineTotal, 0);
+  const subtotal = (quote.lineItems || []).reduce(
+    (sum, item) => sum + item.lineTotal,
+    0
+  );
   const discount = 0; // TODO: Get from quote if available
   const gst = subtotal * 0.05;
   const qst = subtotal * 0.09975;
-  const total = quote.totalAmount || (subtotal + gst + qst);
+  const total = quote.totalAmount || subtotal + gst + qst;
 
   return (
     <div className="quote-detail-page">
@@ -204,7 +210,9 @@ const QuoteDetailPage = () => {
           </div>
           <div className="quote-meta">
             <div className="meta-item">
-              <span className="meta-label">{t('quote.category') || 'Category'}</span>
+              <span className="meta-label">
+                {t('quote.category') || 'Category'}
+              </span>
               <span className="meta-value">{quote.category || 'N/A'}</span>
             </div>
             <div className="meta-item">
@@ -213,12 +221,14 @@ const QuoteDetailPage = () => {
                 {new Date(quote.createdAt).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric'
+                  day: 'numeric',
                 })}
               </span>
             </div>
             <div className="meta-item">
-              <span className="meta-label">{t('quote.status') || 'Status'}</span>
+              <span className="meta-label">
+                {t('quote.status') || 'Status'}
+              </span>
               <span className={getStatusClass(quote.status)}>
                 {getStatusLabel(quote.status)}
               </span>
@@ -239,7 +249,9 @@ const QuoteDetailPage = () => {
             <p>{quote.customerPhone || '—'}</p>
           </div>
           <div className="party-card">
-            <span className="party-label">{t('quote.project') || 'Project'}</span>
+            <span className="party-label">
+              {t('quote.project') || 'Project'}
+            </span>
             <h3>{projectInfo?.projectName || quote.projectIdentifier}</h3>
             <p>{quote.lotAddress || '—'}</p>
           </div>
@@ -253,7 +265,9 @@ const QuoteDetailPage = () => {
               <tr>
                 <th>{t('quote.description') || 'Description'}</th>
                 <th className="text-center">{t('quote.hours') || 'Hours'}</th>
-                <th className="text-right">{t('quote.rate') || 'Rate ($/hr)'}</th>
+                <th className="text-right">
+                  {t('quote.rate') || 'Rate ($/hr)'}
+                </th>
                 <th className="text-right">{t('quote.amount') || 'Amount'}</th>
               </tr>
             </thead>
@@ -273,12 +287,16 @@ const QuoteDetailPage = () => {
         {/* Totals Section */}
         <div className="quote-totals-section">
           <div className="totals-row">
-            <span className="totals-label">{t('quote.subtotal') || 'Subtotal'}</span>
+            <span className="totals-label">
+              {t('quote.subtotal') || 'Subtotal'}
+            </span>
             <span className="totals-value">${subtotal.toFixed(2)}</span>
           </div>
           {discount > 0 && (
             <div className="totals-row">
-              <span className="totals-label">{t('quote.discount') || 'Discount'}</span>
+              <span className="totals-label">
+                {t('quote.discount') || 'Discount'}
+              </span>
               <span className="totals-value">-${discount.toFixed(2)}</span>
             </div>
           )}
@@ -287,7 +305,9 @@ const QuoteDetailPage = () => {
             <span className="totals-value">+${gst.toFixed(2)}</span>
           </div>
           <div className="totals-row">
-            <span className="totals-label">{t('quote.qst') || 'QST'} (9.975%)</span>
+            <span className="totals-label">
+              {t('quote.qst') || 'QST'} (9.975%)
+            </span>
             <span className="totals-value">+${qst.toFixed(2)}</span>
           </div>
           <div className="totals-row totals-total">

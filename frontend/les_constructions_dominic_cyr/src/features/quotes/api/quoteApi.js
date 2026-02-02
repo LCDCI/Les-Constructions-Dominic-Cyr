@@ -7,7 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 export const quoteApi = {
   /**
    * Create a new quote under a project.
-   * 
+   *
    * @param {Object} quoteData - Quote data with line items
    * @param {string} quoteData.projectIdentifier - Project identifier
    * @param {Array} quoteData.lineItems - Array of line items
@@ -31,7 +31,7 @@ export const quoteApi = {
       if (!response.ok) {
         const errorText = await response.text();
         let errorMessage = `Failed to create quote (${response.status})`;
-        
+
         if (errorText) {
           try {
             const errorData = JSON.parse(errorText);
@@ -57,7 +57,7 @@ export const quoteApi = {
 
   /**
    * Get all quotes for a specific project.
-   * 
+   *
    * @param {string} projectIdentifier - Project identifier
    * @param {string} token - Authorization token
    * @returns {Promise<Array>} List of quotes
@@ -90,7 +90,7 @@ export const quoteApi = {
 
   /**
    * Get a specific quote by its quote number.
-   * 
+   *
    * @param {string} quoteNumber - Quote number (e.g., QT-0000001)
    * @param {string} token - Authorization token
    * @returns {Promise<Object>} Quote details
@@ -103,10 +103,9 @@ export const quoteApi = {
         headers.Authorization = `Bearer ${token}`;
       }
 
-      const response = await fetch(
-        `${API_BASE_URL}/quotes/${quoteNumber}`,
-        { headers }
-      );
+      const response = await fetch(`${API_BASE_URL}/quotes/${quoteNumber}`, {
+        headers,
+      });
 
       if (!response.ok) {
         if (response.status === 404) {
@@ -126,19 +125,21 @@ export const quoteApi = {
 
   /**
    * Get all quotes created by the current contractor.
-   * 
+   *
    * @param {string} token - Authorization token
    * @returns {Promise<Array>} List of contractor's quotes
    * @throws {Error} If fetch fails
    */
-  getMyQuotes: async (token) => {
+  getMyQuotes: async token => {
     try {
       const headers = {};
       if (token) {
         headers.Authorization = `Bearer ${token}`;
       }
 
-      const response = await fetch(`${API_BASE_URL}/quotes/my-quotes`, { headers });
+      const response = await fetch(`${API_BASE_URL}/quotes/my-quotes`, {
+        headers,
+      });
 
       if (!response.ok) {
         throw new Error(`Failed to fetch quotes (${response.status})`);
