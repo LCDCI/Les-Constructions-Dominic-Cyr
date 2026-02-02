@@ -1,0 +1,23 @@
+{
+  "title": "Salesperson Dashboard",
+  "thisWeek": "This week:",
+  "seeMore": "See more",
+  "cards": {
+    "projects": {
+      "title": "My Projects",
+      "button": "View Projects"
+    },
+    "inbox": {
+      "title": "Inbox",
+      "button": "View Inbox"
+    },
+    "documents": {
+      "title": "Documents",
+      "button": "View Documents"
+    },
+    "uploads": {
+      "title": "Uploads",
+      "button": "Begin Upload"
+    }
+  }
+}

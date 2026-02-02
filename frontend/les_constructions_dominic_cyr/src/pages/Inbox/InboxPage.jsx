@@ -4,24 +4,32 @@ import NotificationItem from '../../features/notifications/components/Notificati
 import InboxFilterSelect from './InboxFilterSelect';
 import '../../styles/Inbox/InboxPage.css';
 import { GoInbox, GoSearch, GoFilter } from 'react-icons/go';
-
-const FILTER_OPTIONS = [
-  { value: 'all', label: 'All Notifications' },
-  { value: 'unread', label: 'Unread Only' },
-  { value: 'read', label: 'Read Only' },
-];
-
-const SORT_OPTIONS = [
-  { value: 'newest', label: 'Newest First' },
-  { value: 'oldest', label: 'Oldest First' },
-];
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const InboxPage = () => {
+  const { t } = usePageTranslations('inbox');
   const { notifications, loading, error, markAllAsRead, markAsRead } =
     useNotifications();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'unread', 'read'
   const [sortBy, setSortBy] = useState('newest'); // 'newest', 'oldest'
+
+  const FILTER_OPTIONS = useMemo(
+    () => [
+      { value: 'all', label: t('filters.all', 'All Notifications') },
+      { value: 'unread', label: t('filters.unread', 'Unread Only') },
+      { value: 'read', label: t('filters.read', 'Read Only') },
+    ],
+    [t]
+  );
+
+  const SORT_OPTIONS = useMemo(
+    () => [
+      { value: 'newest', label: t('sort.newest', 'Newest First') },
+      { value: 'oldest', label: t('sort.oldest', 'Oldest First') },
+    ],
+    [t]
+  );
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -69,7 +77,9 @@ const InboxPage = () => {
     return (
       <div className="inbox-page">
         <div className="inbox-container">
-          <div className="inbox-loading">Loading notifications...</div>
+          <div className="inbox-loading">
+            {t('loading', 'Loading notifications...')}
+          </div>
         </div>
       </div>
     );
@@ -80,7 +90,9 @@ const InboxPage = () => {
       <div className="inbox-page">
         <div className="inbox-container">
           <div className="inbox-error">
-            Error loading notifications: {error}
+            {t('error', 'Error loading notifications: {{error}}', {
+              error,
+            })}
           </div>
         </div>
       </div>
@@ -93,9 +105,11 @@ const InboxPage = () => {
         <div className="inbox-header">
           <div className="inbox-title-section">
             <GoInbox className="inbox-icon" />
-            <h1 className="inbox-title">Inbox</h1>
+            <h1 className="inbox-title">{t('title', 'Inbox')}</h1>
             {unreadCount > 0 && (
-              <span className="inbox-unread-badge">{unreadCount} unread</span>
+              <span className="inbox-unread-badge">
+                {unreadCount} {t('unread', 'unread')}
+              </span>
             )}
           </div>
           <div className="inbox-header-actions">
@@ -104,7 +118,7 @@ const InboxPage = () => {
                 className="btn-mark-all-read"
                 onClick={handleMarkAllAsRead}
               >
-                Mark all as read
+                {t('markAllAsRead', 'Mark all as read')}
               </button>
             )}
           </div>
@@ -115,7 +129,7 @@ const InboxPage = () => {
             <GoSearch className="search-icon" />
             <input
               type="text"
-              placeholder="Search notifications..."
+              placeholder={t('searchPlaceholder', 'Search notifications...')}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="search-input"
@@ -148,8 +162,11 @@ const InboxPage = () => {
               <GoInbox className="empty-icon" />
               <p>
                 {searchQuery || filterType !== 'all'
-                  ? 'No notifications match your filters'
-                  : 'No notifications yet'}
+                  ? t(
+                      'empty.withFilters',
+                      'No notifications match your filters'
+                    )
+                  : t('empty.noFilters', 'No notifications yet')}
               </p>
             </div>
           ) : (

@@ -1,35 +1,34 @@
 {
-  "hero": {
-    "title": "Project Overview"
+  "loading": "Loading project details...",
+  "projectNotFound": "Project not found",
+  "backToProjects": "Back to Residential Projects",
+  "addressLabel": "Address",
+  "features": {
+    "livingEnvironment": "Living Environment",
+    "livingEnvironmentTitle": "Living Environment",
+    "lots": "Lots",
+    "lotsTitle": "Lots"
   },
-  "details": {
-    "projectInfo": "Project Information",
+  "map": {
+    "addressNotSpecified": "Map address not specified.",
+    "attribution": "© <a href=\"http://osm.org/copyright\">OpenStreetMap</a> contributors",
+    "defaultLocation": "Default location near {{address}}"
+  },
+  "lot": {
+    "imageAlt": "Lot {{lotLocation}}"
+  },
+  "sections": {
+    "overview": "Overview",
     "location": "Location",
-    "status": "Status",
-    "budget": "Budget",
-    "timeline": "Timeline",
-    "description": "Description"
+    "lots": "Lots"
   },
-  "gallery": {
-    "title": "Project Gallery",
-    "previousAriaLabel": "Previous image",
-    "nextAriaLabel": "Next image",
-    "imageAlt": "Project image",
-    "noImages": "No images available"
+  "modal": {
+    "locationTitle": "Location",
+    "closeAriaLabel": "Close modal",
+    "close": "Close"
   },
-  "specs": {
-    "title": "Project Specifications",
-    "squareFootage": "Square Footage",
-    "rooms": "Rooms",
-    "bathrooms": "Bathrooms",
-    "finishDate": "Finish Date",
-    "contractor": "Contractor",
-    "architect": "Architect"
-  },
-  "contact": {
-    "title": "Interested in this project?",
-    "subtitle": "Get in touch with our team to learn more or discuss your own project.",
-    "button": "Contact Us"
+  "errors": {
+    "loadFailed": "Failed to load project details. Please try again later."
   },
   "nav": {
     "home": "Home",
@@ -38,7 +37,9 @@
     "renovations": "Renovations",
     "projectManagement": "Project Management",
     "realizations": "Realizations",
-    "contact": "Contact"
+    "contact": "Contact",
+    "accessPortal": "Access Portal",
+    "logout": "Logout"
   },
   "footer": {
     "company": "Dominic Cyr Construction Inc.",

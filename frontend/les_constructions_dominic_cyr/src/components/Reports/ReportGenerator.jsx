@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { reportService } from '../../features/reports/reportService';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Reports/ReportGenerator.css';
 
 // eslint-disable-next-line react/prop-types
 const ReportGenerator = ({ onReportGenerated }) => {
+  const { t } = usePageTranslations('reportsPage');
   const [formData, setFormData] = useState({
     fileFormat: 'PDF',
     startDate: '',
@@ -22,7 +24,7 @@ const ReportGenerator = ({ onReportGenerated }) => {
     e.preventDefault();
 
     if (!formData.startDate || !formData.endDate) {
-      setError('Please select both a start and end date.');
+      setError(t('form.errors.datesRequired', 'Please select both a start and end date.'));
       return;
     }
 
@@ -45,7 +47,7 @@ const ReportGenerator = ({ onReportGenerated }) => {
 
       await reportService.generateReport(payload);
 
-      setSuccess('Master Audit generated successfully!');
+      setSuccess(t('form.success', 'Master Audit generated successfully!'));
       setFormData(prev => ({ ...prev, startDate: '', endDate: '' }));
 
       if (onReportGenerated) {
@@ -54,7 +56,7 @@ const ReportGenerator = ({ onReportGenerated }) => {
     } catch (err) {
       const serverMessage =
         err.response?.data?.message ||
-        'Failed to generate report. Check Digital Ocean connection.';
+        t('form.errors.generateFailed', 'Failed to generate report. Check Digital Ocean connection.');
       setError(serverMessage);
     } finally {
       setLoading(false);
@@ -64,7 +66,7 @@ const ReportGenerator = ({ onReportGenerated }) => {
   return (
     <div className="report-generator">
       <div className="report-generator-header">
-        <h2>Generate Analytics Report</h2>
+        <h2>{t('form.title', 'Generate Analytics Report')}</h2>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
@@ -73,11 +75,11 @@ const ReportGenerator = ({ onReportGenerated }) => {
       <form onSubmit={handleSubmit} className="report-form">
         <span></span>
         <div className="form-group">
-          <input type="text" value="Analytics Report" disabled />
+          <input type="text" value={t('form.reportType', 'Analytics Report')} disabled />
         </div>
 
         <div className="form-group">
-          <label htmlFor="fileFormat">File Format</label>
+          <label htmlFor="fileFormat">{t('form.fileFormat', 'File Format')}</label>
           <select
             id="fileFormat"
             name="fileFormat"
@@ -92,7 +94,7 @@ const ReportGenerator = ({ onReportGenerated }) => {
 
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="startDate">Start Date</label>
+            <label htmlFor="startDate">{t('form.startDate', 'Start Date')}</label>
             <input
               type="date"
               id="startDate"
@@ -103,7 +105,7 @@ const ReportGenerator = ({ onReportGenerated }) => {
             />
           </div>
           <div className="form-group">
-            <label htmlFor="endDate">End Date</label>
+            <label htmlFor="endDate">{t('form.endDate', 'End Date')}</label>
             <input
               type="date"
               id="endDate"
@@ -116,7 +118,7 @@ const ReportGenerator = ({ onReportGenerated }) => {
         </div>
 
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Processing Large Data...' : 'Generate Report'}
+          {loading ? t('form.processingButton', 'Processing Large Data...') : t('form.generateButton', 'Generate Report')}
         </button>
       </form>
     </div>
