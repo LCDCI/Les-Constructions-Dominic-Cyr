@@ -1,9 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service Unavailable - Les Constructions Dominic Cyr</title>
+    <script>
+        (function () {
+            try {
+                var languages = navigator.languages && navigator.languages.length
+                    ? navigator.languages
+                    : [navigator.language || navigator.userLanguage || 'en'];
+                var primary = (languages[0] || 'en').toLowerCase();
+                var isFrench = primary === 'fr' || primary.indexOf('fr-') === 0;
+                document.documentElement.lang = isFrench ? 'fr' : 'en';
+            } catch (e) {
+                document.documentElement.lang = 'en';
+            }
+        })();
+    </script>
     <style>
         * {
             margin: 0;
