@@ -96,6 +96,14 @@ public class TaskController {
     }
 
     // Contractor endpoints - read-only access to assigned tasks
+    @GetMapping("/contractors/tasks/all")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<List<TaskDetailResponseDTO>> getAllTasksForContractorView() {
+        log.info("Fetching all tasks for contractor view");
+        List<TaskDetailResponseDTO> tasks = taskService.getAllTasks();
+        return ResponseEntity.ok(tasks);
+    }
+
     @GetMapping("/contractors/tasks")
     public ResponseEntity<?> getContractorTasks(@RequestParam String contractorId) {
         try {
