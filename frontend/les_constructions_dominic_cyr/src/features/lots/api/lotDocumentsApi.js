@@ -3,7 +3,9 @@ import axios from 'axios';
 
 const BASE_API_URL =
   import.meta.env.VITE_BACKEND_URL ||
-  (typeof window !== 'undefined' ? `${window.location.origin}/api/v1` : '/api/v1');
+  (typeof window !== 'undefined'
+    ? `${window.location.origin}/api/v1`
+    : '/api/v1');
 
 /**
  * Get all documents for a lot with optional filtering
@@ -15,7 +17,7 @@ const BASE_API_URL =
 export async function fetchLotDocuments(lotId, options = {}, token = null) {
   const { search, type = 'all' } = options;
   let url = `${BASE_API_URL}/lots/${lotId}/documents?type=${type}`;
-  
+
   if (search) {
     url += `&search=${encodeURIComponent(search)}`;
   }
@@ -34,14 +36,14 @@ export async function fetchLotDocuments(lotId, options = {}, token = null) {
  */
 export async function uploadLotDocuments(lotId, files, token) {
   const formData = new FormData();
-  
+
   // Append all files
   if (files instanceof FileList) {
     for (let i = 0; i < files.length; i++) {
       formData.append('files', files[i]);
     }
   } else if (Array.isArray(files)) {
-    files.forEach((file) => {
+    files.forEach(file => {
       formData.append('files', file);
     });
   } else {
@@ -71,7 +73,7 @@ export async function uploadLotDocuments(lotId, files, token) {
  */
 export async function downloadLotDocument(lotId, documentId, fileName, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  
+
   const response = await axios.get(
     `${BASE_API_URL}/lots/${lotId}/documents/${documentId}/download`,
     {
@@ -101,7 +103,7 @@ export async function downloadLotDocument(lotId, documentId, fileName, token) {
  */
 export async function deleteLotDocument(lotId, documentId, token) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  
+
   const response = await axios.delete(
     `${BASE_API_URL}/lots/${lotId}/documents/${documentId}`,
     { headers }

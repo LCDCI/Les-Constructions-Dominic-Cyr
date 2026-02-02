@@ -9,7 +9,15 @@ import {
   deleteLotDocument,
 } from '../api/lotDocumentsApi';
 import { fetchLotById } from '../api/lots';
-import { FaDownload, FaTrash, FaUpload, FaSearch, FaImage, FaFile, FaArrowLeft } from 'react-icons/fa';
+import {
+  FaDownload,
+  FaTrash,
+  FaUpload,
+  FaSearch,
+  FaImage,
+  FaFile,
+  FaArrowLeft,
+} from 'react-icons/fa';
 import './LotDocumentsPage.css';
 
 const LotDocumentsPage = () => {
@@ -31,7 +39,7 @@ const LotDocumentsPage = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [imageDataUrls, setImageDataUrls] = useState({});
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'image', 'file'
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(null); // { documentId, fileName }
@@ -58,14 +66,14 @@ const LotDocumentsPage = () => {
     const loadImages = async () => {
       const token = await getApiToken();
       const urls = {};
-      
+
       for (const doc of filteredDocuments) {
         if (doc.isImage && !imageDataUrls[doc.id]) {
           try {
             const response = await fetch(doc.downloadUrl, {
               headers: {
-                'Authorization': `Bearer ${token}`
-              }
+                Authorization: `Bearer ${token}`,
+              },
             });
             if (response.ok) {
               const blob = await response.blob();
@@ -76,9 +84,9 @@ const LotDocumentsPage = () => {
           }
         }
       }
-      
+
       if (Object.keys(urls).length > 0) {
-        setImageDataUrls((prev) => ({ ...prev, ...urls }));
+        setImageDataUrls(prev => ({ ...prev, ...urls }));
       }
     };
 
@@ -92,7 +100,7 @@ const LotDocumentsPage = () => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
+
     searchTimeoutRef.current = setTimeout(() => {
       applyFilters();
     }, 300);
@@ -126,8 +134,12 @@ const LotDocumentsPage = () => {
 
   const loadDocuments = async (token = null) => {
     try {
-      const authToken = token || await getApiToken();
-      const docs = await fetchLotDocuments(lotId, { type: filterType }, authToken);
+      const authToken = token || (await getApiToken());
+      const docs = await fetchLotDocuments(
+        lotId,
+        { type: filterType },
+        authToken
+      );
       setDocuments(docs);
     } catch (err) {
       console.error('Failed to load documents:', err);
@@ -140,15 +152,15 @@ const LotDocumentsPage = () => {
 
     // Filter by type
     if (filterType === 'image') {
-      filtered = filtered.filter((doc) => doc.isImage);
+      filtered = filtered.filter(doc => doc.isImage);
     } else if (filterType === 'file') {
-      filtered = filtered.filter((doc) => !doc.isImage);
+      filtered = filtered.filter(doc => !doc.isImage);
     }
 
     // Filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((doc) =>
+      filtered = filtered.filter(doc =>
         doc.fileName?.toLowerCase().includes(query)
       );
     }
@@ -160,7 +172,7 @@ const LotDocumentsPage = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (event) => {
+  const handleFileChange = async event => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -174,19 +186,32 @@ const LotDocumentsPage = () => {
       'application/json',
       'application/octet-stream',
     ];
-    const allowedImageTypes = ['image/png', 'image/jpeg', 'image/webp', 'video/mp4'];
-    const allowedTypes = new Set([...allowedDocumentTypes, ...allowedImageTypes]);
-    const allowedTypesLabel = 'PDF, DOCX, XLSX, TXT, JSON, PNG, JPG, JPEG, WEBP, MP4';
+    const allowedImageTypes = [
+      'image/png',
+      'image/jpeg',
+      'image/webp',
+      'video/mp4',
+    ];
+    const allowedTypes = new Set([
+      ...allowedDocumentTypes,
+      ...allowedImageTypes,
+    ]);
+    const allowedTypesLabel =
+      'PDF, DOCX, XLSX, TXT, JSON, PNG, JPG, JPEG, WEBP, MP4';
 
     const filesArray = files instanceof FileList ? Array.from(files) : [files];
-    const emptyFile = filesArray.find((file) => !file || file.size === 0);
+    const emptyFile = filesArray.find(file => !file || file.size === 0);
     if (emptyFile) {
-      setUploadError('The selected file is empty. Please choose a file with content.');
+      setUploadError(
+        'The selected file is empty. Please choose a file with content.'
+      );
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
 
-    const invalidFile = filesArray.find((file) => file && !allowedTypes.has(file.type));
+    const invalidFile = filesArray.find(
+      file => file && !allowedTypes.has(file.type)
+    );
     if (invalidFile) {
       setUploadError(
         `This file type is invalid. Supported types: ${allowedTypesLabel}.`
@@ -236,10 +261,10 @@ const LotDocumentsPage = () => {
     try {
       const token = await getApiToken();
       await deleteLotDocument(lotId, deleteConfirmModal.documentId, token);
-      
+
       // Reload documents
       await loadDocuments(token);
-      
+
       setDeleteConfirmModal(null);
     } catch (err) {
       alert('Failed to delete file: ' + (err.message || 'Unknown error'));
@@ -251,9 +276,10 @@ const LotDocumentsPage = () => {
     setDeleteConfirmModal(null);
   };
 
-  const canDeleteDocument = (document) => {
+  const canDeleteDocument = document => {
     if (userRole === 'OWNER') return true;
-    if (userProfile && document.uploaderUserId === userProfile.userIdentifier) return true;
+    if (userProfile && document.uploaderUserId === userProfile.userIdentifier)
+      return true;
     return false;
   };
 
@@ -270,7 +296,10 @@ const LotDocumentsPage = () => {
       <div className="lot-documents-page" data-testid="lot-documents-page">
         <div className="error-state" data-testid="error-state">
           <p>{error}</p>
-          <button onClick={() => navigate(backLinkTarget)} className="btn btn-secondary">
+          <button
+            onClick={() => navigate(backLinkTarget)}
+            className="btn btn-secondary"
+          >
             Back to Lot Documents
           </button>
         </div>
@@ -286,15 +315,15 @@ const LotDocumentsPage = () => {
           <FaArrowLeft /> Back to Lot Documents
         </Link>
         <div className="page-header-title">
-          <h1>
-            Lot {lot?.lotNumber || lotId} Documents
-          </h1>
+          <h1>Lot {lot?.lotNumber || lotId} Documents</h1>
           <div className="page-header-subtitle">
             <span className="lot-address">
               {lot?.civicAddress || 'Address not available'}
             </span>
             {lot?.lotStatus && (
-              <span className={`lot-status lot-status-${String(lot.lotStatus).toLowerCase()}`}>
+              <span
+                className={`lot-status lot-status-${String(lot.lotStatus).toLowerCase()}`}
+              >
                 {lot.lotStatus}
               </span>
             )}
@@ -310,7 +339,7 @@ const LotDocumentsPage = () => {
             type="text"
             placeholder="Search documents..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             data-testid="lot-documents-search"
             className="search-input"
           />
@@ -377,12 +406,14 @@ const LotDocumentsPage = () => {
           </div>
         ) : (
           <div
-            className={filterType === 'image' || filterType === 'all' 
-              ? 'documents-grid' 
-              : 'documents-list'}
+            className={
+              filterType === 'image' || filterType === 'all'
+                ? 'documents-grid'
+                : 'documents-list'
+            }
             data-testid="lot-documents-list"
           >
-            {filteredDocuments.map((doc) => (
+            {filteredDocuments.map(doc =>
               doc.isImage ? (
                 // Photo card
                 <div
@@ -391,15 +422,16 @@ const LotDocumentsPage = () => {
                   data-testid={`lot-document-card-${doc.id}`}
                 >
                   <div className="photo-preview">
-                    <img 
-                      src={imageDataUrls[doc.id] || doc.downloadUrl} 
+                    <img
+                      src={imageDataUrls[doc.id] || doc.downloadUrl}
                       alt={doc.fileName}
                     />
                   </div>
                   <div className="document-info">
                     <p className="document-name">{doc.fileName}</p>
                     <p className="document-meta">
-                      {doc.uploaderName} • {new Date(doc.uploadedAt).toLocaleDateString()}
+                      {doc.uploaderName} •{' '}
+                      {new Date(doc.uploadedAt).toLocaleDateString()}
                     </p>
                   </div>
                   <div className="document-actions">
@@ -436,7 +468,9 @@ const LotDocumentsPage = () => {
                   <div className="document-details">
                     <p className="document-name">{doc.fileName}</p>
                     <p className="document-meta">
-                      {doc.uploaderName} • {new Date(doc.uploadedAt).toLocaleDateString()} • {(doc.sizeBytes / 1024).toFixed(1)} KB
+                      {doc.uploaderName} •{' '}
+                      {new Date(doc.uploadedAt).toLocaleDateString()} •{' '}
+                      {(doc.sizeBytes / 1024).toFixed(1)} KB
                     </p>
                   </div>
                   <div className="document-actions">
@@ -461,7 +495,7 @@ const LotDocumentsPage = () => {
                   </div>
                 </div>
               )
-            ))}
+            )}
           </div>
         )}
       </div>
@@ -471,7 +505,9 @@ const LotDocumentsPage = () => {
         <div className="modal-overlay" data-testid="confirm-delete-modal">
           <div className="modal-content">
             <h3>Confirm Deletion</h3>
-            <p>Are you sure you want to delete "{deleteConfirmModal.fileName}"?</p>
+            <p>
+              Are you sure you want to delete "{deleteConfirmModal.fileName}"?
+            </p>
             <p className="modal-warning">This action cannot be undone.</p>
             <div className="modal-actions">
               <button

@@ -178,7 +178,10 @@ export async function fetchLotsByUserId(userId, token) {
   const response = await fetch(url, { headers });
 
   if (!response.ok) {
-    const message = await parseErrorMessage(response, 'Failed to fetch user lots');
+    const message = await parseErrorMessage(
+      response,
+      'Failed to fetch user lots'
+    );
     throw new Error(message);
   }
   return response.json();

@@ -59,7 +59,9 @@ function ContractorLotsDocuments() {
   const { profile, loading } = useBackendUser();
 
   if (loading || !profile) {
-    return <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>;
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+    );
   }
 
   return <LotsListDashboard userId={profile.userId} />;
@@ -356,9 +358,7 @@ export default function App() {
               element={
                 <ProtectedRoute
                   allowedRoles={['CONTRACTOR', 'OWNER']}
-                  element={
-                    <ContractorLotsDocuments />
-                  }
+                  element={<ContractorLotsDocuments />}
                 />
               }
             />
@@ -368,9 +368,7 @@ export default function App() {
               element={
                 <ProtectedRoute
                   allowedRoles={['OWNER']}
-                  element={
-                    <ContractorLotsDocuments />
-                  }
+                  element={<ContractorLotsDocuments />}
                 />
               }
             />
