@@ -2,18 +2,18 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAcces
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
 import lombok.Getter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
 @Embeddable
+@Access(AccessType.FIELD)
 @Getter
 public class LotIdentifier {
 
-    @Column(name = "lot_identifier", unique = true)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @Column(name = "lot_identifier", unique = true, columnDefinition = "uuid")
     private UUID lotId;
 
     public LotIdentifier() {
