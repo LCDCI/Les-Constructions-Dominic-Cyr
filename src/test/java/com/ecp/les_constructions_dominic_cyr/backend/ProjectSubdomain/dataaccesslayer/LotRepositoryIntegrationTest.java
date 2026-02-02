@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,9 +57,9 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenLotsExist_thenReturnAll")
     public void whenLotsExist_thenReturnAll() {
-        Lot a1 = new Lot(new LotIdentifier("id-1"), "Lot-A1", "L1", 100f, "1000", "92.9", LotStatus.AVAILABLE);
+        Lot a1 = new Lot(new LotIdentifier(UUID.randomUUID().toString()), "Lot-A1", "L1", 100f, "1000", "92.9", LotStatus.AVAILABLE);
         a1.setProject(testProject);
-        Lot a2 = new Lot(new LotIdentifier("id-2"), "Lot-A2", "L2", 200f, "2000", "185.8", LotStatus.SOLD);
+        Lot a2 = new Lot(new LotIdentifier(UUID.randomUUID().toString()), "Lot-A2", "L2", 200f, "2000", "185.8", LotStatus.SOLD);
         a2.setProject(testProject);
 
         lotRepository.save(a1);
@@ -75,27 +76,29 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenFindByLotId_thenReturnEntity")
     public void whenFindByLotId_thenReturnEntity() {
-        Lot toSave = new Lot(new LotIdentifier("test-lot-1"), "Lot-TEST-1", "LocX", 123f, "1230", "114.3", LotStatus.AVAILABLE);
+        UUID lotId = UUID.randomUUID();
+        Lot toSave = new Lot(new LotIdentifier(lotId.toString()), "Lot-TEST-1", "LocX", 123f, "1230", "114.3", LotStatus.AVAILABLE);
         toSave.setProject(testProject);
         lotRepository.save(toSave);
 
-        Lot found = lotRepository.findByLotIdentifier_LotId("test-lot-1");
+        Lot found = lotRepository.findByLotIdentifier_LotId(lotId);
 
         assertNotNull(found);
-        assertEquals("test-lot-1", found.getLotIdentifier().getLotId());
+        assertEquals(lotId, found.getLotIdentifier().getLotId());
     }
 
     @Test
     @DisplayName("whenFindByUnknownLotId_thenReturnNull")
     public void whenFindByUnknownLotId_thenReturnNull() {
-        Lot found = lotRepository.findByLotIdentifier_LotId("no-such-lot");
+        Lot found = lotRepository.findByLotIdentifier_LotId(UUID.randomUUID());
         assertNull(found);
     }
 
     @Test
     @DisplayName("whenValidEntityIsSaved_thenPersist")
     public void whenValidEntityIsSaved_thenPersist() {
-        Lot entity = new Lot(new LotIdentifier("save-1"), "Lot-SAVE-1", "Saved", 321f, "3210", "298.3", LotStatus.AVAILABLE);
+        UUID lotId = UUID.randomUUID();
+        Lot entity = new Lot(new LotIdentifier(lotId.toString()), "Lot-SAVE-1", "Saved", 321f, "3210", "298.3", LotStatus.AVAILABLE);
         entity.setProject(testProject);
 
         Lot saved = lotRepository.save(entity);
@@ -103,7 +106,7 @@ public class LotRepositoryIntegrationTest {
         assertNotNull(saved);
         assertNotNull(saved.getId());
         assertEquals("Saved", saved.getCivicAddress());
-        assertEquals("save-1", saved.getLotIdentifier().getLotId());
+        assertEquals(lotId, saved.getLotIdentifier().getLotId());
     }
 
     @Test
@@ -127,7 +130,7 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenInsertNonExistent_thenInsertNewRecord")
     public void whenInsertNonExistent_thenInsertNewRecord() {
-        Lot ghost = new Lot(new LotIdentifier("ghost-1"), "Lot-GHOST-1", "Ghost", 5f, "50", "4.6", LotStatus.AVAILABLE);
+        Lot ghost = new Lot(new LotIdentifier(UUID.randomUUID().toString()), "Lot-GHOST-1", "Ghost", 5f, "50", "4.6", LotStatus.AVAILABLE);
         ghost.setProject(testProject);
 
         long before = lotRepository.count();
@@ -141,22 +144,23 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenDeleteEntity_thenReturnNullOnFind")
     public void whenDeleteEntity_thenReturnNullOnFind() {
-        Lot entity = new Lot(new LotIdentifier("del-1"), "Lot-DEL-1", "ToDelete", 11f, "110", "10.2", LotStatus.AVAILABLE);
+        UUID lotId = UUID.randomUUID();
+        Lot entity = new Lot(new LotIdentifier(lotId.toString()), "Lot-DEL-1", "ToDelete", 11f, "110", "10.2", LotStatus.AVAILABLE);
         entity.setProject(testProject);
 
         lotRepository.save(entity);
 
-        Lot toDelete = lotRepository.findByLotIdentifier_LotId("del-1");
+        Lot toDelete = lotRepository.findByLotIdentifier_LotId(lotId);
         lotRepository.delete(toDelete);
 
-        Lot found = lotRepository.findByLotIdentifier_LotId("del-1");
+        Lot found = lotRepository.findByLotIdentifier_LotId(lotId);
         assertNull(found);
     }
 
     @Test
     @DisplayName("whenDeleteNonExistent_thenNoExceptionThrown")
     public void whenDeleteNonExistent_thenNoExceptionThrown() {
-        Lot ghost = new Lot(new LotIdentifier("ghost-del"), "Lot-GHOST-DEL", "G", 1f, "10", "0.9", LotStatus.AVAILABLE);
+        Lot ghost = new Lot(new LotIdentifier(UUID.randomUUID().toString()), "Lot-GHOST-DEL", "G", 1f, "10", "0.9", LotStatus.AVAILABLE);
         ghost.setProject(testProject);
 
         assertDoesNotThrow(() -> lotRepository.delete(ghost));
@@ -165,7 +169,7 @@ public class LotRepositoryIntegrationTest {
     @Test
     @DisplayName("whenExistsByLocation_thenReturnTrueFalse")
     public void whenExistsByLocation_thenReturnTrueFalse() {
-        Lot e = new Lot(new LotIdentifier("ex-1"), "Lot-EX-1", "UniqueLoc", 99f, "990", "92.0", LotStatus.AVAILABLE);
+        Lot e = new Lot(new LotIdentifier(UUID.randomUUID().toString()), "Lot-EX-1", "UniqueLoc", 99f, "990", "92.0", LotStatus.AVAILABLE);
         e.setProject(testProject);
         lotRepository.save(e);
 

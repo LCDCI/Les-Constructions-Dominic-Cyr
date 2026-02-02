@@ -1,0 +1,33 @@
+{
+  "lotDocuments": {
+    "title": "Lot Documents",
+    "backToLots": "Back to Lots",
+    "searchPlaceholder": "Search documents...",
+    "filterAll": "All",
+    "filterPhotos": "Photos",
+    "filterFiles": "Files",
+    "uploadButton": "Upload",
+    "uploading": "Uploading...",
+    "download": "Download",
+    "delete": "Delete",
+    "emptyState": "No documents found.",
+    "emptyStateUpload": "Upload files to get started.",
+    "loadingState": "Loading...",
+    "errorState": "Failed to load data",
+    "uploadFailed": "Failed to upload files",
+    "downloadFailed": "Failed to download file",
+    "deleteFailed": "Failed to delete file",
+    "confirmDelete": {
+      "title": "Confirm Deletion",
+      "message": "Are you sure you want to delete \"{fileName}\"?",
+      "warning": "This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "meta": {
+      "uploadedBy": "Uploaded by {name}",
+      "uploadedOn": "on {date}",
+      "fileSize": "{size} KB"
+    }
+  }
+}

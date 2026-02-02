@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -56,7 +57,14 @@ public class QuoteService {
             throw new InvalidProjectDataException("Lot identifier is required to create a quote");
         }
 
-        var lot = lotRepository.findByLotIdentifier_LotId(requestModel.getLotIdentifier());
+        UUID lotId;
+        try {
+            lotId = UUID.fromString(requestModel.getLotIdentifier());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidProjectDataException("Invalid lot identifier format: " + requestModel.getLotIdentifier());
+        }
+
+        var lot = lotRepository.findByLotIdentifier_LotId(lotId);
         if (lot == null) {
             throw new NotFoundException("Lot not found: " + requestModel.getLotIdentifier());
         }

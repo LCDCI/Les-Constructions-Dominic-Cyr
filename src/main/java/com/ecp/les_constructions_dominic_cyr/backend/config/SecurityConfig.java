@@ -138,6 +138,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/overview").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/lots").permitAll()
+                        
+                        // Lot Documents - Must come BEFORE general /api/v1/lots/** rules
+                        .requestMatchers("/api/v1/lots/*/documents/**").authenticated()
+                        
                         .requestMatchers(HttpMethod.GET, "/api/v1/lots/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/lots/**").permitAll()
 

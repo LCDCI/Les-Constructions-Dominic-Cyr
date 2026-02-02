@@ -3,6 +3,8 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAcces
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
@@ -11,20 +13,21 @@ import java.util.UUID;
 public class LotIdentifier {
 
     @Column(name = "lot_identifier", unique = true)
-    private String lotId;
+    @JdbcTypeCode(SqlTypes.UUID)
+    private UUID lotId;
 
     public LotIdentifier() {
-        this.lotId = UUID.randomUUID().toString();
+        this.lotId = UUID.randomUUID();
     }
 
     public LotIdentifier(String lotId) {
-        this.lotId = lotId;
+        this.lotId = UUID.fromString(lotId);
     }
 
     @Override
     public String toString() {
         return "LotIdentifier{" +
-                "lotId='" + (lotId == null ? "" : lotId) + '\'' +
+                "lotId='" + (lotId == null ? "" : lotId.toString()) + '\'' +
                 '}';
     }
 }

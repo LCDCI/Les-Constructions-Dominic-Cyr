@@ -1,9 +1,5 @@
 package com.ecp.les_constructions_dominic_cyr.backend.config;
 
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Realization.Realization;
@@ -34,9 +30,6 @@ class DataSeederUnitTest {
     private RealizationRepository realizationRepository;
 
     @Mock
-    private LotRepository lotRepository;
-
-    @Mock
     private RenovationRepository renovationRepository;
 
     @InjectMocks
@@ -45,7 +38,7 @@ class DataSeederUnitTest {
     @BeforeEach
     void setUp() {
         // Reset mocks before each test
-        reset(projectRepository, realizationRepository, lotRepository, renovationRepository);
+        reset(projectRepository, realizationRepository, renovationRepository);
     }
 
 
@@ -58,28 +51,11 @@ class DataSeederUnitTest {
         when(projectRepository.findByProjectIdentifier(anyString())).thenReturn(Optional.empty());
         when(realizationRepository.findRealizationByRealizationIdentifier_RealizationId(anyString()))
                 .thenReturn(realization);
-        when(lotRepository.findByLotIdentifier_LotId(anyString())).thenReturn(null);
         when(renovationRepository.findRenovationByRenovationIdentifier_RenovationId(anyString())).thenReturn(null);
 
         dataSeeder.init();
 
         verify(realizationRepository, never()).save(any(Realization.class));
-    }
-
-    @Test
-    void init_WhenLotExistsWithImage_DoesNotUpdate() {
-        Lot lot = new Lot();
-        lot.setLotIdentifier(new LotIdentifier("f3c8837d-bd65-4bc5-9f01-cb9082fc657e"));
-
-        when(projectRepository.findByProjectIdentifier(anyString())).thenReturn(Optional.empty());
-        when(realizationRepository.findRealizationByRealizationIdentifier_RealizationId(anyString())).thenReturn(null);
-        when(lotRepository.findByLotIdentifier_LotId(anyString()))
-                .thenReturn(lot);
-        when(renovationRepository.findRenovationByRenovationIdentifier_RenovationId(anyString())).thenReturn(null);
-
-        dataSeeder.init();
-
-        verify(lotRepository, never()).save(any(Lot.class));
     }
 
     @Test
@@ -126,7 +102,6 @@ class DataSeederUnitTest {
         // Mock all repositories to return empty/null to avoid actual processing
         when(projectRepository.findByProjectIdentifier(anyString())).thenReturn(Optional.empty());
         when(realizationRepository.findRealizationByRealizationIdentifier_RealizationId(anyString())).thenReturn(null);
-        when(lotRepository.findByLotIdentifier_LotId(anyString())).thenReturn(null);
         when(renovationRepository.findRenovationByRenovationIdentifier_RenovationId(anyString())).thenReturn(null);
 
         dataSeeder.init();
@@ -134,7 +109,6 @@ class DataSeederUnitTest {
         // Verify all seed methods are called
         verify(projectRepository, atLeastOnce()).findByProjectIdentifier(anyString());
         verify(realizationRepository, atLeastOnce()).findRealizationByRealizationIdentifier_RealizationId(anyString());
-        verify(lotRepository, atLeastOnce()).findByLotIdentifier_LotId(anyString());
         verify(renovationRepository, atLeastOnce()).findRenovationByRenovationIdentifier_RenovationId(anyString());
     }
 }
