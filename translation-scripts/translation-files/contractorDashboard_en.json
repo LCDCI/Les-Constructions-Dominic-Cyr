@@ -3,6 +3,10 @@
   "upcomingTasks": "Here are your upcoming tasks:",
   "seeMore": "See more",
   "cards": {
+    "myTasks": {
+      "title": "My Tasks",
+      "button": "View My Tasks"
+    },
     "quotes": {
       "title": "Quotes",
       "button": "Upload Quote"

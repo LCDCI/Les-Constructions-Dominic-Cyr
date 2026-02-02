@@ -3,6 +3,10 @@
   "upcomingTasks": "Voici vos tâches à venir :",
   "seeMore": "Voir plus",
   "cards": {
+    "myTasks": {
+      "title": "Mes tâches",
+      "button": "Voir mes tâches"
+    },
     "quotes": {
       "title": "Devis",
       "button": "Télécharger un devis"

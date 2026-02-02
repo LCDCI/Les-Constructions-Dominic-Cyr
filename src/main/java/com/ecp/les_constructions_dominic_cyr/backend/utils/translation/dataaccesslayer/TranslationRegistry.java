@@ -87,8 +87,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.customerdashboard", "6742d6a9-bcfd-4780-b2ec-5c50c27e9493");
         fileIdMap.put("en.salespersondashboard", "6792727a-faac-4fa1-af3b-0c850c6ed022");
         fileIdMap.put("fr.salespersondashboard", "3379cd57-8243-414f-b891-2fcc7a19bd6c");
-        fileIdMap.put("en.contractordashboard", "b2fd3cd8-b168-4c53-bd5f-ee438943dcaa");
-        fileIdMap.put("fr.contractordashboard", "b56ca3fb-bcd5-4e5d-9861-775ca1bc633b");
+        fileIdMap.put("en.contractordashboard", "129b09a5-32d9-426d-98b9-f5da4e2555da");
+        fileIdMap.put("fr.contractordashboard", "6230c4c3-3d42-4b65-bd0c-b402dc24ac9b");
 
         // User management page translations
         fileIdMap.put("en.userspage", "9dd08e21-bfad-452f-9461-8db4c4a9f53a");
@@ -127,8 +127,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.lotmetadata", "76f2c2f0-738c-4352-83f2-eff68a82bf0b");
 
         // Contractor Tasks page translations
-        fileIdMap.put("en.contractortasks", "87e20c13-6487-471f-ad7a-8f3e1e87355b");
-        fileIdMap.put("fr.contractortasks", "0aabdadd-4702-4aa0-acbe-8c7c552d86ac");
+        fileIdMap.put("en.contractortasks", "41d7e9bd-7eff-47e7-8295-82bdaec5bfd6");
+        fileIdMap.put("fr.contractortasks", "12c07401-7d32-49db-94ac-7bd639e578bb");
 
         // Navbar translations (for role-specific navbars)
         fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
