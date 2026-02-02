@@ -58,11 +58,13 @@ const loadTranslations = async (language = null) => {
       lotsTranslations,
       livingEnvironmentTranslations,
       homeTranslations,
+      navbarTranslations,
     ] = await Promise.all([
       fetchTranslations(lang),
       fetchPageTranslations('lots', lang),
       fetchPageTranslations('livingenvironment', lang),
       fetchPageTranslations('home', lang),
+      fetchPageTranslations('navbar', lang),
     ]);
 
     // Add general translations
@@ -110,6 +112,20 @@ const loadTranslations = async (language = null) => {
           true
         );
       }
+    }
+
+    // Load navbar translations into global 'translation' namespace
+    // This ensures role-specific navbar items are always available
+    if (navbarTranslations) {
+      i18n.addResourceBundle(lang, 'navbar', navbarTranslations, true, true);
+      // Also add to global 'translation' namespace for easy access
+      i18n.addResourceBundle(
+        lang,
+        'translation',
+        { navbar: navbarTranslations },
+        true,
+        true
+      );
     }
 
     // Tell i18next we are done so the UI refreshes

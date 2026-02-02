@@ -58,7 +58,9 @@
     "renovations": "Rénovations",
     "projectManagement": "Gestion de projet",
     "realizations": "Réalisations",
-    "contact": "Contact"
+    "contact": "Contact",
+    "accessPortal": "Portail d'accès",
+    "logout": "Déconnexion"
   },
   "footer": {
     "company": "Construction Dominic Cyr Inc.",

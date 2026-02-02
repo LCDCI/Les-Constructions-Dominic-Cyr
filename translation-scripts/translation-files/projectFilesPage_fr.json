@@ -1,22 +1,51 @@
 {
   "title": "Documents du projet",
   "uploadDocument": "Télécharger un document",
-  "refresh": "Actualiser",
+  "syncFiles": "Synchroniser les fichiers",
   "syncing": "Synchronisation...",
   "downloadAll": "Télécharger tout en ZIP",
   "downloading": "Téléchargement...",
-  "loading": "Chargement des documents...",
+  "loading": "Chargement des documents du projet...",
   "error": "Erreur lors du chargement des documents",
   "refreshError": "Échec de l'actualisation des fichiers. Veuillez réessayer.",
   "downloadError": "Échec du téléchargement du fichier. Veuillez réessayer.",
   "zipError": "Échec du téléchargement du fichier ZIP. Veuillez réessayer.",
   "deleteError": "Échec de la suppression du fichier. Veuillez réessayer.",
+  "loadErrorAlert": "Erreur ({{status}}) : {{message}} Redirection vers l'accueil.",
+  "downloadErrorAlert": "Erreur de téléchargement : {{message}}",
   "unknown": "Inconnu",
-  "noDocuments": "Aucun document trouvé.",
+  "noDocumentsMessage": "Aucun document trouvé pour ce projet. Téléchargez votre premier fichier pour commencer !",
+  "userInfoLoading": "Les informations utilisateur sont encore en cours de chargement. Veuillez patienter un moment et réessayer.",
+  "table": {
+    "documentName": "Nom du document",
+    "type": "Type",
+    "uploadedBy": "Téléchargé par",
+    "actions": "Actions"
+  },
   "deleteConfirm": {
     "title": "Supprimer le document",
-    "message": "Êtes-vous sûr de vouloir supprimer ce document ? Cette action ne peut pas être annulée.",
+    "errorPrefix": "Erreur",
+    "message": "Êtes-vous sûr de vouloir supprimer ce document ? Cette action archivera le fichier et il ne sera plus accessible aux utilisateurs. Le fichier peut être récupérable par les administrateurs.",
     "confirm": "Supprimer",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "tryAgain": "Réessayer"
+  },
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets résidentiels",
+    "renovation": "Rénovations",
+    "renovations": "Rénovations",
+    "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
+    "contact": "Contact",
+    "accessPortal": "Portail d'accès",
+    "logout": "Déconnexion"
+  },
+  "footer": {
+    "company": "Construction Dominic Cyr Inc.",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "Courriel",
+    "copyright": "Droits d'auteur © 2024. Tous droits réservés."
   }
 }

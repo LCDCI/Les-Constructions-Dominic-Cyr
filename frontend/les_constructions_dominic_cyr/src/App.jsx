@@ -288,17 +288,61 @@ export default function App() {
               path="/projects/:projectId/metadata"
               element={<ProjectMetadata />}
             />
+            {/* Specific project routes must come before the generic /projects/:projectIdentifier route */}
             <Route
-              path="/projects/:projectIdentifier"
-              element={<ProjectEntryRouter />}
+              path="/projects/:projectId/files"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectFilesPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/photos"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectPhotosPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/schedule"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectSchedulePage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/lots/:lotId/metadata"
+              element={<LotMetadata />}
             />
             <Route
               path="/projects/:projectIdentifier/lots/select"
               element={<LotSelectPage />}
             />
+            {/* Generic project route must come last to avoid catching specific routes */}
             <Route
-              path="/projects/:projectId/lots/:lotId/metadata"
-              element={<LotMetadata />}
+              path="/projects/:projectIdentifier"
+              element={<ProjectEntryRouter />}
             />
 
             {/* Project team management removed */}
@@ -334,51 +378,6 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['CONTRACTOR']}
                   element={<ContractorDashboard />}
-                />
-              }
-            />
-
-            <Route
-              path="/projects/:projectId/files"
-              element={
-                <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
-                  element={<ProjectFilesPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/projects/:projectId/photos"
-              element={
-                <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
-                  element={<ProjectPhotosPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/projects/:projectId/schedule"
-              element={
-                <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
-                  element={<ProjectSchedulePage />}
                 />
               }
             />
