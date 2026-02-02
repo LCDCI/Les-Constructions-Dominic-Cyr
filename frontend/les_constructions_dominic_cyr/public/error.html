@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Unavailable - Les Constructions Dominic Cyr</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .error-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .error-icon svg {
+            width: 60px;
+            height: 60px;
+            fill: white;
+        }
+
+        h1 {
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .error-message {
+            color: #4a5568;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .error-submessage {
+            color: #718096;
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 40px;
+        }
+
+        .retry-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .status-info {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .error-container {
+                padding: 40px 30px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .error-message {
+                font-size: 16px;
+            }
+
+            .error-icon {
+                width: 100px;
+                height: 100px;
+            }
+
+            .error-icon svg {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+        </div>
+        
+        <h1>Service Temporarily Unavailable</h1>
+        
+        <p class="error-message">
+            We are currently experiencing server issues. Our team is working on resolving this as quickly as possible.
+        </p>
+        
+        <p class="error-submessage">
+            Please check back in a few minutes. We apologize for any inconvenience this may cause.
+        </p>
+        
+        <button class="retry-button" onclick="location.reload()">
+            Retry Now
+        </button>
+        
+        <div class="status-info">
+            If this problem persists, please contact us at info@lcdci.ca
+        </div>
+    </div>
+
+    <script>
+        // Auto-retry configuration
+        const RETRY_INTERVAL_MS = 30000; // 30 seconds
+        const MAX_RETRIES = 10;
+        const COOLDOWN_PERIOD_MS = 3600000; // 1 hour before resetting retry counter
+        const RETRY_STORAGE_KEY = 'lcdci_error_retry_count';
+        const RETRY_TIMESTAMP_KEY = 'lcdci_error_retry_timestamp';
+
+        function getRetryData() {
+            const count = parseInt(localStorage.getItem(RETRY_STORAGE_KEY), 10);
+            const timestamp = parseInt(localStorage.getItem(RETRY_TIMESTAMP_KEY), 10);
+            
+            // If data is invalid or cooldown period has passed, reset
+            const now = Date.now();
+            if (isNaN(count) || count < 0 || isNaN(timestamp) || (now - timestamp) > COOLDOWN_PERIOD_MS) {
+                return { count: 0, shouldReset: true };
+            }
+            
+            return { count, shouldReset: false };
+        }
+
+        function setRetryData(count) {
+            localStorage.setItem(RETRY_STORAGE_KEY, String(count));
+            localStorage.setItem(RETRY_TIMESTAMP_KEY, String(Date.now()));
+        }
+
+        function autoRetry() {
+            try {
+                const { count: currentCount, shouldReset } = getRetryData();
+                
+                if (shouldReset) {
+                    // Reset and start fresh
+                    setRetryData(1);
+                    console.log(`Auto-retry attempt 1 of ${MAX_RETRIES}`);
+                    location.reload();
+                } else if (currentCount < MAX_RETRIES) {
+                    const nextCount = currentCount + 1;
+                    setRetryData(nextCount);
+                    console.log(`Auto-retry attempt ${nextCount} of ${MAX_RETRIES}`);
+                    location.reload();
+                } else {
+                    console.log('Max auto-retry attempts reached; no further automatic reloads will be performed for 1 hour.');
+                    // Don't remove the counter - it will reset after cooldown period
+                }
+            } catch (e) {
+                // If storage is unavailable (e.g., disabled), fail safe by not auto-retrying indefinitely.
+                console.error('Auto-retry disabled due to storage access error:', e);
+            }
+        }
+
+        // Start auto-retry after configured interval
+        setTimeout(autoRetry, RETRY_INTERVAL_MS);
+    </script>
+</body>
+</html>
