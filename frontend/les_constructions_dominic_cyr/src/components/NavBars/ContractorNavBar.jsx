@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useUnreadCount } from '../../features/notifications/hooks/useUnreadCount';
 import '../../styles/NavBars/contractorNavbar.css';
 import {
@@ -24,6 +25,7 @@ const Navbar = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation();
   const { unreadCount } = useUnreadCount();
   const isControlled = typeof controlledOpen === 'boolean';
   const menuOpen = isControlled ? controlledOpen : isOpen;
@@ -101,7 +103,9 @@ const Navbar = ({
       <aside className={`navbar-sidebar ${menuOpen ? 'open' : ''}`}>
         <nav className="navbar-sidebar-nav">
           <div className="navbar-section">
-            <h3 className="navbar-section-title">Dashboard</h3>
+            <h3 className="navbar-section-title">
+              {t('navbar.sections.dashboard', 'Dashboard')}
+            </h3>
             <ul className="navbar-menu">
               <li className="navbar-item">
                 <Link
@@ -112,7 +116,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <GoProject />
                   </span>
-                  <span className="navbar-text">Dashboard</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.dashboard', 'Dashboard')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">
@@ -124,7 +130,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <GoHome />
                   </span>
-                  <span className="navbar-text">Home</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.home', 'Home')}
+                  </span>
                 </Link>
               </li>
             </ul>
@@ -132,7 +140,9 @@ const Navbar = ({
 
           {/* Management Section */}
           <div className="navbar-section">
-            <h3 className="navbar-section-title">Management</h3>
+            <h3 className="navbar-section-title">
+              {t('navbar.sections.management', 'Management')}
+            </h3>
             <ul className="navbar-menu">
               <li className="navbar-item">
                 <Link
@@ -143,7 +153,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <GoInbox />
                   </span>
-                  <span className="navbar-text">Inbox</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.inbox', 'Inbox')}
+                  </span>
                   {unreadCount > 0 && (
                     <span className="navbar-badge">{unreadCount}</span>
                   )}
@@ -158,7 +170,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <GoPackage />
                   </span>
-                  <span className="navbar-text">Projects</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.projects', 'Projects')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">
@@ -170,7 +184,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <MdOutlineRequestQuote />
                   </span>
-                  <span className="navbar-text">Quotes</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.quotes', 'Quotes')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">
@@ -182,7 +198,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <GoFile />
                   </span>
-                  <span className="navbar-text">Documents</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.documents', 'Documents')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">
@@ -194,7 +212,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <GoArrowUp />
                   </span>
-                  <span className="navbar-text">Uploads</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.uploads', 'Uploads')}
+                  </span>
                 </Link>
               </li>
             </ul>
@@ -202,7 +222,9 @@ const Navbar = ({
 
           {/* Settings Section */}
           <div className="navbar-section">
-            <h3 className="navbar-section-title">Settings</h3>
+            <h3 className="navbar-section-title">
+              {t('navbar.sections.settings', 'Settings')}
+            </h3>
             <ul className="navbar-menu">
               <li className="navbar-item">
                 <Link
@@ -213,7 +235,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <CgProfile />
                   </span>
-                  <span className="navbar-text">My Profile</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.myProfile', 'My Profile')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">
@@ -225,7 +249,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <GoGear />
                   </span>
-                  <span className="navbar-text">Account Settings</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.accountSettings', 'Account Settings')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">
@@ -237,7 +263,12 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <IoIosNotifications />
                   </span>
-                  <span className="navbar-text">Notification Preferences</span>
+                  <span className="navbar-text">
+                    {t(
+                      'navbar.menuItems.notificationPreferences',
+                      'Notification Preferences'
+                    )}
+                  </span>
                 </Link>
               </li>
             </ul>
@@ -257,7 +288,9 @@ const Navbar = ({
             <span className="navbar-icon">
               <CiLogout />
             </span>
-            <span className="navbar-text">Logout</span>
+            <span className="navbar-text">
+              {t('navbar.menuItems.logout', 'Logout')}
+            </span>
           </button>
         </div>
       </aside>

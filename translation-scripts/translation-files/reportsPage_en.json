@@ -1,0 +1,46 @@
+{
+  "title": "Analytics Reports",
+  "tabs": {
+    "generate": "Generate New",
+    "myReports": "My Reports"
+  },
+  "form": {
+    "title": "Generate Analytics Report",
+    "reportType": "Analytics Report",
+    "fileFormat": "File Format",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "generateButton": "Generate Report",
+    "processingButton": "Processing Large Data...",
+    "errors": {
+      "datesRequired": "Please select both a start and end date.",
+      "generateFailed": "Failed to generate report. Check Digital Ocean connection."
+    },
+    "success": "Master Audit generated successfully!"
+  },
+  "noReportsFound": "No reports found.",
+  "nav": {
+    "home": "Home",
+    "projects": "Residential Projects",
+    "renovation": "Renovations",
+    "renovations": "Renovations",
+    "projectManagement": "Project Management",
+    "realizations": "Realizations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "company": "Dominic Cyr Construction Inc.",
+    "copyright": "© {{year}} Dominic Cyr Construction. All rights reserved.",
+    "contact": "Contact",
+    "phone": "514-123-4567",
+    "email": "constructions.dcyr@gmail.com",
+    "location": "Localisation",
+    "address1": "155 rue Bourgeois",
+    "address2": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
+    "accreditations": "Accréditations",
+    "rbq": "8356-0169-03",
+    "rbqLink": "rbq.gouv.qc.ca",
+    "gcr": "11084",
+    "gcrLink": "garantiegcr.com"
+  }
+}

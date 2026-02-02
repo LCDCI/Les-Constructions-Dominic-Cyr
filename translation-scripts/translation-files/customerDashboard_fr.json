@@ -1,0 +1,23 @@
+{
+  "title": "Tableau de bord client",
+  "thisWeek": "Cette semaine :",
+  "seeMore": "Voir plus",
+  "cards": {
+    "projects": {
+      "title": "Projets",
+      "button": "Voir les projets"
+    },
+    "inbox": {
+      "title": "Boîte de réception",
+      "button": "Voir la boîte de réception"
+    },
+    "documents": {
+      "title": "Documents",
+      "button": "Voir les documents"
+    },
+    "forms": {
+      "title": "Formulaires",
+      "button": "Remplir les formulaires"
+    }
+  }
+}
