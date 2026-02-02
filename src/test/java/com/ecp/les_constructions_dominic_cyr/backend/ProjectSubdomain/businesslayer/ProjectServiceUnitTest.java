@@ -28,6 +28,7 @@ import java. util.Arrays;
 import java.util. Collections;
 import java. util.List;
 import java.util. Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -90,7 +91,7 @@ public class ProjectServiceUnitTest {
         testProject.setImageIdentifier("473f9e87-3415-491c-98a9-9d017c251911");
         testProject.setBuyerName("Test Buyer");
         testProject.setCustomerId("cust-001");
-        testProject.setLotIdentifier("lot-001");
+        testProject.setLotIdentifier("d8aefc3a-8a9b-4e0b-9d20-3e6e0e6f2b5b");
         testProject.setProgressPercentage(50);
 
         testRequestModel = new ProjectRequestModel();
@@ -105,7 +106,7 @@ public class ProjectServiceUnitTest {
         testRequestModel.setImageIdentifier("473f9e87-3415-491c-98a9-9d017c251911");
         testRequestModel. setBuyerName("Test Buyer");
         testRequestModel. setCustomerId("cust-001");
-        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001"));
+        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("d8aefc3a-8a9b-4e0b-9d20-3e6e0e6f2b5b"));
         testRequestModel.setProgressPercentage(50);
 
         testResponseModel = ProjectResponseModel.builder()
@@ -121,14 +122,14 @@ public class ProjectServiceUnitTest {
                 .imageIdentifier("473f9e87-3415-491c-98a9-9d017c251911")
                 .buyerName("Test Buyer")
                 . customerId("cust-001")
-                .lotIdentifiers(java.util.Arrays.asList("lot-001"))
+                .lotIdentifiers(java.util.Arrays.asList("d8aefc3a-8a9b-4e0b-9d20-3e6e0e6f2b5b"))
                 .progressPercentage(50)
                 .build();
 
         // Stub lot existence validation to pass
-        when(lotRepository.findByLotIdentifier_LotId(any())).thenReturn(
+        when(lotRepository.findByLotIdentifier_LotId(any(UUID.class))).thenReturn(
                 new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot(
-                        new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier("lot-001"),
+                new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier("d8aefc3a-8a9b-4e0b-9d20-3e6e0e6f2b5b"),
                         "Lot-001",
                         "Loc", 100f, "1000", "92.9",
                         com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotStatus.AVAILABLE
@@ -196,14 +197,15 @@ public class ProjectServiceUnitTest {
 
     @Test
     void createProject_WithLotIdentifiersContainingNull_ThrowsInvalidProjectDataException() {
-        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("lot-001", null));
+        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("d8aefc3a-8a9b-4e0b-9d20-3e6e0e6f2b5b", null));
         assertThrows(InvalidProjectDataException.class, () -> projectService.createProject(testRequestModel));
     }
 
     @Test
     void createProject_WithMissingLot_ThrowsNotFoundException() {
-        when(lotRepository.findByLotIdentifier_LotId("missing-lot")).thenReturn(null);
-        testRequestModel.setLotIdentifiers(java.util.Arrays.asList("missing-lot"));
+        String missingLotId = "7b0d3b3e-2a8c-4a52-9b0b-1c5f2dd9b1b1";
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(missingLotId))).thenReturn(null);
+        testRequestModel.setLotIdentifiers(java.util.Arrays.asList(missingLotId));
         assertThrows(com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException.class,
                 () -> projectService.createProject(testRequestModel));
     }

@@ -12,7 +12,7 @@ import './QuoteDetailPage.css';
  * Displays full quote details with all line items
  */
 const QuoteDetailPage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotes', 'translation']);
   const { quoteNumber } = useParams();
   const navigate = useNavigate();
   const { getAccessTokenSilently } = useAuth0();
@@ -144,13 +144,13 @@ const QuoteDetailPage = () => {
         <div className="quote-detail-container">
           <div className="detail-header">
             <button className="btn btn-back" onClick={handleBack}>
-              <MdArrowBack /> {t('common.back') || 'Back'}
+              <MdArrowBack /> {t('quote.common.back') || 'Back'}
             </button>
           </div>
           <div className="empty-state">
             <h3>{t('quote.notFound') || 'Quote not found'}</h3>
             <button className="btn btn-primary" onClick={handleBack}>
-              {t('common.goBack') || 'Go Back'}
+              {t('quote.common.goBack') || 'Go Back'}
             </button>
           </div>
         </div>

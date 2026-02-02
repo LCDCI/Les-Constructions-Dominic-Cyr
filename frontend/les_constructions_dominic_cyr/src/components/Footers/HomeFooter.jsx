@@ -1,10 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import {
-  FaPhoneAlt,
-  FaEnvelope,
   FaMapMarkerAlt,
   FaShieldAlt,
-  FaIdCard,
+  FaPhoneAlt,
+  FaEnvelope,
 } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Footers/HomeFooter.css';
@@ -79,6 +79,12 @@ export default function HomeFooter() {
               {t('footer.gcrLink', 'garantiegcr.com')}
             </a>
           </div>
+        </div>
+
+        <div className="footer-section">
+          <Link to="/contact" className="footer-contact-link">
+            Contact Us
+          </Link>
         </div>
       </div>
 

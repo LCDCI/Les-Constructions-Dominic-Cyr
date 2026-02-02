@@ -27,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -244,7 +245,8 @@ public class ProjectServiceImpl implements ProjectService {
             if (lotIdentifier == null || lotIdentifier.trim().isEmpty()) {
                 throw new InvalidProjectDataException("Lot identifier cannot be null or empty");
             }
-            if (lotRepository.findByLotIdentifier_LotId(lotIdentifier) == null) {
+            UUID lotUuid = UUID.fromString(lotIdentifier);
+            if (lotRepository.findByLotIdentifier_LotId(lotUuid) == null) {
                 throw new NotFoundException("Lot not found with identifier: " + lotIdentifier);
             }
         }

@@ -90,6 +90,14 @@ export const taskApi = {
     );
     return response.data;
   },
+
+  getAllTasksForContractorView: async (token = null) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get('/contractors/tasks/all', {
+      headers,
+    });
+    return response.data;
+  },
 };
 
 export default taskApi;

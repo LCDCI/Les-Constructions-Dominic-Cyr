@@ -49,6 +49,31 @@
     "notFound": "Quote not found",
     "createSuccess": "Quote created successfully!",
     "errorTitle": "Quote Error",
+    "viewQuotes": "Quotes",
+    "selectProject": "Select Project",
+    "selectProjectToView": "Select a project to view its quotes",
+    "noProjects": "No Projects Found",
+    "noProjectsContractor": "You are not assigned to any projects yet.",
+    "noProjectsOwner": "No projects available.",
+    "subtitleContractor": "View and manage your quotes",
+    "subtitleOwner": "View all quotes for your projects",
+    "createBillEstimate": "Create Bill Estimate",
+    "newBill": "New Bill",
+    "confirmed": "Confirmed",
+    "auto": "Auto-generated",
+    "issuedDate": "Issued Date",
+    "summary": "Summary",
+    "customer": "Customer",
+    "items": "Items",
+    "preview": "Preview",
+    "createQuote": "Create Quote",
+    "sendFinalInvoice": "Send Final Invoice",
+    "common": {
+      "cancel": "Cancel",
+      "back": "Back",
+      "goBack": "Go Back",
+      "submitting": "Submitting..."
+    },
     "errors": {
       "descriptionRequired": "Description required",
       "hoursInvalid": "Must be > 0",
@@ -56,7 +81,8 @@
       "fixErrors": "Please fix the errors in the form",
       "noLot": "No lot selected",
       "createFailed": "Failed to create quote",
-      "atLeastOneItem": "Please add at least one item to the quote"
+      "atLeastOneItem": "Please add at least one item to the quote",
+      "notAssignedToLot": "You are not assigned to this lot."
     }
   }
 }

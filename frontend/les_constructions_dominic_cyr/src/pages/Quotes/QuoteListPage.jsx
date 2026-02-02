@@ -14,7 +14,7 @@ import './QuoteListPage.css';
  * Matches the first screenshot design
  */
 const QuoteListPage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('quotes');
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
 

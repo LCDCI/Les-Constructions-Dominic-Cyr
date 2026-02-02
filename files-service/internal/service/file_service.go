@@ -73,6 +73,25 @@ func (s *fileService) Upload(ctx context.Context, input domain.FileUploadInput) 
 		}
 	}
 
+	if input.Category == domain.CategoryOther {
+		// OTHER category files (miscellaneous documents)
+		if strings.TrimSpace(input.ProjectID) != "" {
+			objectKey = fmt.Sprintf(
+				"other/%s/%s/%s",
+				input.ProjectID,
+				dateFolder,
+				id,
+			)
+		} else {
+			// Global other files
+			objectKey = fmt.Sprintf(
+				"other/%s/%s",
+				dateFolder,
+				id,
+			)
+		}
+	}
+
 	// Store metadata in Spaces for future reconciliation
 	metadata := map[string]string{
 		"uploadedby": input.UploadedBy,
