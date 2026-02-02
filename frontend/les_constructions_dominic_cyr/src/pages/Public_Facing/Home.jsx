@@ -2,6 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import '../../styles/Public_Facing/home.css';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { TbHomeSearch } from 'react-icons/tb';
+import { PiPaintBrushBroad } from 'react-icons/pi';
+import { RiLeafLine } from 'react-icons/ri';
+import { PiSuitcaseSimple } from 'react-icons/pi';
+import { FiPhoneCall } from 'react-icons/fi';
+import { PiMedalThin } from 'react-icons/pi';
+import { GrCatalog } from 'react-icons/gr';
 
 export default function Home() {
   const { t } = usePageTranslations('home');
@@ -137,64 +144,60 @@ export default function Home() {
         </div>
       </section>
 
-      {/* THINK SECTION */}
-      <section className="content-section featured-section offset-left">
-        <div className="section-image-container" data-animate>
-          <img
-            src={`${filesServiceUrl}/files/${photos.think}`}
-            alt="Design concept"
-            className="section-image"
-            loading="lazy"
-          />
-        </div>
-        <div className="section-text-wrapper" data-animate>
-          <div className="section-header">
+      {/* FEATURES SECTION */}
+      <section className="features-section">
+        <div className="container">
+          <div className="section-header center" data-animate>
+            <span className="section-kicker">
+              {t('features.kicker', 'Why Choose Us')}
+            </span>
             <h2 className="section-title">
-              {t(
-                'think.title',
-                'intelligent, practical and comfortable spaces'
-              )}
+              {t('features.title', 'Personalized Support')}
             </h2>
-            <p className="section-subtitle">
-              {t(
-                'think.subtitle',
-                'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.'
-              )}
-            </p>
-            <Link to="/realizations" className="link-arrow">
-              {t('think.link', 'Discover')}
-            </Link>
           </div>
-        </div>
-      </section>
-
-      {/* BUILD SECTION */}
-      <section className="content-section featured-section alt reverse offset-right">
-        <div className="section-image-container" data-animate>
-          <img
-            src={`${filesServiceUrl}/files/${photos.build}`}
-            alt="Construction"
-            className="section-image"
-            loading="lazy"
-          />
-        </div>
-        <div className="section-text-wrapper" data-animate>
-          <div className="section-header">
-            <h2 className="section-title">
-              {t(
-                'build.title',
-                'a strong relationship and quality partnership'
-              )}
-            </h2>
-            <p className="section-subtitle">
-              {t(
-                'build.subtitle',
-                'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
-              )}
-            </p>
-            <Link to="/contact" className="link-arrow">
-              {t('build.link', 'Contact Us')}
-            </Link>
+          <p className="features-intro" data-animate>
+            {t(
+              'features.intro',
+              'Dominic Cyr Construction Inc. is a dynamic family business with over 30 years of experience in residential construction. We are here to support you in realizing your ideas and projects with personalized, professional service built on transparency.'
+            )}
+          </p>
+          <div className="features-grid">
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <PiSuitcaseSimple />
+                {t('features.feature1', 'Passionate & Professional')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <PiPaintBrushBroad />
+                {t('features.feature2', 'Creative Approach')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <TbHomeSearch />
+                {t('features.feature3', 'Attention to Detail')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <RiLeafLine />
+                {t('features.feature4', 'Eco-Friendly Practices')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <PiMedalThin />
+                {t('features.feature5', 'Excellence Standards')}
+              </h3>
+            </div>
+            <div className="feature-card" data-animate>
+              <h3 className="feature-title">
+                <FiPhoneCall />
+                {t('features.feature6', 'After-Sales Service')}
+              </h3>
+            </div>
           </div>
         </div>
       </section>
@@ -227,6 +230,68 @@ export default function Home() {
         </div>
       </section>
 
+      {/* BUILD SECTION */}
+      <section className="content-section featured-section alt reverse offset-right">
+        <div className="section-image-container" data-animate>
+          <img
+            src={`${filesServiceUrl}/files/${photos.build}`}
+            alt="Construction"
+            className="section-image"
+            loading="lazy"
+          />
+        </div>
+        <div className="section-text-wrapper" data-animate>
+          <div className="section-header lowered-title">
+            <h2 className="section-title">
+              {t(
+                'build.title',
+                'a strong relationship and quality partnership'
+              )}
+            </h2>
+            <p className="section-subtitle">
+              {t(
+                'build.subtitle',
+                'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
+              )}
+            </p>
+            <Link to="/contact" className="link-arrow">
+              {t('build.link', 'Contact Us')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* THINK SECTION */}
+      <section className="content-section featured-section offset-left">
+        <div className="section-image-container" data-animate>
+          <img
+            src={`${filesServiceUrl}/files/${photos.think}`}
+            alt="Design concept"
+            className="section-image"
+            loading="lazy"
+          />
+        </div>
+        <div className="section-text-wrapper" data-animate>
+          <div className="section-header lowered-title">
+            <h2 className="section-title">
+              {t(
+                'think.title',
+                'intelligent, practical and comfortable spaces'
+              )}
+            </h2>
+            <p className="section-subtitle">
+              {t(
+                'think.subtitle',
+                'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.'
+              )}
+            </p>
+            <Link to="/realizations" className="link-arrow">
+              {t('think.link', 'Discover')}
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* PORTFOLIO GRID */}
       <section className="portfolio-section">
         <div className="container">
@@ -245,47 +310,41 @@ export default function Home() {
               data-animate
             >
               <img
-                src={`${filesServiceUrl}/files/${photos.collage1}`}
+                src={`${filesServiceUrl}/files/a93f9fbc-44d6-4c0d-b763-0523ee42656d`}
                 alt="Foresta Project"
                 loading="lazy"
                 className="card-image-bg"
               />
               <div className="card-overlay" />
-              <div className="card-content">
-                <h3 className="card-title">
-                  {t('portfolio.foresta', 'Foresta')}
-                </h3>
-                <p className="card-subtitle">
-                  {t('portfolio.forestaSubtitle', 'Residential Project')}
-                </p>
-              </div>
+              {/* text removed to display image only */}
             </Link>
 
             <Link
-              to="/projects/proj-002-panorama/overview"
-              className="portfolio-card"
+              to="/realizations"
+              className="portfolio-card no-image"
               data-animate
             >
               <img
-                src={`${filesServiceUrl}/files/${photos.collage2}`}
-                alt="Panorama Project"
+                src={`${filesServiceUrl}/files/${photos.project2}`}
+                alt="Our Achievements"
                 loading="lazy"
                 className="card-image-bg"
               />
               <div className="card-overlay" />
               <div className="card-content">
                 <h3 className="card-title">
-                  {t('portfolio.panorama', 'Panorama')}
+                  <GrCatalog />
+                  {t('portfolio.achievements', 'Achievements')}
                 </h3>
                 <p className="card-subtitle">
-                  {t('portfolio.panoramaSubtitle', 'Condominiums')}
+                  {t('portfolio.achievementsSubtitle', 'Portfolio')}
                 </p>
               </div>
             </Link>
 
             <Link
               to="/projectmanagement"
-              className="portfolio-card"
+              className="portfolio-card no-image"
               data-animate
             >
               <img
@@ -297,6 +356,7 @@ export default function Home() {
               <div className="card-overlay" />
               <div className="card-content">
                 <h3 className="card-title">
+                  <PiSuitcaseSimple />
                   {t('portfolio.management', 'Management')}
                 </h3>
                 <p className="card-subtitle">
@@ -305,104 +365,19 @@ export default function Home() {
               </div>
             </Link>
 
-            <Link to="/realizations" className="portfolio-card" data-animate>
+            <Link
+              to="/projects/proj-002-panorama/overview"
+              className="portfolio-card"
+              data-animate
+            >
               <img
-                src={`${filesServiceUrl}/files/${photos.project2}`}
-                alt="Our Achievements"
+                src={`${filesServiceUrl}/files/47d2b619-70cf-460c-b929-605d52ee9eb6`}
+                alt="Panorama Project"
                 loading="lazy"
                 className="card-image-bg"
               />
               <div className="card-overlay" />
-              <div className="card-content">
-                <h3 className="card-title">
-                  {t('portfolio.achievements', 'Achievements')}
-                </h3>
-                <p className="card-subtitle">
-                  {t('portfolio.achievementsSubtitle', 'Portfolio')}
-                </p>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURES SECTION */}
-      <section className="features-section">
-        <div className="container">
-          <div className="section-header center" data-animate>
-            <span className="section-kicker">
-              {t('features.kicker', 'Why Choose Us')}
-            </span>
-            <h2 className="section-title">
-              {t('features.title', 'Personalized Support')}
-            </h2>
-          </div>
-          <p className="features-intro" data-animate>
-            {t(
-              'features.intro',
-              'Dominic Cyr Construction Inc. is a dynamic family business with over 30 years of experience in residential construction. We are here to support you in realizing your ideas and projects with personalized, professional service built on transparency.'
-            )}
-          </p>
-          <div className="features-grid">
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature1', 'Passionate & Professional')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature2', 'Creative Approach')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature3', 'Attention to Detail')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature4', 'Eco-Friendly Practices')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature5', 'Excellence Standards')}
-              </h3>
-            </div>
-            <div className="feature-card" data-animate>
-              <h3 className="feature-title">
-                {t('features.feature6', 'After-Sales Service')}
-              </h3>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CONTACT CTA */}
-      <section className="contact-cta">
-        <div className="contact-wrapper">
-          <div className="contact-image" data-animate>
-            <img
-              src={`${filesServiceUrl}/files/${photos.contact}`}
-              alt="Contact us"
-              loading="lazy"
-            />
-          </div>
-          <div className="contact-content" data-animate>
-            <span className="section-kicker">
-              {t('contact.kicker', 'Get In Touch')}
-            </span>
-            <h2 className="contact-title">
-              {t('contact.title', "Let's Build Your Dream Home Together")}
-            </h2>
-            <p className="contact-description">
-              {t(
-                'contact.description',
-                "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc."
-              )}
-            </p>
-            <Link to="/contact" className="btn btn-primary">
-              {t('contact.button', 'Contact Us')}
+              {/* text removed to display image only */}
             </Link>
           </div>
         </div>

@@ -231,6 +231,24 @@
     transform 0.25s var(--easing),
     box-shadow 0.25s var(--easing),
     border-color 0.25s var(--easing);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.6rem;
+  padding: 20px 18px;
+}
+
+.pm-adv-emoji {
+  font-size: 1.8rem;
+  margin: 0 0 0.5rem 0;
+  line-height: 1;
+  display: inline-block;
+}
+
+.pm-adv-text {
+  display: block;
 }
 
 .pm-advantages-list li::before {
