@@ -1,0 +1,18 @@
+{
+  "title": "Utilisateurs",
+  "status": "Statut :",
+  "addUser": "Ajouter un utilisateur",
+  "loading": "Chargement des utilisateurs...",
+  "error": "Échec du chargement des utilisateurs.",
+  "statusOptions": {
+    "active": "Actif",
+    "inactive": "Inactif",
+    "all": "Tous"
+  },
+  "errors": {
+    "createFailed": "Échec de la création de l'utilisateur. Veuillez réessayer.",
+    "updateFailed": "Échec de la mise à jour de l'utilisateur. Veuillez réessayer.",
+    "statusFailed": "Échec de la mise à jour du statut de l'utilisateur. Veuillez réessayer.",
+    "operationFailed": "Échec de l'opération utilisateur"
+  }
+}

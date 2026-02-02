@@ -1,0 +1,23 @@
+{
+  "title": "Customer Dashboard",
+  "thisWeek": "This week:",
+  "seeMore": "See more",
+  "cards": {
+    "projects": {
+      "title": "Projects",
+      "button": "View Projects"
+    },
+    "inbox": {
+      "title": "Inbox",
+      "button": "View Inbox"
+    },
+    "documents": {
+      "title": "Documents",
+      "button": "View Documents"
+    },
+    "forms": {
+      "title": "Forms",
+      "button": "Fill Out Forms"
+    }
+  }
+}

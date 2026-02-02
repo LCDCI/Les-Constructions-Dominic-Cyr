@@ -1,0 +1,9 @@
+{
+  "loading": "Loading...",
+  "alreadyLoggedIn": "You are already logged in",
+  "verificationRequired": "Verification Required:",
+  "verificationMessage": "Please check your email and click the verification link before logging in.",
+  "title": "Access Portal",
+  "subtitle": "Sign in to access your dashboard",
+  "continueLogin": "Continue to Login →"
+}

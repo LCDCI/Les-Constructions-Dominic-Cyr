@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { reportService } from '../../features/reports/reportService';
 import DeleteConfirmationModal from '../../components/Reports/DeleteConfirmationModal';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Reports/ReportList.css';
 
 // eslint-disable-next-line react/prop-types
 const ReportList = ({ refreshTrigger }) => {
+  const { t } = usePageTranslations('reportsPage');
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -87,7 +89,7 @@ const ReportList = ({ refreshTrigger }) => {
     <div className="report-list">
       {error && <div className="error-message">{error}</div>}
       {reports.length === 0 ? (
-        <p className="no-data">No reports found.</p>
+        <p className="no-data">{t('noReportsFound', 'No reports found.')}</p>
       ) : (
         <table>
           <thead>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ownerUseSchedules from '../../features/schedules/hooks/customerUseSchedules';
 import ScheduleList from '../../features/schedules/components/ScheduleList';
@@ -8,8 +8,10 @@ import { GoInbox } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
 import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const CustomerDashboard = () => {
+  const { t } = usePageTranslations('customerDashboard');
   const { schedules, loading, error } = ownerUseSchedules(false);
   const navigate = useNavigate();
 
@@ -17,36 +19,39 @@ const CustomerDashboard = () => {
     navigate('/customers/schedules/all');
   };
 
-  const dashboardCards = [
-    {
-      icon: <GoPackage />,
-      title: 'Projects',
-      buttonText: 'View Projects',
-      action: () => navigate('/projects'),
-    },
-    {
-      icon: <GoInbox />,
-      title: 'Inbox',
-      buttonText: 'View Inbox',
-      action: () => navigate('/customers/inbox'),
-    },
-    {
-      icon: <GoFile />,
-      title: 'Documents',
-      buttonText: 'View Documents',
-      action: () => navigate('/customers/documents'),
-    },
-    {
-      icon: <GoFileDiff />,
-      title: 'Forms',
-      buttonText: 'Fill Out Forms',
-      action: () => navigate('/customers/forms'),
-    },
-  ];
+  const dashboardCards = useMemo(
+    () => [
+      {
+        icon: <GoPackage />,
+        title: t('cards.projects.title', 'Projects'),
+        buttonText: t('cards.projects.button', 'View Projects'),
+        action: () => navigate('/projects'),
+      },
+      {
+        icon: <GoInbox />,
+        title: t('cards.inbox.title', 'Inbox'),
+        buttonText: t('cards.inbox.button', 'View Inbox'),
+        action: () => navigate('/customers/inbox'),
+      },
+      {
+        icon: <GoFile />,
+        title: t('cards.documents.title', 'Documents'),
+        buttonText: t('cards.documents.button', 'View Documents'),
+        action: () => navigate('/customers/documents'),
+      },
+      {
+        icon: <GoFileDiff />,
+        title: t('cards.forms.title', 'Forms'),
+        buttonText: t('cards.forms.button', 'Fill Out Forms'),
+        action: () => navigate('/customers/forms'),
+      },
+    ],
+    [t, navigate]
+  );
 
   return (
     <div className="customer-dashboard">
-      <h1 className="dashboard-title">Customer Dashboard</h1>
+      <h1 className="dashboard-title">{t('title', 'Customer Dashboard')}</h1>
 
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
@@ -61,10 +66,10 @@ const CustomerDashboard = () => {
       </div>
 
       <div className="schedule-section">
-        <h2>This week:</h2>
+        <h2>{t('thisWeek', 'This week:')}</h2>
         <ScheduleList schedules={schedules} loading={loading} error={error} />
         <button className="see-more-button" onClick={handleSeeMore}>
-          See more
+          {t('seeMore', 'See more')}
         </button>
       </div>
     </div>
