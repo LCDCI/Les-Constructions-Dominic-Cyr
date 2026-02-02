@@ -1,0 +1,28 @@
+{
+  "title": "Photos du projet",
+  "uploadPhoto": "Télécharger une photo",
+  "syncPhotos": "Synchroniser les photos",
+  "syncing": "Synchronisation...",
+  "active": "Actif",
+  "archived": "Archivé",
+  "loading": "Chargement des photos...",
+  "error": "Erreur lors du chargement des photos",
+  "noPhotos": "Aucune photo trouvée.",
+  "unknown": "Inconnu",
+  "errors": {
+    "userIdentifier": "Impossible de déterminer votre identifiant utilisateur. Veuillez recharger et réessayer.",
+    "deleteFailed": "Échec de la suppression de la photo.",
+    "archiveFailed": "Échec de l'archivage de la photo.",
+    "unarchiveFailed": "Échec de la restauration de la photo."
+  },
+  "confirm": {
+    "deleteTitle": "Supprimer la photo",
+    "deleteMessage": "Êtes-vous sûr de vouloir supprimer cette photo ? Cette action ne peut pas être annulée.",
+    "archiveTitle": "Archiver la photo",
+    "archiveMessage": "Êtes-vous sûr de vouloir archiver cette photo ?",
+    "unarchiveTitle": "Restaurer la photo",
+    "unarchiveMessage": "Êtes-vous sûr de vouloir restaurer cette photo ?",
+    "confirm": "Confirmer",
+    "cancel": "Annuler"
+  }
+}

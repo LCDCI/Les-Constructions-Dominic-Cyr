@@ -10,9 +10,17 @@ import { projectApi } from '../../features/projects/api/projectApi';
 import LotList from '../../features/lots/components/LotList';
 import '../../styles/lots.css';
 import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const LotsPage = () => {
-  const { t } = useTranslation(['lots', 'translation']);
+  const { t: tLots } = usePageTranslations('lots');
+  const { t: tGlobal } = useTranslation('translation');
+  const t = (key, defaultValue) => {
+    // Try lots namespace first, then fallback to global
+    const lotsValue = tLots(key, defaultValue);
+    if (lotsValue !== `${'lots'}:${key}`) return lotsValue;
+    return tGlobal(key, defaultValue);
+  };
   const { projectIdentifier: urlProjectIdentifier } = useParams();
   const navigate = useNavigate();
   const {

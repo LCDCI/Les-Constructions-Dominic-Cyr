@@ -1,0 +1,23 @@
+{
+  "title": "Tableau de bord vendeur",
+  "thisWeek": "Cette semaine :",
+  "seeMore": "Voir plus",
+  "cards": {
+    "projects": {
+      "title": "Mes projets",
+      "button": "Voir les projets"
+    },
+    "inbox": {
+      "title": "Boîte de réception",
+      "button": "Voir la boîte de réception"
+    },
+    "documents": {
+      "title": "Documents",
+      "button": "Voir les documents"
+    },
+    "uploads": {
+      "title": "Téléchargements",
+      "button": "Commencer le téléchargement"
+    }
+  }
+}

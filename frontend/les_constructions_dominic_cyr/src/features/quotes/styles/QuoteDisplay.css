@@ -1,0 +1,299 @@
+/* Quote Display Styles */
+
+.quote-display {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.quote-display.loading,
+.quote-display.error,
+.quote-display.empty {
+  text-align: center;
+  padding: 40px 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quote-display.loading {
+  color: #666;
+}
+
+.quote-display.error {
+  color: #d9534f;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.quote-display.empty {
+  color: #999;
+}
+
+/* Quote Selector */
+.quote-selector {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.quote-selector label {
+  font-weight: 600;
+  color: #333;
+}
+
+.quote-selector select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  background-color: white;
+  cursor: pointer;
+}
+
+/* Quote Container */
+.quote-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+/* Quote Header */
+.quote-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 30px;
+}
+
+.quote-number {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quote-number .label {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.quote-number .value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2c3e50;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+.quote-metadata {
+  display: flex;
+  gap: 20px;
+}
+
+.quote-metadata > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quote-metadata .label {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.quote-metadata .value {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Line Items Display */
+.line-items-display {
+  margin-bottom: 30px;
+}
+
+.line-items-display h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.line-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.line-items-table thead {
+  background-color: #f5f5f5;
+}
+
+.line-items-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: #666;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.line-items-table th.col-quantity,
+.line-items-table th.col-rate,
+.line-items-table th.col-total {
+  text-align: right;
+}
+
+.line-items-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #333;
+}
+
+.line-items-table tr:last-child td {
+  border-bottom: none;
+}
+
+.line-items-table td.col-description {
+  font-weight: 500;
+}
+
+.line-items-table td.col-quantity,
+.line-items-table td.col-rate,
+.line-items-table td.col-total {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Quote Totals */
+.quote-totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.total-row {
+  display: flex;
+  gap: 30px;
+  font-size: 14px;
+  width: 300px;
+}
+
+.total-row .label {
+  color: #666;
+  font-weight: 500;
+  flex: 1;
+}
+
+.total-row .amount {
+  color: #333;
+  font-weight: 600;
+  text-align: right;
+  min-width: 100px;
+  font-variant-numeric: tabular-nums;
+}
+
+.total-row.total {
+  border-top: 2px solid #e0e0e0;
+  padding-top: 12px;
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.total-row.total .label {
+  font-weight: 700;
+  color: #333;
+}
+
+.total-row.total .amount {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .quote-container {
+    padding: 16px;
+  }
+
+  .quote-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .quote-metadata {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .line-items-table {
+    font-size: 12px;
+  }
+
+  .line-items-table th,
+  .line-items-table td {
+    padding: 8px 12px;
+  }
+
+  .quote-totals {
+    align-items: flex-end;
+  }
+
+  .total-row {
+    width: 250px;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quote-display {
+    padding: 12px;
+  }
+
+  .quote-container {
+    padding: 12px;
+  }
+
+  .quote-number .value {
+    font-size: 18px;
+  }
+
+  .line-items-table {
+    font-size: 11px;
+  }
+
+  .line-items-table th,
+  .line-items-table td {
+    padding: 6px 8px;
+  }
+
+  .quote-totals {
+    width: 100%;
+  }
+
+  .total-row {
+    width: 100%;
+    gap: 16px;
+  }
+
+  .total-row .amount {
+    min-width: 70px;
+  }
+}

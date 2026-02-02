@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import contractorUseSchedules from '../../features/schedules/hooks/contractorUsesSchedules';
 import ScheduleList from '../../features/schedules/components/ScheduleList';
@@ -8,8 +8,10 @@ import { GoInbox } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { MdOutlineRequestQuote } from 'react-icons/md';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const ContractorDashboard = () => {
+  const { t } = usePageTranslations('contractorDashboard');
   const { schedules, loading, error } = contractorUseSchedules(false);
   const navigate = useNavigate();
 
@@ -17,37 +19,39 @@ const ContractorDashboard = () => {
     navigate('/contractors/schedules/all');
   };
 
-  const dashboardCards = [
-    {
-      icon: <MdOutlineRequestQuote />,
-      title: 'Quotes',
-      buttonText: 'Upload Quote',
-      action: () => navigate('/contractors/quotes'),
-    },
-
-    {
-      icon: <GoPackage />,
-      title: 'Projects',
-      buttonText: 'View Projects',
-      action: () => navigate('/projects'),
-    },
-    {
-      icon: <GoInbox />,
-      title: 'Inbox',
-      buttonText: 'View Inbox',
-      action: () => navigate('/contractors/inbox'),
-    },
-    {
-      icon: <GoFile />,
-      title: 'Documents',
-      buttonText: 'View Documents',
-      action: () => navigate('/contractors/documents'),
-    },
-  ];
+  const dashboardCards = useMemo(
+    () => [
+      {
+        icon: <MdOutlineRequestQuote />,
+        title: t('cards.quotes.title', 'Quotes'),
+        buttonText: t('cards.quotes.button', 'Upload Quote'),
+        action: () => navigate('/contractors/quotes'),
+      },
+      {
+        icon: <GoPackage />,
+        title: t('cards.projects.title', 'Projects'),
+        buttonText: t('cards.projects.button', 'View Projects'),
+        action: () => navigate('/projects'),
+      },
+      {
+        icon: <GoInbox />,
+        title: t('cards.inbox.title', 'Inbox'),
+        buttonText: t('cards.inbox.button', 'View Inbox'),
+        action: () => navigate('/contractors/inbox'),
+      },
+      {
+        icon: <GoFile />,
+        title: t('cards.documents.title', 'Documents'),
+        buttonText: t('cards.documents.button', 'View Documents'),
+        action: () => navigate('/contractors/documents'),
+      },
+    ],
+    [t, navigate]
+  );
 
   return (
     <div className="contractor-dashboard">
-      <h1 className="dashboard-title">Contractor Dashboard</h1>
+      <h1 className="dashboard-title">{t('title', 'Contractor Dashboard')}</h1>
 
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
@@ -62,10 +66,10 @@ const ContractorDashboard = () => {
       </div>
 
       <div className="schedule-section">
-        <h2>Here are your upcoming tasks:</h2>
+        <h2>{t('upcomingTasks', 'Here are your upcoming tasks:')}</h2>
         <ScheduleList schedules={schedules} loading={loading} error={error} />
         <button className="see-more-button" onClick={handleSeeMore}>
-          See more
+          {t('seeMore', 'See more')}
         </button>
       </div>
     </div>

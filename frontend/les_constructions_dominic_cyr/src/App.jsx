@@ -30,6 +30,9 @@ import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
 import PortalLogin from './pages/PortalLogin';
 import TaskDetailsPage from './pages/Tasks/TaskDetailsPage';
 import ProfilePage from './pages/ProfilePage';
+import QuoteListPage from './pages/Quotes/QuoteListPage';
+import QuoteFormPage from './pages/Quotes/QuoteFormPage';
+import QuoteDetailPage from './pages/Quotes/QuoteDetailPage';
 import Unauthorized from './pages/Errors/Unauthorized';
 import NotFound from './pages/Errors/NotFound';
 import ProjectsOverviewPage from './pages/Project/ProjectsOverviewPage';
@@ -288,17 +291,61 @@ export default function App() {
               path="/projects/:projectId/metadata"
               element={<ProjectMetadata />}
             />
+            {/* Specific project routes must come before the generic /projects/:projectIdentifier route */}
             <Route
-              path="/projects/:projectIdentifier"
-              element={<ProjectEntryRouter />}
+              path="/projects/:projectId/files"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectFilesPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/photos"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectPhotosPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/schedule"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectSchedulePage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/lots/:lotId/metadata"
+              element={<LotMetadata />}
             />
             <Route
               path="/projects/:projectIdentifier/lots/select"
               element={<LotSelectPage />}
             />
+            {/* Generic project route must come last to avoid catching specific routes */}
             <Route
-              path="/projects/:projectId/lots/:lotId/metadata"
-              element={<LotMetadata />}
+              path="/projects/:projectIdentifier"
+              element={<ProjectEntryRouter />}
             />
 
             {/* Project team management removed */}
@@ -334,6 +381,36 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['CONTRACTOR']}
                   element={<ContractorDashboard />}
+                />
+              }
+            />
+
+            <Route
+              path="/quotes"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
+                  element={<QuoteListPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/quotes/create"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CONTRACTOR']}
+                  element={<QuoteFormPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/quotes/:quoteNumber"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR', 'CUSTOMER']}
+                  element={<QuoteDetailPage />}
                 />
               }
             />
