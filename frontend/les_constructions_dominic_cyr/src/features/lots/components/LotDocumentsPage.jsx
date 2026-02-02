@@ -511,18 +511,18 @@ const LotDocumentsPage = () => {
             <p className="modal-warning">This action cannot be undone.</p>
             <div className="modal-actions">
               <button
-                onClick={handleDeleteConfirm}
-                className="btn btn-danger"
-                data-testid="confirm-delete-yes"
-              >
-                Delete
-              </button>
-              <button
                 onClick={handleDeleteCancel}
                 className="btn btn-secondary"
                 data-testid="confirm-delete-no"
               >
                 Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="btn btn-danger"
+                data-testid="confirm-delete-yes"
+              >
+                Delete
               </button>
             </div>
           </div>

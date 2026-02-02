@@ -67,7 +67,7 @@
 
 .search-icon {
   position: absolute;
-  left: 12px;
+  left: 16px;
   top: 50%;
   transform: translateY(-50%);
   color: #999;
@@ -352,6 +352,15 @@
   gap: 1rem;
   margin-top: 2rem;
   justify-content: flex-end;
+}
+
+.modal-actions .btn-danger {
+  background: #d32f2f !important;
+  color: white !important;
+}
+
+.modal-actions .btn-danger:hover {
+  background: #c62828 !important;
 }
 
 /* Responsive */
