@@ -84,6 +84,10 @@ public class TranslationRegistry {
         fileIdMap.put("en.projectmetadata", "dbe33040-d8d7-4f4d-92cb-1950a62b2452");
         fileIdMap.put("fr.projectmetadata", "c8bff754-7cf6-4200-bf8a-97e37f01941a");
 
+        // Quotes page translations
+        fileIdMap.put("en.quotes", "9274a2c4-5178-4008-870c-145794588b9f");
+        fileIdMap.put("fr.quotes", "fc34d85b-98e3-4cae-a86d-49ad17b96b60");
+
     }
     
     /**
