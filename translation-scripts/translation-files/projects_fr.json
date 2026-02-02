@@ -13,7 +13,13 @@
     "view": "Voir ce projet",
     "edit": "Modifier",
     "lots": "Voir les lots du projet",
-    "archive": "Archiver"
+    "archive": "Archiver",
+    "actions": "Actions"
+  },
+  "form": {
+    "buttons": {
+      "createProject": "Créer un nouveau projet"
+    }
   },
   "noResults": "Aucun projet trouvé correspondant à \"{{searchTerm}}\"",
   "empty": "Créez votre premier projet!"

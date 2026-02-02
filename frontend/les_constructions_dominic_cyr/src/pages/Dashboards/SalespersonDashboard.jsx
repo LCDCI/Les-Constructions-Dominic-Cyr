@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSchedules from '../../features/schedules/hooks/ownerUseSchedules';
 import ScheduleList from '../../features/schedules/components/ScheduleList';
@@ -8,8 +8,10 @@ import { GoInbox } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
 import { GoArrowUp } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const SalespersonDashboard = () => {
+  const { t } = usePageTranslations('salespersonDashboard');
   const { schedules, loading, error } = useSchedules(false);
   const navigate = useNavigate();
 
@@ -17,36 +19,39 @@ const SalespersonDashboard = () => {
     navigate('/salesperson/schedules/all');
   };
 
-  const dashboardCards = [
-    {
-      icon: <GoPackage />,
-      title: 'My Projects',
-      buttonText: 'View Projects',
-      action: () => navigate('/projects'),
-    },
-    {
-      icon: <GoInbox />,
-      title: 'Inbox',
-      buttonText: 'View Inbox',
-      action: () => navigate('/salesperson/inbox'),
-    },
-    {
-      icon: <GoFile />,
-      title: 'Documents',
-      buttonText: 'View Documents',
-      action: () => navigate('/salesperson/documents'),
-    },
-    {
-      icon: <GoArrowUp />,
-      title: 'Uploads',
-      buttonText: 'Begin Upload',
-      action: () => navigate('/salesperson/uploads'),
-    },
-  ];
+  const dashboardCards = useMemo(
+    () => [
+      {
+        icon: <GoPackage />,
+        title: t('cards.projects.title', 'My Projects'),
+        buttonText: t('cards.projects.button', 'View Projects'),
+        action: () => navigate('/projects'),
+      },
+      {
+        icon: <GoInbox />,
+        title: t('cards.inbox.title', 'Inbox'),
+        buttonText: t('cards.inbox.button', 'View Inbox'),
+        action: () => navigate('/salesperson/inbox'),
+      },
+      {
+        icon: <GoFile />,
+        title: t('cards.documents.title', 'Documents'),
+        buttonText: t('cards.documents.button', 'View Documents'),
+        action: () => navigate('/salesperson/documents'),
+      },
+      {
+        icon: <GoArrowUp />,
+        title: t('cards.uploads.title', 'Uploads'),
+        buttonText: t('cards.uploads.button', 'Begin Upload'),
+        action: () => navigate('/salesperson/uploads'),
+      },
+    ],
+    [t, navigate]
+  );
 
   return (
     <div className="salesperson-dashboard">
-      <h1 className="dashboard-title">Salesperson Dashboard</h1>
+      <h1 className="dashboard-title">{t('title', 'Salesperson Dashboard')}</h1>
 
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
@@ -61,10 +66,10 @@ const SalespersonDashboard = () => {
       </div>
 
       <div className="schedule-section">
-        <h2>This week:</h2>
+        <h2>{t('thisWeek', 'This week:')}</h2>
         <ScheduleList schedules={schedules} loading={loading} error={error} />
         <button className="see-more-button" onClick={handleSeeMore}>
-          See more
+          {t('seeMore', 'See more')}
         </button>
       </div>
     </div>
