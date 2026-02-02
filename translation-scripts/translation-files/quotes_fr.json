@@ -49,6 +49,31 @@
     "notFound": "Facture non trouvée",
     "createSuccess": "Facture créée avec succès!",
     "errorTitle": "Erreur de facture",
+    "viewQuotes": "Factures",
+    "selectProject": "Sélectionner un projet",
+    "selectProjectToView": "Sélectionnez un projet pour voir ses factures",
+    "noProjects": "Aucun projet trouvé",
+    "noProjectsContractor": "Vous n'êtes assigné à aucun projet pour le moment.",
+    "noProjectsOwner": "Aucun projet disponible.",
+    "subtitleContractor": "Voir et gérer vos factures",
+    "subtitleOwner": "Voir toutes les factures de vos projets",
+    "createBillEstimate": "Créer une estimation de facture",
+    "newBill": "Nouvelle facture",
+    "confirmed": "Confirmé",
+    "auto": "Généré automatiquement",
+    "issuedDate": "Date d'émission",
+    "summary": "Résumé",
+    "customer": "Client",
+    "items": "Articles",
+    "preview": "Aperçu",
+    "createQuote": "Créer une facture",
+    "sendFinalInvoice": "Envoyer la facture finale",
+    "common": {
+      "cancel": "Annuler",
+      "back": "Retour",
+      "goBack": "Retour",
+      "submitting": "Envoi en cours..."
+    },
     "errors": {
       "descriptionRequired": "Description requise",
       "hoursInvalid": "Doit être > 0",
@@ -56,7 +81,8 @@
       "fixErrors": "Veuillez corriger les erreurs dans le formulaire",
       "noLot": "Aucun lot sélectionné",
       "createFailed": "Échec de la création de la facture",
-      "atLeastOneItem": "Veuillez ajouter au moins un article à la facture"
+      "atLeastOneItem": "Veuillez ajouter au moins un article à la facture",
+      "notAssignedToLot": "Vous n'êtes pas assigné à ce lot."
     }
   }
 }

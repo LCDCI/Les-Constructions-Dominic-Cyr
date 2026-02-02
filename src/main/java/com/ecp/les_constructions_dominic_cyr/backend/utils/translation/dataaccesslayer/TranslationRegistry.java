@@ -87,8 +87,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.customerdashboard", "6742d6a9-bcfd-4780-b2ec-5c50c27e9493");
         fileIdMap.put("en.salespersondashboard", "6792727a-faac-4fa1-af3b-0c850c6ed022");
         fileIdMap.put("fr.salespersondashboard", "3379cd57-8243-414f-b891-2fcc7a19bd6c");
-        fileIdMap.put("en.contractordashboard", "b2fd3cd8-b168-4c53-bd5f-ee438943dcaa");
-        fileIdMap.put("fr.contractordashboard", "b56ca3fb-bcd5-4e5d-9861-775ca1bc633b");
+        fileIdMap.put("en.contractordashboard", "129b09a5-32d9-426d-98b9-f5da4e2555da");
+        fileIdMap.put("fr.contractordashboard", "6230c4c3-3d42-4b65-bd0c-b402dc24ac9b");
 
         // User management page translations
         fileIdMap.put("en.userspage", "9dd08e21-bfad-452f-9461-8db4c4a9f53a");
@@ -126,20 +126,16 @@ public class TranslationRegistry {
         fileIdMap.put("en.lotmetadata", "04a7731f-86b7-40be-b975-20fea883b9f5");
         fileIdMap.put("fr.lotmetadata", "76f2c2f0-738c-4352-83f2-eff68a82bf0b");
 
-        // Lot Metadata translations (keys normalized to lowercase)
-        fileIdMap.put("en.lotmetadata", "5ab81e0a-2311-4582-9e3e-df56dd8fe4ca");     
-        fileIdMap.put("fr.lotmetadata", "a867f6b6-6337-4309-a6c3-becbdf1b505a");
-
-        // Project Metadata translations (keys normalized to lowercase)
-        fileIdMap.put("en.projectmetadata", "dbe33040-d8d7-4f4d-92cb-1950a62b2452");
-        fileIdMap.put("fr.projectmetadata", "c8bff754-7cf6-4200-bf8a-97e37f01941a");
+        // Contractor Tasks page translations
+        fileIdMap.put("en.contractortasks", "41d7e9bd-7eff-47e7-8295-82bdaec5bfd6");
+        fileIdMap.put("fr.contractortasks", "12c07401-7d32-49db-94ac-7bd639e578bb");
 
         // Navbar translations (for role-specific navbars)
         fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
         fileIdMap.put("fr.navbar", "c9ed527b-48a8-427f-9248-da9e87efbf24");
         // Quotes page translations
-        fileIdMap.put("en.quotes", "39533b35-d0f6-47c5-af6c-c0b9d98420d9");
-        fileIdMap.put("fr.quotes", "1afe0bac-5e34-4a80-945f-39c0ec990dfb");
+        fileIdMap.put("en.quotes", "946a87c9-b8bb-465e-a463-8d5397c72ab4");
+        fileIdMap.put("fr.quotes", "c6f01f88-86a9-4811-8449-1ac1bd492910");
 
     }
     

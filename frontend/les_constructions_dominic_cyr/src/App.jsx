@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  matchPath,
+} from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
@@ -31,6 +37,7 @@ import ProjectPhotosPage from './pages/Project/ProjectPhotosPage';
 import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
 import PortalLogin from './pages/PortalLogin';
 import TaskDetailsPage from './pages/Tasks/TaskDetailsPage';
+import ContractorTasksPage from './pages/Tasks/ContractorTasksPage';
 import ProfilePage from './pages/ProfilePage';
 import QuoteListPage from './pages/Quotes/QuoteListPage';
 import QuoteFormPage from './pages/Quotes/QuoteFormPage';
@@ -43,7 +50,6 @@ import HomeFooter from './components/Footers/HomeFooter';
 import NavigationSetter from './components/NavigationSetter';
 import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import ReportsPage from './pages/ReportsPage';
-import InboxPage from './pages/Inbox/InboxPage';
 import ReactGA from 'react-ga4';
 // import { loadTheme } from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
@@ -548,6 +554,16 @@ export default function App() {
               }
             />
 
+            <Route
+              path="/contractor/tasks"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
+                  element={<ContractorTasksPage />}
+                />
+              }
+            />
+
             <Route path="/portal/login" element={<PortalLogin />} />
 
             <Route
@@ -561,61 +577,6 @@ export default function App() {
                     'CUSTOMER',
                   ]}
                   element={<ProfilePage />}
-                />
-              }
-            />
-
-            <Route
-              path="/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
-                  element={<InboxPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/owner/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['OWNER']}
-                  element={<InboxPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/salesperson/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['SALESPERSON']}
-                  element={<InboxPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/contractors/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['CONTRACTOR']}
-                  element={<InboxPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/customers/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['CUSTOMER']}
-                  element={<InboxPage />}
                 />
               }
             />

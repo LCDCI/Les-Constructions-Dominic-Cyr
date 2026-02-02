@@ -17,9 +17,15 @@ export function useBackendUser() {
   const [error, setError] = useState(null);
 
   const loadProfile = useCallback(async () => {
-    if (!isAuthenticated || !auth0User || isLoading) {
+    if (!isAuthenticated || !auth0User) {
       setProfile(null);
       setLoading(false);
+      return;
+    }
+
+    if (isLoading) {
+      // Keep loading true while Auth0 is initializing
+      setLoading(true);
       return;
     }
 
@@ -32,6 +38,7 @@ export function useBackendUser() {
       const data = await fetchUserByAuth0Id(auth0User.sub, token);
       setProfile(data);
     } catch (err) {
+      console.error('[useBackendUser] Error fetching user:', err);
       setError(err);
     } finally {
       setLoading(false);

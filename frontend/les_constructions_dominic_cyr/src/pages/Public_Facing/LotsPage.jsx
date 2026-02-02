@@ -357,6 +357,7 @@ const LotsPage = () => {
           </button>
         </div>
       </div>
+      <Footer projectId={urlProjectIdentifier} />
     </div>
   );
 };

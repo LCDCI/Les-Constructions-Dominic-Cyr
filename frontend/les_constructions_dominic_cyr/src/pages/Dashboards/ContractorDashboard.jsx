@@ -7,6 +7,7 @@ import '../../styles/Dashboards/ContractorDashboard.css';
 import { GoInbox } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
+import { GoTasklist } from 'react-icons/go';
 import { MdOutlineRequestQuote } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -16,11 +17,17 @@ const ContractorDashboard = () => {
   const navigate = useNavigate();
 
   const handleSeeMore = () => {
-    navigate('/contractors/schedules/all');
+    navigate('/contractor/tasks');
   };
 
   const dashboardCards = useMemo(
     () => [
+      {
+        icon: <GoTasklist />,
+        title: t('cards.myTasks.title', 'My Tasks'),
+        buttonText: t('cards.myTasks.button', 'View My Tasks'),
+        action: () => navigate('/contractor/tasks'),
+      },
       {
         icon: <MdOutlineRequestQuote />,
         title: t('cards.quotes.title', 'Quotes'),
