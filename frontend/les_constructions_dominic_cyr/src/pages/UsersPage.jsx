@@ -18,8 +18,10 @@ import UserStatusModal from '../features/users/components/UserStatusModal';
 import InviteLinkModal from '../features/users/components/InviteLinkModal';
 import ErrorModal from '../features/users/components/ErrorModal';
 import '../styles/users.css';
+import { usePageTranslations } from '../hooks/usePageTranslations';
 
 export default function UsersPage() {
+  const { t } = usePageTranslations('usersPage');
   const { getAccessTokenSilently } = useAuth0();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -62,7 +64,7 @@ export default function UsersPage() {
         setUsers(usersData);
         setCurrentUser(currentUserData);
       } catch (err) {
-        setLoadingError('Failed to load users.');
+        setLoadingError(t('error', 'Failed to load users.'));
       } finally {
         setLoading(false);
       }
@@ -99,7 +101,10 @@ export default function UsersPage() {
 
       setIsAddModalOpen(false);
     } catch (err) {
-      let niceMessage = 'Failed to create user.  Please try again.';
+      let niceMessage = t(
+        'errors.createFailed',
+        'Failed to create user. Please try again.'
+      );
       if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
@@ -149,7 +154,10 @@ export default function UsersPage() {
       setIsOwnerEditModalOpen(false);
       setEditingUser(null);
     } catch (err) {
-      let niceMessage = 'Failed to update user. Please try again.';
+      let niceMessage = t(
+        'errors.updateFailed',
+        'Failed to update user. Please try again.'
+      );
       if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
@@ -202,7 +210,10 @@ export default function UsersPage() {
       setIsStatusModalOpen(false);
       setManagingUser(null);
     } catch (err) {
-      let niceMessage = 'Failed to update user status. Please try again.';
+      let niceMessage = t(
+        'errors.statusFailed',
+        'Failed to update user status. Please try again.'
+      );
       if (err.response?.data?.message) {
         niceMessage = err.response.data.message;
       }
@@ -221,26 +232,32 @@ export default function UsersPage() {
   return (
     <div className="page users-page">
       <div className="page-header">
-        <h1>Users</h1>
+        <h1>{t('title', 'Users')}</h1>
         <div className="header-actions">
           <div className="filter-container">
-            <label htmlFor="status-filter">Status:</label>
+            <label htmlFor="status-filter">{t('status', 'Status:')}</label>
             <select
               id="status-filter"
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value)}
               className="status-filter-select"
             >
-              <option value="ACTIVE">Active</option>
-              <option value="INACTIVE">Inactive</option>
-              <option value="ALL">All</option>
+              <option value="ACTIVE">
+                {t('statusOptions.active', 'Active')}
+              </option>
+              <option value="INACTIVE">
+                {t('statusOptions.inactive', 'Inactive')}
+              </option>
+              <option value="ALL">{t('statusOptions.all', 'All')}</option>
             </select>
           </div>
-          <button onClick={() => setIsAddModalOpen(true)}>Add User</button>
+          <button onClick={() => setIsAddModalOpen(true)}>
+            {t('addUser', 'Add User')}
+          </button>
         </div>
       </div>
 
-      {loading && <p>Loading users...</p>}
+      {loading && <p>{t('loading', 'Loading users...')}</p>}
       {loadingError && <p className="error">{loadingError}</p>}
 
       {!loading && !loadingError && (
@@ -292,7 +309,7 @@ export default function UsersPage() {
 
       <ErrorModal
         isOpen={isErrorModalOpen}
-        title="User Operation Failed"
+        title={t('errors.operationFailed', 'User Operation Failed')}
         message={errorMessage}
         onClose={() => setIsErrorModalOpen(false)}
       />

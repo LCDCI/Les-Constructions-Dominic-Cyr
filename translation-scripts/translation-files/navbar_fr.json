@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "dashboard": "Tableau de bord",
+    "management": "Gestion",
+    "administrative": "Administratif",
+    "settings": "Paramètres"
+  },
+  "menuItems": {
+    "dashboard": "Tableau de bord",
+    "home": "Accueil",
+    "inbox": "Boîte de réception",
+    "inquiries": "Demandes",
+    "projects": "Projets",
+    "forms": "Formulaires",
+    "uploads": "Téléchargements",
+    "documents": "Documents",
+    "lots": "Terrains",
+    "users": "Utilisateurs",
+    "analyticsReports": "Analyses et rapports",
+    "quotes": "Devis",
+    "myProfile": "Mon profil",
+    "accountSettings": "Paramètres du compte",
+    "notificationPreferences": "Préférences de notification",
+    "logout": "Déconnexion"
+  }
+}

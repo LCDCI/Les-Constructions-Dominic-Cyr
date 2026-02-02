@@ -1,0 +1,39 @@
+{
+  "title": "Owner Dashboard",
+  "thisWeek": "This week:",
+  "seeMore": "See more",
+  "cards": {
+    "uploads": {
+      "title": "Uploads",
+      "button": "Begin Upload"
+    },
+    "analytics": {
+      "title": "Analytics & Reports",
+      "button": "View Reports"
+    },
+    "projects": {
+      "title": "Projects",
+      "button": "View Projects"
+    },
+    "inbox": {
+      "title": "Inbox",
+      "button": "View Inbox"
+    },
+    "documents": {
+      "title": "Documents",
+      "button": "View Documents"
+    },
+    "users": {
+      "title": "Users",
+      "button": "View Users"
+    },
+    "forms": {
+      "title": "Forms",
+      "button": "Create Form"
+    },
+    "lots": {
+      "title": "Lots",
+      "button": "Add"
+    }
+  }
+}

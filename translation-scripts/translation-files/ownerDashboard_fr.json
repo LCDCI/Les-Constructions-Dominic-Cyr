@@ -1,0 +1,39 @@
+{
+  "title": "Tableau de bord propriétaire",
+  "thisWeek": "Cette semaine :",
+  "seeMore": "Voir plus",
+  "cards": {
+    "uploads": {
+      "title": "Téléchargements",
+      "button": "Commencer le téléchargement"
+    },
+    "analytics": {
+      "title": "Analyses et rapports",
+      "button": "Voir les rapports"
+    },
+    "projects": {
+      "title": "Projets",
+      "button": "Voir les projets"
+    },
+    "inbox": {
+      "title": "Boîte de réception",
+      "button": "Voir la boîte de réception"
+    },
+    "documents": {
+      "title": "Documents",
+      "button": "Voir les documents"
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "button": "Voir les utilisateurs"
+    },
+    "forms": {
+      "title": "Formulaires",
+      "button": "Créer un formulaire"
+    },
+    "lots": {
+      "title": "Lots",
+      "button": "Ajouter"
+    }
+  }
+}
