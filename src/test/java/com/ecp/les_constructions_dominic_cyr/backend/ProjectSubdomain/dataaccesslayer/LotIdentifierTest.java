@@ -3,11 +3,14 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.dataacces
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class LotIdentifierTest {
 
-    private static final String CUSTOM_ID = "Custom-Lot-ID-789";
+    private static final String CUSTOM_ID = UUID.randomUUID().toString();
 
     @Test
     @DisplayName("NoArgsConstructor (Default) should generate a random UUID")
@@ -17,7 +20,7 @@ class LotIdentifierTest {
 
         // ASSERT
         assertNotNull(identifier.getLotId(), "The LotId should not be null");
-        assertDoesNotThrow(() -> java.util.UUID.fromString(identifier.getLotId()), "The generated LotId should be a valid UUID");
+        assertDoesNotThrow(() -> UUID.fromString(identifier.getLotId().toString()), "The generated LotId should be a valid UUID");
     }
 
     @Test
@@ -27,7 +30,7 @@ class LotIdentifierTest {
         LotIdentifier identifier = new LotIdentifier(CUSTOM_ID);
 
         // ASSERT
-        assertEquals(CUSTOM_ID, identifier.getLotId(), "The LotId should match the custom value provided");
+        assertEquals(UUID.fromString(CUSTOM_ID), identifier.getLotId(), "The LotId should match the custom value provided");
     }
 
     @Test
@@ -45,22 +48,8 @@ class LotIdentifierTest {
     }
 
     @Test
-    @DisplayName("toString() should return the expected formatted string when LotId is null")
-    void toString_WithNullLotId_ReturnsFormattedString() {
-        // ARRANGE
-        // Create an identifier instance and set lotId to null via reflection, or directly via constructor if possible.
-        // Since we are fixing coverage, we can use the argument constructor for nullability testing.
-        LotIdentifier identifier = new LotIdentifier(null);
-
-        // Use reflection to set the field to null if the constructor guards against it,
-        // but since the provided toString() handles null, we assume the constructor allows it.
-
-        String expected = "LotIdentifier{lotId=''}"; // Expect empty quotes for null/empty handling
-
-        // ACT
-        String result = identifier.toString();
-
-        // ASSERT
-        assertEquals(expected, result);
+    @DisplayName("Argument Constructor should throw for null LotId")
+    void argumentConstructor_WithNullLotId_Throws() {
+        assertThrows(NullPointerException.class, () -> new LotIdentifier(null));
     }
 }

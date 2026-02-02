@@ -101,34 +101,34 @@ public class LotServiceUnitTest {
     // ==== GET BY ID ====
     @Test
     public void whenGetByIdFound_thenReturnDto() {
-        String id = "found-id-1";
+        String id = "3cf1b7e2-25fa-4a1b-9fe6-6a582f3d6c7a";
         var entity = buildLotEntity(id, "Lot-123", "FoundLoc", 150f, "1500", "139.4", LotStatus.AVAILABLE);
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(entity);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(entity);
 
         LotResponseModel resp = lotService.getLotById(id);
 
         assertNotNull(resp);
         assertEquals(id, resp.getLotId());
         assertEquals("FoundLoc", resp.getCivicAddress());
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(id);
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(UUID.fromString(id));
     }
 
     @Test
     public void whenGetByIdNotFound_thenThrowNotFound() {
-        String id = "no-such-id";
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(null);
+        String id = "ec8a60ea-7a5b-4a2a-9e92-08ba64d5b20e";
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(null);
 
         NotFoundException ex = assertThrows(NotFoundException.class, () -> lotService.getLotById(id));
         assertTrue(ex.getMessage().contains("Unknown Lot Id"));
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(id);
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(UUID.fromString(id));
     }
 
     @Test
     public void whenGetByIdWithAssignedCustomer_thenReturnDtoWithCustomerInfo() {
-        String id = "found-id-2";
+        String id = "2c1788f0-24af-4a5a-8e19-5bb9cb8cfef6";
         var entity = buildLotEntity(id, "Lot-124", "CustomerLoc", 200f, "2000", "185.8", LotStatus.SOLD);
-        entity.getAssignedUsers().add(testCustomer);
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(entity);
+        entity.setAssignedUsers(List.of(testCustomer));
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(entity);
 
         LotResponseModel resp = lotService.getLotById(id);
 
@@ -160,7 +160,7 @@ public class LotServiceUnitTest {
         when(lotRepository.save(any(Lot.class))).thenAnswer(invocation -> {
             Lot arg = invocation.getArgument(0);
             if (arg.getLotIdentifier() == null) {
-                arg.setLotIdentifier(new LotIdentifier("gen-id"));
+                arg.setLotIdentifier(new LotIdentifier(UUID.randomUUID().toString()));
             }
             return arg;
         });
@@ -194,7 +194,7 @@ public class LotServiceUnitTest {
         when(lotRepository.save(any(Lot.class))).thenAnswer(invocation -> {
             Lot arg = invocation.getArgument(0);
             if (arg.getLotIdentifier() == null) {
-                arg.setLotIdentifier(new LotIdentifier("gen-id-2"));
+                arg.setLotIdentifier(new LotIdentifier(UUID.randomUUID().toString()));
             }
             return arg;
         });
@@ -228,6 +228,13 @@ public class LotServiceUnitTest {
                 .thenReturn(Optional.of(testProject));
         when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(testCustomerId)))
                 .thenReturn(Optional.of(contractor));
+        when(lotRepository.save(any(Lot.class))).thenAnswer(invocation -> {
+            Lot arg = invocation.getArgument(0);
+            if (arg.getLotIdentifier() == null) {
+                arg.setLotIdentifier(new LotIdentifier(UUID.randomUUID().toString()));
+            }
+            return arg;
+        });
 
         // This should not throw anymore since we support all roles
         assertDoesNotThrow(() -> lotService.addLotToProject(testProjectIdentifier, req));
@@ -242,10 +249,10 @@ public class LotServiceUnitTest {
     // ==== UPDATE ====
     @Test
     public void whenUpdateExisting_thenReturnUpdatedDto() {
-        String id = "upd-id-1";
+        String id = "4f1c5f66-2c8f-4e8a-a4ef-5c4cc3a0f4c1";
         var stored = buildLotEntity(id, "Lot-789", "OldLoc", 50f, "500", "46.5", LotStatus.AVAILABLE);
 
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(stored);
         when(lotRepository.save(stored)).thenReturn(stored);
 
         LotRequestModel req = new LotRequestModel();
@@ -261,16 +268,16 @@ public class LotServiceUnitTest {
         assertNotNull(resp);
         assertEquals("NewLoc", resp.getCivicAddress());
         assertEquals(LotStatus.SOLD, resp.getLotStatus());
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(id);
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(UUID.fromString(id));
         verify(lotRepository, times(1)).save(stored);
     }
 
     @Test
     public void whenUpdateWithCustomerAssignment_thenReturnUpdatedDtoWithCustomer() {
-        String id = "upd-id-2";
+        String id = "9a12c63b-1169-498b-96f7-6a78744b1b6f";
         var stored = buildLotEntity(id, "Lot-800", "OldLoc2", 70f, "700", "65.0", LotStatus.AVAILABLE);
 
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(stored);
         when(usersRepository.findByUserIdentifier_UserId(UUID.fromString(testCustomerId)))
                 .thenReturn(Optional.of(testCustomer));
         when(lotRepository.save(stored)).thenReturn(stored);
@@ -295,11 +302,11 @@ public class LotServiceUnitTest {
 
     @Test
     public void whenUpdateRemoveCustomerAssignment_thenReturnDtoWithoutCustomer() {
-        String id = "upd-id-3";
+        String id = "b5e5a81d-2e24-4247-9d75-e41597a0cfd1";
         var stored = buildLotEntity(id, "Lot-801", "OldLoc3", 80f, "800", "74.3", LotStatus.SOLD);
-        stored.getAssignedUsers().add(testCustomer);
+        stored.setAssignedUsers(List.of(testCustomer));
 
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(stored);
         when(lotRepository.save(stored)).thenReturn(stored);
 
         LotRequestModel req = new LotRequestModel();
@@ -319,19 +326,19 @@ public class LotServiceUnitTest {
 
     @Test
     public void whenUpdateNonExisting_thenThrowNotFound() {
-        String id = "missing-id";
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(null);
+        String id = "1a6f0f80-5c24-457b-9d61-5649c2f7a8d7";
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(null);
         LotRequestModel req = new LotRequestModel();
         assertThrows(NotFoundException.class, () -> lotService.updateLot(req, id));
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(id);
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(UUID.fromString(id));
     }
 
     // ==== DELETE ====
     @Test
     public void whenDeleteExisting_thenDeletes() {
-        String id = "del-id-1";
+        String id = "6c2d9c67-391f-4b7c-86c1-7be1df4f2e0b";
         var stored = buildLotEntity(id, "Lot-999", "Rem", 10f, "100", "9.3", LotStatus.AVAILABLE);
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(stored);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(stored);
 
         assertDoesNotThrow(() -> lotService.deleteLot(id));
         verify(lotRepository, times(1)).delete(stored);
@@ -339,10 +346,10 @@ public class LotServiceUnitTest {
 
     @Test
     public void whenDeleteNonExisting_thenThrowNotFound() {
-        String id = "not-exist";
-        when(lotRepository.findByLotIdentifier_LotId(id)).thenReturn(null);
+        String id = "a6d4b9a1-6f59-4b1b-93a2-75bfe3b2bd3a";
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(id))).thenReturn(null);
         assertThrows(NotFoundException.class, () -> lotService.deleteLot(id));
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(id);
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(UUID.fromString(id));
     }
 
     // ==== CUSTOMER VALIDATION ====

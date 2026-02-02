@@ -22,8 +22,8 @@ public class TranslationRegistry {
     
     public TranslationRegistry() {
         // Home page translations
-        fileIdMap.put("en.home", "205acf87-9200-425a-98fe-d874c6580481");
-        fileIdMap.put("fr.home", "5d054972-c8a2-40cd-86bb-3ed8b9207647");
+        fileIdMap.put("en.home", "cb5d4f09-eabb-47df-9161-866ba10bce72");
+        fileIdMap.put("fr.home", "edfca72f-b970-410c-b88c-2f3a97301662");
         
         // Contact page translations
         fileIdMap.put("en.contact", "54897f58-2f88-4e2a-81b2-cced943541bb");
@@ -134,8 +134,8 @@ public class TranslationRegistry {
         fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
         fileIdMap.put("fr.navbar", "c9ed527b-48a8-427f-9248-da9e87efbf24");
         // Quotes page translations
-        fileIdMap.put("en.quotes", "9274a2c4-5178-4008-870c-145794588b9f");
-        fileIdMap.put("fr.quotes", "fc34d85b-98e3-4cae-a86d-49ad17b96b60");
+        fileIdMap.put("en.quotes", "946a87c9-b8bb-465e-a463-8d5397c72ab4");
+        fileIdMap.put("fr.quotes", "c6f01f88-86a9-4811-8449-1ac1bd492910");
 
     }
     

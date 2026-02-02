@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -91,7 +92,8 @@ public class IndividualProjectMetadataServiceImpl implements IndividualProjectMe
 
         List<String> lotIdentifiers = project.getLotIdentifiers();
         if (lotIdentifiers != null && !lotIdentifiers.isEmpty()) {
-            Lot firstLot = lotRepository.findByLotIdentifier_LotId(lotIdentifiers.get(0));
+            UUID lotUuid = UUID.fromString(lotIdentifiers.get(0));
+            Lot firstLot = lotRepository.findByLotIdentifier_LotId(lotUuid);
             if (firstLot != null && firstLot.getCivicAddress() != null) {
                 return firstLot.getCivicAddress();
             }

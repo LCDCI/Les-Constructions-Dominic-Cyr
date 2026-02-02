@@ -12,6 +12,7 @@ import {
 } from 'react-leaflet';
 import { IoLeafOutline } from 'react-icons/io5';
 import { LuMapPinned } from 'react-icons/lu';
+import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import '../../styles/Project/projectOverview.css';
 import '../../styles/Public_Facing/residential-projects.css';
 import '../../styles/Public_Facing/overviewMap.css';
@@ -527,6 +528,7 @@ const ProjectOverviewPage = () => {
           &larr; {t('backToProjects', 'Back to Residential Projects')}
         </button>
       </div>
+      <ProjectsFooter projectId={projectIdentifier} />
     </div>
   );
 };

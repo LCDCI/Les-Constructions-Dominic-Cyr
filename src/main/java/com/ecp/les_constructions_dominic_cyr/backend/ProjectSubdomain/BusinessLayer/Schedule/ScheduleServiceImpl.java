@@ -24,6 +24,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -75,7 +76,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         Lot lot = resolveLot(scheduleRequestDTO.getLotId());
         Schedule schedule = scheduleMapper.requestDTOToEntity(scheduleRequestDTO);
-        schedule.setLotNumber(lot.getLotIdentifier().getLotId());
+        schedule.setLotNumber(lot.getLotIdentifier().getLotId().toString());
         Schedule savedSchedule = scheduleRepository.save(schedule);
 
         log.info("Schedule created with identifier: {}", savedSchedule.getScheduleIdentifier());
@@ -93,7 +94,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
 
         scheduleMapper.updateEntityFromRequestDTO(existingSchedule, scheduleRequestDTO);
-        existingSchedule.setLotNumber(lot.getLotIdentifier().getLotId());
+        existingSchedule.setLotNumber(lot.getLotIdentifier().getLotId().toString());
         Schedule updatedSchedule = scheduleRepository.save(existingSchedule);
 
         log.info("Schedule updated: {}", scheduleIdentifier);
@@ -264,7 +265,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         Lot lot = resolveLot(scheduleRequestDTO.getLotId());
         Schedule schedule = scheduleMapper.requestDTOToEntity(scheduleRequestDTO);
         schedule.setProject(project);
-        schedule.setLotNumber(lot.getLotIdentifier().getLotId());
+        schedule.setLotNumber(lot.getLotIdentifier().getLotId().toString());
         Schedule savedSchedule = scheduleRepository.save(schedule);
         
         log.info("Schedule created with identifier: {} for project: {}", savedSchedule.getScheduleIdentifier(), projectIdentifier);
@@ -288,7 +289,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         validateScheduleBelongsToProject(existingSchedule, projectIdentifier);
         
         scheduleMapper.updateEntityFromRequestDTO(existingSchedule, scheduleRequestDTO);
-        existingSchedule.setLotNumber(lot.getLotIdentifier().getLotId());
+        existingSchedule.setLotNumber(lot.getLotIdentifier().getLotId().toString());
         Schedule updatedSchedule = scheduleRepository.save(existingSchedule);
         
         log.info("Schedule {} updated for project {}", scheduleIdentifier, projectIdentifier);
@@ -296,7 +297,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     private Lot resolveLot(String lotId) {
-        Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
+        UUID lotUuid = UUID.fromString(lotId);
+        Lot lot = lotRepository.findByLotIdentifier_LotId(lotUuid);
         if (lot == null) {
             throw new NotFoundException("Lot not found with id: " + lotId);
         }

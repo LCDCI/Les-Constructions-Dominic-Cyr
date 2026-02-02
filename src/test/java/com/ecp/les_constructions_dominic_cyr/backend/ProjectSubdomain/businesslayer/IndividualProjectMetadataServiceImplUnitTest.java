@@ -58,6 +58,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         private UUID salespersonUUID;
         private UUID customerUUID;
         private static final String OWNER_AUTH0_ID = "auth0|owner-user";
+                private static final String LOT_001_ID = UUID.randomUUID().toString();
 
     @BeforeEach
     void setUp() {
@@ -83,7 +84,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         testProject.setContractorIds(new ArrayList<>(Arrays.asList(contractorUUID.toString())));
         testProject.setSalespersonIds(new ArrayList<>(Arrays.asList(salespersonUUID.toString())));
         testProject.setCustomerId(customerUUID.toString());
-        testProject.setLotIdentifiers(new ArrayList<>(Arrays.asList("lot-001")));
+        testProject.setLotIdentifiers(new ArrayList<>(Arrays.asList(LOT_001_ID)));
 
         contractorUser = new Users();
         contractorUser.setUserIdentifier(createUserIdentifier(contractorUUID));
@@ -117,7 +118,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
                 ownerUser.setUserRole(UserRole.OWNER);
                 ownerUser.setAuth0UserId(OWNER_AUTH0_ID);
 
-        testLot = new Lot(new LotIdentifier("lot-001"), "Lot-001", "Downtown Location", 500000f, "5000", "464.5", LotStatus.AVAILABLE);
+        testLot = new Lot(new LotIdentifier(LOT_001_ID), "Lot-001", "Downtown Location", 500000f, "5000", "464.5", LotStatus.AVAILABLE);
 
                 lenient().when(usersRepository.findByAuth0UserId(anyString())).thenReturn(Optional.of(ownerUser));
     }
@@ -291,7 +292,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         testProject.setLocation(null);
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
-        when(lotRepository.findByLotIdentifier_LotId(eq("lot-001")))
+        when(lotRepository.findByLotIdentifier_LotId(eq(UUID.fromString(LOT_001_ID))))
                 .thenReturn(testLot);
         when(usersRepository.findById(any(UserIdentifier.class)))
                 .thenReturn(Optional.empty());
@@ -303,7 +304,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         assertNotNull(result);
         assertEquals("Downtown Location", result.getLocation());
 
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq("lot-001"));
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq(UUID.fromString(LOT_001_ID)));
     }
 
     @Test
@@ -312,7 +313,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         testProject.setLocation("");
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
-        when(lotRepository.findByLotIdentifier_LotId(eq("lot-001")))
+        when(lotRepository.findByLotIdentifier_LotId(eq(UUID.fromString(LOT_001_ID))))
                 .thenReturn(testLot);
         when(usersRepository.findById(any(UserIdentifier.class)))
                 .thenReturn(Optional.empty());
@@ -324,7 +325,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         assertNotNull(result);
         assertEquals("Downtown Location", result.getLocation());
 
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq("lot-001"));
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq(UUID.fromString(LOT_001_ID)));
     }
 
     @Test
@@ -353,7 +354,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         testProject.setLocation(null);
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
-        when(lotRepository.findByLotIdentifier_LotId(eq("lot-001")))
+        when(lotRepository.findByLotIdentifier_LotId(eq(UUID.fromString(LOT_001_ID))))
                 .thenReturn(null);
         when(usersRepository.findById(any(UserIdentifier.class)))
                 .thenReturn(Optional.empty());
@@ -365,7 +366,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         assertNotNull(result);
         assertEquals("Location not specified", result.getLocation());
 
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq("lot-001"));
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq(UUID.fromString(LOT_001_ID)));
     }
 
     @Test
@@ -375,7 +376,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         testLot.setCivicAddress(null);
         when(projectRepository.findByProjectIdentifier(eq("proj-metadata-001")))
                 .thenReturn(Optional.of(testProject));
-        when(lotRepository.findByLotIdentifier_LotId(eq("lot-001")))
+        when(lotRepository.findByLotIdentifier_LotId(eq(UUID.fromString(LOT_001_ID))))
                 .thenReturn(testLot);
         when(usersRepository.findById(any(UserIdentifier.class)))
                 .thenReturn(Optional.empty());
@@ -387,7 +388,7 @@ public class IndividualProjectMetadataServiceImplUnitTest {
         assertNotNull(result);
         assertEquals("Location not specified", result.getLocation());
 
-        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq("lot-001"));
+        verify(lotRepository, times(1)).findByLotIdentifier_LotId(eq(UUID.fromString(LOT_001_ID)));
     }
 
     @Test

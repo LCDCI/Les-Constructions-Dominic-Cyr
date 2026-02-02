@@ -17,12 +17,19 @@ import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
 import { CgProfile } from 'react-icons/cg';
 
-const Navbar = () => {
+const Navbar = ({
+  isOpen: controlledOpen,
+  onToggle,
+  onClose,
+  showToggle = true,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { logout, isAuthenticated } = useAuth0();
   const { t } = useTranslation();
   const { unreadCount } = useUnreadCount();
+  const isControlled = typeof controlledOpen === 'boolean';
+  const menuOpen = isControlled ? controlledOpen : isOpen;
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
@@ -36,25 +43,32 @@ const Navbar = () => {
   const logoId = import.meta.env.VITE_LOGO_ID;
 
   const toggleMenu = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen) {
+    if (onToggle) {
+      onToggle();
+      return;
+    }
+    setIsOpen(prev => !prev);
+  };
+
+  const closeMenu = () => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+    setIsOpen(false);
+  };
+
+  useEffect(() => {
+    if (menuOpen) {
       document.body.classList.add('menu-open');
     } else {
       document.body.classList.remove('menu-open');
     }
-  };
 
-  const closeMenu = () => {
-    setIsOpen(false);
-    document.body.classList.remove('menu-open');
-  };
-
-  useEffect(() => {
-    // Cleanup on unmount
     return () => {
       document.body.classList.remove('menu-open');
     };
-  }, []);
+  }, [menuOpen]);
 
   const isActive = path => {
     return location.pathname === path ? 'active' : '';
@@ -71,22 +85,24 @@ const Navbar = () => {
   return (
     <>
       <div
-        className={`navbar-overlay ${isOpen ? 'active' : ''}`}
+        className={`navbar-overlay ${menuOpen ? 'active' : ''}`}
         onClick={closeMenu}
         aria-hidden="true"
       />
 
-      <button
-        className="navbar-toggle"
-        onClick={toggleMenu}
-        aria-label="Toggle navigation menu"
-        aria-expanded={isOpen}
-      >
-        <span className="hamburger-line"></span>
-        <span className="hamburger-line"></span>
-        <span className="hamburger-line"></span>
-      </button>
-      <aside className={`navbar-sidebar ${isOpen ? 'open' : ''}`}>
+      {showToggle && (
+        <button
+          className="navbar-toggle"
+          onClick={toggleMenu}
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+        >
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+        </button>
+      )}
+      <aside className={`navbar-sidebar ${menuOpen ? 'open' : ''}`}>
         <nav className="navbar-sidebar-nav">
           <div className="navbar-section">
             <h3 className="navbar-section-title">
