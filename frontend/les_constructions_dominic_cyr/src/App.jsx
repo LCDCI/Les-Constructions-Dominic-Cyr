@@ -32,6 +32,7 @@ import TaskDetailsPage from './pages/Tasks/TaskDetailsPage';
 import ProfilePage from './pages/ProfilePage';
 import QuoteListPage from './pages/Quotes/QuoteListPage';
 import QuoteFormPage from './pages/Quotes/QuoteFormPage';
+import QuoteDetailPage from './pages/Quotes/QuoteDetailPage';
 import Unauthorized from './pages/Errors/Unauthorized';
 import NotFound from './pages/Errors/NotFound';
 import ProjectsOverviewPage from './pages/Project/ProjectsOverviewPage';
@@ -356,6 +357,16 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['CONTRACTOR']}
                   element={<QuoteFormPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/quotes/:quoteNumber"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR', 'CUSTOMER']}
+                  element={<QuoteDetailPage />}
                 />
               }
             />

@@ -22,6 +22,11 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
     List<Quote> findByProjectIdentifier(String projectIdentifier);
 
     /**
+     * Find all quotes for a specific lot.
+     */
+    List<Quote> findByLotIdentifier(String lotIdentifier);
+
+    /**
      * Find all quotes created by a specific contractor.
      */
     List<Quote> findByContractorId(String contractorId);

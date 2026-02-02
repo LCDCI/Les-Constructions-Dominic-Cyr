@@ -28,6 +28,8 @@ public class QuoteMapper {
         Quote quote = Quote.builder()
             .quoteNumber(quoteNumber)
             .projectIdentifier(requestModel.getProjectIdentifier())
+            .lotIdentifier(requestModel.getLotIdentifier())
+            .category(requestModel.getCategory())
             .contractorId(contractorId)
             .totalAmount(BigDecimal.ZERO) // Will be recalculated
             .build();
@@ -54,6 +56,8 @@ public class QuoteMapper {
         return QuoteResponseModel.builder()
             .quoteNumber(quote.getQuoteNumber())
             .projectIdentifier(quote.getProjectIdentifier())
+            .lotIdentifier(quote.getLotIdentifier())
+            .category(quote.getCategory())
             .contractorId(quote.getContractorId())
             .lineItems(
                 quote.getLineItems().stream()

@@ -3,14 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
-import { MdDelete, MdAdd } from 'react-icons/md';
-import { AiOutlineEye, AiOutlineDownload } from 'react-icons/ai';
+import { MdDelete, MdAdd, MdClose } from 'react-icons/md';
+import { AiOutlineEye } from 'react-icons/ai';
+import ErrorModal from '../../features/users/components/ErrorModal';
 import './QuoteFormPage.css';
 
 /**
  * QuoteFormPage Component
- * Create/Edit Bill Estimate matching second screenshot design
- * Shows contractor info, bill number, item details, discount, tax, totals
+ * Premium Create/Edit Bill Estimate with full customer info and payment terms
  */
 const QuoteFormPage = () => {
   const { t } = useTranslation();
@@ -18,13 +18,14 @@ const QuoteFormPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { projectIdentifier, projectName } = location.state || {};
+  const { lotIdentifier, lotNumber, projectIdentifier, projectName } = location.state || {};
 
+  // Form state
   const [lineItems, setLineItems] = useState([
     {
       id: 1,
       itemDescription: '',
-      quantity: '',
+      hours: '',
       rate: '',
       displayOrder: 1,
       errors: {},
@@ -33,13 +34,39 @@ const QuoteFormPage = () => {
   const [nextId, setNextId] = useState(2);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [discountPercentage, setDiscountPercentage] = useState(0);
-  const [taxPercentage, setTaxPercentage] = useState(13); // QC default
+  const [gstPercentage, setGstPercentage] = useState(5); // Quebec GST
+  const [qstPercentage, setQstPercentage] = useState(9.975); // Quebec QST
   const [token, setToken] = useState(null);
-  
-  // Contractor info
+  const [showPreview, setShowPreview] = useState(false);
+  const [generatedQuoteNumber, setGeneratedQuoteNumber] = useState(null);
+
+  // Info state
   const [contractorInfo, setContractorInfo] = useState(null);
   const [projectInfo, setProjectInfo] = useState(null);
+  const [customerInfo, setCustomerInfo] = useState(null);
+
+  // Additional form fields
+  const [formData, setFormData] = useState({
+    category: 'Kitchen',
+    description: '',
+    paymentTerms: 'Net 30',
+    deliveryDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    notes: '',
+  });
+
+  const quoteCategories = [
+    'Kitchen',
+    'Bathroom',
+    'Flooring',
+    'Painting',
+    'Electrical',
+    'Plumbing',
+    'Roofing',
+    'Renovation',
+    'Custom',
+  ];
 
   useEffect(() => {
     const initializeForm = async () => {
@@ -47,15 +74,18 @@ const QuoteFormPage = () => {
         const accessToken = await getAccessTokenSilently();
         setToken(accessToken);
 
-        // Fetch contractor info from user profile
+        // Fetch contractor info
         const userResponse = await axios.get('/api/v1/users/me', {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
 
         if (userResponse.data) {
           setContractorInfo({
-            name: userResponse.data.name || 'Contractor Name',
+            name: userResponse.data.firstName && userResponse.data.lastName 
+              ? `${userResponse.data.firstName} ${userResponse.data.lastName}`
+              : userResponse.data.name || 'Contractor',
             email: userResponse.data.email || '',
+            phone: userResponse.data.phone || '',
             address: userResponse.data.address || '',
             city: userResponse.data.city || '',
             province: userResponse.data.province || 'Quebec',
@@ -63,20 +93,52 @@ const QuoteFormPage = () => {
           });
         }
 
-        // Fetch project details if projectIdentifier provided
-        if (projectIdentifier) {
-          const projectResponse = await axios.get(`/api/v1/projects/${projectIdentifier}`, {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          });
-
-          if (projectResponse.data) {
-            setProjectInfo({
-              name: projectResponse.data.projectName,
-              address: projectResponse.data.address || '',
-              city: projectResponse.data.city || '',
-              province: projectResponse.data.province || 'Quebec',
-              country: 'Canada',
+        // Fetch lot info and project info
+        if (lotIdentifier && projectIdentifier) {
+          try {
+            // First, fetch project to get customer ID
+            const projectResponse = await axios.get(`/api/v1/projects/${projectIdentifier}`, {
+              headers: { Authorization: `Bearer ${accessToken}` },
             });
+
+            if (projectResponse.data) {
+              setProjectInfo({
+                name: projectName || projectResponse.data.projectName || 'Project',
+                lotNumber: lotNumber,
+                address: projectResponse.data.location || projectResponse.data.address || '',
+                city: projectResponse.data.city || '',
+                province: projectResponse.data.province || 'Quebec',
+                country: 'Canada',
+              });
+
+              // Fetch customer details from project's customerId
+              if (projectResponse.data.customerId) {
+                try {
+                  const customerResponse = await axios.get(
+                    `/api/v1/users/${projectResponse.data.customerId}`,
+                    { headers: { Authorization: `Bearer ${accessToken}` } }
+                  );
+                  
+                  if (customerResponse.data) {
+                    setCustomerInfo({
+                      name: customerResponse.data.firstName && customerResponse.data.lastName
+                        ? `${customerResponse.data.firstName} ${customerResponse.data.lastName}`
+                        : customerResponse.data.name || 'Customer',
+                      email: customerResponse.data.email || '',
+                      phone: customerResponse.data.phone || '',
+                      address: customerResponse.data.address || '',
+                      city: customerResponse.data.city || '',
+                      province: customerResponse.data.province || 'Quebec',
+                      country: customerResponse.data.country || 'Canada',
+                    });
+                  }
+                } catch (err) {
+                  console.error('Error fetching customer info:', err);
+                }
+              }
+            }
+          } catch (err) {
+            console.error('Error fetching project info:', err);
           }
         }
       } catch (err) {
@@ -85,36 +147,27 @@ const QuoteFormPage = () => {
     };
 
     initializeForm();
-  }, [getAccessTokenSilently, projectIdentifier]);
+  }, [getAccessTokenSilently, lotIdentifier, projectIdentifier]);
 
-  const calculateLineTotal = (quantity, rate) => {
-    if (!quantity || !rate || isNaN(quantity) || isNaN(rate)) return 0;
-    return parseFloat(quantity) * parseFloat(rate);
+  const calculateLineTotal = (hours, rate) => {
+    if (!hours || !rate || isNaN(hours) || isNaN(rate)) return 0;
+    return parseFloat(hours) * parseFloat(rate);
   };
-
-  const calculateSubtotal = () => {
-    return lineItems.reduce((sum, item) => {
-      return sum + calculateLineTotal(item.quantity, item.rate);
-    }, 0);
-  };
-
-  const calculateDiscount = () => {
-    const subtotal = calculateSubtotal();
-    return (subtotal * (discountPercentage / 100));
-  };
-
-  const calculateTax = () => {
-    const subtotal = calculateSubtotal();
-    const discount = calculateDiscount();
-    return ((subtotal - discount) * (taxPercentage / 100));
-  };
-
-  const calculateTotal = () => {
-    const subtotal = calculateSubtotal();
-    const discount = calculateDiscount();
-    const tax = calculateTax();
-    return subtotal - discount + tax;
-  };
+  
+  // Calculate totals as derived values
+  const subtotal = lineItems.reduce(
+    (sum, item) => sum + calculateLineTotal(item.hours, item.rate),
+    0
+  );
+  const discount = (subtotal * discountPercentage) / 100;
+  const subtotalAfterDiscount = subtotal - discount;
+  const gst = (subtotalAfterDiscount * gstPercentage) / 100;
+  const qst = (subtotalAfterDiscount * qstPercentage) / 100;
+  const total = subtotalAfterDiscount + gst + qst;
+  const totalHours = lineItems.reduce(
+    (sum, item) => sum + (parseFloat(item.hours) || 0),
+    0
+  );
 
   const handleLineItemChange = (id, field, value) => {
     setLineItems(items =>
@@ -126,13 +179,24 @@ const QuoteFormPage = () => {
     );
   };
 
+  const showError = (message) => {
+    let formattedMessage = message;
+    if (typeof formattedMessage === 'string') {
+      if (formattedMessage.includes('Contractor is not assigned to this project') || formattedMessage.includes('Contractor is not assigned to this lot')) {
+        formattedMessage = t('quote.errors.notAssignedToLot') || 'You are not assigned to this lot.';
+      }
+    }
+    setSubmitError(formattedMessage);
+    setIsErrorModalOpen(true);
+  };
+
   const handleAddLineItem = () => {
     setLineItems([
       ...lineItems,
       {
         id: nextId,
         itemDescription: '',
-        quantity: '',
+        hours: '',
         rate: '',
         displayOrder: lineItems.length + 1,
         errors: {},
@@ -148,18 +212,34 @@ const QuoteFormPage = () => {
   };
 
   const validateForm = () => {
+    // Filter out empty line items (items with no description, hours, or rate)
+    const validItems = lineItems.filter(item => 
+      item.itemDescription?.trim() || parseFloat(item.hours) > 0 || parseFloat(item.rate) >= 0
+    );
+
+    // Check if we have at least one valid item
+    if (validItems.length === 0) {
+      showError(t('quote.errors.atLeastOneItem') || 'Please add at least one item to the quote');
+      return false;
+    }
+
     let isValid = true;
     const updatedItems = lineItems.map(item => {
       const errors = {};
+
+      // Skip validation for completely empty items
+      if (!item.itemDescription?.trim() && !item.hours && !item.rate) {
+        return { ...item, errors };
+      }
 
       if (!item.itemDescription || item.itemDescription.trim() === '') {
         errors.itemDescription = t('quote.errors.descriptionRequired') || 'Description required';
         isValid = false;
       }
 
-      const qty = parseFloat(item.quantity);
-      if (!item.quantity || isNaN(qty) || qty <= 0) {
-        errors.quantity = t('quote.errors.quantityInvalid') || 'Must be > 0';
+      const hrs = parseFloat(item.hours);
+      if (!item.hours || isNaN(hrs) || hrs <= 0) {
+        errors.hours = t('quote.errors.hoursInvalid') || 'Must be > 0';
         isValid = false;
       }
 
@@ -180,27 +260,39 @@ const QuoteFormPage = () => {
     e.preventDefault();
 
     if (!validateForm()) {
-      setSubmitError(t('quote.errors.fixErrors') || 'Please fix the errors in the form');
+      showError(t('quote.errors.fixErrors') || 'Please fix the errors in the form');
       return;
     }
 
-    if (!projectIdentifier) {
-      setSubmitError(t('quote.errors.noProject') || 'No project selected');
+    if (!lotIdentifier) {
+      showError(t('quote.errors.noLot') || 'No lot selected');
       return;
     }
 
     try {
       setIsSubmitting(true);
       setSubmitError(null);
+      setIsErrorModalOpen(false);
 
       const quoteData = {
+        lotIdentifier,
         projectIdentifier,
-        lineItems: lineItems.map(item => ({
-          itemDescription: item.itemDescription,
-          quantity: parseFloat(item.quantity),
-          rate: parseFloat(item.rate),
-          displayOrder: item.displayOrder,
-        })),
+        category: formData.category,
+        description: formData.description,
+        paymentTerms: formData.paymentTerms,
+        deliveryDate: formData.deliveryDate,
+        notes: formData.notes,
+        discountPercentage,
+        gstPercentage,
+        qstPercentage,
+        lineItems: lineItems
+          .filter(item => item.itemDescription?.trim() || parseFloat(item.hours) > 0 || parseFloat(item.rate) >= 0)
+          .map(item => ({
+            itemDescription: item.itemDescription,
+            quantity: parseFloat(item.hours),
+            rate: parseFloat(item.rate),
+            displayOrder: item.displayOrder,
+          })),
       };
 
       const response = await axios.post('/api/v1/quotes', quoteData, {
@@ -210,14 +302,18 @@ const QuoteFormPage = () => {
         },
       });
 
-      // Success - navigate back to list
+      // Capture the generated quote number
+      if (response.data && response.data.quoteNumber) {
+        setGeneratedQuoteNumber(response.data.quoteNumber);
+      }
+
       navigate('/quotes', { 
         state: { message: t('quote.createSuccess') || 'Quote created successfully!' } 
       });
 
     } catch (error) {
       console.error('Quote creation error:', error);
-      setSubmitError(
+      showError(
         error.response?.data?.message ||
         error.message ||
         t('quote.errors.createFailed') || 'Failed to create quote'
@@ -225,11 +321,6 @@ const QuoteFormPage = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handlePreview = () => {
-    // TODO: Implement preview functionality
-    console.log('Preview clicked');
   };
 
   const handleCancel = () => {
@@ -250,11 +341,12 @@ const QuoteFormPage = () => {
           {contractorInfo && (
             <div className="contractor-card">
               <div className="contractor-avatar">
-                <span>{contractorInfo.name.charAt(0)}</span>
+                <span>{contractorInfo.name.charAt(0).toUpperCase()}</span>
               </div>
               <div className="contractor-details">
                 <h3>{contractorInfo.name}</h3>
                 <p>{contractorInfo.email}</p>
+                <p>{contractorInfo.phone}</p>
                 <p className="address">
                   {contractorInfo.address}<br />
                   {contractorInfo.city}, {contractorInfo.province}<br />
@@ -265,162 +357,333 @@ const QuoteFormPage = () => {
           )}
         </div>
 
-        {/* Bill Details Section */}
-        <div className="bill-details-section">
-          <div className="details-grid">
-            <div className="detail-item">
-              <label>{t('quote.billNumber') || 'Bill Number'}</label>
-              <p className="detail-value">QT-XXXXXX</p>
-              <span className="detail-meta">
-                {t('quote.issuedDate') || 'Issued Date'}: {new Date().toLocaleDateString()}
-              </span>
-              <span className="detail-meta">
-                {t('quote.dueDate') || 'Due Date'}: {new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toLocaleDateString()}
-              </span>
+        <div className="form-body-grid">
+          <div className="form-main">
+            {/* Bill Details Section */}
+            <div className="bill-details-section">
+              <h2 className="section-heading">Bill Details</h2>
+              <div className="details-grid details-grid-3">
+                <div className="detail-item">
+                  <label>{t('quote.billNumber') || 'Bill Number'}</label>
+                  <p className="detail-value">{generatedQuoteNumber || 'QT-XXXXXX'}</p>
+                  <span className="detail-meta">
+                    {generatedQuoteNumber ? t('quote.confirmed') || 'Confirmed' : t('quote.auto') || 'Auto-generated'}
+                  </span>
+                </div>
+                <div className="detail-item">
+                  <label>{t('quote.category') || 'Category'}</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                    className="form-select"
+                  >
+                    {quoteCategories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="detail-item">
+                  <label>{t('quote.issuedDate') || 'Issued Date'}</label>
+                  <p className="detail-value">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
+              </div>
             </div>
-            <div className="detail-item">
-              <label>{t('quote.billedTo') || 'Billed to'}</label>
-              {projectInfo && (
-                <>
-                  <p className="detail-value">{projectInfo.name}</p>
-                  <span className="detail-meta">{projectInfo.address}</span>
-                  <span className="detail-meta">{projectInfo.city}, {projectInfo.province}</span>
-                  <span className="detail-meta">{projectInfo.country}</span>
-                </>
+
+            {/* Customer/Project Section */}
+            <div className="bill-details-section">
+              <h2 className="section-heading">Billed To</h2>
+              {customerInfo ? (
+                <div className="customer-info-card">
+                  <div className="customer-avatar">
+                    <span>{customerInfo.name.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <div className="customer-details">
+                    <h3>{customerInfo.name}</h3>
+                    <p className="email-phone">
+                      <span>{customerInfo.email}</span>
+                      {customerInfo.phone && <span>{customerInfo.phone}</span>}
+                    </p>
+                    <p className="address">
+                      {customerInfo.address && <>{customerInfo.address}<br /></>}
+                      {customerInfo.city}, {customerInfo.province}, {customerInfo.country}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="customer-info-card placeholder">
+                  <p>Loading customer information...</p>
+                </div>
               )}
             </div>
+
+            {/* Form Fields Section */}
+            <div className="form-fields-section">
+              <h2 className="section-heading">Quote Details</h2>
+              <div className="form-grid form-grid-2">
+                <div className="form-group">
+                  <label htmlFor="description">{t('quote.description') || 'Description'}</label>
+                  <textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    placeholder="Describe the work, materials, or services included in this quote..."
+                    rows="4"
+                    className="form-textarea"
+                  />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="notes">{t('quote.notes') || 'Notes'}</label>
+                  <textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    placeholder="Add any additional notes or special instructions..."
+                    rows="4"
+                    className="form-textarea"
+                  />
+                </div>
+              </div>
+              <div className="form-grid form-grid-2">
+                <div className="form-group">
+                  <label htmlFor="paymentTerms">{t('quote.paymentTerms') || 'Payment Terms'}</label>
+                  <select
+                    id="paymentTerms"
+                    value={formData.paymentTerms}
+                    onChange={(e) => setFormData({ ...formData, paymentTerms: e.target.value })}
+                    className="form-select"
+                  >
+                    <option value="Net 15">Net 15</option>
+                    <option value="Net 30">Net 30</option>
+                    <option value="Net 45">Net 45</option>
+                    <option value="Net 60">Net 60</option>
+                    <option value="Due on Receipt">Due on Receipt</option>
+                    <option value="50% Deposit">50% Deposit</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="deliveryDate">{t('quote.deliveryDate') || 'Delivery Date'}</label>
+                  <input
+                    id="deliveryDate"
+                    type="date"
+                    value={formData.deliveryDate}
+                    onChange={(e) => setFormData({ ...formData, deliveryDate: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Item Details Section */}
+            <div className="item-details-section">
+              <div className="item-details-header">
+                <div className="item-details-title">
+                  <h2 className="section-heading">{t('quote.itemDetails') || 'Item Details'}</h2>
+                  <span className="item-summary">{lineItems.length} items • {totalHours.toFixed(2)} hrs</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleAddLineItem}
+                  className="btn btn-secondary btn-sm add-item-button"
+                >
+                  <MdAdd /> {t('quote.addItem') || 'Add Item'}
+                </button>
+              </div>
+              <div className="items-table-wrapper">
+                <table className="items-table">
+                  <thead>
+                    <tr>
+                      <th>{t('quote.description') || 'Description'}</th>
+                      <th>{t('quote.hours') || 'Hours'}</th>
+                      <th>{t('quote.rate') || 'Rate ($/hr)'}</th>
+                      <th>{t('quote.amount') || 'Amount'}</th>
+                      <th>{t('quote.action') || 'Action'}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lineItems.map((item, index) => (
+                      <tr key={item.id}>
+                        <td>
+                          <input
+                            type="text"
+                            value={item.itemDescription}
+                            onChange={(e) => handleLineItemChange(item.id, 'itemDescription', e.target.value)}
+                            placeholder="e.g., Labor, Consulting, Installation"
+                            className={`form-input ${item.errors.itemDescription ? 'error' : ''}`}
+                          />
+                          {item.errors.itemDescription && <span className="error-text">{item.errors.itemDescription}</span>}
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            value={item.hours}
+                            onChange={(e) => handleLineItemChange(item.id, 'hours', e.target.value)}
+                            placeholder="0"
+                            step="0.01"
+                            min="0"
+                            className={`form-input input-number ${item.errors.hours ? 'error' : ''}`}
+                          />
+                          {item.errors.hours && <span className="error-text">{item.errors.hours}</span>}
+                        </td>
+                        <td>
+                          <div className="input-with-symbol">
+                            <span className="currency">$</span>
+                            <input
+                              type="number"
+                              value={item.rate}
+                              onChange={(e) => handleLineItemChange(item.id, 'rate', e.target.value)}
+                              placeholder="0.00"
+                              step="0.01"
+                              min="0"
+                              className={`form-input input-number ${item.errors.rate ? 'error' : ''}`}
+                            />
+                            <span className="currency-suffix">/hr</span>
+                          </div>
+                          {item.errors.rate && <span className="error-text">{item.errors.rate}</span>}
+                        </td>
+                        <td className="amount-cell">
+                          <span className="amount">${calculateLineTotal(item.hours, item.rate).toFixed(2)}</span>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveLineItem(item.id)}
+                            className="btn btn-icon btn-danger"
+                            disabled={lineItems.length === 1}
+                            title="Remove item"
+                          >
+                            <MdDelete />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
           </div>
-        </div>
 
-        {submitError && (
-          <div className="error-banner">{submitError}</div>
-        )}
+          <aside className="form-sidebar">
+            <div className="summary-card">
+              <h3>{t('quote.summary') || 'Summary'}</h3>
+              <div className="summary-row">
+                <span>{t('quote.project') || 'Project'}</span>
+                <strong>{projectInfo?.name || projectName || '—'}</strong>
+              </div>
+              <div className="summary-row">
+                <span>{t('quote.lot') || 'Lot'}</span>
+                <strong>{projectInfo?.lotNumber || lotNumber || '—'}</strong>
+              </div>
+              <div className="summary-row">
+                <span>{t('quote.customer') || 'Customer'}</span>
+                <strong>{customerInfo?.name || '—'}</strong>
+              </div>
+              <div className="summary-row">
+                <span>{t('quote.paymentTerms') || 'Payment Terms'}</span>
+                <strong>{formData.paymentTerms}</strong>
+              </div>
+              <div className="summary-row">
+                <span>{t('quote.deliveryDate') || 'Delivery Date'}</span>
+                <strong>{formData.deliveryDate}</strong>
+              </div>
+              <div className="summary-divider" />
+              <div className="summary-row">
+                <span>{t('quote.items') || 'Items'}</span>
+                <strong>{lineItems.length}</strong>
+              </div>
+              <div className="summary-row">
+                <span>{t('quote.hours') || 'Hours'}</span>
+                <strong>{totalHours.toFixed(2)}</strong>
+              </div>
+            </div>
 
-        {/* Item Details Section */}
-        <div className="item-details-section">
-          <h3>{t('quote.itemDetails') || 'Item Details'}</h3>
-          <p className="section-subtitle">{t('quote.materialsLabor') || 'Materials/Labor'}</p>
-
-          <div className="items-table-wrapper">
-            <table className="items-table">
-              <thead>
-                <tr>
-                  <th className="col-item">{t('quote.item') || 'ITEM'}</th>
-                  <th className="col-amount">{t('quote.amount') || 'AMOUNT'}</th>
-                  <th className="col-rate">{t('quote.rate') || 'RATE'}</th>
-                  <th className="col-total">{t('quote.amount') || 'AMOUNT'}</th>
-                  <th className="col-actions"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {lineItems.map((item) => (
-                  <tr key={item.id} className={Object.keys(item.errors).length > 0 ? 'row-error' : ''}>
-                    <td className="col-item">
-                      <input
-                        type="text"
-                        value={item.itemDescription}
-                        onChange={(e) => handleLineItemChange(item.id, 'itemDescription', e.target.value)}
-                        placeholder={t('quote.itemPlaceholder') || 'Item description'}
-                        className={item.errors.itemDescription ? 'input-error' : ''}
-                      />
-                      {item.errors.itemDescription && (
-                        <span className="error-hint">{item.errors.itemDescription}</span>
-                      )}
-                    </td>
-                    <td className="col-amount">
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={item.quantity}
-                        onChange={(e) => handleLineItemChange(item.id, 'quantity', e.target.value)}
-                        placeholder="0"
-                        className={item.errors.quantity ? 'input-error' : ''}
-                      />
-                      {item.errors.quantity && (
-                        <span className="error-hint">{item.errors.quantity}</span>
-                      )}
-                    </td>
-                    <td className="col-rate">
-                      <div className="rate-input">
-                        <span className="currency">$</span>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={item.rate}
-                          onChange={(e) => handleLineItemChange(item.id, 'rate', e.target.value)}
-                          placeholder="0.00"
-                          className={item.errors.rate ? 'input-error' : ''}
-                        />
-                      </div>
-                      {item.errors.rate && (
-                        <span className="error-hint">{item.errors.rate}</span>
-                      )}
-                    </td>
-                    <td className="col-total">
-                      <span className="total-value">
-                        ${calculateLineTotal(item.quantity, item.rate).toFixed(2)}
-                      </span>
-                    </td>
-                    <td className="col-actions">
-                      <button
-                        type="button"
-                        className="btn-delete"
-                        onClick={() => handleRemoveLineItem(item.id)}
-                        disabled={lineItems.length === 1}
-                      >
-                        <MdDelete />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <button
-            type="button"
-            className="add-item-link"
-            onClick={handleAddLineItem}
-          >
-            <MdAdd /> {t('quote.addItem') || 'Add Item'}
-          </button>
+            {/* Totals Section */}
+            <div className="totals-section">
+              <div className="totals-row">
+                <span className="totals-label">{t('quote.subtotal') || 'Subtotal'}</span>
+                <span className="totals-value">${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="totals-row discount-row">
+                <span className="totals-label">
+                  {t('quote.discount') || 'Discount'} ({discountPercentage}%)
+                </span>
+                <div className="totals-input-group">
+                  <span>-${discount.toFixed(2)}</span>
+                  <input
+                    type="number"
+                    min="0"
+                    max="100"
+                    value={discountPercentage}
+                    onChange={(e) => setDiscountPercentage(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
+                    className="totals-input"
+                  />
+                </div>
+              </div>
+              <div className="totals-row tax-row">
+                <span className="totals-label">
+                  {t('quote.gst') || 'GST'} ({gstPercentage}%)
+                </span>
+                <div className="totals-input-group">
+                  <span>+${gst.toFixed(2)}</span>
+                </div>
+              </div>
+              <div className="totals-row tax-row">
+                <span className="totals-label">
+                  {t('quote.qst') || 'QST'} ({qstPercentage}%)
+                </span>
+                <div className="totals-input-group">
+                  <span>+${qst.toFixed(2)}</span>
+                </div>
+              </div>
+              <div className="totals-row totals-total">
+                <span className="totals-label">{t('quote.total') || 'Total'}</span>
+                <span className="totals-value">${total.toFixed(2)}</span>
+              </div>
+            </div>
+          </aside>
         </div>
 
         {/* Totals Section */}
         <div className="totals-section">
-          <div className="total-row">
-            <span className="label">{t('quote.subtotal') || 'Subtotal'}</span>
-            <span className="value">${calculateSubtotal().toFixed(2)}</span>
+          <div className="totals-row">
+            <span className="totals-label">{t('quote.subtotal') || 'Subtotal'}</span>
+            <span className="totals-value">${subtotal.toFixed(2)}</span>
           </div>
-          <div className="total-row discount-row">
-            <span className="label">{t('quote.discount') || 'Discount'}</span>
-            <input
-              type="number"
-              className="discount-input"
-              value={discountPercentage}
-              onChange={(e) => setDiscountPercentage(parseFloat(e.target.value) || 0)}
-              min="0"
-              max="100"
-              step="0.1"
-            />
-            <span className="discount-amount">-${calculateDiscount().toFixed(2)}</span>
+          <div className="totals-row discount-row">
+            <span className="totals-label">
+              {t('quote.discount') || 'Discount'} ({discountPercentage}%)
+            </span>
+            <div className="totals-input-group">
+              <span>-${discount.toFixed(2)}</span>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={discountPercentage}
+                onChange={(e) => setDiscountPercentage(Math.max(0, Math.min(100, parseFloat(e.target.value) || 0)))}
+                className="totals-input"
+              />
+            </div>
           </div>
-          <div className="total-row discount-row">
-            <span className="label">{t('quote.tax') || 'Tax'}</span>
-            <input
-              type="number"
-              className="tax-input"
-              value={taxPercentage}
-              onChange={(e) => setTaxPercentage(parseFloat(e.target.value) || 0)}
-              min="0"
-              max="100"
-              step="0.1"
-            />
-            <span className="tax-amount">${calculateTax().toFixed(2)}</span>
+          <div className="totals-row tax-row">
+            <span className="totals-label">
+              {t('quote.gst') || 'GST'} ({gstPercentage}%)
+            </span>
+            <div className="totals-input-group">
+              <span>+${gst.toFixed(2)}</span>
+            </div>
           </div>
-          <div className="total-row total">
-            <span className="label">{t('quote.total') || 'Total'}</span>
-            <span className="value">${calculateTotal().toFixed(2)}</span>
+          <div className="totals-row tax-row">
+            <span className="totals-label">
+              {t('quote.qst') || 'QST'} ({qstPercentage}%)
+            </span>
+            <div className="totals-input-group">
+              <span>+${qst.toFixed(2)}</span>
+            </div>
+          </div>
+          <div className="totals-row totals-total">
+            <span className="totals-label">{t('quote.total') || 'Total'}</span>
+            <span className="totals-value">${total.toFixed(2)}</span>
           </div>
         </div>
 
@@ -428,29 +691,133 @@ const QuoteFormPage = () => {
         <div className="form-actions">
           <button
             type="button"
-            className="btn btn-cancel"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-          >
-            {t('common.cancel') || 'Cancel'}
-          </button>
-          <button
-            type="button"
+            onClick={() => setShowPreview(true)}
             className="btn btn-preview"
-            onClick={handlePreview}
-            disabled={isSubmitting}
           >
             <AiOutlineEye /> {t('quote.preview') || 'Preview'}
           </button>
-          <button
-            type="submit"
-            className="btn btn-send"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (t('common.saving') || 'Saving...') : (t('quote.sendEstimatedBill') || 'Send Estimated Bill')}
-          </button>
+          <div className="form-actions-right">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="btn btn-secondary"
+            >
+              {t('common.cancel') || 'Cancel'}
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn btn-primary"
+            >
+              {isSubmitting ? t('common.submitting') || 'Submitting...' : t('quote.createQuote') || 'Create Quote'}
+            </button>
+          </div>
         </div>
       </form>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="preview-modal-overlay" onClick={() => setShowPreview(false)}>
+          <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="preview-header">
+              <h2>{t('quote.preview') || 'Preview'}</h2>
+              <button
+                type="button"
+                onClick={() => setShowPreview(false)}
+                className="preview-close"
+              >
+                <MdClose />
+              </button>
+            </div>
+            <div className="preview-content">
+              <div className="preview-section">
+                <h3>Quote Summary</h3>
+                <div className="preview-grid">
+                  <div>
+                    <p className="preview-label">From</p>
+                    <p className="preview-value">{contractorInfo?.name}</p>
+                    <p className="preview-meta">{contractorInfo?.email}</p>
+                  </div>
+                  <div>
+                    <p className="preview-label">To</p>
+                    <p className="preview-value">{customerInfo?.name}</p>
+                    <p className="preview-meta">{customerInfo?.email}</p>
+                  </div>
+                  <div>
+                    <p className="preview-label">Amount</p>
+                    <p className="preview-value preview-amount">${total.toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="preview-section">
+                <h3>Items</h3>
+                <table className="preview-table">
+                  <thead>
+                    <tr>
+                      <th>Description</th>
+                      <th>Hours</th>
+                      <th>Rate ($/hr)</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lineItems.map(item => (
+                      <tr key={item.id}>
+                        <td>{item.itemDescription}</td>
+                        <td>{item.hours}</td>
+                        <td>${parseFloat(item.rate).toFixed(2)}/hr</td>
+                        <td>${calculateLineTotal(item.hours, item.rate).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="preview-section">
+                <div className="preview-totals">
+                  <div className="preview-total-row">
+                    <span>Subtotal:</span>
+                    <span>${subtotal.toFixed(2)}</span>
+                  </div>
+                  {discountPercentage > 0 && (
+                    <div className="preview-total-row">
+                      <span>Discount ({discountPercentage}%):</span>
+                      <span>-${discount.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="preview-total-row">
+                    <span>GST ({gstPercentage}%):</span>
+                    <span>+${gst.toFixed(2)}</span>
+                  </div>
+                  <div className="preview-total-row">
+                    <span>QST ({qstPercentage}%):</span>
+                    <span>+${qst.toFixed(2)}</span>
+                  </div>
+                  <div className="preview-total-row preview-total">
+                    <span>Total:</span>
+                    <span>${total.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {formData.notes && (
+                <div className="preview-section">
+                  <h3>Notes</h3>
+                  <p>{formData.notes}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ErrorModal
+        isOpen={isErrorModalOpen}
+        title={t('quote.errorTitle') || 'Permission Error'}
+        message={submitError}
+        onClose={() => setIsErrorModalOpen(false)}
+      />
     </div>
   );
 };

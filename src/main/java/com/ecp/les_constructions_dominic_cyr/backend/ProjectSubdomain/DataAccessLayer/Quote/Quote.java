@@ -35,6 +35,12 @@ public class Quote {
     @Column(name = "project_identifier", nullable = false)
     private String projectIdentifier;
 
+    @Column(name = "lot_identifier", nullable = true)
+    private String lotIdentifier;
+
+    @Column(name = "category", nullable = true, length = 100)
+    private String category;
+
     @Column(name = "contractor_id", nullable = false)
     private String contractorId;
 

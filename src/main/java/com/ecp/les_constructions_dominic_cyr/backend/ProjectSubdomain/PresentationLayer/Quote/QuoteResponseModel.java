@@ -22,6 +22,10 @@ public class QuoteResponseModel {
 
     private String projectIdentifier;
 
+    private String lotIdentifier;
+
+    private String category;
+
     private String contractorId;
 
     private List<QuoteLineItemResponseModel> lineItems;

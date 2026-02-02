@@ -3,6 +3,9 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.Quote;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.QuoteRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.QuoteMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteResponseModel;
@@ -23,6 +26,8 @@ public class QuoteService {
 
     private final QuoteRepository quoteRepository;
     private final ProjectRepository projectRepository;
+    private final LotRepository lotRepository;
+    private final UsersRepository usersRepository;
     private final QuoteNumberGenerator quoteNumberGenerator;
     private final QuoteMapper quoteMapper;
 
@@ -46,10 +51,30 @@ public class QuoteService {
                 "Project not found: " + requestModel.getProjectIdentifier()
             ));
 
-        // Validate contractor is assigned to project
-        if (!project.getContractorIds().contains(contractorId)) {
+        // Validate lot exists and belongs to the project
+        if (requestModel.getLotIdentifier() == null || requestModel.getLotIdentifier().isBlank()) {
+            throw new InvalidProjectDataException("Lot identifier is required to create a quote");
+        }
+
+        var lot = lotRepository.findByLotIdentifier_LotId(requestModel.getLotIdentifier());
+        if (lot == null) {
+            throw new NotFoundException("Lot not found: " + requestModel.getLotIdentifier());
+        }
+
+        if (lot.getProject() == null || !project.getProjectIdentifier().equals(lot.getProject().getProjectIdentifier())) {
+            throw new InvalidProjectDataException("Lot does not belong to the specified project");
+        }
+
+        Users contractorUser = usersRepository.findByAuth0UserId(contractorId)
+            .or(() -> usersRepository.findByUserIdentifier(contractorId))
+            .orElseThrow(() -> new InvalidProjectDataException("Contractor user not found"));
+
+        boolean isAssignedToLot = lot.getAssignedUsers().stream()
+            .anyMatch(user -> user.getUserIdentifier().equals(contractorUser.getUserIdentifier()));
+
+        if (!isAssignedToLot) {
             throw new InvalidProjectDataException(
-                "Contractor is not assigned to this project"
+                "Contractor is not assigned to this lot"
             );
         }
 
@@ -82,6 +107,20 @@ public class QuoteService {
             .orElseThrow(() -> new NotFoundException("Project not found"));
 
         List<Quote> quotes = quoteRepository.findByProjectIdentifier(projectIdentifier);
+        return quotes.stream()
+            .map(quoteMapper::entityToResponseModel)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all quotes for a specific lot.
+     * Accessible to: Owner, Salesperson, Customer (who owns the lot), assigned Contractors.
+     */
+    @Transactional(readOnly = true)
+    public List<QuoteResponseModel> getQuotesByLot(String lotIdentifier) {
+        log.info("Fetching quotes for lot: {}", lotIdentifier);
+
+        List<Quote> quotes = quoteRepository.findByLotIdentifier(lotIdentifier);
         return quotes.stream()
             .map(quoteMapper::entityToResponseModel)
             .collect(Collectors.toList());

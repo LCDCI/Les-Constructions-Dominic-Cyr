@@ -73,6 +73,29 @@ public class QuoteController {
     }
 
     /**
+     * Get all quotes for a specific lot.
+     * 
+     * Accessible to:
+     * - Owner (all quotes)
+     * - Salesperson (all quotes for assigned lots)
+     * - Customer (quotes for their lots)
+     * - Contractor (their own quotes for the lot)
+     * 
+     * @param lotIdentifier The lot identifier (UUID)
+     * @return List of quotes for the lot
+     */
+    @GetMapping("/lot/{lotIdentifier}")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALESPERSON', 'CUSTOMER', 'CONTRACTOR')")
+    public ResponseEntity<List<QuoteResponseModel>> getQuotesByLot(
+        @PathVariable String lotIdentifier
+    ) {
+        log.info("Fetching quotes for lot: {}", lotIdentifier);
+
+        List<QuoteResponseModel> quotes = quoteService.getQuotesByLot(lotIdentifier);
+        return ResponseEntity.ok(quotes);
+    }
+
+    /**
      * Get a specific quote by its quote number (QT-XXXXXXX format).
      * 
      * @param quoteNumber The quote number (e.g., QT-0000001)

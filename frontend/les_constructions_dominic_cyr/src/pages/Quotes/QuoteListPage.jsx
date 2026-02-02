@@ -19,7 +19,8 @@ const QuoteListPage = () => {
   const navigate = useNavigate();
 
   const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [lots, setLots] = useState([]);
+  const [selectedLot, setSelectedLot] = useState(null);
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,7 +36,7 @@ const QuoteListPage = () => {
         const accessToken = await getAccessTokenSilently();
         setToken(accessToken);
 
-        // Fetch projects
+        // Fetch all projects
         const projectsResponse = await axios.get('/api/v1/projects', {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -44,10 +45,40 @@ const QuoteListPage = () => {
 
         if (projectsResponse.data && Array.isArray(projectsResponse.data)) {
           setProjects(projectsResponse.data);
-          if (projectsResponse.data.length > 0) {
-            setSelectedProject(projectsResponse.data[0]);
-            // Fetch quotes for first project
-            await fetchQuotesForProject(projectsResponse.data[0].projectIdentifier, accessToken);
+
+          // Fetch lots for each project and flatten them
+          const allLots = [];
+          for (const project of projectsResponse.data) {
+            try {
+              const lotsResponse = await axios.get(
+                `/api/v1/projects/${project.projectIdentifier}/lots`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              );
+              if (lotsResponse.data && Array.isArray(lotsResponse.data)) {
+                const mappedLots = lotsResponse.data.map(lot => {
+                  return {
+                    ...lot,
+                    lotIdentifier: lot.lotId, // Backend returns 'lotId', map to 'lotIdentifier' for consistency
+                    projectIdentifier: project.projectIdentifier,
+                    projectName: project.projectName,
+                  };
+                });
+                allLots.push(...mappedLots);
+              }
+            } catch (err) {
+              console.error(`Error fetching lots for project ${project.projectIdentifier}:`, err);
+            }
+          }
+
+          setLots(allLots);
+          if (allLots.length > 0) {
+            setSelectedLot(allLots[0]);
+            // Fetch quotes for first lot
+            await fetchQuotesForLot(allLots[0].lotIdentifier, accessToken);
           }
         }
       } catch (err) {
@@ -66,9 +97,9 @@ const QuoteListPage = () => {
     initializePage();
   }, [getAccessTokenSilently, t]);
 
-  const fetchQuotesForProject = async (projectIdentifier, accessToken) => {
+  const fetchQuotesForLot = async (lotIdentifier, accessToken) => {
     try {
-      const response = await axios.get(`/api/v1/quotes/project/${projectIdentifier}`, {
+      const response = await axios.get(`/api/v1/quotes/lot/${lotIdentifier}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -80,23 +111,39 @@ const QuoteListPage = () => {
     }
   };
 
-  const handleProjectChange = async (e) => {
-    const projectId = e.target.value;
-    const project = projects.find(p => p.projectIdentifier === projectId);
-    setSelectedProject(project);
+  const handleLotChange = async (e) => {
+    const selectedValue = e.target.value;
     
-    if (project && token) {
+    if (!selectedValue) return;
+    
+    const lot = lots.find(l => l.lotIdentifier === selectedValue);
+    
+    if (!lot) {
+      console.error('Lot not found. Selected value:', selectedValue);
+      return;
+    }
+    
+    setSelectedLot(lot);
+    
+    if (token) {
       setLoading(true);
-      await fetchQuotesForProject(project.projectIdentifier, token);
-      setLoading(false);
+      try {
+        await fetchQuotesForLot(lot.lotIdentifier, token);
+      } catch (err) {
+        console.error('Error fetching quotes for lot:', err);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const handleCreateNewBill = () => {
     navigate(`/quotes/create`, { 
       state: { 
-        projectIdentifier: selectedProject?.projectIdentifier,
-        projectName: selectedProject?.projectName 
+        lotIdentifier: selectedLot?.lotIdentifier,
+        lotNumber: selectedLot?.lotNumber,
+        projectIdentifier: selectedLot?.projectIdentifier,
+        projectName: selectedLot?.projectName,
       } 
     });
   };
@@ -106,10 +153,45 @@ const QuoteListPage = () => {
   };
 
   const filteredQuotes = quotes.filter(quote =>
-    quote.quoteNumber.toLowerCase().includes(searchQuery.toLowerCase())
+    quote.quoteNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    quote.customerName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loading && !selectedProject) {
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'PENDING_OWNER_APPROVAL':
+        return t('quote.statusPendingOwner') || 'Waiting for Owner Approval';
+      case 'OWNER_APPROVED':
+        return t('quote.statusOwnerApproved') || 'Owner Approved';
+      case 'CUSTOMER_APPROVED':
+        return t('quote.statusCustomerApproved') || 'Customer Approved';
+      case 'REJECTED':
+        return t('quote.statusRejected') || 'Rejected';
+      case 'ESTIMATED':
+        return t('quote.estimatedInvoice') || 'Estimated Invoice';
+      default:
+        return t('quote.statusUnknown') || 'Pending';
+    }
+  };
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case 'PENDING_OWNER_APPROVAL':
+        return 'status-pill status-pending-owner';
+      case 'OWNER_APPROVED':
+        return 'status-pill status-owner-approved';
+      case 'CUSTOMER_APPROVED':
+        return 'status-pill status-customer-approved';
+      case 'REJECTED':
+        return 'status-pill status-rejected';
+      case 'ESTIMATED':
+        return 'status-pill status-estimated';
+      default:
+        return 'status-pill status-pending-owner';
+    }
+  };
+
+  if (loading && !selectedLot) {
     return (
       <div className="quote-list-page">
         <div className="loading-container">
@@ -138,29 +220,30 @@ const QuoteListPage = () => {
   return (
     <div className="quote-list-page">
       <div className="quote-list-container">
-        {/* Header with Project Selector */}
+        {/* Header with Lot Selector */}
         <div className="page-header">
           <div className="header-left">
             <div className="project-selector-wrapper">
               <label htmlFor="project-selector" className="project-selector-label">
-                {t('quote.selectProject') || 'Select Project'}
+                {t('quote.selectLot') || 'Select Lot'}
               </label>
               <select
                 id="project-selector"
                 className="project-selector"
-                value={selectedProject?.projectIdentifier || ''}
-                onChange={handleProjectChange}
+                value={selectedLot?.lotIdentifier || ''}
+                onChange={handleLotChange}
+                disabled={lots.length === 0}
               >
                 <option value="">
-                  {t('quote.chooseProject') || 'Choose a project...'}
+                  {lots.length === 0 ? (t('quote.noLotsAvailable') || 'No lots available') : (t('quote.chooseLot') || 'Choose a lot...')}
                 </option>
-                {projects.map((project) => (
-                  <option
-                    key={project.projectIdentifier}
-                    value={project.projectIdentifier}
-                  >
-                    {project.projectName || project.projectIdentifier}
-                  </option>
+                {lots && lots.length > 0 && lots.map((lot) => (
+                    <option
+                      key={lot.lotIdentifier || `lot-${lot.lotNumber}`}
+                      value={lot.lotIdentifier}
+                    >
+                      {lot.projectName} - {lot.lotNumber}
+                    </option>
                 ))}
               </select>
             </div>
@@ -224,10 +307,8 @@ const QuoteListPage = () => {
                     <td className="col-bill-number">
                       <div className="bill-info">
                         <span className="bill-number">{quote.quoteNumber}</span>
-                        <span className="bill-status">
-                          {quote.status === 'ESTIMATED' 
-                            ? (t('quote.estimatedInvoice') || 'Estimated Invoice')
-                            : (t('quote.finalInvoice') || 'Final Invoice')}
+                        <span className={getStatusClass(quote.status)}>
+                          {getStatusLabel(quote.status)}
                         </span>
                       </div>
                     </td>

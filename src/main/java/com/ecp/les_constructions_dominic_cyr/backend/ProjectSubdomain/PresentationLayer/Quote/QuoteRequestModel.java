@@ -23,6 +23,16 @@ public class QuoteRequestModel {
     private String projectIdentifier;
 
     /**
+     * Lot identifier (optional) - if provided, the quote is linked to a specific lot within the project.
+     */
+    private String lotIdentifier;
+
+    /**
+     * Quote category - type of work being quoted (e.g., Kitchen, Bathroom, Flooring, etc.)
+     */
+    private String category;
+
+    /**
      * List of line items for this quote.
      * At least 1 line item required.
      */
