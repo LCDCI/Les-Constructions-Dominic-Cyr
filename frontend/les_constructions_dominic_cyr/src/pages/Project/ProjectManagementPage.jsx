@@ -2,6 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Project/project-management.css';
+import '../../styles/Public_Facing/residential-projects.css';
+import { FaUserTie } from 'react-icons/fa';
+import { IoIosHammer } from 'react-icons/io';
+import { AiOutlineStock } from 'react-icons/ai';
+import { GrFormSchedule } from 'react-icons/gr';
+import { MdAttachMoney } from 'react-icons/md';
+import { CiStopwatch } from 'react-icons/ci';
 
 export default function ProjectManagementPage() {
   const { t } = usePageTranslations('projectManagement');
@@ -125,12 +132,54 @@ export default function ProjectManagementPage() {
           </h2>
 
           <ul className="pm-advantages-list">
-            <li>{t('advantages.item1', 'Advisory services')}</li>
-            <li>{t('advantages.item2', 'Compliance with building codes')}</li>
-            <li>{t('advantages.item3', 'Planning with all stakeholders')}</li>
-            <li>{t('advantages.item4', 'Work schedule development')}</li>
-            <li>{t('advantages.item5', 'Cost control')}</li>
-            <li>{t('advantages.item6', 'Rigorous follow-up')}</li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <FaUserTie />
+              </span>
+              <span className="pm-adv-text">
+                {t('advantages.item1', 'Advisory services')}
+              </span>
+            </li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <IoIosHammer />
+              </span>
+              <span className="pm-adv-text">
+                {t('advantages.item2', 'Compliance with building codes')}
+              </span>
+            </li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <AiOutlineStock />
+              </span>
+              <span className="pm-adv-text">
+                {t('advantages.item3', 'Planning with all stakeholders')}
+              </span>
+            </li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <GrFormSchedule />
+              </span>
+              <span className="pm-adv-text">
+                {t('advantages.item4', 'Work schedule development')}
+              </span>
+            </li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <MdAttachMoney />
+              </span>
+              <span className="pm-adv-text">
+                {t('advantages.item5', 'Cost control')}
+              </span>
+            </li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <CiStopwatch />
+              </span>
+              <span className="pm-adv-text">
+                {t('advantages.item6', 'Rigorous follow-up')}
+              </span>
+            </li>
           </ul>
 
           {/* Separator Lines */}
