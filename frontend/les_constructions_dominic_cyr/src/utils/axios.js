@@ -63,7 +63,10 @@ axiosInstance.interceptors.response.use(
         // eslint-disable-next-line no-console
         console.error('Backend service unavailable:', error.response.status);
         // Redirect to static error page to ensure consistent UX if nginx does not intercept
-        window.location.href = ERROR_PAGE_PATH;
+        // Avoid redirect loop if already on error page
+        if (window.location.pathname !== ERROR_PAGE_PATH) {
+          window.location.href = ERROR_PAGE_PATH;
+        }
       }
     } else {
       // No response received - could be timeout or network error
@@ -75,7 +78,10 @@ axiosInstance.interceptors.response.use(
         // eslint-disable-next-line no-console
         console.error('Network error - backend is unreachable');
         // Redirect to static error page only for non-timeout network failures
-        window.location.href = ERROR_PAGE_PATH;
+        // Avoid redirect loop if already on error page
+        if (window.location.pathname !== ERROR_PAGE_PATH) {
+          window.location.href = ERROR_PAGE_PATH;
+        }
       }
     }
     return Promise.reject(error);
