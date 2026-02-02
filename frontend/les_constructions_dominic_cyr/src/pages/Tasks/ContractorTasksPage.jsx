@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -27,7 +28,9 @@ const ContractorTasksPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const { userId } = useBackendUser();
-  const { t, isLoading: translationsLoading } = usePageTranslations('contractorTasks');
+  // eslint-disable-next-line no-unused-vars
+  const { t, isLoading: translationsLoading } =
+    usePageTranslations('contractorTasks');
 
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -296,9 +299,7 @@ const ContractorTasksPage = () => {
         </div>
 
         <div className="filter-group">
-          <label htmlFor="lot-filter">
-            {t('filters.lot', 'Lot')}:
-          </label>
+          <label htmlFor="lot-filter">{t('filters.lot', 'Lot')}:</label>
           <select
             id="lot-filter"
             value={selectedLot}
@@ -410,7 +411,10 @@ const ContractorTasksPage = () => {
                                   task.taskStatus
                                 )}`}
                               >
-                                {t(`status.${task.taskStatus}`, STATUS_LABELS[task.taskStatus])}
+                                {t(
+                                  `status.${task.taskStatus}`,
+                                  STATUS_LABELS[task.taskStatus]
+                                )}
                               </span>
                             </td>
                             <td>
@@ -419,7 +423,10 @@ const ContractorTasksPage = () => {
                                   task.taskPriority
                                 )}`}
                               >
-                                {t(`priority.${task.taskPriority}`, PRIORITY_LABELS[task.taskPriority])}
+                                {t(
+                                  `priority.${task.taskPriority}`,
+                                  PRIORITY_LABELS[task.taskPriority]
+                                )}
                               </span>
                             </td>
                             <td>{formatDate(task.periodStart)}</td>
