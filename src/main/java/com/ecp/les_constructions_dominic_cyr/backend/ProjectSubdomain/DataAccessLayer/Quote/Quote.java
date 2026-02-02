@@ -66,6 +66,32 @@ public class Quote {
     private LocalDateTime updatedAt;
 
     /**
+     * Quote status: SUBMITTED (pending approval), APPROVED, or REJECTED
+     * Default: SUBMITTED
+     */
+    @Column(name = "status", nullable = false, length = 20)
+    @Builder.Default
+    private String status = "SUBMITTED";
+
+    /**
+     * Reason for rejection (only populated if status is REJECTED)
+     */
+    @Column(name = "rejection_reason", nullable = true, length = 500)
+    private String rejectionReason;
+
+    /**
+     * Timestamp when the quote was approved or rejected
+     */
+    @Column(name = "approved_at", nullable = true)
+    private LocalDateTime approvedAt;
+
+    /**
+     * ID of the owner who approved or rejected the quote
+     */
+    @Column(name = "approved_by", nullable = true)
+    private String approvedBy;
+
+    /**
      * Lifecycle hooks to automatically manage timestamps.
      */
     @PrePersist
@@ -74,6 +100,9 @@ public class Quote {
         updatedAt = LocalDateTime.now();
         if (totalAmount == null) {
             totalAmount = BigDecimal.ZERO;
+        }
+        if (status == null) {
+            status = "SUBMITTED";
         }
     }
 

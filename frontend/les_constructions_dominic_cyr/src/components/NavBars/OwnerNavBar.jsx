@@ -14,6 +14,7 @@ import {
   GoGear,
   GoHome,
   GoCommentDiscussion,
+  GoCheckCircle,
 } from 'react-icons/go';
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
@@ -147,6 +148,18 @@ const Navbar = () => {
                     <GoCommentDiscussion />
                   </span>
                   <span className="navbar-text">Inquiries</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
+                  to="/quotes/approval"
+                  className={`navbar-link ${isActive('/quotes/approval')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoCheckCircle />
+                  </span>
+                  <span className="navbar-text">Quote Approval</span>
                 </Link>
               </li>
               <li className="navbar-item">

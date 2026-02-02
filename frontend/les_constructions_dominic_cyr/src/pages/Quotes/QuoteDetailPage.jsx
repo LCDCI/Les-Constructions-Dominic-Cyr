@@ -323,6 +323,47 @@ const QuoteDetailPage = () => {
             <p>{quote.notes}</p>
           </div>
         )}
+
+        {/* Approval Status Section */}
+        {quote.status && (
+          <div className={`approval-status-section status-${quote.status.toLowerCase()}`}>
+            <h3>{t('quote.approvalStatus') || 'Approval Status'}</h3>
+            <div className="status-detail">
+              <div className="status-info">
+                <span className="status-label">{t('quote.currentStatus') || 'Current Status'}</span>
+                <span className={`status-badge status-${quote.status.toLowerCase()}`}>
+                  {quote.status}
+                </span>
+              </div>
+              {quote.approvedBy && (
+                <div className="status-info">
+                  <span className="status-label">{t('quote.approvedBy') || 'Approved By'}</span>
+                  <span className="status-value">{quote.approvedBy}</span>
+                </div>
+              )}
+              {quote.approvedAt && (
+                <div className="status-info">
+                  <span className="status-label">{t('quote.approvedDate') || 'Approved Date'}</span>
+                  <span className="status-value">
+                    {new Date(quote.approvedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+              )}
+              {quote.rejectionReason && (
+                <div className="status-info rejection-reason">
+                  <span className="status-label">{t('quote.rejectionReason') || 'Rejection Reason'}</span>
+                  <p className="reason-text">{quote.rejectionReason}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -129,4 +129,91 @@ public class QuoteController {
         List<QuoteResponseModel> quotes = quoteService.getQuotesByContractor(contractorId);
         return ResponseEntity.ok(quotes);
     }
+
+    /**
+     * Get all submitted (pending approval) quotes.
+     * 
+     * Accessible to: Only OWNER role
+     * 
+     * @return List of all submitted quotes
+     */
+    @GetMapping("/admin/submitted")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<List<QuoteResponseModel>> getSubmittedQuotes() {
+        log.info("Fetching all submitted quotes for approval");
+
+        List<QuoteResponseModel> quotes = quoteService.getSubmittedQuotes();
+        return ResponseEntity.ok(quotes);
+    }
+
+    /**
+     * Get submitted quotes filtered by project.
+     * 
+     * Accessible to: Only OWNER role
+     * 
+     * @param projectIdentifier The project identifier to filter by
+     * @return List of submitted quotes for the project
+     */
+    @GetMapping("/admin/submitted/project/{projectIdentifier}")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<List<QuoteResponseModel>> getSubmittedQuotesByProject(
+        @PathVariable String projectIdentifier
+    ) {
+        log.info("Fetching submitted quotes for project: {}", projectIdentifier);
+
+        List<QuoteResponseModel> quotes = quoteService.getSubmittedQuotesByProject(projectIdentifier);
+        return ResponseEntity.ok(quotes);
+    }
+
+    /**
+     * Approve a quote.
+     * 
+     * Accessible to: Only OWNER role
+     * 
+     * @param quoteNumber The quote number to approve
+     * @param authentication Current user's authentication (owner)
+     * @return The updated quote with APPROVED status
+     */
+    @PutMapping("/{quoteNumber}/approve")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<QuoteResponseModel> approveQuote(
+        @PathVariable String quoteNumber,
+        Authentication authentication
+    ) {
+        log.info("Approving quote: {}", quoteNumber);
+
+        String ownerId = QuoteMapper.getContractorIdFromAuth(authentication);
+        QuoteResponseModel approvedQuote = quoteService.approveQuote(quoteNumber, ownerId);
+
+        return ResponseEntity.ok(approvedQuote);
+    }
+
+    /**
+     * Reject a quote with a reason.
+     * 
+     * Accessible to: Only OWNER role
+     * 
+     * @param quoteNumber The quote number to reject
+     * @param requestModel Contains the rejection reason
+     * @param authentication Current user's authentication (owner)
+     * @return The updated quote with REJECTED status and reason
+     */
+    @PutMapping("/{quoteNumber}/reject")
+    @PreAuthorize("hasRole('OWNER')")
+    public ResponseEntity<QuoteResponseModel> rejectQuote(
+        @PathVariable String quoteNumber,
+        @Valid @RequestBody QuoteApprovalRequestModel requestModel,
+        Authentication authentication
+    ) {
+        log.info("Rejecting quote: {}", quoteNumber);
+
+        if (!requestModel.isValid()) {
+            throw new IllegalArgumentException("Rejection reason is required");
+        }
+
+        String ownerId = QuoteMapper.getContractorIdFromAuth(authentication);
+        QuoteResponseModel rejectedQuote = quoteService.rejectQuote(quoteNumber, requestModel.getRejectionReason(), ownerId);
+
+        return ResponseEntity.ok(rejectedQuote);
+    }
 }

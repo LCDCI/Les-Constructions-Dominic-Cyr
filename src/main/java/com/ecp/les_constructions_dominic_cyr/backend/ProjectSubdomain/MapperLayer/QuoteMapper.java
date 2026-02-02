@@ -67,6 +67,10 @@ public class QuoteMapper {
             .totalAmount(quote.getTotalAmount())
             .createdAt(quote.getCreatedAt())
             .updatedAt(quote.getUpdatedAt())
+            .status(quote.getStatus())
+            .rejectionReason(quote.getRejectionReason())
+            .approvedAt(quote.getApprovedAt())
+            .approvedBy(quote.getApprovedBy())
             .build();
     }
 

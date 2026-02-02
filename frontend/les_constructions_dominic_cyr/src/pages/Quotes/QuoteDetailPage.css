@@ -629,3 +629,99 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(52, 152, 219, 0.3);
 }
+/* Approval Status Section */
+.approval-status-section {
+  padding: 32px;
+  border-top: 2px solid #e2e8f0;
+  margin-top: 32px;
+}
+
+.approval-status-section h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 20px;
+}
+
+.approval-status-section.status-submitted {
+  background: #fffbeb;
+  border-left: 4px solid #f59e0b;
+}
+
+.approval-status-section.status-approved {
+  background: #f0fdf4;
+  border-left: 4px solid #10b981;
+}
+
+.approval-status-section.status-rejected {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+}
+
+.status-detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.status-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.status-submitted {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.status-approved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-info.rejection-reason {
+  grid-column: 1 / -1;
+}
+
+.reason-text {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}

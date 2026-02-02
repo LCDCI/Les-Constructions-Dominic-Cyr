@@ -153,6 +153,99 @@ public class QuoteService {
     }
 
     /**
+     * Get all submitted (pending approval) quotes for owner view.
+     */
+    @Transactional(readOnly = true)
+    public List<QuoteResponseModel> getSubmittedQuotes() {
+        log.info("Fetching all submitted quotes");
+
+        List<Quote> quotes = quoteRepository.findByStatus("SUBMITTED");
+        return quotes.stream()
+            .map(quoteMapper::entityToResponseModel)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get submitted quotes filtered by project.
+     */
+    @Transactional(readOnly = true)
+    public List<QuoteResponseModel> getSubmittedQuotesByProject(String projectIdentifier) {
+        log.info("Fetching submitted quotes for project: {}", projectIdentifier);
+
+        List<Quote> quotes = quoteRepository.findByProjectAndStatus(projectIdentifier, "SUBMITTED");
+        return quotes.stream()
+            .map(quoteMapper::entityToResponseModel)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Approve a quote.
+     * 
+     * @param quoteNumber The quote to approve
+     * @param ownerId The owner approving the quote
+     * @return The updated quote
+     * @throws NotFoundException if quote not found
+     * @throws InvalidProjectDataException if quote is not in SUBMITTED status
+     */
+    @Transactional
+    public QuoteResponseModel approveQuote(String quoteNumber, String ownerId) {
+        log.info("Approving quote: {} by owner: {}", quoteNumber, ownerId);
+
+        Quote quote = quoteRepository.findByQuoteNumber(quoteNumber)
+            .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
+
+        if (!"SUBMITTED".equals(quote.getStatus())) {
+            throw new InvalidProjectDataException("Quote is not in SUBMITTED status: " + quote.getStatus());
+        }
+
+        quote.setStatus("APPROVED");
+        quote.setApprovedBy(ownerId);
+        quote.setApprovedAt(java.time.LocalDateTime.now());
+        quote.setRejectionReason(null); // Clear any rejection reason
+
+        Quote savedQuote = quoteRepository.save(quote);
+        log.info("Quote approved: {}", quoteNumber);
+
+        return quoteMapper.entityToResponseModel(savedQuote);
+    }
+
+    /**
+     * Reject a quote with a reason.
+     * 
+     * @param quoteNumber The quote to reject
+     * @param rejectionReason The reason for rejection
+     * @param ownerId The owner rejecting the quote
+     * @return The updated quote
+     * @throws NotFoundException if quote not found
+     * @throws InvalidProjectDataException if quote is not in SUBMITTED status or reason is empty
+     */
+    @Transactional
+    public QuoteResponseModel rejectQuote(String quoteNumber, String rejectionReason, String ownerId) {
+        log.info("Rejecting quote: {} by owner: {}", quoteNumber, ownerId);
+
+        if (rejectionReason == null || rejectionReason.isBlank()) {
+            throw new InvalidProjectDataException("Rejection reason is required");
+        }
+
+        Quote quote = quoteRepository.findByQuoteNumber(quoteNumber)
+            .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
+
+        if (!"SUBMITTED".equals(quote.getStatus())) {
+            throw new InvalidProjectDataException("Quote is not in SUBMITTED status: " + quote.getStatus());
+        }
+
+        quote.setStatus("REJECTED");
+        quote.setRejectionReason(rejectionReason);
+        quote.setApprovedBy(ownerId);
+        quote.setApprovedAt(java.time.LocalDateTime.now());
+
+        Quote savedQuote = quoteRepository.save(quote);
+        log.info("Quote rejected: {}", quoteNumber);
+
+        return quoteMapper.entityToResponseModel(savedQuote);
+    }
+
+    /**
      * Validate line items before creating quote.
      * 
      * Rules:

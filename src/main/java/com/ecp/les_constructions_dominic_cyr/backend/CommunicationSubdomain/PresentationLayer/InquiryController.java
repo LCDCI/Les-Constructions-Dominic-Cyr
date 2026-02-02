@@ -11,7 +11,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 
 @RestController
-@RequestMapping("/api/inquiries")
+@RequestMapping("/api/v1/inquiries")
 public class InquiryController {
     private final InquiryService service;
 

@@ -49,6 +49,34 @@
     "notFound": "Facture non trouvée",
     "createSuccess": "Facture créée avec succès!",
     "errorTitle": "Erreur de facture",
+    "contractor": "Entrepreneur",
+    "createdDate": "Date de création",
+    "approvalStatus": "Statut d'approbation",
+    "currentStatus": "Statut actuel",
+    "approvedBy": "Approuvé par",
+    "approvedDate": "Date d'approbation",
+    "rejectionReason": "Raison du rejet",
+    "approval": {
+      "title": "Gestion de l'approbation des devis",
+      "subtitle": "Examinez et gérez les devis soumis",
+      "submitted": "Soumis",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "searchPlaceholder": "Numéro de devis ou entrepreneur...",
+      "newestFirst": "Plus récent en premier",
+      "oldestFirst": "Plus ancien en premier",
+      "highestAmount": "Montant le plus élevé",
+      "lowestAmount": "Montant le plus bas",
+      "noQuotes": "Aucun devis trouvé",
+      "confirmApprove": "Approuver le devis",
+      "confirmReject": "Rejeter le devis",
+      "approveMessage": "Êtes-vous sûr de vouloir approuver ce devis? Il sera marqué comme valide pour être envoyé aux clients.",
+      "rejectMessage": "Êtes-vous sûr de vouloir rejeter ce devis? Une raison doit être fournie et l'entrepreneur sera notifié.",
+      "reasonRequired": "Veuillez fournir une raison de rejet",
+      "reasonPlaceholder": "Expliquez pourquoi ce devis est rejeté...",
+      "approve": "Approuver",
+      "reject": "Rejeter"
+    },
     "errors": {
       "descriptionRequired": "Description requise",
       "hoursInvalid": "Doit être > 0",
@@ -56,7 +84,8 @@
       "fixErrors": "Veuillez corriger les erreurs dans le formulaire",
       "noLot": "Aucun lot sélectionné",
       "createFailed": "Échec de la création de la facture",
-      "atLeastOneItem": "Veuillez ajouter au moins un article à la facture"
+      "atLeastOneItem": "Veuillez ajouter au moins un article à la facture",
+      "errorFetchingQuotes": "Échec du chargement des devis"
     }
   }
 }

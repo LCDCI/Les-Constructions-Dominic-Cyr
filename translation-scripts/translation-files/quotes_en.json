@@ -49,6 +49,34 @@
     "notFound": "Quote not found",
     "createSuccess": "Quote created successfully!",
     "errorTitle": "Quote Error",
+    "contractor": "Contractor",
+    "createdDate": "Created Date",
+    "approvalStatus": "Approval Status",
+    "currentStatus": "Current Status",
+    "approvedBy": "Approved By",
+    "approvedDate": "Approved Date",
+    "rejectionReason": "Rejection Reason",
+    "approval": {
+      "title": "Quote Approval Management",
+      "subtitle": "Review and manage submitted quotes",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "searchPlaceholder": "Quote # or Contractor...",
+      "newestFirst": "Newest First",
+      "oldestFirst": "Oldest First",
+      "highestAmount": "Highest Amount",
+      "lowestAmount": "Lowest Amount",
+      "noQuotes": "No quotes found",
+      "confirmApprove": "Approve Quote",
+      "confirmReject": "Reject Quote",
+      "approveMessage": "Are you sure you want to approve this quote? It will be marked as valid for sending to customers.",
+      "rejectMessage": "Are you sure you want to reject this quote? A reason must be provided and the contractor will be notified.",
+      "reasonRequired": "Please provide a rejection reason",
+      "reasonPlaceholder": "Explain why this quote is being rejected...",
+      "approve": "Approve",
+      "reject": "Reject"
+    },
     "errors": {
       "descriptionRequired": "Description required",
       "hoursInvalid": "Must be > 0",
@@ -56,7 +84,8 @@
       "fixErrors": "Please fix the errors in the form",
       "noLot": "No lot selected",
       "createFailed": "Failed to create quote",
-      "atLeastOneItem": "Please add at least one item to the quote"
+      "atLeastOneItem": "Please add at least one item to the quote",
+      "errorFetchingQuotes": "Failed to load quotes"
     }
   }
 }
