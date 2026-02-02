@@ -1,7 +1,5 @@
 .app-footer {
-  background-color: var(
-    --secondary-color
-  ); /* Using your global secondary grey */
+  background-color: #aab2a6;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   padding: 40px 0;
   margin-top: auto;
@@ -15,11 +13,13 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 40px;
+  text-align: center;
 }
 
 .footer-section {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .footer-title-group {
@@ -47,6 +47,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  align-items: center;
 }
 
 .footer-item-with-icon {

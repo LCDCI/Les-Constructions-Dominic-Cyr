@@ -25,7 +25,7 @@ export default function ContactPage() {
         addressLine3: 'J3G 0M9',
         directions: "Obtenir l'itinéraire",
         phoneLabel: 'Téléphone',
-        phone: '514-123-4567',
+        phone: '514-705-7848',
         emailLabel: 'Courriel',
         email: 'constructions.dcyr@gmail.com',
         rbqLabel: 'Régie du bâtiment du Québec',
@@ -51,7 +51,7 @@ export default function ContactPage() {
         addressLine3: 'J3G 0M9',
         directions: 'Get Directions',
         phoneLabel: 'Phone',
-        phone: '514-123-4567',
+        phone: '514-705-7848',
         emailLabel: 'Email',
         email: 'constructions.dcyr@gmail.com',
         rbqLabel: 'Régie du bâtiment du Québec',
@@ -114,7 +114,7 @@ export default function ContactPage() {
                 {t('contactInfo.phoneLabel', f.contactInfo.phoneLabel)}
               </strong>
               <p>
-                <a href="tel:+15141234567">
+                <a href="tel:+15147057848">
                   {t('contactInfo.phone', f.contactInfo.phone)}
                 </a>
               </p>
