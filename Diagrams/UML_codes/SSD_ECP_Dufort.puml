@@ -1,18 +1,90 @@
 @startuml
-title Salesperson View Project Page SSD
+title Owner — View Project
+
+actor Owner
+
+Owner -> System: viewProjectPage(ownerId)
+System --> Owner : AllLots&Projects(projectIds, ownerId, lotIds)
+
+alt (existingLots >= 1 && existingProjects >= 1)
+    System --> Owner: projectCard(projectId, projectName)
+        Owner -> System: viewProject(projectId, lotIds, ownerId)
+        System --> Owner : ProjectMetadata(projectId, lotIds, Status, completionPercentage, projectDescription)
+        Owner -> System: selectLot(projectId, lotId, ownerId)
+        System --> Owner : lotMetadata(lotId, lotNumber, area, status, lotSpecificFields, assignedUsers)
+else
+    System --> Owner : ProjectPageEmpty(),  message("No assigned Projects, please comeback later.")
+end
+@enduml
+
+@startuml
+title Customer — View Project
+
+actor Customer
+
+Customer -> System: viewProjectPage(salespersonId)
+System --> Customer : assignedLots&Projects(projectId, customerId, lotIds)
+
+alt (assignedLots >= 1 && assignedProjects >= 1)
+    System --> Customer : projectCard(projectId, projectName)
+    alt assignedLots > 1
+        Customer -> System: viewProject(projectId, lotIds, customerId)
+        System --> Customer : LotSelection(lotId, projectId)
+        Customer -> System: selectLot(projectId, lotId, customerId)
+        System --> Customer : lotMetadata(lotId, lotNumber, area, status, lotSpecificFields, assignedUsers)
+    else assignedLots == 1
+        Customer -> System: viewLotMetadata(projectId, LotId, customerId)
+        System --> Customer : lotMetadata(lotId, lotNumber, area, status, lotSpecificFields, assignedUsers)
+    end
+else
+    System --> Customer : ProjectPageEmpty(),  message("No assigned Projects, please comeback later.")
+end
+@enduml
+
+@startuml
+title Contractor— View Project
+
+actor Contractor
+
+Contractor-> System: viewProjectPage(contractorId)
+System --> Contractor: assignedLots&Projects(projectId, contractorId, lotIds)
+
+alt (assignedLots >= 1 && assignedProjects >= 1)
+    System --> Contractor: projectCard(projectId, projectName)
+    alt assignedLots > 1
+        Contractor-> System: viewProject(projectId, lotIds, contractorId)
+        System --> Contractor: LotSelection(lotId, projectId)
+        Contractor-> System: selectLot(projectId, lotId, contractorId)
+        System --> Contractor: lotMetadata(lotId, lotNumber, area, status, lotSpecificFields, assignedUsers)
+    else assignedLots == 1
+        Contractor-> System: viewLotMetadata(projectId, LotId, contractorId)
+        System --> Contractor: lotMetadata(lotId, lotNumber, area, status, lotSpecificFields, assignedUsers)
+    end
+else
+    System --> Contractor: ProjectPageEmpty(),  message("No assigned Projects, please comeback later.")
+end
+@enduml
+
+@startuml
+title Salesperson— View Project
 
 actor Salesperson
 
-loop for every request attempt
- alt valid SalespersonIdentifier && valid projectIdentifier
- Salesperson -> System: inquireOnProjectPage (projectIdentifier, SalespersonIdentifier)
-    System --> Salesperson:  projectIdentifier, SalespersonIdentifier, projectName, projectDescription, lastUpdated, city, startDate, projectColor, projectStatus, progressPercentage
-    Salesperson -> System: inquireOnSchedule_&_Milestones(projectIdentifier, SalespersonIdentifier, scheduleIdentifier)
-    System --> Salesperson: projectIdentifier, SalespersonIdentifier, scheduleIdentifier, updatedOn, completionDate, UpcomingWork
- else invalid SalespersonIdentifier || invalid projectIdentifier
-     Salesperson -> System: inquireOnProjectPage(projectIdentifier, SalespersonIdentifier)
-     System --> Salesperson: HTTPstatus, errorMessage
- end
+Salesperson-> System: viewProjectPage(salespersonId)
+System --> Salesperson: assignedLots&Projects(projectId, salespersonId, lotIds)
 
-
+alt (assignedLots >= 1 && assignedProjects >= 1)
+    System --> Salesperson: projectCard(projectId, projectName)
+    alt assignedLots > 1
+        Salesperson-> System: viewProject(projectId, lotIds, salespersonId)
+        System --> Salesperson: LotSelection(lotId, projectId)
+        Salesperson-> System: selectLot(projectId, lotId, salespersonId)
+        System --> Salesperson: lotMetadata(lotId, lotNumber, area, status, lotSpecificFields, assignedUsers)
+    else assignedLots == 1
+        Salesperson-> System: viewLotMetadata(projectId, LotId, salespersonId)
+        System --> Salesperson: lotMetadata(lotId, lotNumber, area, status, lotSpecificFields, assignedUsers)
+    end
+else
+    System --> Salesperson : ProjectPageEmpty(),  message("No assigned Projects, please comeback later.")
+end
 @enduml
