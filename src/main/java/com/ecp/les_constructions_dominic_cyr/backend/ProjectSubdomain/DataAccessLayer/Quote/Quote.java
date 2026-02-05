@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "quotes")
@@ -36,7 +37,7 @@ public class Quote {
     private String projectIdentifier;
 
     @Column(name = "lot_identifier", nullable = true)
-    private String lotIdentifier;
+    private UUID lotIdentifier;
 
     @Column(name = "category", nullable = true, length = 100)
     private String category;

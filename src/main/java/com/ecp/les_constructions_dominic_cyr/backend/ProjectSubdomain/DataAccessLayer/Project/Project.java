@@ -96,11 +96,6 @@ public class Project {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        // Set legacy lotIdentifier to empty string to satisfy NOT NULL constraint during migration
-        // This will be removed once the column is dropped
-        if (lotIdentifier == null) {
-            lotIdentifier = "";
-        }
     }
 
     @PreUpdate

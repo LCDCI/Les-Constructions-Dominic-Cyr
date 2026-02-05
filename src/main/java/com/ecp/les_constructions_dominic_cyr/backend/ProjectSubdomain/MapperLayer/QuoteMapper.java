@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -28,7 +29,9 @@ public class QuoteMapper {
         Quote quote = Quote.builder()
             .quoteNumber(quoteNumber)
             .projectIdentifier(requestModel.getProjectIdentifier())
-            .lotIdentifier(requestModel.getLotIdentifier())
+            .lotIdentifier(requestModel.getLotIdentifier() != null && !requestModel.getLotIdentifier().isBlank() 
+                ? UUID.fromString(requestModel.getLotIdentifier()) 
+                : null)
             .category(requestModel.getCategory())
             .contractorId(contractorId)
             .totalAmount(BigDecimal.ZERO) // Will be recalculated
@@ -56,7 +59,7 @@ public class QuoteMapper {
         return QuoteResponseModel.builder()
             .quoteNumber(quote.getQuoteNumber())
             .projectIdentifier(quote.getProjectIdentifier())
-            .lotIdentifier(quote.getLotIdentifier())
+            .lotIdentifier(quote.getLotIdentifier() != null ? quote.getLotIdentifier().toString() : null)
             .category(quote.getCategory())
             .contractorId(quote.getContractorId())
             .lineItems(
