@@ -128,7 +128,8 @@ public class QuoteService {
     public List<QuoteResponseModel> getQuotesByLot(String lotIdentifier) {
         log.info("Fetching quotes for lot: {}", lotIdentifier);
 
-        List<Quote> quotes = quoteRepository.findByLotIdentifier(lotIdentifier);
+        UUID lotId = UUID.fromString(lotIdentifier);
+        List<Quote> quotes = quoteRepository.findByLotIdentifier(lotId);
         return quotes.stream()
             .map(quoteMapper::entityToResponseModel)
             .collect(Collectors.toList());

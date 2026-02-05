@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface QuoteRepository extends JpaRepository<Quote, Long> {
@@ -24,7 +25,7 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
     /**
      * Find all quotes for a specific lot.
      */
-    List<Quote> findByLotIdentifier(String lotIdentifier);
+    List<Quote> findByLotIdentifier(UUID lotIdentifier);
 
     /**
      * Find all quotes created by a specific contractor.
