@@ -27,8 +27,8 @@ public class TaskMapper {
                 .taskPriority(task.getTaskPriority())
                 .estimatedHours(task.getEstimatedHours())
                 .hoursSpent(task.getHoursSpent())
-                .taskProgress(task.getTaskProgress())
-                .assignedToUserId(task.getAssignedTo() != null && task.getAssignedTo().getUserIdentifier() != null 
+                .taskProgress(task.calculateProgress()) // Use calculated progress instead of stored value
+                .assignedToUserId(task.getAssignedTo() != null && task.getAssignedTo().getUserIdentifier() != null
                     ? task.getAssignedTo().getUserIdentifier().getUserId().toString() : null)
                 .assignedToUserName(task.getAssignedTo() != null 
                     ? task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName() : null)

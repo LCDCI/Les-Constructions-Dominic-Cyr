@@ -63,6 +63,9 @@ public class Task {
     @Column(name = "schedule_id", nullable = false)
     private String scheduleId;
 
+    @Column(name = "lot_id")
+    private java.util.UUID lotId;
+
     public Task(@NotNull TaskIdentifier taskIdentifier, @NotNull TaskStatus taskStatus, @NotNull String taskTitle, @NotNull LocalDate periodStart, @NotNull LocalDate periodEnd, @NotNull String taskDescription, @NotNull TaskPriority taskPriority, @NotNull Double estimatedHours, @NotNull Double hoursSpent, @NotNull Double taskProgress, @NotNull Users assignedTo) {
         this.taskIdentifier = taskIdentifier;
         this.taskStatus = taskStatus;
@@ -75,6 +78,19 @@ public class Task {
         this.hoursSpent = hoursSpent;
         this.taskProgress = taskProgress;
         this.assignedTo = assignedTo;
+    }
+
+    /**
+     * Calculate task progress based on hours spent vs estimated hours.
+     * Progress = hoursSpent / estimatedHours * 100
+     * @return Progress percentage (0-100), or 0 if estimatedHours is null or 0
+     */
+    public double calculateProgress() {
+        if (estimatedHours == null || estimatedHours == 0 || hoursSpent == null) {
+            return 0.0;
+        }
+        double progress = (hoursSpent / estimatedHours) * 100.0;
+        return Math.min(Math.max(progress, 0.0), 100.0); // Clamp between 0 and 100
     }
 
     @Override

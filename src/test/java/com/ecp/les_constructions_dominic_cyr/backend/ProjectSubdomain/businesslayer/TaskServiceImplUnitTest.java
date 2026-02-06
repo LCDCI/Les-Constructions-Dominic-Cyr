@@ -590,4 +590,113 @@ class TaskServiceImplUnitTest {
         verify(taskRepository).findByScheduleId(scheduleIdentifier);
         verify(taskMapper).entitiesToResponseDTOs(Collections.emptyList());
     }
+
+    @Test
+    void getTasksForScheduleByStatus_shouldReturnFilteredTasks() {
+        String scheduleIdentifier = "SCH-001";
+        TaskStatus status = TaskStatus.COMPLETED;
+
+        Task completedTask = Task.builder()
+                .id(3)
+                .taskIdentifier(new TaskIdentifier("TASK-003"))
+                .taskStatus(TaskStatus.COMPLETED)
+                .taskTitle("Completed Task")
+                .scheduleId(scheduleIdentifier)
+                .build();
+
+        List<Task> tasks = Arrays.asList(completedTask);
+        TaskDetailResponseDTO completedDTO = TaskDetailResponseDTO.builder()
+                .taskId("TASK-003")
+                .taskStatus(TaskStatus.COMPLETED)
+                .scheduleId(scheduleIdentifier)
+                .build();
+        List<TaskDetailResponseDTO> responseDTOs = Arrays.asList(completedDTO);
+
+        when(taskRepository.findByScheduleIdAndTaskStatus(scheduleIdentifier, status)).thenReturn(tasks);
+        when(taskMapper.entitiesToResponseDTOs(tasks)).thenReturn(responseDTOs);
+
+        List<TaskDetailResponseDTO> result = taskService.getTasksForScheduleByStatus(scheduleIdentifier, status);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(TaskStatus.COMPLETED, result.get(0).getTaskStatus());
+
+        verify(taskRepository).findByScheduleIdAndTaskStatus(scheduleIdentifier, status);
+        verify(taskMapper).entitiesToResponseDTOs(tasks);
+    }
+
+    @Test
+    void getTasksForProject_shouldReturnAllTasksForProject() {
+        String projectIdentifier = "PRJ-001";
+        List<Task> tasks = Arrays.asList(task1, task2);
+        List<TaskDetailResponseDTO> responseDTOs = Arrays.asList(responseDTO1, responseDTO2);
+
+        when(taskRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(tasks);
+        when(taskMapper.entitiesToResponseDTOs(tasks)).thenReturn(responseDTOs);
+
+        List<TaskDetailResponseDTO> result = taskService.getTasksForProject(projectIdentifier);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+
+        verify(taskRepository).findByProjectIdentifier(projectIdentifier);
+        verify(taskMapper).entitiesToResponseDTOs(tasks);
+    }
+
+    @Test
+    void getTasksForProjectByStatus_shouldReturnFilteredTasksForProject() {
+        String projectIdentifier = "PRJ-001";
+        TaskStatus status = TaskStatus.IN_PROGRESS;
+        List<Task> tasks = Arrays.asList(task1);
+        List<TaskDetailResponseDTO> responseDTOs = Arrays.asList(responseDTO1);
+
+        when(taskRepository.findByProjectIdentifierAndTaskStatus(projectIdentifier, status)).thenReturn(tasks);
+        when(taskMapper.entitiesToResponseDTOs(tasks)).thenReturn(responseDTOs);
+
+        List<TaskDetailResponseDTO> result = taskService.getTasksForProjectByStatus(projectIdentifier, status);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals(TaskStatus.IN_PROGRESS, result.get(0).getTaskStatus());
+
+        verify(taskRepository).findByProjectIdentifierAndTaskStatus(projectIdentifier, status);
+        verify(taskMapper).entitiesToResponseDTOs(tasks);
+    }
+
+    @Test
+    void taskProgressCalculation_shouldBeBasedOnHoursSpentOverEstimatedHours() {
+        // Test that task progress is calculated correctly
+        Task testTask = Task.builder()
+                .estimatedHours(100.0)
+                .hoursSpent(50.0)
+                .build();
+
+        double progress = testTask.calculateProgress();
+
+        assertEquals(50.0, progress, 0.01);
+    }
+
+    @Test
+    void taskProgressCalculation_shouldReturnZeroWhenEstimatedHoursIsNull() {
+        Task testTask = Task.builder()
+                .estimatedHours(null)
+                .hoursSpent(50.0)
+                .build();
+
+        double progress = testTask.calculateProgress();
+
+        assertEquals(0.0, progress, 0.01);
+    }
+
+    @Test
+    void taskProgressCalculation_shouldClampProgressAt100() {
+        Task testTask = Task.builder()
+                .estimatedHours(100.0)
+                .hoursSpent(150.0)
+                .build();
+
+        double progress = testTask.calculateProgress();
+
+        assertEquals(100.0, progress, 0.01);
+    }
 }

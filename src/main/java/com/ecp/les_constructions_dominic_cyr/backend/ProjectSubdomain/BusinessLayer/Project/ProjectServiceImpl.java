@@ -7,7 +7,11 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectActivityLog;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectActivityLogRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ProjectMapper;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectActivityLogResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidProjectDataException;
@@ -15,7 +19,6 @@ import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundExc
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.ProjectNotFoundException;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Project.ProjectActivityLogResponseModel;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,7 +43,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final FileServiceClient fileServiceClient;
     private final ProjectActivityLogRepository activityLogRepository;
     private final UsersRepository usersRepository;
-
+    private final TaskRepository taskRepository;
     private String getFullName(Users user) {
         if (user == null) return "";
         String first = user.getFirstName() == null ? "" : user.getFirstName();
@@ -66,24 +69,33 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
 
-        // Calculate progress based on lots
-        List<Lot> lots = lotRepository.findByProject_ProjectIdentifier(projectIdentifier);
-        if (!lots.isEmpty()) {
-            int totalUpcomingWork = 59;
-            int totalCompleted = lots.stream()
-                    .mapToInt(lot -> {
-                        int remaining = lot.getRemainingUpcomingWork() != null ? lot.getRemainingUpcomingWork() : totalUpcomingWork;
-                        return totalUpcomingWork - remaining;
-                    })
-                    .sum();
-            int maxPossible = lots.size() * totalUpcomingWork;
-            int progress = maxPossible > 0 ? (int) Math.round((double) totalCompleted / maxPossible * 100) : 0;
+        // Calculate progress based on tasks across all lots
+        List<Task> allTasks = taskRepository.findByProjectIdentifier(projectIdentifier);
+        if (!allTasks.isEmpty()) {
+            long completedTasks = allTasks.stream()
+                    .filter(t -> t.getTaskStatus() == TaskStatus.COMPLETED)
+                    .count();
+            int progress = (int) Math.round((double) completedTasks / allTasks.size() * 100);
             project.setProgressPercentage(progress);
+        } else {
+            // Fallback to old calculation if no tasks exist
+            List<Lot> lots = lotRepository.findByProject_ProjectIdentifier(projectIdentifier);
+            if (!lots.isEmpty()) {
+                int totalUpcomingWork = 59;
+                int totalCompleted = lots.stream()
+                        .mapToInt(lot -> {
+                            int remaining = lot.getRemainingUpcomingWork() != null ? lot.getRemainingUpcomingWork() : totalUpcomingWork;
+                            return totalUpcomingWork - remaining;
+                        })
+                        .sum();
+                int maxPossible = lots.size() * totalUpcomingWork;
+                int progress = maxPossible > 0 ? (int) Math.round((double) totalCompleted / maxPossible * 100) : 0;
+                project.setProgressPercentage(progress);
+            }
         }
 
         return projectMapper.entityToResponseModel(project);
     }
-
 
     @Override
     @Transactional
@@ -92,7 +104,7 @@ public class ProjectServiceImpl implements ProjectService {
                 .orElseThrow(() -> new ProjectNotFoundException("Project not found with identifier: " + projectIdentifier));
 
         validateProjectRequestForUpdate(requestModel);
-        
+
         // Validate all lots exist if lotIdentifiers are being updated
         if (requestModel.getLotIdentifiers() != null && !requestModel.getLotIdentifiers().isEmpty()) {
             validateLotsExist(requestModel.getLotIdentifiers());
