@@ -17,7 +17,7 @@ public class Project {
     @Column(name = "project_id")
     private Long projectId;
 
-    @Column(name = "project_identifier", nullable = false, unique = true) // Add name here
+    @Column(name = "project_identifier", nullable = false, unique = true)
     private String projectIdentifier;
 
     @Column(nullable = false)
