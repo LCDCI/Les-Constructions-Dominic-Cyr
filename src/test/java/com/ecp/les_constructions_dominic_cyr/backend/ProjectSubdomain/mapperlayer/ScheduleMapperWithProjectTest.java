@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,6 +18,7 @@ class ScheduleMapperWithProjectTest {
 
     private ScheduleMapper scheduleMapper;
     private TaskMapper taskMapper;
+    private static final UUID LOT_53_UUID = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
@@ -38,7 +40,7 @@ class ScheduleMapperWithProjectTest {
                 .scheduleStartDate(LocalDate.of(2024, 11, 26))
                 .scheduleEndDate(LocalDate.of(2024, 11, 26))
                 .scheduleDescription("Begin Excavation")
-                .lotId("Lot 53")
+                .lotId(LOT_53_UUID)
                 .tasks(new ArrayList<>())
                 .project(project)
                 .build();
@@ -52,8 +54,8 @@ class ScheduleMapperWithProjectTest {
         assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleStartDate());
         assertEquals(LocalDate.of(2024, 11, 26), result.getScheduleEndDate());
         assertEquals("Begin Excavation", result.getScheduleDescription());
-        assertEquals("Lot 53", result.getLotId());
-        
+        assertEquals(LOT_53_UUID.toString(), result.getLotId());
+
         // Verify project fields
         assertEquals(1L, result.getProjectId());
         assertEquals("proj-001-test", result.getProjectIdentifier());
@@ -69,7 +71,7 @@ class ScheduleMapperWithProjectTest {
                 .scheduleStartDate(LocalDate.of(2024, 11, 26))
                 .scheduleEndDate(LocalDate.of(2024, 11, 26))
                 .scheduleDescription("Begin Excavation")
-                .lotId("Lot 53")
+                .lotId(LOT_53_UUID)
                 .tasks(new ArrayList<>())
                 .project(null)
                 .build();

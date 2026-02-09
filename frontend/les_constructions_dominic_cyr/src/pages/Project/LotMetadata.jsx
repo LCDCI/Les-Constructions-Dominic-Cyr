@@ -419,7 +419,10 @@ const LotMetadata = () => {
                       </div>
                       <div className="lot-status-inline">
                         <span className="status-label">
-                          {getTaskStatusLabel(t, normalizeTaskStatusKey(task.taskStatus))}
+                          {getTaskStatusLabel(
+                            t,
+                            normalizeTaskStatusKey(task.taskStatus)
+                          )}
                         </span>
                       </div>
                     </div>
@@ -471,7 +474,10 @@ const LotMetadata = () => {
                       </div>
                       <div className="lot-status-inline">
                         <span className="status-label">
-                          {getTaskStatusLabel(t, normalizeTaskStatusKey(task.taskStatus))}
+                          {getTaskStatusLabel(
+                            t,
+                            normalizeTaskStatusKey(task.taskStatus)
+                          )}
                         </span>
                       </div>
                     </div>
