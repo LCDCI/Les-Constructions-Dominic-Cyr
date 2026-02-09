@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -32,6 +33,41 @@ const normalizeStatusKey = raw => {
   if (key === 'sold') return 'sold';
   if (key === 'pending') return 'pending';
   return key || 'unknown';
+};
+
+// Fallback labels for task statuses (used when translations aren't loaded)
+const TASK_STATUS_LABELS = {
+  todo: 'To Do',
+  inprogress: 'In Progress',
+  completed: 'Completed',
+  onhold: 'On Hold',
+  cancelled: 'Cancelled',
+  pending: 'Pending',
+};
+
+// Normalize task statuses coming from API (handles uppercase/underscores)
+const normalizeTaskStatusKey = raw => {
+  if (!raw) return 'pending';
+  // Convert to lowercase and remove underscores to match translation keys
+  const key = String(raw).toLowerCase().replace(/_/g, '');
+  if (key === 'completed') return 'completed';
+  if (key === 'inprogress') return 'inprogress';
+  if (key === 'todo') return 'todo';
+  if (key === 'onhold') return 'onhold';
+  if (key === 'cancelled') return 'cancelled';
+  if (key === 'pending') return 'pending';
+  return key || 'pending';
+};
+
+// Helper to get task status label with fallback
+const getTaskStatusLabel = (t, statusKey) => {
+  const translationKey = `taskStatus.${statusKey}`;
+  const translated = t(translationKey);
+  // If translation returns the key itself, use fallback
+  if (translated === translationKey || translated.startsWith('taskStatus.')) {
+    return TASK_STATUS_LABELS[statusKey] || statusKey;
+  }
+  return translated;
 };
 
 const LotMetadata = () => {
@@ -87,6 +123,7 @@ const LotMetadata = () => {
               },
             });
           } catch (tokenErr) {
+            // eslint-disable-next-line no-console
             console.warn(
               'Unable to fetch token, continuing without auth',
               tokenErr
@@ -266,17 +303,29 @@ const LotMetadata = () => {
                 <div
                   className="progress-fill"
                   style={{
-                    width: `${tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : (lot.progressPercentage || 0)}%`,
-                    backgroundColor: project?.primaryColor || lot.primaryColor || '#27ae60',
+                    width: `${tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : lot.progressPercentage || 0}%`,
+                    backgroundColor:
+                      project?.primaryColor || lot.primaryColor || '#27ae60',
                   }}
                 ></div>
                 <span className="progress-text">
-                  {tasks.length > 0 ? Math.round((completedTasks.length / tasks.length) * 100) : (lot.progressPercentage || 0)}%
+                  {tasks.length > 0
+                    ? Math.round((completedTasks.length / tasks.length) * 100)
+                    : lot.progressPercentage || 0}
+                  %
                 </span>
               </div>
               {tasks.length > 0 && (
-                <span className="metadata-value" style={{ marginTop: '5px', fontSize: '0.9rem', color: '#666' }}>
-                  {completedTasks.length} / {tasks.length} {t('tasksCompleted') || 'tasks completed'}
+                <span
+                  className="metadata-value"
+                  style={{
+                    marginTop: '5px',
+                    fontSize: '0.9rem',
+                    color: '#666',
+                  }}
+                >
+                  {completedTasks.length} / {tasks.length}{' '}
+                  {t('tasksCompleted') || 'tasks completed'}
                 </span>
               )}
             </div>
@@ -340,14 +389,20 @@ const LotMetadata = () => {
                     <div
                       key={task.taskId}
                       className="lot-card"
-                      style={{ borderColor: lot.primaryColor, cursor: 'pointer' }}
+                      style={{
+                        borderColor: lot.primaryColor,
+                        cursor: 'pointer',
+                      }}
                       onClick={() => navigate(`/tasks/${task.taskId}`)}
                     >
                       <h3>{task.taskTitle}</h3>
                       <p className="lot-address">
                         {task.taskDescription || t('noDescription')}
                       </p>
-                      <div className="progress-bar" style={{ marginTop: '10px' }}>
+                      <div
+                        className="progress-bar"
+                        style={{ marginTop: '10px' }}
+                      >
                         <div
                           className="progress-fill"
                           style={{
@@ -356,13 +411,15 @@ const LotMetadata = () => {
                           }}
                         ></div>
                         <span className="progress-text">
-                          {task.taskProgress != null ? Math.round(task.taskProgress) : 100}%
+                          {task.taskProgress != null
+                            ? Math.round(task.taskProgress)
+                            : 100}
+                          %
                         </span>
                       </div>
                       <div className="lot-status-inline">
                         <span className="status-label">
-                          {t(`taskStatus.${task.taskStatus?.toLowerCase()}`) ||
-                            task.taskStatus}
+                          {getTaskStatusLabel(t, normalizeTaskStatusKey(task.taskStatus))}
                         </span>
                       </div>
                     </div>
@@ -384,14 +441,20 @@ const LotMetadata = () => {
                     <div
                       key={task.taskId}
                       className="lot-card"
-                      style={{ borderColor: lot.primaryColor, cursor: 'pointer' }}
+                      style={{
+                        borderColor: lot.primaryColor,
+                        cursor: 'pointer',
+                      }}
                       onClick={() => navigate(`/tasks/${task.taskId}`)}
                     >
                       <h3>{task.taskTitle}</h3>
                       <p className="lot-address">
                         {task.taskDescription || t('noDescription')}
                       </p>
-                      <div className="progress-bar" style={{ marginTop: '10px' }}>
+                      <div
+                        className="progress-bar"
+                        style={{ marginTop: '10px' }}
+                      >
                         <div
                           className="progress-fill"
                           style={{
@@ -400,13 +463,15 @@ const LotMetadata = () => {
                           }}
                         ></div>
                         <span className="progress-text">
-                          {task.taskProgress != null ? Math.round(task.taskProgress) : 0}%
+                          {task.taskProgress != null
+                            ? Math.round(task.taskProgress)
+                            : 0}
+                          %
                         </span>
                       </div>
                       <div className="lot-status-inline">
                         <span className="status-label">
-                          {t(`taskStatus.${task.taskStatus?.toLowerCase()}`) ||
-                            task.taskStatus}
+                          {getTaskStatusLabel(t, normalizeTaskStatusKey(task.taskStatus))}
                         </span>
                       </div>
                     </div>

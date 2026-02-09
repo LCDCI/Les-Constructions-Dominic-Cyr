@@ -27,3 +27,4 @@ export const scheduleApi = {
 };
 
 export default scheduleApi;
+
