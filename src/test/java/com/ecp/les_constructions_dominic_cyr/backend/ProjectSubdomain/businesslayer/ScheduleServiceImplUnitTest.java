@@ -83,7 +83,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Begin Excavation")
-                .lotId(LOT_53_ID)
+                .lotId(UUID.fromString(LOT_53_ID))
                 .project(project)
                 .build();
 
@@ -93,7 +93,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(1))
                 .scheduleEndDate(LocalDate.now().plusDays(1))
                 .scheduleDescription("Plumbing")
-                .lotId(LOT_57_ID)
+                .lotId(UUID.fromString(LOT_57_ID))
                 .project(project)
                 .build();
 
