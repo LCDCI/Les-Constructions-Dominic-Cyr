@@ -71,12 +71,13 @@ services:
     ports:
       - "5434:5432"
     volumes:
-        - backend-db-data:/var/lib/postgresql/data
-        # Mount individual SQL files from resources to ensure deterministic order
-        - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-        - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+      - backend-db-data:/var/lib/postgresql/data
+      # Mount individual SQL files from resources to ensure deterministic order
+      - ./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./src/main/resources/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d lcdci"]
+      test:
+        ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d lcdci"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -88,18 +89,18 @@ services:
   #######################################################################
   mailer-service:
     build:
-      context: ./mailer-service
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: mailer-service/Dockerfile
     container_name: mailer-service
     ports:
-      - "8083:8080"   # external 8083 -> internal 8080
+      - "8083:8080" # external 8083 -> internal 8080
     env_file:
       - .env
       - mailer.env
     environment:
-      BREVO_API_KEY: "${BREVO_API_KEY}"  # Brevo API v3 key (from .env or mailer.env)
-      BREVO_FROM_EMAIL: "${BREVO_FROM_EMAIL:-noreply@constructions-dominiccyr.com}"  # Sender email address (from .env or mailer.env)
-      MAILER_PORT: "8080"  # Internal port (matches Dockerfile EXPOSE)
+      BREVO_API_KEY: "${BREVO_API_KEY}" # Brevo API v3 key (from .env or mailer.env)
+      BREVO_FROM_EMAIL: "${BREVO_FROM_EMAIL:-noreply@constructions-dominiccyr.com}" # Sender email address (from .env or mailer.env)
+      MAILER_PORT: "8080" # Internal port (matches Dockerfile EXPOSE)
     # Note: Healthcheck removed because scratch base image has no shell/tools
     # Service will be considered healthy once it starts listening on port 8080
     networks:

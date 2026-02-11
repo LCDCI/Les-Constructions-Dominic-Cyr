@@ -2,6 +2,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.TaskMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
@@ -112,6 +113,27 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskDetailResponseDTO> getTasksForSchedule(String scheduleIdentifier) {
         log.info("Fetching tasks for schedule: {}", scheduleIdentifier);
         List<Task> tasks = taskRepository.findByScheduleId(scheduleIdentifier);
+        return taskMapper.entitiesToResponseDTOs(tasks);
+    }
+
+    @Override
+    public List<TaskDetailResponseDTO> getTasksForScheduleByStatus(String scheduleIdentifier, TaskStatus taskStatus) {
+        log.info("Fetching tasks for schedule: {} with status: {}", scheduleIdentifier, taskStatus);
+        List<Task> tasks = taskRepository.findByScheduleIdAndTaskStatus(scheduleIdentifier, taskStatus);
+        return taskMapper.entitiesToResponseDTOs(tasks);
+    }
+
+    @Override
+    public List<TaskDetailResponseDTO> getTasksForProject(String projectIdentifier) {
+        log.info("Fetching tasks for project: {}", projectIdentifier);
+        List<Task> tasks = taskRepository.findByProjectIdentifier(projectIdentifier);
+        return taskMapper.entitiesToResponseDTOs(tasks);
+    }
+
+    @Override
+    public List<TaskDetailResponseDTO> getTasksForProjectByStatus(String projectIdentifier, TaskStatus taskStatus) {
+        log.info("Fetching tasks for project: {} with status: {}", projectIdentifier, taskStatus);
+        List<Task> tasks = taskRepository.findByProjectIdentifierAndTaskStatus(projectIdentifier, taskStatus);
         return taskMapper.entitiesToResponseDTOs(tasks);
     }
 

@@ -56,6 +56,7 @@ public class Lot {
             joinColumns = @JoinColumn(name = "lot_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     )
+    @org.hibernate.annotations.BatchSize(size = 50)
     @lombok.Getter(lombok.AccessLevel.NONE)
     private List<Users> assignedUsers = new ArrayList<>();
 

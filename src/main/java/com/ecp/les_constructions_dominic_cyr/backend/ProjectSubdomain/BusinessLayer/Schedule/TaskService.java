@@ -2,6 +2,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 
 import java.util.List;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
 
@@ -37,5 +38,23 @@ public interface TaskService {
      */
     List<TaskDetailResponseDTO> getTasksForContractor(String contractorId);
 
+    /**
+     * Get all tasks for a specific schedule
+     */
     List<TaskDetailResponseDTO> getTasksForSchedule(String scheduleIdentifier);
+
+    /**
+     * Get tasks for a schedule filtered by status
+     */
+    List<TaskDetailResponseDTO> getTasksForScheduleByStatus(String scheduleIdentifier, TaskStatus taskStatus);
+
+    /**
+     * Get all tasks for a specific project
+     */
+    List<TaskDetailResponseDTO> getTasksForProject(String projectIdentifier);
+
+    /**
+     * Get tasks for a project filtered by status
+     */
+    List<TaskDetailResponseDTO> getTasksForProjectByStatus(String projectIdentifier, TaskStatus taskStatus);
 }

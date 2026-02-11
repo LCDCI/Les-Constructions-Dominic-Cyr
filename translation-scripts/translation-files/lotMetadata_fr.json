@@ -10,6 +10,7 @@
   "price": "Prix",
   "progress": "Progrès",
   "lotDescription": "Description",
+  "tasksCompleted": "tâches complétées",
 
   "assignedUsers": "Utilisateurs affectés",
   "unnamedUser": "Utilisateur sans nom",
@@ -22,6 +23,21 @@
     "customer": "Client",
     "admin": "Administrateur",
     "other": "Autre"
+  },
+
+  "completedTasks": "Tâches complétées",
+  "remainingTasks": "Tâches restantes",
+  "noDescription": "Aucune description",
+  "noCompletedTasks": "Aucune tâche complétée pour le moment.",
+  "noRemainingTasks": "Aucune tâche restante.",
+
+  "taskStatus": {
+    "todo": "À faire",
+    "pending": "En attente",
+    "inprogress": "En cours",
+    "completed": "Complété",
+    "onhold": "En pause",
+    "cancelled": "Annulé"
   },
 
   "lotStatus": {
