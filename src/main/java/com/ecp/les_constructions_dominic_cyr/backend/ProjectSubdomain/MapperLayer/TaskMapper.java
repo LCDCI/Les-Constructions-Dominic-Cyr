@@ -2,6 +2,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLay
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskIdentifier;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
@@ -43,16 +44,24 @@ public class TaskMapper {
     }
 
     public Task requestDTOToEntity(TaskRequestDTO requestDTO, Users assignedUser) {
+        // Auto-transition from TO_DO to IN_PROGRESS when hours are logged during creation
+        TaskStatus taskStatus = requestDTO.getTaskStatus();
+        Double hoursSpent = toDouble(requestDTO.getHoursSpent());
+
+        if (taskStatus == TaskStatus.TO_DO && hoursSpent != null && hoursSpent > 0) {
+            taskStatus = TaskStatus.IN_PROGRESS;
+        }
+
         return Task.builder()
                 .taskIdentifier(new TaskIdentifier())
-                .taskStatus(requestDTO.getTaskStatus())
+                .taskStatus(taskStatus)
                 .taskTitle(requestDTO.getTaskTitle())
                 .periodStart(dateToLocalDate(requestDTO.getPeriodStart()))
                 .periodEnd(dateToLocalDate(requestDTO.getPeriodEnd()))
                 .taskDescription(requestDTO.getTaskDescription())
                 .taskPriority(requestDTO.getTaskPriority())
                 .estimatedHours(toDouble(requestDTO.getEstimatedHours()))
-                .hoursSpent(toDouble(requestDTO.getHoursSpent()))
+                .hoursSpent(hoursSpent)
                 .taskProgress(toDouble(requestDTO.getTaskProgress()))
                 .assignedTo(assignedUser)
                 .scheduleId(requestDTO.getScheduleId())
@@ -60,14 +69,25 @@ public class TaskMapper {
     }
 
     public void updateEntityFromRequestDTO(Task task, TaskRequestDTO requestDTO, Users assignedUser) {
-        task.setTaskStatus(requestDTO.getTaskStatus());
+        // Auto-transition from TO_DO to IN_PROGRESS when hours are logged
+        // Only apply if the request is trying to keep status as TO_DO
+        TaskStatus newStatus = requestDTO.getTaskStatus();
+        Double newHoursSpent = toDouble(requestDTO.getHoursSpent());
+
+        if (task.getTaskStatus() == TaskStatus.TO_DO &&
+            newStatus == TaskStatus.TO_DO &&
+            newHoursSpent != null && newHoursSpent > 0) {
+            newStatus = TaskStatus.IN_PROGRESS;
+        }
+
+        task.setTaskStatus(newStatus);
         task.setTaskTitle(requestDTO.getTaskTitle());
         task.setPeriodStart(dateToLocalDate(requestDTO.getPeriodStart()));
         task.setPeriodEnd(dateToLocalDate(requestDTO.getPeriodEnd()));
         task.setTaskDescription(requestDTO.getTaskDescription());
         task.setTaskPriority(requestDTO.getTaskPriority());
         task.setEstimatedHours(toDouble(requestDTO.getEstimatedHours()));
-        task.setHoursSpent(toDouble(requestDTO.getHoursSpent()));
+        task.setHoursSpent(newHoursSpent);
         task.setTaskProgress(toDouble(requestDTO.getTaskProgress()));
         task.setAssignedTo(assignedUser);
         if (requestDTO.getScheduleId() != null && !requestDTO.getScheduleId().isBlank()) {

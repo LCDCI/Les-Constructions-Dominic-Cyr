@@ -406,16 +406,10 @@ const LotMetadata = () => {
                         <div
                           className="progress-fill"
                           style={{
-                            width: `${task.taskProgress != null ? Math.round(task.taskProgress) : 100}%`,
+                            width: '100%',
                             backgroundColor: lot.primaryColor || '#27ae60',
                           }}
                         ></div>
-                        <span className="progress-text">
-                          {task.taskProgress != null
-                            ? Math.round(task.taskProgress)
-                            : 100}
-                          %
-                        </span>
                       </div>
                       <div className="lot-status-inline">
                         <span className="status-label">
@@ -465,12 +459,6 @@ const LotMetadata = () => {
                             backgroundColor: lot.primaryColor || '#27ae60',
                           }}
                         ></div>
-                        <span className="progress-text">
-                          {task.taskProgress != null
-                            ? Math.round(task.taskProgress)
-                            : 0}
-                          %
-                        </span>
                       </div>
                       <div className="lot-status-inline">
                         <span className="status-label">
