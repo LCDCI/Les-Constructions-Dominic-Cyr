@@ -1,5 +1,9 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule;
 
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.MailerServiceClient;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
@@ -27,6 +31,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationCategory;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -37,6 +43,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ProjectRepository projectRepository;
     private final LotRepository lotRepository;
     private final ScheduleMapper scheduleMapper;
+    private final NotificationService notificationService;
+    private final MailerServiceClient mailerServiceClient;
+    private final UsersRepository usersRepository;
 
     private static final int MAX_TASK_IDS = 50;
     private static final int MAX_TOP_PRIORITY_TASKS = 5;
@@ -277,21 +286,68 @@ public class ScheduleServiceImpl implements ScheduleService {
     public ScheduleResponseDTO updateScheduleForProject(String projectIdentifier, String scheduleIdentifier, ScheduleRequestDTO scheduleRequestDTO) {
         log.info("Updating schedule {} for project {}", scheduleIdentifier, projectIdentifier);
         validateScheduleRequest(scheduleRequestDTO);
-        
+
         // Verify project exists
-        projectRepository.findByProjectIdentifier(projectIdentifier)
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
                 .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
-        
+
         Lot lot = resolveLot(scheduleRequestDTO.getLotId());
         Schedule existingSchedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)
                 .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + scheduleIdentifier));
-        
+
         validateScheduleBelongsToProject(existingSchedule, projectIdentifier);
-        
+
         scheduleMapper.updateEntityFromRequestDTO(existingSchedule, scheduleRequestDTO);
         existingSchedule.setLotNumber(lot.getLotIdentifier().getLotId().toString());
         Schedule updatedSchedule = scheduleRepository.save(existingSchedule);
-        
+
+        // --- Notification logic ---
+        // Recipients: users assigned to the lot
+        List<Users> assignedUsers = lot.getAssignedUsers();
+
+        // Prepare notification content
+        String taskNames = updatedSchedule.getTasks() != null && !updatedSchedule.getTasks().isEmpty()
+            ? updatedSchedule.getTasks().stream().map(t -> t.getTaskTitle()).reduce((a, b) -> a + ", " + b).orElse("")
+            : "No tasks";
+        String message = String.format(
+            "The project schedule was updated. Tasks: %s. Start: %s, End: %s.",
+            taskNames,
+            updatedSchedule.getScheduleStartDate(),
+            updatedSchedule.getScheduleEndDate()
+        );
+        String title = "Project Schedule Updated";
+        String link = "/projects/" + projectIdentifier + "/schedules/" + scheduleIdentifier;
+
+        // Send notifications
+        for (Users user : assignedUsers) {
+            try {
+                notificationService.createNotification(
+                    user.getUserIdentifier().getUserId(),
+                    title,
+                    message,
+                    NotificationCategory.SCHEDULE_UPDATED,
+                    link
+                );
+                // Send email
+                if (user.getPrimaryEmail() != null) {
+                    String emailBody = String.format(
+                        "Hello %s,<br><br>%s<br><br>Updated at: %s", user.getFirstName(), message, updatedSchedule.getUpdatedAt()
+                    );
+                    mailerServiceClient.sendEmail(
+                        user.getPrimaryEmail(),
+                        title,
+                        emailBody,
+                        "Les Constructions Dominic Cyr"
+                    ).subscribe(
+                        null,
+                        error -> log.error("Failed to send email to {}: {}", user.getPrimaryEmail(), error.getMessage(), error)
+                    );
+                }
+            } catch (Exception e) {
+                log.warn("Failed to notify user {}: {}", user.getUserIdentifier().getUserId(), e.getMessage());
+            }
+        }
+
         log.info("Schedule {} updated for project {}", scheduleIdentifier, projectIdentifier);
         return scheduleMapper.entityToResponseDTO(updatedSchedule);
     }

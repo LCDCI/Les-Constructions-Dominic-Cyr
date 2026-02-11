@@ -1,5 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.businesslayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.MailerServiceClient;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.ScheduleServiceImpl;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
@@ -13,6 +15,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLaye
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +52,12 @@ class ScheduleServiceImplUnitTest {
 
     @Mock
     private LotRepository lotRepository;
+
+    @Mock
+    private MailerServiceClient mailerServiceClient;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ScheduleServiceImpl scheduleService;
@@ -735,11 +744,28 @@ class ScheduleServiceImplUnitTest {
                 .lotId(LOT_101_ID)
                 .build();
 
+        // Set up lot with assigned users
+        Users user1 = new Users();
+        user1.setUserIdentifier(new com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier(UUID.randomUUID()));
+        user1.setFirstName("John");
+        user1.setPrimaryEmail("john@example.com");
+
+        Users user2 = new Users();
+        user2.setUserIdentifier(new com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier(UUID.randomUUID()));
+        user2.setFirstName("Jane");
+        user2.setPrimaryEmail("jane@example.com");
+
+        lot101.setAssignedUsers(Arrays.asList(user1, user2));
+
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
         when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_101_ID))).thenReturn(lot101);
         when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.of(schedule1));
         when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
         when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
+
+        // Mock notification and email services
+        when(notificationService.createNotification(any(UUID.class), anyString(), anyString(), any(), anyString())).thenReturn(null);
+        when(mailerServiceClient.sendEmail(anyString(), anyString(), anyString(), anyString())).thenReturn(null); // Mock reactive call
 
         ScheduleResponseDTO result = scheduleService.updateScheduleForProject(
                 projectIdentifier, scheduleIdentifier, requestDTO);
@@ -752,6 +778,10 @@ class ScheduleServiceImplUnitTest {
         verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
         verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
         verify(scheduleRepository).save(schedule1);
+
+        // Verify notifications were sent to assigned users
+        verify(notificationService, times(2)).createNotification(any(UUID.class), eq("Project Schedule Updated"), anyString(), any(), anyString());
+        verify(mailerServiceClient, times(2)).sendEmail(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
