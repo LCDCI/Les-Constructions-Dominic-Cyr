@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,6 +32,11 @@ class ScheduleRepositoryIntegrationTest {
     private Schedule schedule2;
     private Schedule schedule3;
 
+    private static final UUID LOT_53_UUID = UUID.randomUUID();
+    private static final UUID LOT_57_UUID = UUID.randomUUID();
+    private static final UUID LOT_99_UUID = UUID.randomUUID();
+    private static final UUID LOT_100_UUID = UUID.randomUUID();
+
     @BeforeEach
     void setUp() {
         scheduleRepository.deleteAll();
@@ -43,7 +49,7 @@ class ScheduleRepositoryIntegrationTest {
                 .scheduleStartDate(startOfWeek)
                 .scheduleEndDate(startOfWeek)
                 .scheduleDescription("Begin Excavation")
-                .lotId("Lot 53")
+                .lotId(LOT_53_UUID)
                 .build();
 
         schedule2 = Schedule.builder()
@@ -51,7 +57,7 @@ class ScheduleRepositoryIntegrationTest {
                 .scheduleStartDate(startOfWeek.plusDays(2))
                 .scheduleEndDate(startOfWeek.plusDays(2))
                 .scheduleDescription("Plumbing")
-                .lotId("Lot 57")
+                .lotId(LOT_57_UUID)
                 .build();
 
         schedule3 = Schedule.builder()
@@ -59,7 +65,7 @@ class ScheduleRepositoryIntegrationTest {
                 .scheduleStartDate(startOfWeek.plusDays(20))
                 .scheduleEndDate(startOfWeek.plusDays(20))
                 .scheduleDescription("Future Task")
-                .lotId("Lot 99")
+                .lotId(LOT_99_UUID)
                 .build();
 
         scheduleRepository.save(schedule1);
@@ -131,7 +137,7 @@ class ScheduleRepositoryIntegrationTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotId("Lot 100")
+                .lotId(LOT_100_UUID)
                 .build();
 
         Schedule saved = scheduleRepository.save(newSchedule);

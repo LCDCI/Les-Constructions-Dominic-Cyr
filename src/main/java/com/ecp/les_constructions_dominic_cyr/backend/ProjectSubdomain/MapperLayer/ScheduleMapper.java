@@ -45,7 +45,7 @@ public class ScheduleMapper {
                 .scheduleStartDate(requestDTO.getScheduleStartDate())
                 .scheduleEndDate(requestDTO.getScheduleEndDate())
                 .scheduleDescription(requestDTO.getScheduleDescription())
-                .lotId(requestDTO.getLotId())
+                .lotId(requestDTO.getLotId() != null ? UUID.fromString(requestDTO.getLotId()) : null)
                 .tasks(new ArrayList<>())
                 .build();
     }
@@ -54,6 +54,6 @@ public class ScheduleMapper {
         schedule.setScheduleStartDate(requestDTO.getScheduleStartDate());
         schedule.setScheduleEndDate(requestDTO.getScheduleEndDate());
         schedule.setScheduleDescription(requestDTO.getScheduleDescription());
-        schedule.setLotId(requestDTO.getLotId());
+        schedule.setLotId(requestDTO.getLotId() != null ? UUID.fromString(requestDTO.getLotId()) : null);
     }
 }

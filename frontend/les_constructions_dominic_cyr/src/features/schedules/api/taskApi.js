@@ -98,6 +98,40 @@ export const taskApi = {
     });
     return response.data;
   },
-};
 
+  getTasksForProject: async (projectIdentifier, token = null) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get(
+      `/projects/${projectIdentifier}/tasks`,
+      { headers }
+    );
+    return response.data;
+  },
+
+  getTasksForProjectByStatus: async (
+    projectIdentifier,
+    status,
+    token = null
+  ) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get(
+      `/projects/${projectIdentifier}/tasks/status/${status}`,
+      { headers }
+    );
+    return response.data;
+  },
+
+  getTasksForScheduleByStatus: async (
+    scheduleIdentifier,
+    status,
+    token = null
+  ) => {
+    const headers = buildHeaders(token);
+    const response = await axiosInstance.get(
+      `/schedules/${scheduleIdentifier}/tasks/status/${status}`,
+      { headers }
+    );
+    return response.data;
+  },
+};
 export default taskApi;

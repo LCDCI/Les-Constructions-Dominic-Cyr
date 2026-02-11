@@ -123,8 +123,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.projectmetadata", "8a02a6c8-e64c-4d8c-8109-c1a2e86c27ec");
         
         // Lot Metadata page translations
-        fileIdMap.put("en.lotmetadata", "04a7731f-86b7-40be-b975-20fea883b9f5");
-        fileIdMap.put("fr.lotmetadata", "76f2c2f0-738c-4352-83f2-eff68a82bf0b");
+        fileIdMap.put("en.lotmetadata", "fedbe51f-2362-49c7-bbc7-d91055f3d8a8");
+        fileIdMap.put("fr.lotmetadata", "58a85d61-34dd-457a-ad89-4de96056a19a");
 
         // Contractor Tasks page translations
         fileIdMap.put("en.contractortasks", "30c5add1-5926-40c4-80d9-8e56714e0d74");
@@ -174,4 +174,3 @@ public class TranslationRegistry {
         return getFileId(language, page) != null;
     }
 }
-
