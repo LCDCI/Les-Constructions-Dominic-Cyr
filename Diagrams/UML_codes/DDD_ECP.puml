@@ -17,352 +17,456 @@ skinparam rectangle {
 }
 
 rectangle "Users Subdomain" as UserManagementContext #LightBlue {
-    ENTITY(Users) #lightpink {
-        userIdentifier: UserIdentifier
-        firstName: String
-        lastName: String
-        email: String
-        phone: String
-        passwordHash: String
-        userRole: UserRole
-        address: Address
-        communicationLanguage: CommunicationLanguage
-        dateCreated: Date
-    }
+    
+    package "User Management Context" #AliceBlue {
+        ENTITY(Users) #lightpink {
+            userIdentifier: UserIdentifier
+            firstName: String
+            lastName: String
+            primaryEmail: String
+            secondaryEmail: String
+            phone: String
+            userRole: UserRole
+            auth0UserId: String
+            userStatus: UserStatus
+        }
 
-    VALUE_OBJECT(UserIdentifier) #Bisque {
-        userIdentifier: UUID
-    }
-    VALUE_OBJECT(Address) #Bisque {
-        StreetName: String
-        City: String
-        Province: String
-        PostalCode: String
-        Country: String
-    }
+        VALUE_OBJECT(UserIdentifier) #Bisque {
+            userId: UUID
+        }
 
-    ENUM(UserRole) {
-        OWNER
-        SALESMAN
-        CONTRACTOR
-        CUSTOMER
-    }
+        ENUM(UserRole) {
+            OWNER
+            SALESPERSON
+            CONTRACTOR
+            CUSTOMER
+        }
 
-ENUM(CommunicationLanguage) {
-        ENGLISH
-        FRANCAIS
-    }
+        ENUM(UserStatus) {
+            ACTIVE
+            INACTIVE
+            DEACTIVATED
+        }
 
-    'Users relationships'
-    UserIdentifier "1" <-- "1" Users
-    Users "1" *-- "1..*" Address
-    Users "1" *-- "1" UserRole
-    Users "1" *-- "1" CommunicationLanguage
+        'Users relationships'
+        UserIdentifier "1" <-- "1" Users
+        Users "1" *-- "1" UserRole
+        Users "1" *-- "1" UserStatus
+    }
 }
 
-rectangle "Project  Subdomain" as ProjectManagementContext #LightGreen {
-    AGGREGATE_ROOT(Project) #lightpink {
-        projectIdentifier: ProjectIdentifier
-        projectName: String
-        projectDescription: String
-        lastUpdated: Date
-        city: String
-        startDate: Date
-        projectColor: ProjectColor
-        projectStatus: ProjectStatus
-        progressPercentage: int
-    }
-     VALUE_OBJECT(ProjectColor) #Bisque {
-               primaryHexColor: String
-               secondaryHexColor: String
-               tertiaryHexColor: String
-               accentColor: String
-      }
-
-
-    VALUE_OBJECT(ProjectIdentifier) #Bisque {
-        projectId: UUID
-    }
-
-    ENTITY(Image) #lightpink {
-        imageIdentifier: ImageIdentifier
-        postedOn: Date
-        publishedBy: UserIdentifier
-        ImageType: ImageType
-        url: String
-    }
-
-    ENTITY(Document) #lightpink {
-        documentIdentifier: DocumentIdentifier
-        uploadedOn: Date
-        uploadedBy: UserIdentifier
-        DocumentType: DocumentType
-        url: String
-    }
-
-    ENTITY(Schedule) #lightpink {
-        scheduleIdentifier: ScheduleIdentifier
-        updatedOn: Date
-        completionDate: Date
-        upcomingWork: UpcomingWork
-    }
-
-    VALUE_OBJECT(UpcomingWork) #Bisque {
-        work: boolean
-        workDate: Date
-        estimatedTime: String
-        completionDate: Date
-        totalTime: String
-    }
-
-
-       ENTITY(Lot) #lightpink {
-            lotIdentifier: LotIdentifier
+rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
+    
+    package "Project Core Context" #LightYellow {
+        AGGREGATE_ROOT(Project) #lightpink {
+            projectId: Long
+            projectIdentifier: String
+            projectName: String
+            projectDescription: String
+            status: ProjectStatus
+            startDate: LocalDate
+            endDate: LocalDate
+            completionDate: LocalDate
+            primaryColor: String
+            tertiaryColor: String
+            buyerColor: String
+            buyerName: String
+            imageIdentifier: String
+            customerId: String
+            lotIdentifiers: List<String>
+            progressPercentage: Integer
+            createdAt: LocalDateTime
+            updatedAt: LocalDateTime
+            contractorIds: List<String>
+            salespersonIds: List<String>
             location: String
+        }
+
+        ENTITY(ProjectActivityLog) #lightpink {
+            id: Long
+            projectIdentifier: String
+            activityType: ActivityType
+            userIdentifier: String
+            userName: String
+            changedBy: String
+            changedByName: String
+            timestamp: LocalDateTime
+            description: String
+        }
+
+        ENUM(ProjectStatus) {
+            PLANNED
+            IN_PROGRESS
+            COMPLETED
+            DELAYED
+            CANCELLED
+            ARCHIVED
+        }
+
+        ENUM(ActivityType) {
+            CONTRACTOR_ASSIGNED
+            CONTRACTOR_REMOVED
+            SALESPERSON_ASSIGNED
+            SALESPERSON_REMOVED
+            CUSTOMER_ASSIGNED
+            CUSTOMER_REMOVED
+            PROJECT_CREATED
+            PROJECT_UPDATED
+            PROJECT_COMPLETED
+        }
+    }
+
+    package "Schedule Management Context" #LightCyan {
+        ENTITY(Schedule) #lightpink {
+            id: Integer
+            scheduleIdentifier: String
+            scheduleStartDate: LocalDate
+            scheduleEndDate: LocalDate
+            scheduleDescription: String
+            lotId: String
+            createdAt: LocalDateTime
+            updatedAt: LocalDateTime
+        }
+
+        ENTITY(Task) #lightpink {
+            id: Integer
+            taskIdentifier: TaskIdentifier
+            taskStatus: TaskStatus
+            taskTitle: String
+            periodStart: LocalDate
+            periodEnd: LocalDate
+            taskDescription: String
+            taskPriority: TaskPriority
+            estimatedHours: Double
+            hoursSpent: Double
+            taskProgress: Double
+            scheduleId: String
+        }
+
+        VALUE_OBJECT(TaskIdentifier) #Bisque {
+            taskId: UUID
+        }
+
+        ENUM(TaskStatus) {
+            TO_DO
+            IN_PROGRESS
+            COMPLETED
+            ON_HOLD
+            CANCELLED
+        }
+
+        ENUM(TaskPriority) {
+            VERY_LOW
+            LOW
+            MEDIUM
+            HIGH
+            VERY_HIGH
+        }
+    }
+
+    package "Lot Management Context" #Wheat {
+        ENTITY(Lot) #lightpink {
+            id: Integer
+            lotIdentifier: LotIdentifier
+            lotNumber: String
+            civicAddress: String
             price: Float
-            dimensions: String
-            status: LotStatus
+            dimensionsSquareFeet: String
+            dimensionsSquareMeters: String
+            lotStatus: LotStatus
+            createdAt: LocalDateTime
+            remainingUpcomingWork: Integer
         }
 
-         ENUM(LotStatus) {
-                AVAILABLE
-                SOLD
-                PENDING
-            }
-
-    ENUM(ProjectStatus) {
-        PLANNED
-        IN_PROGRESS
-        DELAYED
-        COMPLETED
-        CANCELLED
-    }
-
- ENUM(ImageType) {
-         PNG
-         JPG
-         WEBP
-         HEIC
-         BLOB
+        ENTITY(LotDocument) #lightpink {
+            id: UUID
+            uploaderName: String
+            originalFileName: String
+            storageKey: String
+            mimeType: String
+            sizeBytes: Long
+            isImage: Boolean
+            uploadedAt: LocalDateTime
         }
- ENUM(DocumentType) {
-          PDF
-          DOCX
-          TXT
-          XLSX
-         }
 
-   VALUE_OBJECT(LotIdentifier) #Bisque {
-        lotIdentifier: UUID
+        VALUE_OBJECT(LotIdentifier) #Bisque {
+            lotIdentifier: UUID
+        }
+
+        ENUM(LotStatus) {
+            AVAILABLE
+            SOLD
+            PENDING
+            RESERVED
+        }
     }
 
-    VALUE_OBJECT(DocumentIdentifier) #Bisque {
-        documentTypeIdentifier: UUID
-    }
-    VALUE_OBJECT(ImageIdentifier) #Bisque {
-        imageIdentifier: UUID
-    }
-    VALUE_OBJECT(ScheduleIdentifier) #Bisque {
-        scheduleIdentifier: UUID
+    package "Quote Management Context" #LightSalmon {
+        ENTITY(Quote) #lightpink {
+            quoteId: Long
+            quoteNumber: String
+            projectIdentifier: String
+            lotIdentifier: UUID
+            category: String
+            contractorId: String
+            totalAmount: BigDecimal
+            createdAt: LocalDateTime
+            updatedAt: LocalDateTime
+        }
+
+        ENTITY(QuoteLineItem) #lightpink {
+            lineItemId: Long
+            itemDescription: String
+            quantity: BigDecimal
+            rate: BigDecimal
+            lineTotal: BigDecimal
+            displayOrder: Integer
+        }
     }
 
+    package "Portfolio Context" #Lavender {
+        ENTITY(Realization) #lightpink {
+            id: Integer
+            realizationIdentifier: RealizationIdentifier
+            realizationName: String
+            location: String
+            description: String
+            imageIdentifier: String
+            numberOfRooms: Integer
+            numberOfBedrooms: Integer
+            numberOfBathrooms: Integer
+            constructionYear: Integer
+        }
 
-  'Project Relationships'
-    Project "1" --> "1..*     " ScheduleIdentifier
+        ENTITY(Renovation) #lightpink {
+            id: Integer
+            renovationIdentifier: RenovationIdentifier
+            beforeImageIdentifier: String
+            afterImageIdentifier: String
+            description: String
+        }
+
+        VALUE_OBJECT(RealizationIdentifier) #Bisque {
+            realizationIdentifier: UUID
+        }
+
+        VALUE_OBJECT(RenovationIdentifier) #Bisque {
+            renovationIdentifier: UUID
+        }
+    }
+
+    package "Content Management Context" #LightSteelBlue {
+        ENTITY(ProjectOverviewContent) #lightpink {
+            id: Long
+            projectIdentifier: String
+            heroTitle: String
+            heroSubtitle: String
+            heroDescription: String
+            overviewSectionTitle: String
+            overviewSectionContent: String
+            featuresSectionTitle: String
+            locationSectionTitle: String
+            locationDescription: String
+            locationAddress: String
+            locationMapEmbedUrl: String
+            gallerySectionTitle: String
+            locationLatitude: Double
+            locationLongitude: Double
+            createdAt: LocalDateTime
+            updatedAt: LocalDateTime
+        }
+
+        ENTITY(ProjectGalleryImage) #lightpink {
+            id: Long
+            projectIdentifier: String
+            imageIdentifier: String
+            imageCaption: String
+            displayOrder: Integer
+            createdAt: LocalDateTime
+        }
+
+        ENTITY(ProjectFeature) #lightpink {
+            id: Long
+            projectIdentifier: String
+            featureTitle: String
+            featureDescription: String
+            displayOrder: Integer
+            createdAt: LocalDateTime
+        }
+
+        ENTITY(ProjectManagementPageContent) #lightpink {
+            id: Long
+            language: String
+            contentJson: String
+            createdAt: LocalDateTime
+            updatedAt: LocalDateTime
+        }
+    }
+
+    package "Living Environment Context" #PaleGreen {
+        ENTITY(LivingEnvironmentContent) #lightpink {
+            id: Long
+            projectIdentifier: String
+            language: String
+            headerTitle: String
+            headerSubtitle: String
+            headerSubtitleLast: String
+            headerTagline: String
+            descriptionText: String
+            proximityTitle: String
+            footerText: String
+            createdAt: LocalDateTime
+            updatedAt: LocalDateTime
+        }
+
+        ENTITY(LivingEnvironmentAmenity) #lightpink {
+            id: Long
+            amenityKey: String
+            amenityLabel: String
+            displayOrder: Integer
+        }
+    }
+
+    package "Shared Types" #WhiteSmoke {
+        ENUM(ImageType) {
+            PNG
+            JPEG
+            WEBP
+            HEIC
+            BLOB
+        }
+
+        ENUM(DocumentType) {
+            PDF
+            DOCX
+            TXT
+            XLSX
+        }
+    }
+
+    'Project Relationships'
     Project "1" *-- "1" ProjectStatus
-    ProjectIdentifier "1" --> "1" Project
-    Project "1  "-->"1..*    " LotIdentifier
-    LotIdentifier "1  " <-- "1" Lot
+    Project "1" --> "0..*" Schedule
+    Schedule "1" --> "0..*" Task
+    Schedule "1" --> "1" Project
+    Task "1" *-- "1" TaskIdentifier
+    Task "1" *-- "1" TaskStatus
+    Task "1" *-- "1" TaskPriority
+    Task "1" --> "0..1" UserIdentifier
+    TaskIdentifier "1" <-- "1" Task
+    
+    Project "1" --> "0..*" Lot
+    Lot "1" *-- "1" LotIdentifier
     Lot "1" *-- "1" LotStatus
-    Schedule "1" *--  "1" UpcomingWork
-    Project "1" --> "           0..*" ImageIdentifier
-    Project "1" --> "        0..*" DocumentIdentifier
-    Image "1" *-- "1"  ImageType
-    Document "1" *-- "1"  DocumentType
-    ScheduleIdentifier "1  " <-- "1" Schedule
-    DocumentIdentifier "1  "<--"1 " Document
-    ImageIdentifier "1" <-- "1" Image
-    Project "1" *-- "1" ProjectColor
+    Lot "1" --> "1" Project
+    Lot "1" --> "0..*" UserIdentifier
+    LotIdentifier "1" <-- "1" Lot
+    
+    Quote "1" --> "1..*" QuoteLineItem
+    QuoteLineItem "1" --> "1" Quote
+    Quote "1" --> "0..1" LotIdentifier
+    Quote "1" --> "1" UserIdentifier
+    
+    Realization "1" *-- "1" RealizationIdentifier
+    RealizationIdentifier "1" <-- "1" Realization
+    
+    Renovation "1" *-- "1" RenovationIdentifier
+    RenovationIdentifier "1" <-- "1" Renovation
+    
+    ProjectOverviewContent "1" --> "0..*" ProjectGalleryImage
+    ProjectOverviewContent "1" --> "0..*" ProjectFeature
+    
+    LivingEnvironmentContent "1" --> "0..*" LivingEnvironmentAmenity
+    LivingEnvironmentAmenity "1" --> "1" LivingEnvironmentContent
+    
+    LotDocument "1" --> "1" Lot
+    LotDocument "1" --> "1" UserIdentifier
+    
+    ProjectActivityLog "1" *-- "1" ActivityType
 }
 
-
-rectangle "Billing Subdomain" as FinanceContext #LightCoral {
-    AGGREGATE(Bill) #lightpink {
-        billIdentifier: BillIdentifier
-        totalCost: Float
-        dateCreated: Date
-        dateDue: Date
-        currency: Currency
-        ownerRate: Float
-        isFinal: Boolean
-        billCategory: BillCategory
-        billLineItem: BillLineItem
-        billDocumentIdentifier: BillDocumentTypeIdentifier
-    }
-
-    VALUE_OBJECT(BillIdentifier) #Bisque{
-    billIdentifier: UUID
-    }
-
-    VALUE_OBJECT(BillLineItem) #Bisque {
-        description: String
-        billCategory: BillCategory
-        billLineItemCost: Float
-    }
-    ENUM(BillCategory){
-        MATERIALS
-        LABOR
-        PERMITS
-        OTHER
-    }
-
-    ENTITY(Payment) #lightpink {
-        paymentIdentifier: Paymentidentifier
-        amount: Float
-        paymentDate: Date
-        paymentType: PaymentType
-        paymentDetails: String
-    }
-
-    VALUE_OBJECT(Currency) #Bisque {
-        currencyMultiplier: Float
-        currencySign: String
-    }
-
-    ENUM(PaymentType) {
-        CASH
-        CREDIT
-        BANK_TRANSFER
-        CHEQUE
-    }
-
-    ENTITY(BillDocument) #lightpink {
-        billDocumentIdentifier: BillDocumentIdentifier
-        uploadedOn: Date
-        documentType: DocumentType
-        url: String
-        billDocumentType: BillDocumentType
-    }
-    VALUE_OBJECT(BillDocumentIdentifier) #Bisque {
-        billDocumentIdentifier: UUID
-    }
-
-    VALUE_OBJECT(PaymentIdentifier) #Bisque {
-        paymentIdentifier: UUID
-    }
-
-    ENUM (BillDocumentType) {
-          PDF
-          XLSX
- }
-
-
-    'Bill Relationships'
-    BillDocumentIdentifier "1" <-- "1" BillDocument
-        BillIdentifier "1  "<-- "1"Bill
-        Bill "1" *-- "1" BillCategory
-        Bill "1" *-- "1..*" BillLineItem
-        Bill "1" --> "1..*     " PaymentIdentifier
-        Payment "1" *-- "1"PaymentType
-        Bill "1" *-- "1   " Currency
-        Bill "1" --> "0..*      " BillDocumentIdentifier
-        PaymentIdentifier "1" <-- "1" Payment
-        BillDocument "1" *-- "1" BillDocumentType
-}
-
-
-rectangle "Form Subdomain" as FormManagementContext #Khaki {
-    ENTITY(Form) #lightpink {
-        formIdentifier: FormIdentifier
-        title: String
-        formType: FormType
-        formStatus: FormStatus
-        formDetails: String
-        submissionDate: Date
-        isReadAndAccepted: Boolean
-    }
-
-    VALUE_OBJECT(FormIdentifier) #Bisque {
-        formId: UUID
-    }
-
-    ENUM(FormType) {
-        ELECTRICAL
-        PLUMBING
-        ORDER
-        WOODWORK
-        SALE
-        ADD_ONS
-        TIME_CARD
-        DELIVERY_NOTE
-        INVENTORY
-    }
-
-    ENUM(FormStatus) {
-        PENDING
-        SIGNED
-        REJECTED
-    }
-
-     'Form Relationships'
-        FormIdentifier "1" <-- "1 " Form
-        Form "1 "*-- "1" FormType
-        Form "1" *-- "1" FormStatus
-
-}
 
 rectangle "Communication Subdomain" as CommunicationContext #YellowGreen {
-   AGGREGATE(Notification) #lightpink {
-           notificationId: UUID
-           Subject: String
-           recipientId: UUID
-           sentDate: Date
-           type: NotificationType
-       }
+    
+    package "Notification Context" #LemonChiffon {
+        ENTITY(Notification) #lightpink {
+            notificationId: UUID
+            userId: UUID
+            title: String
+            message: String
+            category: NotificationCategory
+            link: String
+            isRead: Boolean
+            createdAt: LocalDateTime
+        }
 
-   AGGREGATE(ConversationThread) #lightpink {
-        threadIdentifier: ThreadIdentifier
-        createdOn: Date
-        participants: List<UserIdentifier>
+        ENUM(NotificationCategory) {
+            TASK_ASSIGNED
+            TASK_COMPLETED
+            TASK_UPDATED
+            PROJECT_CREATED
+            PROJECT_UPDATED
+            PROJECT_COMPLETED
+            FORM_SUBMITTED
+            FORM_SIGNED
+            FORM_REJECTED
+            SCHEDULE_CREATED
+            SCHEDULE_UPDATED
+            DOCUMENT_UPLOADED
+            DOCUMENT_SHARED
+            TEAM_MEMBER_ASSIGNED
+            TEAM_MEMBER_REMOVED
+            QUOTE_SUBMITTED
+            QUOTE_APPROVED
+            QUOTE_REJECTED
+            INQUIRY_RECEIVED
+            GENERAL
+        }
+
+        ENUM(NotificationType) {
+            EMAIL
+            SYSTEM_ALERT
+        }
     }
 
-    ENTITY(Message) #lightpink {
-        messageIdentifier: UUID
-        senderIdentifier: UUID
-        body: String
-        sentDate: Date
+    package "Inquiry Context" #PeachPuff {
+        ENTITY(Inquiry) #lightpink {
+            id: Long
+            name: String
+            email: String
+            phone: String
+            message: String
+            createdAt: OffsetDateTime
+        }
     }
-
- VALUE_OBJECT(NotificationIdentifier) #Bisque {
-           notificationId: UUID
-       }
-
-    ENUM(NotificationType) {
-        EMAIL
-        SYSTEM_ALERT
-    }
-}
 
     'Notification Relationships'
-    Notification "1  " --> "1 "ConversationThread
-    NotificationIdentifier "1" <-- "1" Notification
-    ConversationThread "1" --> "1   " Message
-    Notification "1" *-- "1" NotificationType
+    Notification "1" *-- "1" NotificationCategory
+    Notification "1" --> "1" UserIdentifier
+}
 
-    'Previous Cross-Class Relationships From Milestone 1'
-    'BillIdentifier "1"--> "1" Users'
-    'ProjectIdentifier "1" --> "1" Users'
-    'FormIdentifier "0..*" --> "1" Users'
-    'NotificationIdentifier "0..*" --> "1" Users'
-    'FileIdentifier "0..*" --> "1" Users'
+rectangle "Report Subdomain" as ReportContext #Khaki {
+    
+    package "Analytics Context" #Cornsilk {
+        ENTITY(AnalyticsReport) #lightpink {
+            id: UUID
+            ownerId: String
+            reportType: String
+            fileFormat: String
+            fileKey: String
+            fileSize: Long
+            generationTimestamp: LocalDateTime
+            startDate: LocalDateTime
+            endDate: LocalDateTime
+            status: String
+            metadata: Map<String Object>
+            createdAt: LocalDateTime
+            updatedAt: LocalDateTime
+        }
 
-    'Cross-Class Relationships Milestone 2'
-    Bill "1" --> "1" UserIdentifier
-    Bill "1" --> "1" FormIdentifier
-    Project "1" --> "1" UserIdentifier
-    Project "1" --> "1" FormIdentifier
-    Project "1" --> "1" NotificationIdentifier
-    Project "1" --> "1" BillIdentifier
+        'Report Relationships'
+        AnalyticsReport "1" --> "1" UserIdentifier
+    }
 }
 
 @enduml
