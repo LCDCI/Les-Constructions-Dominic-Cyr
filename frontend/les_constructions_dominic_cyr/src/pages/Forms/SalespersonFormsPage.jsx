@@ -1,0 +1,559 @@
+import { useState, useEffect, useRef } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { useNavigate } from 'react-router-dom';
+import {
+  getAllForms,
+  createForm,
+  reopenForm,
+  completeForm,
+  deleteForm,
+} from '../../features/forms/api/formsApi';
+import { fetchActiveCustomers } from '../../features/users/api/usersApi';
+import '../../styles/Forms/salesperson-forms.css';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
+
+const FORM_TYPES = [
+  { value: 'EXTERIOR_DOORS', label: 'Exterior Doors' },
+  { value: 'GARAGE_DOORS', label: 'Garage Doors' },
+  { value: 'WINDOWS', label: 'Windows' },
+  { value: 'ASPHALT_SHINGLES', label: 'Asphalt Shingles' },
+  { value: 'WOODWORK', label: 'Woodwork' },
+  { value: 'PAINT', label: 'Paint' },
+];
+
+const FORM_STATUS_LABELS = {
+  DRAFT: 'Draft',
+  ASSIGNED: 'Assigned',
+  IN_PROGRESS: 'In Progress',
+  SUBMITTED: 'Submitted',
+  REOPENED: 'Reopened',
+  COMPLETED: 'Completed',
+};
+
+const SalespersonFormsPage = () => {
+  const { t } = usePageTranslations('salespersonForms');
+  const [forms, setForms] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState('');
+  const [selectedFormType, setSelectedFormType] = useState('');
+  const [selectedProject, setSelectedProject] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
+  const [formToReopen, setFormToReopen] = useState(null);
+  const [reopenReason, setReopenReason] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [formToDelete, setFormToDelete] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
+
+  const { getAccessTokenSilently } = useAuth0();
+  const navigate = useNavigate();
+  const createModalRef = useRef(null);
+
+  const redirectToError = (status = 500) => {
+    if (status === 404) {
+      navigate('/404', { replace: true });
+    } else {
+      navigate('/error', { replace: true });
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      const [formsData, customersData] = await Promise.all([
+        getAllForms(token),
+        fetchActiveCustomers(token),
+      ]);
+
+      setForms(formsData || []);
+      setCustomers(customersData || []);
+      setLoading(false);
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        redirectToError(404);
+      } else {
+        redirectToError();
+      }
+    }
+  };
+
+  const handleCreateForm = async () => {
+    try {
+      setSubmitError(null);
+
+      if (!selectedCustomer || !selectedFormType) {
+        setSubmitError('Please select a customer and form type');
+        return;
+      }
+
+      const customer = customers.find(c => c.userIdentifier === selectedCustomer);
+      if (!customer || !customer.userIdentifier) {
+        setSubmitError('Invalid customer selected');
+        return;
+      }
+
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      const payload = {
+        customerId: customer.userIdentifier,
+        formType: selectedFormType,
+      };
+
+      if (selectedProject) {
+        payload.projectIdentifier = selectedProject;
+      }
+
+      await createForm(payload, token);
+
+      setIsCreateOpen(false);
+      setSelectedCustomer('');
+      setSelectedFormType('');
+      setSelectedProject('');
+      fetchData();
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        redirectToError(404);
+      } else if (error?.response?.data?.message) {
+        setSubmitError(error.response.data.message);
+      } else {
+        setSubmitError('Failed to create form. Please try again.');
+      }
+    }
+  };
+
+  const handleReopenForm = async () => {
+    try {
+      if (!reopenReason.trim()) {
+        setSubmitError('Please provide a reason for reopening');
+        return;
+      }
+
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      await reopenForm(formToReopen.formId, { reason: reopenReason }, token);
+
+      setIsReopenModalOpen(false);
+      setFormToReopen(null);
+      setReopenReason('');
+      fetchData();
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        redirectToError(404);
+      } else if (error?.response?.data?.message) {
+        setSubmitError(error.response.data.message);
+      } else {
+        setSubmitError('Failed to reopen form. Please try again.');
+      }
+    }
+  };
+
+  const handleCompleteForm = async formId => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      await completeForm(formId, token);
+      fetchData();
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        redirectToError(404);
+      } else {
+        redirectToError();
+      }
+    }
+  };
+
+  const handleDeleteForm = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      await deleteForm(formToDelete.formId, token);
+
+      setIsDeleteModalOpen(false);
+      setFormToDelete(null);
+      fetchData();
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        redirectToError(404);
+      } else {
+        redirectToError();
+      }
+    }
+  };
+
+  const filteredForms = forms.filter(form => {
+    const matchesSearch =
+      form.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      form.formType?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === 'ALL' || form.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const getCustomerName = customerId => {
+    const customer = customers.find(c => c.userIdentifier === customerId);
+    return customer
+      ? `${customer.firstName} ${customer.lastName}`
+      : 'Unknown Customer';
+  };
+
+  if (loading) {
+    return (
+      <div className="forms-page">
+        <div className="forms-hero">
+          <div className="forms-hero-content">
+            <h1 className="forms-hero-title">
+              {t('title', 'Customer Forms')}
+            </h1>
+          </div>
+        </div>
+        <div className="forms-content">
+          <div className="forms-container">
+            <div className="forms-loading">Loading...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="forms-page">
+      <div className="forms-hero">
+        <div className="forms-hero-content">
+          <h1 className="forms-hero-title">{t('title', 'Customer Forms')}</h1>
+        </div>
+      </div>
+
+      <div className="forms-content">
+        <div className="forms-container">
+          <div className="forms-header">
+            <h2 className="forms-subtitle">
+              {t('subtitle', 'Assign and Manage Customer Forms')}
+            </h2>
+            <button
+              className="forms-create-button"
+              onClick={() => setIsCreateOpen(true)}
+            >
+              {t('createButton', 'Assign New Form')}
+            </button>
+          </div>
+
+          {submitError && (
+            <div className="forms-error">
+              <p>{submitError}</p>
+              <button onClick={() => setSubmitError(null)}>×</button>
+            </div>
+          )}
+
+          <div className="forms-filters">
+            <div className="forms-search-container">
+              <input
+                type="text"
+                placeholder={t('searchPlaceholder', 'Search forms...')}
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                className="forms-search-input"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={e => setStatusFilter(e.target.value)}
+              className="forms-filter-select"
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="ASSIGNED">Assigned</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="SUBMITTED">Submitted</option>
+              <option value="REOPENED">Reopened</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
+
+          {filteredForms.length === 0 ? (
+            <div className="no-forms">
+              <p>{t('noForms', 'No forms found')}</p>
+            </div>
+          ) : (
+            <div className="forms-list">
+              {filteredForms.map(form => (
+                <div key={form.formId} className="form-card">
+                  <div className="form-card-header">
+                    <h3 className="form-card-title">
+                      {form.formType.replace(/_/g, ' ')}
+                    </h3>
+                    <span className={`form-status form-status-${form.status}`}>
+                      {FORM_STATUS_LABELS[form.status]}
+                    </span>
+                  </div>
+                  <div className="form-card-body">
+                    <p>
+                      <strong>Customer:</strong>{' '}
+                      {getCustomerName(form.customerId)}
+                    </p>
+                    <p>
+                      <strong>Assigned:</strong>{' '}
+                      {new Date(form.assignmentDate).toLocaleDateString()}
+                    </p>
+                    {form.submissionDate && (
+                      <p>
+                        <strong>Submitted:</strong>{' '}
+                        {new Date(form.submissionDate).toLocaleDateString()}
+                      </p>
+                    )}
+                    {form.reopenedDate && (
+                      <p>
+                        <strong>Reopened:</strong>{' '}
+                        {new Date(form.reopenedDate).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  <div className="form-card-actions">
+                    {form.status === 'SUBMITTED' && (
+                      <>
+                        <button
+                          className="form-action-button form-action-reopen"
+                          onClick={() => {
+                            setFormToReopen(form);
+                            setIsReopenModalOpen(true);
+                          }}
+                        >
+                          Reopen
+                        </button>
+                        <button
+                          className="form-action-button form-action-complete"
+                          onClick={() => handleCompleteForm(form.formId)}
+                        >
+                          Complete
+                        </button>
+                      </>
+                    )}
+                    {(form.status === 'ASSIGNED' ||
+                      form.status === 'DRAFT') && (
+                      <button
+                        className="form-action-button form-action-delete"
+                        onClick={() => {
+                          setFormToDelete(form);
+                          setIsDeleteModalOpen(true);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Create Form Modal */}
+      {isCreateOpen && (
+        <div className="forms-modal-overlay" onClick={() => setIsCreateOpen(false)}>
+          <div
+            className="forms-modal"
+            ref={createModalRef}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="forms-modal-header">
+              <h2>Assign New Form</h2>
+              <button
+                className="forms-modal-close"
+                onClick={() => setIsCreateOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="forms-modal-body">
+              <div className="forms-form-group">
+                <label htmlFor="customer">Customer *</label>
+                <select
+                  id="customer"
+                  value={selectedCustomer}
+                  onChange={e => setSelectedCustomer(e.target.value)}
+                  className="forms-form-select"
+                >
+                  <option value="">Select a customer</option>
+                  {customers.map(customer => (
+                    <option key={customer.userIdentifier} value={customer.userIdentifier}>
+                      {customer.firstName} {customer.lastName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="forms-form-group">
+                <label htmlFor="formType">Form Type *</label>
+                <select
+                  id="formType"
+                  value={selectedFormType}
+                  onChange={e => setSelectedFormType(e.target.value)}
+                  className="forms-form-select"
+                >
+                  <option value="">Select a form type</option>
+                  {FORM_TYPES.map(type => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="forms-form-group">
+                <label htmlFor="project">Project ID (Optional)</label>
+                <input
+                  id="project"
+                  type="text"
+                  value={selectedProject}
+                  onChange={e => setSelectedProject(e.target.value)}
+                  className="forms-form-input"
+                  placeholder="Enter project ID if applicable"
+                />
+              </div>
+            </div>
+            <div className="forms-modal-footer">
+              <button
+                className="forms-modal-button forms-modal-button-secondary"
+                onClick={() => setIsCreateOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="forms-modal-button forms-modal-button-primary"
+                onClick={handleCreateForm}
+              >
+                Assign Form
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reopen Form Modal */}
+      {isReopenModalOpen && (
+        <div
+          className="forms-modal-overlay"
+          onClick={() => setIsReopenModalOpen(false)}
+        >
+          <div className="forms-modal" onClick={e => e.stopPropagation()}>
+            <div className="forms-modal-header">
+              <h2>Reopen Form</h2>
+              <button
+                className="forms-modal-close"
+                onClick={() => setIsReopenModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="forms-modal-body">
+              <div className="forms-form-group">
+                <label htmlFor="reopenReason">Reason for Reopening *</label>
+                <textarea
+                  id="reopenReason"
+                  value={reopenReason}
+                  onChange={e => setReopenReason(e.target.value)}
+                  className="forms-form-textarea"
+                  placeholder="Explain why this form needs to be reopened..."
+                  rows="4"
+                />
+              </div>
+            </div>
+            <div className="forms-modal-footer">
+              <button
+                className="forms-modal-button forms-modal-button-secondary"
+                onClick={() => setIsReopenModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="forms-modal-button forms-modal-button-primary"
+                onClick={handleReopenForm}
+              >
+                Reopen Form
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div
+          className="forms-modal-overlay"
+          onClick={() => setIsDeleteModalOpen(false)}
+        >
+          <div className="forms-modal" onClick={e => e.stopPropagation()}>
+            <div className="forms-modal-header">
+              <h2>Delete Form</h2>
+              <button
+                className="forms-modal-close"
+                onClick={() => setIsDeleteModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="forms-modal-body">
+              <p>
+                Are you sure you want to delete this form? This action cannot be undone.
+              </p>
+            </div>
+            <div className="forms-modal-footer">
+              <button
+                className="forms-modal-button forms-modal-button-secondary"
+                onClick={() => setIsDeleteModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="forms-modal-button forms-modal-button-danger"
+                onClick={handleDeleteForm}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SalespersonFormsPage;
