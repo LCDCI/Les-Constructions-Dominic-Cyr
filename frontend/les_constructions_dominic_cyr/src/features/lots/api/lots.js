@@ -22,16 +22,21 @@ const parseErrorMessage = async (response, fallback) => {
 export const resolveProjectIdentifier = projectIdentifier =>
   projectIdentifier || FALLBACK_PROJECT_IDENTIFIER || null;
 
-export async function fetchLots({ projectIdentifier, token } = {}) {
+export async function fetchLots({ projectIdentifier, customerId, token } = {}) {
   const projectId = resolveProjectIdentifier(projectIdentifier);
   const headers = {};
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const url = projectId
+  let url = projectId
     ? `${API_BASE_URL}/projects/${projectId}/lots`
     : `${API_BASE_URL}/lots`;
+  
+  // Add customerId as query parameter if provided
+  if (customerId) {
+    url += `?customerId=${encodeURIComponent(customerId)}`;
+  }
 
   const response = await fetch(url, { headers });
 

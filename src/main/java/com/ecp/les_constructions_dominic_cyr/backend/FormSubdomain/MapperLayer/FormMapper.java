@@ -22,6 +22,7 @@ public class FormMapper {
         form.setFormType(requestModel.getFormType());
         form.setFormStatus(FormStatus.DRAFT); // New forms start as DRAFT
         form.setProjectIdentifier(requestModel.getProjectIdentifier());
+        form.setLotIdentifier(requestModel.getLotIdentifier());
         form.setCustomerId(requestModel.getCustomerId());
         form.setFormTitle(requestModel.getFormTitle());
         form.setInstructions(requestModel.getInstructions());
@@ -42,6 +43,7 @@ public class FormMapper {
                 .formType(form.getFormType())
                 .formStatus(form.getFormStatus())
                 .projectIdentifier(form.getProjectIdentifier())
+                .lotIdentifier(form.getLotIdentifier())
                 .customerId(form.getCustomerId())
                 .customerName(form.getCustomerName())
                 .customerEmail(form.getCustomerEmail())

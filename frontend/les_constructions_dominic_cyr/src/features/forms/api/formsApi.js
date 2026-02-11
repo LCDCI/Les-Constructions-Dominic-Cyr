@@ -7,7 +7,8 @@ const API_BASE = import.meta.env.VITE_API_BASE || '/api/v1';
  * @param {Object} payload - Form creation payload
  * @param {string} payload.customerId - User ID (UUID) of the customer
  * @param {string} payload.formType - Type of form (EXTERIOR_DOORS, GARAGE_DOORS, etc.)
- * @param {string} payload.projectIdentifier - Project ID (optional)
+ * @param {string} payload.projectIdentifier - Project ID (required)
+ * @param {string} payload.lotIdentifier - Lot ID (required)
  * @param {string} token - Auth token
  */
 export async function createForm(payload, token) {

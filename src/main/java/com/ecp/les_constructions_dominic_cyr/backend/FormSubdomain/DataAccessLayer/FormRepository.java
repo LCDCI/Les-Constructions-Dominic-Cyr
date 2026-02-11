@@ -77,8 +77,19 @@ public interface FormRepository extends JpaRepository<Form, Long> {
     List<Form> findByFormStatusAndReopenedDateIsNotNull(FormStatus formStatus);
 
     /**
-     * Check if a customer has a form of a specific type for a project
+     *Check if a customer has a form of a specific type for a project
      */
     boolean existsByProjectIdentifierAndCustomerIdAndFormType(
             String projectIdentifier, String customerId, FormType formType);
+
+    /**
+     * Check if a customer has a form of a specific type for a project and lot
+     */
+    boolean existsByProjectIdentifierAndLotIdentifierAndCustomerIdAndFormType(
+            String projectIdentifier, String lotIdentifier, String customerId, FormType formType);
+
+    /**
+     * Find all forms for a project and lot
+     */
+    List<Form> findByProjectIdentifierAndLotIdentifier(String projectIdentifier, String lotIdentifier);
 }

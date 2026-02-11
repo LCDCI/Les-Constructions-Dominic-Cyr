@@ -508,3 +508,52 @@
     width: 100%;
   }
 }
+
+/* ========== CUSTOMER FORMS SELECTION PAGE ========== */
+.forms-selection-container {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-card.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-card.clickable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(76, 77, 79, 0.2);
+}
+
+.form-count-badge {
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.no-forms-text {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.lots-list {
+  margin-top: var(--spacing-md);
+}
+
+.lots-list h3 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.forms-hero-subtitle {
+  color: var(--color-light);
+  font-size: 1.125rem;
+  margin-top: var(--spacing-xs);
+  opacity: 0.9;
+}

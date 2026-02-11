@@ -45,6 +45,12 @@ public class Form {
     private String projectIdentifier;
 
     /**
+     * Lot identifier this form is associated with
+     */
+    @Column(name = "lot_identifier", nullable = false)
+    private String lotIdentifier;
+
+    /**
      * Customer user ID (UUID) this form is assigned to
      */
     @Column(name = "customer_id", nullable = false)
@@ -151,11 +157,12 @@ public class Form {
     private LocalDateTime updatedAt;
 
     public Form(FormIdentifier formIdentifier, FormType formType, FormStatus formStatus,
-                String projectIdentifier, String customerId, String assignedByUserId) {
+                String projectIdentifier, String lotIdentifier, String customerId, String assignedByUserId) {
         this.formIdentifier = formIdentifier;
         this.formType = formType;
         this.formStatus = formStatus;
         this.projectIdentifier = projectIdentifier;
+        this.lotIdentifier = lotIdentifier;
         this.customerId = customerId;
         this.assignedByUserId = assignedByUserId;
         this.reopenCount = 0;

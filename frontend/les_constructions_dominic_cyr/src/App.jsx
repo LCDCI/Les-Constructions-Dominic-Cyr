@@ -53,6 +53,7 @@ import ReportsPage from './pages/ReportsPage';
 import InboxPage from './pages/Inbox/InboxPage';
 import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
 import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
+import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
 import ReactGA from 'react-ga4';
 // import { loadTheme } from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
@@ -493,12 +494,12 @@ export default function App() {
               element={
                 <ProtectedRoute
                   allowedRoles={['CUSTOMER']}
-                  element={<CustomerFormsPage />}
+                  element={<CustomerFormsSelectionPage />}
                 />
               }
             />
             <Route
-              path="/forms"
+              path="/projects/:projectId/lots/:lotId/forms"
               element={
                 <ProtectedRoute
                   allowedRoles={['CUSTOMER']}

@@ -8,7 +8,9 @@ import {
   completeForm,
   deleteForm,
 } from '../../features/forms/api/formsApi';
-import { fetchActiveCustomers } from '../../features/users/api/usersApi';
+import { fetchCustomersWithSharedLots } from '../../features/users/api/usersApi';
+import { projectApi } from '../../features/projects/api/projectApi';
+import { fetchLots } from '../../features/lots/api/lots';
 import '../../styles/Forms/salesperson-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -34,11 +36,14 @@ const SalespersonFormsPage = () => {
   const { t } = usePageTranslations('salespersonForms');
   const [forms, setForms] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [lots, setLots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState('');
-  const [selectedFormType, setSelectedFormType] = useState('');
   const [selectedProject, setSelectedProject] = useState('');
+  const [selectedLot, setSelectedLot] = useState('');
+  const [selectedFormType, setSelectedFormType] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
@@ -64,6 +69,26 @@ const SalespersonFormsPage = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (selectedCustomer) {
+      fetchProjectsForCustomer();
+    } else {
+      setProjects([]);
+      setSelectedProject('');
+      setLots([]);
+      setSelectedLot('');
+    }
+  }, [selectedCustomer]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      fetchLotsForProject();
+    } else {
+      setLots([]);
+      setSelectedLot('');
+    }
+  }, [selectedProject]);
+
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -77,7 +102,7 @@ const SalespersonFormsPage = () => {
 
       const [formsData, customersData] = await Promise.all([
         getAllForms(token),
-        fetchActiveCustomers(token),
+        fetchCustomersWithSharedLots(token),
       ]);
 
       setForms(formsData || []);
@@ -92,12 +117,53 @@ const SalespersonFormsPage = () => {
     }
   };
 
+  const fetchProjectsForCustomer = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      const projectsData = await projectApi.getAllProjects(
+        { customerId: selectedCustomer },
+        token
+      );
+      setProjects(projectsData || []);
+    } catch (error) {
+      setProjects([]);
+    }
+  };
+
+  const fetchLotsForProject = async () => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      const lotsData = await fetchLots({
+        projectIdentifier: selectedProject,
+        customerId: selectedCustomer, // Filter lots by both salesperson and customer
+        token,
+      });
+      setLots(lotsData || []);
+    } catch (error) {
+      setLots([]);
+    }
+  };
+
   const handleCreateForm = async () => {
     try {
       setSubmitError(null);
 
-      if (!selectedCustomer || !selectedFormType) {
-        setSubmitError('Please select a customer and form type');
+      if (!selectedCustomer || !selectedFormType || !selectedProject || !selectedLot) {
+        setSubmitError('Please select a customer, project, lot, and form type');
         return;
       }
 
@@ -118,18 +184,13 @@ const SalespersonFormsPage = () => {
       const payload = {
         customerId: customer.userIdentifier,
         formType: selectedFormType,
+        projectIdentifier: selectedProject,
+        lotIdentifier: selectedLot,
       };
-
-      if (selectedProject) {
-        payload.projectIdentifier = selectedProject;
-      }
 
       await createForm(payload, token);
 
-      setIsCreateOpen(false);
-      setSelectedCustomer('');
-      setSelectedFormType('');
-      setSelectedProject('');
+      handleCloseModal();
       fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
@@ -140,6 +201,15 @@ const SalespersonFormsPage = () => {
         setSubmitError('Failed to create form. Please try again.');
       }
     }
+  };
+
+  const handleCloseModal = () => {
+    setIsCreateOpen(false);
+    setSelectedCustomer('');
+    setSelectedProject('');
+    setSelectedLot('');
+    setSelectedFormType('');
+    setSubmitError(null);
   };
 
   const handleReopenForm = async () => {
@@ -225,7 +295,7 @@ const SalespersonFormsPage = () => {
       form.formType?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
-      statusFilter === 'ALL' || form.status === statusFilter;
+      statusFilter === 'ALL' || form.formStatus === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
@@ -235,6 +305,11 @@ const SalespersonFormsPage = () => {
     return customer
       ? `${customer.firstName} ${customer.lastName}`
       : 'Unknown Customer';
+  };
+
+  const getProjectName = projectId => {
+    const project = projects.find(p => p.projectIdentifier === projectId);
+    return project?.projectName || projectId;
   };
 
   if (loading) {
@@ -321,8 +396,8 @@ const SalespersonFormsPage = () => {
                     <h3 className="form-card-title">
                       {form.formType.replace(/_/g, ' ')}
                     </h3>
-                    <span className={`form-status form-status-${form.status}`}>
-                      {FORM_STATUS_LABELS[form.status]}
+                    <span className={`form-status form-status-${form.formStatus}`}>
+                      {FORM_STATUS_LABELS[form.formStatus]}
                     </span>
                   </div>
                   <div className="form-card-body">
@@ -331,13 +406,20 @@ const SalespersonFormsPage = () => {
                       {getCustomerName(form.customerId)}
                     </p>
                     <p>
-                      <strong>Assigned:</strong>{' '}
-                      {new Date(form.assignmentDate).toLocaleDateString()}
+                      <strong>Project:</strong>{' '}
+                      {getProjectName(form.projectIdentifier)}
                     </p>
-                    {form.submissionDate && (
+                    <p>
+                      <strong>Lot:</strong> {form.lotIdentifier}
+                    </p>
+                    <p>
+                      <strong>Assigned:</strong>{' '}
+                      {new Date(form.assignedDate).toLocaleDateString()}
+                    </p>
+                    {form.lastSubmittedDate && (
                       <p>
                         <strong>Submitted:</strong>{' '}
-                        {new Date(form.submissionDate).toLocaleDateString()}
+                        {new Date(form.lastSubmittedDate).toLocaleDateString()}
                       </p>
                     )}
                     {form.reopenedDate && (
@@ -348,7 +430,7 @@ const SalespersonFormsPage = () => {
                     )}
                   </div>
                   <div className="form-card-actions">
-                    {form.status === 'SUBMITTED' && (
+                    {form.formStatus === 'SUBMITTED' && (
                       <>
                         <button
                           className="form-action-button form-action-reopen"
@@ -367,8 +449,8 @@ const SalespersonFormsPage = () => {
                         </button>
                       </>
                     )}
-                    {(form.status === 'ASSIGNED' ||
-                      form.status === 'DRAFT') && (
+                    {(form.formStatus === 'ASSIGNED' ||
+                      form.formStatus === 'DRAFT') && (
                       <button
                         className="form-action-button form-action-delete"
                         onClick={() => {
@@ -389,7 +471,7 @@ const SalespersonFormsPage = () => {
 
       {/* Create Form Modal */}
       {isCreateOpen && (
-        <div className="forms-modal-overlay" onClick={() => setIsCreateOpen(false)}>
+        <div className="forms-modal-overlay" onClick={handleCloseModal}>
           <div
             className="forms-modal"
             ref={createModalRef}
@@ -399,7 +481,7 @@ const SalespersonFormsPage = () => {
               <h2>Assign New Form</h2>
               <button
                 className="forms-modal-close"
-                onClick={() => setIsCreateOpen(false)}
+                onClick={handleCloseModal}
               >
                 ×
               </button>
@@ -422,6 +504,50 @@ const SalespersonFormsPage = () => {
                 </select>
               </div>
               <div className="forms-form-group">
+                <label htmlFor="project">Project *</label>
+                <select
+                  id="project"
+                  value={selectedProject}
+                  onChange={e => setSelectedProject(e.target.value)}
+                  className="forms-form-select"
+                  disabled={!selectedCustomer}
+                >
+                  <option value="">
+                    {!selectedCustomer
+                      ? 'Select a customer first'
+                      : projects.length === 0
+                      ? 'No projects available for this customer'
+                      : 'Select a project'}
+                  </option>
+                  {projects.map(project => (
+                    <option key={project.projectIdentifier} value={project.projectIdentifier}>
+                      {project.projectName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="forms-form-group">
+                <label htmlFor="lot">Lot *</label>
+                <select
+                  id="lot"
+                  value={selectedLot}
+                  onChange={e => setSelectedLot(e.target.value)}
+                  className="forms-form-select"
+                  disabled={!selectedProject}
+                >
+                  <option value="">
+                    {selectedProject
+                      ? 'Select a lot'
+                      : 'Select a project first'}
+                  </option>
+                  {lots.map(lot => (
+                    <option key={lot.lotId} value={lot.lotId}>
+                      {lot.lotNumber} - {lot.civicAddress || 'No address'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="forms-form-group">
                 <label htmlFor="formType">Form Type *</label>
                 <select
                   id="formType"
@@ -437,22 +563,11 @@ const SalespersonFormsPage = () => {
                   ))}
                 </select>
               </div>
-              <div className="forms-form-group">
-                <label htmlFor="project">Project ID (Optional)</label>
-                <input
-                  id="project"
-                  type="text"
-                  value={selectedProject}
-                  onChange={e => setSelectedProject(e.target.value)}
-                  className="forms-form-input"
-                  placeholder="Enter project ID if applicable"
-                />
-              </div>
             </div>
             <div className="forms-modal-footer">
               <button
                 className="forms-modal-button forms-modal-button-secondary"
-                onClick={() => setIsCreateOpen(false)}
+                onClick={handleCloseModal}
               >
                 Cancel
               </button>

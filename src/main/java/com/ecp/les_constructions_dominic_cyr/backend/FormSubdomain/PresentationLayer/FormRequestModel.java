@@ -26,6 +26,9 @@ public class FormRequestModel {
     @NotBlank(message = "Project identifier is required")
     private String projectIdentifier;
 
+    @NotBlank(message = "Lot identifier is required")
+    private String lotIdentifier;
+
     @NotBlank(message = "Customer ID is required")
     private String customerId;
 

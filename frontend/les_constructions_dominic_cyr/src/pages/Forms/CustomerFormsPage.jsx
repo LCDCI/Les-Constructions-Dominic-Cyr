@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   getMyForms,
   updateFormData,
@@ -72,6 +72,7 @@ const FORM_FIELDS = {
 
 const CustomerFormsPage = () => {
   const { t } = usePageTranslations('customerForms');
+  const { projectId, lotId } = useParams();
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedForm, setSelectedForm] = useState(null);
@@ -109,7 +110,11 @@ const CustomerFormsPage = () => {
       });
 
       const formsData = await getMyForms(token);
-      setForms(formsData || []);
+      // Filter forms by projectId and lotId from URL params
+      const filteredForms = formsData?.filter(
+        form => form.projectIdentifier === projectId && form.lotIdentifier === lotId
+      ) || [];
+      setForms(filteredForms);
       setLoading(false);
     } catch (error) {
       if (error?.response?.status === 404) {
@@ -245,9 +250,9 @@ const CustomerFormsPage = () => {
 
   const canEditForm = form => {
     return (
-      form.status === 'ASSIGNED' ||
-      form.status === 'IN_PROGRESS' ||
-      form.status === 'REOPENED'
+      form.formStatus === 'ASSIGNED' ||
+      form.formStatus === 'IN_PROGRESS' ||
+      form.formStatus === 'REOPENED'
     );
   };
 
@@ -288,6 +293,7 @@ const CustomerFormsPage = () => {
         <div className="forms-hero">
           <div className="forms-hero-content">
             <h1 className="forms-hero-title">{t('title', 'My Forms')}</h1>
+            <p className="forms-hero-subtitle">Project: {projectId} | Lot: {lotId}</p>
           </div>
         </div>
         <div className="forms-content">
@@ -304,6 +310,7 @@ const CustomerFormsPage = () => {
       <div className="forms-hero">
         <div className="forms-hero-content">
           <h1 className="forms-hero-title">{t('title', 'My Forms')}</h1>
+          <p className="forms-hero-subtitle">Project: {projectId} | Lot: {lotId}</p>
         </div>
       </div>
 
@@ -324,7 +331,7 @@ const CustomerFormsPage = () => {
 
           {forms.length === 0 ? (
             <div className="no-forms">
-              <p>{t('noForms', 'No forms assigned to you yet')}</p>
+              <p>{t('noForms', 'No forms assigned for this project and lot yet')}</p>
             </div>
           ) : (
             <div className="forms-list">
@@ -334,25 +341,25 @@ const CustomerFormsPage = () => {
                     <h3 className="form-card-title">
                       {form.formType.replace(/_/g, ' ')}
                     </h3>
-                    <span className={`form-status form-status-${form.status}`}>
-                      {FORM_STATUS_LABELS[form.status]}
+                    <span className={`form-status form-status-${form.formStatus}`}>
+                      {FORM_STATUS_LABELS[form.formStatus]}
                     </span>
                   </div>
                   <div className="form-card-body">
                     <p>
                       <strong>Assigned:</strong>{' '}
-                      {new Date(form.assignmentDate).toLocaleDateString()}
+                      {new Date(form.assignedDate).toLocaleDateString()}
                     </p>
-                    {form.submissionDate && (
+                    {form.lastSubmittedDate && (
                       <p>
                         <strong>Submitted:</strong>{' '}
-                        {new Date(form.submissionDate).toLocaleDateString()}
+                        {new Date(form.lastSubmittedDate).toLocaleDateString()}
                       </p>
                     )}
-                    {form.completionDate && (
+                    {form.completedDate && (
                       <p>
                         <strong>Completed:</strong>{' '}
-                        {new Date(form.completionDate).toLocaleDateString()}
+                        {new Date(form.completedDate).toLocaleDateString()}
                       </p>
                     )}
                     {form.reopenReason && (
@@ -367,10 +374,10 @@ const CustomerFormsPage = () => {
                         className="form-action-button form-action-edit"
                         onClick={() => openEditModal(form)}
                       >
-                        {form.status === 'ASSIGNED' ? 'Fill Form' : 'Edit Form'}
+                        {form.formStatus === 'ASSIGNED' ? 'Fill Form' : 'Edit Form'}
                       </button>
                     )}
-                    {form.status === 'SUBMITTED' && (
+                    {form.formStatus === 'SUBMITTED' && (
                       <button
                         className="form-action-button form-action-history"
                         onClick={() => handleViewHistory(form)}

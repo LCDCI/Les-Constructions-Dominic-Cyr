@@ -7,6 +7,10 @@ import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLay
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.MapperLayer.FormMapper;
 import com. ecp.les_constructions_dominic_cyr.backend.FormSubdomain.MapperLayer.FormSubmissionHistoryMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.*;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
@@ -36,14 +40,17 @@ public class FormServiceImpl implements FormService {
     private final FormMapper formMapper;
     private final FormSubmissionHistoryMapper historyMapper;
     private final UsersRepository usersRepository;
+    private final LotRepository lotRepository;
+    private final ProjectRepository projectRepository;
     private final NotificationService notificationService;
     private final MailerServiceClient mailerServiceClient;
 
     @Override
     @Transactional
     public FormResponseModel createAndAssignForm(FormRequestModel requestModel, String assignedByUserId) {
-        log.info("Creating and assigning form of type {} to customer {} for project {}",
-                requestModel.getFormType(), requestModel.getCustomerId(), requestModel.getProjectIdentifier());
+        log.info("Creating and assigning form of type {} to customer {} for project {} lot {}",
+                requestModel.getFormType(), requestModel.getCustomerId(), 
+                requestModel.getProjectIdentifier(), requestModel.getLotIdentifier());
 
         // Validate that customer exists
         Users customer = usersRepository.findByUserIdentifier(requestModel.getCustomerId())
@@ -53,11 +60,53 @@ public class FormServiceImpl implements FormService {
         Users assignedBy = usersRepository.findByAuth0UserId(assignedByUserId)
                 .orElseThrow(() -> new NotFoundException("User not found with Auth0 ID: " + assignedByUserId));
 
-        // Check if customer already has this form type for this project
-        if (formRepository.existsByProjectIdentifierAndCustomerIdAndFormType(
-                requestModel.getProjectIdentifier(), requestModel.getCustomerId(), requestModel.getFormType())) {
+        // Validate that project exists
+        Project project = projectRepository.findByProjectIdentifier(requestModel.getProjectIdentifier())
+                .orElseThrow(() -> new NotFoundException("Project not found with ID: " + requestModel.getProjectIdentifier()));
+
+        // Validate that lot exists and belongs to the project (with assigned users eagerly loaded)
+        Lot lot = lotRepository.findByLotIdentifier_LotIdWithUsers(
+                java.util.UUID.fromString(requestModel.getLotIdentifier()));
+        
+        if (lot == null) {
+            throw new NotFoundException("Lot not found with ID: " + requestModel.getLotIdentifier());
+        }
+
+        if (!lot.getProject().getProjectIdentifier().equals(requestModel.getProjectIdentifier())) {
+            throw new InvalidInputException("Lot " + requestModel.getLotIdentifier() + 
+                    " does not belong to project " + requestModel.getProjectIdentifier());
+        }
+
+        // Validate that both salesperson and customer are assigned to the lot
+        List<Users> assignedUsers = lot.getAssignedUsers();
+        if (assignedUsers == null || assignedUsers.isEmpty()) {
+            throw new InvalidInputException("No users are assigned to lot " + requestModel.getLotIdentifier());
+        }
+        
+        boolean isSalespersonAssigned = assignedUsers.stream()
+                .anyMatch(user -> user.getUserIdentifier() != null 
+                        && user.getUserIdentifier().getUserId() != null
+                        && user.getUserIdentifier().getUserId().equals(assignedBy.getUserIdentifier().getUserId()));
+        
+        boolean isCustomerAssigned = assignedUsers.stream()
+                .anyMatch(user -> user.getUserIdentifier() != null 
+                        && user.getUserIdentifier().getUserId() != null
+                        && user.getUserIdentifier().getUserId().equals(customer.getUserIdentifier().getUserId()));
+        
+        if (!isSalespersonAssigned) {
+            throw new InvalidInputException("Salesperson is not assigned to lot " + requestModel.getLotIdentifier());
+        }
+        
+        if (!isCustomerAssigned) {
+            throw new InvalidInputException("Customer is not assigned to lot " + requestModel.getLotIdentifier());
+        }
+
+        // Check if customer already has this form type for this project and lot
+        if (formRepository.existsByProjectIdentifierAndLotIdentifierAndCustomerIdAndFormType(
+                requestModel.getProjectIdentifier(), requestModel.getLotIdentifier(),
+                requestModel.getCustomerId(), requestModel.getFormType())) {
             throw new InvalidInputException("Customer already has a " + requestModel.getFormType() +
-                    " form for this project");
+                    " form for this project and lot");
         }
 
         // Create form entity
