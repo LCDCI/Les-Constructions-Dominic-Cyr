@@ -89,7 +89,7 @@ services:
   #######################################################################
   mailer-service:
     build:
-      context: ./mailer-service
+      context: mailer-service/Dockerfile
       dockerfile: Dockerfile
     container_name: mailer-service
     ports:
