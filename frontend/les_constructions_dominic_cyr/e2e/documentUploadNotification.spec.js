@@ -34,7 +34,6 @@ test.describe('Document upload notification - Inbox display (mocked)', () => {
 
   test('Inbox shows document upload notification with file name and uploader and unread status', async ({ page }) => {
     expect(true).toBe(true);
-    return;
     const mockDocumentNotification = {
       notificationId: 'notif-doc-001',
       title: 'New documents uploaded',
