@@ -15,22 +15,13 @@ import '../../styles/Forms/salesperson-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const FORM_TYPES = [
-  { value: 'EXTERIOR_DOORS', label: 'Exterior Doors' },
-  { value: 'GARAGE_DOORS', label: 'Garage Doors' },
-  { value: 'WINDOWS', label: 'Windows' },
-  { value: 'ASPHALT_SHINGLES', label: 'Asphalt Shingles' },
-  { value: 'WOODWORK', label: 'Woodwork' },
-  { value: 'PAINT', label: 'Paint' },
+  { value: 'EXTERIOR_DOORS', translationKey: 'formTypes.exteriorDoors' },
+  { value: 'GARAGE_DOORS', translationKey: 'formTypes.garageDoors' },
+  { value: 'WINDOWS', translationKey: 'formTypes.windows' },
+  { value: 'ASPHALT_SHINGLES', translationKey: 'formTypes.asphaltShingles' },
+  { value: 'WOODWORK', translationKey: 'formTypes.woodwork' },
+  { value: 'PAINT', translationKey: 'formTypes.paint' },
 ];
-
-const FORM_STATUS_LABELS = {
-  DRAFT: 'Draft',
-  ASSIGNED: 'Assigned',
-  IN_PROGRESS: 'In Progress',
-  SUBMITTED: 'Submitted',
-  REOPENED: 'Reopened',
-  COMPLETED: 'Completed',
-};
 
 const SalespersonFormsPage = () => {
   const { t } = usePageTranslations('salespersonForms');
@@ -324,7 +315,7 @@ const SalespersonFormsPage = () => {
         </div>
         <div className="forms-content">
           <div className="forms-container">
-            <div className="forms-loading">Loading...</div>
+            <div className="forms-loading">{t('loading', 'Loading...')}</div>
           </div>
         </div>
       </div>
@@ -375,12 +366,12 @@ const SalespersonFormsPage = () => {
               onChange={e => setStatusFilter(e.target.value)}
               className="forms-filter-select"
             >
-              <option value="ALL">All Statuses</option>
-              <option value="ASSIGNED">Assigned</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="SUBMITTED">Submitted</option>
-              <option value="REOPENED">Reopened</option>
-              <option value="COMPLETED">Completed</option>
+              <option value="ALL">{t('filters.allStatuses', 'All Statuses')}</option>
+              <option value="ASSIGNED">{t('filters.assigned', 'Assigned')}</option>
+              <option value="IN_PROGRESS">{t('filters.inProgress', 'In Progress')}</option>
+              <option value="SUBMITTED">{t('filters.submitted', 'Submitted')}</option>
+              <option value="REOPENED">{t('filters.reopened', 'Reopened')}</option>
+              <option value="COMPLETED">{t('filters.completed', 'Completed')}</option>
             </select>
           </div>
 
@@ -394,37 +385,37 @@ const SalespersonFormsPage = () => {
                 <div key={form.formId} className="form-card">
                   <div className="form-card-header">
                     <h3 className="form-card-title">
-                      {form.formType.replace(/_/g, ' ')}
+                      {t(`formTypes.${form.formType.toLowerCase().replace(/_/g, '')}`, form.formType.replace(/_/g, ' '))}
                     </h3>
                     <span className={`form-status form-status-${form.formStatus}`}>
-                      {FORM_STATUS_LABELS[form.formStatus]}
+                      {t(`status.${form.formStatus.toLowerCase().replace('_', '')}`, form.formStatus)}
                     </span>
                   </div>
                   <div className="form-card-body">
                     <p>
-                      <strong>Customer:</strong>{' '}
+                      <strong>{t('labels.customer', 'Customer')}:</strong>{' '}
                       {getCustomerName(form.customerId)}
                     </p>
                     <p>
-                      <strong>Project:</strong>{' '}
+                      <strong>{t('labels.project', 'Project')}:</strong>{' '}
                       {getProjectName(form.projectIdentifier)}
                     </p>
                     <p>
-                      <strong>Lot:</strong> {form.lotIdentifier}
+                      <strong>{t('labels.lot', 'Lot')}:</strong> {form.lotIdentifier}
                     </p>
                     <p>
-                      <strong>Assigned:</strong>{' '}
+                      <strong>{t('labels.assigned', 'Assigned')}:</strong>{' '}
                       {new Date(form.assignedDate).toLocaleDateString()}
                     </p>
                     {form.lastSubmittedDate && (
                       <p>
-                        <strong>Submitted:</strong>{' '}
+                        <strong>{t('labels.submitted', 'Submitted')}:</strong>{' '}
                         {new Date(form.lastSubmittedDate).toLocaleDateString()}
                       </p>
                     )}
                     {form.reopenedDate && (
                       <p>
-                        <strong>Reopened:</strong>{' '}
+                        <strong>{t('labels.reopened', 'Reopened')}:</strong>{' '}
                         {new Date(form.reopenedDate).toLocaleDateString()}
                       </p>
                     )}
@@ -439,13 +430,13 @@ const SalespersonFormsPage = () => {
                             setIsReopenModalOpen(true);
                           }}
                         >
-                          Reopen
+                          {t('buttons.reopen', 'Reopen')}
                         </button>
                         <button
                           className="form-action-button form-action-complete"
                           onClick={() => handleCompleteForm(form.formId)}
                         >
-                          Complete
+                          {t('buttons.complete', 'Complete')}
                         </button>
                       </>
                     )}
@@ -458,7 +449,7 @@ const SalespersonFormsPage = () => {
                           setIsDeleteModalOpen(true);
                         }}
                       >
-                        Delete
+                        {t('buttons.delete', 'Delete')}
                       </button>
                     )}
                   </div>
@@ -478,7 +469,7 @@ const SalespersonFormsPage = () => {
             onClick={e => e.stopPropagation()}
           >
             <div className="forms-modal-header">
-              <h2>Assign New Form</h2>
+              <h2>{t('modal.create.title', 'Assign New Form')}</h2>
               <button
                 className="forms-modal-close"
                 onClick={handleCloseModal}
@@ -488,14 +479,14 @@ const SalespersonFormsPage = () => {
             </div>
             <div className="forms-modal-body">
               <div className="forms-form-group">
-                <label htmlFor="customer">Customer *</label>
+                <label htmlFor="customer">{t('modal.create.customer', 'Customer')} {t('modal.create.required', '*')}</label>
                 <select
                   id="customer"
                   value={selectedCustomer}
                   onChange={e => setSelectedCustomer(e.target.value)}
                   className="forms-form-select"
                 >
-                  <option value="">Select a customer</option>
+                  <option value="">{t('modal.create.selectCustomer', 'Select a customer')}</option>
                   {customers.map(customer => (
                     <option key={customer.userIdentifier} value={customer.userIdentifier}>
                       {customer.firstName} {customer.lastName}
@@ -504,7 +495,7 @@ const SalespersonFormsPage = () => {
                 </select>
               </div>
               <div className="forms-form-group">
-                <label htmlFor="project">Project *</label>
+                <label htmlFor="project">{t('modal.create.project', 'Project')} {t('modal.create.required', '*')}</label>
                 <select
                   id="project"
                   value={selectedProject}
@@ -514,10 +505,10 @@ const SalespersonFormsPage = () => {
                 >
                   <option value="">
                     {!selectedCustomer
-                      ? 'Select a customer first'
+                      ? t('modal.create.selectCustomerFirst', 'Select a customer first')
                       : projects.length === 0
-                      ? 'No projects available for this customer'
-                      : 'Select a project'}
+                      ? t('modal.create.noProjectsAvailable', 'No projects available for this customer')
+                      : t('modal.create.selectProject', 'Select a project')}
                   </option>
                   {projects.map(project => (
                     <option key={project.projectIdentifier} value={project.projectIdentifier}>
@@ -527,7 +518,7 @@ const SalespersonFormsPage = () => {
                 </select>
               </div>
               <div className="forms-form-group">
-                <label htmlFor="lot">Lot *</label>
+                <label htmlFor="lot">{t('modal.create.lot', 'Lot')} {t('modal.create.required', '*')}</label>
                 <select
                   id="lot"
                   value={selectedLot}
@@ -537,28 +528,28 @@ const SalespersonFormsPage = () => {
                 >
                   <option value="">
                     {selectedProject
-                      ? 'Select a lot'
-                      : 'Select a project first'}
+                      ? t('modal.create.selectLot', 'Select a lot')
+                      : t('modal.create.selectProjectFirst', 'Select a project first')}
                   </option>
                   {lots.map(lot => (
                     <option key={lot.lotId} value={lot.lotId}>
-                      {lot.lotNumber} - {lot.civicAddress || 'No address'}
+                      {lot.lotNumber} - {lot.civicAddress || t('modal.create.noAddress', 'No address')}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="forms-form-group">
-                <label htmlFor="formType">Form Type *</label>
+                <label htmlFor="formType">{t('modal.create.formType', 'Form Type')} {t('modal.create.required', '*')}</label>
                 <select
                   id="formType"
                   value={selectedFormType}
                   onChange={e => setSelectedFormType(e.target.value)}
                   className="forms-form-select"
                 >
-                  <option value="">Select a form type</option>
+                  <option value="">{t('modal.create.selectFormType', 'Select a form type')}</option>
                   {FORM_TYPES.map(type => (
                     <option key={type.value} value={type.value}>
-                      {type.label}
+                      {t(type.translationKey, type.value)}
                     </option>
                   ))}
                 </select>
@@ -569,13 +560,13 @@ const SalespersonFormsPage = () => {
                 className="forms-modal-button forms-modal-button-secondary"
                 onClick={handleCloseModal}
               >
-                Cancel
+                {t('buttons.cancel', 'Cancel')}
               </button>
               <button
                 className="forms-modal-button forms-modal-button-primary"
                 onClick={handleCreateForm}
               >
-                Assign Form
+                {t('buttons.assignForm', 'Assign Form')}
               </button>
             </div>
           </div>
@@ -590,7 +581,7 @@ const SalespersonFormsPage = () => {
         >
           <div className="forms-modal" onClick={e => e.stopPropagation()}>
             <div className="forms-modal-header">
-              <h2>Reopen Form</h2>
+              <h2>{t('modal.reopen.title', 'Reopen Form')}</h2>
               <button
                 className="forms-modal-close"
                 onClick={() => setIsReopenModalOpen(false)}
@@ -600,13 +591,13 @@ const SalespersonFormsPage = () => {
             </div>
             <div className="forms-modal-body">
               <div className="forms-form-group">
-                <label htmlFor="reopenReason">Reason for Reopening *</label>
+                <label htmlFor="reopenReason">{t('modal.reopen.reasonLabel', 'Reason for Reopening')} {t('modal.reopen.required', '*')}</label>
                 <textarea
                   id="reopenReason"
                   value={reopenReason}
                   onChange={e => setReopenReason(e.target.value)}
                   className="forms-form-textarea"
-                  placeholder="Explain why this form needs to be reopened..."
+                  placeholder={t('modal.reopen.reasonPlaceholder', 'Explain why this form needs to be reopened...')}
                   rows="4"
                 />
               </div>
@@ -616,13 +607,13 @@ const SalespersonFormsPage = () => {
                 className="forms-modal-button forms-modal-button-secondary"
                 onClick={() => setIsReopenModalOpen(false)}
               >
-                Cancel
+                {t('buttons.cancel', 'Cancel')}
               </button>
               <button
                 className="forms-modal-button forms-modal-button-primary"
                 onClick={handleReopenForm}
               >
-                Reopen Form
+                {t('modal.reopen.buttonReopen', 'Reopen Form')}
               </button>
             </div>
           </div>
@@ -637,7 +628,7 @@ const SalespersonFormsPage = () => {
         >
           <div className="forms-modal" onClick={e => e.stopPropagation()}>
             <div className="forms-modal-header">
-              <h2>Delete Form</h2>
+              <h2>{t('modal.delete.title', 'Delete Form')}</h2>
               <button
                 className="forms-modal-close"
                 onClick={() => setIsDeleteModalOpen(false)}
@@ -647,7 +638,7 @@ const SalespersonFormsPage = () => {
             </div>
             <div className="forms-modal-body">
               <p>
-                Are you sure you want to delete this form? This action cannot be undone.
+                {t('modal.delete.message', 'Are you sure you want to delete this form? This action cannot be undone.')}
               </p>
             </div>
             <div className="forms-modal-footer">
@@ -655,13 +646,13 @@ const SalespersonFormsPage = () => {
                 className="forms-modal-button forms-modal-button-secondary"
                 onClick={() => setIsDeleteModalOpen(false)}
               >
-                Cancel
+                {t('buttons.cancel', 'Cancel')}
               </button>
               <button
                 className="forms-modal-button forms-modal-button-danger"
                 onClick={handleDeleteForm}
               >
-                Delete
+                {t('modal.delete.buttonDelete', 'Delete')}
               </button>
             </div>
           </div>

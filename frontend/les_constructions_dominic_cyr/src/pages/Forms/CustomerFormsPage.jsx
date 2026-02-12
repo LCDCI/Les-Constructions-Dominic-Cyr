@@ -10,63 +10,54 @@ import {
 import '../../styles/Forms/customer-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
-const FORM_STATUS_LABELS = {
-  DRAFT: 'Draft',
-  ASSIGNED: 'Assigned',
-  IN_PROGRESS: 'In Progress',
-  SUBMITTED: 'Submitted',
-  REOPENED: 'Reopened',
-  COMPLETED: 'Completed',
-};
-
 const FORM_FIELDS = {
   EXTERIOR_DOORS: [
-    { name: 'doorType', label: 'Door Type', type: 'text', required: true },
-    { name: 'doorColor', label: 'Door Color', type: 'text', required: true },
-    { name: 'doorSize', label: 'Door Size', type: 'text', required: true },
-    { name: 'numberOfDoors', label: 'Number of Doors', type: 'number', required: true },
-    { name: 'hardwareFinish', label: 'Hardware Finish', type: 'text', required: false },
-    { name: 'additionalNotes', label: 'Additional Notes', type: 'textarea', required: false },
+    { name: 'doorType', translationKey: 'formFields.doorType', type: 'text', required: true },
+    { name: 'doorColor', translationKey: 'formFields.doorColor', type: 'text', required: true },
+    { name: 'doorSize', translationKey: 'formFields.doorSize', type: 'text', required: true },
+    { name: 'numberOfDoors', translationKey: 'formFields.numberOfDoors', type: 'number', required: true },
+    { name: 'hardwareFinish', translationKey: 'formFields.hardwareFinish', type: 'text', required: false },
+    { name: 'additionalNotes', translationKey: 'formFields.additionalNotes', type: 'textarea', required: false },
   ],
   GARAGE_DOORS: [
-    { name: 'doorStyle', label: 'Door Style', type: 'text', required: true },
-    { name: 'doorColor', label: 'Door Color', type: 'text', required: true },
-    { name: 'doorSize', label: 'Door Size (Width x Height)', type: 'text', required: true },
-    { name: 'openerType', label: 'Opener Type', type: 'text', required: true },
-    { name: 'windowInserts', label: 'Window Inserts', type: 'text', required: false },
-    { name: 'additionalNotes', label: 'Additional Notes', type: 'textarea', required: false },
+    { name: 'doorStyle', translationKey: 'formFields.doorStyle', type: 'text', required: true },
+{ name: 'doorColor', translationKey: 'formFields.doorColor', type: 'text', required: true },
+    { name: 'doorSize', translationKey: 'formFields.doorSize', type: 'text', required: true },
+    { name: 'openerType', translationKey: 'formFields.openerType', type: 'text', required: true },
+    { name: 'windowInserts', translationKey: 'formFields.windowInserts', type: 'text', required: false },
+    { name: 'additionalNotes', translationKey: 'formFields.additionalNotes', type: 'textarea', required: false },
   ],
   WINDOWS: [
-    { name: 'windowType', label: 'Window Type', type: 'text', required: true },
-    { name: 'frameColor', label: 'Frame Color', type: 'text', required: true },
-    { name: 'glassType', label: 'Glass Type', type: 'text', required: true },
-    { name: 'numberOfWindows', label: 'Number of Windows', type: 'number', required: true },
-    { name: 'dimensions', label: 'Dimensions (per window)', type: 'text', required: true },
-    { name: 'additionalNotes', label: 'Additional Notes', type: 'textarea', required: false },
+    { name: 'windowType', translationKey: 'formFields.windowType', type: 'text', required: true },
+    { name: 'frameColor', translationKey: 'formFields.frameColor', type: 'text', required: true },
+    { name: 'glassType', translationKey: 'formFields.glassType', type: 'text', required: true },
+    { name: 'numberOfWindows', translationKey: 'formFields.numberOfWindows', type: 'number', required: true },
+    { name: 'dimensions', translationKey: 'formFields.dimensions', type: 'text', required: true },
+    { name: 'additionalNotes', translationKey: 'formFields.additionalNotes', type: 'textarea', required: false },
   ],
   ASPHALT_SHINGLES: [
-    { name: 'shingleBrand', label: 'Shingle Brand', type: 'text', required: true },
-    { name: 'shingleColor', label: 'Shingle Color', type: 'text', required: true },
-    { name: 'shingleStyle', label: 'Shingle Style', type: 'text', required: true },
-    { name: 'roofArea', label: 'Roof Area (sq ft)', type: 'number', required: true },
-    { name: 'ventilationNeeded', label: 'Ventilation Needed', type: 'text', required: false },
-    { name: 'additionalNotes', label: 'Additional Notes', type: 'textarea', required: false },
+    { name: 'shingleBrand', translationKey: 'formFields.shingleBrand', type: 'text', required: true },
+    { name: 'shingleColor', translationKey: 'formFields.shingleColor', type: 'text', required: true },
+    { name: 'shingleStyle', translationKey: 'formFields.shingleStyle', type: 'text', required: true },
+    { name: 'roofArea', translationKey: 'formFields.roofArea', type: 'number', required: true },
+    { name: 'ventilationNeeded', translationKey: 'formFields.ventilationNeeded', type: 'text', required: false },
+    { name: 'additionalNotes', translationKey: 'formFields.additionalNotes', type: 'textarea', required: false },
   ],
   WOODWORK: [
-    { name: 'woodType', label: 'Wood Type', type: 'text', required: true },
-    { name: 'finish', label: 'Finish', type: 'text', required: true },
-    { name: 'stainColor', label: 'Stain/Paint Color', type: 'text', required: true },
-    { name: 'roomsAffected', label: 'Rooms Affected', type: 'text', required: true },
-    { name: 'trimStyle', label: 'Trim Style', type: 'text', required: false },
-    { name: 'additionalNotes', label: 'Additional Notes', type: 'textarea', required: false },
+    { name: 'woodType', translationKey: 'formFields.woodType', type: 'text', required: true },
+    { name: 'finish', translationKey: 'formFields.finish', type: 'text', required: true },
+    { name: 'stainColor', translationKey: 'formFields.stainColor', type: 'text', required: true },
+    { name: 'roomsAffected', translationKey: 'formFields.roomsAffected', type: 'text', required: true },
+    { name: 'trimStyle', translationKey: 'formFields.trimStyle', type: 'text', required: false },
+    { name: 'additionalNotes', translationKey: 'formFields.additionalNotes', type: 'textarea', required: false },
   ],
   PAINT: [
-    { name: 'paintBrand', label: 'Paint Brand', type: 'text', required: true },
-    { name: 'paintFinish', label: 'Paint Finish (Matte/Satin/Gloss)', type: 'text', required: true },
-    { name: 'interiorColors', label: 'Interior Colors', type: 'text', required: true },
-    { name: 'exteriorColors', label: 'Exterior Colors', type: 'text', required: false },
-    { name: 'roomsToPaint', label: 'Rooms to Paint', type: 'text', required: true },
-    { name: 'additionalNotes', label: 'Additional Notes', type: 'textarea', required: false },
+    { name: 'paintBrand', translationKey: 'formFields.paintBrand', type: 'text', required: true },
+    { name: 'paintFinish', translationKey: 'formFields.paintFinish', type: 'text', required: true },
+    { name: 'interiorColors', translationKey: 'formFields.interiorColors', type: 'text', required: true },
+    { name: 'exteriorColors', translationKey: 'formFields.exteriorColors', type: 'text', required: false },
+    { name: 'roomsToPaint', translationKey: 'formFields.roomsToPaint', type: 'text', required: true },
+    { name: 'additionalNotes', translationKey: 'formFields.additionalNotes', type: 'textarea', required: false },
   ],
 };
 
@@ -117,11 +108,10 @@ const CustomerFormsPage = () => {
       setForms(filteredForms);
       setLoading(false);
     } catch (error) {
-      if (error?.response?.status === 404) {
-        redirectToError(404);
-      } else {
-        redirectToError();
-      }
+      console.error('Error fetching forms for lot:', error);
+      // Don't redirect on error - just show empty state
+      setForms([]);
+      setLoading(false);
     }
   };
 
@@ -264,7 +254,7 @@ const CustomerFormsPage = () => {
     return fields.map(field => (
       <div key={field.name} className="forms-form-group">
         <label htmlFor={field.name}>
-          {field.label} {field.required && <span className="required">*</span>}
+          {t(field.translationKey, field.name)} {field.required && <span className="required">{t('modal.required', '*')}</span>}
         </label>
         {field.type === 'textarea' ? (
           <textarea
@@ -293,12 +283,12 @@ const CustomerFormsPage = () => {
         <div className="forms-hero">
           <div className="forms-hero-content">
             <h1 className="forms-hero-title">{t('title', 'My Forms')}</h1>
-            <p className="forms-hero-subtitle">Project: {projectId} | Lot: {lotId}</p>
+            <p className="forms-hero-subtitle">{t('project', 'Project')}: {projectId} | {t('lot', 'Lot')}: {lotId}</p>
           </div>
         </div>
         <div className="forms-content">
           <div className="forms-container">
-            <div className="forms-loading">Loading...</div>
+            <div className="forms-loading">{t('loading', 'Loading...')}</div>
           </div>
         </div>
       </div>
@@ -339,32 +329,32 @@ const CustomerFormsPage = () => {
                 <div key={form.formId} className="form-card">
                   <div className="form-card-header">
                     <h3 className="form-card-title">
-                      {form.formType.replace(/_/g, ' ')}
+                      {t(`formTypes.${form.formType}`, form.formType.replace(/_/g, ' '))}
                     </h3>
                     <span className={`form-status form-status-${form.formStatus}`}>
-                      {FORM_STATUS_LABELS[form.formStatus]}
+                      {t(`status.${form.formStatus.toLowerCase().replace('_', '')}`, form.formStatus)}
                     </span>
                   </div>
                   <div className="form-card-body">
                     <p>
-                      <strong>Assigned:</strong>{' '}
+                      <strong>{t('labels.assigned', 'Assigned')}:</strong>{' '}
                       {new Date(form.assignedDate).toLocaleDateString()}
                     </p>
                     {form.lastSubmittedDate && (
                       <p>
-                        <strong>Submitted:</strong>{' '}
+                        <strong>{t('labels.submitted', 'Submitted')}:</strong>{' '}
                         {new Date(form.lastSubmittedDate).toLocaleDateString()}
                       </p>
                     )}
                     {form.completedDate && (
                       <p>
-                        <strong>Completed:</strong>{' '}
+                        <strong>{t('labels.completed', 'Completed')}:</strong>{' '}
                         {new Date(form.completedDate).toLocaleDateString()}
                       </p>
                     )}
                     {form.reopenReason && (
                       <p>
-                        <strong>Reopen Reason:</strong> {form.reopenReason}
+                        <strong>{t('labels.reopenReason', 'Reopen Reason')}:</strong> {form.reopenReason}
                       </p>
                     )}
                   </div>
@@ -374,7 +364,7 @@ const CustomerFormsPage = () => {
                         className="form-action-button form-action-edit"
                         onClick={() => openEditModal(form)}
                       >
-                        {form.formStatus === 'ASSIGNED' ? 'Fill Form' : 'Edit Form'}
+                        {form.formStatus === 'ASSIGNED' ? t('buttons.fillForm', 'Fill Form') : t('buttons.editForm', 'Edit Form')}
                       </button>
                     )}
                     {form.formStatus === 'SUBMITTED' && (
@@ -382,7 +372,7 @@ const CustomerFormsPage = () => {
                         className="form-action-button form-action-history"
                         onClick={() => handleViewHistory(form)}
                       >
-                        View History
+                        {t('buttons.viewHistory', 'View History')}
                       </button>
                     )}
                   </div>
@@ -404,7 +394,7 @@ const CustomerFormsPage = () => {
             onClick={e => e.stopPropagation()}
           >
             <div className="forms-modal-header">
-              <h2>{selectedForm.formType.replace(/_/g, ' ')} Form</h2>
+              <h2>{t(`formTypes.${selectedForm.formType}`, selectedForm.formType.replace(/_/g, ' '))} {t('modal.editTitle', 'Form')}</h2>
               <button
                 className="forms-modal-close"
                 onClick={() => setIsEditModalOpen(false)}
@@ -420,19 +410,19 @@ const CustomerFormsPage = () => {
                 className="forms-modal-button forms-modal-button-secondary"
                 onClick={() => setIsEditModalOpen(false)}
               >
-                Cancel
+                {t('buttons.cancel', 'Cancel')}
               </button>
               <button
                 className="forms-modal-button forms-modal-button-primary"
                 onClick={handleSaveForm}
               >
-                Save Draft
+                {t('buttons.saveDraft', 'Save Draft')}
               </button>
               <button
                 className="forms-modal-button forms-modal-button-success"
                 onClick={handleSubmitForm}
               >
-                Submit Form
+                {t('buttons.submitForm', 'Submit Form')}
               </button>
             </div>
           </div>
@@ -450,7 +440,7 @@ const CustomerFormsPage = () => {
             onClick={e => e.stopPropagation()}
           >
             <div className="forms-modal-header">
-              <h2>Submission History</h2>
+              <h2>{t('modal.historyTitle', 'Submission History')}</h2>
               <button
                 className="forms-modal-close"
                 onClick={() => setIsHistoryModalOpen(false)}
@@ -460,20 +450,20 @@ const CustomerFormsPage = () => {
             </div>
             <div className="forms-modal-body">
               {historyLoading ? (
-                <div className="forms-loading">Loading history...</div>
+                <div className="forms-loading">{t('modal.historyLoading', 'Loading history...')}</div>
               ) : formHistory.length === 0 ? (
-                <p>No submission history available</p>
+                <p>{t('modal.noHistory', 'No submission history available')}</p>
               ) : (
                 <div className="forms-history-list">
                   {formHistory.map((history, index) => (
                     <div key={history.historyId} className="history-item">
-                      <h4>Submission #{formHistory.length - index}</h4>
+                      <h4>{t('modal.submissionNumber', 'Submission #{{number}}').replace('{{number}}', formHistory.length - index)}</h4>
                       <p>
-                        <strong>Date:</strong>{' '}
+                        <strong>{t('modal.date', 'Date')}:</strong>{' '}
                         {new Date(history.submissionDate).toLocaleString()}
                       </p>
                       <div className="history-data">
-                        <strong>Form Data:</strong>
+                        <strong>{t('modal.formData', 'Form Data')}:</strong>
                         <pre>{JSON.stringify(history.formDataSnapshot, null, 2)}</pre>
                       </div>
                     </div>
@@ -486,7 +476,7 @@ const CustomerFormsPage = () => {
                 className="forms-modal-button forms-modal-button-secondary"
                 onClick={() => setIsHistoryModalOpen(false)}
               >
-                Close
+                {t('buttons.close', 'Close')}
               </button>
             </div>
           </div>

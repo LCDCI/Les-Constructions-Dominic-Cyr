@@ -170,6 +170,24 @@ public class FormController {
     }
 
     /**
+     * Get all forms assigned to the current authenticated customer
+     * This endpoint is specifically for customers to access their own forms
+     */
+    @GetMapping("/my-forms")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<List<FormResponseModel>> getMyForms(
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        log.info("GET /api/v1/forms/my-forms - Customer accessing their forms");
+
+        UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
+        String userId = currentUser.getUserIdentifier();
+
+        List<FormResponseModel> forms = formService.getFormsByCustomer(userId);
+        return ResponseEntity.ok(forms);
+    }
+
+    /**
      * Update form data (used by customers filling out forms)
      */
     @PutMapping("/{formId}/data")

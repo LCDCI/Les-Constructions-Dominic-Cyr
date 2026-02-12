@@ -1,0 +1,82 @@
+{
+  "title": "Formulaires clients",
+  "subtitle": "Assigner et gérer les formulaires clients",
+  "loading": "Chargement...",
+  "noForms": "Aucun formulaire trouvé",
+  "createButton": "Assigner un nouveau formulaire",
+  "searchPlaceholder": "Rechercher des formulaires...",
+  "filters": {
+    "allStatuses": "Tous les statuts",
+    "assigned": "Assigné",
+    "inProgress": "En cours",
+    "submitted": "Soumis",
+    "reopened": "Réouvert",
+    "completed": "Complété"
+  },
+  "status": {
+    "draft": "Brouillon",
+    "assigned": "Assigné",
+    "inProgress": "En cours",
+    "submitted": "Soumis",
+    "reopened": "Réouvert",
+    "completed": "Complété"
+  },
+  "labels": {
+    "customer": "Client",
+    "project": "Projet",
+    "lot": "Lot",
+    "assigned": "Assigné",
+    "submitted": "Soumis",
+    "reopened": "Réouvert"
+  },
+  "buttons": {
+    "reopen": "Réouvrir",
+    "complete": "Compléter",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "assignForm": "Assigner le formulaire"
+  },
+  "formTypes": {
+    "exteriorDoors": "Portes extérieures",
+    "garageDoors": "Portes de garage",
+    "windows": "Fenêtres",
+    "asphaltShingles": "Bardeaux d'asphalte",
+    "woodwork": "Boiseries",
+    "paint": "Peinture"
+  },
+  "modal": {
+    "create": {
+      "title": "Assigner un nouveau formulaire",
+      "customer": "Client",
+      "selectCustomer": "Sélectionnez un client",
+      "project": "Projet",
+      "selectProject": "Sélectionnez un projet",
+      "selectCustomerFirst": "Sélectionnez d'abord un client",
+      "noProjectsAvailable": "Aucun projet disponible pour ce client",
+      "lot": "Lot",
+      "selectLot": "Sélectionnez un lot",
+      "selectProjectFirst": "Sélectionnez d'abord un projet",
+      "noAddress": "Aucune adresse",
+      "formType": "Type de formulaire",
+      "selectFormType": "Sélectionnez un type de formulaire",
+      "required": "*",
+      "errorAllFields": "Veuillez sélectionner un client, un projet, un lot et un type de formulaire",
+      "errorInvalidCustomer": "Client sélectionné invalide",
+      "errorCreateFailed": "Échec de la création du formulaire. Veuillez réessayer."
+    },
+    "reopen": {
+      "title": "Réouvrir le formulaire",
+      "reasonLabel": "Raison de la réouverture",
+      "reasonPlaceholder": "Expliquez pourquoi ce formulaire doit être réouvert...",
+      "required": "*",
+      "buttonReopen": "Réouvrir le formulaire",
+      "errorReasonRequired": "Veuillez fournir une raison pour la réouverture",
+      "errorReopenFailed": "Échec de la réouverture du formulaire. Veuillez réessayer."
+    },
+    "delete": {
+      "title": "Supprimer le formulaire",
+      "message": "Êtes-vous sûr de vouloir supprimer ce formulaire? Cette action ne peut pas être annulée.",
+      "buttonDelete": "Supprimer"
+    }
+  }
+}

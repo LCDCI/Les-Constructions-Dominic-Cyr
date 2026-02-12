@@ -73,7 +73,6 @@
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 700;
   margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* ========== CONTENT SECTION ========== */

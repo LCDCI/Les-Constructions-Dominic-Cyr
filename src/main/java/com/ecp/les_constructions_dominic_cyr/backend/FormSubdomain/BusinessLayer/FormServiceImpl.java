@@ -405,13 +405,19 @@ public class FormServiceImpl implements FormService {
                     formTypeName, form.getProjectIdentifier()
             );
 
-            // Create system notification
+            // Create system notification with customer-specific route
+            String notificationLink = String.format(
+                    "/projects/%s/lots/%s/forms",
+                    form.getProjectIdentifier(),
+                    form.getLotIdentifier()
+            );
+            
             notificationService.createNotification(
                     customer.getUserIdentifier().getUserId(),
                     notificationTitle,
                     notificationMessage,
                     NotificationCategory.FORM_ASSIGNED,
-                    "/forms/" + form.getFormIdentifier().getFormId()
+                    notificationLink
             );
 
             // Send email
@@ -452,13 +458,13 @@ public class FormServiceImpl implements FormService {
                     customerName, formTypeName, form.getProjectIdentifier()
             );
 
-            // Create system notification
+            // Create system notification with salesperson route
             notificationService.createNotification(
                     assignedBy.getUserIdentifier().getUserId(),
                     notificationTitle,
                     notificationMessage,
                     NotificationCategory.FORM_SUBMITTED,
-                    "/forms/" + form.getFormIdentifier().getFormId()
+                    "/salesperson/forms"
             );
 
             // Send email
@@ -495,13 +501,19 @@ public class FormServiceImpl implements FormService {
                     formTypeName, form.getProjectIdentifier(), reopenReason
             );
 
-            // Create system notification
+            // Create system notification with customer-specific route
+            String notificationLink = String.format(
+                    "/projects/%s/lots/%s/forms",
+                    form.getProjectIdentifier(),
+                    form.getLotIdentifier()
+            );
+            
             notificationService.createNotification(
                     customer.getUserIdentifier().getUserId(),
                     notificationTitle,
                     notificationMessage,
                     NotificationCategory.FORM_REOPENED,
-                    "/forms/" + form.getFormIdentifier().getFormId()
+                    notificationLink
             );
 
             // Send email
