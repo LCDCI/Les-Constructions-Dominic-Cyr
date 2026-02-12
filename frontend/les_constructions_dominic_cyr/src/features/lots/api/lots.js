@@ -32,7 +32,7 @@ export async function fetchLots({ projectIdentifier, customerId, token } = {}) {
   let url = projectId
     ? `${API_BASE_URL}/projects/${projectId}/lots`
     : `${API_BASE_URL}/lots`;
-  
+
   // Add customerId as query parameter if provided
   if (customerId) {
     url += `?customerId=${encodeURIComponent(customerId)}`;

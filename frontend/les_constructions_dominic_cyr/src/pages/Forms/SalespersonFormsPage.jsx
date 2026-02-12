@@ -153,12 +153,19 @@ const SalespersonFormsPage = () => {
     try {
       setSubmitError(null);
 
-      if (!selectedCustomer || !selectedFormType || !selectedProject || !selectedLot) {
+      if (
+        !selectedCustomer ||
+        !selectedFormType ||
+        !selectedProject ||
+        !selectedLot
+      ) {
         setSubmitError('Please select a customer, project, lot, and form type');
         return;
       }
 
-      const customer = customers.find(c => c.userIdentifier === selectedCustomer);
+      const customer = customers.find(
+        c => c.userIdentifier === selectedCustomer
+      );
       if (!customer || !customer.userIdentifier) {
         setSubmitError('Invalid customer selected');
         return;
@@ -308,9 +315,7 @@ const SalespersonFormsPage = () => {
       <div className="forms-page">
         <div className="forms-hero">
           <div className="forms-hero-content">
-            <h1 className="forms-hero-title">
-              {t('title', 'Customer Forms')}
-            </h1>
+            <h1 className="forms-hero-title">{t('title', 'Customer Forms')}</h1>
           </div>
         </div>
         <div className="forms-content">
@@ -366,12 +371,24 @@ const SalespersonFormsPage = () => {
               onChange={e => setStatusFilter(e.target.value)}
               className="forms-filter-select"
             >
-              <option value="ALL">{t('filters.allStatuses', 'All Statuses')}</option>
-              <option value="ASSIGNED">{t('filters.assigned', 'Assigned')}</option>
-              <option value="IN_PROGRESS">{t('filters.inProgress', 'In Progress')}</option>
-              <option value="SUBMITTED">{t('filters.submitted', 'Submitted')}</option>
-              <option value="REOPENED">{t('filters.reopened', 'Reopened')}</option>
-              <option value="COMPLETED">{t('filters.completed', 'Completed')}</option>
+              <option value="ALL">
+                {t('filters.allStatuses', 'All Statuses')}
+              </option>
+              <option value="ASSIGNED">
+                {t('filters.assigned', 'Assigned')}
+              </option>
+              <option value="IN_PROGRESS">
+                {t('filters.inProgress', 'In Progress')}
+              </option>
+              <option value="SUBMITTED">
+                {t('filters.submitted', 'Submitted')}
+              </option>
+              <option value="REOPENED">
+                {t('filters.reopened', 'Reopened')}
+              </option>
+              <option value="COMPLETED">
+                {t('filters.completed', 'Completed')}
+              </option>
             </select>
           </div>
 
@@ -385,10 +402,18 @@ const SalespersonFormsPage = () => {
                 <div key={form.formId} className="form-card">
                   <div className="form-card-header">
                     <h3 className="form-card-title">
-                      {t(`formTypes.${form.formType}`, form.formType.replace(/_/g, ' '))}
+                      {t(
+                        `formTypes.${form.formType}`,
+                        form.formType.replace(/_/g, ' ')
+                      )}
                     </h3>
-                    <span className={`form-status form-status-${form.formStatus}`}>
-                      {t(`status.${form.formStatus.toLowerCase().replace('_', '')}`, form.formStatus)}
+                    <span
+                      className={`form-status form-status-${form.formStatus}`}
+                    >
+                      {t(
+                        `status.${form.formStatus.toLowerCase().replace('_', '')}`,
+                        form.formStatus
+                      )}
                     </span>
                   </div>
                   <div className="form-card-body">
@@ -401,7 +426,8 @@ const SalespersonFormsPage = () => {
                       {getProjectName(form.projectIdentifier)}
                     </p>
                     <p>
-                      <strong>{t('labels.lot', 'Lot')}:</strong> {form.lotIdentifier}
+                      <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
+                      {form.lotIdentifier}
                     </p>
                     <p>
                       <strong>{t('labels.assigned', 'Assigned')}:</strong>{' '}
@@ -470,32 +496,40 @@ const SalespersonFormsPage = () => {
           >
             <div className="forms-modal-header">
               <h2>{t('modal.create.title', 'Assign New Form')}</h2>
-              <button
-                className="forms-modal-close"
-                onClick={handleCloseModal}
-              >
+              <button className="forms-modal-close" onClick={handleCloseModal}>
                 ×
               </button>
             </div>
             <div className="forms-modal-body">
               <div className="forms-form-group">
-                <label htmlFor="customer">{t('modal.create.customer', 'Customer')} {t('modal.create.required', '*')}</label>
+                <label htmlFor="customer">
+                  {t('modal.create.customer', 'Customer')}{' '}
+                  {t('modal.create.required', '*')}
+                </label>
                 <select
                   id="customer"
                   value={selectedCustomer}
                   onChange={e => setSelectedCustomer(e.target.value)}
                   className="forms-form-select"
                 >
-                  <option value="">{t('modal.create.selectCustomer', 'Select a customer')}</option>
+                  <option value="">
+                    {t('modal.create.selectCustomer', 'Select a customer')}
+                  </option>
                   {customers.map(customer => (
-                    <option key={customer.userIdentifier} value={customer.userIdentifier}>
+                    <option
+                      key={customer.userIdentifier}
+                      value={customer.userIdentifier}
+                    >
                       {customer.firstName} {customer.lastName}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="forms-form-group">
-                <label htmlFor="project">{t('modal.create.project', 'Project')} {t('modal.create.required', '*')}</label>
+                <label htmlFor="project">
+                  {t('modal.create.project', 'Project')}{' '}
+                  {t('modal.create.required', '*')}
+                </label>
                 <select
                   id="project"
                   value={selectedProject}
@@ -505,20 +539,32 @@ const SalespersonFormsPage = () => {
                 >
                   <option value="">
                     {!selectedCustomer
-                      ? t('modal.create.selectCustomerFirst', 'Select a customer first')
+                      ? t(
+                          'modal.create.selectCustomerFirst',
+                          'Select a customer first'
+                        )
                       : projects.length === 0
-                      ? t('modal.create.noProjectsAvailable', 'No projects available for this customer')
-                      : t('modal.create.selectProject', 'Select a project')}
+                        ? t(
+                            'modal.create.noProjectsAvailable',
+                            'No projects available for this customer'
+                          )
+                        : t('modal.create.selectProject', 'Select a project')}
                   </option>
                   {projects.map(project => (
-                    <option key={project.projectIdentifier} value={project.projectIdentifier}>
+                    <option
+                      key={project.projectIdentifier}
+                      value={project.projectIdentifier}
+                    >
                       {project.projectName}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="forms-form-group">
-                <label htmlFor="lot">{t('modal.create.lot', 'Lot')} {t('modal.create.required', '*')}</label>
+                <label htmlFor="lot">
+                  {t('modal.create.lot', 'Lot')}{' '}
+                  {t('modal.create.required', '*')}
+                </label>
                 <select
                   id="lot"
                   value={selectedLot}
@@ -529,24 +575,34 @@ const SalespersonFormsPage = () => {
                   <option value="">
                     {selectedProject
                       ? t('modal.create.selectLot', 'Select a lot')
-                      : t('modal.create.selectProjectFirst', 'Select a project first')}
+                      : t(
+                          'modal.create.selectProjectFirst',
+                          'Select a project first'
+                        )}
                   </option>
                   {lots.map(lot => (
                     <option key={lot.lotId} value={lot.lotId}>
-                      {lot.lotNumber} - {lot.civicAddress || t('modal.create.noAddress', 'No address')}
+                      {lot.lotNumber} -{' '}
+                      {lot.civicAddress ||
+                        t('modal.create.noAddress', 'No address')}
                     </option>
                   ))}
                 </select>
               </div>
               <div className="forms-form-group">
-                <label htmlFor="formType">{t('modal.create.formType', 'Form Type')} {t('modal.create.required', '*')}</label>
+                <label htmlFor="formType">
+                  {t('modal.create.formType', 'Form Type')}{' '}
+                  {t('modal.create.required', '*')}
+                </label>
                 <select
                   id="formType"
                   value={selectedFormType}
                   onChange={e => setSelectedFormType(e.target.value)}
                   className="forms-form-select"
                 >
-                  <option value="">{t('modal.create.selectFormType', 'Select a form type')}</option>
+                  <option value="">
+                    {t('modal.create.selectFormType', 'Select a form type')}
+                  </option>
                   {FORM_TYPES.map(type => (
                     <option key={type.value} value={type.value}>
                       {t(type.translationKey, type.value)}
@@ -591,13 +647,19 @@ const SalespersonFormsPage = () => {
             </div>
             <div className="forms-modal-body">
               <div className="forms-form-group">
-                <label htmlFor="reopenReason">{t('modal.reopen.reasonLabel', 'Reason for Reopening')} {t('modal.reopen.required', '*')}</label>
+                <label htmlFor="reopenReason">
+                  {t('modal.reopen.reasonLabel', 'Reason for Reopening')}{' '}
+                  {t('modal.reopen.required', '*')}
+                </label>
                 <textarea
                   id="reopenReason"
                   value={reopenReason}
                   onChange={e => setReopenReason(e.target.value)}
                   className="forms-form-textarea"
-                  placeholder={t('modal.reopen.reasonPlaceholder', 'Explain why this form needs to be reopened...')}
+                  placeholder={t(
+                    'modal.reopen.reasonPlaceholder',
+                    'Explain why this form needs to be reopened...'
+                  )}
                   rows="4"
                 />
               </div>
@@ -638,7 +700,10 @@ const SalespersonFormsPage = () => {
             </div>
             <div className="forms-modal-body">
               <p>
-                {t('modal.delete.message', 'Are you sure you want to delete this form? This action cannot be undone.')}
+                {t(
+                  'modal.delete.message',
+                  'Are you sure you want to delete this form? This action cannot be undone.'
+                )}
               </p>
             </div>
             <div className="forms-modal-footer">

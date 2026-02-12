@@ -94,7 +94,8 @@ const CustomerFormsSelectionPage = () => {
 
   const getFormCountForLot = (projectId, lotId) => {
     return forms.filter(
-      form => form.projectIdentifier === projectId && form.lotIdentifier === lotId
+      form =>
+        form.projectIdentifier === projectId && form.lotIdentifier === lotId
     ).length;
   };
 
@@ -141,7 +142,9 @@ const CustomerFormsSelectionPage = () => {
                 onChange={e => setSelectedProject(e.target.value)}
                 className="forms-form-select"
               >
-                <option value="">{t('selectAProject', 'Select a project')}</option>
+                <option value="">
+                  {t('selectAProject', 'Select a project')}
+                </option>
                 {projects.map(project => (
                   <option
                     key={project.projectIdentifier}
@@ -176,18 +179,28 @@ const CustomerFormsSelectionPage = () => {
                           </h3>
                           {formCount > 0 && (
                             <span className="form-count-badge">
-                              {formCount} {t(`formCount.${formCount === 1 ? 'one' : 'other'}`, formCount === 1 ? 'form' : 'forms')}
+                              {formCount}{' '}
+                              {t(
+                                `formCount.${formCount === 1 ? 'one' : 'other'}`,
+                                formCount === 1 ? 'form' : 'forms'
+                              )}
                             </span>
                           )}
                         </div>
                         <div className="form-card-body">
                           {lot.civicAddress && (
                             <p>
-                              <strong>{t('address', 'Address')}:</strong> {lot.civicAddress}
+                              <strong>{t('address', 'Address')}:</strong>{' '}
+                              {lot.civicAddress}
                             </p>
                           )}
                           {formCount === 0 && (
-                            <p className="no-forms-text">{t('noFormsAssignedToLot', 'No forms assigned yet')}</p>
+                            <p className="no-forms-text">
+                              {t(
+                                'noFormsAssignedToLot',
+                                'No forms assigned yet'
+                              )}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -206,9 +219,16 @@ const CustomerFormsSelectionPage = () => {
             {!selectedProject && (
               <div className="no-forms">
                 {projects.length === 0 ? (
-                  <p>{t('noFormsAssigned', 'No forms have been assigned to you yet. They will appear here once assigned.')}</p>
+                  <p>
+                    {t(
+                      'noFormsAssigned',
+                      'No forms have been assigned to you yet. They will appear here once assigned.'
+                    )}
+                  </p>
                 ) : (
-                  <p>{t('selectProject', 'Please select a project to view lots')}</p>
+                  <p>
+                    {t('selectProject', 'Please select a project to view lots')}
+                  </p>
                 )}
               </div>
             )}
