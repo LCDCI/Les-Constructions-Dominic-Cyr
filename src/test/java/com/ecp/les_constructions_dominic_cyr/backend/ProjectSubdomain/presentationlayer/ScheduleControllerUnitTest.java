@@ -5,6 +5,9 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentati
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.BadRequestException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidRequestException;
@@ -17,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,11 +37,18 @@ class ScheduleControllerUnitTest{
     @Mock
     private ScheduleService scheduleService;
 
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private Jwt jwt;
+
     @InjectMocks
     private ScheduleController scheduleController;
 
     private ScheduleResponseDTO responseDTO1;
     private ScheduleResponseDTO responseDTO2;
+    private UserResponseModel ownerUser;
 
     @BeforeEach
     void setUp() {
@@ -56,6 +67,14 @@ class ScheduleControllerUnitTest{
                 .scheduleDescription("Plumbing")
                 .lotId("Lot 57")
                 .build();
+
+        // Setup owner user for tests
+        ownerUser = new UserResponseModel();
+        ownerUser.setUserIdentifier("user-123");
+        ownerUser.setUserRole(UserRole.OWNER);
+        ownerUser.setFirstName("Test");
+        ownerUser.setLastName("Owner");
+        ownerUser.setPrimaryEmail("owner@test.com");
     }
 
     // Owner Endpoints Tests
@@ -471,13 +490,18 @@ class ScheduleControllerUnitTest{
     void getProjectSchedules_shouldReturnSchedulesWithOkStatus() {
         String projectIdentifier = "proj-001";
         List<ScheduleResponseDTO> schedules = Arrays.asList(responseDTO1, responseDTO2);
+        
+        when(jwt.getSubject()).thenReturn("auth0|123");
+        when(userService.getUserByAuth0Id("auth0|123")).thenReturn(ownerUser);
         when(scheduleService.getSchedulesByProjectIdentifier(projectIdentifier)).thenReturn(schedules);
 
-        ResponseEntity<List<ScheduleResponseDTO>> response = scheduleController.getProjectSchedules(projectIdentifier);
+        ResponseEntity<?> response = scheduleController.getProjectSchedules(projectIdentifier, jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
+        @SuppressWarnings("unchecked")
+        List<ScheduleResponseDTO> body = (List<ScheduleResponseDTO>) response.getBody();
+        assertEquals(2, body.size());
 
         verify(scheduleService).getSchedulesByProjectIdentifier(projectIdentifier);
     }
@@ -485,13 +509,18 @@ class ScheduleControllerUnitTest{
     @Test
     void getProjectSchedules_shouldReturnEmptyListWithOkStatus() {
         String projectIdentifier = "proj-001";
+        
+        when(jwt.getSubject()).thenReturn("auth0|123");
+        when(userService.getUserByAuth0Id("auth0|123")).thenReturn(ownerUser);
         when(scheduleService.getSchedulesByProjectIdentifier(projectIdentifier)).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<ScheduleResponseDTO>> response = scheduleController.getProjectSchedules(projectIdentifier);
+        ResponseEntity<?> response = scheduleController.getProjectSchedules(projectIdentifier, jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertTrue(response.getBody().isEmpty());
+        @SuppressWarnings("unchecked")
+        List<ScheduleResponseDTO> body = (List<ScheduleResponseDTO>) response.getBody();
+        assertTrue(body.isEmpty());
 
         verify(scheduleService).getSchedulesByProjectIdentifier(projectIdentifier);
     }
@@ -547,10 +576,13 @@ class ScheduleControllerUnitTest{
     void getProjectSchedules_shouldReturnInternalServerErrorWhenExceptionThrown() {
         String projectIdentifier = "proj-001";
         String errorMessage = "Database error";
+        
+        when(jwt.getSubject()).thenReturn("auth0|123");
+        when(userService.getUserByAuth0Id("auth0|123")).thenReturn(ownerUser);
         when(scheduleService.getSchedulesByProjectIdentifier(projectIdentifier))
                 .thenThrow(new RuntimeException(errorMessage));
 
-        ResponseEntity response = scheduleController.getProjectSchedules(projectIdentifier);
+        ResponseEntity<?> response = scheduleController.getProjectSchedules(projectIdentifier, jwt);
 
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
         assertEquals(errorMessage, response.getBody());

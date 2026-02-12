@@ -316,7 +316,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             updatedSchedule.getScheduleEndDate()
         );
         String title = "Project Schedule Updated";
-        String link = "/projects/" + projectIdentifier + "/schedules/" + scheduleIdentifier;
+        String link = "/projects/" + projectIdentifier + "/schedule";
 
         // Send notifications
         for (Users user : assignedUsers) {
@@ -329,7 +329,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     link
                 );
                 // Send email
-                if (user.getPrimaryEmail() != null) {
+                if (user.getPrimaryEmail() != null && !user.getPrimaryEmail().isEmpty()) {
                     String emailBody = String.format(
                         "Hello %s,<br><br>%s<br><br>Updated at: %s", user.getFirstName(), message, updatedSchedule.getUpdatedAt()
                     );
@@ -383,5 +383,56 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (schedule.getProject() == null || !projectIdentifier.equals(schedule.getProject().getProjectIdentifier())) {
             throw new NotFoundException("Schedule " + schedule.getScheduleIdentifier() + " does not belong to project " + projectIdentifier);
         }
+    }
+
+    @Override
+    public List<ScheduleResponseDTO> getSchedulesForUserAssignedLots(String userId) {
+        log.info("Fetching schedules for user's assigned lots: {}", userId);
+        
+        // Find all lots assigned to this user
+        UUID userUuid = UUID.fromString(userId);
+        List<Lot> assignedLots = lotRepository.findByAssignedUserId(userUuid);
+        
+        if (assignedLots.isEmpty()) {
+            log.info("No assigned lots found for user: {}", userId);
+            return List.of();
+        }
+        
+        // Get lot IDs
+        List<UUID> lotIds = assignedLots.stream()
+                .map(lot -> lot.getLotIdentifier().getLotId())
+                .toList();
+        
+        // Get all schedules for these lots
+        List<Schedule> schedules = scheduleRepository.findByLotIdIn(lotIds);
+        
+        log.info("Found {} schedules for user's {} assigned lots", schedules.size(), assignedLots.size());
+        return scheduleMapper.entitiesToResponseDTOs(schedules);
+    }
+
+    @Override
+    public List<ScheduleResponseDTO> getSchedulesByProjectIdentifierAndUserAssignedLots(String projectIdentifier, String userId) {
+        log.info("Fetching schedules for project {} filtered by user's assigned lots: {}", projectIdentifier, userId);
+        
+        // Find all lots assigned to this user
+        UUID userUuid = UUID.fromString(userId);
+        List<Lot> assignedLots = lotRepository.findByAssignedUserId(userUuid);
+        
+        if (assignedLots.isEmpty()) {
+            log.info("No assigned lots found for user: {}", userId);
+            return List.of();
+        }
+        
+        // Get lot IDs
+        List<UUID> lotIds = assignedLots.stream()
+                .map(lot -> lot.getLotIdentifier().getLotId())
+                .toList();
+        
+        // Get schedules for the project filtered by these lots
+        List<Schedule> schedules = scheduleRepository.findByProjectIdentifierAndLotIdIn(projectIdentifier, lotIds);
+        
+        log.info("Found {} schedules for project {} filtered by user's {} assigned lots", 
+                 schedules.size(), projectIdentifier, assignedLots.size());
+        return scheduleMapper.entitiesToResponseDTOs(schedules);
     }
 }
