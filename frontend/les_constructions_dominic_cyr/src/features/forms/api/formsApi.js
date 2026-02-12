@@ -80,7 +80,7 @@ export async function submitForm(formId, token) {
     `${API_BASE}/forms/${formId}/submit`,
     {
       formData: {},
-      isSubmitting: true
+      isSubmitting: true,
     },
     {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
