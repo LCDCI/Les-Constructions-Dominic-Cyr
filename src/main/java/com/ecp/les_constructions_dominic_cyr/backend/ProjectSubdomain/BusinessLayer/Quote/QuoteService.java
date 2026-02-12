@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Quote;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.LineItem;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.Quote;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.QuoteRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
@@ -7,6 +8,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.QuoteMapper;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.LineItemModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidProjectDataException;
@@ -35,22 +37,22 @@ public class QuoteService {
     /**
      * Create a new quote for a project.
      * 
-     * @param requestModel Quote data with line items (quote number NOT provided by frontend)
+     * @param requestModel Quote data with line items (quote number NOT provided by
+     *                     frontend)
      * @param contractorId The contractor creating the quote
      * @return The created quote with system-generated quote number
-     * @throws NotFoundException if project does not exist
+     * @throws NotFoundException           if project does not exist
      * @throws InvalidProjectDataException if validation fails
      */
     @Transactional
     public QuoteResponseModel createQuote(QuoteRequestModel requestModel, String contractorId) {
-        log.info("Creating quote for project: {} by contractor: {}", 
-            requestModel.getProjectIdentifier(), contractorId);
+        log.info("Creating quote for project: {} by contractor: {}",
+                requestModel.getProjectIdentifier(), contractorId);
 
         // Validate project exists
         var project = projectRepository.findByProjectIdentifier(requestModel.getProjectIdentifier())
-            .orElseThrow(() -> new NotFoundException(
-                "Project not found: " + requestModel.getProjectIdentifier()
-            ));
+                .orElseThrow(() -> new NotFoundException(
+                        "Project not found: " + requestModel.getProjectIdentifier()));
 
         // Validate lot exists and belongs to the project
         if (requestModel.getLotIdentifier() == null || requestModel.getLotIdentifier().isBlank()) {
@@ -69,21 +71,21 @@ public class QuoteService {
             throw new NotFoundException("Lot not found: " + requestModel.getLotIdentifier());
         }
 
-        if (lot.getProject() == null || !project.getProjectIdentifier().equals(lot.getProject().getProjectIdentifier())) {
+        if (lot.getProject() == null
+                || !project.getProjectIdentifier().equals(lot.getProject().getProjectIdentifier())) {
             throw new InvalidProjectDataException("Lot does not belong to the specified project");
         }
 
         Users contractorUser = usersRepository.findByAuth0UserId(contractorId)
-            .or(() -> usersRepository.findByUserIdentifier(contractorId))
-            .orElseThrow(() -> new InvalidProjectDataException("Contractor user not found"));
+                .or(() -> usersRepository.findByUserIdentifier(contractorId))
+                .orElseThrow(() -> new InvalidProjectDataException("Contractor user not found"));
 
         boolean isAssignedToLot = lot.getAssignedUsers().stream()
-            .anyMatch(user -> user.getUserIdentifier().equals(contractorUser.getUserIdentifier()));
+                .anyMatch(user -> user.getUserIdentifier().equals(contractorUser.getUserIdentifier()));
 
         if (!isAssignedToLot) {
             throw new InvalidProjectDataException(
-                "Contractor is not assigned to this lot"
-            );
+                    "Contractor is not assigned to this lot");
         }
 
         // Validate line items
@@ -104,7 +106,8 @@ public class QuoteService {
 
     /**
      * Get all quotes for a specific project.
-     * Accessible to: Owner, Salesperson, Customer (who owns the project), assigned Contractors.
+     * Accessible to: Owner, Salesperson, Customer (who owns the project), assigned
+     * Contractors.
      */
     @Transactional(readOnly = true)
     public List<QuoteResponseModel> getQuotesByProject(String projectIdentifier) {
@@ -112,17 +115,18 @@ public class QuoteService {
 
         // Validate project exists
         projectRepository.findByProjectIdentifier(projectIdentifier)
-            .orElseThrow(() -> new NotFoundException("Project not found"));
+                .orElseThrow(() -> new NotFoundException("Project not found"));
 
         List<Quote> quotes = quoteRepository.findByProjectIdentifier(projectIdentifier);
         return quotes.stream()
-            .map(quoteMapper::entityToResponseModel)
-            .collect(Collectors.toList());
+                .map(quoteMapper::entityToResponseModel)
+                .collect(Collectors.toList());
     }
 
     /**
      * Get all quotes for a specific lot.
-     * Accessible to: Owner, Salesperson, Customer (who owns the lot), assigned Contractors.
+     * Accessible to: Owner, Salesperson, Customer (who owns the lot), assigned
+     * Contractors.
      */
     @Transactional(readOnly = true)
     public List<QuoteResponseModel> getQuotesByLot(String lotIdentifier) {
@@ -131,8 +135,8 @@ public class QuoteService {
         UUID lotId = UUID.fromString(lotIdentifier);
         List<Quote> quotes = quoteRepository.findByLotIdentifier(lotId);
         return quotes.stream()
-            .map(quoteMapper::entityToResponseModel)
-            .collect(Collectors.toList());
+                .map(quoteMapper::entityToResponseModel)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -143,7 +147,7 @@ public class QuoteService {
         log.info("Fetching quote: {}", quoteNumber);
 
         Quote quote = quoteRepository.findByQuoteNumber(quoteNumber)
-            .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
+                .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
 
         return quoteMapper.entityToResponseModel(quote);
     }
@@ -157,8 +161,8 @@ public class QuoteService {
 
         List<Quote> quotes = quoteRepository.findByContractorId(contractorId);
         return quotes.stream()
-            .map(quoteMapper::entityToResponseModel)
-            .collect(Collectors.toList());
+                .map(quoteMapper::entityToResponseModel)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -170,8 +174,21 @@ public class QuoteService {
 
         List<Quote> quotes = quoteRepository.findByStatus("SUBMITTED");
         return quotes.stream()
-            .map(quoteMapper::entityToResponseModel)
-            .collect(Collectors.toList());
+                .map(quoteMapper::entityToResponseModel)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all quotes for owner (admin view), sorted by creation date.
+     */
+    @Transactional(readOnly = true)
+    public List<QuoteResponseModel> getAllQuotes() {
+        log.info("Fetching all quotes for owner");
+
+        List<Quote> quotes = quoteRepository.findAllByOrderByCreatedAtDesc();
+        return quotes.stream()
+                .map(quoteMapper::entityToResponseModel)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -183,17 +200,17 @@ public class QuoteService {
 
         List<Quote> quotes = quoteRepository.findByProjectAndStatus(projectIdentifier, "SUBMITTED");
         return quotes.stream()
-            .map(quoteMapper::entityToResponseModel)
-            .collect(Collectors.toList());
+                .map(quoteMapper::entityToResponseModel)
+                .collect(Collectors.toList());
     }
 
     /**
      * Approve a quote.
      * 
      * @param quoteNumber The quote to approve
-     * @param ownerId The owner approving the quote
+     * @param ownerId     The owner approving the quote
      * @return The updated quote
-     * @throws NotFoundException if quote not found
+     * @throws NotFoundException           if quote not found
      * @throws InvalidProjectDataException if quote is not in SUBMITTED status
      */
     @Transactional
@@ -201,7 +218,7 @@ public class QuoteService {
         log.info("Approving quote: {} by owner: {}", quoteNumber, ownerId);
 
         Quote quote = quoteRepository.findByQuoteNumber(quoteNumber)
-            .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
+                .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
 
         if (!"SUBMITTED".equals(quote.getStatus())) {
             throw new InvalidProjectDataException("Quote is not in SUBMITTED status: " + quote.getStatus());
@@ -221,12 +238,13 @@ public class QuoteService {
     /**
      * Reject a quote with a reason.
      * 
-     * @param quoteNumber The quote to reject
+     * @param quoteNumber     The quote to reject
      * @param rejectionReason The reason for rejection
-     * @param ownerId The owner rejecting the quote
+     * @param ownerId         The owner rejecting the quote
      * @return The updated quote
-     * @throws NotFoundException if quote not found
-     * @throws InvalidProjectDataException if quote is not in SUBMITTED status or reason is empty
+     * @throws NotFoundException           if quote not found
+     * @throws InvalidProjectDataException if quote is not in SUBMITTED status or
+     *                                     reason is empty
      */
     @Transactional
     public QuoteResponseModel rejectQuote(String quoteNumber, String rejectionReason, String ownerId) {
@@ -237,7 +255,7 @@ public class QuoteService {
         }
 
         Quote quote = quoteRepository.findByQuoteNumber(quoteNumber)
-            .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
+                .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
 
         if (!"SUBMITTED".equals(quote.getStatus())) {
             throw new InvalidProjectDataException("Quote is not in SUBMITTED status: " + quote.getStatus());
@@ -270,14 +288,12 @@ public class QuoteService {
         requestModel.getLineItems().forEach(item -> {
             if (item.getQuantity() == null || item.getQuantity().signum() <= 0) {
                 throw new InvalidProjectDataException(
-                    "Quantity must be greater than 0 for: " + item.getItemDescription()
-                );
+                        "Quantity must be greater than 0 for: " + item.getItemDescription());
             }
 
             if (item.getRate() == null || item.getRate().signum() < 0) {
                 throw new InvalidProjectDataException(
-                    "Rate cannot be negative for: " + item.getItemDescription()
-                );
+                        "Rate cannot be negative for: " + item.getItemDescription());
             }
 
             if (item.getItemDescription() == null || item.getItemDescription().isBlank()) {

@@ -186,6 +186,37 @@ export const quoteApi = {
   },
 
   /**
+   * Get all quotes for owner (admin view).
+   *
+   * @param {string} token - Authorization token
+   * @returns {Promise<Array>} List of all quotes
+   * @throws {Error} If fetch fails
+   */
+  getAllQuotes: async token => {
+    try {
+      const headers = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/quotes/admin/all`, {
+        headers,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch quotes (${response.status})`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to API');
+      }
+      throw error;
+    }
+  },
+
+  /**
    * Get submitted quotes filtered by project.
    *
    * @param {string} projectIdentifier - Project identifier

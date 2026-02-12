@@ -32,7 +32,7 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
     List<Quote> findByProjectIdentifierAndStatus(String projectIdentifier, String status);
 
-    List<Quote> findByLotIdentifierAndStatus(String lotIdentifier, String status);
+    List<Quote> findByLotIdentifierAndStatus(UUID lotIdentifier, String status);
 
     @Query("SELECT q FROM Quote q WHERE q.projectIdentifier = :projectIdentifier AND q.status = :status ORDER BY q.createdAt DESC")
     List<Quote> findByProjectAndStatus(@Param("projectIdentifier") String projectIdentifier,
@@ -40,4 +40,6 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
     @Query("SELECT q FROM Quote q WHERE q.contractorId = :contractorId AND q.status = :status ORDER BY q.createdAt DESC")
     List<Quote> findByContractorAndStatus(@Param("contractorId") String contractorId, @Param("status") String status);
+
+    List<Quote> findAllByOrderByCreatedAtDesc();
 }

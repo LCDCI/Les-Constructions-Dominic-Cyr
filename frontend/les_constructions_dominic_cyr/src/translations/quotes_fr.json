@@ -1,12 +1,12 @@
 {
   "quote": {
-    "bills": "Factures",
-    "billEstimate": "Estimation de facture",
-    "billNumber": "NUMÉRO DE FACTURE",
-    "createNewBill": "Créer une nouvelle facture",
-    "searchBills": "Rechercher dans les factures",
-    "noBills": "Aucune facture trouvée",
-    "noBillsDesc": "Créez votre première estimation de facture pour commencer",
+    "bills": "Devis",
+    "billEstimate": "Estimation de devis",
+    "billNumber": "NUMÉRO DE DEVIS",
+    "createNewBill": "Créer un nouveau devis",
+    "searchBills": "Rechercher dans les devis",
+    "noBills": "Aucun devis trouvé",
+    "noBillsDesc": "Créez votre premier devis pour commencer",
     "selectLot": "Sélectionner un lot",
     "chooseLot": "Choisir un lot...",
     "noLotsAvailable": "Aucun lot disponible",
@@ -57,8 +57,8 @@
     "noProjectsOwner": "Aucun projet disponible.",
     "subtitleContractor": "Voir et gérer vos factures",
     "subtitleOwner": "Voir toutes les factures de vos projets",
-    "createBillEstimate": "Créer une estimation de facture",
-    "newBill": "Nouvelle facture",
+    "createBillEstimate": "Créer une estimation de devis",
+    "newBill": "Nouveau devis",
     "confirmed": "Confirmé",
     "auto": "Généré automatiquement",
     "issuedDate": "Date d'émission",
@@ -68,21 +68,25 @@
     "preview": "Aperçu",
     "createQuote": "Créer une facture",
     "sendFinalInvoice": "Envoyer la facture finale",
+      "rejectionInfo": "Information de rejet"
+    },
     "common": {
       "cancel": "Annuler",
       "back": "Retour",
       "goBack": "Retour",
-      "submitting": "Envoi en cours..."
-    },
-    "errors": {
-      "descriptionRequired": "Description requise",
-      "hoursInvalid": "Doit être > 0",
-      "rateInvalid": "Doit être >= 0",
-      "fixErrors": "Veuillez corriger les erreurs dans le formulaire",
-      "noLot": "Aucun lot sélectionné",
-      "createFailed": "Échec de la création de la facture",
-      "atLeastOneItem": "Veuillez ajouter au moins un article à la facture",
-      "notAssignedToLot": "Vous n'êtes pas assigné à ce lot."
+      "submitting": "Envoi en cours...",
+      "loading": "Chargement...",
+      "processing": "Traitement...",
+      "search": "Rechercher",
+      "status": "Statut",
+      "all": "Tous",
+      "refresh": "Actualiser",
+      "actions": "Actions",
+      "view": "Voir",
+      "approve": "Approuver",
+      "reject": "Rejeter",
+      "error": "Erreur",
+      "success": "Succès",
+      "tryAgain": "Réessayer"
     }
-  }
 }

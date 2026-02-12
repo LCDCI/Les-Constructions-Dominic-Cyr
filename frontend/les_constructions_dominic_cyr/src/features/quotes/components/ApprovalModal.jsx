@@ -7,8 +7,8 @@ import './ApprovalModal.css';
  * ApprovalModal Component
  * Modal for approving or rejecting quotes
  */
-const ApprovalModal = ({ quote, action, onConfirm, onCancel }) => {
-  const { t } = useTranslation();
+const ApprovalModal = ({ quote, contractorName, action, onConfirm, onCancel }) => {
+  const { t } = useTranslation('quotes');
   const [rejectionReason, setRejectionReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -66,7 +66,7 @@ const ApprovalModal = ({ quote, action, onConfirm, onCancel }) => {
             </div>
             <div className="summary-row">
               <span className="label">{t('quote.contractor') || 'Contractor'}</span>
-              <span className="value">{quote.contractorId}</span>
+              <span className="value">{contractorName || quote.contractorId}</span>
             </div>
           </div>
 

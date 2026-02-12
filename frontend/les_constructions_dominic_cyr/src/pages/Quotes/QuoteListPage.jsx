@@ -263,7 +263,7 @@ const QuoteListPage = () => {
             </div>
           </div>
           <div className="header-right">
-            <h1>{t('quote.bills') || 'Bills'}</h1>
+            <h1>{t('quote.bills') || 'Quotes'}</h1>
           </div>
         </div>
 
@@ -273,14 +273,14 @@ const QuoteListPage = () => {
             <BiSearch className="search-icon" />
             <input
               type="text"
-              placeholder={t('quote.searchBills') || 'Search anything on Bills'}
+              placeholder={t('quote.searchBills') || 'Search anything on Quotes'}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="search-input"
             />
           </div>
           <button className="btn btn-create" onClick={handleCreateNewBill}>
-            {t('quote.createNewBill') || 'Create New Bill'}
+            {t('quote.createNewBill') || 'Create New Quote'}
           </button>
         </div>
 
@@ -292,13 +292,13 @@ const QuoteListPage = () => {
         ) : filteredQuotes.length === 0 ? (
           <div className="empty-state">
             <MdOutlineRequestQuote className="empty-icon" />
-            <h3>{t('quote.noBills') || 'No bills found'}</h3>
+            <h3>{t('quote.noBills') || 'No quotes found'}</h3>
             <p>
               {t('quote.noBillsDesc') ||
-                'Create your first bill to get started'}
+                'Create your first quote to get started'}
             </p>
             <button className="btn btn-primary" onClick={handleCreateNewBill}>
-              <MdAdd /> {t('quote.createNewBill') || 'Create New Bill'}
+              <MdAdd /> {t('quote.createNewBill') || 'Create New Quote'}
             </button>
           </div>
         ) : (
@@ -307,7 +307,7 @@ const QuoteListPage = () => {
               <thead>
                 <tr>
                   <th className="col-bill-number">
-                    {t('quote.billNumber') || 'BILL NUMBER'}
+                    {t('quote.billNumber') || 'QUOTE NUMBER'}
                   </th>
                   <th className="col-amount">
                     {t('quote.amount') || 'AMOUNT'}
