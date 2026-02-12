@@ -328,25 +328,25 @@
 }
 
 .users-page .modal-actions .btn-cancel {
-  background-color: #e5e7eb !important;
-  color: #111827 !important;
-  background-image: none !important;
+  background-color: var(--button-secondary-bg, #e5e7eb);
+  color: var(--button-secondary-fg, #111827);
+  background-image: none;
 }
 
 .users-page .modal-actions .btn-cancel:hover {
-  background-color: #d1d5db !important;
-  background-image: none !important;
+  background-color: var(--button-secondary-hover-bg, #d1d5db);
+  background-image: none;
 }
 
 .modal-actions button.btn-cancel {
-  background-color: #e5e7eb !important;
-  color: #111827 !important;
-  background-image: none !important;
+  background-color: var(--button-secondary-bg, #e5e7eb);
+  color: var(--button-secondary-fg, #111827);
+  background-image: none;
 }
 
 .modal-actions button.btn-cancel:hover {
-  background-color: #d1d5db !important;
-  background-image: none !important;
+  background-color: var(--button-secondary-hover-bg, #d1d5db);
+  background-image: none;
 }
 
 .users-page .modal-actions button[type='button'] {
