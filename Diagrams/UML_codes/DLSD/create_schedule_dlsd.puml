@@ -1,0 +1,129 @@
+
+' Professional Minimalist Styling
+skinparam Style strictuml
+skinparam SequenceMessageAlignment center
+skinparam shadowing false
+skinparam ParticipantBackgroundColor #White
+skinparam ParticipantBorderColor #333333
+skinparam ActorBorderColor #333333
+skinparam NoteBackgroundColor #F9F9F9
+skinparam NoteBorderColor #CCCCCC
+
+actor "o:Owner" as Owner
+
+' Tier 1
+participant "view:CreateScheduleForm" as UI
+participant "ctrl:ScheduleController" as Controller
+
+' Tier 2
+participant "svc:ScheduleServiceImpl" as Service
+participant "v:ScheduleValidator" as Validator
+participant "map:ScheduleMapper" as Mapper
+
+' Tier 3
+participant "projRepo:ProjectRepository" as ProjectRepo
+participant "lotRepo:LotRepository" as LotRepo
+participant "schedRepo:ScheduleRepository" as ScheduleRepo
+participant "db:PostgreSQL" as DB
+
+ref over Owner, Controller : JWT Authentication (Security Filter)
+
+Owner -> UI : input details & submit
+activate UI
+
+UI -> Controller : POST /api/v1/projects/{id}/schedules (JSON)
+activate Controller
+
+' Instantiate Incoming DTO
+create "req:ScheduleRequestDTO" as ReqDTO
+Controller -> ReqDTO : <<create>>(payload)
+
+Controller -> Service : addScheduleToProject(id, req)
+activate Service
+
+' Logic Validation
+Service -> Validator : validate(req)
+activate Validator
+
+alt Validation Fails
+    Validator --[#Black]> Service : throw BusinessValidationException
+    Service --[#Black]> Controller : error
+    Controller --[#Black]> UI : HTTP 400 (Invalid input)
+    UI --[#Black]> Owner : Display error message
+else Validation Passes
+    Validator --> Service : void
+    deactivate Validator
+
+    ' Data Retrieval (Tier 3 Interaction)
+    Service -> ProjectRepo : findByProjectIdentifier(id)
+    activate ProjectRepo
+    ProjectRepo -> DB : SELECT * FROM projects...
+    activate DB
+    DB --> ProjectRepo : project_row
+    deactivate DB
+    ProjectRepo --> Service : Optional<Project>
+    deactivate ProjectRepo
+
+    alt Project Not Found
+        Service --[#Black]> Controller : throw NotFoundException
+        Controller --[#Black]> UI : HTTP 404 (Project not found)
+    else Project Found
+
+        Service -> LotRepo : findByLotId(req.getLotId())
+        activate LotRepo
+        LotRepo -> DB : SELECT * FROM lots...
+        activate DB
+        DB --> LotRepo : lot_row
+        deactivate DB
+        LotRepo --> Service : Optional<Lot>
+        deactivate LotRepo
+
+        alt Lot Not Found
+            Service --[#Black]> Controller : throw NotFoundException
+            Controller --[#Black]> UI : HTTP 404 (Lot not found)
+        else Lot Found
+
+            ' Entity Mapping
+            Service -> Mapper : requestDTOToEntity(req)
+            activate Mapper
+            create "sched:Schedule" as Schedule
+            Mapper -> Schedule : <<create>> Builder
+            Mapper --> Service : sched
+            deactivate Mapper
+
+            ' Persist (Tier 3)
+            Service -> ScheduleRepo : save(sched)
+            activate ScheduleRepo
+            ScheduleRepo -> DB : INSERT INTO schedules...
+            activate DB
+            DB --> ScheduleRepo : row_created
+            deactivate DB
+            ScheduleRepo --> Service : savedSchedule
+            deactivate ScheduleRepo
+
+            ' Response DTO Instantiation & Logic
+            Service -> Mapper : entityToResponseDTO(savedSchedule)
+            activate Mapper
+            create "res:ScheduleResponseDTO" as ResponseDTO
+            Mapper -> ResponseDTO : <<create>>(savedSchedule)
+
+            ' The message after creation you asked for
+            Mapper -> ResponseDTO : prepareViewDetails()
+            note right: Logic applied to DTO post-creation
+
+            ResponseDTO --> Mapper : responseInstance
+            Mapper --> Service : res
+            deactivate Mapper
+
+            Service --> Controller : res
+            deactivate Service
+
+            Controller --> UI : HTTP 201 Created (res)
+            deactivate Controller
+
+            UI --> Owner : Display Success Confirmation
+            deactivate UI
+        end
+    end
+end
+@enduml

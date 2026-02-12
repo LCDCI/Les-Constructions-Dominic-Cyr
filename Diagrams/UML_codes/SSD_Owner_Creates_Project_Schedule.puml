@@ -1,0 +1,69 @@
+@startuml
+title System Sequence Diagram - Owner Creates Project Schedule
+
+actor Owner
+participant ":System" as System
+
+Owner -> System : getProject(projectIdentifier)
+note right
+    **projectInfo contains:**
+    - projectIdentifier: String
+    - projectName: String
+    - projectDescription: String
+    - status: ProjectStatus
+    - lotIdentifiers: List<String>
+    - progressPercentage: Integer
+end note
+System --> Owner : projectInfo
+
+Owner -> System : initiateScheduleCreation(projectIdentifier)
+note right
+    **scheduleForm contains:**
+    - scheduleStartDate: LocalDate
+    - scheduleEndDate: LocalDate
+    - scheduleDescription: String
+    - lotId: String
+end note
+System --> Owner : scheduleForm
+
+Owner -> System : submitSchedule(scheduleRequestDTO)
+
+alt
+    System --> Owner : scheduleResponseDTO
+    
+    loop
+        Owner -> System : createTask(taskRequestDTO)
+        note right
+            **taskForm contains:**
+            - taskTitle: String
+            - taskDescription: String
+            - periodStart: Date
+            - periodEnd: Date
+            - taskStatus: TaskStatus
+            - taskPriority: TaskPriority
+            - estimatedHours: Number
+            - assignedToUserId: String
+            - scheduleId: String
+        end note
+        
+        alt
+            System --> Owner : taskDetailResponseDTO
+        else
+            System --> Owner : validationError(errorMessage)
+            Owner -> System : correctTaskData(taskRequestDTO)
+            System --> Owner : taskDetailResponseDTO
+        end
+    end
+    
+    opt
+        Owner -> System : getSchedule(scheduleIdentifier)
+        System --> Owner : scheduleResponseDTO
+    end
+    
+else
+    System --> Owner : validationError(errorMessage)
+    Owner -> System : correctScheduleData(scheduleRequestDTO)
+    System --> Owner : scheduleResponseDTO
+end
+
+@enduml

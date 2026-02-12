@@ -89,8 +89,8 @@ services:
   #######################################################################
   mailer-service:
     build:
-      context: .
-      dockerfile: mailer-service/Dockerfile
+      context: ./mailer-service
+      dockerfile: Dockerfile
     container_name: mailer-service
     ports:
       - "8083:8080" # external 8083 -> internal 8080
