@@ -385,7 +385,7 @@ const SalespersonFormsPage = () => {
                 <div key={form.formId} className="form-card">
                   <div className="form-card-header">
                     <h3 className="form-card-title">
-                      {t(`formTypes.${form.formType.toLowerCase().replace(/_/g, '')}`, form.formType.replace(/_/g, ' '))}
+                      {t(`formTypes.${form.formType}`, form.formType.replace(/_/g, ' '))}
                     </h3>
                     <span className={`form-status form-status-${form.formStatus}`}>
                       {t(`status.${form.formStatus.toLowerCase().replace('_', '')}`, form.formStatus)}

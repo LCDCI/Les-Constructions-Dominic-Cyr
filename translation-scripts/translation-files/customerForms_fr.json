@@ -57,7 +57,13 @@
     "WINDOWS": "Fenêtres",
     "ASPHALT_SHINGLES": "Bardeaux d'asphalte",
     "WOODWORK": "Boiseries",
-    "PAINT": "Peinture"
+    "PAINT": "Peinture",
+    "exteriorDoors": "Portes extérieures",
+    "garageDoors": "Portes de garage",
+    "windows": "Fenêtres",
+    "asphaltShingles": "Bardeaux d'asphalte",
+    "woodwork": "Boiseries",
+    "paint": "Peinture"
   },
   "formFields": {
     "doorType": "Type de porte",

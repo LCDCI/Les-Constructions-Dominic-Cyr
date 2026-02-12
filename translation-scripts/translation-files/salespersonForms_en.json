@@ -37,6 +37,12 @@
     "assignForm": "Assign Form"
   },
   "formTypes": {
+    "EXTERIOR_DOORS": "Exterior Doors",
+    "GARAGE_DOORS": "Garage Doors",
+    "WINDOWS": "Windows",
+    "ASPHALT_SHINGLES": "Asphalt Shingles",
+    "WOODWORK": "Woodwork",
+    "PAINT": "Paint",
     "exteriorDoors": "Exterior Doors",
     "garageDoors": "Garage Doors",
     "windows": "Windows",

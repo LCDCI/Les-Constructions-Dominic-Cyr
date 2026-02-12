@@ -394,7 +394,7 @@ const CustomerFormsPage = () => {
             onClick={e => e.stopPropagation()}
           >
             <div className="forms-modal-header">
-              <h2>{t(`formTypes.${selectedForm.formType}`, selectedForm.formType.replace(/_/g, ' '))} {t('modal.editTitle', 'Form')}</h2>
+              <h2>{t('modal.editTitle', 'Form', { formType: t(`formTypes.${selectedForm.formType}`, selectedForm.formType.replace(/_/g, ' ')) })}</h2>
               <button
                 className="forms-modal-close"
                 onClick={() => setIsEditModalOpen(false)}

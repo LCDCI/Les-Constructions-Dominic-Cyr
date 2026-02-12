@@ -57,7 +57,13 @@
     "WINDOWS": "Windows",
     "ASPHALT_SHINGLES": "Asphalt Shingles",
     "WOODWORK": "Woodwork",
-    "PAINT": "Paint"
+    "PAINT": "Paint",
+    "exteriorDoors": "Exterior Doors",
+    "garageDoors": "Garage Doors",
+    "windows": "Windows",
+    "asphaltShingles": "Asphalt Shingles",
+    "woodwork": "Woodwork",
+    "paint": "Paint"
   },
   "formFields": {
     "doorType": "Door Type",

@@ -37,6 +37,12 @@
     "assignForm": "Assigner le formulaire"
   },
   "formTypes": {
+    "EXTERIOR_DOORS": "Portes extérieures",
+    "GARAGE_DOORS": "Portes de garage",
+    "WINDOWS": "Fenêtres",
+    "ASPHALT_SHINGLES": "Bardeaux d'asphalte",
+    "WOODWORK": "Boiseries",
+    "PAINT": "Peinture",
     "exteriorDoors": "Portes extérieures",
     "garageDoors": "Portes de garage",
     "windows": "Fenêtres",
