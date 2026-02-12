@@ -1,7 +1,8 @@
 /* Quote Detail Page Styling */
 .quote-detail-page {
   min-height: 100vh;
-  background: radial-gradient(
+  background:
+    radial-gradient(
       circle at 20% 20%,
       rgba(93, 173, 226, 0.12) 0%,
       rgba(255, 255, 255, 0) 55%

@@ -20,4 +20,11 @@ public interface UserService {
     List<UserResponseModel> getActiveContractors();
     List<UserResponseModel> getActiveSalespersons();
     List<UserResponseModel> getActiveCustomers();
+    
+    /**
+     * Get active customers that share at least one lot with the specified user (typically a salesperson).
+     * @param auth0UserId The auth0 user ID of the salesperson
+     * @return List of customers with shared lot assignments
+     */
+    List<UserResponseModel> getCustomersWithSharedLots(String auth0UserId);
 }

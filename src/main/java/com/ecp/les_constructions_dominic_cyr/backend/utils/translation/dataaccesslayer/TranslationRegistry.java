@@ -137,6 +137,14 @@ public class TranslationRegistry {
         fileIdMap.put("en.quotes", "946a87c9-b8bb-465e-a463-8d5397c72ab4");
         fileIdMap.put("fr.quotes", "c6f01f88-86a9-4811-8449-1ac1bd492910");
 
+        // Customer Forms page translations
+        fileIdMap.put("en.customerforms", "cf04f42b-1442-44cb-839c-7b8ae130a5af");
+        fileIdMap.put("fr.customerforms", "b3915f9d-c967-493f-ae1f-2867dfffac37");
+
+        // Salesperson Forms page translations
+        fileIdMap.put("en.salespersonforms", "bf89b8c0-12d8-43f3-b713-8cf5133a95ac");
+        fileIdMap.put("fr.salespersonforms", "0209707e-6022-4e1e-9a0c-4e166bf715e4");
+
     }
     
     /**
