@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
@@ -24,4 +25,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("SELECT s FROM Schedule s LEFT JOIN FETCH s.project WHERE s.project.projectIdentifier = :projectIdentifier ORDER BY s.scheduleStartDate ASC")
     List<Schedule> findByProjectIdentifier(@Param("projectIdentifier") String projectIdentifier);
+
+    @Query("SELECT s FROM Schedule s WHERE s.lotId IN :lotIds ORDER BY s.scheduleStartDate ASC")
+    List<Schedule> findByLotIdIn(@Param("lotIds") List<UUID> lotIds);
+
+    @Query("SELECT s FROM Schedule s LEFT JOIN FETCH s.project WHERE s.project.projectIdentifier = :projectIdentifier AND s.lotId IN :lotIds ORDER BY s.scheduleStartDate ASC")
+    List<Schedule> findByProjectIdentifierAndLotIdIn(@Param("projectIdentifier") String projectIdentifier, @Param("lotIds") List<UUID> lotIds);
 }

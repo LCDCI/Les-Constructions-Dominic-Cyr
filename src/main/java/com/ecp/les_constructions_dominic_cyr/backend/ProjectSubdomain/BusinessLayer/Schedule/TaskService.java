@@ -57,4 +57,9 @@ public interface TaskService {
      * Get tasks for a project filtered by status
      */
     List<TaskDetailResponseDTO> getTasksForProjectByStatus(String projectIdentifier, TaskStatus taskStatus);
+
+    /**
+     * Get all tasks for lots assigned to a specific user (customer/salesperson view)
+     */
+    List<TaskDetailResponseDTO> getTasksForUserAssignedLots(String userId);
 }

@@ -1,0 +1,114 @@
+@startuml
+title DLCD for Salesperson View Project Page
+
+class ProjectController {
+    - projectService: ProjectService
+    - userService: UserService
+    - lotRepository: LotRepository
+    + getAllProjects(status: ProjectStatus, startDate: LocalDate, endDate: LocalDate, customerId: String, jwt: Jwt, auth: Authentication): ResponseEntity<List<ProjectResponseModel>>
+}
+
+class LotController {
+    - lotService: LotService
+    - userService: UserService
+    - lotRepository: LotRepository
+    + getAllLotsByProject(projectIdentifier: String, jwt: Jwt, auth: Authentication): ResponseEntity<List<LotResponseModel>>
+    + getLotById(lotId: String): ResponseEntity<LotResponseModel>
+}
+
+interface ProjectService {
+    + getAllProjects(isOwner: boolean): List<ProjectResponseModel>
+    + filterProjects(status: ProjectStatus, start: LocalDate, end: LocalDate, customerId: String, isOwner: boolean): List<ProjectResponseModel>
+}
+
+interface LotService {
+    + getAllLotsByProject(projectIdentifier: String): List<LotResponseModel>
+    + getLotById(lotId: String): LotResponseModel
+    + mapLotsToResponses(lots: List<Lot>): List<LotResponseModel>
+}
+
+interface UserService {
+    + getUserByAuth0Id(auth0UserId: String): UserResponseModel
+}
+
+class ProjectServiceImpl implements ProjectService {
+    - projectRepository: ProjectRepository
+}
+
+class LotServiceImpl implements LotService {
+    - lotRepository: LotRepository
+    - projectRepository: ProjectRepository
+}
+
+interface ProjectRepository {
+    + findAll(): List<Project>
+    + findByProjectIdentifier(identifier: String): Optional<Project>
+}
+
+interface LotRepository {
+    + findByAssignedUserId(userId: UUID): List<Lot>
+    + findByLotIdentifier_LotId(lotId: UUID): Lot
+}
+
+interface UsersRepository {
+    + findByAuth0UserId(auth0Id: String): Optional<Users>
+}
+
+class Project {
+    - projectId: Long
+    - projectIdentifier: String
+    - projectName: String
+    - status: ProjectStatus
+    - salespersonIds: List<String>
+}
+
+class Lot {
+    - id: Integer
+    - lotIdentifier: LotIdentifier
+    - lotNumber: String
+    - civicAddress: String
+    - lotStatus: LotStatus
+    - project: Project
+    - assignedUsers: List<Users>
+}
+
+class Users {
+    - userId: Integer
+    - userIdentifier: UserIdentifier
+    - auth0UserId: String
+    - userRole: UserRole
+}
+
+class ProjectResponseModel {
+    - projectIdentifier: String
+    - projectName: String
+    - status: ProjectStatus
+}
+
+class LotResponseModel {
+    - lotIdentifier: String
+    - lotNumber: String
+    - civicAddress: String
+    - status: LotStatus
+}
+
+class UserResponseModel {
+    - userIdentifier: String
+    - auth0UserId: String
+}
+
+ProjectController --> ProjectService
+ProjectController --> UserService
+ProjectController --> LotRepository
+
+LotController --> LotService
+LotController --> UserService
+LotController --> LotRepository
+
+ProjectServiceImpl --> ProjectRepository
+LotServiceImpl --> LotRepository
+
+Project "1" *-- "many" Lot : contains
+Lot "many" -- "many" Users : assigned to
+
+@enduml

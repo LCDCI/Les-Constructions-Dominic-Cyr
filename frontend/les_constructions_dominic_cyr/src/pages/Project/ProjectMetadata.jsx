@@ -236,7 +236,6 @@ const ProjectMetadata = () => {
             <div className="lots-grid">
               {[...lots]
                 .sort((a, b) => {
-                  // Sort by lot.id or lot.lotId (fallback)
                   const idA = a.id ?? a.lotId;
                   const idB = b.id ?? b.lotId;
                   return idA - idB;

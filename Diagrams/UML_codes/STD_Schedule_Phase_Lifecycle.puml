@@ -1,0 +1,179 @@
+@startuml
+title State Transition Diagram - Schedule Lifecycle (Phase Logic)
+
+' Professional Minimalist Styling
+skinparam state {
+    BackgroundColor<<Active>> #E8F4F8
+    BackgroundColor<<Inactive>> #F5F5F5
+    BackgroundColor<<Terminal>> #FFE6E6
+    BorderColor #333333
+    FontSize 11
+    FontName Arial
+}
+skinparam shadowing false
+
+[*] --> Draft : Owner initiates\nschedule creation
+
+state "Draft" as Draft <<Active>> {
+    Draft : Entry: scheduleIdentifier generated
+    Draft : Entry: default dates set
+    Draft : Do: validate input fields
+    Draft : Do: check lot availability
+    Draft : Exit: persist to database
+}
+
+state "PendingApproval" as PendingApproval <<Active>> {
+    PendingApproval : Entry: notify project manager
+    PendingApproval : Do: await approval
+    PendingApproval : Exit: update status timestamp
+}
+
+state "Approved" as Approved <<Active>> {
+    Approved : Entry: notify contractor
+    Approved : Entry: generate initial tasks
+    Approved : Do: monitor for start date
+    Approved : Exit: activate schedule
+}
+
+state "InProgress" as InProgress <<Active>> {
+    InProgress : Entry: startDate reached
+    InProgress : Entry: send notifications
+    InProgress : Do: track task completion
+    InProgress : Do: calculate progress percentage
+    InProgress : Do: monitor deadlines
+    InProgress : Exit: finalize completion status
+}
+
+state "Completed" as Completed <<Inactive>> {
+    Completed : Entry: all tasks completed
+    Completed : Entry: endDate reached
+    Completed : Do: generate completion report
+    Completed : Do: archive schedule data
+}
+
+state "OnHold" as OnHold <<Inactive>> {
+    OnHold : Entry: pause all tasks
+    OnHold : Entry: notify stakeholders
+    OnHold : Do: await resolution
+    OnHold : Exit: recalculate dates
+}
+
+state "Cancelled" as Cancelled <<Terminal>> {
+    Cancelled : Entry: cancel all tasks
+    Cancelled : Entry: notify all parties
+    Cancelled : Do: archive as cancelled
+    Cancelled : Exit: cleanup resources
+}
+
+' Transitions from Draft
+Draft --> PendingApproval : submit()\n[validationPassed]
+Draft --> Draft : saveAsDraft()\n[dataIncomplete]
+Draft --> Cancelled : cancel()\n[ownerDecision]
+
+' Transitions from PendingApproval
+PendingApproval --> Approved : approve()\n[managerApproved]
+PendingApproval --> Draft : reject()\n[requiresChanges]
+PendingApproval --> Cancelled : cancel()\n[projectCancelled]
+
+' Transitions from Approved
+Approved --> InProgress : startSchedule()\n[startDateReached && allConditionsMet]
+Approved --> OnHold : pause()\n[externalIssue || resourceUnavailable]
+Approved --> Draft : requestModification()\n[needsUpdate]
+Approved --> Cancelled : cancel()\n[projectCancelled]
+
+' Transitions from InProgress
+InProgress --> Completed : complete()\n[allTasksCompleted && endDateReached]
+InProgress --> OnHold : pause()\n[emergencyStop || contractorUnavailable]
+InProgress --> InProgress : updateProgress()\n[taskCompleted]
+InProgress --> Cancelled : cancel()\n[criticalIssue]
+
+' Transitions from OnHold
+OnHold --> InProgress : resume()\n[issueResolved && resourcesAvailable]
+OnHold --> Cancelled : cancel()\n[cannotResolve]
+OnHold --> Draft : restructure()\n[majorChangesRequired]
+
+' Transitions from Completed
+Completed --> [*] : archive()\n[retentionPeriodExpired]
+
+' Transitions from Cancelled
+Cancelled --> [*] : archive()\n[administrativeCleanup]
+
+' Design Notes
+note right of Draft
+    **Initial State**
+    Owner creates schedule with:
+    - Project identifier
+    - Lot identifier
+    - Date range
+    - Description
+    
+    Validation occurs before
+    submission to next phase.
+end note
+
+note right of InProgress
+    **Active Execution Phase**
+    
+    Progress calculated as:
+    completedTasks / totalTasks × 100
+    
+    Triggers:
+    - Daily status updates
+    - Task completion notifications
+    - Deadline alerts
+    
+    Transition to Completed when:
+    1. All tasks completed, AND
+    2. End date reached, AND
+    3. Final inspection passed
+end note
+
+note bottom of Approved
+    **Waiting for Start Date**
+    
+    Preconditions checked:
+    • Lot available
+    • Contractor assigned
+    • Resources allocated
+    • Weather conditions (if applicable)
+end note
+
+note top of OnHold
+    **Suspended State**
+    
+    Common reasons:
+    • Weather delays
+    • Material shortages
+    • Contractor unavailability
+    • Client request
+    • Permit issues
+    
+    Dates automatically adjusted
+    upon resumption.
+end note
+
+note as N1
+    **State Invariants**
+    
+    • Only one active schedule per lot at a time
+    • startDate must be < endDate
+    • Cannot transition to InProgress if startDate is future
+    • Cannot mark Completed if any tasks are incomplete
+    • OnHold can occur from Approved or InProgress only
+    
+    **Guard Conditions enforce business rules**
+end note
+
+note as N2
+    **Event-Driven State Changes**
+    
+    External Events:
+    • Date/time triggers (cron jobs)
+    • User actions (API calls)
+    • System events (task completion)
+    
+    Each transition logged for audit trail.
+    Notifications sent to stakeholders on state change.
+end note
+
+@enduml
