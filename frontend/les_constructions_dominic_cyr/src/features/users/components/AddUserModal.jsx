@@ -124,7 +124,11 @@ export default function AddUserModal({
             >
               Cancel
             </button>
-            <button type="submit" disabled={isSubmitting}>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="btn-submit"
+            >
               {isSubmitting ? 'Creating...' : 'Create User'}
             </button>
           </div>
