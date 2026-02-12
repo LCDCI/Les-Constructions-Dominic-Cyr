@@ -17,7 +17,7 @@ public class Project {
     @Column(name = "project_id")
     private Long projectId;
 
-    @Column(name = "project_identifier", nullable = false, unique = true) // Add name here
+    @Column(name = "project_identifier", nullable = false, unique = true)
     private String projectIdentifier;
 
     @Column(nullable = false)
@@ -96,11 +96,6 @@ public class Project {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        // Set legacy lotIdentifier to empty string to satisfy NOT NULL constraint during migration
-        // This will be removed once the column is dropped
-        if (lotIdentifier == null) {
-            lotIdentifier = "";
-        }
     }
 
     @PreUpdate

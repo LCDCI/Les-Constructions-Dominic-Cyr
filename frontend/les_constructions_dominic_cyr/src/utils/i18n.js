@@ -58,6 +58,8 @@ const loadTranslations = async (language = null) => {
       allTranslations,
       lotsTranslations,
       livingEnvironmentTranslations,
+      homeTranslations,
+      navbarTranslations,
       lotMetadataTranslations,
       projectMetadataTranslations,
       quotesTranslations,
@@ -65,6 +67,8 @@ const loadTranslations = async (language = null) => {
       fetchTranslations(lang),
       fetchPageTranslations('lots', lang),
       fetchPageTranslations('livingenvironment', lang),
+      fetchPageTranslations('home', lang),
+      fetchPageTranslations('navbar', lang),
       fetchPageTranslations('lotMetadata', lang),
       fetchPageTranslations('projectMetadata', lang),
       fetchPageTranslations('quotes', lang),
@@ -82,17 +86,6 @@ const loadTranslations = async (language = null) => {
       i18n.addResourceBundle(lang, 'lots', lotsTranslations, true, true);
     }
 
-    // Explicitly add/overwrite the 'lotMetadata' namespace
-    if (lotMetadataTranslations) {
-      i18n.addResourceBundle(
-        lang,
-        'lotMetadata',
-        lotMetadataTranslations,
-        true,
-        true
-      );
-    }
-
     // Explicitly add/overwrite the 'livingenvironment' namespace
     if (livingEnvironmentTranslations) {
       i18n.addResourceBundle(
@@ -104,12 +97,39 @@ const loadTranslations = async (language = null) => {
       );
     }
 
-    // Explicitly add/overwrite the 'projectMetadata' namespace
-    if (projectMetadataTranslations) {
+    // Always load home translations for nav/footer in global 'translation' namespace
+    // This ensures navbar and footer are always available regardless of current page
+    if (homeTranslations) {
+      i18n.addResourceBundle(lang, 'home', homeTranslations, true, true);
+
+      // Extract nav and footer from home translations and add to global 'translation' namespace
+      const globalTranslations = {};
+      if (homeTranslations.nav) {
+        globalTranslations.nav = homeTranslations.nav;
+      }
+      if (homeTranslations.footer) {
+        globalTranslations.footer = homeTranslations.footer;
+      }
+      if (Object.keys(globalTranslations).length > 0) {
+        i18n.addResourceBundle(
+          lang,
+          'translation',
+          globalTranslations,
+          true,
+          true
+        );
+      }
+    }
+
+    // Load navbar translations into global 'translation' namespace
+    // This ensures role-specific navbar items are always available
+    if (navbarTranslations) {
+      i18n.addResourceBundle(lang, 'navbar', navbarTranslations, true, true);
+      // Also add to global 'translation' namespace for easy access
       i18n.addResourceBundle(
         lang,
-        'projectMetadata',
-        projectMetadataTranslations,
+        'translation',
+        { navbar: navbarTranslations },
         true,
         true
       );

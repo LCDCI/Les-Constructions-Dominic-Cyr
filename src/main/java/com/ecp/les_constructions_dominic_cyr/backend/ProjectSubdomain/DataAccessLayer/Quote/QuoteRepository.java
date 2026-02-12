@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public interface QuoteRepository extends JpaRepository<Quote, Long> {
@@ -15,7 +16,10 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
     List<Quote> findByProjectIdentifier(String projectIdentifier);
 
-    List<Quote> findByLotIdentifier(String lotIdentifier);
+    /**
+     * Find all quotes for a specific lot.
+     */
+    List<Quote> findByLotIdentifier(UUID lotIdentifier);
 
     List<Quote> findByContractorId(String contractorId);
 
@@ -31,7 +35,8 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
     List<Quote> findByLotIdentifierAndStatus(String lotIdentifier, String status);
 
     @Query("SELECT q FROM Quote q WHERE q.projectIdentifier = :projectIdentifier AND q.status = :status ORDER BY q.createdAt DESC")
-    List<Quote> findByProjectAndStatus(@Param("projectIdentifier") String projectIdentifier, @Param("status") String status);
+    List<Quote> findByProjectAndStatus(@Param("projectIdentifier") String projectIdentifier,
+            @Param("status") String status);
 
     @Query("SELECT q FROM Quote q WHERE q.contractorId = :contractorId AND q.status = :status ORDER BY q.createdAt DESC")
     List<Quote> findByContractorAndStatus(@Param("contractorId") String contractorId, @Param("status") String status);

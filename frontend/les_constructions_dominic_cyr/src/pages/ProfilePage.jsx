@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { fetchUserByAuth0Id, updateUser } from '../features/users/api/usersApi';
 import '../styles/profile.css';
+import { usePageTranslations } from '../hooks/usePageTranslations';
 
 export default function ProfilePage() {
+  const { t } = usePageTranslations('profilePage');
   const {
     user: auth0User,
     isLoading: auth0Loading,
@@ -31,7 +33,9 @@ export default function ProfilePage() {
 
       // Check if user is authenticated
       if (!auth0User) {
-        setError('You must be logged in to view your profile.');
+        setError(
+          t('errors.notLoggedIn', 'You must be logged in to view your profile.')
+        );
         setLoading(false);
         return;
       }
@@ -42,7 +46,12 @@ export default function ProfilePage() {
         // Fetch user from backend using Auth0 user ID
         const auth0UserId = auth0User.sub;
         if (!auth0UserId || auth0UserId.trim() === '') {
-          setError('Invalid authentication data. Please log in again.');
+          setError(
+            t(
+              'errors.invalidAuth',
+              'Invalid authentication data. Please log in again.'
+            )
+          );
           setLoading(false);
           return;
         }
@@ -62,10 +71,18 @@ export default function ProfilePage() {
       } catch (err) {
         console.error('Failed to load user:', err);
         if (err.response?.status === 404) {
-          setError('Your user profile was not found. Please contact support.');
+          setError(
+            t(
+              'errors.notFound',
+              'Your user profile was not found. Please contact support.'
+            )
+          );
         } else {
           setError(
-            'Failed to load profile information. Please try again later.'
+            t(
+              'errors.loadFailed',
+              'Failed to load profile information. Please try again later.'
+            )
           );
         }
       } finally {
@@ -102,7 +119,9 @@ export default function ProfilePage() {
       setIsEditing(false);
     } catch (err) {
       console.error('Failed to update user:', err);
-      setSaveError('Failed to update profile. Please try again.');
+      setSaveError(
+        t('errors.updateFailed', 'Failed to update profile. Please try again.')
+      );
     } finally {
       setIsSaving(false);
     }
@@ -124,7 +143,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="profile-page">
-        <p>Loading profile...</p>
+        <p>{t('loading', 'Loading profile...')}</p>
       </div>
     );
   }
@@ -140,7 +159,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="profile-page">
-        <p>No user information available.</p>
+        <p>{t('noUserInfo', 'No user information available.')}</p>
       </div>
     );
   }
@@ -148,10 +167,10 @@ export default function ProfilePage() {
   return (
     <div className="profile-page">
       <div className="profile-header">
-        <h1>My Profile</h1>
+        <h1>{t('title', 'My Profile')}</h1>
         {!isEditing && (
           <button onClick={() => setIsEditing(true)} className="edit-button">
-            Edit Profile
+            {t('editProfile', 'Edit Profile')}
           </button>
         )}
       </div>
@@ -160,10 +179,10 @@ export default function ProfilePage() {
         {saveError && <div className="save-error-message">{saveError}</div>}
 
         <div className="profile-section">
-          <h2>Personal Information</h2>
+          <h2>{t('personalInfo', 'Personal Information')}</h2>
 
           <div className="profile-field">
-            <label>First Name</label>
+            <label>{t('fields.firstName', 'First Name')}</label>
             {isEditing ? (
               <input
                 type="text"
@@ -178,7 +197,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="profile-field">
-            <label>Last Name</label>
+            <label>{t('fields.lastName', 'Last Name')}</label>
             {isEditing ? (
               <input
                 type="text"
@@ -193,15 +212,17 @@ export default function ProfilePage() {
           </div>
 
           <div className="profile-field">
-            <label>Email</label>
+            <label>{t('fields.email', 'Email')}</label>
             <div className="profile-value profile-value-readonly">
               {user.primaryEmail}
             </div>
-            <small className="field-note">Email cannot be changed</small>
+            <small className="field-note">
+              {t('emailCannotChange', 'Email cannot be changed')}
+            </small>
           </div>
 
           <div className="profile-field">
-            <label>Secondary Email</label>
+            <label>{t('fields.secondaryEmail', 'Secondary Email')}</label>
             {isEditing ? (
               <input
                 type="email"
@@ -212,13 +233,13 @@ export default function ProfilePage() {
               />
             ) : (
               <div className="profile-value">
-                {user.secondaryEmail || 'Not provided'}
+                {user.secondaryEmail || t('notProvided', 'Not provided')}
               </div>
             )}
           </div>
 
           <div className="profile-field">
-            <label>Phone</label>
+            <label>{t('fields.phone', 'Phone')}</label>
             {isEditing ? (
               <input
                 type="tel"
@@ -229,17 +250,19 @@ export default function ProfilePage() {
               />
             ) : (
               <div className="profile-value">
-                {user.phone || 'Not provided'}
+                {user.phone || t('notProvided', 'Not provided')}
               </div>
             )}
           </div>
 
           <div className="profile-field">
-            <label>Role</label>
+            <label>{t('fields.role', 'Role')}</label>
             <div className="profile-value profile-value-readonly">
               {user.userRole}
             </div>
-            <small className="field-note">Role cannot be changed</small>
+            <small className="field-note">
+              {t('roleCannotChange', 'Role cannot be changed')}
+            </small>
           </div>
         </div>
 
@@ -250,14 +273,16 @@ export default function ProfilePage() {
               disabled={isSaving}
               className="save-button"
             >
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              {isSaving
+                ? t('saving', 'Saving...')
+                : t('saveChanges', 'Save Changes')}
             </button>
             <button
               onClick={handleCancel}
               disabled={isSaving}
               className="cancel-button"
             >
-              Cancel
+              {t('cancel', 'Cancel')}
             </button>
           </div>
         )}

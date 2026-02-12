@@ -44,19 +44,19 @@ public class Lot {
     // ManyToOne relationship with Project entity (like Schedule does)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "project_id",                          // The FK column in 'lots' table
-            referencedColumnName = "project_identifier",   // The column in 'projects' table
+            name = "project_id",                        
+            referencedColumnName = "project_identifier",
             nullable = false
     )
     private Project project;
 
-    // Support multiple assigned users of any role (contractors, customers, salespersons)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "lot_assigned_users",
             joinColumns = @JoinColumn(name = "lot_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     )
+    @org.hibernate.annotations.BatchSize(size = 50)
     @lombok.Getter(lombok.AccessLevel.NONE)
     private List<Users> assignedUsers = new ArrayList<>();
 

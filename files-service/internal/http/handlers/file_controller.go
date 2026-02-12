@@ -52,6 +52,7 @@ func (fc *FileController) RegisterRoutes(r *gin.Engine) {
 }
 
 func (fc *FileController) upload(c *gin.Context) {
+	
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "file not provided or invalid form-data"})
@@ -64,7 +65,7 @@ func (fc *FileController) upload(c *gin.Context) {
 	}
 
 	contentType := file.Header.Get("Content-Type")
-
+	
 	categoryRaw := c.PostForm("category")
 	if categoryRaw == "" {
 		categoryRaw = string(domain.CategoryOther)

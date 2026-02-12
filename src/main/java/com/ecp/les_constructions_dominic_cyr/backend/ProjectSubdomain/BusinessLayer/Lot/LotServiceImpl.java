@@ -48,7 +48,8 @@ public class LotServiceImpl implements LotService{
 
     @Override
     public LotResponseModel getLotById(String lotId) {
-        Lot lot = lotRepository.findByLotIdentifier_LotId(lotId);
+        UUID lotUuid = UUID.fromString(lotId);
+        Lot lot = lotRepository.findByLotIdentifier_LotId(lotUuid);
 
         if (lot == null)
             throw new NotFoundException("Unknown Lot Id: " + lotId);
@@ -103,7 +104,8 @@ public class LotServiceImpl implements LotService{
     @Override
     @Transactional
     public LotResponseModel updateLot(LotRequestModel lotRequestModel, String lotId) {
-        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotId);
+        UUID lotUuid = UUID.fromString(lotId);
+        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotUuid);
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
@@ -142,7 +144,8 @@ public class LotServiceImpl implements LotService{
     @Override
     @Transactional
     public void deleteLot(String lotId) {
-        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotId);
+        UUID lotUuid = UUID.fromString(lotId);
+        Lot foundLot = lotRepository.findByLotIdentifier_LotId(lotUuid);
         if(foundLot == null){
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
@@ -167,7 +170,7 @@ public class LotServiceImpl implements LotService{
     private LotResponseModel mapToResponse(Lot lot) {
         LotResponseModel dto = new LotResponseModel();
         dto.setId(lot.getId());
-        dto.setLotId(lot.getLotIdentifier() != null ? lot.getLotIdentifier().getLotId() : UUID.randomUUID().toString());
+        dto.setLotId(lot.getLotIdentifier() != null ? lot.getLotIdentifier().getLotId().toString() : UUID.randomUUID().toString());
         dto.setLotNumber(lot.getLotNumber());
         dto.setCivicAddress(lot.getCivicAddress());
         dto.setPrice(lot.getPrice());
@@ -207,32 +210,20 @@ public class LotServiceImpl implements LotService{
     }
 
     public List<LotResponseModel> mapLotsToResponses(List<Lot> lots) {
-        List<LotResponseModel> responseList = new ArrayList<>();
-        for (Lot lot : lots) {
-            responseList.add(mapToResponse(lot));
-        }
-        return responseList;
+        return lots.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
-    private void validateLotRequest(LotRequestModel lotRequestModel) {
-        if (lotRequestModel.getLotNumber() == null || lotRequestModel.getLotNumber().isBlank()) {
-            throw new InvalidInputException("Lot number must not be blank");
+    private void validateLotRequest(LotRequestModel requestModel) {
+        if (requestModel.getLotNumber() == null || requestModel.getLotNumber().isBlank()) {
+            throw new InvalidInputException("Lot number is required");
         }
-        if (lotRequestModel.getCivicAddress() == null || lotRequestModel.getCivicAddress().isBlank()) {
-            throw new InvalidInputException("Civic address must not be blank");
+        if (requestModel.getCivicAddress() == null || requestModel.getCivicAddress().isBlank()) {
+            throw new InvalidInputException("Civic address is required");
         }
-        // Price is optional - only validate if provided
-        if (lotRequestModel.getPrice() != null && lotRequestModel.getPrice() < 0) {
-            throw new InvalidInputException("Price cannot be negative");
-        }
-        if (lotRequestModel.getDimensionsSquareFeet() == null || lotRequestModel.getDimensionsSquareFeet().isBlank()) {
-            throw new InvalidInputException("Dimensions in square feet must not be blank");
-        }
-        if (lotRequestModel.getDimensionsSquareMeters() == null || lotRequestModel.getDimensionsSquareMeters().isBlank()) {
-            throw new InvalidInputException("Dimensions in square meters must not be blank");
-        }
-        if (lotRequestModel.getLotStatus() == null) {
-            throw new InvalidInputException("Lot status must not be null");
+        if (requestModel.getLotStatus() == null) {
+            throw new InvalidInputException("Lot status is required");
         }
     }
 }

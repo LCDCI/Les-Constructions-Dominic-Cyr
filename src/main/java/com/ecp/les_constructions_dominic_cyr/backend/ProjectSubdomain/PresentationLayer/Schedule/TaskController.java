@@ -1,6 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.TaskService;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
@@ -96,6 +97,14 @@ public class TaskController {
     }
 
     // Contractor endpoints - read-only access to assigned tasks
+    @GetMapping("/contractors/tasks/all")
+    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
+    public ResponseEntity<List<TaskDetailResponseDTO>> getAllTasksForContractorView() {
+        log.info("Fetching all tasks for contractor view");
+        List<TaskDetailResponseDTO> tasks = taskService.getAllTasks();
+        return ResponseEntity.ok(tasks);
+    }
+
     @GetMapping("/contractors/tasks")
     public ResponseEntity<?> getContractorTasks(@RequestParam String contractorId) {
         try {
@@ -121,6 +130,28 @@ public class TaskController {
     @GetMapping("/schedules/{scheduleIdentifier}/tasks")
     public ResponseEntity<List<TaskDetailResponseDTO>> getTasksForSchedule(@PathVariable String scheduleIdentifier) {
         List<TaskDetailResponseDTO> tasks = taskService.getTasksForSchedule(scheduleIdentifier);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/schedules/{scheduleIdentifier}/tasks/status/{status}")
+    public ResponseEntity<List<TaskDetailResponseDTO>> getTasksForScheduleByStatus(
+            @PathVariable String scheduleIdentifier,
+            @PathVariable TaskStatus status) {
+        List<TaskDetailResponseDTO> tasks = taskService.getTasksForScheduleByStatus(scheduleIdentifier, status);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/projects/{projectIdentifier}/tasks")
+    public ResponseEntity<List<TaskDetailResponseDTO>> getTasksForProject(@PathVariable String projectIdentifier) {
+        List<TaskDetailResponseDTO> tasks = taskService.getTasksForProject(projectIdentifier);
+        return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/projects/{projectIdentifier}/tasks/status/{status}")
+    public ResponseEntity<List<TaskDetailResponseDTO>> getTasksForProjectByStatus(
+            @PathVariable String projectIdentifier,
+            @PathVariable TaskStatus status) {
+        List<TaskDetailResponseDTO> tasks = taskService.getTasksForProjectByStatus(projectIdentifier, status);
         return ResponseEntity.ok(tasks);
     }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ownerUseSchedules from '../../features/schedules/hooks/ownerUseSchedules';
 import ScheduleList from '../../features/schedules/components/ScheduleList';
@@ -12,8 +12,10 @@ import { GoPackage } from 'react-icons/go';
 import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { FaMapLocationDot } from 'react-icons/fa6';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const OwnerDashboard = () => {
+  const { t } = usePageTranslations('ownerDashboard');
   const { schedules, loading, error } = ownerUseSchedules(false);
   const navigate = useNavigate();
 
@@ -21,60 +23,63 @@ const OwnerDashboard = () => {
     navigate('/owner/schedules/all');
   };
 
-  const dashboardCards = [
-    {
-      icon: <GoArrowUp />,
-      title: 'Uploads',
-      buttonText: 'Begin Upload',
-      action: () => navigate('/owner/uploads'),
-    },
-    {
-      icon: <GoGraph />,
-      title: 'Analytics & Reports',
-      buttonText: 'View Reports',
-      action: () => navigate('/reports'),
-    },
-    {
-      icon: <GoPackage />,
-      title: 'Projects',
-      buttonText: 'View Projects',
-      action: () => navigate('/projects'),
-    },
-    {
-      icon: <GoInbox />,
-      title: 'Inbox',
-      buttonText: 'View Inbox',
-      action: () => navigate('/owner/inbox'),
-    },
-    {
-      icon: <GoFile />,
-      title: 'Documents',
-      buttonText: 'View Documents',
-      action: () => navigate('/owner/documents'),
-    },
-    {
-      icon: <GoPeople />,
-      title: 'Users',
-      buttonText: 'View Users',
-      action: () => navigate('/users'),
-    },
-    {
-      icon: <GoFileDiff />,
-      title: 'Forms',
-      buttonText: 'Create Form',
-      action: () => navigate('/owner/forms'),
-    },
-    {
-      icon: <FaMapLocationDot />,
-      title: 'Lots',
-      buttonText: 'Add',
-      action: () => navigate('/lots'),
-    },
-  ];
+  const dashboardCards = useMemo(
+    () => [
+      {
+        icon: <GoArrowUp />,
+        title: t('cards.uploads.title', 'Uploads'),
+        buttonText: t('cards.uploads.button', 'Begin Upload'),
+        action: () => navigate('/owner/uploads'),
+      },
+      {
+        icon: <GoGraph />,
+        title: t('cards.analytics.title', 'Analytics & Reports'),
+        buttonText: t('cards.analytics.button', 'View Reports'),
+        action: () => navigate('/reports'),
+      },
+      {
+        icon: <GoPackage />,
+        title: t('cards.projects.title', 'Projects'),
+        buttonText: t('cards.projects.button', 'View Projects'),
+        action: () => navigate('/projects'),
+      },
+      {
+        icon: <GoInbox />,
+        title: t('cards.inbox.title', 'Inbox'),
+        buttonText: t('cards.inbox.button', 'View Inbox'),
+        action: () => navigate('/owner/inbox'),
+      },
+      {
+        icon: <GoFile />,
+        title: t('cards.documents.title', 'Documents'),
+        buttonText: t('cards.documents.button', 'View Documents'),
+        action: () => navigate('/owner/documents'),
+      },
+      {
+        icon: <GoPeople />,
+        title: t('cards.users.title', 'Users'),
+        buttonText: t('cards.users.button', 'View Users'),
+        action: () => navigate('/users'),
+      },
+      {
+        icon: <GoFileDiff />,
+        title: t('cards.forms.title', 'Forms'),
+        buttonText: t('cards.forms.button', 'Create Form'),
+        action: () => navigate('/owner/forms'),
+      },
+      {
+        icon: <FaMapLocationDot />,
+        title: t('cards.lotDocuments.title', 'Lot Documents'),
+        buttonText: t('cards.lotDocuments.button', 'View Documents'),
+        action: () => navigate('/owner/lot-documents'),
+      },
+    ],
+    [t, navigate]
+  );
 
   return (
     <div className="owner-dashboard">
-      <h1 className="dashboard-title">Owner Dashboard</h1>
+      <h1 className="dashboard-title">{t('title', 'Owner Dashboard')}</h1>
 
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
@@ -89,10 +94,10 @@ const OwnerDashboard = () => {
       </div>
 
       <div className="schedule-section">
-        <h2>This week:</h2>
+        <h2>{t('thisWeek', 'This week:')}</h2>
         <ScheduleList schedules={schedules} loading={loading} error={error} />
         <button className="see-more-button" onClick={handleSeeMore}>
-          See more
+          {t('seeMore', 'See more')}
         </button>
       </div>
     </div>

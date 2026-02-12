@@ -1,0 +1,51 @@
+{
+  "title": "Project Documents",
+  "uploadDocument": "Upload Document",
+  "syncFiles": "Sync Files",
+  "syncing": "Syncing...",
+  "downloadAll": "Download All as ZIP",
+  "downloading": "Downloading...",
+  "loading": "Loading project documents...",
+  "error": "Error loading documents",
+  "refreshError": "Failed to refresh files. Please try again.",
+  "downloadError": "Failed to download file. Please try again.",
+  "zipError": "Failed to download ZIP file. Please try again.",
+  "deleteError": "Failed to delete file. Please try again.",
+  "loadErrorAlert": "Error ({{status}}): {{message}} Redirecting to Home.",
+  "downloadErrorAlert": "Download error: {{message}}",
+  "unknown": "Unknown",
+  "noDocumentsMessage": "No documents found for this project. Upload your first file to get started!",
+  "userInfoLoading": "User information is still loading. Please wait a moment and try again.",
+  "table": {
+    "documentName": "Document Name",
+    "type": "Type",
+    "uploadedBy": "Uploaded By",
+    "actions": "Actions"
+  },
+  "deleteConfirm": {
+    "title": "Delete Document",
+    "errorPrefix": "Error",
+    "message": "Are you sure you want to delete this document? This action will archive the file and it will no longer be accessible to users. The file may be recoverable by administrators.",
+    "confirm": "Delete",
+    "cancel": "Cancel",
+    "tryAgain": "Try Again"
+  },
+  "nav": {
+    "home": "Home",
+    "projects": "Residential Projects",
+    "renovation": "Renovations",
+    "renovations": "Renovations",
+    "projectManagement": "Project Management",
+    "realizations": "Realizations",
+    "contact": "Contact",
+    "accessPortal": "Access Portal",
+    "logout": "Logout"
+  },
+  "footer": {
+    "company": "Dominic Cyr Construction Inc.",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "copyright": "Copyright © 2024. All rights reserved."
+  }
+}

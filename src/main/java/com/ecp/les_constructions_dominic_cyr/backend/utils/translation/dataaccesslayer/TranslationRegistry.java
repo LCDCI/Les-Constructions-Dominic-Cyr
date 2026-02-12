@@ -22,8 +22,8 @@ public class TranslationRegistry {
     
     public TranslationRegistry() {
         // Home page translations
-        fileIdMap.put("en.home", "4907b518-7b33-4b99-9c7f-927c67aa4a8a");
-        fileIdMap.put("fr.home", "6bae8020-dd6e-4a10-93f8-d00f1348597d");
+        fileIdMap.put("en.home", "cb5d4f09-eabb-47df-9161-866ba10bce72");
+        fileIdMap.put("fr.home", "edfca72f-b970-410c-b88c-2f3a97301662");
         
         // Contact page translations
         fileIdMap.put("en.contact", "54897f58-2f88-4e2a-81b2-cced943541bb");
@@ -54,8 +54,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.servererror", "f54a08b1-b0f6-4fda-9469-dac983b1ef42");
         
         // Project Overview page translations
-        fileIdMap.put("en.projectoverview", "b690c9f9-a2ee-4a49-9e28-2d87cb3dc15e");
-        fileIdMap.put("fr.projectoverview", "78c97b4d-2cdd-45e7-93b9-0e5e9d23d668");
+        fileIdMap.put("en.projectoverview", "9a9f9bb2-c3da-4896-a452-57b6156e1d3b");
+        fileIdMap.put("fr.projectoverview", "84fa52c6-e821-43be-872a-6d8cc099677d");
 
         fileIdMap.put("en.lots", "dd3ea708-475f-4cef-ab1c-4303331cf803");
         fileIdMap.put("fr.lots", "9ee50174-382f-467f-b30c-5f64ca470335");
@@ -73,20 +73,69 @@ public class TranslationRegistry {
         fileIdMap.put("fr.livingenvironment", "1e49e1c9-1dc8-4ecf-8212-47e51d62abd2");
 
         // Projects page translations
-        fileIdMap.put("en.projects", "e1fb2a05-f1c0-4509-9ae5-016df6de7629");
-        fileIdMap.put("fr.projects", "67fc5df5-4ab5-4747-9077-296157d342ad");
+        fileIdMap.put("en.projects", "ba8bdea5-82ff-46a5-80b5-217356ddd314");
+        fileIdMap.put("fr.projects", "7b26f6ac-cf77-4ed8-921a-b641bff89228");
 
-        // Lot Metadata translations (keys normalized to lowercase)
-        fileIdMap.put("en.lotmetadata", "5ab81e0a-2311-4582-9e3e-df56dd8fe4ca");     
-        fileIdMap.put("fr.lotmetadata", "a867f6b6-6337-4309-a6c3-becbdf1b505a");
+        // Inbox page translations
+        fileIdMap.put("en.inbox", "3fbc18df-6d7f-4159-bfce-94431f8d6eeb");
+        fileIdMap.put("fr.inbox", "7a7c4dba-747d-4228-b34d-6c83b6647337");
 
-        // Project Metadata translations (keys normalized to lowercase)
-        fileIdMap.put("en.projectmetadata", "dbe33040-d8d7-4f4d-92cb-1950a62b2452");
-        fileIdMap.put("fr.projectmetadata", "c8bff754-7cf6-4200-bf8a-97e37f01941a");
+        // Dashboard page translations
+        fileIdMap.put("en.ownerdashboard", "64afdd86-06a3-4a16-b9c9-628dbc34d475");
+        fileIdMap.put("fr.ownerdashboard", "bf1b332f-7866-4910-99f7-1f09a324ea53");
+        fileIdMap.put("en.customerdashboard", "bc1fa28b-dc6e-4653-b3e9-b0a9ce3bfa64");
+        fileIdMap.put("fr.customerdashboard", "6742d6a9-bcfd-4780-b2ec-5c50c27e9493");
+        fileIdMap.put("en.salespersondashboard", "6792727a-faac-4fa1-af3b-0c850c6ed022");
+        fileIdMap.put("fr.salespersondashboard", "3379cd57-8243-414f-b891-2fcc7a19bd6c");
+        fileIdMap.put("en.contractordashboard", "129b09a5-32d9-426d-98b9-f5da4e2555da");
+        fileIdMap.put("fr.contractordashboard", "6230c4c3-3d42-4b65-bd0c-b402dc24ac9b");
 
+        // User management page translations
+        fileIdMap.put("en.userspage", "9dd08e21-bfad-452f-9461-8db4c4a9f53a");
+        fileIdMap.put("fr.userspage", "8b464bee-4e4b-49cc-b679-0154bfbe5a07");
+        fileIdMap.put("en.profilepage", "18a23a69-2f38-4fc4-8d73-748d815ec849");
+        fileIdMap.put("fr.profilepage", "31ed222a-2651-4d7f-8624-5a19f5a15b88");
+
+        // Other page translations
+        fileIdMap.put("en.ownerinquiriespage", "214a7763-2400-40f3-9fa8-6a24c3e4ef34");
+        fileIdMap.put("fr.ownerinquiriespage", "7a5b33bd-0cf8-4b8d-99e8-85e91dc4c40d");
+        fileIdMap.put("en.portallogin", "c2bfbed4-4863-4ece-962d-615d1ef01d94");
+        fileIdMap.put("fr.portallogin", "01ec1381-fdab-47ff-b576-80f62cab4d89");
+        fileIdMap.put("en.reportspage", "27cbcb6c-935e-4758-a420-fb81fd62b0b2");
+        fileIdMap.put("fr.reportspage", "1ac3ffaa-0613-4b27-94c2-34cf08b1d62c");
+        fileIdMap.put("en.unauthorized", "ec316287-8fde-44db-b51e-e3692b9ce510");
+        fileIdMap.put("fr.unauthorized", "8fa54e9d-84eb-444a-aa9f-d7eb986c68a8");
+
+        // Project page translations
+        fileIdMap.put("en.createprojectpage", "32d23b1a-805a-40dc-a311-bfd9b4614339");
+        fileIdMap.put("fr.createprojectpage", "5cd86972-f085-4edd-9c87-ad07ec3314f2");
+        fileIdMap.put("en.lotselectpage", "0738514f-6b6f-4dd2-a4f9-b57e83a007df");
+        fileIdMap.put("fr.lotselectpage", "c60d9ed6-83f4-4c22-9466-8278032e7edd");
+        fileIdMap.put("en.projectfilespage", "9ad4557e-ebec-4d86-9c55-a848e81a9e17");
+        fileIdMap.put("fr.projectfilespage", "fe765f9e-d3bc-4da8-a65d-d966c3f213d2");
+        fileIdMap.put("en.projectphotospage", "d9d1892f-2b9a-4135-af0b-9292e21a222b");
+        fileIdMap.put("fr.projectphotospage", "96a109f6-15f9-4b27-9cd7-096850d232a8");
+        fileIdMap.put("en.projectschedulepage", "54f8eebf-9af5-4376-944e-a87cc268b442");
+        fileIdMap.put("fr.projectschedulepage", "718dc85f-6582-4a62-9be8-83a76602aa0b");
+        
+        // Project Metadata page translations
+        fileIdMap.put("en.projectmetadata", "09e765c8-b637-4199-8349-950db3ccf1df");
+        fileIdMap.put("fr.projectmetadata", "8a02a6c8-e64c-4d8c-8109-c1a2e86c27ec");
+        
+        // Lot Metadata page translations
+        fileIdMap.put("en.lotmetadata", "fedbe51f-2362-49c7-bbc7-d91055f3d8a8");
+        fileIdMap.put("fr.lotmetadata", "58a85d61-34dd-457a-ad89-4de96056a19a");
+
+        // Contractor Tasks page translations
+        fileIdMap.put("en.contractortasks", "30c5add1-5926-40c4-80d9-8e56714e0d74");
+        fileIdMap.put("fr.contractortasks", "a62edee1-b73f-41e6-a727-ab23e29f03a4");
+
+        // Navbar translations (for role-specific navbars)
+        fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
+        fileIdMap.put("fr.navbar", "c9ed527b-48a8-427f-9248-da9e87efbf24");
         // Quotes page translations
-        fileIdMap.put("en.quotes", "9274a2c4-5178-4008-870c-145794588b9f");
-        fileIdMap.put("fr.quotes", "fc34d85b-98e3-4cae-a86d-49ad17b96b60");
+        fileIdMap.put("en.quotes", "946a87c9-b8bb-465e-a463-8d5397c72ab4");
+        fileIdMap.put("fr.quotes", "c6f01f88-86a9-4811-8449-1ac1bd492910");
 
     }
     
@@ -125,4 +174,3 @@ public class TranslationRegistry {
         return getFileId(language, page) != null;
     }
 }
-

@@ -10,12 +10,19 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ScheduleEntityTest {
 
     private Schedule schedule;
+    private static final UUID TEST_LOT_UUID = UUID.randomUUID();
+    private static final UUID LOT_100_UUID = UUID.randomUUID();
+    private static final UUID LOT_50_UUID = UUID.randomUUID();
+    private static final UUID LOT_75_UUID = UUID.randomUUID();
+    private static final UUID LOT_123_UUID = UUID.randomUUID();
+    private static final UUID LOT_456_UUID = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
@@ -41,7 +48,7 @@ class ScheduleEntityTest {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = LocalDate.now().plusDays(7);
         String description = "Test Schedule";
-        String lotId = "Lot 100";
+        UUID lotId = TEST_LOT_UUID;
 
         Schedule schedule = new Schedule(identifier, startDate, endDate, description, lotId);
 
@@ -64,7 +71,7 @@ class ScheduleEntityTest {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = LocalDate.now().plusDays(10);
         String description = "Builder Schedule";
-        String lotId = "Lot 50";
+        UUID lotId = LOT_50_UUID;
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -97,7 +104,7 @@ class ScheduleEntityTest {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = LocalDate.now().plusDays(5);
         String description = "Getter Setter Schedule";
-        String lotId = "Lot 75";
+        UUID lotId = LOT_75_UUID;
         LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
         LocalDateTime updatedAt = LocalDateTime.now();
         List<Task> tasks = new ArrayList<>();
@@ -130,22 +137,22 @@ class ScheduleEntityTest {
 
     @Test
     void testLegacyLotNumberAccessors() {
-        String lotId = "Lot 123";
-        
-        schedule.setLotNumber(lotId);
-        
-        assertEquals(lotId, schedule.getLotNumber());
-        assertEquals(lotId, schedule.getLotId());
+        String lotIdString = LOT_123_UUID.toString();
+
+        schedule.setLotNumber(lotIdString);
+
+        assertEquals(lotIdString, schedule.getLotNumber());
+        assertEquals(LOT_123_UUID, schedule.getLotId());
     }
 
     @Test
     void testSetLotIdDirectly() {
-        String lotId = "Lot 456";
-        
+        UUID lotId = LOT_456_UUID;
+
         schedule.setLotId(lotId);
         
         assertEquals(lotId, schedule.getLotId());
-        assertEquals(lotId, schedule.getLotNumber());
+        assertEquals(lotId.toString(), schedule.getLotNumber());
     }
 
     @Test
@@ -203,7 +210,7 @@ class ScheduleEntityTest {
                 .id(1)
                 .scheduleIdentifier("SCH-001")
                 .scheduleDescription("Test Schedule")
-                .lotId("Lot 100")
+                .lotId(LOT_100_UUID)
                 .build();
 
         String toString = schedule.toString();

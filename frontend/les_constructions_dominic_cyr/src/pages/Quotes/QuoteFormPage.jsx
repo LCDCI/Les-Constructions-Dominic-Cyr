@@ -13,7 +13,7 @@ import './QuoteFormPage.css';
  * Premium Create/Edit Bill Estimate with full customer info and payment terms
  */
 const QuoteFormPage = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['quotes', 'translation']);
   const { getAccessTokenSilently, user } = useAuth0();
   const location = useLocation();
   const navigate = useNavigate();
@@ -834,7 +834,7 @@ const QuoteFormPage = () => {
               onClick={handleCancel}
               className="btn btn-secondary"
             >
-              {t('common.cancel') || 'Cancel'}
+              {t('quote.common.cancel') || 'Cancel'}
             </button>
             <button
               type="submit"
@@ -842,7 +842,7 @@ const QuoteFormPage = () => {
               className="btn btn-primary"
             >
               {isSubmitting
-                ? t('common.submitting') || 'Submitting...'
+                ? t('quote.common.submitting') || 'Submitting...'
                 : t('quote.createQuote') || 'Create Quote'}
             </button>
           </div>

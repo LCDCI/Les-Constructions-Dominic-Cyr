@@ -1,0 +1,96 @@
+@startuml
+title DLSD for Owner View Project Page
+
+actor Owner
+participant "Frontend" as FE
+participant "ProjectController" as PC
+participant "IndividualProjectMetadataController" as PMC
+participant "LotController" as LC
+participant "ProjectService" as PS
+participant "IndividualProjectMetadataService" as PMS
+participant "LotService" as LS
+participant "ProjectRepository" as PR
+participant "UsersRepository" as UR
+participant "LotRepository" as LR
+
+== 1. View List of Projects ==
+
+Owner -> FE: Click "view projects"
+FE -> PC: getAllProjects(isOwner=true)
+activate PC
+PC -> PS: getAllProjects(isOwner=true)
+activate PS
+PS -> PR: findAll()
+activate PR
+PR --> PS: List<Project>
+deactivate PR
+PS --> PC: List<ProjectResponseModel>
+deactivate PS
+PC --> FE: 200 OK (List<Projects>)
+deactivate PC
+FE --> Owner: Display projects list
+
+== 2. View Specific Project Details ==
+
+Owner -> FE: Click "view this project"
+FE -> PMC: getProjectMetadata(projectIdentifier)
+activate PMC
+PMC -> PMS: getProjectMetadata(projectIdentifier, auth0UserId)
+activate PMS
+PMS -> PR: findByProjectIdentifier(projectIdentifier)
+activate PR
+PR --> PMS: Project / Optional.empty
+deactivate PR
+
+alt Project not found
+    PMS --> PMC: throw ProjectNotFoundException
+    PMC --> FE: 404 Not Found
+    FE --> Owner: Display "Project not found"
+else Project exists
+    PMS -> UR: findByAuth0UserId(auth0UserId)
+    activate UR
+    UR --> PMS: User / Optional.empty
+    deactivate UR
+    
+    alt User invalid
+        PMS --> PMC: throw ForbiddenAccessException
+        PMC --> FE: 403 Forbidden / 302 Redirect
+        FE --> Owner: Redirect to Home Page
+    else User valid
+        PMS -> LR: findByProject_ProjectIdentifier(projectIdentifier)
+        activate LR
+        LR --> PMS: List<Lot>
+        deactivate LR
+        PMS --> PMC: IndividualProjectResponseModel
+        deactivate PMS
+        PMC --> FE: 200 OK (Project Metadata)
+        deactivate PMC
+        FE --> Owner: Display Project Page & Lots
+    end
+end
+
+== 3. View Specific Lot Details ==
+
+Owner -> FE: Click on a specific lot
+FE -> LC: getLotById(lotId)
+activate LC
+LC -> LS: getLotById(lotId)
+activate LS
+LS -> LR: findByLotIdentifier(lotId)
+activate LR
+LR --> LS: Lot / Optional.empty
+deactivate LR
+
+alt Lot not found
+    LS --> LC: throw EntryNotFoundException
+    LC --> FE: 404 Not Found
+    FE --> Owner: Display "Lot not found"
+else Lot exists
+    LS --> LC: LotResponseModel
+    deactivate LS
+    LC --> FE: 200 OK (Lot Metadata)
+    deactivate LC
+    FE --> Owner: Display Lot Metadata Page
+end
+
+@enduml

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "schedules")
@@ -37,8 +38,8 @@ public class Schedule {
     @Column(name = "schedule_description", nullable = false, length = 500)
     private String scheduleDescription;
 
-    @Column(name = "lot_number", nullable = false, length = 50)
-    private String lotId;
+    @Column(name = "lot_id", nullable = false)
+    private UUID lotId;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -52,13 +53,13 @@ public class Schedule {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "project_id",                          // The FK column in 'lots' table
+            name = "project_id",                          // The FK column in 'schedules' table
             referencedColumnName = "project_identifier",   // The column in 'projects' table
             nullable = false
     )
     private Project project;
 
-    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate scheduleStartDate, @NotNull LocalDate scheduleEndDate, @NotNull String scheduleDescription, @NotNull String lotId) {
+    public Schedule(@NotNull String scheduleIdentifier, @NotNull LocalDate scheduleStartDate, @NotNull LocalDate scheduleEndDate, @NotNull String scheduleDescription, @NotNull UUID lotId) {
         this.scheduleIdentifier = scheduleIdentifier;
         this.scheduleStartDate = scheduleStartDate;
         this.scheduleEndDate = scheduleEndDate;
@@ -71,11 +72,11 @@ public class Schedule {
 
     // Backward compatibility: keep legacy accessor names until callers migrate to lotId
     public String getLotNumber() {
-        return lotId;
+        return lotId != null ? lotId.toString() : null;
     }
 
     public void setLotNumber(String lotNumber) {
-        this.lotId = lotNumber;
+        this.lotId = lotNumber != null ? UUID.fromString(lotNumber) : null;
     }
 
     @PrePersist

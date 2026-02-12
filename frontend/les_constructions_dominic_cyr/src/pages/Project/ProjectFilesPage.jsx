@@ -4,6 +4,7 @@ import { FaFileArrowUp } from 'react-icons/fa6';
 import FileUploadModal from '../../components/Modals/FileUploadModal';
 import ConfirmationModal from '../../components/Modals/ConfirmationModal';
 import FileCard from '../../features/files/components/FileCard';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import {
   deleteFile,
   fetchProjectDocuments,
@@ -24,6 +25,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 export default function ProjectFilesPage() {
   const { projectId } = useParams();
+  const { t } = usePageTranslations('projectFilesPage');
   const [allFiles, setAllFiles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -161,7 +163,16 @@ export default function ProjectFilesPage() {
         setError(msg);
 
         if (status === 500 || status === 404 || status === 'Network Error') {
-          alert(`Error (${status}): ${msg} Redirecting to Home.`);
+          alert(
+            t(
+              'loadErrorAlert',
+              'Error ({{status}}): {{message}} Redirecting to Home.',
+              {
+                status,
+                message: msg,
+              }
+            )
+          );
           navigate('/');
         }
       } finally {
@@ -314,7 +325,7 @@ export default function ProjectFilesPage() {
       setAllFiles(files || []);
     } catch (err) {
       console.error('Failed to refresh:', err);
-      alert('Failed to refresh files. Please try again.');
+      alert(t('refreshError', 'Failed to refresh files. Please try again.'));
     } finally {
       setIsRefreshing(false);
     }
@@ -327,8 +338,12 @@ export default function ProjectFilesPage() {
       console.error('Failed to download file:', error);
       const errorMsg =
         error.response?.data?.error ||
-        'Failed to download file. Please try again.';
-      alert(`Download error: ${errorMsg}`);
+        t('downloadError', 'Failed to download file. Please try again.');
+      alert(
+        t('downloadErrorAlert', 'Download error: {{message}}', {
+          message: errorMsg,
+        })
+      );
     }
   };
 
@@ -341,7 +356,7 @@ export default function ProjectFilesPage() {
       console.error('Failed to download ZIP:', error);
       const errorMsg =
         error.response?.data?.error ||
-        'Failed to download ZIP file. Please try again.';
+        t('zipError', 'Failed to download ZIP file. Please try again.');
       setZipError(errorMsg);
     } finally {
       setIsDownloadingZip(false);
@@ -354,7 +369,7 @@ export default function ProjectFilesPage() {
         className="documents-page container"
         style={{ textAlign: 'center', padding: '50px' }}
       >
-        Loading project documents...
+        {t('loading', 'Loading project documents...')}
       </div>
     );
   }
@@ -366,7 +381,7 @@ export default function ProjectFilesPage() {
           className="error-message"
           style={{ color: '#E53935', textAlign: 'center', marginTop: '20px' }}
         >
-          Error loading documents: {error}
+          {t('error', 'Error loading documents')}: {error}
         </p>
       </div>
     );
@@ -375,7 +390,9 @@ export default function ProjectFilesPage() {
   return (
     <div className="documents-page container">
       <div className="documents-header">
-        <h1>Project Documents: {projectId}</h1>
+        <h1>
+          {t('title', 'Project Documents')}: {projectId}
+        </h1>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
             className="btn-refresh"
@@ -394,7 +411,9 @@ export default function ProjectFilesPage() {
             }}
           >
             <FaSync className={isRefreshing ? 'spinning' : ''} />{' '}
-            {isRefreshing ? 'Syncing...' : 'Sync Files'}
+            {isRefreshing
+              ? t('syncing', 'Syncing...')
+              : t('syncFiles', 'Sync Files')}
           </button>
           <button
             className="btn-download-all"
@@ -416,7 +435,9 @@ export default function ProjectFilesPage() {
             }}
           >
             <FaArchive />{' '}
-            {isDownloadingZip ? 'Downloading...' : 'Download All as ZIP'}
+            {isDownloadingZip
+              ? t('downloading', 'Downloading...')
+              : t('downloadAll', 'Download All as ZIP')}
           </button>
           {canUpload && (
             <button
@@ -424,7 +445,10 @@ export default function ProjectFilesPage() {
               onClick={() => {
                 if (!userId || !role) {
                   alert(
-                    'User information is still loading. Please wait a moment and try again.'
+                    t(
+                      'userInfoLoading',
+                      'User information is still loading. Please wait a moment and try again.'
+                    )
                   );
                   return;
                 }
@@ -432,7 +456,7 @@ export default function ProjectFilesPage() {
               }}
               disabled={profileLoading || !userId || !role}
             >
-              <FaFileArrowUp /> Upload Document
+              <FaFileArrowUp /> {t('uploadDocument', 'Upload Document')}
             </button>
           )}
         </div>
@@ -451,10 +475,16 @@ export default function ProjectFilesPage() {
           <table>
             <thead>
               <tr>
-                <th style={{ width: '45%' }}>Document Name</th>
-                <th style={{ width: '20%' }}>Type</th>
-                <th style={{ width: '20%' }}>Uploaded By</th>
-                <th style={{ width: '15%' }}>Actions</th>
+                <th style={{ width: '45%' }}>
+                  {t('table.documentName', 'Document Name')}
+                </th>
+                <th style={{ width: '20%' }}>{t('table.type', 'Type')}</th>
+                <th style={{ width: '20%' }}>
+                  {t('table.uploadedBy', 'Uploaded By')}
+                </th>
+                <th style={{ width: '15%' }}>
+                  {t('table.actions', 'Actions')}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -475,8 +505,10 @@ export default function ProjectFilesPage() {
 
       {documents.length === 0 && (
         <p style={{ marginTop: '20px', textAlign: 'center', color: '#6B7280' }}>
-          No documents found for this project. Upload your first file to get
-          started!
+          {t(
+            'noDocumentsMessage',
+            'No documents found for this project. Upload your first file to get started!'
+          )}
         </p>
       )}
 
@@ -494,13 +526,18 @@ export default function ProjectFilesPage() {
         isOpen={isDeleteModalOpen}
         onCancel={cancelDelete}
         config={{
-          title: 'Delete Document',
+          title: t('deleteConfirm.title', 'Delete Document'),
           message: deleteError
-            ? `Error: ${deleteError}`
-            : 'Are you sure you want to delete this document? This action will archive the file and it will no longer be accessible to users. The file may be recoverable by administrators.',
+            ? `${t('deleteConfirm.errorPrefix', 'Error')}: ${deleteError}`
+            : t(
+                'deleteConfirm.message',
+                'Are you sure you want to delete this document? This action will archive the file and it will no longer be accessible to users. The file may be recoverable by administrators.'
+              ),
           onConfirm: confirmDelete,
-          confirmText: deleteError ? 'Try Again' : 'Delete',
-          cancelText: 'Cancel',
+          confirmText: deleteError
+            ? t('deleteConfirm.tryAgain', 'Try Again')
+            : t('deleteConfirm.confirm', 'Delete'),
+          cancelText: t('deleteConfirm.cancel', 'Cancel'),
           isDestructive: !deleteError,
         }}
       />

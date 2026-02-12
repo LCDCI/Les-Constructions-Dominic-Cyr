@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useParams, useNavigate } from 'react-router-dom';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import {
   MapContainer,
   TileLayer,
@@ -11,6 +12,7 @@ import {
 } from 'react-leaflet';
 import { IoLeafOutline } from 'react-icons/io5';
 import { LuMapPinned } from 'react-icons/lu';
+import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import '../../styles/Project/projectOverview.css';
 import '../../styles/Public_Facing/residential-projects.css';
 import '../../styles/Public_Facing/overviewMap.css';
@@ -83,6 +85,7 @@ const LocationMap = ({ locationAddress, mapCoords, setShowModal }) => {
   const centerCoords = mapCoords || DEFAULT_COORDS;
   const defaultZoom = 13;
   const [mapKey, setMapKey] = useState(0);
+  const { t } = usePageTranslations('projectOverview');
 
   useEffect(() => {
     if (mapCoords && mapCoords !== DEFAULT_COORDS) {
@@ -101,18 +104,22 @@ const LocationMap = ({ locationAddress, mapCoords, setShowModal }) => {
           backgroundColor: 'var(--background-color-tertiary)',
         }}
       >
-        Map address not specified.
+        {t('map.addressNotSpecified', 'Map address not specified.')}
       </div>
     );
   }
 
   const mapUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-  const attribution =
-    '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors';
+  const attribution = t(
+    'map.attribution',
+    '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  );
 
   const usingDefault = mapCoords === null;
   const popupText = usingDefault
-    ? `Default location near ${locationAddress.split(',').pop()}`
+    ? t('map.defaultLocation', 'Default location near {{address}}', {
+        address: locationAddress.split(',').pop(),
+      })
     : locationAddress;
 
   const handleMapClick = () => {
@@ -149,6 +156,7 @@ LocationMap.propTypes = {
 const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
   const centerCoords = mapCoords || DEFAULT_COORDS;
   const modalZoom = 15;
+  const { t } = usePageTranslations('projectOverview');
 
   if (!show) return null;
 
@@ -156,11 +164,13 @@ const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-container" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h2 className="modal-title">Location: {locationAddress}</h2>
+          <h2 className="modal-title">
+            {t('modal.locationTitle', 'Location')}: {locationAddress}
+          </h2>
           <button
             className="modal-close-btn"
             onClick={handleClose}
-            aria-label="Close modal"
+            aria-label={t('modal.closeAriaLabel', 'Close modal')}
           >
             &times;
           </button>
@@ -175,7 +185,10 @@ const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
           >
             <MapController mapCoords={centerCoords} />
             <TileLayer
-              attribution='© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              attribution={t(
+                'map.attribution',
+                '© <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              )}
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <Marker position={centerCoords}>
@@ -185,7 +198,7 @@ const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
         </div>
         <div className="modal-footer">
           <button className="btn-secondary" onClick={handleClose}>
-            Close
+            {t('modal.close', 'Close')}
           </button>
         </div>
       </div>
@@ -203,6 +216,7 @@ LocationModal.propTypes = {
 const ProjectOverviewPage = () => {
   const { projectIdentifier } = useParams();
   const navigate = useNavigate();
+  const { t } = usePageTranslations('projectOverview');
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -241,7 +255,12 @@ const ProjectOverviewPage = () => {
           setMapCoords(null);
         }
       } catch (err) {
-        setError('Failed to load project details. Please try again later.');
+        setError(
+          t(
+            'errors.loadFailed',
+            'Failed to load project details. Please try again later.'
+          )
+        );
       } finally {
         setLoading(false);
       }
@@ -286,13 +305,16 @@ const ProjectOverviewPage = () => {
 
   const getFeatureIcon = featureTitle => {
     const title = featureTitle?.toLowerCase() || '';
+    const livingEnvKey = t(
+      'features.livingEnvironmentTitle',
+      'Living Environment'
+    ).toLowerCase();
+    const lotsKey = t('features.lotsTitle', 'Lots').toLowerCase();
 
     switch (title) {
-      case 'living environment':
+      case livingEnvKey:
         return IoLeafOutline;
-      //case 'new realizations':
-      // return HiOutlineHomeModern;
-      case 'lots':
+      case lotsKey:
         return LuMapPinned;
       default:
     }
@@ -301,11 +323,16 @@ const ProjectOverviewPage = () => {
 
   const getFeaturePath = featureTitle => {
     const title = featureTitle?.toLowerCase() || '';
+    const livingEnvKey = t(
+      'features.livingEnvironmentTitle',
+      'Living Environment'
+    ).toLowerCase();
+    const lotsKey = t('features.lotsTitle', 'Lots').toLowerCase();
 
     switch (title) {
-      case 'living environment':
+      case livingEnvKey:
         return 'living-environment';
-      case 'lots':
+      case lotsKey:
         return 'lots';
       default:
         return null;
@@ -315,7 +342,7 @@ const ProjectOverviewPage = () => {
   if (loading) {
     return (
       <div className="project-overview-loading">
-        <p>Loading project details...</p>
+        <p>{t('loading', 'Loading project details...')}</p>
       </div>
     );
   }
@@ -325,7 +352,7 @@ const ProjectOverviewPage = () => {
       <div className="project-overview-error">
         <p>{error}</p>
         <button onClick={() => navigate('/residential-projects')}>
-          Back to Residential Projects
+          {t('backToProjects', 'Back to Residential Projects')}
         </button>
       </div>
     );
@@ -334,9 +361,9 @@ const ProjectOverviewPage = () => {
   if (!overview) {
     return (
       <div className="project-overview-error">
-        <p>Project not found</p>
+        <p>{t('projectNotFound', 'Project not found')}</p>
         <button onClick={() => navigate('/residential-projects')}>
-          Back to Residential Projects
+          {t('backToProjects', 'Back to Residential Projects')}
         </button>
       </div>
     );
@@ -380,15 +407,18 @@ const ProjectOverviewPage = () => {
       {overview.overviewSectionContent && (
         <section className="project-section overview-section">
           <div className="section-container">
-            {overview.overviewSectionTitle && (
-              <h2 className="section-title">{overview.overviewSectionTitle}</h2>
-            )}
+            <h2 className="section-title">
+              {t('sections.overview', 'Overview')}
+            </h2>
             {overview.heroDescription && (
               <p className="section-description">{overview.heroDescription}</p>
             )}
           </div>
           <div className="project-features-grid">
-            {['Living Environment', 'Lots'].map(featureTitle => {
+            {[
+              t('features.livingEnvironmentTitle', 'Living Environment'),
+              t('features.lotsTitle', 'Lots'),
+            ].map(featureTitle => {
               const IconComponent = getFeatureIcon(featureTitle);
               const path = getFeaturePath(featureTitle);
 
@@ -415,16 +445,16 @@ const ProjectOverviewPage = () => {
       {overview.lots && overview.lots.length > 0 && (
         <section className="project-section lots-section">
           <div className="section-container">
-            {overview.lotsSectionTitle && (
-              <h2 className="section-title">{overview.lotsSectionTitle}</h2>
-            )}
+            <h2 className="section-title">{t('sections.lots', 'Lots')}</h2>
             <div className="lots-grid">
               {overview.lots.map((lot, index) => (
                 <div key={index} className="lot-card">
                   <div className="lot-image-container">
                     <img
                       src={getImageUrl(lot.lotImageIdentifier)}
-                      alt={`Lot ${lot.lotLocation}`}
+                      alt={t('lot.imageAlt', 'Lot {{lotLocation}}', {
+                        lotLocation: lot.lotLocation,
+                      })}
                       className="lot-image"
                     />
                   </div>
@@ -453,9 +483,9 @@ const ProjectOverviewPage = () => {
       {overview.locationDescription && (
         <section className="project-section location-section">
           <div className="section-container">
-            {overview.locationSectionTitle && (
-              <h2 className="section-title">{overview.locationSectionTitle}</h2>
-            )}
+            <h2 className="section-title">
+              {t('sections.location', 'Location')}
+            </h2>
             <div className="location-content">
               <div className="location-text">
                 <p className="section-content">
@@ -463,7 +493,7 @@ const ProjectOverviewPage = () => {
                 </p>
                 {overview.locationAddress && (
                   <div className="location-address">
-                    <strong>Address:</strong>
+                    <strong>{t('addressLabel', 'Address')}:</strong>
                     <p>{overview.locationAddress}</p>
                   </div>
                 )}
@@ -495,9 +525,10 @@ const ProjectOverviewPage = () => {
           className="back-button"
           onClick={() => navigate('/residential-projects')}
         >
-          &larr; Back to Residential Projects
+          &larr; {t('backToProjects', 'Back to Residential Projects')}
         </button>
       </div>
+      <ProjectsFooter projectId={projectIdentifier} />
     </div>
   );
 };

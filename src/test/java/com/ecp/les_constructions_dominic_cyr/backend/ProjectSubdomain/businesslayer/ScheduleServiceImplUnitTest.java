@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -59,9 +60,15 @@ class ScheduleServiceImplUnitTest {
     private Lot lot;
     private Project project;
 
+    private static final String LOT_53_ID = UUID.randomUUID().toString();
+    private static final String LOT_57_ID = UUID.randomUUID().toString();
+    private static final String LOT_100_ID = UUID.randomUUID().toString();
+    private static final String LOT_101_ID = UUID.randomUUID().toString();
+    private static final String LOT_999_ID = UUID.randomUUID().toString();
+
     @BeforeEach
     void setUp() {
-        LotIdentifier lotIdentifier = new LotIdentifier("Lot 53");
+        LotIdentifier lotIdentifier = new LotIdentifier(LOT_53_ID);
         lot = new Lot(lotIdentifier, "Lot-53", "Test Address", 150000f, "5000", "464.5", LotStatus.AVAILABLE);
         lot.setId(1);
 
@@ -76,7 +83,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Begin Excavation")
-                .lotId("Lot 53")
+                .lotId(UUID.fromString(LOT_53_ID))
                 .project(project)
                 .build();
 
@@ -86,7 +93,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(1))
                 .scheduleEndDate(LocalDate.now().plusDays(1))
                 .scheduleDescription("Plumbing")
-                .lotId("Lot 57")
+                .lotId(UUID.fromString(LOT_57_ID))
                 .project(project)
                 .build();
 
@@ -95,7 +102,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Begin Excavation")
-                .lotId("Lot 53")
+                .lotId(LOT_53_ID)
                 .build();
 
         responseDTO2 = ScheduleResponseDTO.builder()
@@ -103,7 +110,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(1))
                 .scheduleEndDate(LocalDate.now().plusDays(1))
                 .scheduleDescription("Plumbing")
-                .lotId("Lot 57")
+                .lotId(LOT_57_ID)
                 .build();
     }
 
@@ -193,7 +200,7 @@ class ScheduleServiceImplUnitTest {
         assertNotNull(result);
         assertEquals("SCH-001", result.getScheduleIdentifier());
         assertEquals("Begin Excavation", result.getScheduleDescription());
-        assertEquals("Lot 53", result.getLotId());
+        assertEquals(LOT_53_ID, result.getLotId());
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
         verify(scheduleMapper).entityToResponseDTO(schedule1);
@@ -222,10 +229,10 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotId("Lot 100")
+                .lotId(LOT_100_ID)
                 .build();
 
-        LotIdentifier lotId100 = new LotIdentifier("Lot 100");
+        LotIdentifier lotId100 = new LotIdentifier(LOT_100_ID);
         Lot lot100 = new Lot();
         lot100.setId(2);
         lot100.setLotIdentifier(lotId100);
@@ -235,7 +242,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotId("Lot 100")
+                .lotId(UUID.fromString(LOT_100_ID))
                 .build();
 
         ScheduleResponseDTO responseDTO = ScheduleResponseDTO.builder()
@@ -243,10 +250,10 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotId("Lot 100")
+                .lotId(LOT_100_ID)
                 .build();
 
-        when(lotRepository.findByLotIdentifier_LotId("Lot 100")).thenReturn(lot100);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_100_ID))).thenReturn(lot100);
         when(scheduleMapper.requestDTOToEntity(requestDTO)).thenReturn(newSchedule);
         when(scheduleRepository.save(newSchedule)).thenReturn(newSchedule);
         when(scheduleMapper.entityToResponseDTO(newSchedule)).thenReturn(responseDTO);
@@ -257,7 +264,7 @@ class ScheduleServiceImplUnitTest {
         assertEquals("SCH-NEW", result.getScheduleIdentifier());
         assertEquals("New Task", result.getScheduleDescription());
 
-        verify(lotRepository).findByLotIdentifier_LotId("Lot 100");
+        verify(lotRepository).findByLotIdentifier_LotId(UUID.fromString(LOT_100_ID));
         verify(scheduleMapper).requestDTOToEntity(requestDTO);
         verify(scheduleRepository).save(newSchedule);
         verify(scheduleMapper).entityToResponseDTO(newSchedule);
@@ -269,7 +276,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(null)
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotId("Lot 100")
+                .lotId(LOT_100_ID)
                 .build();
 
         assertThrows(InvalidInputException.class, () -> {
@@ -283,7 +290,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("")
-                .lotId("Lot 100")
+                .lotId(LOT_100_ID)
                 .build();
 
         assertThrows(InvalidInputException.class, () -> {
@@ -299,10 +306,10 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(5))
                 .scheduleEndDate(LocalDate.now().plusDays(5))
                 .scheduleDescription("Updated Task")
-                .lotId("Lot 101")
+                .lotId(LOT_101_ID)
                 .build();
 
-        LotIdentifier lotId101 = new LotIdentifier("Lot 101");
+        LotIdentifier lotId101 = new LotIdentifier(LOT_101_ID);
         Lot lot101 = new Lot();
         lot101.setId(3);
         lot101.setLotIdentifier(lotId101);
@@ -312,11 +319,11 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(5))
                 .scheduleEndDate(LocalDate.now().plusDays(5))
                 .scheduleDescription("Updated Task")
-                .lotId("Lot 101")
+                .lotId(LOT_101_ID)
                 .build();
 
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.of(schedule1));
-        when(lotRepository.findByLotIdentifier_LotId("Lot 101")).thenReturn(lot101);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_101_ID))).thenReturn(lot101);
         when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
         when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
 
@@ -327,7 +334,7 @@ class ScheduleServiceImplUnitTest {
         assertEquals("Updated Task", result.getScheduleDescription());
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
-        verify(lotRepository).findByLotIdentifier_LotId("Lot 101");
+        verify(lotRepository).findByLotIdentifier_LotId(UUID.fromString(LOT_101_ID));
         verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
         verify(scheduleRepository).save(schedule1);
     }
@@ -339,15 +346,15 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Updated Task")
-                .lotId("Lot 100")
+                .lotId(LOT_100_ID)
                 .build();
 
-        LotIdentifier lotId100 = new LotIdentifier("Lot 100");
+        LotIdentifier lotId100 = new LotIdentifier(LOT_100_ID);
         Lot lot100 = new Lot();
         lot100.setId(2);
         lot100.setLotIdentifier(lotId100);
 
-        when(lotRepository.findByLotIdentifier_LotId("Lot 100")).thenReturn(lot100);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_100_ID))).thenReturn(lot100);
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> {
@@ -447,7 +454,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(null)
                 .scheduleDescription("Test")
-                .lotId("Lot 100")
+                .lotId(LOT_100_ID)
                 .build();
 
         assertThrows(InvalidInputException.class, () -> {
@@ -475,16 +482,16 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Test")
-                .lotId("Lot 999")
+                .lotId(LOT_999_ID)
                 .build();
 
-        when(lotRepository.findByLotIdentifier_LotId("Lot 999")).thenReturn(null);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_999_ID))).thenReturn(null);
 
         assertThrows(NotFoundException.class, () -> {
             scheduleService.addSchedule(requestDTO);
         });
 
-        verify(lotRepository).findByLotIdentifier_LotId("Lot 999");
+        verify(lotRepository).findByLotIdentifier_LotId(UUID.fromString(LOT_999_ID));
     }
 
     @Test
@@ -494,10 +501,10 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(5))
                 .scheduleEndDate(LocalDate.now().plusDays(5))
                 .scheduleDescription("Updated Task")
-                .lotId("Lot 101")
+                .lotId(LOT_101_ID)
                 .build();
 
-        LotIdentifier lotId101 = new LotIdentifier("Lot 101");
+        LotIdentifier lotId101 = new LotIdentifier(LOT_101_ID);
         Lot lot101 = new Lot();
         lot101.setId(3);
         lot101.setLotIdentifier(lotId101);
@@ -507,11 +514,11 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(5))
                 .scheduleEndDate(LocalDate.now().plusDays(5))
                 .scheduleDescription("Updated Task")
-                .lotId("Lot 101")
+                .lotId(LOT_101_ID)
                 .build();
 
         when(scheduleRepository.findByScheduleIdentifier(identifier)).thenReturn(Optional.of(schedule1));
-        when(lotRepository.findByLotIdentifier_LotId("Lot 101")).thenReturn(lot101);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_101_ID))).thenReturn(lot101);
         when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
         when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
 
@@ -522,7 +529,7 @@ class ScheduleServiceImplUnitTest {
         assertEquals("Updated Task", result.getScheduleDescription());
 
         verify(scheduleRepository).findByScheduleIdentifier(identifier);
-        verify(lotRepository).findByLotIdentifier_LotId("Lot 101");
+        verify(lotRepository).findByLotIdentifier_LotId(UUID.fromString(LOT_101_ID));
         verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
         verify(scheduleRepository).save(schedule1);
     }
@@ -641,10 +648,10 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now().plusDays(7))
                 .scheduleDescription("Project Schedule")
-                .lotId("Lot 100")
+            .lotId(LOT_100_ID)
                 .build();
 
-        LotIdentifier lotId100 = new LotIdentifier("Lot 100");
+        LotIdentifier lotId100 = new LotIdentifier(LOT_100_ID);
         Lot lot100 = new Lot();
         lot100.setId(2);
         lot100.setLotIdentifier(lotId100);
@@ -654,7 +661,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now().plusDays(7))
                 .scheduleDescription("Project Schedule")
-                .lotId("Lot 100")
+                .lotId(UUID.fromString(LOT_100_ID))
                 .project(project)
                 .build();
 
@@ -663,11 +670,11 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now().plusDays(7))
                 .scheduleDescription("Project Schedule")
-                .lotId("Lot 100")
+                .lotId(LOT_100_ID)
                 .build();
 
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
-        when(lotRepository.findByLotIdentifier_LotId("Lot 100")).thenReturn(lot100);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_100_ID))).thenReturn(lot100);
         when(scheduleMapper.requestDTOToEntity(requestDTO)).thenReturn(newSchedule);
         when(scheduleRepository.save(newSchedule)).thenReturn(newSchedule);
         when(scheduleMapper.entityToResponseDTO(newSchedule)).thenReturn(responseDTO);
@@ -678,7 +685,7 @@ class ScheduleServiceImplUnitTest {
         assertEquals("SCH-NEW", result.getScheduleIdentifier());
 
         verify(projectRepository).findByProjectIdentifier(projectIdentifier);
-        verify(lotRepository).findByLotIdentifier_LotId("Lot 100");
+        verify(lotRepository).findByLotIdentifier_LotId(UUID.fromString(LOT_100_ID));
         verify(scheduleMapper).requestDTOToEntity(requestDTO);
         verify(scheduleRepository).save(newSchedule);
         verify(scheduleMapper).entityToResponseDTO(newSchedule);
@@ -691,7 +698,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now().plusDays(7))
                 .scheduleDescription("Project Schedule")
-                .lotId("Lot 100")
+            .lotId(LOT_100_ID)
                 .build();
 
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.empty());
@@ -712,10 +719,10 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(2))
                 .scheduleEndDate(LocalDate.now().plusDays(9))
                 .scheduleDescription("Updated Project Schedule")
-                .lotId("Lot 101")
+                .lotId(LOT_101_ID)
                 .build();
 
-        LotIdentifier lotId101 = new LotIdentifier("Lot 101");
+        LotIdentifier lotId101 = new LotIdentifier(LOT_101_ID);
         Lot lot101 = new Lot();
         lot101.setId(3);
         lot101.setLotIdentifier(lotId101);
@@ -725,11 +732,11 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(2))
                 .scheduleEndDate(LocalDate.now().plusDays(9))
                 .scheduleDescription("Updated Project Schedule")
-                .lotId("Lot 101")
+                .lotId(LOT_101_ID)
                 .build();
 
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
-        when(lotRepository.findByLotIdentifier_LotId("Lot 101")).thenReturn(lot101);
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_101_ID))).thenReturn(lot101);
         when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.of(schedule1));
         when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
         when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
@@ -741,7 +748,7 @@ class ScheduleServiceImplUnitTest {
         assertEquals("SCH-001", result.getScheduleIdentifier());
 
         verify(projectRepository).findByProjectIdentifier(projectIdentifier);
-        verify(lotRepository).findByLotIdentifier_LotId("Lot 101");
+        verify(lotRepository).findByLotIdentifier_LotId(UUID.fromString(LOT_101_ID));
         verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
         verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
         verify(scheduleRepository).save(schedule1);
@@ -755,7 +762,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now().plusDays(7))
                 .scheduleDescription("Updated Schedule")
-                .lotId("Lot 100")
+            .lotId(LOT_100_ID)
                 .build();
 
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.empty());

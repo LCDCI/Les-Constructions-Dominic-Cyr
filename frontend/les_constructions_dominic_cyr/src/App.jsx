@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  matchPath,
+} from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import AppNavBar from './components/NavBars/AppNavBar';
 import Home from './pages/Public_Facing/Home';
@@ -24,11 +30,14 @@ import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
 import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPage';
 import ContractorDashboard from './pages/Dashboards/ContractorDashboard';
+import LotDocumentsPage from './features/lots/components/LotDocumentsPage';
+import LotsListDashboard from './features/lots/components/LotsListDashboard';
 import ProjectFilesPage from './pages/Project/ProjectFilesPage';
 import ProjectPhotosPage from './pages/Project/ProjectPhotosPage';
 import ProjectSchedulePage from './pages/Project/ProjectSchedulePage';
 import PortalLogin from './pages/PortalLogin';
 import TaskDetailsPage from './pages/Tasks/TaskDetailsPage';
+import ContractorTasksPage from './pages/Tasks/ContractorTasksPage';
 import ProfilePage from './pages/ProfilePage';
 import QuoteListPage from './pages/Quotes/QuoteListPage';
 import QuoteFormPage from './pages/Quotes/QuoteFormPage';
@@ -47,6 +56,7 @@ import ReactGA from 'react-ga4';
 // import { loadTheme } from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
+import useBackendUser from './hooks/useBackendUser';
 
 function PageViewTracker() {
   const location = useLocation();
@@ -54,6 +64,35 @@ function PageViewTracker() {
     ReactGA.send({ hitType: 'pageview', page: location.pathname });
   }, [location]);
   return null;
+}
+
+function ContractorLotsDocuments() {
+  const { profile, loading } = useBackendUser();
+
+  if (loading || !profile) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+    );
+  }
+
+  return <LotsListDashboard userId={profile.userId} />;
+}
+
+function ConditionalFooter() {
+  const location = useLocation();
+
+  const isProjectPage =
+    matchPath('/projects/:projectIdentifier/overview', location.pathname) ||
+    matchPath('/projects/:projectIdentifier/lots', location.pathname);
+
+  const isContactPage = location.pathname === '/contact';
+  const isPortalLoginPage = location.pathname === '/portal/login';
+
+  if (isProjectPage || isContactPage || isPortalLoginPage) {
+    return null;
+  }
+
+  return <HomeFooter />;
 }
 
 export default function App() {
@@ -292,17 +331,61 @@ export default function App() {
               path="/projects/:projectId/metadata"
               element={<ProjectMetadata />}
             />
+            {/* Specific project routes must come before the generic /projects/:projectIdentifier route */}
             <Route
-              path="/projects/:projectIdentifier"
-              element={<ProjectEntryRouter />}
+              path="/projects/:projectId/files"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectFilesPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/photos"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectPhotosPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/schedule"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<ProjectSchedulePage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/lots/:lotId/metadata"
+              element={<LotMetadata />}
             />
             <Route
               path="/projects/:projectIdentifier/lots/select"
               element={<LotSelectPage />}
             />
+            {/* Generic project route must come last to avoid catching specific routes */}
             <Route
-              path="/projects/:projectId/lots/:lotId/metadata"
-              element={<LotMetadata />}
+              path="/projects/:projectIdentifier"
+              element={<ProjectEntryRouter />}
             />
 
             {/* Project team management removed */}
@@ -338,6 +421,99 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['CONTRACTOR']}
                   element={<ContractorDashboard />}
+                />
+              }
+            />
+
+            {/* Inbox routes */}
+            <Route
+              path="/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={[
+                    'OWNER',
+                    'SALESPERSON',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                  ]}
+                  element={<InboxPage />}
+                />
+              }
+            />
+            <Route
+              path="/customers/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CUSTOMER']}
+                  element={<InboxPage />}
+                />
+              }
+            />
+            <Route
+              path="/owner/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<InboxPage />}
+                />
+              }
+            />
+            <Route
+              path="/contractors/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CONTRACTOR']}
+                  element={<InboxPage />}
+                />
+              }
+            />
+            <Route
+              path="/salesperson/inbox"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['SALESPERSON']}
+                  element={<InboxPage />}
+                />
+              }
+            />
+
+            <Route
+              path="/contractors/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CONTRACTOR', 'OWNER']}
+                  element={<ContractorLotsDocuments />}
+                />
+              }
+            />
+
+            <Route
+              path="/owner/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<ContractorLotsDocuments />}
+                />
+              }
+            />
+
+            <Route
+              path="/dashboard/lots/:lotId/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
+                  element={<LotDocumentsPage />}
+                />
+              }
+            />
+
+            {/* Project-based lot documents route */}
+            <Route
+              path="/projects/:projectIdentifier/lots/:lotId/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR', 'CUSTOMER']}
+                  element={<LotDocumentsPage />}
                 />
               }
             />
@@ -442,6 +618,16 @@ export default function App() {
               }
             />
 
+            <Route
+              path="/contractor/tasks"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
+                  element={<ContractorTasksPage />}
+                />
+              }
+            />
+
             <Route path="/portal/login" element={<PortalLogin />} />
 
             <Route
@@ -455,61 +641,6 @@ export default function App() {
                     'CUSTOMER',
                   ]}
                   element={<ProfilePage />}
-                />
-              }
-            />
-
-            <Route
-              path="/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
-                  element={<InboxPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/owner/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['OWNER']}
-                  element={<InboxPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/salesperson/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['SALESPERSON']}
-                  element={<InboxPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/contractors/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['CONTRACTOR']}
-                  element={<InboxPage />}
-                />
-              }
-            />
-
-            <Route
-              path="/customers/inbox"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['CUSTOMER']}
-                  element={<InboxPage />}
                 />
               }
             />
@@ -540,7 +671,7 @@ export default function App() {
           </Routes>
         </main>
 
-        <HomeFooter />
+        <ConditionalFooter />
 
         {showIdleModal && (
           <IdleTimeoutModal

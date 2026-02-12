@@ -91,11 +91,9 @@ const ProjectsPage = () => {
       setError(null);
       setLoading(true);
 
-      // Build URLs based on filter
       const baseUrl = `${apiBaseUrl}/projects`;
 
       const headers = {};
-      // Include auth token if user is authenticated
       if (isAuthenticated) {
         try {
           const token = await getAccessTokenSilently({
@@ -159,7 +157,6 @@ const ProjectsPage = () => {
         setProjects(data || []);
         setFilteredProjects(data || []);
       } else {
-        // ACTIVE (default): explicitly filter out archived in case backend returns both for owners
         const response = await fetch(baseUrl, { headers });
         if (!response.ok) {
           const errorText = await response.text();
@@ -173,7 +170,6 @@ const ProjectsPage = () => {
 
       setLoading(false);
     } catch (error) {
-      console.error('[ProjectsPage] fetchProjects failed', error);
       if (error?.response?.status === 404) {
         redirectToError(404);
       } else {
@@ -195,7 +191,6 @@ const ProjectsPage = () => {
       });
       setFilteredProjects(filtered);
     } catch (err) {
-      console.error('[ProjectsPage] filterProjects error', err);
       setFilteredProjects([]);
     }
   };
@@ -232,7 +227,6 @@ const ProjectsPage = () => {
       });
 
       // Filter lots to only those assigned to current user
-      // For now, we'll assume the backend filtering already ensures user can only see their lots
       // If there are multiple lots, show selection modal
       if (lotsData && lotsData.length > 1) {
         setProjectForLotSelection(project);
@@ -244,12 +238,9 @@ const ProjectsPage = () => {
           `/projects/${project.projectIdentifier}/lots/${lotsData[0].lotId}/metadata`
         );
       } else {
-        // No lots found, go to project metadata directly
         navigate(`/projects/${project.projectIdentifier}/metadata`);
       }
     } catch (error) {
-      console.error('Error fetching lots for project view:', error);
-      // Fallback to project metadata
       navigate(`/projects/${project.projectIdentifier}/metadata`);
     }
   };

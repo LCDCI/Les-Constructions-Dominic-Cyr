@@ -1,0 +1,112 @@
+@startuml
+title DLSD for Salesperson View Project Page
+
+actor Salesperson
+participant "Frontend" as FE
+participant "ProjectController" as PC
+participant "LotController" as LC
+participant "UserService" as US
+participant "LotService" as LS
+participant "ProjectRepository" as PR
+participant "UsersRepository" as UR
+participant "LotRepository" as LR
+
+== 1. View List of Assigned Projects ==
+
+Salesperson -> FE: Click "view projects"
+FE -> PC: getAllProjects(isOwner=false)
+activate PC
+PC -> US: getUserByAuth0Id(auth0UserId)
+activate US
+US -> UR: findByAuth0UserId(auth0UserId)
+activate UR
+UR --> US: User / Optional.empty
+deactivate UR
+
+alt User not found
+    US --> PC: throw Exception
+    PC --> FE: 401 Unauthorized
+    FE --> Salesperson: Redirect to Login/Home
+else User exists
+    US --> PC: UserResponseModel
+    deactivate US
+
+    PC -> LR: findByAssignedUserId(userUuid)
+    activate LR
+    LR --> PC: List<Lot>
+    deactivate LR
+
+    PC --> FE: 200 OK (List<ProjectResponseModel>)
+end
+deactivate PC
+FE --> Salesperson: Display assigned projects list
+
+== 2. Select Project & Lot Redirection ==
+
+Salesperson -> FE: Click "view this project"
+FE -> LC: getAllLotsByProject(projectIdentifier)
+activate LC
+
+LC -> US: getUserByAuth0Id(auth0UserId)
+activate US
+US -> UR: findByAuth0UserId(auth0UserId)
+activate UR
+UR --> US: User
+deactivate UR
+US --> LC: UserResponseModel
+deactivate US
+
+LC -> PR: findByProjectIdentifier(projectIdentifier)
+activate PR
+PR --> LC: Project / Optional.empty
+deactivate PR
+
+alt Project not found
+    LC --> FE: 404 Not Found
+    FE --> Salesperson: Display Error
+else Project exists
+    LC -> LR: findByAssignedUserId(userUuid)
+    activate LR
+    LR --> LC: List<Lot>
+    deactivate LR
+
+    LC -> LS: mapLotsToResponses(filteredLots)
+    activate LS
+    LS --> LC: List<LotResponseModel>
+    deactivate LS
+
+    LC --> FE: 200 OK (List<LotResponseModel>)
+end
+deactivate LC
+
+alt (lots.count == 1)
+    FE -> FE: Automatically select lot
+else (lots.count > 1)
+    FE --> Salesperson: Display Lot Selection Screen
+    Salesperson -> FE: Select specific lot
+end
+
+== 3. View Lot Metadata ==
+
+FE -> LC: getLotById(lotId)
+activate LC
+LC -> LS: getLotById(lotId)
+activate LS
+LS -> LR: findByLotIdentifier(lotId)
+activate LR
+LR --> LS: Lot / Optional.empty
+deactivate LR
+
+alt Lot not found
+    LS --> LC: throw EntryNotFoundException
+    LC --> FE: 404 Not Found
+    FE --> Salesperson: Display "Lot not found"
+else Lot exists
+    LS --> LC: LotResponseModel
+    deactivate LS
+    LC --> FE: 200 OK (Lot Metadata)
+    deactivate LC
+    FE --> Salesperson: Display Lot Metadata Page
+end
+
+@enduml

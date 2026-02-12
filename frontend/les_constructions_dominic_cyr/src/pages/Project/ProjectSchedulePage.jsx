@@ -1,3 +1,5 @@
+/* eslint-disable no-empty */
+/* eslint-disable no-unused-vars */
 import React, {
   useState,
   useEffect,
@@ -34,6 +36,7 @@ import EditScheduleModal from '../../components/Modals/EditScheduleModal';
 import TaskModal from '../../components/Modals/TaskModal';
 import { useBackendUser } from '../../hooks/useBackendUser';
 import { ROLES } from '../../utils/permissions';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Project/ProjectSchedule.css';
 
 const locales = {
@@ -132,6 +135,7 @@ const computeTaskProgress = (estimated, hours) => {
 };
 
 const ProjectSchedulePage = () => {
+  const { t } = usePageTranslations('projectSchedulePage');
   const { projectId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -343,8 +347,8 @@ const ProjectSchedulePage = () => {
       title:
         normalized.scheduleDescription ||
         (normalized.lotNumber
-          ? `Schedule · ${normalized.lotNumber}`
-          : 'Schedule'),
+          ? `${t('schedule', 'Schedule')} · ${normalized.lotNumber}`
+          : t('schedule', 'Schedule')),
       start: safeStart,
       end: safeEnd < safeStart ? safeStart : safeEnd,
       allDay:
@@ -473,7 +477,7 @@ const ProjectSchedulePage = () => {
         if (!scheduleResponse || scheduleResponse.length === 0) {
           setSchedules([]);
           setEvents([]);
-          setProjectName('Project');
+          setProjectName(t('project', 'Project'));
           setDefaultDate(new Date());
           setCurrentDate(new Date());
           setError(null);
@@ -495,7 +499,9 @@ const ProjectSchedulePage = () => {
 
         setEvents(mappedEvents);
         setSchedules(scheduleWithIds);
-        setProjectName(scheduleWithIds[0]?.projectName || 'Project');
+        setProjectName(
+          scheduleWithIds[0]?.projectName || t('project', 'Project')
+        );
 
         // Fetch project data to get contractor IDs
         try {
@@ -520,7 +526,12 @@ const ProjectSchedulePage = () => {
 
         setError(null);
       } catch (err) {
-        setError('Failed to load project schedules. Please try again later.');
+        setError(
+          t(
+            'error',
+            'Failed to load project schedules. Please try again later.'
+          )
+        );
       } finally {
         setLoading(false);
       }
@@ -550,7 +561,7 @@ const ProjectSchedulePage = () => {
       setLotsError(null);
     } catch (err) {
       console.error('Lots loading error:', err);
-      setLotsError('Unable to load lots.');
+      setLotsError(t('errors.loadLotsFailed', 'Unable to load lots.'));
     } finally {
       setLotsLoading(false);
     }
@@ -648,7 +659,10 @@ const ProjectSchedulePage = () => {
           ? {
               ...prev,
               tasksLoading: false,
-              tasksError: 'Failed to load tasks for this schedule.',
+              tasksError: t(
+                'errors.loadTasksFailed',
+                'Failed to load tasks for this schedule.'
+              ),
             }
           : prev
       );
@@ -847,12 +861,14 @@ const ProjectSchedulePage = () => {
     setFormError('');
 
     if (!newSchedule.scheduleDescription.trim()) {
-      setFormError('Schedule description is required.');
+      setFormError(
+        t('errors.descriptionRequired', 'Schedule description is required.')
+      );
       return;
     }
 
     if (!newSchedule.lotId) {
-      setFormError('Please select a lot.');
+      setFormError(t('errors.lotRequired', 'Please select a lot.'));
       return;
     }
 
@@ -903,7 +919,9 @@ const ProjectSchedulePage = () => {
       setSchedules(prev => [...prev, normalized]);
       setEvents(prev => [...prev, newEvent]);
       setSelectedEvent(newEvent);
-      setProjectName(prev => prev || normalized.projectName || 'Project');
+      setProjectName(
+        prev => prev || normalized.projectName || t('project', 'Project')
+      );
       setScheduleForTasks(normalized);
       resetTaskDrafts(payload.scheduleStartDate, payload.scheduleEndDate);
       setIsCreateModalOpen(false);
@@ -912,7 +930,9 @@ const ProjectSchedulePage = () => {
       setNewSchedule(buildEmptyScheduleForm());
     } catch (err) {
       const detailed = extractErrorMessage(err);
-      setFormError(`Failed to create schedule: ${detailed}`);
+      setFormError(
+        `${t('errors.createFailed', 'Failed to create schedule')}: ${detailed}`
+      );
     } finally {
       setIsSaving(false);
     }
@@ -976,17 +996,21 @@ const ProjectSchedulePage = () => {
 
     const scheduleIdentifier = editSchedule.scheduleIdentifier;
     if (!scheduleIdentifier) {
-      setEditFormError('Missing schedule identifier for update.');
+      setEditFormError(
+        t('errors.updateFailed', 'Missing schedule identifier for update.')
+      );
       return false;
     }
 
     if (!editSchedule.scheduleDescription.trim()) {
-      setEditFormError('Schedule description is required.');
+      setEditFormError(
+        t('errors.descriptionRequired', 'Schedule description is required.')
+      );
       return false;
     }
 
     if (!editSchedule.lotId) {
-      setEditFormError('Please select a lot.');
+      setEditFormError(t('errors.lotRequired', 'Please select a lot.'));
       return false;
     }
 
@@ -1130,7 +1154,9 @@ const ProjectSchedulePage = () => {
       return true;
     } catch (err) {
       const detailed = extractErrorMessage(err);
-      setEditFormError(`Failed to update schedule: ${detailed}`);
+      setEditFormError(
+        `${t('errors.updateFailed', 'Failed to update schedule')}: ${detailed}`
+      );
       return false;
     } finally {
       setIsSavingEdit(false);
@@ -1192,7 +1218,9 @@ const ProjectSchedulePage = () => {
       setTasksToDelete([]);
     } catch (err) {
       const detailed = extractErrorMessage(err);
-      setEditFormError(`Failed to delete schedule: ${detailed}`);
+      setEditFormError(
+        `${t('errors.deleteFailed', 'Failed to delete schedule')}: ${detailed}`
+      );
     } finally {
       setIsDeletingSchedule(false);
     }
@@ -1200,7 +1228,12 @@ const ProjectSchedulePage = () => {
 
   const handleSaveTasks = async () => {
     if (!scheduleForTasks) {
-      setTaskFormError('No schedule selected. Please create a schedule first.');
+      setTaskFormError(
+        t(
+          'errors.noScheduleSelected',
+          'No schedule selected. Please create a schedule first.'
+        )
+      );
       return;
     }
 
@@ -1259,7 +1292,9 @@ const ProjectSchedulePage = () => {
 
       const scheduleIdentifier = getScheduleIdentifier(scheduleForTasks);
       if (!scheduleIdentifier) {
-        setTaskFormError('Could not determine schedule id for tasks.');
+        setTaskFormError(
+          t('errors.noScheduleId', 'Could not determine schedule id for tasks.')
+        );
         return;
       }
 
@@ -1322,29 +1357,37 @@ const ProjectSchedulePage = () => {
       const detailed = extractErrorMessage(taskErr);
       const authHint =
         status === 401 || status === 403
-          ? ' Please make sure you are signed in with a role that can create tasks.'
+          ? t(
+              'errors.authRequired',
+              ' Please make sure you are signed in with a role that can create tasks.'
+            )
           : '';
-      setTaskFormError(`Failed to save tasks: ${detailed}.${authHint}`);
+      setTaskFormError(
+        `${t('errors.saveTasksFailed', 'Failed to save tasks')}: ${detailed}.${authHint}`
+      );
     } finally {
       setIsSavingTasks(false);
     }
   };
 
   const CustomToolbar = toolbarProps => {
-    const monthNames = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
+    const monthNames = useMemo(
+      () => [
+        t('months.january', 'January'),
+        t('months.february', 'February'),
+        t('months.march', 'March'),
+        t('months.april', 'April'),
+        t('months.may', 'May'),
+        t('months.june', 'June'),
+        t('months.july', 'July'),
+        t('months.august', 'August'),
+        t('months.september', 'September'),
+        t('months.october', 'October'),
+        t('months.november', 'November'),
+        t('months.december', 'December'),
+      ],
+      [t]
+    );
 
     const currentYear = currentDate.getFullYear();
     const years = Array.from({ length: 11 }, (_, idx) => currentYear - 5 + idx);
@@ -1379,10 +1422,10 @@ const ProjectSchedulePage = () => {
               className="toolbar-button"
               onClick={() => toolbarProps.onNavigate('TODAY')}
             >
-              Today
+              {t('today', 'Today')}
             </button>
             <span className="toolbar-today-label">
-              Today: {formatDate(today, 'eee, MMM d')}
+              {t('today', 'Today')}: {formatDate(today, 'eee, MMM d')}
             </span>
           </div>
           <div className="toolbar-nav">
@@ -1407,20 +1450,20 @@ const ProjectSchedulePage = () => {
               className={`toolbar-button ${currentView === Views.WEEK ? 'toolbar-button-active' : ''}`}
               onClick={() => handleViewChange(Views.WEEK)}
             >
-              Week
+              {t('week', 'Week')}
             </button>
             <button
               type="button"
               className={`toolbar-button ${currentView === Views.MONTH ? 'toolbar-button-active' : ''}`}
               onClick={() => handleViewChange(Views.MONTH)}
             >
-              Month
+              {t('month', 'Month')}
             </button>
           </div>
         </div>
         <div className="toolbar-right">
           <select
-            aria-label="Select month"
+            aria-label={t('selectMonth', 'Select month')}
             className="toolbar-select"
             value={currentDate.getMonth()}
             onChange={handleMonthChange}
@@ -1432,7 +1475,7 @@ const ProjectSchedulePage = () => {
             ))}
           </select>
           <select
-            aria-label="Select year"
+            aria-label={t('selectYear', 'Select year')}
             className="toolbar-select"
             value={currentDate.getFullYear()}
             onChange={handleYearChange}
@@ -1452,8 +1495,11 @@ const ProjectSchedulePage = () => {
   if (loading) {
     return (
       <div className="schedule-loading">
-        <div className="spinner" aria-label="Loading schedule" />
-        <span>Loading schedule…</span>
+        <div
+          className="spinner"
+          aria-label={t('loading', 'Loading schedule')}
+        />
+        <span>{t('loading', 'Loading schedule…')}</span>
       </div>
     );
   }
@@ -1463,7 +1509,7 @@ const ProjectSchedulePage = () => {
       <div className="schedule-error">
         <div>{error}</div>
         <button type="button" onClick={() => window.location.reload()}>
-          Retry
+          {t('retry', 'Retry')}
         </button>
       </div>
     );
@@ -1473,7 +1519,7 @@ const ProjectSchedulePage = () => {
     <div className="project-schedule-page">
       <div className="schedule-header">
         <div>
-          <h1>Project Schedule</h1>
+          <h1>{t('title', 'Project Schedule')}</h1>
           <div className="schedule-subtitle">{projectName}</div>
         </div>
         <div className="schedule-actions">
@@ -1494,7 +1540,7 @@ const ProjectSchedulePage = () => {
                 ]);
               }}
             >
-              + New Work
+              {t('newWork', '+ New Work')}
             </button>
           )}
         </div>
@@ -1523,9 +1569,9 @@ const ProjectSchedulePage = () => {
         </div>
 
         <div className="schedule-list">
-          <div className="list-title">Upcoming Work</div>
+          <div className="list-title">{t('upcomingWork', 'Upcoming Work')}</div>
           {schedules.length === 0 && (
-            <div className="empty">No schedules yet.</div>
+            <div className="empty">{t('noSchedules', 'No schedules yet.')}</div>
           )}
           {schedules.map(schedule => {
             const start = parseDateSafe(schedule.scheduleStartDate);
@@ -1538,8 +1584,8 @@ const ProjectSchedulePage = () => {
                 : [];
             const taskCount = tasksArray.length;
             const lotLabel = schedule.lotId
-              ? `Lot ${schedule.lotId}`
-              : 'Lot unknown';
+              ? `${t('lot', 'Lot')} ${schedule.lotId}`
+              : t('lotUnknown', 'Lot unknown');
             return (
               <div
                 key={getScheduleIdentifier(schedule)}
@@ -1557,17 +1603,23 @@ const ProjectSchedulePage = () => {
                 <div className="card-top">
                   <div>
                     <div className="card-title">
-                      {schedule.scheduleDescription || 'Schedule'}
+                      {schedule.scheduleDescription ||
+                        t('schedule', 'Schedule')}
                     </div>
                     <div className="card-meta">
                       {lotLabel} ·{' '}
-                      {start ? formatDate(start, 'MMM d, yyyy') : 'Start ?'}
+                      {start
+                        ? formatDate(start, 'MMM d, yyyy')
+                        : t('startUnknown', 'Start ?')}
                       {end ? ` → ${formatDate(end, 'MMM d, yyyy')}` : ''}
-                      {isToday ? ' · Today' : ''}
+                      {isToday ? ` · ${t('today', 'Today')}` : ''}
                     </div>
                     <div className="card-meta">
                       <span className="card-chip">
-                        {taskCount} task{taskCount === 1 ? '' : 's'}
+                        {taskCount}{' '}
+                        {taskCount === 1
+                          ? t('task', 'task')
+                          : t('tasks', 'tasks')}
                       </span>
                     </div>
                   </div>
@@ -1581,7 +1633,7 @@ const ProjectSchedulePage = () => {
                           openEditScheduleModal(schedule);
                         }}
                       >
-                        <FiEdit2 size={16} /> Edit
+                        <FiEdit2 size={16} /> {t('edit', 'Edit')}
                       </button>
                     </div>
                   )}
@@ -1593,7 +1645,7 @@ const ProjectSchedulePage = () => {
       </div>
 
       <ScheduleFormModal
-        title="Create Work"
+        title={t('createWork', 'Create Work')}
         isOpen={isCreateModalOpen}
         schedule={newSchedule}
         onChange={setNewSchedule}

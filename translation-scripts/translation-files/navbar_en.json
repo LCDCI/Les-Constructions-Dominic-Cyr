@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "dashboard": "Dashboard",
+    "management": "Management",
+    "administrative": "Administrative",
+    "settings": "Settings"
+  },
+  "menuItems": {
+    "dashboard": "Dashboard",
+    "home": "Home",
+    "inbox": "Inbox",
+    "inquiries": "Inquiries",
+    "projects": "Projects",
+    "forms": "Forms",
+    "uploads": "Uploads",
+    "documents": "Documents",
+    "lots": "Lots",
+    "users": "Users",
+    "analyticsReports": "Analytics & Reports",
+    "quotes": "Quotes",
+    "myProfile": "My Profile",
+    "accountSettings": "Account Settings",
+    "notificationPreferences": "Notification Preferences",
+    "logout": "Logout"
+  }
+}
