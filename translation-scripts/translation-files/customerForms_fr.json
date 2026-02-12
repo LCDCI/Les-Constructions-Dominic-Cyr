@@ -42,7 +42,7 @@
     "close": "Fermer"
   },
   "modal": {
-    "editTitle": "Formulaire {{formType}}",
+    "editTitle": "Formulaire",
     "historyTitle": "Historique des soumissions",
     "historyLoading": "Chargement de l'historique...",
     "noHistory": "Aucun historique de soumission disponible",

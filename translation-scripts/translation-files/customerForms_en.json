@@ -42,7 +42,7 @@
     "close": "Close"
   },
   "modal": {
-    "editTitle": "{{formType}} Form",
+    "editTitle": "Form",
     "historyTitle": "Submission History",
     "historyLoading": "Loading history...",
     "noHistory": "No submission history available",
