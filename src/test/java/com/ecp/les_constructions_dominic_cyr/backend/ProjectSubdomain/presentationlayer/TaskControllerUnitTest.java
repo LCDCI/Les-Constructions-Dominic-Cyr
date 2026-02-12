@@ -6,6 +6,9 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskController;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,12 +35,20 @@ class TaskControllerUnitTest {
     @Mock
     private TaskService taskService;
 
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private Jwt jwt;
+
     @InjectMocks
     private TaskController taskController;
 
     private TaskDetailResponseDTO taskResponseDTO1;
     private TaskDetailResponseDTO taskResponseDTO2;
     private TaskRequestDTO taskRequestDTO;
+    private UserResponseModel customerUser;
+    private UserResponseModel salespersonUser;
 
     @BeforeEach
     void setUp() {
@@ -85,6 +97,20 @@ class TaskControllerUnitTest {
                 .assignedToUserId("user-123")
                 .scheduleId("SCH-001")
                 .build();
+
+        customerUser = new UserResponseModel();
+        customerUser.setUserIdentifier("customer-123");
+        customerUser.setUserRole(UserRole.CUSTOMER);
+        customerUser.setFirstName("John");
+        customerUser.setLastName("Customer");
+        customerUser.setPrimaryEmail("customer@test.com");
+
+        salespersonUser = new UserResponseModel();
+        salespersonUser.setUserIdentifier("salesperson-456");
+        salespersonUser.setUserRole(UserRole.SALESPERSON);
+        salespersonUser.setFirstName("Jane");
+        salespersonUser.setLastName("Sales");
+        salespersonUser.setPrimaryEmail("sales@test.com");
     }
 
     // Owner Endpoints Tests
@@ -705,5 +731,117 @@ class TaskControllerUnitTest {
         assertEquals(contractorId, responseTasks.get(0).getAssignedToUserId());
 
         verify(taskService).getTasksForContractor(contractorId);
+    }
+
+    // Customer Endpoints Tests
+    @Test
+    void getCustomerTasks_shouldReturnTasksForAssignedLots() {
+        String auth0UserId = "auth0|customer123";
+        List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2);
+
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenReturn(customerUser);
+        when(taskService.getTasksForUserAssignedLots(customerUser.getUserIdentifier())).thenReturn(tasks);
+
+        ResponseEntity<?> response = taskController.getCustomerTasks(jwt);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseTasks = (List<TaskDetailResponseDTO>) response.getBody();
+        assertNotNull(responseTasks);
+        assertEquals(2, responseTasks.size());
+
+        verify(jwt).getSubject();
+        verify(userService).getUserByAuth0Id(auth0UserId);
+        verify(taskService).getTasksForUserAssignedLots(customerUser.getUserIdentifier());
+    }
+
+    @Test
+    void getCustomerTasks_shouldReturnEmptyListWhenNoTasks() {
+        String auth0UserId = "auth0|customer123";
+
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenReturn(customerUser);
+        when(taskService.getTasksForUserAssignedLots(customerUser.getUserIdentifier())).thenReturn(Collections.emptyList());
+
+        ResponseEntity<?> response = taskController.getCustomerTasks(jwt);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseTasks = (List<TaskDetailResponseDTO>) response.getBody();
+        assertNotNull(responseTasks);
+        assertTrue(responseTasks.isEmpty());
+
+        verify(taskService).getTasksForUserAssignedLots(customerUser.getUserIdentifier());
+    }
+
+    @Test
+    void getCustomerTasks_shouldReturnNotFoundWhenUserNotFound() {
+        String auth0UserId = "auth0|customer999";
+
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenThrow(new NotFoundException("User not found"));
+
+        ResponseEntity<?> response = taskController.getCustomerTasks(jwt);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(userService).getUserByAuth0Id(auth0UserId);
+        verify(taskService, never()).getTasksForUserAssignedLots(any());
+    }
+
+    // Salesperson Endpoints Tests
+    @Test
+    void getSalespersonTasks_shouldReturnTasksForAssignedLots() {
+        String auth0UserId = "auth0|sales456";
+        List<TaskDetailResponseDTO> tasks = Collections.singletonList(taskResponseDTO1);
+
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenReturn(salespersonUser);
+        when(taskService.getTasksForUserAssignedLots(salespersonUser.getUserIdentifier())).thenReturn(tasks);
+
+        ResponseEntity<?> response = taskController.getSalespersonTasks(jwt);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseTasks = (List<TaskDetailResponseDTO>) response.getBody();
+        assertNotNull(responseTasks);
+        assertEquals(1, responseTasks.size());
+
+        verify(jwt).getSubject();
+        verify(userService).getUserByAuth0Id(auth0UserId);
+        verify(taskService).getTasksForUserAssignedLots(salespersonUser.getUserIdentifier());
+    }
+
+    @Test
+    void getSalespersonTasks_shouldReturnEmptyListWhenNoTasks() {
+        String auth0UserId = "auth0|sales456";
+
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenReturn(salespersonUser);
+        when(taskService.getTasksForUserAssignedLots(salespersonUser.getUserIdentifier())).thenReturn(Collections.emptyList());
+
+        ResponseEntity<?> response = taskController.getSalespersonTasks(jwt);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseTasks = (List<TaskDetailResponseDTO>) response.getBody();
+        assertNotNull(responseTasks);
+        assertTrue(responseTasks.isEmpty());
+
+        verify(taskService).getTasksForUserAssignedLots(salespersonUser.getUserIdentifier());
+    }
+
+    @Test
+    void getSalespersonTasks_shouldReturnNotFoundWhenUserNotFound() {
+        String auth0UserId = "auth0|sales999";
+
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenThrow(new NotFoundException("User not found"));
+
+        ResponseEntity<?> response = taskController.getSalespersonTasks(jwt);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(userService).getUserByAuth0Id(auth0UserId);
+        verify(taskService, never()).getTasksForUserAssignedLots(any());
     }
 }

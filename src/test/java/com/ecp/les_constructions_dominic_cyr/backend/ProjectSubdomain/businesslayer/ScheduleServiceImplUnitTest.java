@@ -1,5 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.businesslayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.MailerServiceClient;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.ScheduleServiceImpl;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
@@ -13,6 +15,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLaye
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -49,6 +53,12 @@ class ScheduleServiceImplUnitTest {
 
     @Mock
     private LotRepository lotRepository;
+
+    @Mock
+    private MailerServiceClient mailerServiceClient;
+
+    @Mock
+    private NotificationService notificationService;
 
     @InjectMocks
     private ScheduleServiceImpl scheduleService;
@@ -83,7 +93,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("Begin Excavation")
-                .lotId(LOT_53_ID)
+                .lotId(UUID.fromString(LOT_53_ID))
                 .project(project)
                 .build();
 
@@ -93,7 +103,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now().plusDays(1))
                 .scheduleEndDate(LocalDate.now().plusDays(1))
                 .scheduleDescription("Plumbing")
-                .lotId(LOT_57_ID)
+                .lotId(UUID.fromString(LOT_57_ID))
                 .project(project)
                 .build();
 
@@ -242,7 +252,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now())
                 .scheduleDescription("New Task")
-                .lotId(LOT_100_ID)
+                .lotId(UUID.fromString(LOT_100_ID))
                 .build();
 
         ScheduleResponseDTO responseDTO = ScheduleResponseDTO.builder()
@@ -661,7 +671,7 @@ class ScheduleServiceImplUnitTest {
                 .scheduleStartDate(LocalDate.now())
                 .scheduleEndDate(LocalDate.now().plusDays(7))
                 .scheduleDescription("Project Schedule")
-                .lotId(LOT_100_ID)
+                .lotId(UUID.fromString(LOT_100_ID))
                 .project(project)
                 .build();
 
@@ -735,11 +745,28 @@ class ScheduleServiceImplUnitTest {
                 .lotId(LOT_101_ID)
                 .build();
 
+        // Set up lot with assigned users
+        Users user1 = new Users();
+        user1.setUserIdentifier(com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier.newId());
+        user1.setFirstName("John");
+        user1.setPrimaryEmail("john@example.com");
+
+        Users user2 = new Users();
+        user2.setUserIdentifier(com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier.newId());
+        user2.setFirstName("Jane");
+        user2.setPrimaryEmail("jane@example.com");
+
+        lot101.setAssignedUsers(Arrays.asList(user1, user2));
+
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
         when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(LOT_101_ID))).thenReturn(lot101);
         when(scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)).thenReturn(Optional.of(schedule1));
         when(scheduleRepository.save(schedule1)).thenReturn(schedule1);
         when(scheduleMapper.entityToResponseDTO(schedule1)).thenReturn(updatedResponseDTO);
+
+        // Mock notification and email services
+        when(notificationService.createNotification(any(UUID.class), anyString(), anyString(), any(), anyString())).thenReturn(null);
+        when(mailerServiceClient.sendEmail(anyString(), anyString(), anyString(), anyString())).thenReturn(Mono.empty());
 
         ScheduleResponseDTO result = scheduleService.updateScheduleForProject(
                 projectIdentifier, scheduleIdentifier, requestDTO);
@@ -752,6 +779,10 @@ class ScheduleServiceImplUnitTest {
         verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
         verify(scheduleMapper).updateEntityFromRequestDTO(schedule1, requestDTO);
         verify(scheduleRepository).save(schedule1);
+
+        // Verify notifications were sent to assigned users
+        verify(notificationService, times(2)).createNotification(any(UUID.class), eq("Project Schedule Updated"), anyString(), any(), anyString());
+        verify(mailerServiceClient, times(2)).sendEmail(anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -821,4 +852,89 @@ class ScheduleServiceImplUnitTest {
         verify(scheduleRepository).findByScheduleIdentifier(scheduleIdentifier);
         verify(scheduleRepository, never()).delete(any());
     }
+
+    @Test
+    void getSchedulesForUserAssignedLots_shouldReturnSchedulesForAssignedLots() {
+        String userId = UUID.randomUUID().toString();
+        UUID userUuid = UUID.fromString(userId);
+        UUID lotId1 = UUID.fromString(LOT_53_ID);
+        UUID lotId2 = UUID.fromString(LOT_57_ID);
+
+        Lot lot1 = new Lot();
+        lot1.setLotIdentifier(new LotIdentifier(lotId1.toString()));
+        Lot lot2 = new Lot();
+        lot2.setLotIdentifier(new LotIdentifier(lotId2.toString()));
+
+        List<Lot> assignedLots = Arrays.asList(lot1, lot2);
+        List<Schedule> schedules = Arrays.asList(schedule1, schedule2);
+
+        when(lotRepository.findByAssignedUserId(userUuid)).thenReturn(assignedLots);
+        when(scheduleRepository.findByLotIdIn(Arrays.asList(lotId1, lotId2))).thenReturn(schedules);
+        when(scheduleMapper.entitiesToResponseDTOs(schedules)).thenReturn(Arrays.asList(responseDTO1, responseDTO2));
+
+        List<ScheduleResponseDTO> result = scheduleService.getSchedulesForUserAssignedLots(userId);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(lotRepository).findByAssignedUserId(userUuid);
+        verify(scheduleRepository).findByLotIdIn(Arrays.asList(lotId1, lotId2));
+    }
+
+    @Test
+    void getSchedulesForUserAssignedLots_shouldReturnEmptyListWhenNoAssignedLots() {
+        String userId = UUID.randomUUID().toString();
+        UUID userUuid = UUID.fromString(userId);
+
+        when(lotRepository.findByAssignedUserId(userUuid)).thenReturn(Collections.emptyList());
+
+        List<ScheduleResponseDTO> result = scheduleService.getSchedulesForUserAssignedLots(userId);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(lotRepository).findByAssignedUserId(userUuid);
+        verify(scheduleRepository, never()).findByLotIdIn(any());
+    }
+
+    @Test
+    void getSchedulesByProjectIdentifierAndUserAssignedLots_shouldReturnFilteredSchedules() {
+        String projectIdentifier = "proj-001";
+        String userId = UUID.randomUUID().toString();
+        UUID userUuid = UUID.fromString(userId);
+        UUID lotId1 = UUID.fromString(LOT_53_ID);
+
+        Lot lot1 = new Lot();
+        lot1.setLotIdentifier(new LotIdentifier(lotId1.toString()));
+
+        List<Lot> assignedLots = Collections.singletonList(lot1);
+        List<Schedule> schedules = Collections.singletonList(schedule1);
+
+        when(lotRepository.findByAssignedUserId(userUuid)).thenReturn(assignedLots);
+        when(scheduleRepository.findByProjectIdentifierAndLotIdIn(projectIdentifier, Collections.singletonList(lotId1)))
+                .thenReturn(schedules);
+        when(scheduleMapper.entitiesToResponseDTOs(schedules)).thenReturn(Collections.singletonList(responseDTO1));
+
+        List<ScheduleResponseDTO> result = scheduleService.getSchedulesByProjectIdentifierAndUserAssignedLots(projectIdentifier, userId);
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(lotRepository).findByAssignedUserId(userUuid);
+        verify(scheduleRepository).findByProjectIdentifierAndLotIdIn(projectIdentifier, Collections.singletonList(lotId1));
+    }
+
+    @Test
+    void getSchedulesByProjectIdentifierAndUserAssignedLots_shouldReturnEmptyListWhenNoAssignedLots() {
+        String projectIdentifier = "proj-001";
+        String userId = UUID.randomUUID().toString();
+        UUID userUuid = UUID.fromString(userId);
+
+        when(lotRepository.findByAssignedUserId(userUuid)).thenReturn(Collections.emptyList());
+
+        List<ScheduleResponseDTO> result = scheduleService.getSchedulesByProjectIdentifierAndUserAssignedLots(projectIdentifier, userId);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(lotRepository).findByAssignedUserId(userUuid);
+        verify(scheduleRepository, never()).findByProjectIdentifierAndLotIdIn(any(), any());
+    }
 }
+

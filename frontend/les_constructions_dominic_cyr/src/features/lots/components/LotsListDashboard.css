@@ -106,7 +106,6 @@
   color: #333;
 }
 
-
 .lots-table {
   background: white;
   border-radius: 10px;
@@ -117,7 +116,10 @@
 .lots-table-header,
 .lots-table-row {
   display: grid;
-  grid-template-columns: 1.3fr 0.8fr 1.8fr 1fr 1fr 1.1fr 1fr minmax(160px, 1.3fr);
+  grid-template-columns: 1.3fr 0.8fr 1.8fr 1fr 1fr 1.1fr 1fr minmax(
+      160px,
+      1.3fr
+    );
   gap: 1rem;
   align-items: center;
 }
@@ -169,7 +171,9 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition:
+    background 0.2s,
+    transform 0.1s;
   font-weight: 500;
 }
 
@@ -208,7 +212,6 @@
   background: #e3f2fd;
   color: #1565c0;
 }
-
 
 .btn-primary {
   background: #1976d2;

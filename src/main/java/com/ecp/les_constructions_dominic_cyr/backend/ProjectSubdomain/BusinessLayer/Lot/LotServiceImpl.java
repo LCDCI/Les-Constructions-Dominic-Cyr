@@ -47,6 +47,25 @@ public class LotServiceImpl implements LotService{
     }
 
     @Override
+    public List<LotResponseModel> getLotsByProjectAndBothUsersAssigned(String projectIdentifier, String salespersonId, String customerId) {
+        if (projectIdentifier == null || projectIdentifier.isBlank()) {
+            throw new InvalidInputException("Project identifier must not be blank");
+        }
+        if (salespersonId == null || salespersonId.isBlank()) {
+            throw new InvalidInputException("Salesperson ID must not be blank");
+        }
+        if (customerId == null || customerId.isBlank()) {
+            throw new InvalidInputException("Customer ID must not be blank");
+        }
+
+        UUID salespersonUuid = UUID.fromString(salespersonId);
+        UUID customerUuid = UUID.fromString(customerId);
+
+        List<Lot> lots = lotRepository.findByProjectAndBothUsersAssigned(projectIdentifier, salespersonUuid, customerUuid);
+        return mapLotsToResponses(lots);
+    }
+
+    @Override
     public LotResponseModel getLotById(String lotId) {
         UUID lotUuid = UUID.fromString(lotId);
         Lot lot = lotRepository.findByLotIdentifier_LotId(lotUuid);
@@ -210,32 +229,20 @@ public class LotServiceImpl implements LotService{
     }
 
     public List<LotResponseModel> mapLotsToResponses(List<Lot> lots) {
-        List<LotResponseModel> responseList = new ArrayList<>();
-        for (Lot lot : lots) {
-            responseList.add(mapToResponse(lot));
-        }
-        return responseList;
+        return lots.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
 
-    private void validateLotRequest(LotRequestModel lotRequestModel) {
-        if (lotRequestModel.getLotNumber() == null || lotRequestModel.getLotNumber().isBlank()) {
-            throw new InvalidInputException("Lot number must not be blank");
+    private void validateLotRequest(LotRequestModel requestModel) {
+        if (requestModel.getLotNumber() == null || requestModel.getLotNumber().isBlank()) {
+            throw new InvalidInputException("Lot number is required");
         }
-        if (lotRequestModel.getCivicAddress() == null || lotRequestModel.getCivicAddress().isBlank()) {
-            throw new InvalidInputException("Civic address must not be blank");
+        if (requestModel.getCivicAddress() == null || requestModel.getCivicAddress().isBlank()) {
+            throw new InvalidInputException("Civic address is required");
         }
-        // Price is optional - only validate if provided
-        if (lotRequestModel.getPrice() != null && lotRequestModel.getPrice() < 0) {
-            throw new InvalidInputException("Price cannot be negative");
-        }
-        if (lotRequestModel.getDimensionsSquareFeet() == null || lotRequestModel.getDimensionsSquareFeet().isBlank()) {
-            throw new InvalidInputException("Dimensions in square feet must not be blank");
-        }
-        if (lotRequestModel.getDimensionsSquareMeters() == null || lotRequestModel.getDimensionsSquareMeters().isBlank()) {
-            throw new InvalidInputException("Dimensions in square meters must not be blank");
-        }
-        if (lotRequestModel.getLotStatus() == null) {
-            throw new InvalidInputException("Lot status must not be null");
+        if (requestModel.getLotStatus() == null) {
+            throw new InvalidInputException("Lot status is required");
         }
     }
 }

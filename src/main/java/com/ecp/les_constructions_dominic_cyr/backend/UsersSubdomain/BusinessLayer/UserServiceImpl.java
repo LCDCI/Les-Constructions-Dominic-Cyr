@@ -5,25 +5,32 @@ import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.MapperLayer.
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserCreateRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserUpdateRequestModel;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UsersRepository usersRepository;
+    private final LotRepository lotRepository;
     private final Auth0ManagementService auth0ManagementService;
 
     @Value("${app.invite.result-url}")
     private String inviteResultUrl;
 
     public UserServiceImpl(UsersRepository usersRepository,
+                           LotRepository lotRepository,
                            Auth0ManagementService auth0ManagementService) {
         this.usersRepository = usersRepository;
+        this.lotRepository = lotRepository;
         this.auth0ManagementService = auth0ManagementService;
     }
 
@@ -280,6 +287,31 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseModel> getActiveCustomers() {
         return usersRepository.findByUserStatus(UserStatus.ACTIVE).stream()
                 .filter(user -> user.getUserRole() == UserRole.CUSTOMER)
+                .map(user -> UserMapper.toResponseModel(user, null))
+                .toList();
+    }
+
+    @Override
+    public List<UserResponseModel> getCustomersWithSharedLots(String auth0UserId) {
+        // Get the salesperson by auth0UserId
+        Users salesperson = usersRepository.findByAuth0UserId(auth0UserId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with Auth0 ID: " + auth0UserId));
+
+        // Get all lots assigned to the salesperson
+        List<Lot> salespersonLots = lotRepository.findByAssignedUserId(salesperson.getUserIdentifier().getUserId());
+        
+        if (salespersonLots.isEmpty()) {
+            return List.of(); // No lots, no customers
+        }
+
+        // Collect all unique customers from these lots
+        Set<Users> customersWithSharedLots = salespersonLots.stream()
+                .flatMap(lot -> lot.getAssignedUsers().stream())
+                .filter(user -> user.getUserRole() == UserRole.CUSTOMER)
+                .filter(user -> user.getUserStatus() == UserStatus.ACTIVE)
+                .collect(Collectors.toSet());
+
+        return customersWithSharedLots.stream()
                 .map(user -> UserMapper.toResponseModel(user, null))
                 .toList();
     }

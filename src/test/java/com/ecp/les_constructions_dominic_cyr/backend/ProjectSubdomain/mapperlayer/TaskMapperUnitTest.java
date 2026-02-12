@@ -177,4 +177,82 @@ class TaskMapperUnitTest {
         assertEquals(100.0, task1.getTaskProgress());
         assertEquals(testContractor, task1.getAssignedTo());
     }
+
+    @Test
+    void updateEntityFromRequestDTO_shouldAutoTransitionToInProgressWhenHoursLoggedOnToDoTask() {
+        // Given a task with TO_DO status
+        task1.setTaskStatus(TaskStatus.TO_DO);
+        task1.setHoursSpent(0.0);
+
+        // When updating with hours spent > 0
+        TaskRequestDTO requestDTO = TaskRequestDTO.builder()
+                .taskStatus(TaskStatus.TO_DO)  // Client sends TO_DO
+                .taskTitle("Install Foundation")
+                .periodStart(new Date())
+                .periodEnd(new Date())
+                .taskDescription("Pour concrete foundation")
+                .taskPriority(TaskPriority.HIGH)
+                .estimatedHours(16.0)
+                .hoursSpent(5.0)  // Hours logged
+                .taskProgress(31.25)
+                .assignedToUserId(testContractor.getUserIdentifier().getUserId().toString())
+                .build();
+
+        taskMapper.updateEntityFromRequestDTO(task1, requestDTO, testContractor);
+
+        // Then status should automatically change to IN_PROGRESS
+        assertEquals(TaskStatus.IN_PROGRESS, task1.getTaskStatus());
+        assertEquals(5.0, task1.getHoursSpent());
+    }
+
+    @Test
+    void updateEntityFromRequestDTO_shouldNotChangeStatusWhenNoHoursLogged() {
+        // Given a task with TO_DO status
+        task1.setTaskStatus(TaskStatus.TO_DO);
+        task1.setHoursSpent(0.0);
+
+        // When updating with hours spent = 0
+        TaskRequestDTO requestDTO = TaskRequestDTO.builder()
+                .taskStatus(TaskStatus.TO_DO)
+                .taskTitle("Install Foundation")
+                .periodStart(new Date())
+                .periodEnd(new Date())
+                .taskDescription("Pour concrete foundation")
+                .taskPriority(TaskPriority.HIGH)
+                .estimatedHours(16.0)
+                .hoursSpent(0.0)  // No hours logged
+                .taskProgress(0.0)
+                .assignedToUserId(testContractor.getUserIdentifier().getUserId().toString())
+                .build();
+
+        taskMapper.updateEntityFromRequestDTO(task1, requestDTO, testContractor);
+
+        // Then status should remain TO_DO
+        assertEquals(TaskStatus.TO_DO, task1.getTaskStatus());
+        assertEquals(0.0, task1.getHoursSpent());
+    }
+
+    @Test
+    void requestDTOToEntity_shouldAutoTransitionToInProgressWhenCreatingWithHours() {
+        // When creating a task with TO_DO status but with hours logged
+        TaskRequestDTO requestDTO = TaskRequestDTO.builder()
+                .taskStatus(TaskStatus.TO_DO)
+                .taskTitle("New Task with Hours")
+                .periodStart(new Date())
+                .periodEnd(new Date())
+                .taskDescription("Task with initial hours")
+                .taskPriority(TaskPriority.MEDIUM)
+                .estimatedHours(20.0)
+                .hoursSpent(8.0)  // Hours logged during creation
+                .taskProgress(40.0)
+                .assignedToUserId(testContractor.getUserIdentifier().getUserId().toString())
+                .scheduleId("SCH-001")
+                .build();
+
+        Task result = taskMapper.requestDTOToEntity(requestDTO, testContractor);
+
+        // Then status should automatically be IN_PROGRESS
+        assertEquals(TaskStatus.IN_PROGRESS, result.getTaskStatus());
+        assertEquals(8.0, result.getHoursSpent());
+    }
 }

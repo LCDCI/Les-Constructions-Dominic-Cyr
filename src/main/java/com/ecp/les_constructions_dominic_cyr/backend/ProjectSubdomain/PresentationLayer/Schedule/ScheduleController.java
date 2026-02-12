@@ -1,6 +1,9 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.ScheduleService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.BadRequestException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidRequestException;
@@ -10,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,6 +28,7 @@ import java.util.List;
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
+    private final UserService userService;
 
     // Owner endpoints
     @GetMapping("/owners/schedules")
@@ -223,16 +229,40 @@ public class ScheduleController {
     }
 
     // Get schedules by project identifier - accessible by all authenticated users
+    // Customers and salespersons see only schedules for their assigned lots
     @GetMapping("/projects/{projectIdentifier}/schedules")
-    public ResponseEntity<List<ScheduleResponseDTO>> getProjectSchedules(@PathVariable String projectIdentifier) {
+    public ResponseEntity<?> getProjectSchedules(
+            @PathVariable String projectIdentifier,
+            @AuthenticationPrincipal Jwt jwt) {
         try {
             log.info("Fetching schedules for project identifier: {}", projectIdentifier);
-            List<ScheduleResponseDTO> schedules = scheduleService.getSchedulesByProjectIdentifier(projectIdentifier);
+            
+            // Get the current user
+            String auth0UserId = jwt.getSubject();
+            UserResponseModel user = userService.getUserByAuth0Id(auth0UserId);
+            
+            List<ScheduleResponseDTO> schedules;
+            
+            // Filter by assigned lots for customers and salespersons
+            if (user.getUserRole() == UserRole.CUSTOMER || user.getUserRole() == UserRole.SALESPERSON) {
+                log.info("Filtering schedules for {} with role {}", user.getUserIdentifier(), user.getUserRole());
+                schedules = scheduleService.getSchedulesByProjectIdentifierAndUserAssignedLots(
+                    projectIdentifier, 
+                    user.getUserIdentifier()
+                );
+            } else {
+                // Owners and contractors can see all schedules
+                schedules = scheduleService.getSchedulesByProjectIdentifier(projectIdentifier);
+            }
+            
             log.info("Successfully fetched {} schedules for project: {}", schedules.size(), projectIdentifier);
             return ResponseEntity.ok(schedules);
+        } catch (NotFoundException ex) {
+            log.error("Not found: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception ex) {
             log.error("Error fetching schedules for project {}: {}", projectIdentifier, ex.getMessage(), ex);
-            return new ResponseEntity(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -90,6 +90,13 @@ export async function fetchActiveCustomers(token) {
   return response.data;
 }
 
+export async function fetchCustomersWithSharedLots(token) {
+  const response = await axios.get(`${API_BASE}/users/customers/shared-lots`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  return response.data;
+}
+
 export async function fetchAllContractors(token) {
   const response = await axios.get(`${API_BASE}/users`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
