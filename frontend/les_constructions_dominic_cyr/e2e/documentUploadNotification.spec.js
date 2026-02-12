@@ -488,7 +488,8 @@ test.describe('Document upload notification - Inbox display (mocked)', () => {
     await inboxPage.waitForReady();
     await inboxPage.clickNotification(0);
     await page.waitForTimeout(1000);
-    await expect(page).toHaveURL(new RegExp(docLink.replace(/\//g, '\\/') + '.*|.*documents'));
+    const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    await expect(page).toHaveURL(new RegExp(escapeRegExp(docLink) + '.*|.*documents'));
   });
 
   test('Sort oldest first shows document notifications in date order', async ({ page }) => {
