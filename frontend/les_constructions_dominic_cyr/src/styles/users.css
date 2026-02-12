@@ -349,17 +349,6 @@
   background-image: none;
 }
 
-.users-page .modal-actions button[type='button'] {
-  background-color: #e5e7eb !important;
-  color: #111827 !important;
-  background-image: none !important;
-}
-
-.users-page .modal-actions button[type='button']:hover {
-  background-color: #d1d5db !important;
-  background-image: none !important;
-}
-
 .modal-actions button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
