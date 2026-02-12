@@ -135,7 +135,11 @@ export default function OwnerEditUserModal({
             >
               Cancel
             </button>
-            <button type="submit" disabled={isSaving}>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="btn-submit"
+            >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
