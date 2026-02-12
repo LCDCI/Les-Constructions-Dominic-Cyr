@@ -63,8 +63,6 @@ const CustomerFormsSelectionPage = () => {
 
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching customer forms:', error);
-      // Don't redirect on error - just show empty state
       setProjects([]);
       setForms([]);
       setLoading(false);
