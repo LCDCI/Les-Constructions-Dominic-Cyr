@@ -80,9 +80,9 @@
 /* Cancel Button */
 .btn-cancel {
   padding: 10px 20px;
-  border: 1px solid #d1d5db;
-  background-color: white;
-  color: #374151;
+  border: 1px solid #cbd5e1;
+  background-color: #e5e7eb;
+  color: #1f2937;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -90,8 +90,19 @@
   transition: all 0.2s;
 }
 
+.btn-cancel.btn-stay-on-form {
+  background-color: #e5e7eb;
+  border-color: #cbd5e1;
+  color: #1f2937;
+}
+
 .btn-cancel:hover {
-  background-color: #f9fafb;
+  background-color: #d1d5db;
+  border-color: #9ca3af;
+}
+
+.btn-cancel.btn-stay-on-form:hover {
+  background-color: #d1d5db;
   border-color: #9ca3af;
 }
 
@@ -99,8 +110,8 @@
 .btn-confirm {
   padding: 10px 20px;
   border: none;
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -109,15 +120,15 @@
 }
 
 .btn-confirm:hover {
-  background-color: #2563eb;
+  background-color: var(--button-primary-hover);
 }
 
 /* Confirm Button (Destructive) */
 .btn-confirm-destructive {
   padding: 10px 20px;
   border: none;
-  background-color: #dc2626;
-  color: white;
+  background-color: var(--button-danger-bg);
+  color: var(--button-danger-text);
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -126,7 +137,7 @@
 }
 
 .btn-confirm-destructive:hover {
-  background-color: #b91c1c;
+  background-color: var(--button-danger-hover);
 }
 
 /* Mobile Responsiveness */

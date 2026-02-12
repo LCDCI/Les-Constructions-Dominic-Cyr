@@ -127,7 +127,12 @@ export default function OwnerEditUserModal({
           </div>
 
           <div className="modal-actions">
-            <button type="button" onClick={onClose} disabled={isSaving}>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSaving}
+              className="btn-cancel"
+            >
               Cancel
             </button>
             <button type="submit" disabled={isSaving}>

@@ -35,7 +35,11 @@ export default function IdleTimeoutModal({
         </p>
 
         <div className="modal-actions">
-          <button type="button" className="modal-secondary" onClick={onStay}>
+          <button
+            type="button"
+            className="modal-secondary btn-cancel"
+            onClick={onStay}
+          >
             Stay signed in
           </button>
           <button type="button" className="modal-primary" onClick={onLogout}>

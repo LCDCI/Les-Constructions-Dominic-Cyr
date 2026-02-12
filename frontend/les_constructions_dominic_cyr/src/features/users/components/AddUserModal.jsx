@@ -49,7 +49,7 @@ export default function AddUserModal({
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">
             <label>
-              First Name
+              First Name <span className="required">*</span>
               <input
                 type="text"
                 value={firstName}
@@ -58,7 +58,7 @@ export default function AddUserModal({
               />
             </label>
             <label>
-              Last Name
+              Last Name <span className="required">*</span>
               <input
                 type="text"
                 value={lastName}
@@ -70,7 +70,7 @@ export default function AddUserModal({
 
           <div className="form-row">
             <label>
-              Primary Email
+              Primary Email <span className="required">*</span>
               <input
                 type="email"
                 value={primaryEmail}
@@ -90,19 +90,21 @@ export default function AddUserModal({
 
           <div className="form-row">
             <label>
-              Phone
+              Phone <span className="required">*</span>
               <input
                 type="tel"
                 value={phone}
                 onChange={e => setPhone(e.target.value)}
+                required
               />
             </label>
 
             <label>
-              Role
+              Role <span className="required">*</span>
               <select
                 value={userRole}
                 onChange={e => setUserRole(e.target.value)}
+                required
               >
                 {USER_ROLES.map(role => (
                   <option key={role} value={role}>
@@ -114,7 +116,12 @@ export default function AddUserModal({
           </div>
 
           <div className="modal-actions">
-            <button type="button" onClick={onClose} disabled={isSubmitting}>
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isSubmitting}
+              className="btn-cancel"
+            >
               Cancel
             </button>
             <button type="submit" disabled={isSubmitting}>

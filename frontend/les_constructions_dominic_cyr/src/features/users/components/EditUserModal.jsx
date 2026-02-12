@@ -113,7 +113,7 @@ export default function EditUserModal({
               type="button"
               onClick={onClose}
               disabled={isSaving}
-              className="btn-secondary"
+              className="btn-cancel"
             >
               Cancel
             </button>
