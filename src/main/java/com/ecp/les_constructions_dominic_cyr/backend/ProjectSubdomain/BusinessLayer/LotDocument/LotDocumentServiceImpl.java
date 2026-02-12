@@ -53,7 +53,7 @@ public class LotDocumentServiceImpl implements LotDocumentService {
             "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "image/svg+xml"
     );
 
-    private static final List<String> ALLOWED_ROLES_UPLOAD = List.of("OWNER", "CONTRACTOR");
+    private static final List<String> ALLOWED_ROLES_UPLOAD = List.of("OWNER", "CONTRACTOR", "SALESPERSON");
 
     @Override
     public List<LotDocumentResponseModel> getLotDocuments(String lotId, String search, String type) {
@@ -109,7 +109,7 @@ public class LotDocumentServiceImpl implements LotDocumentService {
             throw new AccessDeniedException("User role '" + userRole + "' is not authorized to upload documents");
         }
 
-        // OWNER users can upload to any lot; CONTRACTOR users must be assigned to this specific lot
+        // OWNER and SALESPERSON can upload to any lot; CONTRACTOR must be assigned to this specific lot
         if ("CONTRACTOR".equals(userRole)) {
             boolean isAssignedToLot = lot.getAssignedUsers().stream()
                     .anyMatch(u -> u.getUserIdentifier().getUserId().equals(uploaderUUID));
@@ -152,17 +152,17 @@ public class LotDocumentServiceImpl implements LotDocumentService {
             }
         }
 
-        // Notify customers assigned to the lot (one notification + optional email per customer, per upload action)
-        notifyCustomersOfDocumentUpload(lot, lotId, uploader, files);
+        // Notify customers and (when uploader is contractor/salesperson) owners: in-app notification + email
+        notifyRecipientsOfDocumentUpload(lot, lotId, uploader, files);
 
         return uploadedDocuments;
     }
 
     /**
-     * Notifies all customers assigned to the lot about the document upload.
-     * One in-app notification per customer; email sent only when customer has primaryEmail.
+     * Notifies customers assigned to the lot and, when the uploader is a contractor or salesperson,
+     * also notifies all owner users. Each recipient gets one in-app notification and an email if they have primaryEmail.
      */
-    private void notifyCustomersOfDocumentUpload(Lot lot, String lotId, Users uploader, MultipartFile[] files) {
+    private void notifyRecipientsOfDocumentUpload(Lot lot, String lotId, Users uploader, MultipartFile[] files) {
         String projectIdentifier = lot.getProject() != null ? lot.getProject().getProjectIdentifier() : null;
         if (projectIdentifier == null) {
             log.warn("Lot has no project; skipping document upload notifications for lot {}", lotId);
@@ -189,48 +189,64 @@ public class LotDocumentServiceImpl implements LotDocumentService {
         String notificationMessage = uploaderName + " uploaded " + documentLabel + ": " + fileNamesList;
         String link = "/projects/" + projectIdentifier + "/lots/" + lotId + "/documents";
 
-        List<Users> customersOnLot = lot.getAssignedUsers().stream()
-                .filter(u -> u.getUserRole() == UserRole.CUSTOMER)
-                .filter(u -> !u.getUserIdentifier().getUserId().equals(uploader.getUserIdentifier().getUserId()))
-                .collect(Collectors.toList());
-
-        if (customersOnLot.isEmpty()) {
-            log.debug("No customers assigned to lot {}; no document upload notifications sent", lotId);
-            return;
-        }
-
         String emailSubject = "New documents uploaded to your lot";
         String emailBody = buildDocumentUploadEmailBody(uploaderName, fileNamesList, documentLabel, link);
 
-        for (Users customer : customersOnLot) {
-            try {
-                UUID customerUserId = customer.getUserIdentifier().getUserId();
-                notificationService.createNotification(
-                        customerUserId,
-                        notificationTitle,
-                        notificationMessage,
-                        NotificationCategory.DOCUMENT_UPLOADED,
-                        link
-                );
-                log.info("Document upload notification created for customer: {}", customer.getPrimaryEmail());
+        UUID uploaderUserId = uploader.getUserIdentifier().getUserId();
 
-                if (customer.getPrimaryEmail() != null && !customer.getPrimaryEmail().isBlank()) {
-                    mailerServiceClient.sendEmail(
-                            customer.getPrimaryEmail(),
-                            emailSubject,
-                            emailBody,
-                            "Les Constructions Dominic Cyr"
-                    ).subscribe(
-                            null,
-                            error -> log.error("Failed to send document upload email to {}: {}",
-                                    customer.getPrimaryEmail(), error.getMessage(), error),
-                            () -> log.info("Document upload email sent to {}", customer.getPrimaryEmail())
-                    );
-                }
-            } catch (Exception e) {
-                log.error("Error sending document upload notification/email to customer {}: {}",
-                        customer.getPrimaryEmail(), e.getMessage(), e);
+        // Notify customers assigned to the lot (exclude uploader)
+        List<Users> customersOnLot = lot.getAssignedUsers().stream()
+                .filter(u -> u.getUserRole() == UserRole.CUSTOMER)
+                .filter(u -> !u.getUserIdentifier().getUserId().equals(uploaderUserId))
+                .collect(Collectors.toList());
+
+        for (Users customer : customersOnLot) {
+            sendDocumentUploadNotificationAndEmail(customer, notificationTitle, notificationMessage, link,
+                    emailSubject, emailBody, "customer");
+        }
+
+        // When uploader is contractor or salesperson, also notify all owners (exclude uploader)
+        UserRole uploaderRole = uploader.getUserRole();
+        if (uploaderRole == UserRole.CONTRACTOR || uploaderRole == UserRole.SALESPERSON) {
+            List<Users> owners = usersRepository.findByUserRole(UserRole.OWNER).stream()
+                    .filter(u -> !u.getUserIdentifier().getUserId().equals(uploaderUserId))
+                    .collect(Collectors.toList());
+            for (Users owner : owners) {
+                sendDocumentUploadNotificationAndEmail(owner, notificationTitle, notificationMessage, link,
+                        emailSubject, emailBody, "owner");
             }
+        }
+    }
+
+    private void sendDocumentUploadNotificationAndEmail(Users recipient, String notificationTitle,
+            String notificationMessage, String link, String emailSubject, String emailBody, String recipientType) {
+        try {
+            UUID recipientUserId = recipient.getUserIdentifier().getUserId();
+            notificationService.createNotification(
+                    recipientUserId,
+                    notificationTitle,
+                    notificationMessage,
+                    NotificationCategory.DOCUMENT_UPLOADED,
+                    link
+            );
+            log.info("Document upload notification created for {}: {}", recipientType, recipient.getPrimaryEmail());
+
+            if (recipient.getPrimaryEmail() != null && !recipient.getPrimaryEmail().isBlank()) {
+                mailerServiceClient.sendEmail(
+                        recipient.getPrimaryEmail(),
+                        emailSubject,
+                        emailBody,
+                        "Les Constructions Dominic Cyr"
+                ).subscribe(
+                        null,
+                        error -> log.error("Failed to send document upload email to {}: {}",
+                                recipient.getPrimaryEmail(), error.getMessage(), error),
+                        () -> log.info("Document upload email sent to {}", recipient.getPrimaryEmail())
+                );
+            }
+        } catch (Exception e) {
+            log.error("Error sending document upload notification/email to {} {}: {}",
+                    recipientType, recipient.getPrimaryEmail(), e.getMessage(), e);
         }
     }
 

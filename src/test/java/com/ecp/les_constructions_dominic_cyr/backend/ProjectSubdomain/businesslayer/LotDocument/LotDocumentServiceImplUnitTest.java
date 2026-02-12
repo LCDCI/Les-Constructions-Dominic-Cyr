@@ -334,6 +334,7 @@ class LotDocumentServiceImplUnitTest {
     void uploadDocuments_ContractorSuccess_WhenAssignedToLot() {
         when(lotRepository.findByLotIdentifier_LotId(any(UUID.class))).thenReturn(lot);
         when(usersRepository.findByUserIdentifier_UserId(eq(contractorUser.getUserIdentifier().getUserId()))).thenReturn(Optional.of(contractorUser));
+        when(usersRepository.findByUserRole(UserRole.OWNER)).thenReturn(List.of()); // contractor upload triggers owner notification path
         mockWebClientPostResponse("{\"fileId\": \"key-contractor\"}");
         when(lotDocumentRepository.save(any(LotDocument.class))).thenAnswer(inv -> {
             LotDocument d = inv.getArgument(0);

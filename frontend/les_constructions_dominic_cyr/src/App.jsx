@@ -497,6 +497,16 @@ export default function App() {
             />
 
             <Route
+              path="/lots"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
+                  element={<ContractorLotsDocuments />}
+                />
+              }
+            />
+
+            <Route
               path="/dashboard/lots/:lotId/documents"
               element={
                 <ProtectedRoute
