@@ -41,8 +41,8 @@ public class ProjectController {
     @GetMapping
     public ResponseEntity<List<ProjectResponseModel>> getAllProjects(
             @RequestParam(required = false) ProjectStatus status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat. ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO. DATE) LocalDate endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String customerId,
             @AuthenticationPrincipal Jwt jwt,
             Authentication authentication

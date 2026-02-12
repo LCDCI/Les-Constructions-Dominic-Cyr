@@ -1,10 +1,14 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.LotDocument;
 
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.MailerServiceClient;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationCategory;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.LotDocument.LotDocument;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.LotDocument.LotDocumentRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.LotDocument.LotDocumentResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
@@ -39,6 +43,8 @@ public class LotDocumentServiceImpl implements LotDocumentService {
     private final LotRepository lotRepository;
     private final UsersRepository usersRepository;
     private final WebClient.Builder webClientBuilder;
+    private final NotificationService notificationService;
+    private final MailerServiceClient mailerServiceClient;
 
     @Value("${files.service.base-url}")
     private String filesServiceBaseUrl;
@@ -146,7 +152,117 @@ public class LotDocumentServiceImpl implements LotDocumentService {
             }
         }
 
+        // Notify customers assigned to the lot (one notification + optional email per customer, per upload action)
+        notifyCustomersOfDocumentUpload(lot, lotId, uploader, files);
+
         return uploadedDocuments;
+    }
+
+    /**
+     * Notifies all customers assigned to the lot about the document upload.
+     * One in-app notification per customer; email sent only when customer has primaryEmail.
+     */
+    private void notifyCustomersOfDocumentUpload(Lot lot, String lotId, Users uploader, MultipartFile[] files) {
+        String projectIdentifier = lot.getProject() != null ? lot.getProject().getProjectIdentifier() : null;
+        if (projectIdentifier == null) {
+            log.warn("Lot has no project; skipping document upload notifications for lot {}", lotId);
+            return;
+        }
+
+        String uploaderName = (uploader.getFirstName() != null ? uploader.getFirstName() : "")
+                + (uploader.getLastName() != null ? " " + uploader.getLastName() : "").trim();
+        if (uploaderName.isEmpty()) {
+            uploaderName = "Someone";
+        }
+
+        List<String> fileNames = new ArrayList<>();
+        for (MultipartFile file : files) {
+            if (file != null && file.getOriginalFilename() != null) {
+                fileNames.add(file.getOriginalFilename());
+            }
+        }
+        String fileNamesList = String.join(", ", fileNames);
+        int count = fileNames.size();
+        String documentLabel = count == 1 ? "1 document" : count + " documents";
+
+        String notificationTitle = "New documents uploaded";
+        String notificationMessage = uploaderName + " uploaded " + documentLabel + ": " + fileNamesList;
+        String link = "/projects/" + projectIdentifier + "/lots/" + lotId + "/documents";
+
+        List<Users> customersOnLot = lot.getAssignedUsers().stream()
+                .filter(u -> u.getUserRole() == UserRole.CUSTOMER)
+                .filter(u -> !u.getUserIdentifier().getUserId().equals(uploader.getUserIdentifier().getUserId()))
+                .collect(Collectors.toList());
+
+        if (customersOnLot.isEmpty()) {
+            log.debug("No customers assigned to lot {}; no document upload notifications sent", lotId);
+            return;
+        }
+
+        String emailSubject = "New documents uploaded to your lot";
+        String emailBody = buildDocumentUploadEmailBody(uploaderName, fileNamesList, documentLabel, link);
+
+        for (Users customer : customersOnLot) {
+            try {
+                UUID customerUserId = customer.getUserIdentifier().getUserId();
+                notificationService.createNotification(
+                        customerUserId,
+                        notificationTitle,
+                        notificationMessage,
+                        NotificationCategory.DOCUMENT_UPLOADED,
+                        link
+                );
+                log.info("Document upload notification created for customer: {}", customer.getPrimaryEmail());
+
+                if (customer.getPrimaryEmail() != null && !customer.getPrimaryEmail().isBlank()) {
+                    mailerServiceClient.sendEmail(
+                            customer.getPrimaryEmail(),
+                            emailSubject,
+                            emailBody,
+                            "Les Constructions Dominic Cyr"
+                    ).subscribe(
+                            null,
+                            error -> log.error("Failed to send document upload email to {}: {}",
+                                    customer.getPrimaryEmail(), error.getMessage(), error),
+                            () -> log.info("Document upload email sent to {}", customer.getPrimaryEmail())
+                    );
+                }
+            } catch (Exception e) {
+                log.error("Error sending document upload notification/email to customer {}: {}",
+                        customer.getPrimaryEmail(), e.getMessage(), e);
+            }
+        }
+    }
+
+    private String buildDocumentUploadEmailBody(String uploaderName, String fileNamesList, String documentLabel, String link) {
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'>");
+        html.append("<style>");
+        html.append("body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }");
+        html.append(".container { max-width: 600px; margin: 0 auto; padding: 20px; }");
+        html.append(".header { background-color: #2c3e50; color: white; padding: 20px; text-align: center; }");
+        html.append(".content { background-color: #f9f9f9; padding: 20px; margin-top: 20px; }");
+        html.append(".field { margin-bottom: 15px; } .label { font-weight: bold; color: #555; }");
+        html.append(".value { margin-top: 5px; padding: 10px; background-color: white; border-left: 3px solid #2c3e50; }");
+        html.append(".link { margin-top: 20px; } .link a { color: #3498db; }");
+        html.append("</style></head><body>");
+        html.append("<div class='container'>");
+        html.append("<div class='header'><h1>New documents uploaded</h1></div>");
+        html.append("<div class='content'>");
+        html.append("<div class='field'><span class='label'>Uploaded by:</span><div class='value'>").append(escapeHtml(uploaderName)).append("</div></div>");
+        html.append("<div class='field'><span class='label'>").append(escapeHtml(documentLabel)).append(":</span><div class='value'>").append(escapeHtml(fileNamesList)).append("</div></div>");
+        html.append("<div class='link'><a href='").append(escapeHtml(link)).append("'>View documents</a></div>");
+        html.append("</div></div></body></html>");
+        return html.toString();
+    }
+
+    private String escapeHtml(String text) {
+        if (text == null) return "";
+        return text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 
     @Override
@@ -393,7 +509,8 @@ public class LotDocumentServiceImpl implements LotDocumentService {
                 int end = jsonResponse.indexOf("\"", start);
                 return jsonResponse.substring(start, end);
             } else if (jsonResponse.contains("\"id\"")) {
-                int start = jsonResponse.indexOf("\"id\"") + 6;
+                int afterId = jsonResponse.indexOf("\"id\"") + 4;
+                int start = jsonResponse.indexOf("\"", afterId) + 1;
                 int end = jsonResponse.indexOf("\"", start);
                 return jsonResponse.substring(start, end);
             }
