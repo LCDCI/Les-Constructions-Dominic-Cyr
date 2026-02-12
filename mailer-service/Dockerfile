@@ -1,7 +1,7 @@
 FROM golang:1.24 AS builder
 WORKDIR /app/GoMailer
-# Build context is ./mailer-service (per docker-compose), so copy context into WORKDIR
-COPY . .
+# Build context is repo root (source_dir: /), so copy only mailer-service so go.mod is in WORKDIR
+COPY mailer-service/ .
 RUN ["go", "install", "github.com/swaggo/swag/cmd/swag@v1.3.2"]
 RUN ["swag", "init", "-g", "./cmd/mailer/main.go", "-d", "./cmd/mailer,./internal,./pkg", "--swagger", "./docs", "--parseDependency", "--parseInternal"]
 RUN ["go", "mod", "download"]
