@@ -69,7 +69,12 @@ public class LotController {
             final String userIdentifier = currentUser.getUserIdentifier();
 
             // If customerId is provided, filter lots where both current user and customer are assigned
+            // This requires authentication
             if (customerId != null && !customerId.isBlank()) {
+                if (jwt == null || authentication == null) {
+                    log.warn("Unauthenticated request with customerId filter");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                }
                 try {
                     List<LotResponseModel> sharedLots = lotService.getLotsByProjectAndBothUsersAssigned(
                         projectIdentifier, 

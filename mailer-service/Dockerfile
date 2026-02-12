@@ -1,7 +1,7 @@
 FROM golang:1.24 AS builder
 WORKDIR /app/GoMailer
-# Build context is repo root (source_dir: /), so copy only mailer-service so go.mod is in WORKDIR
-COPY mailer-service/ .
+# Build context is mailer-service directory
+COPY . .
 RUN ["go", "mod", "download"]
 RUN ["env", "CGO_ENABLED=0", "GOOS=linux", "go", "build", "-a", "-installsuffix", "cgo", "-o", "app", "./cmd/mailer"]
 

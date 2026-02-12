@@ -78,7 +78,10 @@ export async function updateFormData(formId, payload, token) {
 export async function submitForm(formId, token) {
   const response = await axios.post(
     `${API_BASE}/forms/${formId}/submit`,
-    {},
+    {
+      formData: {},
+      isSubmitting: true
+    },
     {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     }

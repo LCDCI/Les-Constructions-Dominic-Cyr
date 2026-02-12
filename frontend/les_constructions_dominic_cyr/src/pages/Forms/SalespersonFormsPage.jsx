@@ -225,7 +225,7 @@ const SalespersonFormsPage = () => {
         },
       });
 
-      await reopenForm(formToReopen.formId, { reason: reopenReason }, token);
+      await reopenForm(formToReopen.formId, { reopenReason }, token);
 
       setIsReopenModalOpen(false);
       setFormToReopen(null);

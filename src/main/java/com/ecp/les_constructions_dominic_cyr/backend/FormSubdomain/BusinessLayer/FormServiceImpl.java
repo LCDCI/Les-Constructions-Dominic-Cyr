@@ -430,7 +430,7 @@ public class FormServiceImpl implements FormService {
                     emailBody,
                     "Les Constructions Dominic Cyr"
             ).subscribe(
-                    null,
+                    v -> {},
                     error -> log.error("Failed to send form assigned email to {}: {}", customer.getPrimaryEmail(), error.getMessage()),
                     () -> log.info("Form assigned email sent to: {}", customer.getPrimaryEmail())
             );

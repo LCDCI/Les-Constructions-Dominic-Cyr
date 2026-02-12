@@ -657,7 +657,7 @@ const CustomerFormsPage = () => {
               ) : (
                 <div className="forms-history-list">
                   {formHistory.map((history, index) => (
-                    <div key={history.historyId} className="history-item">
+                    <div key={history.id} className="history-item">
                       <h4>
                         {t(
                           'modal.submissionNumber',
@@ -666,7 +666,7 @@ const CustomerFormsPage = () => {
                       </h4>
                       <p>
                         <strong>{t('modal.date', 'Date')}:</strong>{' '}
-                        {new Date(history.submissionDate).toLocaleString()}
+                        {new Date(history.submittedAt).toLocaleString()}
                       </p>
                       <div className="history-data">
                         <strong>{t('modal.formData', 'Form Data')}:</strong>
