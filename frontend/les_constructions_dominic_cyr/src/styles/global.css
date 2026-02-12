@@ -165,9 +165,9 @@ label:has(> textarea[required]) {
   position: relative;
 }
 
-label:has(> input[required])::after,
-label:has(> select[required])::after,
-label:has(> textarea[required])::after {
+label:has(> input[required])::before,
+label:has(> select[required])::before,
+label:has(> textarea[required])::before {
   content: ' *';
   color: var(--gray-500);
   font-weight: 700;
