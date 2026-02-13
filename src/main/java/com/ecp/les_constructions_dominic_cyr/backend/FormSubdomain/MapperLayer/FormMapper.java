@@ -7,6 +7,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationL
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.FormResponseModel;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 /**
  * Mapper for converting between Form entities and presentation models.
  */
@@ -22,8 +24,8 @@ public class FormMapper {
         form.setFormType(requestModel.getFormType());
         form.setFormStatus(FormStatus.DRAFT); // New forms start as DRAFT
         form.setProjectIdentifier(requestModel.getProjectIdentifier());
-        form.setLotIdentifier(requestModel.getLotIdentifier());
-        form.setCustomerId(requestModel.getCustomerId());
+        form.setLotIdentifier(UUID.fromString(requestModel.getLotIdentifier()));
+        form.setCustomerId(UUID.fromString(requestModel.getCustomerId()));
         form.setFormTitle(requestModel.getFormTitle());
         form.setInstructions(requestModel.getInstructions());
         
@@ -43,11 +45,11 @@ public class FormMapper {
                 .formType(form.getFormType())
                 .formStatus(form.getFormStatus())
                 .projectIdentifier(form.getProjectIdentifier())
-                .lotIdentifier(form.getLotIdentifier())
-                .customerId(form.getCustomerId())
+                .lotIdentifier(form.getLotIdentifier().toString())
+                .customerId(form.getCustomerId().toString())
                 .customerName(form.getCustomerName())
                 .customerEmail(form.getCustomerEmail())
-                .assignedByUserId(form.getAssignedByUserId())
+                .assignedByUserId(form.getAssignedByUserId() != null ? form.getAssignedByUserId().toString() : null)
                 .assignedByName(form.getAssignedByName())
                 .formTitle(form.getFormTitle())
                 .instructions(form.getInstructions())
@@ -57,7 +59,7 @@ public class FormMapper {
                 .lastSubmittedDate(form.getLastSubmittedDate())
                 .completedDate(form.getCompletedDate())
                 .reopenedDate(form.getReopenedDate())
-                .reopenedByUserId(form.getReopenedByUserId())
+                .reopenedByUserId(form.getReopenedByUserId() != null ? form.getReopenedByUserId().toString() : null)
                 .reopenReason(form.getReopenReason())
                 .reopenCount(form.getReopenCount())
                 .createdAt(form.getCreatedAt())

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -103,15 +104,15 @@ public class FormServiceImpl implements FormService {
 
         // Check if customer already has this form type for this project and lot
         if (formRepository.existsByProjectIdentifierAndLotIdentifierAndCustomerIdAndFormType(
-                requestModel.getProjectIdentifier(), requestModel.getLotIdentifier(),
-                requestModel.getCustomerId(), requestModel.getFormType())) {
+                requestModel.getProjectIdentifier(), UUID.fromString(requestModel.getLotIdentifier()),
+                UUID.fromString(requestModel.getCustomerId()), requestModel.getFormType())) {
             throw new InvalidInputException("Customer already has a " + requestModel.getFormType() +
                     " form for this project and lot");
         }
 
         // Create form entity
         Form form = formMapper.requestModelToEntity(requestModel);
-        form.setAssignedByUserId(assignedBy.getUserIdentifier().getUserId().toString());
+        form.setAssignedByUserId(assignedBy.getUserIdentifier().getUserId());
         form.setAssignedByName(getFullName(assignedBy));
         form.setCustomerName(getFullName(customer));
         form.setCustomerEmail(customer.getPrimaryEmail());
@@ -147,7 +148,7 @@ public class FormServiceImpl implements FormService {
     @Override
     public List<FormResponseModel> getFormsByCustomer(String customerId) {
         log.info("Fetching forms for customer: {}", customerId);
-        return formRepository.findByCustomerId(customerId).stream()
+        return formRepository.findByCustomerId(UUID.fromString(customerId)).stream()
                 .map(formMapper::entityToResponseModel)
                 .collect(Collectors.toList());
     }
@@ -155,7 +156,7 @@ public class FormServiceImpl implements FormService {
     @Override
     public List<FormResponseModel> getFormsCreatedBy(String salespersonId) {
         log.info("Fetching forms created by: {}", salespersonId);
-        return formRepository.findByAssignedByUserId(salespersonId).stream()
+        return formRepository.findByAssignedByUserId(UUID.fromString(salespersonId)).stream()
                 .map(formMapper::entityToResponseModel)
                 .collect(Collectors.toList());
     }
@@ -262,7 +263,7 @@ public class FormServiceImpl implements FormService {
         // Update form status
         form.setFormStatus(FormStatus.REOPENED);
         form.setReopenedDate(LocalDateTime.now());
-        form.setReopenedByUserId(reopenedBy.getUserIdentifier().getUserId().toString());
+        form.setReopenedByUserId(reopenedBy.getUserIdentifier().getUserId());
         form.setReopenReason(reopenRequest.getReopenReason());
         form.setReopenCount(form.getReopenCount() + 1);
 
@@ -275,7 +276,7 @@ public class FormServiceImpl implements FormService {
         log.info("Form reopened successfully. Reopen count: {}", savedForm.getReopenCount());
 
         // Send notification to customer
-        Users customer = usersRepository.findByUserIdentifier(form.getCustomerId()).orElse(null);
+        Users customer = usersRepository.findByUserIdentifier_UserId(form.getCustomerId()).orElse(null);
         sendFormReopenedNotification(savedForm, customer, reopenRequest.getReopenReason());
 
         return formMapper.entityToResponseModel(savedForm);
@@ -366,7 +367,7 @@ public class FormServiceImpl implements FormService {
     @Override
     public boolean hasFormOfType(String projectIdentifier, String customerId, FormType formType) {
         return formRepository.existsByProjectIdentifierAndCustomerIdAndFormType(
-                projectIdentifier, customerId, formType);
+                projectIdentifier, UUID.fromString(customerId), formType);
     }
 
     // ========== Private Helper Methods ==========
@@ -387,7 +388,7 @@ public class FormServiceImpl implements FormService {
                 submissionNumber,
                 form.getFormStatus(),
                 dataSnapshot,
-                customerId,
+                UUID.fromString(customerId),
                 customerName
         );
         history.setSubmissionNotes(submissionNotes);
@@ -443,7 +444,7 @@ public class FormServiceImpl implements FormService {
     private void sendFormSubmittedNotification(Form form, Users customer) {
         try {
             // Notify salesperson/owner who assigned the form
-            Users assignedBy = usersRepository.findByUserIdentifier(form.getAssignedByUserId()).orElse(null);
+            Users assignedBy = usersRepository.findByUserIdentifier_UserId(form.getAssignedByUserId()).orElse(null);
             if (assignedBy == null) {
                 log.warn("Cannot send form submitted notification: assigner not found");
                 return;

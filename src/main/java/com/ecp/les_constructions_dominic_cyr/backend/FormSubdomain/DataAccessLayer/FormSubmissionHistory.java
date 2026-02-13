@@ -10,6 +10,7 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Entity representing a historical snapshot of form submissions.
@@ -54,8 +55,8 @@ public class FormSubmissionHistory {
     /**
      * Customer ID who submitted
      */
-    @Column(name = "submitted_by_customer_id", nullable = false)
-    private String submittedByCustomerId;
+    @Column(name = "submitted_by_customer_id", nullable = false, columnDefinition = "UUID")
+    private UUID submittedByCustomerId;
 
     /**
      * Customer name at time of submission
@@ -75,7 +76,7 @@ public class FormSubmissionHistory {
 
     public FormSubmissionHistory(String formIdentifier, Integer submissionNumber,
                                   FormStatus statusAtSubmission, Map<String, Object> formDataSnapshot,
-                                  String submittedByCustomerId, String submittedByCustomerName) {
+                                  UUID submittedByCustomerId, String submittedByCustomerName) {
         this.formIdentifier = formIdentifier;
         this.submissionNumber = submissionNumber;
         this.statusAtSubmission = statusAtSubmission;
