@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,8 +40,8 @@ class FormMapperUnitTest {
         FormRequestModel requestModel = FormRequestModel.builder()
                 .formType(FormType.WINDOWS)
                 .projectIdentifier("project-123")
-                .lotIdentifier("lot-uuid-456")
-                .customerId("customer-id-123")
+                .lotIdentifier("550e8400-e29b-41d4-a716-446655440000")
+                .customerId("550e8400-e29b-41d4-a716-446655440001")
                 .formTitle("Window Selection")
                 .instructions("Please select windows")
                 .formData(formData)
@@ -55,8 +56,8 @@ class FormMapperUnitTest {
         assertEquals(FormType.WINDOWS, form.getFormType());
         assertEquals(FormStatus.DRAFT, form.getFormStatus());
         assertEquals("project-123", form.getProjectIdentifier());
-        assertEquals("lot-uuid-456", form.getLotIdentifier());
-        assertEquals("customer-id-123", form.getCustomerId());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"), form.getLotIdentifier());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"), form.getCustomerId());
         assertEquals("Window Selection", form.getFormTitle());
         assertEquals("Please select windows", form.getInstructions());
         assertEquals(formData, form.getFormData());
@@ -68,8 +69,8 @@ class FormMapperUnitTest {
         FormRequestModel requestModel = FormRequestModel.builder()
                 .formType(FormType.PAINT)
                 .projectIdentifier("project-123")
-                .lotIdentifier("lot-uuid-456")
-                .customerId("customer-id-123")
+                .lotIdentifier("550e8400-e29b-41d4-a716-446655440000")
+                .customerId("550e8400-e29b-41d4-a716-446655440001")
                 .formTitle("Paint Selection")
                 .build();
 
@@ -88,8 +89,8 @@ class FormMapperUnitTest {
         FormRequestModel requestModel = FormRequestModel.builder()
                 .formType(FormType.EXTERIOR_DOORS)
                 .projectIdentifier("proj-456")
-                .lotIdentifier("lot-789")
-                .customerId("cust-789")
+                .lotIdentifier("550e8400-e29b-41d4-a716-446655440050")
+                .customerId("550e8400-e29b-41d4-a716-446655440051")
                 .build();
 
         // Act
@@ -100,8 +101,8 @@ class FormMapperUnitTest {
         assertNotNull(form.getFormIdentifier());
         assertEquals(FormType.EXTERIOR_DOORS, form.getFormType());
         assertEquals("proj-456", form.getProjectIdentifier());
-        assertEquals("lot-789", form.getLotIdentifier());
-        assertEquals("cust-789", form.getCustomerId());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440050"), form.getLotIdentifier());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440051"), form.getCustomerId());
     }
 
     // ========== Entity To Response Model Tests ==========
@@ -115,11 +116,11 @@ class FormMapperUnitTest {
         form.setFormType(FormType.WINDOWS);
         form.setFormStatus(FormStatus.SUBMITTED);
         form.setProjectIdentifier("project-123");
-        form.setLotIdentifier("lot-uuid-456");
-        form.setCustomerId("customer-id-123");
+        form.setLotIdentifier(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
+        form.setCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"));
         form.setCustomerName("John Customer");
         form.setCustomerEmail("john@example.com");
-        form.setAssignedByUserId("salesperson-id-456");
+        form.setAssignedByUserId(UUID.fromString("550e8400-e29b-41d4-a716-446655440002"));
         form.setAssignedByName("Jane Salesperson");
         form.setFormTitle("Window Selection");
         form.setInstructions("Please select windows");
@@ -134,7 +135,7 @@ class FormMapperUnitTest {
         form.setLastSubmittedDate(now);
         form.setCompletedDate(now.plusDays(1));
         form.setReopenedDate(now.minusHours(2));
-        form.setReopenedByUserId("reopener-id");
+        form.setReopenedByUserId(UUID.fromString("550e8400-e29b-41d4-a716-446655440003"));
         form.setReopenReason("Need changes");
         form.setReopenCount(2);
         form.setCreatedAt(now.minusDays(5));
@@ -149,11 +150,11 @@ class FormMapperUnitTest {
         assertEquals(FormType.WINDOWS, responseModel.getFormType());
         assertEquals(FormStatus.SUBMITTED, responseModel.getFormStatus());
         assertEquals("project-123", responseModel.getProjectIdentifier());
-        assertEquals("lot-uuid-456", responseModel.getLotIdentifier());
-        assertEquals("customer-id-123", responseModel.getCustomerId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440000", responseModel.getLotIdentifier());
+        assertEquals("550e8400-e29b-41d4-a716-446655440001", responseModel.getCustomerId());
         assertEquals("John Customer", responseModel.getCustomerName());
         assertEquals("john@example.com", responseModel.getCustomerEmail());
-        assertEquals("salesperson-id-456", responseModel.getAssignedByUserId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440002", responseModel.getAssignedByUserId());
         assertEquals("Jane Salesperson", responseModel.getAssignedByName());
         assertEquals("Window Selection", responseModel.getFormTitle());
         assertEquals("Please select windows", responseModel.getInstructions());
@@ -163,7 +164,7 @@ class FormMapperUnitTest {
         assertEquals(now, responseModel.getLastSubmittedDate());
         assertEquals(now.plusDays(1), responseModel.getCompletedDate());
         assertEquals(now.minusHours(2), responseModel.getReopenedDate());
-        assertEquals("reopener-id", responseModel.getReopenedByUserId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440003", responseModel.getReopenedByUserId());
         assertEquals("Need changes", responseModel.getReopenReason());
         assertEquals(2, responseModel.getReopenCount());
         assertEquals(now.minusDays(5), responseModel.getCreatedAt());
@@ -178,8 +179,8 @@ class FormMapperUnitTest {
         form.setFormType(FormType.GARAGE_DOORS);
         form.setFormStatus(FormStatus.ASSIGNED);
         form.setProjectIdentifier("proj-minimal");
-        form.setLotIdentifier("lot-minimal");
-        form.setCustomerId("cust-minimal");
+        form.setLotIdentifier(UUID.fromString("550e8400-e29b-41d4-a716-446655440010"));
+        form.setCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440011"));
         form.setFormData(new HashMap<>());
         form.setReopenCount(0);
 
@@ -202,8 +203,8 @@ class FormMapperUnitTest {
         form.setFormType(FormType.ASPHALT_SHINGLES);
         form.setFormStatus(FormStatus.IN_PROGRESS);
         form.setProjectIdentifier("project-nulls");
-        form.setLotIdentifier("lot-nulls");
-        form.setCustomerId("customer-nulls");
+        form.setLotIdentifier(UUID.fromString("550e8400-e29b-41d4-a716-446655440020"));
+        form.setCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440021"));
         form.setFormData(new HashMap<>());
         form.setReopenCount(0);
         // Leave optional fields as null
@@ -325,16 +326,16 @@ class FormMapperUnitTest {
         Form form = new Form();
         form.setFormType(FormType.WINDOWS);
         form.setProjectIdentifier("original-project");
-        form.setLotIdentifier("original-lot");
-        form.setCustomerId("original-customer");
+        form.setLotIdentifier(UUID.fromString("550e8400-e29b-41d4-a716-446655440030"));
+        form.setCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440031"));
         form.setFormTitle("Title");
         form.setInstructions("Instructions");
 
         FormRequestModel requestModel = FormRequestModel.builder()
                 .formType(FormType.PAINT) // Different type
                 .projectIdentifier("different-project") // Different project
-                .lotIdentifier("different-lot") // Different lot
-                .customerId("different-customer") // Different customer
+                .lotIdentifier("550e8400-e29b-41d4-a716-446655440060") // Different lot
+                .customerId("550e8400-e29b-41d4-a716-446655440061") // Different customer
                 .formTitle("New Title")
                 .instructions("New instructions")
                 .build();
@@ -350,8 +351,8 @@ class FormMapperUnitTest {
         // These should NOT be changed (they're immutable after creation)
         assertEquals(FormType.WINDOWS, form.getFormType());
         assertEquals("original-project", form.getProjectIdentifier());
-        assertEquals("original-lot", form.getLotIdentifier());
-        assertEquals("original-customer", form.getCustomerId());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440030"), form.getLotIdentifier());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440031"), form.getCustomerId());
     }
 
     // ========== Edge Cases Tests ==========
@@ -363,8 +364,8 @@ class FormMapperUnitTest {
             FormRequestModel requestModel = FormRequestModel.builder()
                     .formType(formType)
                     .projectIdentifier("project-test")
-                    .lotIdentifier("lot-test")
-                    .customerId("customer-test")
+                    .lotIdentifier("550e8400-e29b-41d4-a716-446655440070")
+                    .customerId("550e8400-e29b-41d4-a716-446655440071")
                     .build();
 
             // Act
@@ -385,8 +386,8 @@ class FormMapperUnitTest {
             form.setFormType(FormType.WINDOWS);
             form.setFormStatus(status);
             form.setProjectIdentifier("proj");
-            form.setLotIdentifier("lot");
-            form.setCustomerId("cust");
+            form.setLotIdentifier(UUID.fromString("550e8400-e29b-41d4-a716-446655440040"));
+            form.setCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440041"));
             form.setFormData(new HashMap<>());
             form.setReopenCount(0);
 
