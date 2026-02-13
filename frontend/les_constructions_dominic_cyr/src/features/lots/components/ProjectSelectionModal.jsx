@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +27,9 @@ const ProjectSelectionModal = ({ isOpen, onClose }) => {
           setProjects(projectsData);
         } catch (err) {
           console.error('Failed to load projects:', err);
-          setError(t('projectSelection.errorLoading', 'Failed to load projects'));
+          setError(
+            t('projectSelection.errorLoading', 'Failed to load projects')
+          );
         } finally {
           setLoading(false);
         }
@@ -54,13 +57,13 @@ const ProjectSelectionModal = ({ isOpen, onClose }) => {
         </div>
 
         {loading && <p className="modal-message">Loading...</p>}
-        
+
         {error && (
           <div className="modal-message error">
             <p>{error}</p>
           </div>
         )}
-        
+
         {!loading && !error && projects.length === 0 && (
           <p className="modal-message">No projects found</p>
         )}
