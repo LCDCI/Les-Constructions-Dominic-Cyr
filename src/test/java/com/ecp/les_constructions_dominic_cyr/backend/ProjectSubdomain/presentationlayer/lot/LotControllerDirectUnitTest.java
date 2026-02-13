@@ -62,7 +62,7 @@ public class LotControllerDirectUnitTest {
 
         when(lotService.mapLotsToResponses(anyList())).thenReturn(List.of());
 
-        var resp = lotController.getAllLotsByProject(projectId, jwt, auth);
+        var resp = lotController.getAllLotsByProject(projectId, null, jwt, auth);
         assertEquals(200, resp.getStatusCodeValue());
     }
 

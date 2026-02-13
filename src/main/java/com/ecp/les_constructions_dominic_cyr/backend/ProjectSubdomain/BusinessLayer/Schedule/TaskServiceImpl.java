@@ -1,7 +1,13 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule;
 
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.MailerServiceClient;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationCategory;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.TaskMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
@@ -27,6 +33,9 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final UsersRepository usersRepository;
+    private final LotRepository lotRepository;
+    private final NotificationService notificationService;
+    private final MailerServiceClient mailerServiceClient;
 
     @Override
     public List<TaskDetailResponseDTO> getAllTasks() {
@@ -78,6 +87,70 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.updateEntityFromRequestDTO(existingTask, taskRequestDTO, assignedUser);
         Task updatedTask = taskRepository.save(existingTask);
 
+        // --- Notification logic ---
+        // Find the lot associated with this task to get assigned users
+        if (updatedTask.getLotId() != null) {
+            try {
+                Lot lot = lotRepository.findByLotIdentifier_LotId(updatedTask.getLotId());
+                if (lot != null && lot.getAssignedUsers() != null && !lot.getAssignedUsers().isEmpty()) {
+                    List<Users> assignedUsers = lot.getAssignedUsers();
+                    
+                    // Prepare notification content
+                    String message = String.format(
+                        "Task \"%s\" was updated. Period: %s to %s. Status: %s.",
+                        updatedTask.getTaskTitle(),
+                        updatedTask.getPeriodStart(),
+                        updatedTask.getPeriodEnd(),
+                        updatedTask.getTaskStatus()
+                    );
+                    String title = "Task Updated";
+                    
+                    // Build link to the lot metadata page
+                    String link = null;
+                    if (lot.getProject() != null) {
+                        String projectIdentifier = lot.getProject().getProjectIdentifier();
+                        link = String.format("/projects/%s/lots/%s/metadata", projectIdentifier, updatedTask.getLotId());
+                    }
+                    
+                    // Send notifications to all assigned users
+                    for (Users user : assignedUsers) {
+                        try {
+                            notificationService.createNotification(
+                                user.getUserIdentifier().getUserId(),
+                                title,
+                                message,
+                                NotificationCategory.TASK_UPDATED,
+                                link
+                            );
+                            
+                            // Send email
+                            if (user.getPrimaryEmail() != null && !user.getPrimaryEmail().isEmpty()) {
+                                String emailBody = String.format(
+                                    "Hello %s,<br><br>%s<br><br>Task Description: %s",
+                                    user.getFirstName(),
+                                    message,
+                                    updatedTask.getTaskDescription() != null ? updatedTask.getTaskDescription() : "N/A"
+                                );
+                                mailerServiceClient.sendEmail(
+                                    user.getPrimaryEmail(),
+                                    title,
+                                    emailBody,
+                                    "Les Constructions Dominic Cyr"
+                                ).subscribe(
+                                    null,
+                                    error -> log.error("Failed to send email to {}: {}", user.getPrimaryEmail(), error.getMessage(), error)
+                                );
+                            }
+                        } catch (Exception e) {
+                            log.warn("Failed to notify user {}: {}", user.getUserIdentifier().getUserId(), e.getMessage());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Failed to send notifications for task update {}: {}", taskId, e.getMessage());
+            }
+        }
+
         log.info("Task updated: {}", taskId);
         return taskMapper.entityToResponseDTO(updatedTask);
     }
@@ -113,6 +186,49 @@ public class TaskServiceImpl implements TaskService {
         log.info("Fetching tasks for schedule: {}", scheduleIdentifier);
         List<Task> tasks = taskRepository.findByScheduleId(scheduleIdentifier);
         return taskMapper.entitiesToResponseDTOs(tasks);
+    }
+
+    @Override
+    public List<TaskDetailResponseDTO> getTasksForScheduleByStatus(String scheduleIdentifier, TaskStatus taskStatus) {
+        log.info("Fetching tasks for schedule: {} with status: {}", scheduleIdentifier, taskStatus);
+        List<Task> tasks = taskRepository.findByScheduleIdAndTaskStatus(scheduleIdentifier, taskStatus);
+        return taskMapper.entitiesToResponseDTOs(tasks);
+    }
+
+    @Override
+    public List<TaskDetailResponseDTO> getTasksForProject(String projectIdentifier) {
+        log.info("Fetching tasks for project: {}", projectIdentifier);
+        List<Task> tasks = taskRepository.findByProjectIdentifier(projectIdentifier);
+        return taskMapper.entitiesToResponseDTOs(tasks);
+    }
+
+    @Override
+    public List<TaskDetailResponseDTO> getTasksForProjectByStatus(String projectIdentifier, TaskStatus taskStatus) {
+        log.info("Fetching tasks for project: {} with status: {}", projectIdentifier, taskStatus);
+        List<Task> tasks = taskRepository.findByProjectIdentifierAndTaskStatus(projectIdentifier, taskStatus);
+        return taskMapper.entitiesToResponseDTOs(tasks);
+    }
+
+    @Override
+    public List<TaskDetailResponseDTO> getTasksForUserAssignedLots(String userId) {
+        log.info("Fetching tasks for user's assigned lots: {}", userId);
+        
+        // Find all lots assigned to this user
+        UUID userUuid = UUID.fromString(userId);
+        List<Lot> assignedLots = lotRepository.findByAssignedUserId(userUuid);
+        
+        if (assignedLots.isEmpty()) {
+            log.info("No assigned lots found for user: {}", userId);
+            return List.of();
+        }
+        
+        // Get all tasks for these lots
+        List<Task> allTasks = assignedLots.stream()
+                .flatMap(lot -> taskRepository.findByLotId(lot.getLotIdentifier().getLotId()).stream())
+                .toList();
+        
+        log.info("Found {} tasks for user's {} assigned lots", allTasks.size(), assignedLots.size());
+        return taskMapper.entitiesToResponseDTOs(allTasks);
     }
 
     private void validateTaskRequest(TaskRequestDTO taskRequestDTO) {

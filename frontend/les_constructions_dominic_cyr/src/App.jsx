@@ -51,6 +51,9 @@ import NavigationSetter from './components/NavigationSetter';
 import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import ReportsPage from './pages/ReportsPage';
 import InboxPage from './pages/Inbox/InboxPage';
+import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
+import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
+import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
 import ReactGA from 'react-ga4';
 // import { loadTheme } from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
@@ -476,6 +479,35 @@ export default function App() {
               }
             />
 
+            {/* Forms routes */}
+            <Route
+              path="/salesperson/forms"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['SALESPERSON', 'OWNER']}
+                  element={<SalespersonFormsPage />}
+                />
+              }
+            />
+            <Route
+              path="/customers/forms"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CUSTOMER']}
+                  element={<CustomerFormsSelectionPage />}
+                />
+              }
+            />
+            <Route
+              path="/projects/:projectId/lots/:lotId/forms"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CUSTOMER']}
+                  element={<CustomerFormsPage />}
+                />
+              }
+            />
+
             <Route
               path="/contractors/documents"
               element={
@@ -491,6 +523,16 @@ export default function App() {
               element={
                 <ProtectedRoute
                   allowedRoles={['OWNER']}
+                  element={<ContractorLotsDocuments />}
+                />
+              }
+            />
+
+            <Route
+              path="/lots"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
                   element={<ContractorLotsDocuments />}
                 />
               }

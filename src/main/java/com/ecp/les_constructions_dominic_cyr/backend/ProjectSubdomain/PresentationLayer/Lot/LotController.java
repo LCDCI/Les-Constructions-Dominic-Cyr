@@ -42,6 +42,7 @@ public class LotController {
     @GetMapping()
     public ResponseEntity<List<LotResponseModel>> getAllLotsByProject(
             @PathVariable String projectIdentifier,
+            @RequestParam(required = false) String customerId,
             @AuthenticationPrincipal Jwt jwt,
             Authentication authentication
     ){
@@ -66,6 +67,26 @@ public class LotController {
             }
 
             final String userIdentifier = currentUser.getUserIdentifier();
+
+            // If customerId is provided, filter lots where both current user and customer are assigned
+            // This requires authentication
+            if (customerId != null && !customerId.isBlank()) {
+                if (jwt == null || authentication == null) {
+                    log.warn("Unauthenticated request with customerId filter");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                }
+                try {
+                    List<LotResponseModel> sharedLots = lotService.getLotsByProjectAndBothUsersAssigned(
+                        projectIdentifier, 
+                        userIdentifier, 
+                        customerId
+                    );
+                    return ResponseEntity.ok().body(sharedLots);
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid UUID for user identifier or customer ID: {} / {}", userIdentifier, customerId);
+                    return ResponseEntity.ok().body(List.of());
+                }
+            }
 
             // Check if user has project-level access or lot-level access
             // For lots, we only return lots the user is assigned to

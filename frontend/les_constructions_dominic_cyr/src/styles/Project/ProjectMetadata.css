@@ -10,15 +10,7 @@
   overflow: hidden;
 }
 
-/* make hero more readable on light/dark backgrounds */
-.metadata-hero::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.05);
-  z-index: 1;
-  pointer-events: none;
-}
+/* Removed dark overlay for cleaner appearance */
 
 .hero-content {
   position: relative;

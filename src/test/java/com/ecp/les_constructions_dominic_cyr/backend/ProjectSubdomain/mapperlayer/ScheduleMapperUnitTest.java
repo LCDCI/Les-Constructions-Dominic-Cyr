@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,6 +22,9 @@ class ScheduleMapperUnitTest {
     private TaskMapper taskMapper;
     private Schedule schedule1;
     private Schedule schedule2;
+    private static final UUID LOT_53_UUID = UUID.randomUUID();
+    private static final UUID LOT_57_UUID = UUID.randomUUID();
+    private static final UUID LOT_100_UUID = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
@@ -33,7 +37,7 @@ class ScheduleMapperUnitTest {
                 .scheduleStartDate(LocalDate.of(2024, 11, 26))
                 .scheduleEndDate(LocalDate.of(2024, 11, 26))
                 .scheduleDescription("Begin Excavation")
-                .lotId("Lot 53")
+                .lotId(LOT_53_UUID)
                 .tasks(new ArrayList<>())
                 .build();
 
@@ -43,7 +47,7 @@ class ScheduleMapperUnitTest {
                 .scheduleStartDate(LocalDate.of(2024, 11, 27))
                 .scheduleEndDate(LocalDate.of(2024, 11, 27))
                 .scheduleDescription("Plumbing")
-                .lotId("Lot 57")
+                .lotId(LOT_57_UUID)
                 .tasks(new ArrayList<>())
                 .build();
     }
@@ -68,7 +72,7 @@ class ScheduleMapperUnitTest {
                 .scheduleStartDate(LocalDate.of(2024, 12, 1))
                 .scheduleEndDate(LocalDate.of(2024, 12, 1))
                 .scheduleDescription("Electrical Work")
-                .lotId("Lot 100")
+                .lotId(LOT_100_UUID)
                 .tasks(new ArrayList<>())
                 .build();
 
@@ -93,11 +97,11 @@ class ScheduleMapperUnitTest {
 
         assertEquals("SCH-001", result.get(0).getScheduleIdentifier());
         assertEquals("Begin Excavation", result.get(0).getScheduleDescription());
-        assertEquals("Lot 53", result.get(0).getLotId());
+        assertEquals(LOT_53_UUID.toString(), result.get(0).getLotId());
 
         assertEquals("SCH-002", result.get(1).getScheduleIdentifier());
         assertEquals("Plumbing", result.get(1).getScheduleDescription());
-        assertEquals("Lot 57", result.get(1).getLotId());
+        assertEquals(LOT_57_UUID.toString(), result.get(1).getLotId());
     }
 
     @Test
