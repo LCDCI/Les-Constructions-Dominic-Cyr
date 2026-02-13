@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUnreadCount } from '../../features/notifications/hooks/useUnreadCount';
+import ProjectSelectionModal from '../../features/lots/components/ProjectSelectionModal';
 import '../../styles/NavBars/ownerNavbar.css';
 import {
   GoProject,
@@ -28,6 +29,7 @@ const Navbar = ({
   showToggle = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
   const { unreadCount } = useUnreadCount();
@@ -237,10 +239,21 @@ const Navbar = ({
                 </Link>
               </li>
               <li className="navbar-item">
-                <Link
-                  to="/lots"
-                  className={`navbar-link ${isActive('/lots')}`}
-                  onClick={closeMenu}
+                <div
+                  className="navbar-link"
+                  onClick={() => {
+                    setIsProjectModalOpen(true);
+                    closeMenu();
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setIsProjectModalOpen(true);
+                      closeMenu();
+                    }
+                  }}
                 >
                   <span className="navbar-icon">
                     <FaMapLocationDot />
@@ -248,7 +261,7 @@ const Navbar = ({
                   <span className="navbar-text">
                     {t('navbar.menuItems.lots', 'Lots')}
                   </span>
-                </Link>
+                </div>
               </li>
             </ul>
           </div>
@@ -376,6 +389,11 @@ const Navbar = ({
           </button>
         </div>
       </aside>
+
+      <ProjectSelectionModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+      />
     </>
   );
 };
