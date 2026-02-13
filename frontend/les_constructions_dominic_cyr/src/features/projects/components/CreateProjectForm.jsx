@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
-import LanguageSwitcher from './LanguageSwitcher';
 import LotSelector from './LotSelector';
 import { projectApi } from '../api/projectApi';
 import { uploadFile } from '../../files/api/filesApi';
+import { createLot } from '../../lots/api/lots';
 import '../../../styles/Project/create-project.css';
 
 // Hardcoded translations
@@ -28,9 +28,10 @@ const translations = {
         startDate: 'Start Date',
         endDate: 'End Date',
         completionDate: 'Completion Date',
+        location: 'Location',
         primaryColor: 'Primary Color',
-        tertiaryColor: 'Tertiary Color',
-        buyerColor: 'Buyer Color',
+        tertiaryColor: 'Secondary Color',
+        buyerColor: 'Accent Color',
         // Removed in UI: buyerName, customerId
         progressPercentage: 'Progress Percentage',
         coverPhoto: 'Cover Photo',
@@ -38,6 +39,7 @@ const translations = {
       placeholders: {
         projectName: 'Enter project name',
         projectDescription: 'Enter project description',
+        location: 'Enter project location',
         // Removed in UI: buyerName, customerId
         coverPhoto: 'Choose an image file...',
       },
@@ -47,8 +49,19 @@ const translations = {
         submitting: 'Creating...',
         fillOutEnglish: 'Fill out English',
         continue: 'Continue',
+        continueToLots: 'Continue to add lots',
+        back: 'Back',
         chooseImage: 'Choose Image',
+        changeImage: 'Change Image',
         removeImage: 'Remove Image',
+      },
+      labels: {
+        noFileChosen: 'No file chosen',
+      },
+      steps: {
+        one: 'Step 1 of 3',
+        two: 'Step 2 of 3',
+        three: 'Step 3 of 3',
       },
       validation: {
         required: 'This field is required',
@@ -81,9 +94,10 @@ const translations = {
         startDate: 'Date de début',
         endDate: 'Date de fin',
         completionDate: "Date d'achèvement",
+        location: 'Emplacement',
         primaryColor: 'Couleur principale',
-        tertiaryColor: 'Couleur tertiaire',
-        buyerColor: "Couleur de l'acheteur",
+        tertiaryColor: 'Couleur secondaire',
+        buyerColor: "Couleur d'accent",
         // Removed in UI: buyerName, customerId
         progressPercentage: 'Pourcentage de progression',
         coverPhoto: 'Photo de couverture',
@@ -91,6 +105,7 @@ const translations = {
       placeholders: {
         projectName: 'Entrez le nom du projet',
         projectDescription: 'Entrez la description du projet',
+        location: "Entrez l'emplacement du projet",
         // Removed in UI: buyerName, customerId
         coverPhoto: 'Choisissez une image...',
       },
@@ -100,8 +115,19 @@ const translations = {
         submitting: 'Création en cours...',
         fillOutEnglish: "Remplir l'anglais",
         continue: 'Continuer',
+        continueToLots: 'Continuer vers les lots',
+        back: 'Retour',
         chooseImage: 'Choisir une image',
+        changeImage: "Changer l'image",
         removeImage: "Supprimer l'image",
+      },
+      labels: {
+        noFileChosen: 'Aucun fichier choisi',
+      },
+      steps: {
+        one: 'Étape 1 sur 3',
+        two: 'Étape 2 sur 3',
+        three: 'Étape 3 sur 3',
       },
       validation: {
         required: 'Ce champ est requis',
@@ -150,6 +176,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     startDate: '',
     endDate: '',
     completionDate: '',
+    location: '',
     primaryColor: '#4A90A4',
     tertiaryColor: '#33FF57',
     buyerColor: '#3357FF',
@@ -164,6 +191,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
   const [coverImagePreviewUrl, setCoverImagePreviewUrl] = useState(null);
   const [animateLangSwitch, setAnimateLangSwitch] = useState(false);
   const formContentRef = useRef(null);
+  const coverImageInputRef = useRef(null);
   const [validationAlert, setValidationAlert] = useState(null);
 
   // Lot creation form state - lifted to parent to persist across language switches
@@ -177,6 +205,12 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     assignedCustomerId: '',
   });
   const [showLotCreateForm, setShowLotCreateForm] = useState(false);
+
+  // Draft lots: created on step 3 without a project; created via API after project is saved
+  const [draftLots, setDraftLots] = useState([]);
+
+  // Three-step wizard: 0 = French (no lots), 1 = English (no lots), 2 = Lots only
+  const [step, setStep] = useState(0);
 
   // Language is auto-switched, no manual change needed
 
@@ -210,6 +244,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     return (
       formData.projectNameFr.trim() !== '' &&
       formData.projectDescriptionFr.trim() !== '' &&
+      formData.location.trim() !== '' &&
       formData.status !== '' &&
       formData.startDate !== '' &&
       formData.endDate !== '' &&
@@ -224,6 +259,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     return (
       formData.projectNameEn.trim() !== '' &&
       formData.projectDescriptionEn.trim() !== '' &&
+      formData.location.trim() !== '' &&
       formData.status !== '' &&
       formData.startDate !== '' &&
       formData.endDate !== '' &&
@@ -248,6 +284,9 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     }
     if (!formData.projectDescriptionFr.trim()) {
       newErrors.projectDescriptionFr = t('form.validation.required');
+    }
+    if (!formData.location.trim()) {
+      newErrors.location = t('form.validation.required');
     }
 
     // Validate common fields
@@ -370,7 +409,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
   };
 
   const handleSwitchToEnglish = () => {
-    // Start animation, then switch language so the new content mounts with the class
+    setStep(1);
     setAnimateLangSwitch(true);
     setCurrentLanguage('en');
     // Scroll the form content into view (closest scrollable ancestor - overlay)
@@ -492,6 +531,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         startDate: formData.startDate,
         endDate: formData.endDate,
         completionDate: formData.completionDate || null,
+        location: formData.location?.trim() || null,
         primaryColor: formData.primaryColor,
         tertiaryColor: formData.tertiaryColor,
         buyerColor: formData.buyerColor,
@@ -519,6 +559,8 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
       const createdProject = await projectApi.createProject(projectData, token);
       console.log('Project created successfully:', createdProject);
 
+      const nonBlockingErrors = [];
+
       // If a cover image was selected, upload it and update the project
       if (coverImageFile && createdProject?.projectIdentifier) {
         try {
@@ -541,10 +583,12 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
           }
         } catch (uploadErr) {
           console.error('Cover image upload failed:', uploadErr);
-          // Non-blocking: project is created even if image upload fails
-          if (onError) {
-            onError(uploadErr.message || 'Cover image upload failed');
-          }
+          const raw = uploadErr?.message || '';
+          const friendly =
+            raw.includes('404') || raw.includes('status code 404')
+              ? 'Cover image could not be uploaded (file service unavailable).'
+              : raw || 'Cover image upload failed';
+          nonBlockingErrors.push(friendly);
         }
       }
 
@@ -556,6 +600,48 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
           console.error('Translation upload failed:', translationErr);
           // Non-blocking: project remains created even if translation upload fails
         }
+      }
+
+      // Create draft lots (added on step 3 before project existed) for the new project
+      if (createdProject?.projectIdentifier && Array.isArray(draftLots) && draftLots.length > 0) {
+        for (const draft of draftLots) {
+          try {
+            const lotPayload = {
+              lotNumber: String(draft.lotNumber ?? ''),
+              civicAddress: String(draft.civicAddress ?? ''),
+              dimensionsSquareFeet: String(draft.dimensionsSquareFeet ?? ''),
+              dimensionsSquareMeters: String(draft.dimensionsSquareMeters ?? ''),
+              price: draft.price != null && draft.price !== '' ? Number(draft.price) : null,
+              lotStatus: draft.lotStatus || 'AVAILABLE',
+              assignedUserIds: draft.assignedCustomerId
+                ? [draft.assignedCustomerId]
+                : [],
+            };
+            await createLot({
+              projectIdentifier: createdProject.projectIdentifier,
+              lotData: lotPayload,
+              token,
+            });
+          } catch (lotErr) {
+            console.error('Draft lot creation failed:', draft, lotErr);
+            const raw = lotErr?.message || 'Lot creation failed';
+            const friendly =
+              raw.includes('404') || raw.includes('status code 404')
+                ? 'One or more lots could not be created (service unavailable).'
+                : raw;
+            const display = `Lot "${draft.civicAddress || draft.lotNumber || '?'}": ${friendly}`;
+            if (!nonBlockingErrors.some(e => e.includes(friendly))) {
+              nonBlockingErrors.push(display);
+            }
+          }
+        }
+      }
+
+      // Show any non-blocking errors in the persistent banner (parent keeps modal closed)
+      if (nonBlockingErrors.length > 0 && onError) {
+        onError(
+          'Project created. Some issues: ' + nonBlockingErrors.join(' — ')
+        );
       }
 
       if (onSuccess && createdProject && createdProject.projectIdentifier) {
@@ -581,7 +667,11 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
   return (
     <form className="create-project-form" onSubmit={handleSubmit}>
-      <LanguageSwitcher currentLanguage={currentLanguage} />
+      <div className="language-switcher step-indicator" role="tablist" aria-label="Form step">
+        <span className={`lang-indicator ${step === 0 ? 'active' : ''}`}>Français</span>
+        <span className={`lang-indicator ${step === 1 ? 'active' : ''}`}>English</span>
+        <span className={`lang-indicator ${step === 2 ? 'active' : ''}`}>Lots</span>
+      </div>
 
       {validationAlert && (
         <div className="validation-alert" role="alert">
@@ -589,24 +679,17 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         </div>
       )}
 
-      {/* Show message when French is complete and on English form */}
-      {currentLanguage === 'en' &&
-        isFrenchComplete() &&
-        !isEnglishComplete() && (
-          <div className="language-switch-message">
-            {t('form.messages.fillOutEnglish')}
-          </div>
-        )}
-
-      <div
-        key={`lang-${currentLanguage}-${animateLangSwitch ? 'anim' : 'static'}`}
-        className={
-          animateLangSwitch && currentLanguage === 'en' ? 'slide-up-enter' : ''
-        }
-        ref={formContentRef}
-        onAnimationEnd={() => setAnimateLangSwitch(false)}
-      >
-        {/* Basic Information Section */}
+      {/* Step 0: French — Step 1: English (no lots on either) */}
+      {step < 2 && (
+        <div
+          key={`lang-${currentLanguage}-${animateLangSwitch ? 'anim' : 'static'}`}
+          className={
+            animateLangSwitch && currentLanguage === 'en' ? 'slide-up-enter' : ''
+          }
+          ref={formContentRef}
+          onAnimationEnd={() => setAnimateLangSwitch(false)}
+        >
+          {/* Basic Information Section */}
         <div className="form-section">
           <h2>{t('form.sections.basicInfo')}</h2>
 
@@ -659,6 +742,24 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                   ? errors.projectDescriptionEn
                   : errors.projectDescriptionFr}
               </span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="location">
+              {t('form.fields.location')} *
+            </label>
+            <input
+              type="text"
+              id="location"
+              value={formData.location}
+              onChange={e => handleInputChange('location', e.target.value)}
+              placeholder={t('form.placeholders.location')}
+              maxLength={255}
+              className={errors.location ? 'error' : ''}
+            />
+            {errors.location && (
+              <span className="error-message">{errors.location}</span>
             )}
           </div>
         </div>
@@ -729,11 +830,11 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
           </div>
         </div>
 
-        {/* Colors Section */}
+        {/* Colors Section — match edit project: h3, side by side */}
         <div className="form-section">
-          <h2>{t('form.sections.colors')}</h2>
+          <h3>{t('form.sections.colors')}</h3>
 
-          <div className="form-row">
+          <div className="form-row form-row-three-col">
             <div className="form-group">
               <label htmlFor="primaryColor">
                 {t('form.fields.primaryColor')} *
@@ -790,76 +891,124 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
         {/* Customer & Buyer Section removed */}
 
-        {/* Progress Section */}
-        <div className="form-section">
-          <h2>{t('form.sections.progress')}</h2>
+        {/* Progress: removed — calculated automatically from lots when project is loaded */}
 
-          <div className="form-group">
-            <label htmlFor="progressPercentage">
-              {t('form.fields.progressPercentage')}
-            </label>
-            <input
-              type="number"
-              id="progressPercentage"
-              value={formData.progressPercentage}
-              onChange={e =>
-                handleInputChange(
-                  'progressPercentage',
-                  parseInt(e.target.value) || 0
-                )
-              }
-              min="0"
-              max="100"
-            />
-          </div>
-        </div>
-
-        {/* Cover Image Section */}
+        {/* Cover Image Section — custom label so "Choose file" / "No file chosen" are translated */}
         <div className="form-section">
           <h2>{t('form.sections.coverImage')}</h2>
           <div className="form-group">
             <label htmlFor="coverImage">{t('form.fields.coverPhoto')}</label>
             <input
+              ref={coverImageInputRef}
               type="file"
               id="coverImage"
               accept="image/png, image/jpeg, image/webp"
               onChange={e => handleCoverImageChange(e.target.files?.[0])}
+              className="create-project-file-input-hidden"
+              aria-label={t('form.fields.coverPhoto')}
             />
+            {!coverImageFile ? (
+              <div className="create-project-file-trigger-wrap">
+                <label
+                  htmlFor="coverImage"
+                  className="create-project-file-trigger"
+                >
+                  {t('form.buttons.chooseImage')}
+                </label>
+                <span className="create-project-file-status">
+                  {t('form.labels.noFileChosen')}
+                </span>
+              </div>
+            ) : (
+              <div className="form-group">
+                <img
+                  src={coverImagePreviewUrl}
+                  alt="Cover preview"
+                  className="create-project-cover-preview"
+                />
+                <div className="create-project-cover-actions">
+                  <button
+                    type="button"
+                    className="btn-cancel create-project-cover-btn"
+                    onClick={() => coverImageInputRef.current?.click()}
+                    disabled={isSubmitting}
+                    aria-label={t('form.buttons.changeImage')}
+                  >
+                    {t('form.buttons.changeImage')}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-cancel create-project-cover-btn"
+                    onClick={() => {
+                      setCoverImageFile(null);
+                      setCoverImagePreviewUrl(null);
+                      if (coverImageInputRef.current) {
+                        coverImageInputRef.current.value = '';
+                      }
+                    }}
+                    disabled={isSubmitting}
+                  >
+                    {t('form.buttons.removeImage')}
+                  </button>
+                </div>
+              </div>
+            )}
             {errors.coverImage && (
               <span className="error-message">{errors.coverImage}</span>
             )}
           </div>
-          {coverImagePreviewUrl && (
-            <div className="form-group">
-              <img
-                src={coverImagePreviewUrl}
-                alt="Cover preview"
-                style={{
-                  width: '100%',
-                  maxWidth: '400px',
-                  borderRadius: '6px',
-                  border: '1px solid #e0e0e0',
-                }}
-              />
-              <div style={{ marginTop: '0.5rem' }}>
+        </div>
+
+          {/* Form Actions — Step 0: Fill out English | Step 1: Back + Continue to add lots */}
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={onCancel}
+              disabled={isSubmitting}
+            >
+              {t('form.buttons.cancel')}
+            </button>
+            {step === 0 && (
+              <button
+                type="button"
+                className="btn-submit"
+                onClick={handleSwitchToEnglish}
+                disabled={isSubmitting || !isFrenchComplete()}
+              >
+                {t('form.buttons.fillOutEnglish')}
+              </button>
+            )}
+            {step === 1 && (
+              <>
                 <button
                   type="button"
                   className="btn-cancel"
                   onClick={() => {
-                    setCoverImageFile(null);
-                    setCoverImagePreviewUrl(null);
+                    setStep(0);
+                    setCurrentLanguage('fr');
                   }}
                   disabled={isSubmitting}
                 >
-                  {t('form.buttons.removeImage')}
+                  {t('form.buttons.back')}
                 </button>
-              </div>
-            </div>
-          )}
+                <button
+                  type="button"
+                  className="btn-submit"
+                  onClick={() => setStep(2)}
+                  disabled={isSubmitting || !isEnglishComplete()}
+                >
+                  {t('form.buttons.continueToLots')}
+                </button>
+              </>
+            )}
+          </div>
         </div>
+      )}
 
-        {/* Lots Section */}
-        <div className="form-section">
+      {/* Step 2: Lots only — draft mode: no projectIdentifier; new lots created after project is saved */}
+      {step === 2 && (
+        <div className="form-section" ref={formContentRef}>
           <h2>{t('form.sections.lots')}</h2>
           <LotSelector
             currentLanguage={currentLanguage}
@@ -868,7 +1017,6 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
               handleInputChange('lotIdentifiers', lotIds || []);
             }}
             onLotCreated={newLotId => {
-              // The onChange should have already updated the state, but ensure it's added
               setFormData(prev => {
                 const current = prev.lotIdentifiers || [];
                 if (newLotId && !current.includes(newLotId)) {
@@ -877,53 +1025,46 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                 return prev;
               });
             }}
-            // Pass lot form state from parent to persist across language switches
+            projectIdentifier={undefined}
+            draftLots={draftLots}
+            onDraftLotAdded={lotData => setDraftLots(prev => [...prev, lotData])}
+            onDraftLotRemoved={index =>
+              setDraftLots(prev => prev.filter((_, i) => i !== index))
+            }
             lotFormData={lotFormData}
             onLotFormDataChange={setLotFormData}
             showLotCreateForm={showLotCreateForm}
             onShowLotCreateFormChange={setShowLotCreateForm}
           />
-        </div>
-
-        {/* Form Actions */}
-        <div className="form-actions">
-          <button
-            type="button"
-            className="btn-cancel"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
-            {t('form.buttons.cancel')}
-          </button>
-          {currentLanguage === 'fr' ? (
+          <div className="form-actions">
             <button
               type="button"
-              className="btn-submit"
-              onClick={() => {
-                if (isFrenchComplete()) {
-                  // Switch to English form
-                  handleSwitchToEnglish();
-                }
-              }}
-              disabled={isSubmitting || !isFrenchComplete()}
+              className="btn-cancel"
+              onClick={onCancel}
+              disabled={isSubmitting}
             >
-              {t('form.buttons.fillOutEnglish')}
+              {t('form.buttons.cancel')}
             </button>
-          ) : (
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={() => setStep(1)}
+              disabled={isSubmitting}
+            >
+              {t('form.buttons.back')}
+            </button>
             <button
               type="submit"
               className="btn-submit"
-              disabled={
-                isSubmitting || !isEnglishComplete() || !isFrenchComplete()
-              }
+              disabled={isSubmitting}
             >
               {isSubmitting
                 ? t('form.buttons.submitting')
                 : t('form.buttons.createProject')}
             </button>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </form>
   );
 };

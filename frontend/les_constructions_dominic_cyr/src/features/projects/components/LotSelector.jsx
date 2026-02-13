@@ -36,6 +36,8 @@ const lotTranslations = {
     removeImage: 'Remove Image',
     invalidImageType: 'Invalid image type. Allowed: PNG, JPG, JPEG, WEBP',
     loadingCustomers: 'Loading customers...',
+    draftLotsTitle: 'New lots (to be created with project)',
+    newLabel: 'New',
   },
   fr: {
     searchPlaceholder: 'Rechercher des lots par emplacement...',
@@ -66,6 +68,8 @@ const lotTranslations = {
     removeImage: "Supprimer l'image",
     invalidImageType: "Type d'image invalide. Autorisés: PNG, JPG, JPEG, WEBP",
     loadingCustomers: 'Chargement des clients...',
+    draftLotsTitle: 'Nouveaux lots (créés avec le projet)',
+    newLabel: 'Nouveau',
   },
 };
 
@@ -75,17 +79,22 @@ const LotSelector = ({
   onChange,
   onLotCreated,
   projectIdentifier,
+  // Draft lots (create-project flow: no project yet; lots created after project is saved)
+  draftLots = [],
+  onDraftLotAdded,
+  onDraftLotRemoved,
   // Props to persist lot form state across language switches
   lotFormData,
   onLotFormDataChange,
   showLotCreateForm,
   onShowLotCreateFormChange,
 }) => {
+  const isDraftMode = !projectIdentifier && typeof onDraftLotAdded === 'function';
   const t = key => lotTranslations[currentLanguage]?.[key] || key;
   const { user, getAccessTokenSilently } = useAuth0();
   const [availableLots, setAvailableLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!isDraftMode);
   const [error, setError] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState(null);
@@ -114,9 +123,14 @@ const LotSelector = ({
   const setShowCreateForm = onShowLotCreateFormChange || setLocalShowCreateForm;
 
   useEffect(() => {
-    loadLots();
     loadCustomersAndRole();
-  }, []);
+    if (isDraftMode) {
+      setAvailableLots([]);
+      setIsLoading(false);
+    } else {
+      loadLots();
+    }
+  }, [isDraftMode]);
 
   const loadCustomersAndRole = async () => {
     try {
@@ -213,6 +227,33 @@ const LotSelector = ({
       return;
     }
 
+    const lotData = {
+      lotNumber: newLotData.lotNumber.trim(),
+      civicAddress: newLotData.civicAddress.trim(),
+      dimensionsSquareFeet: newLotData.dimensionsSquareFeet.trim(),
+      dimensionsSquareMeters: newLotData.dimensionsSquareMeters.trim(),
+      price: parseFloat(newLotData.price),
+      lotStatus: newLotData.lotStatus,
+      assignedCustomerId: newLotData.assignedCustomerId || null,
+    };
+
+    // Draft mode: no project yet (create-project step 3); add to draft list and create after project is saved
+    if (isDraftMode) {
+      onDraftLotAdded(lotData);
+      setNewLotData({
+        lotNumber: '',
+        civicAddress: '',
+        dimensionsSquareFeet: '',
+        dimensionsSquareMeters: '',
+        price: '',
+        lotStatus: 'AVAILABLE',
+        assignedCustomerId: '',
+      });
+      setShowCreateForm(false);
+      setCreateError(null);
+      return;
+    }
+
     if (!projectIdentifier) {
       setCreateError(
         'Project identifier is missing. Save or select a project before creating lots.'
@@ -223,16 +264,6 @@ const LotSelector = ({
     setIsCreating(true);
     try {
       const token = await getAccessTokenSilently();
-
-      const lotData = {
-        lotNumber: newLotData.lotNumber.trim(),
-        civicAddress: newLotData.civicAddress.trim(),
-        dimensionsSquareFeet: newLotData.dimensionsSquareFeet.trim(),
-        dimensionsSquareMeters: newLotData.dimensionsSquareMeters.trim(),
-        price: parseFloat(newLotData.price),
-        lotStatus: newLotData.lotStatus,
-        assignedCustomerId: newLotData.assignedCustomerId || null,
-      };
 
       const createdLot = await createLot({
         projectIdentifier,
@@ -293,8 +324,8 @@ const LotSelector = ({
     return <div className="lot-selector-loading">{t('loading')}</div>;
   }
 
-  // Show error if there's an error and no lots loaded
-  if (error && availableLots.length === 0) {
+  // Show error and block UI only if not in draft mode (draft mode: no project yet, so loading lots may fail; still show form to add draft lots)
+  if (error && availableLots.length === 0 && !isDraftMode) {
     return (
       <div className="lot-selector">
         <div className="lot-selector-error">
@@ -313,18 +344,7 @@ const LotSelector = ({
 
   return (
     <div className="lot-selector">
-      <div className="lot-selector-header">
-        <button
-          type="button"
-          className="btn-create-lot"
-          onClick={() => setShowCreateForm(!showCreateForm)}
-        >
-          {showCreateForm ? t('cancelCreate') : t('createNew')}
-        </button>
-      </div>
-
-      {showCreateForm && (
-        <div className="create-lot-form">
+      <div className="create-lot-form create-lot-form-always-open">
           <h3>{t('createLotTitle')}</h3>
           <div className="form-group">
             <label htmlFor="newLotNumber">{t('lotNumber')} *</label>
@@ -336,7 +356,6 @@ const LotSelector = ({
                 setNewLotData({ ...newLotData, lotNumber: e.target.value })
               }
               placeholder={t('lotNumberPlaceholder')}
-              required
             />
           </div>
 
@@ -350,7 +369,6 @@ const LotSelector = ({
                 setNewLotData({ ...newLotData, civicAddress: e.target.value })
               }
               placeholder={t('civicAddressPlaceholder')}
-              required
             />
           </div>
 
@@ -369,7 +387,6 @@ const LotSelector = ({
                 })
               }
               placeholder={t('dimensionsSquareFeetPlaceholder')}
-              required
             />
           </div>
 
@@ -388,7 +405,6 @@ const LotSelector = ({
                 })
               }
               placeholder={t('dimensionsSquareMetersPlaceholder')}
-              required
             />
           </div>
 
@@ -404,7 +420,6 @@ const LotSelector = ({
               placeholder={t('pricePlaceholder')}
               min="0"
               step="0.01"
-              required
             />
           </div>
 
@@ -416,7 +431,6 @@ const LotSelector = ({
               onChange={e =>
                 setNewLotData({ ...newLotData, lotStatus: e.target.value })
               }
-              required
             >
               <option value="AVAILABLE">AVAILABLE</option>
               <option value="SOLD">SOLD</option>
@@ -475,26 +489,6 @@ const LotSelector = ({
           <div className="create-lot-actions">
             <button
               type="button"
-              className="btn-cancel"
-              onClick={() => {
-                setShowCreateForm(false);
-                setCreateError(null);
-                setNewLotData({
-                  lotNumber: '',
-                  civicAddress: '',
-                  dimensionsSquareFeet: '',
-                  dimensionsSquareMeters: '',
-                  price: '',
-                  lotStatus: 'AVAILABLE',
-                  assignedCustomerId: '',
-                });
-              }}
-              disabled={isCreating}
-            >
-              {t('cancel')}
-            </button>
-            <button
-              type="button"
               className="btn-submit"
               disabled={isCreating}
               onClick={handleCreateLot}
@@ -503,63 +497,116 @@ const LotSelector = ({
             </button>
           </div>
         </div>
+
+      {!isDraftMode && (
+        <>
+          <div className="lot-selector-search">
+            <input
+              type="text"
+              placeholder={t('searchPlaceholder')}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="lot-search-input"
+            />
+          </div>
+
+          <div className="lot-selector-list">
+            {filteredLots.length > 0 ? (
+              filteredLots.map(lot => {
+                if (!lot || !lot.lotId) {
+                  return null;
+                }
+                const isSelected = (selectedLots || []).includes(lot.lotId);
+                return (
+                  <div
+                    key={lot.lotId}
+                    className={`lot-item ${isSelected ? 'selected' : ''}`}
+                    onClick={() => handleToggleLot(lot.lotId)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleToggleLot(lot.lotId)}
+                      onClick={e => e.stopPropagation()}
+                    />
+                    <div className="lot-item-details">
+                      <div className="lot-item-location">
+                        {lot.civicAddress || 'Unknown Location'}
+                      </div>
+                      <div className="lot-item-info">
+                        <span>Lot #: {lot.lotNumber || 'N/A'}</span>
+                        <span>
+                          Dimensions: {lot.dimensionsSquareFeet || 'N/A'} sq ft /{' '}
+                          {lot.dimensionsSquareMeters || 'N/A'} sq m
+                        </span>
+                        {lot.price && (
+                          <span>Price: ${lot.price.toLocaleString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="lot-selector-empty">
+                {searchTerm ? t('noLotsFound') : t('noLotsAvailable')}
+              </div>
+            )}
+          </div>
+        </>
       )}
 
-      <div className="lot-selector-search">
-        <input
-          type="text"
-          placeholder={t('searchPlaceholder')}
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          className="lot-search-input"
-        />
-      </div>
-
-      <div className="lot-selector-list">
-        {filteredLots.length > 0 ? (
-          filteredLots.map(lot => {
-            if (!lot || !lot.lotId) {
-              return null;
-            }
-            const isSelected = (selectedLots || []).includes(lot.lotId);
-            return (
+      {draftLots.length > 0 && (
+        <div className="draft-lots-section">
+          <div className="selected-lots-header">
+            {t('draftLotsTitle')} ({draftLots.length}):
+          </div>
+          <div className="lot-selector-list">
+            {draftLots.map((draft, index) => (
               <div
-                key={lot.lotId}
-                className={`lot-item ${isSelected ? 'selected' : ''}`}
-                onClick={() => handleToggleLot(lot.lotId)}
+                key={`draft-${index}`}
+                className="lot-item lot-item-draft"
               >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => handleToggleLot(lot.lotId)}
-                  onClick={e => e.stopPropagation()}
-                />
                 <div className="lot-item-details">
                   <div className="lot-item-location">
-                    {lot.civicAddress || 'Unknown Location'}
+                    {draft.civicAddress || 'Unknown Location'}
                   </div>
                   <div className="lot-item-info">
-                    <span>Lot #: {lot.lotNumber || 'N/A'}</span>
+                    <span>Lot #: {draft.lotNumber || 'N/A'}</span>
                     <span>
-                      Dimensions: {lot.dimensionsSquareFeet || 'N/A'} sq ft /{' '}
-                      {lot.dimensionsSquareMeters || 'N/A'} sq m
+                      Dimensions: {draft.dimensionsSquareFeet || 'N/A'} sq ft /{' '}
+                      {draft.dimensionsSquareMeters || 'N/A'} sq m
                     </span>
-                    {lot.price && (
-                      <span>Price: ${lot.price.toLocaleString()}</span>
+                    {draft.price != null && draft.price !== '' && (
+                      <span>
+                        Price: $
+                        {typeof draft.price === 'number'
+                          ? draft.price.toLocaleString()
+                          : Number(draft.price).toLocaleString()}
+                      </span>
+                    )}
+                    {draft.lotStatus && (
+                      <span>Status: {draft.lotStatus}</span>
                     )}
                   </div>
                 </div>
+                {typeof onDraftLotRemoved === 'function' && (
+                  <button
+                    type="button"
+                    onClick={() => onDraftLotRemoved(index)}
+                    className="lot-item-draft-remove"
+                    aria-label="Remove draft lot"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
-            );
-          })
-        ) : (
-          <div className="lot-selector-empty">
-            {searchTerm ? t('noLotsFound') : t('noLotsAvailable')}
+            ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {selectedLots.length > 0 && (
+      {!isDraftMode && selectedLots.length > 0 && (
         <div className="selected-lots">
           <div className="selected-lots-header">
             {t('selectedCount')} ({selectedLots.length}):
@@ -594,6 +641,9 @@ LotSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   onLotCreated: PropTypes.func,
   projectIdentifier: PropTypes.string,
+  draftLots: PropTypes.arrayOf(PropTypes.object),
+  onDraftLotAdded: PropTypes.func,
+  onDraftLotRemoved: PropTypes.func,
   // Optional props for persisting lot form state across language switches
   lotFormData: PropTypes.object,
   onLotFormDataChange: PropTypes.func,
