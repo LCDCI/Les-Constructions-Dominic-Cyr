@@ -245,32 +245,32 @@ const ProjectMetadata = () => {
                   const lotId = lot.lotId ?? lot.id;
                   const displayId = lot.id ?? lot.lotId ?? '—';
                   return (
-                  <div
-                    key={lotId}
-                    className="lot-card"
-                    style={{ borderColor: metadata.primaryColor }}
-                    onClick={() =>
-                      navigate(
-                        `/projects/${projectId}/lots/${lotId}/metadata`
-                      )
-                    }
-                  >
-                    <h3>{`${t('lot') || 'Lot'} ${displayId}`}</h3>
-                    {lot.civicAddress && (
-                      <p className="lot-address">{lot.civicAddress}</p>
-                    )}
-                    {lot.lotStatus && (
-                      <div className="lot-status-inline">
-                        <span
-                          className={`status-dot status-${lot.lotStatus.toLowerCase()}`}
-                          aria-hidden="true"
-                        ></span>
-                        <span className="status-label">
-                          {lot.lotStatus.replace('_', ' ')}
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                    <div
+                      key={lotId}
+                      className="lot-card"
+                      style={{ borderColor: metadata.primaryColor }}
+                      onClick={() =>
+                        navigate(
+                          `/projects/${projectId}/lots/${lotId}/metadata`
+                        )
+                      }
+                    >
+                      <h3>{`${t('lot') || 'Lot'} ${displayId}`}</h3>
+                      {lot.civicAddress && (
+                        <p className="lot-address">{lot.civicAddress}</p>
+                      )}
+                      {lot.lotStatus && (
+                        <div className="lot-status-inline">
+                          <span
+                            className={`status-dot status-${lot.lotStatus.toLowerCase()}`}
+                            aria-hidden="true"
+                          ></span>
+                          <span className="status-label">
+                            {lot.lotStatus.replace('_', ' ')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
             </div>

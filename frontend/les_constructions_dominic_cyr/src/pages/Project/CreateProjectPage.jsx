@@ -9,7 +9,7 @@ const CreateProjectPage = () => {
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState(null);
   const isFrench = (i18n.language || '').toLowerCase().startsWith('fr');
-  const pageTitle = isFrench ? "Créer un nouveau projet" : 'Create New Project';
+  const pageTitle = isFrench ? 'Créer un nouveau projet' : 'Create New Project';
 
   const handleCancel = () => {
     navigate('/projects');

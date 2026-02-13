@@ -18,8 +18,10 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
 const ProjectsPage = () => {
   const { i18n } = useTranslation();
   const { t } = usePageTranslations('projects');
-  const createProjectTitle = (i18n.language || '').toLowerCase().startsWith('fr')
-    ? "Créer un nouveau projet"
+  const createProjectTitle = (i18n.language || '')
+    .toLowerCase()
+    .startsWith('fr')
+    ? 'Créer un nouveau projet'
     : 'Create New Project';
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -49,7 +51,11 @@ const ProjectsPage = () => {
 
   // Lock body scroll when any modal is open
   const isAnyModalOpen =
-    isCreateOpen || isEditOpen || showConfirmClose || isArchiveOpen || isLotSelectionOpen;
+    isCreateOpen ||
+    isEditOpen ||
+    showConfirmClose ||
+    isArchiveOpen ||
+    isLotSelectionOpen;
   useEffect(() => {
     if (isAnyModalOpen) {
       if (originalBodyOverflow.current === null) {
