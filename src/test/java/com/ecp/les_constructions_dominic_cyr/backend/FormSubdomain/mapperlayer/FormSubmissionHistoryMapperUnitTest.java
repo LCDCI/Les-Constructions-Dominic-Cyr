@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +41,7 @@ class FormSubmissionHistoryMapperUnitTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(formDataSnapshot);
-        history.setSubmittedByCustomerId("customer-id-123");
+        history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"));
         history.setSubmittedByCustomerName("John Customer");
         history.setSubmissionNotes("All selections completed");
         history.setSubmittedAt(LocalDateTime.now());
@@ -55,7 +56,7 @@ class FormSubmissionHistoryMapperUnitTest {
         assertEquals(1, responseModel.getSubmissionNumber());
         assertEquals(FormStatus.SUBMITTED, responseModel.getStatusAtSubmission());
         assertEquals(formDataSnapshot, responseModel.getFormDataSnapshot());
-        assertEquals("customer-id-123", responseModel.getSubmittedByCustomerId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440001", responseModel.getSubmittedByCustomerId());
         assertEquals("John Customer", responseModel.getSubmittedByCustomerName());
         assertEquals("All selections completed", responseModel.getSubmissionNotes());
         assertNotNull(responseModel.getSubmittedAt());
@@ -70,7 +71,7 @@ class FormSubmissionHistoryMapperUnitTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(new HashMap<>());
-        history.setSubmittedByCustomerId("customer-id-456");
+        history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440002"));
         history.setSubmittedByCustomerName("Jane Customer");
         history.setSubmittedAt(LocalDateTime.now());
 
@@ -85,7 +86,7 @@ class FormSubmissionHistoryMapperUnitTest {
         assertEquals(FormStatus.SUBMITTED, responseModel.getStatusAtSubmission());
         assertNotNull(responseModel.getFormDataSnapshot());
         assertTrue(responseModel.getFormDataSnapshot().isEmpty());
-        assertEquals("customer-id-456", responseModel.getSubmittedByCustomerId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440002", responseModel.getSubmittedByCustomerId());
         assertEquals("Jane Customer", responseModel.getSubmittedByCustomerName());
         assertNull(responseModel.getSubmissionNotes());
     }
@@ -99,7 +100,7 @@ class FormSubmissionHistoryMapperUnitTest {
         history.setSubmissionNumber(2);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(new HashMap<>());
-        history.setSubmittedByCustomerId("customer-id-789");
+        history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440003"));
         history.setSubmittedByCustomerName("Bob Customer");
         history.setSubmissionNotes(null);
         history.setSubmittedAt(LocalDateTime.now());
@@ -133,7 +134,7 @@ class FormSubmissionHistoryMapperUnitTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(complexData);
-        history.setSubmittedByCustomerId("customer-id-complex");
+        history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440004"));
         history.setSubmittedByCustomerName("Complex Customer");
         history.setSubmissionNotes("Complex submission");
         history.setSubmittedAt(LocalDateTime.now());
@@ -168,7 +169,7 @@ class FormSubmissionHistoryMapperUnitTest {
             history.setSubmissionNumber(i);
             history.setStatusAtSubmission(FormStatus.SUBMITTED);
             history.setFormDataSnapshot(new HashMap<>());
-            history.setSubmittedByCustomerId("customer-id-multi");
+            history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440005"));
             history.setSubmittedByCustomerName("Multi Customer");
             history.setSubmissionNotes("Submission #" + i);
             history.setSubmittedAt(baseTime.plusHours(i));
@@ -193,7 +194,7 @@ class FormSubmissionHistoryMapperUnitTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(new HashMap<>());
-        history.setSubmittedByCustomerId("customer-id-empty");
+        history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440006"));
         history.setSubmittedByCustomerName("Empty Customer");
         history.setSubmittedAt(LocalDateTime.now());
 
@@ -217,7 +218,7 @@ class FormSubmissionHistoryMapperUnitTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(new HashMap<>());
-        history.setSubmittedByCustomerId("customer-id-timestamp");
+        history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440007"));
         history.setSubmittedByCustomerName("Timestamp Customer");
         history.setSubmittedAt(preciseTime);
 
@@ -245,7 +246,7 @@ class FormSubmissionHistoryMapperUnitTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(new HashMap<>());
-        history.setSubmittedByCustomerId("customer-id-long");
+        history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440008"));
         history.setSubmittedByCustomerName("Long Notes Customer");
         history.setSubmissionNotes(notesText);
         history.setSubmittedAt(LocalDateTime.now());
@@ -270,7 +271,7 @@ class FormSubmissionHistoryMapperUnitTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(new HashMap<>());
-        history.setSubmittedByCustomerId("customer-id-special");
+        history.setSubmittedByCustomerId(UUID.fromString("550e8400-e29b-41d4-a716-446655440009"));
         history.setSubmittedByCustomerName("Special Customer");
         history.setSubmissionNotes(specialNotes);
         history.setSubmittedAt(LocalDateTime.now());
