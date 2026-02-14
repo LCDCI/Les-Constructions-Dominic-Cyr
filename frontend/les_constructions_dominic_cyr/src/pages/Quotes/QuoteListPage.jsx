@@ -273,7 +273,9 @@ const QuoteListPage = () => {
             <BiSearch className="search-icon" />
             <input
               type="text"
-              placeholder={t('quote.searchBills') || 'Search anything on Quotes'}
+              placeholder={
+                t('quote.searchBills') || 'Search anything on Quotes'
+              }
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="search-input"

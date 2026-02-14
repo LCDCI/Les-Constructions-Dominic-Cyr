@@ -769,7 +769,6 @@ const QuoteFormPage = () => {
           </aside>
         </div>
 
-
         {/* Action Buttons */}
         <div className="form-actions">
           <button

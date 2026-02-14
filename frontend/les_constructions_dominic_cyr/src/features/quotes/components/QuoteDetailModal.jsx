@@ -56,8 +56,8 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
       if (quoteData.approvedBy) {
         try {
           if (quoteData.approvedBy.includes('|')) {
-             const encodedId = encodeURIComponent(quoteData.approvedBy);
-             const userResponse = await fetch(
+            const encodedId = encodeURIComponent(quoteData.approvedBy);
+            const userResponse = await fetch(
               `/api/v1/users/auth0/${encodedId}`,
               {
                 headers: {
@@ -72,7 +72,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
               );
             }
           } else {
-             setApprovedByName(quoteData.approvedBy);
+            setApprovedByName(quoteData.approvedBy);
           }
         } catch (err) {
           console.warn('Failed to fetch approver name:', err);
@@ -107,7 +107,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
     }
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     if (!amount) return '$0.00';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -115,7 +115,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
     }).format(amount);
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = dateString => {
     if (!dateString) return '-';
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
@@ -170,7 +170,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
   }
 
   // Helper to translate status
-  const getStatusLabel = (status) => {
+  const getStatusLabel = status => {
     switch (status) {
       case 'SUBMITTED':
         return t('quote.approval.submitted') || 'Submitted';
@@ -208,7 +208,9 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
             </div>
             <div className="header-item">
               <span className="label">{t('quote.status') || 'Status'}</span>
-              <span className={`status-badge status-${quote.status?.toLowerCase()}`}>
+              <span
+                className={`status-badge status-${quote.status?.toLowerCase()}`}
+              >
                 {getStatusLabel(quote.status)}
               </span>
             </div>
@@ -217,8 +219,12 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
               <span className="value">{formatDate(quote.createdAt)}</span>
             </div>
             <div className="header-item">
-              <span className="label">{t('quote.totalAmount') || 'Total Amount'}</span>
-              <span className="value amount">{formatCurrency(quote.totalAmount)}</span>
+              <span className="label">
+                {t('quote.totalAmount') || 'Total Amount'}
+              </span>
+              <span className="value amount">
+                {formatCurrency(quote.totalAmount)}
+              </span>
             </div>
           </div>
 
@@ -234,7 +240,8 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
               <span className="value">
                 {lotDetails ? (
                   <>
-                    {lotDetails.lotNumber && `${t('quote.lot') || 'Lot'} ${lotDetails.lotNumber}`}
+                    {lotDetails.lotNumber &&
+                      `${t('quote.lot') || 'Lot'} ${lotDetails.lotNumber}`}
                     {lotDetails.address && ` - ${lotDetails.address}`}
                   </>
                 ) : (
@@ -243,8 +250,12 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
               </span>
             </div>
             <div className="info-row">
-              <span className="label">{t('quote.contractor') || 'Contractor'}</span>
-              <span className="value">{contractorName || quote.contractorId}</span>
+              <span className="label">
+                {t('quote.contractor') || 'Contractor'}
+              </span>
+              <span className="value">
+                {contractorName || quote.contractorId}
+              </span>
             </div>
           </div>
 
@@ -273,7 +284,9 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
                 </tbody>
               </table>
             ) : (
-              <p className="no-items">{t('quote.noItems') || 'No line items'}</p>
+              <p className="no-items">
+                {t('quote.noItems') || 'No line items'}
+              </p>
             )}
           </div>
 
@@ -282,11 +295,15 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
             <div className="approval-info approved">
               <h3>{t('quote.approvalInfo') || 'Approval Information'}</h3>
               <div className="info-row">
-                <span className="label">{t('quote.approvedDate') || 'Approved Date'}</span>
+                <span className="label">
+                  {t('quote.approvedDate') || 'Approved Date'}
+                </span>
                 <span className="value">{formatDate(quote.approvedAt)}</span>
               </div>
               <div className="info-row">
-                <span className="label">{t('quote.approvedBy') || 'Approved By'}</span>
+                <span className="label">
+                  {t('quote.approvedBy') || 'Approved By'}
+                </span>
                 <span className="value">{quote.approvedBy || '-'}</span>
               </div>
             </div>
@@ -297,7 +314,9 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
             <div className="approval-info rejected">
               <h3>{t('quote.rejectionInfo') || 'Rejection Information'}</h3>
               <div className="info-row">
-                <span className="label">{t('quote.approval.rejectionReason') || 'Rejection Reason'}</span>
+                <span className="label">
+                  {t('quote.approval.rejectionReason') || 'Rejection Reason'}
+                </span>
                 <span className="value">{quote.rejectionReason}</span>
               </div>
             </div>

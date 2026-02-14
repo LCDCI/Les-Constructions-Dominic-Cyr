@@ -14,7 +14,10 @@ const CustomerApprovalModal = ({ quote, onConfirm, onCancel }) => {
 
   const handleConfirm = async () => {
     if (!acknowledged) {
-      alert(t('customerApproval.acknowledgmentRequired') || 'Please acknowledge that you have reviewed the quote');
+      alert(
+        t('customerApproval.acknowledgmentRequired') ||
+          'Please acknowledge that you have reviewed the quote'
+      );
       return;
     }
 
@@ -26,7 +29,7 @@ const CustomerApprovalModal = ({ quote, onConfirm, onCancel }) => {
     }
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     if (!amount) return '$0.00';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -68,7 +71,9 @@ const CustomerApprovalModal = ({ quote, onConfirm, onCancel }) => {
             </div>
             <div className="summary-row total">
               <span className="label">{t('table.totalAmount')}</span>
-              <span className="value amount">{formatCurrency(quote.totalAmount)}</span>
+              <span className="value amount">
+                {formatCurrency(quote.totalAmount)}
+              </span>
             </div>
           </div>
 
@@ -84,7 +89,7 @@ const CustomerApprovalModal = ({ quote, onConfirm, onCancel }) => {
               <input
                 type="checkbox"
                 checked={acknowledged}
-                onChange={(e) => setAcknowledged(e.target.checked)}
+                onChange={e => setAcknowledged(e.target.checked)}
                 disabled={isProcessing}
               />
               <span className="checkmark"></span>

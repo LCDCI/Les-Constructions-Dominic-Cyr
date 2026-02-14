@@ -7,14 +7,23 @@ import './ApprovalModal.css';
  * ApprovalModal Component
  * Modal for approving or rejecting quotes
  */
-const ApprovalModal = ({ quote, contractorName, action, onConfirm, onCancel }) => {
+const ApprovalModal = ({
+  quote,
+  contractorName,
+  action,
+  onConfirm,
+  onCancel,
+}) => {
   const { t } = useTranslation('quotes');
   const [rejectionReason, setRejectionReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleConfirm = async () => {
     if (action === 'REJECT' && !rejectionReason.trim()) {
-      alert(t('quote.approval.reasonRequired') || 'Please provide a rejection reason');
+      alert(
+        t('quote.approval.reasonRequired') ||
+          'Please provide a rejection reason'
+      );
       return;
     }
 
@@ -31,7 +40,7 @@ const ApprovalModal = ({ quote, contractorName, action, onConfirm, onCancel }) =
     ? t('quote.approval.confirmApprove') || 'Approve Quote'
     : t('quote.approval.confirmReject') || 'Reject Quote';
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = amount => {
     if (!amount) return '$0.00';
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -65,8 +74,12 @@ const ApprovalModal = ({ quote, contractorName, action, onConfirm, onCancel }) =
               <span className="value">{formatCurrency(quote.totalAmount)}</span>
             </div>
             <div className="summary-row">
-              <span className="label">{t('quote.contractor') || 'Contractor'}</span>
-              <span className="value">{contractorName || quote.contractorId}</span>
+              <span className="label">
+                {t('quote.contractor') || 'Contractor'}
+              </span>
+              <span className="value">
+                {contractorName || quote.contractorId}
+              </span>
             </div>
           </div>
 
@@ -96,7 +109,9 @@ const ApprovalModal = ({ quote, contractorName, action, onConfirm, onCancel }) =
           )}
 
           {/* Confirmation Message */}
-          <div className={`confirmation-message ${isApproval ? 'approve' : 'reject'}`}>
+          <div
+            className={`confirmation-message ${isApproval ? 'approve' : 'reject'}`}
+          >
             {isApproval ? (
               <p>
                 {t('quote.approval.approveMessage') ||

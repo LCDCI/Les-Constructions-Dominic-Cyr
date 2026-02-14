@@ -27,7 +27,7 @@ const CustomerQuoteApprovalPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
-  
+
   // Notification state
   const [notification, setNotification] = useState({
     isOpen: false,
@@ -63,7 +63,7 @@ const CustomerQuoteApprovalPage = () => {
   // Fetch pending quotes
   const fetchPendingQuotes = async () => {
     if (!token) return;
-    
+
     setLoading(true);
     try {
       const data = await quoteApi.getCustomerPendingQuotes(token);
@@ -90,7 +90,7 @@ const CustomerQuoteApprovalPage = () => {
       return;
     }
 
-    const filtered = quotes.filter((quote) => {
+    const filtered = quotes.filter(quote => {
       const searchLower = searchTerm.toLowerCase();
       return (
         quote.quoteNumber?.toLowerCase().includes(searchLower) ||
@@ -113,13 +113,13 @@ const CustomerQuoteApprovalPage = () => {
   };
 
   // Handle approve click
-  const handleApproveClick = (quote) => {
+  const handleApproveClick = quote => {
     setSelectedQuote(quote);
     setShowApprovalModal(true);
   };
 
   // Handle view details
-  const handleViewDetails = (quote) => {
+  const handleViewDetails = quote => {
     setDetailQuote(quote);
     setShowDetailModal(true);
   };
@@ -153,11 +153,16 @@ const CustomerQuoteApprovalPage = () => {
           <h1 className="page-title">{t('customerApproval.title')}</h1>
           <p className="page-subtitle">{t('customerApproval.subtitle')}</p>
         </div>
-        <button className="btn-refresh btn-icon-only" onClick={handleRefresh} disabled={loading} title={t('actions.refresh')}>
+        <button
+          className="btn-refresh btn-icon-only"
+          onClick={handleRefresh}
+          disabled={loading}
+          title={t('actions.refresh')}
+        >
           <MdRefresh className={loading ? 'spinning' : ''} />
         </button>
       </div>
-      
+
       {/* Payment Info Section */}
       <div className="payment-info-card">
         <div className="payment-info-icon">
@@ -166,9 +171,9 @@ const CustomerQuoteApprovalPage = () => {
         <div className="payment-info-content">
           <h3>{t('customerApproval.paymentInfo.title')}</h3>
           <p>{t('customerApproval.paymentInfo.description')}</p>
-          <a 
-            href="https://www.acceo.com/nos-solutions/pme/" 
-            target="_blank" 
+          <a
+            href="https://www.acceo.com/nos-solutions/pme/"
+            target="_blank"
             rel="noopener noreferrer"
             className="btn-payment-link"
           >
@@ -184,7 +189,7 @@ const CustomerQuoteApprovalPage = () => {
           type="text"
           placeholder={t('search.placeholder')}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           className="search-input"
         />
       </div>
@@ -231,13 +236,17 @@ const CustomerQuoteApprovalPage = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredQuotes.map((quote) => (
+              {filteredQuotes.map(quote => (
                 <tr key={quote.quoteNumber}>
                   <td className="quote-number">{quote.quoteNumber}</td>
                   <td>{quote.projectName || '-'}</td>
                   <td>{quote.lotNumber || '-'}</td>
                   <td className="amount">
-                    ${quote.totalAmount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    $
+                    {quote.totalAmount?.toLocaleString('en-US', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </td>
                   <td>
                     {quote.approvedAt

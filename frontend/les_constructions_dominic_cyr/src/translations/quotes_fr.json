@@ -108,21 +108,21 @@
     "noQuotesDescription": "Tous les devis ont été examinés. Revenez plus tard pour de nouveaux devis.",
     "modalTitle": "Approuver le devis",
     "infoMessage": "En approuvant ce devis, vous confirmez avoir pris connaissance des détails et acceptez de procéder aux travaux tels que décrits.",
-      "acknowledgmentText": "Je reconnais avoir pris connaissance de ce devis et j'approuve les travaux.",
-      "acknowledgmentRequired": "Veuillez confirmer que vous avez pris connaissance du devis",
-      "paymentInfo": {
-        "title": "Facturation et Paiement Officiels",
-        "description": "Toute la facturation et les paiements officiels sont traités via notre plateforme partenaire sécurisée. Veuillez créer un compte pour gérer vos factures.",
-        "button": "Accéder au portail de paiement"
-      }
+    "acknowledgmentText": "Je reconnais avoir pris connaissance de ce devis et j'approuve les travaux.",
+    "acknowledgmentRequired": "Veuillez confirmer que vous avez pris connaissance du devis",
+    "paymentInfo": {
+      "title": "Facturation et Paiement Officiels",
+      "description": "Toute la facturation et les paiements officiels sont traités via notre plateforme partenaire sécurisée. Veuillez créer un compte pour gérer vos factures.",
+      "button": "Accéder au portail de paiement"
+    }
   },
   "approval": {
-      "reasonPlaceholder": "Expliquez pourquoi ce devis est rejeté...",
-      "rejectMessage": "Êtes-vous sûr de vouloir rejeter ce devis ? Une raison doit être fournie et l'entrepreneur sera notifié.",
-      "approveMessage": "Êtes-vous sûr de vouloir approuver ce devis ? Il sera marqué comme valide pour l'envoi aux clients.",
-      "confirmApprove": "Approuver le devis",
-      "confirmReject": "Rejeter le devis",
-      "reasonRequired": "Veuillez fournir une raison de rejet"
+    "reasonPlaceholder": "Expliquez pourquoi ce devis est rejeté...",
+    "rejectMessage": "Êtes-vous sûr de vouloir rejeter ce devis ? Une raison doit être fournie et l'entrepreneur sera notifié.",
+    "approveMessage": "Êtes-vous sûr de vouloir approuver ce devis ? Il sera marqué comme valide pour l'envoi aux clients.",
+    "confirmApprove": "Approuver le devis",
+    "confirmReject": "Rejeter le devis",
+    "reasonRequired": "Veuillez fournir une raison de rejet"
   },
   "table": {
     "quoteNumber": "Devis #",

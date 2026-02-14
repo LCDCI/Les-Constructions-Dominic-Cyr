@@ -108,21 +108,21 @@
     "noQuotesDescription": "All quotes have been reviewed. Check back later for new quotes.",
     "modalTitle": "Approve Quote",
     "infoMessage": "By approving this quote, you confirm that you have reviewed the details and agree to proceed with the work as outlined.",
-      "acknowledgmentText": "I acknowledge that I have reviewed this quote and approve the work to proceed.",
-      "acknowledgmentRequired": "Please acknowledge that you have reviewed the quote",
-      "paymentInfo": {
-        "title": "Official Billing & Payment",
-        "description": "All official billing and payments are processed through our secure partner platform. Please create an account to manage your invoices.",
-        "button": "Go to Payment Portal"
-      }
+    "acknowledgmentText": "I acknowledge that I have reviewed this quote and approve the work to proceed.",
+    "acknowledgmentRequired": "Please acknowledge that you have reviewed the quote",
+    "paymentInfo": {
+      "title": "Official Billing & Payment",
+      "description": "All official billing and payments are processed through our secure partner platform. Please create an account to manage your invoices.",
+      "button": "Go to Payment Portal"
+    }
   },
   "approval": {
-      "reasonPlaceholder": "Explain why this quote is being rejected...",
-      "rejectMessage": "Are you sure you want to reject this quote? A reason must be provided and the contractor will be notified.",
-      "approveMessage": "Are you sure you want to approve this quote? It will be marked as valid for sending to customers.",
-      "confirmApprove": "Approve Quote",
-      "confirmReject": "Reject Quote",
-      "reasonRequired": "Please provide a rejection reason"
+    "reasonPlaceholder": "Explain why this quote is being rejected...",
+    "rejectMessage": "Are you sure you want to reject this quote? A reason must be provided and the contractor will be notified.",
+    "approveMessage": "Are you sure you want to approve this quote? It will be marked as valid for sending to customers.",
+    "confirmApprove": "Approve Quote",
+    "confirmReject": "Reject Quote",
+    "reasonRequired": "Please provide a rejection reason"
   },
   "table": {
     "quoteNumber": "Quote #",

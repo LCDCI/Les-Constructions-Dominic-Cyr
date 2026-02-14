@@ -3,7 +3,8 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   padding: 40px 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
 }
 
 .quote-detail-container {
@@ -11,7 +12,9 @@
   margin: 0 auto;
   background: white;
   border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
@@ -235,8 +238,12 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
-.items-table thead th.text-center { text-align: center; }
-.items-table thead th.text-right { text-align: right; }
+.items-table thead th.text-center {
+  text-align: center;
+}
+.items-table thead th.text-right {
+  text-align: right;
+}
 
 .items-table tbody td {
   padding: 16px;
@@ -249,8 +256,12 @@
   border-bottom: none;
 }
 
-.items-table tbody td.text-center { text-align: center; }
-.items-table tbody td.text-right { text-align: right; }
+.items-table tbody td.text-center {
+  text-align: center;
+}
+.items-table tbody td.text-right {
+  text-align: right;
+}
 
 /* Quote Totals Section */
 .quote-totals-section {
@@ -348,7 +359,9 @@
 }
 
 /* Loading/Error */
-.loading-container, .error-container, .empty-state {
+.loading-container,
+.error-container,
+.empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -368,7 +381,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Print Styles */
@@ -377,18 +392,21 @@
     background: white;
     padding: 0;
   }
-  
+
   .quote-detail-container {
     box-shadow: none;
     border: none;
     max-width: 100%;
   }
 
-  .detail-header, .btn-back {
+  .detail-header,
+  .btn-back {
     display: none;
   }
 
-  .quote-items-section, .quote-totals-section, .quote-party-section {
+  .quote-items-section,
+  .quote-totals-section,
+  .quote-party-section {
     padding: 16px;
   }
 }
@@ -399,7 +417,10 @@
     padding: 16px;
   }
 
-  .quote-header-section, .quote-party-section, .quote-items-section, .quote-totals-section {
+  .quote-header-section,
+  .quote-party-section,
+  .quote-items-section,
+  .quote-totals-section {
     padding: 20px;
   }
 

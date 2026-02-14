@@ -173,7 +173,9 @@ export const quoteApi = {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch submitted quotes (${response.status})`);
+        throw new Error(
+          `Failed to fetch submitted quotes (${response.status})`
+        );
       }
 
       return response.json();
@@ -237,7 +239,9 @@ export const quoteApi = {
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to fetch submitted quotes (${response.status})`);
+        throw new Error(
+          `Failed to fetch submitted quotes (${response.status})`
+        );
       }
 
       return response.json();
@@ -264,10 +268,13 @@ export const quoteApi = {
         Authorization: `Bearer ${token}`,
       };
 
-      const response = await fetch(`${API_BASE_URL}/quotes/${quoteNumber}/approve`, {
-        method: 'PUT',
-        headers,
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/quotes/${quoteNumber}/approve`,
+        {
+          method: 'PUT',
+          headers,
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -312,14 +319,17 @@ export const quoteApi = {
         Authorization: `Bearer ${token}`,
       };
 
-      const response = await fetch(`${API_BASE_URL}/quotes/${quoteNumber}/reject`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({
-          action: 'REJECT',
-          rejectionReason,
-        }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/quotes/${quoteNumber}/reject`,
+        {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify({
+            action: 'REJECT',
+            rejectionReason,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -356,7 +366,7 @@ export const quoteApi = {
    * @returns {Promise<Array>} List of quotes pending customer approval
    * @throws {Error} If fetch fails
    */
-  getCustomerPendingQuotes: async (token) => {
+  getCustomerPendingQuotes: async token => {
     try {
       const headers = {
         Authorization: `Bearer ${token}`,
@@ -396,10 +406,13 @@ export const quoteApi = {
         Authorization: `Bearer ${token}`,
       };
 
-      const response = await fetch(`${API_BASE_URL}/quotes/${quoteNumber}/customer-approve`, {
-        method: 'POST',
-        headers,
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/quotes/${quoteNumber}/customer-approve`,
+        {
+          method: 'POST',
+          headers,
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();

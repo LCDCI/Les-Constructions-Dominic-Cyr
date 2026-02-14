@@ -4,7 +4,13 @@
   min-height: 100vh;
   background-color: #fcfcfc;
   padding: 40px 32px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   color: #1e1e1e;
 }
 
@@ -125,11 +131,24 @@
   color: #333;
 }
 
-.col-item { width: 40%; }
-.col-amount { width: 15%; } /* Quantity */
-.col-rate { width: 20%; text-align: right; }
-.col-total { width: 15%; text-align: right; }
-.col-actions { width: 10%; text-align: center; }
+.col-item {
+  width: 40%;
+}
+.col-amount {
+  width: 15%;
+} /* Quantity */
+.col-rate {
+  width: 20%;
+  text-align: right;
+}
+.col-total {
+  width: 15%;
+  text-align: right;
+}
+.col-actions {
+  width: 10%;
+  text-align: center;
+}
 
 /* Input Styles */
 .line-items-table input {
@@ -395,7 +414,7 @@
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .header-right .note {
     text-align: left;
   }
@@ -411,22 +430,32 @@
   }
 
   /* Compact columns for mobile table */
-  .col-item { width: 30%; }
-  .col-amount { width: 15%; }
-  .col-rate { width: 25%; }
-  .col-total { width: 20%; }
-  .col-actions { width: 10%; }
-  
-  .line-items-table th, 
+  .col-item {
+    width: 30%;
+  }
+  .col-amount {
+    width: 15%;
+  }
+  .col-rate {
+    width: 25%;
+  }
+  .col-total {
+    width: 20%;
+  }
+  .col-actions {
+    width: 10%;
+  }
+
+  .line-items-table th,
   .line-items-table td {
     padding: 12px 10px;
     font-size: 13px;
   }
-  
+
   .actions-section {
     flex-direction: column-reverse;
   }
-  
+
   .btn {
     width: 100%;
   }

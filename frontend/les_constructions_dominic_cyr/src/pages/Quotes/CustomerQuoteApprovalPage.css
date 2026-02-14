@@ -6,7 +6,8 @@
   padding: 40px 32px;
   min-height: 100vh;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
 }
 
 /* Page Header */
@@ -77,8 +78,12 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Payment Info Section */
@@ -162,7 +167,9 @@
   background: white;
   padding: 16px 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
   margin-bottom: 32px;
 }
 
@@ -285,7 +292,9 @@
 .customer-quote-approval-page .table-container {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.05),
+    0 4px 6px -2px rgba(0, 0, 0, 0.025);
   overflow: hidden;
   border: 1px solid #f1f5f9;
 }
@@ -341,7 +350,7 @@
 .customer-quote-approval-page .amount {
   font-weight: 700;
   color: #1e293b;
-  font-feature-settings: "tnum";
+  font-feature-settings: 'tnum';
 }
 
 /* Actions */
@@ -431,9 +440,9 @@
     display: none;
   }
 
-  .customer-quote-approval-page .quotes-table, 
-  .customer-quote-approval-page .quotes-table tbody, 
-  .customer-quote-approval-page .quotes-table tr, 
+  .customer-quote-approval-page .quotes-table,
+  .customer-quote-approval-page .quotes-table tbody,
+  .customer-quote-approval-page .quotes-table tr,
   .customer-quote-approval-page .quotes-table td {
     display: block;
     width: 100%;
@@ -495,7 +504,7 @@
   .customer-quote-approval-page .page-title {
     font-size: 24px;
   }
-  
+
   .customer-quote-approval-page .quotes-table td {
     padding: 12px 16px;
     font-size: 14px;

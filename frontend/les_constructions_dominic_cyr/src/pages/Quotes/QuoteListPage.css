@@ -173,7 +173,8 @@
   transform: translateY(-1px);
 }
 
-.btn-view, .btn-send {
+.btn-view,
+.btn-send {
   background: white;
   color: #64748b;
   border: 1px solid #e2e8f0;
@@ -182,7 +183,8 @@
   border-radius: 6px;
 }
 
-.btn-view:hover, .btn-send:hover {
+.btn-view:hover,
+.btn-send:hover {
   background: #f8fafc;
   color: #0f172a;
   border-color: #cbd5e1;
@@ -258,7 +260,8 @@
   border: 1px solid #fcd34d;
 }
 
-.status-owner-approved, .status-customer-approved {
+.status-owner-approved,
+.status-customer-approved {
   color: #047857;
   background: #ecfdf5;
   border: 1px solid #6ee7b7;
@@ -395,7 +398,8 @@
     width: 100%;
   }
 
-  .quotes-table th, .quotes-table td {
+  .quotes-table th,
+  .quotes-table td {
     padding: 12px 16px;
   }
 

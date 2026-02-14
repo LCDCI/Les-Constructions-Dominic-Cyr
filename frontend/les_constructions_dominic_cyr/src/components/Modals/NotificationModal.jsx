@@ -5,7 +5,7 @@ import './NotificationModal.css';
 /**
  * NotificationModal Component
  * Replaces native alerts with a styled modal
- * 
+ *
  * @param {boolean} isOpen - Whether the modal is open
  * @param {string} type - 'success', 'error', or 'info'
  * @param {string} message - The message to display
@@ -52,12 +52,12 @@ const NotificationModal = ({ isOpen, type = 'info', message, onClose }) => {
         <button className="close-button-absolute" onClick={onClose}>
           <MdClose />
         </button>
-        
+
         <div className="notification-content">
           {getIcon()}
           <h3 className={`notification-title ${type}`}>{getTitle()}</h3>
           <p className="notification-message">{message}</p>
-          
+
           <button className="btn-primary" onClick={onClose}>
             Close
           </button>
