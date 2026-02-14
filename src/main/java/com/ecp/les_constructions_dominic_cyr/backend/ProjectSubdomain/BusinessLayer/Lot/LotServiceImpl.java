@@ -47,6 +47,25 @@ public class LotServiceImpl implements LotService{
     }
 
     @Override
+    public List<LotResponseModel> getLotsByProjectAndBothUsersAssigned(String projectIdentifier, String salespersonId, String customerId) {
+        if (projectIdentifier == null || projectIdentifier.isBlank()) {
+            throw new InvalidInputException("Project identifier must not be blank");
+        }
+        if (salespersonId == null || salespersonId.isBlank()) {
+            throw new InvalidInputException("Salesperson ID must not be blank");
+        }
+        if (customerId == null || customerId.isBlank()) {
+            throw new InvalidInputException("Customer ID must not be blank");
+        }
+
+        UUID salespersonUuid = UUID.fromString(salespersonId);
+        UUID customerUuid = UUID.fromString(customerId);
+
+        List<Lot> lots = lotRepository.findByProjectAndBothUsersAssigned(projectIdentifier, salespersonUuid, customerUuid);
+        return mapLotsToResponses(lots);
+    }
+
+    @Override
     public LotResponseModel getLotById(String lotId) {
         UUID lotUuid = UUID.fromString(lotId);
         Lot lot = lotRepository.findByLotIdentifier_LotId(lotUuid);

@@ -35,6 +35,8 @@ public class ProjectOverviewResponseModel {
     private String locationDescription;
     private String locationAddress;
     private String locationMapEmbedUrl;
+    private Double locationLatitude;
+    private Double locationLongitude;
 
     private String gallerySectionTitle;
     private List<ProjectGalleryImageResponseModel> galleryImages;

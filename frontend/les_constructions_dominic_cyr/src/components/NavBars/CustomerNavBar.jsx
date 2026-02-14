@@ -193,8 +193,8 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/forms"
-                  className={`navbar-link ${isActive('/forms')}`}
+                  to="/customers/forms"
+                  className={`navbar-link ${isActive('/customers/forms')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">

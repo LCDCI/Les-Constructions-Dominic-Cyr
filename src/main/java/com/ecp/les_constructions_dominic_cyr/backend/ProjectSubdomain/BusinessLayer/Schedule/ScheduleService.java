@@ -85,4 +85,21 @@ public interface ScheduleService {
      * @param scheduleIdentifier The schedule identifier
      */
     void deleteScheduleFromProject(String projectIdentifier, String scheduleIdentifier);
+
+    /**
+     * Get schedules for lots assigned to a specific user (customer/salesperson view).
+     *
+     * @param userId The user's ID
+     * @return List of ScheduleResponseDTO for the user's assigned lots
+     */
+    List<ScheduleResponseDTO> getSchedulesForUserAssignedLots(String userId);
+
+    /**
+     * Get schedules for a project filtered by lots assigned to a specific user.
+     *
+     * @param projectIdentifier The project identifier
+     * @param userId The user's ID
+     * @return List of ScheduleResponseDTO for the user's assigned lots in the project
+     */
+    List<ScheduleResponseDTO> getSchedulesByProjectIdentifierAndUserAssignedLots(String projectIdentifier, String userId);
 }

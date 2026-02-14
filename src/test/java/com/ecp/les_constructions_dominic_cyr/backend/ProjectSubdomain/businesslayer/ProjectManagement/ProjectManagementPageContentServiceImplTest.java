@@ -1,5 +1,6 @@
-package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.ProjectManagement;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.businesslayer.ProjectManagement;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.ProjectManagement.ProjectManagementPageContentServiceImpl;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectManagement.ProjectManagementPageContent;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.ProjectManagement.ProjectManagementPageContentRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
@@ -264,5 +265,15 @@ class ProjectManagementPageContentServiceImplTest {
         // Assert
         assertNotNull(result);
         verify(repository).findByLanguage("en");
+    }
+
+    @Test
+    void getContentByLanguage_WhenJsonParseFails_ThrowsRuntimeException() throws Exception {
+        when(repository.findByLanguage("en")).thenReturn(Optional.of(testContent));
+        when(objectMapper.readValue(eq(testJsonContent), any(com.fasterxml.jackson.core.type.TypeReference.class)))
+                .thenThrow(new com.fasterxml.jackson.core.JsonProcessingException("parse error") {});
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> service.getContentByLanguage("en"));
+        assertTrue(ex.getMessage().contains("Failed to parse content JSON"));
     }
 }

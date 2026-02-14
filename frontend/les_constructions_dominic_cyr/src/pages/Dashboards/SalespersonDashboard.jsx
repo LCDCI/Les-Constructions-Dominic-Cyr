@@ -6,7 +6,7 @@ import DashboardCard from '../../components/DashboardCard';
 import '../../styles/Dashboards/SalespersonDashboard.css';
 import { GoInbox } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
-import { GoArrowUp } from 'react-icons/go';
+import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -40,10 +40,10 @@ const SalespersonDashboard = () => {
         action: () => navigate('/salesperson/documents'),
       },
       {
-        icon: <GoArrowUp />,
-        title: t('cards.uploads.title', 'Uploads'),
-        buttonText: t('cards.uploads.button', 'Begin Upload'),
-        action: () => navigate('/salesperson/uploads'),
+        icon: <GoFileDiff />,
+        title: t('cards.forms.title', 'Forms'),
+        buttonText: t('cards.forms.button', 'Assign Forms'),
+        action: () => navigate('/salesperson/forms'),
       },
     ],
     [t, navigate]
