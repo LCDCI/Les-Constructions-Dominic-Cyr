@@ -8,7 +8,7 @@ const PROJECT_INFO = {
   'proj-001-foresta': {
     contact: {
       name: 'Isabelle Misiazeck',
-      phone: '514-123-4567',
+      phone: '514-705-7848',
       email: 'Isabelle.misiazeck@foresta.ca',
     },
     hours: {
@@ -25,7 +25,7 @@ const PROJECT_INFO = {
   'proj-002-panorama': {
     contact: {
       name: 'Elyse St-Jean',
-      phone: '514-123-4567',
+      phone: '514-705-7848',
       email: 'elyse.stjean@panorama.ca',
     },
     hours: {
