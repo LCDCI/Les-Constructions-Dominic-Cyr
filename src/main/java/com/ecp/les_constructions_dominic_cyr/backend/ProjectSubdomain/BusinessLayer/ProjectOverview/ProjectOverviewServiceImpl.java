@@ -62,6 +62,8 @@ public class ProjectOverviewServiceImpl implements ProjectOverviewService {
                     .locationDescription(content.getLocationDescription())
                     .locationAddress(content.getLocationAddress())
                     .locationMapEmbedUrl(content.getLocationMapEmbedUrl())
+                    .locationLatitude(content.getLocationLatitude())
+                    .locationLongitude(content.getLocationLongitude())
                     .gallerySectionTitle(content.getGallerySectionTitle());
         }
 

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -115,11 +116,11 @@ class FormMapperUnitTest {
         form.setFormType(FormType.WINDOWS);
         form.setFormStatus(FormStatus.SUBMITTED);
         form.setProjectIdentifier("project-123");
-        form.setLotIdentifier("lot-uuid-456");
-        form.setCustomerId("customer-id-123");
+        form.setLotIdentifier(UUID.fromString("lot-uuid-456"));
+        form.setCustomerId(UUID.fromString("customer-id-123"));
         form.setCustomerName("John Customer");
         form.setCustomerEmail("john@example.com");
-        form.setAssignedByUserId("salesperson-id-456");
+        form.setAssignedByUserId(UUID.fromString("salesperson-id-456"));
         form.setAssignedByName("Jane Salesperson");
         form.setFormTitle("Window Selection");
         form.setInstructions("Please select windows");
@@ -134,7 +135,7 @@ class FormMapperUnitTest {
         form.setLastSubmittedDate(now);
         form.setCompletedDate(now.plusDays(1));
         form.setReopenedDate(now.minusHours(2));
-        form.setReopenedByUserId("reopener-id");
+        form.setReopenedByUserId(UUID.fromString("reopener-id"));
         form.setReopenReason("Need changes");
         form.setReopenCount(2);
         form.setCreatedAt(now.minusDays(5));
@@ -178,8 +179,8 @@ class FormMapperUnitTest {
         form.setFormType(FormType.GARAGE_DOORS);
         form.setFormStatus(FormStatus.ASSIGNED);
         form.setProjectIdentifier("proj-minimal");
-        form.setLotIdentifier("lot-minimal");
-        form.setCustomerId("cust-minimal");
+        form.setLotIdentifier(UUID.fromString("lot-minimal"));
+        form.setCustomerId(UUID.fromString("cust-minimal"));
         form.setFormData(new HashMap<>());
         form.setReopenCount(0);
 
@@ -202,8 +203,8 @@ class FormMapperUnitTest {
         form.setFormType(FormType.ASPHALT_SHINGLES);
         form.setFormStatus(FormStatus.IN_PROGRESS);
         form.setProjectIdentifier("project-nulls");
-        form.setLotIdentifier("lot-nulls");
-        form.setCustomerId("customer-nulls");
+        form.setLotIdentifier(UUID.fromString("lot-nulls"));
+        form.setCustomerId(UUID.fromString("customer-nulls"));
         form.setFormData(new HashMap<>());
         form.setReopenCount(0);
         // Leave optional fields as null
@@ -325,8 +326,8 @@ class FormMapperUnitTest {
         Form form = new Form();
         form.setFormType(FormType.WINDOWS);
         form.setProjectIdentifier("original-project");
-        form.setLotIdentifier("original-lot");
-        form.setCustomerId("original-customer");
+        form.setLotIdentifier(UUID.fromString("original-lot"));
+        form.setCustomerId(UUID.fromString("original-customer"));
         form.setFormTitle("Title");
         form.setInstructions("Instructions");
 
@@ -385,8 +386,8 @@ class FormMapperUnitTest {
             form.setFormType(FormType.WINDOWS);
             form.setFormStatus(status);
             form.setProjectIdentifier("proj");
-            form.setLotIdentifier("lot");
-            form.setCustomerId("cust");
+            form.setLotIdentifier(UUID.fromString("lot"));
+            form.setCustomerId(UUID.fromString("cust"));
             form.setFormData(new HashMap<>());
             form.setReopenCount(0);
 
