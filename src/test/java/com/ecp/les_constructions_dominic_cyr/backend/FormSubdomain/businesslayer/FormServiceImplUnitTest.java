@@ -1969,5 +1969,358 @@ class FormServiceImplUnitTest {
                 form.getReopenCount() == 1
         ));
     }
+
+    // ========== Tests for Viewing Submitted Forms (Lot Documents Page Functionality) ==========
+
+    @Test
+    void getFormById_SubmittedForm_ReturnsFormWithCustomerData() {
+        // Arrange
+        Map<String, Object> customerFormData = new HashMap<>();
+        customerFormData.put("pdfFile", Map.of("fileId", "file-123", "fileName", "selection.pdf"));
+        customerFormData.put("additionalNotes", "Customer notes here");
+        
+        testForm.setFormStatus(FormStatus.SUBMITTED);
+        testForm.setFormData(customerFormData);
+        testForm.setSubmittedAt(LocalDateTime.now());
+        
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        
+        testResponseModel = FormResponseModel.builder()
+                .formId("test-form-id-123")
+                .formType(FormType.GARAGE_DOORS)
+                .formStatus(FormStatus.SUBMITTED)
+                .formData(customerFormData)
+                .build();
+        
+        when(formMapper.entityToResponseModel(testForm)).thenReturn(testResponseModel);
+
+        // Act
+        FormResponseModel result = formService.getFormById("test-form-id-123");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(FormStatus.SUBMITTED, result.getFormStatus());
+        assertNotNull(result.getFormData());
+        assertEquals("Customer notes here", result.getFormData().get("additionalNotes"));
+        verify(formRepository).findByFormIdentifier_FormId("test-form-id-123");
+        verify(formMapper).entityToResponseModel(testForm);
+    }
+
+    @Test
+    void getFormById_SubmittedForm_PreservesAllFormData() {
+        // Arrange
+        Map<String, Object> complexFormData = new HashMap<>();
+        complexFormData.put("exteriorColor", "Navy Blue");
+        complexFormData.put("interiorColor", "Warm White");
+        complexFormData.put("trim", "Maple");
+        complexFormData.put("specialNotes", "Custom finish requested");
+        
+        testForm.setFormStatus(FormStatus.SUBMITTED);
+        testForm.setFormData(complexFormData);
+        
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        
+        testResponseModel = FormResponseModel.builder()
+                .formId("test-form-id-123")
+                .formType(FormType.PAINT)
+                .formStatus(FormStatus.SUBMITTED)
+                .formData(complexFormData)
+                .build();
+        
+        when(formMapper.entityToResponseModel(testForm)).thenReturn(testResponseModel);
+
+        // Act
+        FormResponseModel result = formService.getFormById("test-form-id-123");
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(4, result.getFormData().size());
+        assertEquals("Navy Blue", result.getFormData().get("exteriorColor"));
+        assertEquals("Warm White", result.getFormData().get("interiorColor"));
+        assertEquals("Maple", result.getFormData().get("trim"));
+        assertEquals("Custom finish requested", result.getFormData().get("specialNotes"));
+    }
+
+    @Test
+    void updateFormData_SubmittedForm_ThrowsInvalidInputException() {
+        // Arrange
+        testForm.setFormStatus(FormStatus.SUBMITTED);
+        Map<String, Object> newFormData = Map.of("newField", "newValue");
+        
+        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+                .formData(newFormData)
+                .build();
+        
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+
+        // Act & Assert
+        InvalidInputException exception = assertThrows(
+                InvalidInputException.class,
+                () -> formService.updateFormData("test-form-id-123", updateRequest)
+        );
+        
+        assertTrue(exception.getMessage().contains("Cannot update form data for a submitted form"));
+        verify(formRepository, never()).save(any());
+    }
+
+    @Test
+    void updateFormData_CompletedForm_ThrowsInvalidInputException() {
+        // Arrange
+        testForm.setFormStatus(FormStatus.COMPLETED);
+        Map<String, Object> newFormData = Map.of("field", "value");
+        
+        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+                .formData(newFormData)
+                .build();
+        
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+
+        // Act & Assert
+        InvalidInputException exception = assertThrows(
+                InvalidInputException.class,
+                () -> formService.updateFormData("test-form-id-123", updateRequest)
+        );
+        
+        assertTrue(exception.getMessage().contains("Cannot update form data for a completed form") ||
+                   exception.getMessage().contains("Cannot update form data for a submitted form"));
+        verify(formRepository, never()).save(any());
+    }
+
+    @Test
+    void updateFormData_AssignedForm_AllowsUpdate() {
+        // Arrange
+        testForm.setFormStatus(FormStatus.ASSIGNED);
+        Map<String, Object> newFormData = Map.of("doorModel", "Model X");
+        Map<String, Object> originalData = new HashMap<>();
+        testForm.setFormData(originalData);
+        
+        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+                .formData(newFormData)
+                .build();
+        
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        when(formRepository.save(any(Form.class))).thenReturn(testForm);
+        
+        testResponseModel = FormResponseModel.builder()
+                .formId("test-form-id-123")
+                .formStatus(FormStatus.IN_PROGRESS)
+                .formData(newFormData)
+                .build();
+        
+        when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
+
+        // Act
+        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest);
+
+        // Assert
+        assertNotNull(result);
+        verify(formRepository).save(argThat(form ->
+                form.getFormStatus() == FormStatus.IN_PROGRESS &&
+                form.getFormData().get("doorModel").equals("Model X")
+        ));
+    }
+
+    @Test
+    void updateFormData_InProgressForm_AllowsUpdate() {
+        // Arrange
+        testForm.setFormStatus(FormStatus.IN_PROGRESS);
+        Map<String, Object> existingData = new HashMap<>(Map.of("field1", "value1"));
+        testForm.setFormData(existingData);
+        
+        Map<String, Object> newFormData = Map.of("field1", "updated", "field2", "new");
+        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+                .formData(newFormData)
+                .build();
+        
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        when(formRepository.save(any(Form.class))).thenReturn(testForm);
+        
+        testResponseModel = FormResponseModel.builder()
+                .formId("test-form-id-123")
+                .formStatus(FormStatus.IN_PROGRESS)
+                .formData(newFormData)
+                .build();
+        
+        when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
+
+        // Act
+        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("updated", result.getFormData().get("field1"));
+        assertEquals("new", result.getFormData().get("field2"));
+        verify(formRepository).save(any(Form.class));
+    }
+
+    @Test
+    void updateFormData_ReopenedForm_AllowsUpdate() {
+        // Arrange
+        testForm.setFormStatus(FormStatus.REOPENED);
+        Map<String, Object> formData = new HashMap<>();
+        testForm.setFormData(formData);
+        
+        Map<String, Object> newFormData = Map.of("correctedField", "new value");
+        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+                .formData(newFormData)
+                .build();
+        
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        when(formRepository.save(any(Form.class))).thenReturn(testForm);
+        
+        testResponseModel = FormResponseModel.builder()
+                .formId("test-form-id-123")
+                .formStatus(FormStatus.REOPENED)
+                .formData(newFormData)
+                .build();
+        
+        when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
+
+        // Act
+        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("new value", result.getFormData().get("correctedField"));
+        verify(formRepository).save(any(Form.class));
+    }
+
+    // ========== getAllForms Tests ==========
+
+    @Test
+    void getAllForms_ReturnsAllFormsInRepository() {
+        // Arrange
+        Form form2 = new Form();
+        form2.setFormIdentifier(new FormIdentifier("form-2"));
+        form2.setFormType(FormType.PAINT);
+
+        FormResponseModel response2 = FormResponseModel.builder()
+                .formId("form-2")
+                .formType(FormType.PAINT)
+                .build();
+
+        when(formRepository.findAll()).thenReturn(Arrays.asList(testForm, form2));
+        when(formMapper.entityToResponseModel(testForm)).thenReturn(testResponseModel);
+        when(formMapper.entityToResponseModel(form2)).thenReturn(response2);
+
+        // Act
+        List<FormResponseModel> result = formService.getAllForms();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(formRepository).findAll();
+    }
+
+    @Test
+    void getAllForms_WhenEmpty_ReturnsEmptyList() {
+        // Arrange
+        when(formRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act
+        List<FormResponseModel> result = formService.getAllForms();
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(formRepository).findAll();
+    }
+
+    // ========== submitForm formData Preservation Tests ==========
+
+    @Test
+    void submitForm_WithEmptyFormData_PreservesExistingFormData() {
+        // Arrange - form already has saved data
+        Map<String, Object> existingData = new HashMap<>();
+        existingData.put("windowColor", "Blue");
+        existingData.put("doorStyle", "Modern");
+        testForm.setFormData(existingData);
+        testForm.setFormStatus(FormStatus.IN_PROGRESS);
+
+        // Submit request has empty formData (simulating frontend submitForm call)
+        FormDataUpdateRequestModel submitRequest = FormDataUpdateRequestModel.builder()
+                .formData(new HashMap<>())
+                .isSubmitting(true)
+                .build();
+
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        when(formRepository.save(any(Form.class))).thenReturn(testForm);
+        when(usersRepository.findByUserIdentifier(CUSTOMER_UUID)).thenReturn(Optional.of(testCustomer));
+        when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
+
+        // Act
+        formService.submitForm("test-form-id-123", submitRequest, CUSTOMER_UUID);
+
+        // Assert - existing data should be preserved
+        assertEquals(existingData, testForm.getFormData());
+        assertEquals("Blue", testForm.getFormData().get("windowColor"));
+        assertEquals("Modern", testForm.getFormData().get("doorStyle"));
+    }
+
+    @Test
+    void submitForm_WithNullFormData_PreservesExistingFormData() {
+        // Arrange
+        Map<String, Object> existingData = new HashMap<>();
+        existingData.put("color", "Red");
+        testForm.setFormData(existingData);
+        testForm.setFormStatus(FormStatus.IN_PROGRESS);
+
+        FormDataUpdateRequestModel submitRequest = FormDataUpdateRequestModel.builder()
+                .formData(null)
+                .isSubmitting(true)
+                .build();
+
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        when(formRepository.save(any(Form.class))).thenReturn(testForm);
+        when(usersRepository.findByUserIdentifier(CUSTOMER_UUID)).thenReturn(Optional.of(testCustomer));
+        when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
+
+        // Act
+        formService.submitForm("test-form-id-123", submitRequest, CUSTOMER_UUID);
+
+        // Assert - existing data should be preserved
+        assertEquals("Red", testForm.getFormData().get("color"));
+    }
+
+    @Test
+    void submitForm_WithNonEmptyFormData_UpdatesFormData() {
+        // Arrange
+        Map<String, Object> existingData = new HashMap<>();
+        existingData.put("color", "Red");
+        testForm.setFormData(existingData);
+        testForm.setFormStatus(FormStatus.IN_PROGRESS);
+
+        Map<String, Object> newData = new HashMap<>();
+        newData.put("color", "Blue");
+        newData.put("size", "Large");
+
+        FormDataUpdateRequestModel submitRequest = FormDataUpdateRequestModel.builder()
+                .formData(newData)
+                .isSubmitting(true)
+                .build();
+
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        when(formRepository.save(any(Form.class))).thenReturn(testForm);
+        when(usersRepository.findByUserIdentifier(CUSTOMER_UUID)).thenReturn(Optional.of(testCustomer));
+        when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
+
+        // Act
+        formService.submitForm("test-form-id-123", submitRequest, CUSTOMER_UUID);
+
+        // Assert - data should be updated
+        assertEquals(newData, testForm.getFormData());
+        assertEquals("Blue", testForm.getFormData().get("color"));
+        assertEquals("Large", testForm.getFormData().get("size"));
+    }
 }
 

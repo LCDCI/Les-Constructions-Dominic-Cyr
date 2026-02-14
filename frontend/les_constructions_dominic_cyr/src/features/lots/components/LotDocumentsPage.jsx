@@ -10,6 +10,14 @@ import {
 } from '../api/lotDocumentsApi';
 import { fetchLotById } from '../api/lots';
 import {
+  getAllForms,
+  getFormById,
+  updateFormData,
+  submitForm,
+} from '../../forms/api/formsApi';
+import { uploadFile } from '../../files/api/filesApi';
+import { usePageTranslations } from '../../../hooks/usePageTranslations';
+import {
   FaDownload,
   FaTrash,
   FaUpload,
@@ -18,12 +26,324 @@ import {
   FaFile,
   FaArrowLeft,
 } from 'react-icons/fa';
+import { GoFileDiff } from 'react-icons/go';
 import './LotDocumentsPage.css';
+import '../../../styles/Forms/customer-forms.css';
+
+/**
+ * Form field configuration for each form type.
+ */
+const FORM_FIELDS = {
+  EXTERIOR_DOORS: [
+    {
+      name: '__instructions',
+      type: 'instructions',
+      translationKey: 'formFields.exteriorDoors.instructions',
+    },
+    {
+      name: '__link',
+      type: 'external-link',
+      url: 'https://design.novatechgroup.com/fr',
+      translationKey: 'formFields.exteriorDoors.linkLabel',
+    },
+    {
+      name: 'pdfFile',
+      type: 'file-upload',
+      translationKey: 'formFields.exteriorDoors.uploadPdf',
+      required: true,
+      accept: '.pdf',
+    },
+    {
+      name: 'additionalNotes',
+      type: 'textarea',
+      translationKey: 'formFields.additionalNotes',
+      required: false,
+    },
+  ],
+  GARAGE_DOORS: [
+    {
+      name: '__instructions',
+      type: 'instructions',
+      translationKey: 'formFields.garageDoors.instructions',
+    },
+    {
+      name: '__link',
+      type: 'external-link',
+      url: 'https://www.portesuniverselles.com/fr-ca/centredesign/selection',
+      translationKey: 'formFields.garageDoors.linkLabel',
+    },
+    {
+      name: 'pdfFile',
+      type: 'file-upload',
+      translationKey: 'formFields.garageDoors.uploadPdf',
+      required: true,
+      accept: '.pdf',
+    },
+    {
+      name: 'additionalNotes',
+      type: 'textarea',
+      translationKey: 'formFields.additionalNotes',
+      required: false,
+    },
+  ],
+  WINDOWS: [
+    {
+      name: 'exteriorColorFacade',
+      type: 'text',
+      translationKey: 'formFields.windows.exteriorColorFacade',
+      required: true,
+    },
+    {
+      name: 'exteriorColorSidesBack',
+      type: 'text',
+      translationKey: 'formFields.windows.exteriorColorSidesBack',
+      required: true,
+    },
+    {
+      name: 'interiorColorFacade',
+      type: 'text',
+      translationKey: 'formFields.windows.interiorColorFacade',
+      required: true,
+    },
+    {
+      name: 'interiorColorSidesBack',
+      type: 'text',
+      translationKey: 'formFields.windows.interiorColorSidesBack',
+      required: true,
+    },
+    {
+      name: 'otherDetails',
+      type: 'textarea',
+      translationKey: 'formFields.windows.otherDetails',
+      required: false,
+    },
+  ],
+  ASPHALT_SHINGLES: [
+    {
+      name: 'company',
+      type: 'text',
+      translationKey: 'formFields.shingles.company',
+      required: true,
+    },
+    {
+      name: 'collection',
+      type: 'text',
+      translationKey: 'formFields.shingles.collection',
+      required: true,
+    },
+    {
+      name: 'color',
+      type: 'text',
+      translationKey: 'formFields.shingles.color',
+      required: true,
+    },
+    {
+      name: 'steelRoofColor',
+      type: 'text',
+      translationKey: 'formFields.shingles.steelRoofColor',
+      required: false,
+    },
+  ],
+  WOODWORK: [
+    {
+      name: '__doorSection',
+      type: 'section-header',
+      translationKey: 'formFields.woodwork.doorModelSection',
+      referenceUrl: 'https://www.intermat.ca/portes-de-masonites',
+      referenceTranslationKey: 'formFields.woodwork.viewOnWebsite',
+    },
+    {
+      name: 'interiorDoorModel',
+      type: 'image-radio',
+      translationKey: 'formFields.woodwork.interiorDoorModel',
+      required: true,
+      options: [
+        { value: 'unie', labelKey: 'formFields.woodwork.doors.unie' },
+        { value: 'carrara', labelKey: 'formFields.woodwork.doors.carrara' },
+        { value: 'coloniale', labelKey: 'formFields.woodwork.doors.coloniale' },
+        { value: 'rockport', labelKey: 'formFields.woodwork.doors.rockport' },
+        { value: 'logan', labelKey: 'formFields.woodwork.doors.logan' },
+        {
+          value: 'lincoln_park',
+          labelKey: 'formFields.woodwork.doors.lincolnPark',
+        },
+        { value: 'conmore', labelKey: 'formFields.woodwork.doors.conmore' },
+      ],
+    },
+    {
+      name: '__handleSection',
+      type: 'section-header',
+      translationKey: 'formFields.woodwork.handleSection',
+      referenceUrl: 'https://www.intermat.ca/leviers',
+      referenceTranslationKey: 'formFields.woodwork.viewOnWebsite',
+    },
+    {
+      name: 'interiorHandleModel',
+      type: 'image-radio',
+      translationKey: 'formFields.woodwork.interiorHandleModel',
+      required: true,
+      options: [
+        { value: 'boston', labelKey: 'formFields.woodwork.handles.boston' },
+        { value: 'brava', labelKey: 'formFields.woodwork.handles.brava' },
+        { value: 'destin', labelKey: 'formFields.woodwork.handles.destin' },
+        { value: 'zen', labelKey: 'formFields.woodwork.handles.zen' },
+        { value: 'verona', labelKey: 'formFields.woodwork.handles.verona' },
+        {
+          value: 'linea_rosette_carre',
+          labelKey: 'formFields.woodwork.handles.lineaRosetteCarre',
+        },
+        {
+          value: 'linea_rosette_ronde',
+          labelKey: 'formFields.woodwork.handles.lineaRosetteRonde',
+        },
+        { value: 'sanford', labelKey: 'formFields.woodwork.handles.sanford' },
+      ],
+    },
+    {
+      name: 'handleFinish',
+      type: 'select',
+      translationKey: 'formFields.woodwork.handleFinish',
+      required: true,
+      options: [
+        {
+          value: 'chrome',
+          labelKey: 'formFields.woodwork.finishes.chrome',
+          label: 'Chrome',
+        },
+        {
+          value: 'satin_nickel',
+          labelKey: 'formFields.woodwork.finishes.satinNickel',
+          label: 'Satin Nickel',
+        },
+        {
+          value: 'matte_black',
+          labelKey: 'formFields.woodwork.finishes.matteBlack',
+          label: 'Matte Black',
+        },
+        {
+          value: 'antique_bronze',
+          labelKey: 'formFields.woodwork.finishes.antiqueBronze',
+          label: 'Antique Bronze',
+        },
+        {
+          value: 'glossy_black',
+          labelKey: 'formFields.woodwork.finishes.glossyBlack',
+          label: 'Glossy Black',
+        },
+      ],
+    },
+    {
+      name: '__baseboardSection',
+      type: 'section-header',
+      translationKey: 'formFields.woodwork.baseboardSection',
+      referenceUrl: 'https://www.intermat.ca/plinthes',
+      referenceTranslationKey: 'formFields.woodwork.viewOnWebsite',
+    },
+    {
+      name: 'baseboardModel',
+      type: 'image-radio',
+      translationKey: 'formFields.woodwork.baseboardModel',
+      required: true,
+      options: [
+        {
+          value: 'urbaine',
+          labelKey: 'formFields.woodwork.baseboards.urbaine',
+        },
+        { value: '1000', labelKey: 'formFields.woodwork.baseboards.m1000' },
+        { value: 'oblik', labelKey: 'formFields.woodwork.baseboards.oblik' },
+        { value: '1500', labelKey: 'formFields.woodwork.baseboards.m1500' },
+        { value: '1249', labelKey: 'formFields.woodwork.baseboards.m1249' },
+      ],
+    },
+    {
+      name: 'baseboardHeight',
+      type: 'text',
+      translationKey: 'formFields.woodwork.baseboardHeight',
+      required: true,
+    },
+    {
+      name: '__quarterRoundSection',
+      type: 'section-header',
+      translationKey: 'formFields.woodwork.quarterRoundSection',
+      referenceUrl: 'https://www.intermat.ca/quart-de-rond',
+      referenceTranslationKey: 'formFields.woodwork.viewOnWebsite',
+    },
+    {
+      name: 'quarterRoundModel',
+      type: 'image-radio',
+      translationKey: 'formFields.woodwork.quarterRoundModel',
+      required: true,
+      options: [
+        {
+          value: '1000',
+          labelKey: 'formFields.woodwork.quarterRounds.m1000',
+        },
+        {
+          value: '1234',
+          labelKey: 'formFields.woodwork.quarterRounds.m1234',
+        },
+        {
+          value: '1500',
+          labelKey: 'formFields.woodwork.quarterRounds.m1500',
+        },
+        {
+          value: '2000',
+          labelKey: 'formFields.woodwork.quarterRounds.m2000',
+        },
+      ],
+    },
+    {
+      name: 'additionalNotes',
+      type: 'textarea',
+      translationKey: 'formFields.additionalNotes',
+      required: false,
+    },
+  ],
+  PAINT: [
+    {
+      name: 'paintBrand',
+      type: 'text',
+      translationKey: 'formFields.paint.brand',
+      required: true,
+    },
+    {
+      name: 'paintFinish',
+      type: 'text',
+      translationKey: 'formFields.paint.finish',
+      required: true,
+    },
+    {
+      name: 'interiorColors',
+      type: 'text',
+      translationKey: 'formFields.paint.interiorColors',
+      required: true,
+    },
+    {
+      name: 'exteriorColors',
+      type: 'text',
+      translationKey: 'formFields.paint.exteriorColors',
+      required: false,
+    },
+    {
+      name: 'roomsToPaint',
+      type: 'text',
+      translationKey: 'formFields.paint.roomsToPaint',
+      required: true,
+    },
+    {
+      name: 'additionalNotes',
+      type: 'textarea',
+      translationKey: 'formFields.additionalNotes',
+      required: false,
+    },
+  ],
+};
 
 const LotDocumentsPage = () => {
+  const { t } = usePageTranslations('customerForms');
   const { lotId } = useParams();
   const navigate = useNavigate();
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   const { role: userRole, profile: userProfile } = useBackendUser();
 
   const getApiToken = () =>
@@ -43,6 +363,18 @@ const LotDocumentsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'image', 'file'
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(null); // { documentId, fileName }
+  const [viewMode, setViewMode] = useState('documents'); // 'documents' or 'forms'
+  const [lotForms, setLotForms] = useState([]);
+  const [formsLoading, setFormsLoading] = useState(false);
+
+  // Form modal state
+  const [selectedForm, setSelectedForm] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [submitError, setSubmitError] = useState(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
+  const formFileInputRef = useRef(null);
 
   const fileInputRef = useRef(null);
   const searchTimeoutRef = useRef(null);
@@ -146,6 +478,29 @@ const LotDocumentsPage = () => {
       throw err;
     }
   };
+
+  const loadFormsForLot = async () => {
+    try {
+      setFormsLoading(true);
+      const token = await getApiToken();
+      // Use getAllForms to get all forms accessible by current role (includes forms for lots user has access to)
+      const allForms = await getAllForms(token);
+      const filtered = (allForms || []).filter(
+        form => form.lotIdentifier === lotId
+      );
+      setLotForms(filtered);
+    } catch (err) {
+      console.error('Failed to load forms:', err);
+    } finally {
+      setFormsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (viewMode === 'forms') {
+      loadFormsForLot();
+    }
+  }, [viewMode]);
 
   const applyFilters = () => {
     let filtered = [...documents];
@@ -283,6 +638,348 @@ const LotDocumentsPage = () => {
     return false;
   };
 
+  /* ── Form Modal Handlers ───────────────────────────────────────── */
+  const openFormModal = form => {
+    setSelectedForm(form);
+    setFormData(form.formData || {});
+    setIsEditModalOpen(true);
+    setSubmitError(null);
+    setUploadError(null);
+  };
+
+  const handleFieldChange = (fieldName, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldName]: value,
+    }));
+  };
+
+  const handleFileUpload = async (fieldName, file) => {
+    if (!file) return;
+    try {
+      setUploadingFile(true);
+      setUploadError(null);
+
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('category', 'DOCUMENT');
+      fd.append('projectId', lot?.projectIdentifier || 'unknown');
+      fd.append('uploadedBy', user?.sub || '');
+      fd.append('uploaderRole', userRole || 'CUSTOMER');
+
+      const result = await uploadFile(fd);
+
+      handleFieldChange(fieldName, {
+        fileId: result.id,
+        fileName: result.fileName || file.name,
+      });
+      setUploadingFile(false);
+    } catch (err) {
+      setUploadingFile(false);
+      setUploadError(
+        t('errors.uploadFailed', 'Failed to upload file. Please try again.')
+      );
+    }
+  };
+
+  const handleRemoveFile = fieldName => {
+    handleFieldChange(fieldName, null);
+    if (formFileInputRef.current) formFileInputRef.current.value = '';
+  };
+
+  const handleSaveForm = async () => {
+    try {
+      setSubmitError(null);
+      const token = await getApiToken();
+      await updateFormData(selectedForm.formId, { formData }, token);
+      setIsEditModalOpen(false);
+      setSelectedForm(null);
+      setFormData({});
+      loadFormsForLot();
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        setSubmitError(error.response.data.message);
+      } else {
+        setSubmitError(t('errors.saveFailed', 'Failed to save form.'));
+      }
+    }
+  };
+
+  const handleSubmitFormClick = () => {
+    const fields = FORM_FIELDS[selectedForm.formType] || [];
+    const requiredFields = fields.filter(
+      f => f.required && !f.name.startsWith('__')
+    );
+
+    const missingFields = requiredFields.filter(f => {
+      const val = formData[f.name];
+      if (f.type === 'file-upload') return !val || !val.fileId;
+      if (val == null) return true;
+      return val.toString().trim() === '';
+    });
+
+    if (missingFields.length > 0) {
+      const names = missingFields
+        .map(f => t(f.translationKey, f.name))
+        .join(', ');
+      setSubmitError(
+        t(
+          'errors.missingFields',
+          'Please fill in all required fields: {{fields}}'
+        ).replace('{{fields}}', names)
+      );
+      return;
+    }
+
+    setIsSubmitConfirmOpen(true);
+  };
+
+  const handleSubmitForm = async () => {
+    try {
+      setSubmitError(null);
+      setIsSubmitConfirmOpen(false);
+
+      const token = await getApiToken();
+      await updateFormData(selectedForm.formId, { formData }, token);
+      await submitForm(selectedForm.formId, token);
+
+      setIsEditModalOpen(false);
+      setSelectedForm(null);
+      setFormData({});
+      loadFormsForLot();
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        setSubmitError(error.response.data.message);
+      } else {
+        setSubmitError(t('errors.submitFailed', 'Failed to submit form.'));
+      }
+    }
+  };
+
+  const handleViewForm = async form => {
+    try {
+      setSubmitError(null);
+      setUploadError(null);
+      // Fetch the latest form data to ensure we have the most recent customer inputs
+      const token = await getApiToken();
+      const freshFormData = await getFormById(form.formId, token);
+      setSelectedForm(freshFormData);
+      setFormData(freshFormData.formData || {});
+      setIsEditModalOpen(true);
+    } catch (err) {
+      console.error('Failed to load form data:', err);
+      setSubmitError('Failed to load form data. Please try again.');
+    }
+  };
+
+  /* ── Field Renderers ───────────────────────────────────────────── */
+  const renderInstructions = field => (
+    <div key={field.name} className="forms-instructions">
+      <p>{t(field.translationKey, '')}</p>
+    </div>
+  );
+
+  const renderExternalLink = field => (
+    <div key={field.name} className="forms-external-link">
+      <a href={field.url} target="_blank" rel="noopener noreferrer">
+        {t(field.translationKey, 'Open website')} ↗
+      </a>
+    </div>
+  );
+
+  const renderSectionHeader = field => (
+    <div key={field.name} className="forms-section-header">
+      <h3>{t(field.translationKey, '')}</h3>
+      {field.referenceUrl && (
+        <a
+          href={field.referenceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="forms-section-ref"
+        >
+          {t(field.referenceTranslationKey, 'View on website')} ↗
+        </a>
+      )}
+    </div>
+  );
+
+  const renderFileUpload = field => {
+    const fileVal = formData[field.name];
+    const isViewOnly = selectedForm && selectedForm.formStatus === 'SUBMITTED';
+    return (
+      <div key={field.name} className="forms-form-group">
+        <label>
+          {t(field.translationKey, field.name)}{' '}
+          {field.required && <span className="required">*</span>}
+        </label>
+
+        {fileVal?.fileId ? (
+          <div className="forms-file-uploaded">
+            <span className="forms-file-name">📄 {fileVal.fileName}</span>
+            {!isViewOnly && (
+              <button
+                type="button"
+                className="forms-file-remove"
+                onClick={() => handleRemoveFile(field.name)}
+              >
+                ×
+              </button>
+            )}
+          </div>
+        ) : (
+          !isViewOnly && (
+            <div className="forms-file-dropzone">
+              <input
+                ref={formFileInputRef}
+                type="file"
+                accept={field.accept || '.pdf'}
+                onChange={e => handleFileUpload(field.name, e.target.files[0])}
+                disabled={uploadingFile}
+              />
+              {uploadingFile && (
+                <p className="forms-file-uploading">
+                  {t('modal.uploading', 'Uploading...')}
+                </p>
+              )}
+            </div>
+          )
+        )}
+
+        {uploadError && <p className="forms-field-error">{uploadError}</p>}
+      </div>
+    );
+  };
+
+  const renderImageRadio = field => {
+    const selected = formData[field.name] || '';
+    const isViewOnly = selectedForm && selectedForm.formStatus === 'SUBMITTED';
+    return (
+      <div key={field.name} className="forms-form-group">
+        <label>
+          {t(field.translationKey, field.name)}{' '}
+          {field.required && <span className="required">*</span>}
+        </label>
+        <div className="forms-radio-grid">
+          {(field.options || []).map(opt => (
+            <button
+              key={opt.value}
+              type="button"
+              className={`forms-radio-card${selected === opt.value ? ' selected' : ''}`}
+              onClick={() => !isViewOnly && handleFieldChange(field.name, opt.value)}
+              disabled={isViewOnly}
+            >
+              <span className="forms-radio-indicator" />
+              <span className="forms-radio-label">
+                {t(opt.labelKey, opt.label || opt.value)}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTextInput = field => {
+    const isViewOnly = selectedForm && selectedForm.formStatus === 'SUBMITTED';
+    return (
+      <div key={field.name} className="forms-form-group">
+        <label htmlFor={field.name}>
+          {t(field.translationKey, field.name)}{' '}
+          {field.required && <span className="required">*</span>}
+        </label>
+        <input
+          id={field.name}
+          type={field.type}
+          value={formData[field.name] || ''}
+          onChange={e => handleFieldChange(field.name, e.target.value)}
+          className="forms-form-input"
+          readOnly={isViewOnly}
+          disabled={isViewOnly}
+        />
+      </div>
+    );
+  };
+
+  const renderTextarea = field => {
+    const isViewOnly = selectedForm && selectedForm.formStatus === 'SUBMITTED';
+    return (
+      <div key={field.name} className="forms-form-group">
+        <label htmlFor={field.name}>
+          {t(field.translationKey, field.name)}{' '}
+          {field.required && <span className="required">*</span>}
+        </label>
+        <textarea
+          id={field.name}
+          value={formData[field.name] || ''}
+          onChange={e => handleFieldChange(field.name, e.target.value)}
+          className="forms-form-textarea"
+          rows="4"
+          readOnly={isViewOnly}
+          disabled={isViewOnly}
+        />
+      </div>
+    );
+  };
+
+  const renderSelect = field => {
+    const isViewOnly = selectedForm && selectedForm.formStatus === 'SUBMITTED';
+    return (
+      <div key={field.name} className="forms-form-group">
+        <label htmlFor={field.name}>
+          {t(field.translationKey, field.name)}{' '}
+          {field.required && <span className="required">*</span>}
+        </label>
+        <select
+          id={field.name}
+          value={formData[field.name] || ''}
+          onChange={e => handleFieldChange(field.name, e.target.value)}
+          className="forms-form-select"
+          disabled={isViewOnly}
+        >
+          <option value="">{t('modal.selectOption', '-- Select --')}</option>
+          {(field.options || []).map(opt => (
+            <option key={opt.value} value={opt.value}>
+              {t(opt.labelKey, opt.label || opt.value)}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  };
+
+  const renderField = field => {
+    switch (field.type) {
+      case 'instructions':
+        return renderInstructions(field);
+      case 'external-link':
+        return renderExternalLink(field);
+      case 'section-header':
+        return renderSectionHeader(field);
+      case 'file-upload':
+        return renderFileUpload(field);
+      case 'image-radio':
+        return renderImageRadio(field);
+      case 'select':
+        return renderSelect(field);
+      case 'textarea':
+        return renderTextarea(field);
+      case 'text':
+      case 'number':
+      default:
+        return renderTextInput(field);
+    }
+  };
+
+  const renderFormFields = () => {
+    if (!selectedForm) return null;
+    const fields = FORM_FIELDS[selectedForm.formType] || [];
+    return fields.map(field => renderField(field));
+  };
+
+  const isViewOnlyForm = () => {
+    return selectedForm && selectedForm.formStatus === 'SUBMITTED';
+  };
+
   if (loading) {
     return (
       <div className="lot-documents-page" data-testid="lot-documents-page">
@@ -331,6 +1028,26 @@ const LotDocumentsPage = () => {
         </div>
       </div>
 
+      {/* View Mode Toggle */}
+      <div className="view-mode-toggle">
+        <button
+          className={`view-mode-button ${viewMode === 'documents' ? 'active' : ''}`}
+          onClick={() => setViewMode('documents')}
+          data-testid="view-mode-documents"
+        >
+          <FaFile /> Documents
+        </button>
+        <button
+          className={`view-mode-button ${viewMode === 'forms' ? 'active' : ''}`}
+          onClick={() => setViewMode('forms')}
+          data-testid="view-mode-forms"
+        >
+          <GoFileDiff /> Forms
+        </button>
+      </div>
+
+      {viewMode === 'documents' ? (
+      <>
       {/* Search & Filters */}
       <div className="documents-toolbar">
         <div className="search-bar">
@@ -499,6 +1216,184 @@ const LotDocumentsPage = () => {
           </div>
         )}
       </div>
+      </>
+      ) : (
+        /* Forms View */
+        <div className="forms-view-container" data-testid="lot-forms-view">
+          {formsLoading ? (
+            <div className="loading-state">Loading forms...</div>
+          ) : lotForms.length === 0 ? (
+            <div className="empty-state" data-testid="no-forms-state">
+              <p>No forms assigned for this lot.</p>
+            </div>
+          ) : (
+            <div className="lot-forms-list">
+              {lotForms.map(form => (
+                <div
+                  key={form.formId}
+                  className="lot-form-card"
+                  data-testid={`lot-form-card-${form.formId}`}
+                >
+                  <div className="lot-form-info">
+                    <h3 className="lot-form-title">
+                      {form.formType?.replace(/_/g, ' ') || 'Form'}
+                    </h3>
+                    <span
+                      className={`lot-form-status lot-form-status-${(form.formStatus || '').toLowerCase()}`}
+                    >
+                      {form.formStatus || 'Unknown'}
+                    </span>
+                  </div>
+                  <div className="lot-form-meta">
+                    {form.assignedAt && (
+                      <p>
+                        Assigned:{' '}
+                        {new Date(form.assignedAt).toLocaleDateString()}
+                      </p>
+                    )}
+                    {form.submittedAt && (
+                      <p>
+                        Submitted:{' '}
+                        {new Date(form.submittedAt).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                  {/* Show Fill Form button only for customers on non-submitted forms */}
+                  {userRole === 'CUSTOMER' &&
+                    (form.formStatus === 'ASSIGNED' ||
+                      form.formStatus === 'IN_PROGRESS' ||
+                      form.formStatus === 'REOPENED') && (
+                      <button
+                        onClick={() => openFormModal(form)}
+                        className="btn btn-primary lot-form-action"
+                        data-testid={`lot-form-fill-${form.formId}`}
+                      >
+                        Fill Form
+                      </button>
+                    )}
+                  {/* Show View Form button only for submitted forms (all users) */}
+                  {form.formStatus === 'SUBMITTED' && (
+                    <button
+                      onClick={() => handleViewForm(form)}
+                      className="btn btn-secondary lot-form-action"
+                      data-testid={`lot-form-view-${form.formId}`}
+                    >
+                      View Form
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Form Edit Modal */}
+      {isEditModalOpen && selectedForm && (
+        <div className="forms-modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+          <div className="forms-modal forms-modal-large" onClick={e => e.stopPropagation()}>
+            <div className="forms-modal-header">
+              <h2>
+                {t('modal.editTitle', 'Form')} -{' '}
+                {t(
+                  `formTypes.${selectedForm.formType}`,
+                  selectedForm.formType?.replace(/_/g, ' ') || 'Form'
+                )}
+              </h2>
+              <button
+                className="forms-modal-close"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="forms-modal-body">
+              {submitError && (
+                <div className="forms-error forms-error-modal">
+                  <p>{submitError}</p>
+                  <button onClick={() => setSubmitError(null)}>×</button>
+                </div>
+              )}
+              {renderFormFields()}
+            </div>
+            <div className="forms-modal-footer">
+              {isViewOnlyForm() || userRole !== 'CUSTOMER' ? (
+                // View-only mode: Only show Close button
+                <button
+                  className="forms-modal-button forms-modal-button-secondary"
+                  onClick={() => setIsEditModalOpen(false)}
+                >
+                  {t('buttons.close', 'Close')}
+                </button>
+              ) : (
+                // Edit mode: Show all action buttons (only for customers on non-submitted forms)
+                <>
+                  <button
+                    className="forms-modal-button forms-modal-button-secondary"
+                    onClick={() => setIsEditModalOpen(false)}
+                  >
+                    {t('buttons.cancel', 'Cancel')}
+                  </button>
+                  <button
+                    className="forms-modal-button forms-modal-button-primary"
+                    onClick={handleSaveForm}
+                  >
+                    {t('buttons.saveDraft', 'Save Draft')}
+                  </button>
+                  <button
+                    className="forms-modal-button forms-modal-button-success"
+                    onClick={handleSubmitFormClick}
+                  >
+                    {t('buttons.submitForm', 'Submit Form')}
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Submit Confirmation Modal */}
+      {isSubmitConfirmOpen && (
+        <div
+          className="forms-modal-overlay"
+          onClick={() => setIsSubmitConfirmOpen(false)}
+        >
+          <div className="forms-modal" onClick={e => e.stopPropagation()}>
+            <div className="forms-modal-header">
+              <h2>{t('modal.confirmSubmitTitle', 'Confirm Submission')}</h2>
+              <button
+                className="forms-modal-close"
+                onClick={() => setIsSubmitConfirmOpen(false)}
+              >
+                &times;
+              </button>
+            </div>
+            <div className="forms-modal-body">
+              <p>
+                {t(
+                  'modal.confirmSubmitMessage',
+                  'Are you sure you want to submit this form? You will not be able to edit it after submission.'
+                )}
+              </p>
+            </div>
+            <div className="forms-modal-footer">
+              <button
+                className="forms-modal-button forms-modal-button-secondary"
+                onClick={() => setIsSubmitConfirmOpen(false)}
+              >
+                {t('buttons.cancel', 'Cancel')}
+              </button>
+              <button
+                className="forms-modal-button forms-modal-button-success"
+                onClick={handleSubmitForm}
+              >
+                {t('buttons.confirmSubmit', 'Yes, Submit')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmModal && (

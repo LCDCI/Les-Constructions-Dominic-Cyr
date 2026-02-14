@@ -35,8 +35,8 @@ const CustomerDashboard = () => {
       },
       {
         icon: <GoFile />,
-        title: t('cards.documents.title', 'Documents'),
-        buttonText: t('cards.documents.button', 'View Documents'),
+        title: t('cards.documents.title', 'Lot Documents'),
+        buttonText: t('cards.documents.button', 'View Lot Documents'),
         action: () => navigate('/customers/documents'),
       },
       {
