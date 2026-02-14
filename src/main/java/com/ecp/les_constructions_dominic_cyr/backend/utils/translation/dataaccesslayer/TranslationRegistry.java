@@ -61,8 +61,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.lots", "9ee50174-382f-467f-b30c-5f64ca470335");
 
         // Owner Lots page translations
-        fileIdMap.put("en.ownerlots", "62178381-21ab-415a-a604-9d80c5d7774a");
-        fileIdMap.put("fr.ownerlots", "29509c00-9273-4df9-96ae-6fba61a0d1b4");
+        fileIdMap.put("en.ownerlots", "b071f51e-c04d-412c-adb4-4e56cadb734a");
+        fileIdMap.put("fr.ownerlots", "bea7f8ce-9d27-4784-a006-0afaac0b3202");
 
         // Task Details page translations
         fileIdMap.put("en.taskdetails", "0d1566a4-ace6-4341-9b8e-e108bd562091");
@@ -81,8 +81,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.inbox", "7a7c4dba-747d-4228-b34d-6c83b6647337");
 
         // Dashboard page translations
-        fileIdMap.put("en.ownerdashboard", "64afdd86-06a3-4a16-b9c9-628dbc34d475");
-        fileIdMap.put("fr.ownerdashboard", "bf1b332f-7866-4910-99f7-1f09a324ea53");
+        fileIdMap.put("en.ownerdashboard", "fac46b1c-2158-484d-8839-10ff51fdd878");
+        fileIdMap.put("fr.ownerdashboard", "a73f68c8-4a84-49c0-b86e-50039a1444c6");
         fileIdMap.put("en.customerdashboard", "bc1fa28b-dc6e-4653-b3e9-b0a9ce3bfa64");
         fileIdMap.put("fr.customerdashboard", "6742d6a9-bcfd-4780-b2ec-5c50c27e9493");
         fileIdMap.put("en.salespersondashboard", "6792727a-faac-4fa1-af3b-0c850c6ed022");

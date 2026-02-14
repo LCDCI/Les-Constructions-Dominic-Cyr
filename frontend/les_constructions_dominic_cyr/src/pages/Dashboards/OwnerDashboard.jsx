@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ownerUseSchedules from '../../features/schedules/hooks/ownerUseSchedules';
 import ScheduleList from '../../features/schedules/components/ScheduleList';
 import DashboardCard from '../../components/DashboardCard';
+import ProjectSelectionModal from '../../features/lots/components/ProjectSelectionModal';
 import '../../styles/Dashboards/OwnerDashboard.css';
 import { GoInbox } from 'react-icons/go';
 import { GoArrowUp } from 'react-icons/go';
@@ -18,6 +19,7 @@ const OwnerDashboard = () => {
   const { t } = usePageTranslations('ownerDashboard');
   const { schedules, loading, error } = ownerUseSchedules(false);
   const navigate = useNavigate();
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   const handleSeeMore = () => {
     navigate('/owner/schedules/all');
@@ -71,7 +73,7 @@ const OwnerDashboard = () => {
         icon: <FaMapLocationDot />,
         title: t('cards.lots.title', 'Lots'),
         buttonText: t('cards.lots.button', 'View Lots'),
-        action: () => navigate('/lots'),
+        action: () => setIsProjectModalOpen(true),
       },
     ],
     [t, navigate]
@@ -100,6 +102,11 @@ const OwnerDashboard = () => {
           {t('seeMore', 'See more')}
         </button>
       </div>
+
+      <ProjectSelectionModal
+        isOpen={isProjectModalOpen}
+        onClose={() => setIsProjectModalOpen(false)}
+      />
     </div>
   );
 };

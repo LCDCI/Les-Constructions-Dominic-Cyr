@@ -1,0 +1,102 @@
+.project-modal {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 480px;
+  max-height: 70vh;
+  overflow: hidden;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+.modal-message {
+  padding: 30px 20px;
+  text-align: center;
+  color: #666;
+  margin: 0;
+}
+
+.modal-message.error {
+  color: #d32f2f;
+}
+
+.project-list {
+  list-style: none;
+  margin: 0;
+  padding: 12px;
+  max-height: calc(70vh - 60px);
+  overflow-y: auto;
+}
+
+.project-list li {
+  margin: 0;
+  padding: 0;
+}
+
+.project-item {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 6px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #333;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.project-item:hover {
+  background: #f5f5f5;
+  border-color: #4d85b9;
+}
+
+.project-item:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .project-modal {
+    width: 95%;
+    max-width: none;
+  }
+  
+  .modal-header {
+    padding: 14px 16px;
+  }
+  
+  .project-list {
+    padding: 10px;
+  }
+}
