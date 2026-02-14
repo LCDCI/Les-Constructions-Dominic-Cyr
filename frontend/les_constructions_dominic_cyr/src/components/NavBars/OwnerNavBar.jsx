@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUnreadCount } from '../../features/notifications/hooks/useUnreadCount';
+import { useAuth0 } from '@auth0/auth0-react';
+import { clearAppSession } from '../../features/users/api/clearAppSession';
 import ProjectSelectionModal from '../../features/lots/components/ProjectSelectionModal';
 import '../../styles/NavBars/ownerNavbar.css';
 import {
@@ -32,6 +34,7 @@ const Navbar = ({
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const location = useLocation();
   const { t } = useTranslation();
+  const { logout } = useAuth0();
   const { unreadCount } = useUnreadCount();
   const isControlled = typeof controlledOpen === 'boolean';
   const menuOpen = isControlled ? controlledOpen : isOpen;
@@ -378,6 +381,12 @@ const Navbar = ({
             className="navbar-logout"
             onClick={() => {
               closeMenu();
+              clearAppSession();
+              logout({
+                logoutParams: {
+                  returnTo: window.location.origin,
+                },
+              });
             }}
           >
             <span className="navbar-icon">
