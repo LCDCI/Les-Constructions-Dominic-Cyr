@@ -12,6 +12,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -57,6 +59,7 @@ public class Quote {
     @Column(name = "contractor_id", nullable = false)
     private String contractorId;
 
+    @Builder.Default
     @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<QuoteLineItem> lineItems = new ArrayList<>();
 
@@ -99,6 +102,25 @@ public class Quote {
      */
     @Column(name = "approved_by", nullable = true)
     private String approvedBy;
+
+    /**
+     * Timestamp when the customer approved the quote
+     */
+    @Column(name = "customer_approved_at", nullable = true)
+    private LocalDateTime customerApprovedAt;
+
+    /**
+     * Auth0 ID of the customer who approved the quote
+     */
+    @Column(name = "customer_approved_by", nullable = true)
+    private String customerApprovedBy;
+
+    /**
+     * Flag indicating customer has acknowledged and read the quote
+     */
+    @Column(name = "customer_acknowledged", nullable = true)
+    @Builder.Default
+    private Boolean customerAcknowledged = false;
 
     /**
      * Lifecycle hooks to automatically manage timestamps.

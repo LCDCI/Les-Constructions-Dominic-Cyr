@@ -77,20 +77,13 @@
 }
 
 /* Content */
-.quote-detail-modal .modal-content {
+.quote-detail-modal .quote-modal-content {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 32px; /* Increased padding */
   display: flex;
   flex-direction: column;
   gap: 24px;
-  /* Reset global modal-content styles from users.css */
-  background: transparent !important;
-  box-shadow: none !important;
-  border: none !important;
-  border-radius: 0 !important;
-  max-width: none !important;
-  width: auto !important;
 }
 
 /* Quote Header Info Grid */
@@ -264,7 +257,7 @@
     overflow-x: auto;
   }
   
-  .modal-content {
+  .quote-modal-content {
     padding: 16px;
   }
 }

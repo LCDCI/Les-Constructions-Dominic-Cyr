@@ -59,6 +59,21 @@ public class QuoteResponseModel {
      */
     private String approvedBy;
 
+    /**
+     * Timestamp when the customer approved the quote
+     */
+    private LocalDateTime customerApprovedAt;
+
+    /**
+     * Auth0 ID of the customer who approved the quote
+     */
+    private String customerApprovedBy;
+
+    /**
+     * Flag indicating customer has acknowledged and read the quote
+     */
+    private Boolean customerAcknowledged;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

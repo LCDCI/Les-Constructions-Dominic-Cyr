@@ -18,7 +18,9 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
   const [lotDetails, setLotDetails] = useState(null);
 
   useEffect(() => {
-    fetchQuoteDetails();
+    if (quoteNumber) {
+      fetchQuoteDetails();
+    }
   }, [quoteNumber, token]);
 
   const fetchQuoteDetails = async () => {
@@ -134,7 +136,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
               <MdClose />
             </button>
           </div>
-          <div className="modal-content">
+          <div className="quote-modal-content">
             <div className="loading">
               <div className="spinner"></div>
               <p>{t('common.loading') || 'Loading...'}</p>
@@ -155,7 +157,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
               <MdClose />
             </button>
           </div>
-          <div className="modal-content">
+          <div className="quote-modal-content">
             <div className="error-message">{error}</div>
           </div>
         </div>
@@ -197,7 +199,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
           </button>
         </div>
 
-        <div className="modal-content">
+        <div className="quote-modal-content">
           {/* Quote Header */}
           <div className="quote-summary-grid">
             <div className="header-item">

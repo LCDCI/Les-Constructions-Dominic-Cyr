@@ -769,55 +769,6 @@ const QuoteFormPage = () => {
           </aside>
         </div>
 
-        {/* Totals Section */}
-        <div className="totals-section">
-          <div className="totals-row">
-            <span className="totals-label">
-              {t('quote.subtotal') || 'Subtotal'}
-            </span>
-            <span className="totals-value">${subtotal.toFixed(2)}</span>
-          </div>
-          <div className="totals-row discount-row">
-            <span className="totals-label">
-              {t('quote.discount') || 'Discount'} ({discountPercentage}%)
-            </span>
-            <div className="totals-input-group">
-              <span>-${discount.toFixed(2)}</span>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={discountPercentage}
-                onChange={e =>
-                  setDiscountPercentage(
-                    Math.max(0, Math.min(100, parseFloat(e.target.value) || 0))
-                  )
-                }
-                className="totals-input"
-              />
-            </div>
-          </div>
-          <div className="totals-row tax-row">
-            <span className="totals-label">
-              {t('quote.gst') || 'GST'} ({gstPercentage}%)
-            </span>
-            <div className="totals-input-group">
-              <span>+${gst.toFixed(2)}</span>
-            </div>
-          </div>
-          <div className="totals-row tax-row">
-            <span className="totals-label">
-              {t('quote.qst') || 'QST'} ({qstPercentage}%)
-            </span>
-            <div className="totals-input-group">
-              <span>+${qst.toFixed(2)}</span>
-            </div>
-          </div>
-          <div className="totals-row totals-total">
-            <span className="totals-label">{t('quote.total') || 'Total'}</span>
-            <span className="totals-value">${total.toFixed(2)}</span>
-          </div>
-        </div>
 
         {/* Action Buttons */}
         <div className="form-actions">

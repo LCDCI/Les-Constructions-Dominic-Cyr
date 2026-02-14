@@ -1,14 +1,13 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Quote;
 
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.LineItem;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.Quote;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.QuoteRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.QuoteMapper;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.LineItemModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidProjectDataException;
@@ -224,7 +223,7 @@ public class QuoteService {
             throw new InvalidProjectDataException("Quote is not in SUBMITTED status: " + quote.getStatus());
         }
 
-        quote.setStatus("APPROVED");
+        quote.setStatus("OWNER_APPROVED");
         quote.setApprovedBy(ownerId);
         quote.setApprovedAt(java.time.LocalDateTime.now());
         quote.setRejectionReason(null); // Clear any rejection reason
@@ -270,6 +269,81 @@ public class QuoteService {
         log.info("Quote rejected: {}", quoteNumber);
 
         return quoteMapper.entityToResponseModel(savedQuote);
+    }
+
+    /**
+     * Customer approves a quote.
+     * Only customers who own the lot can approve.
+     * 
+     * @param quoteNumber     The quote to approve
+     * @param customerAuth0Id The customer's Auth0 ID
+     * @return The updated quote
+     * @throws NotFoundException           if quote not found
+     * @throws InvalidProjectDataException if quote is not in OWNER_APPROVED status
+     * @throws SecurityException           if customer doesn't own the lot
+     */
+    @Transactional
+    public QuoteResponseModel customerApproveQuote(String quoteNumber, String customerAuth0Id) {
+        log.info("Customer approving quote: {} by customer: {}", quoteNumber, customerAuth0Id);
+
+        Quote quote = quoteRepository.findByQuoteNumber(quoteNumber)
+                .orElseThrow(() -> new NotFoundException("Quote not found: " + quoteNumber));
+
+        if (!"OWNER_APPROVED".equals(quote.getStatus())) {
+            throw new InvalidProjectDataException(
+                    "Quote must be owner-approved before customer can approve. Current status: " + quote.getStatus());
+        }
+
+        // Validate customer owns the lot
+        if (quote.getLotIdentifier() != null) {
+            Users customer = usersRepository.findByAuth0UserId(customerAuth0Id)
+                    .orElseThrow(() -> new NotFoundException("Customer not found"));
+
+            // Check if customer owns the lot
+            Lot lot = lotRepository.findByLotIdentifier_LotId(quote.getLotIdentifier());
+            boolean ownsLot = lot != null && lot.getAssignedUsers().stream()
+                    .anyMatch(u -> u.getAuth0UserId().equals(customerAuth0Id));
+
+            if (!ownsLot) {
+                throw new SecurityException("Customer does not own the lot for this quote");
+            }
+        }
+
+        quote.setStatus("CUSTOMER_APPROVED");
+        quote.setCustomerApprovedBy(customerAuth0Id);
+        quote.setCustomerApprovedAt(java.time.LocalDateTime.now());
+        quote.setCustomerAcknowledged(true);
+
+        Quote savedQuote = quoteRepository.save(quote);
+        log.info("Quote customer-approved: {}", quoteNumber);
+
+        return quoteMapper.entityToResponseModel(savedQuote);
+    }
+
+    /**
+     * Get quotes pending customer approval for a specific customer.
+     * Returns quotes that are OWNER_APPROVED for lots owned by the customer.
+     */
+    @Transactional(readOnly = true)
+    public List<QuoteResponseModel> getCustomerPendingQuotes(String customerAuth0Id) {
+        log.info("Fetching pending quotes for customer: {}", customerAuth0Id);
+
+        Users customer = usersRepository.findByAuth0UserId(customerAuth0Id)
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+
+        // Get all OWNER_APPROVED quotes
+        List<Quote> ownerApprovedQuotes = quoteRepository.findByStatus("OWNER_APPROVED");
+
+        // Filter for quotes on lots owned by this customer
+        return ownerApprovedQuotes.stream()
+                .filter(quote -> quote.getLotIdentifier() != null)
+                .filter(quote -> {
+                    Lot lot = lotRepository.findByLotIdentifier_LotId(quote.getLotIdentifier());
+                    return lot != null && lot.getAssignedUsers().stream()
+                            .anyMatch(u -> u.getAuth0UserId().equals(customerAuth0Id));
+                })
+                .map(quoteMapper::entityToResponseModel)
+                .collect(Collectors.toList());
     }
 
     /**

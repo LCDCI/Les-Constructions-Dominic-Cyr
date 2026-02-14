@@ -17,42 +17,42 @@ import java.util.Map;
  */
 @Component
 public class TranslationRegistry {
-    
+
     private final Map<String, String> fileIdMap = new HashMap<>();
-    
+
     public TranslationRegistry() {
         // Home page translations
         fileIdMap.put("en.home", "cb5d4f09-eabb-47df-9161-866ba10bce72");
         fileIdMap.put("fr.home", "edfca72f-b970-410c-b88c-2f3a97301662");
-        
+
         // Contact page translations
         fileIdMap.put("en.contact", "54897f58-2f88-4e2a-81b2-cced943541bb");
         fileIdMap.put("fr.contact", "bb7203b2-975a-43be-9d69-5a2847543cec");
-        
+
         // Renovations page translations
         fileIdMap.put("en.renovations", "c73f88fc-934c-4634-a523-917d88ec7dc9");
         fileIdMap.put("fr.renovations", "64d36b39-21d4-4d6a-b5b4-cf1dd670eb0a");
-        
+
         // Realizations page translations
         fileIdMap.put("en.realizations", "cbb6c67a-bd74-4c07-8a04-95706446183a");
         fileIdMap.put("fr.realizations", "8fa54390-8e3c-4bcc-a409-f729572e2bde");
-        
+
         // Residential Projects page translations
         fileIdMap.put("en.residentialprojects", "2323ba44-a51f-4385-b102-5559f04ef0c0");
         fileIdMap.put("fr.residentialprojects", "edc7a148-3150-48e5-b20f-e399f0d9911c");
-        
+
         // Project Management page translations
         fileIdMap.put("en.projectmanagement", "94942154-b27b-4b48-a830-8623cd1275a8");
         fileIdMap.put("fr.projectmanagement", "a33e3eb0-83f0-4af6-8691-5684d9253298");
-        
+
         // 404 Not Found page translations
         fileIdMap.put("en.notfound", "c0e10c2b-51e6-4ac3-9802-81f8b5ed7686");
         fileIdMap.put("fr.notfound", "995a0589-e141-40b0-b87e-a895273442c7");
-        
+
         // 500 Server Error page translations
         fileIdMap.put("en.servererror", "befe6470-56ab-4e41-ae87-72e7f02a20eb");
         fileIdMap.put("fr.servererror", "f54a08b1-b0f6-4fda-9469-dac983b1ef42");
-        
+
         // Project Overview page translations
         fileIdMap.put("en.projectoverview", "9a9f9bb2-c3da-4896-a452-57b6156e1d3b");
         fileIdMap.put("fr.projectoverview", "84fa52c6-e821-43be-872a-6d8cc099677d");
@@ -117,11 +117,11 @@ public class TranslationRegistry {
         fileIdMap.put("fr.projectphotospage", "96a109f6-15f9-4b27-9cd7-096850d232a8");
         fileIdMap.put("en.projectschedulepage", "54f8eebf-9af5-4376-944e-a87cc268b442");
         fileIdMap.put("fr.projectschedulepage", "718dc85f-6582-4a62-9be8-83a76602aa0b");
-        
+
         // Project Metadata page translations
         fileIdMap.put("en.projectmetadata", "09e765c8-b637-4199-8349-950db3ccf1df");
         fileIdMap.put("fr.projectmetadata", "8a02a6c8-e64c-4d8c-8109-c1a2e86c27ec");
-        
+
         // Lot Metadata page translations
         fileIdMap.put("en.lotmetadata", "fedbe51f-2362-49c7-bbc7-d91055f3d8a8");
         fileIdMap.put("fr.lotmetadata", "58a85d61-34dd-457a-ad89-4de96056a19a");
@@ -134,40 +134,40 @@ public class TranslationRegistry {
         fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
         fileIdMap.put("fr.navbar", "c9ed527b-48a8-427f-9248-da9e87efbf24");
         // Quotes page translations
-        fileIdMap.put("en.quotes", "946a87c9-b8bb-465e-a463-8d5397c72ab4");
-        fileIdMap.put("fr.quotes", "c6f01f88-86a9-4811-8449-1ac1bd492910");
+        fileIdMap.put("en.quotes", "1bdf1f9e-22ff-4a3e-83e8-ba0fc692b6c5");
+        fileIdMap.put("fr.quotes", "9e58be85-1a54-4ee4-8a74-04db5c48d231");
 
     }
-    
+
     /**
      * Gets the file ID for a given language and page.
      * 
      * @param language the language code (e.g., "en", "fr")
-     * @param page the page name (e.g., "home", "projects")
+     * @param page     the page name (e.g., "home", "projects")
      * @return the file ID, or null if not found
      */
     public String getFileId(String language, String page) {
         String key = language.toLowerCase() + "." + page.toLowerCase();
         return fileIdMap.get(key);
     }
-    
+
     /**
      * Registers a file ID for a language and page.
      * 
      * @param language the language code
-     * @param page the page name
-     * @param fileId the file ID from file service
+     * @param page     the page name
+     * @param fileId   the file ID from file service
      */
     public void registerFileId(String language, String page, String fileId) {
         String key = language.toLowerCase() + "." + page.toLowerCase();
         fileIdMap.put(key, fileId);
     }
-    
+
     /**
      * Checks if a translation file exists for the given language and page.
      * 
      * @param language the language code
-     * @param page the page name
+     * @param page     the page name
      * @return true if file ID exists, false otherwise
      */
     public boolean hasTranslation(String language, String page) {

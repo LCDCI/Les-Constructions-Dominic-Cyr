@@ -30,7 +30,8 @@
     "itemDetails": "Item Details",
     "addItem": "Add Item",
     "hours": "Hours",
-    "rate": "Rate ($/hr)",
+    "rate": "Rate",
+    "qty": "Qty",
     "total": "Total",
     "subtotal": "Subtotal",
     "discount": "Discount",
@@ -39,10 +40,15 @@
     "totalAmount": "Total Amount",
     "status": "Status",
     "statusPendingOwner": "Waiting for Owner Approval",
-    "statusOwnerApproved": "Owner Approved",
     "statusCustomerApproved": "Customer Approved",
-    "statusRejected": "Rejected",
-    "statusUnknown": "Pending",
+    "currentStatus": {
+      "SUBMITTED": "Submitted",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "PENDING_OWNER_APPROVAL": "Pending Owner Approval",
+      "OWNER_APPROVED": "Owner Approved",
+      "CUSTOMER_APPROVED": "Customer Approved"
+    },
     "estimatedInvoice": "Estimated Invoice",
     "errorLoading": "Failed to load quotes",
     "errorLoadingDetail": "Failed to load quote details",
@@ -68,25 +74,101 @@
     "preview": "Preview",
     "createQuote": "Create Quote",
     "sendFinalInvoice": "Send Final Invoice",
-      "rejectionInfo": "Rejection Information"
-    },
-    "common": {
-      "cancel": "Cancel",
-      "back": "Back",
-      "goBack": "Go Back",
-      "submitting": "Submitting...",
-      "loading": "Loading...",
-      "processing": "Processing...",
-      "search": "Search",
-      "status": "Status",
-      "all": "All",
-      "refresh": "Refresh",
-      "actions": "Actions",
-      "view": "View",
+    "rejectionInfo": "Rejection Information",
+    "number": "Quote #",
+    "details": "Quote Details",
+    "created": "Created",
+    "projectInfo": "Project Information",
+    "contractor": "Contractor",
+    "noItems": "No line items",
+    "approvalInfo": "Approval Information",
+    "approvedDate": "Approved Date",
+    "approvedBy": "Approved By",
+    "approval": {
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "ownerApproved": "Owner Approved",
+      "customerApproved": "Customer Approved",
+      "rejectionReason": "Rejection Reason",
+      "approveSuccess": "Quote approved successfully",
+      "rejectSuccess": "Quote rejected successfully",
+      "title": "Quote Approvals",
+      "subtitle": "Review and manage contractor quotes",
+      "searchPlaceholder": "Quote #, Project, Contractor...",
       "approve": "Approve",
-      "reject": "Reject",
-      "error": "Error",
-      "success": "Success",
-      "tryAgain": "Try Again"
-    }
+      "reject": "Reject"
+    },
+    "noQuotes": "No quotes found matching your filters."
+  },
+  "customerApproval": {
+    "title": "Quote Approval",
+    "subtitle": "Review and approve quotes for your lots",
+    "noQuotes": "No Quotes Pending Approval",
+    "noQuotesDescription": "All quotes have been reviewed. Check back later for new quotes.",
+    "modalTitle": "Approve Quote",
+    "infoMessage": "By approving this quote, you confirm that you have reviewed the details and agree to proceed with the work as outlined.",
+      "acknowledgmentText": "I acknowledge that I have reviewed this quote and approve the work to proceed.",
+      "acknowledgmentRequired": "Please acknowledge that you have reviewed the quote",
+      "paymentInfo": {
+        "title": "Official Billing & Payment",
+        "description": "All official billing and payments are processed through our secure partner platform. Please create an account to manage your invoices.",
+        "button": "Go to Payment Portal"
+      }
+  },
+  "approval": {
+      "reasonPlaceholder": "Explain why this quote is being rejected...",
+      "rejectMessage": "Are you sure you want to reject this quote? A reason must be provided and the contractor will be notified.",
+      "approveMessage": "Are you sure you want to approve this quote? It will be marked as valid for sending to customers.",
+      "confirmApprove": "Approve Quote",
+      "confirmReject": "Reject Quote",
+      "reasonRequired": "Please provide a rejection reason"
+  },
+  "table": {
+    "quoteNumber": "Quote #",
+    "project": "Project",
+    "lot": "Lot",
+    "totalAmount": "Total Amount",
+    "ownerApprovedAt": "Owner Approved",
+    "actions": "Actions"
+  },
+  "actions": {
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "viewDetails": "View Details",
+    "approve": "Approve"
+  },
+  "search": {
+    "placeholder": "Search by quote number, project, or lot..."
+  },
+  "loading": {
+    "quotes": "Loading quotes..."
+  },
+  "errors": {
+    "tokenFetch": "Failed to fetch authentication token",
+    "fetchQuotes": "Failed to load quotes. Please try again.",
+    "approvalFailed": "Failed to approve quote. Please try again."
+  },
+  "notifications": {
+    "customerApprovalSuccess": "Quote approved successfully!"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "back": "Back",
+    "goBack": "Go Back",
+    "submitting": "Submitting...",
+    "loading": "Loading...",
+    "processing": "Processing...",
+    "search": "Search",
+    "status": "Status",
+    "all": "All",
+    "refresh": "Refresh",
+    "actions": "Actions",
+    "view": "View",
+    "approve": "Approve",
+    "reject": "Reject",
+    "error": "Error",
+    "success": "Success",
+    "tryAgain": "Try Again"
+  }
 }

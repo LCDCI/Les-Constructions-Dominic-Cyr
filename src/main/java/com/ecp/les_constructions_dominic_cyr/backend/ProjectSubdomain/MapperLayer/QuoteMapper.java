@@ -22,28 +22,26 @@ public class QuoteMapper {
      * Line items are created and linked to the quote.
      */
     public Quote requestModelToEntity(
-        QuoteRequestModel requestModel,
-        String quoteNumber,
-        String contractorId
-    ) {
+            QuoteRequestModel requestModel,
+            String quoteNumber,
+            String contractorId) {
         Quote quote = Quote.builder()
-            .quoteNumber(quoteNumber)
-            .projectIdentifier(requestModel.getProjectIdentifier())
-            .lotIdentifier(requestModel.getLotIdentifier() != null && !requestModel.getLotIdentifier().isBlank() 
-                ? UUID.fromString(requestModel.getLotIdentifier()) 
-                : null)
-            .category(requestModel.getCategory())
-            .contractorId(contractorId)
-            .totalAmount(BigDecimal.ZERO) // Will be recalculated
-            .build();
+                .quoteNumber(quoteNumber)
+                .projectIdentifier(requestModel.getProjectIdentifier())
+                .lotIdentifier(requestModel.getLotIdentifier() != null && !requestModel.getLotIdentifier().isBlank()
+                        ? UUID.fromString(requestModel.getLotIdentifier())
+                        : null)
+                .category(requestModel.getCategory())
+                .contractorId(contractorId)
+                .totalAmount(BigDecimal.ZERO) // Will be recalculated
+                .build();
 
         // Map line items
         if (requestModel.getLineItems() != null) {
             quote.setLineItems(
-                requestModel.getLineItems().stream()
-                    .map(item -> mapLineItemRequestToEntity(item, quote))
-                    .collect(Collectors.toList())
-            );
+                    requestModel.getLineItems().stream()
+                            .map(item -> mapLineItemRequestToEntity(item, quote))
+                            .collect(Collectors.toList()));
         }
 
         // Recalculate total from line items
@@ -57,59 +55,59 @@ public class QuoteMapper {
      */
     public QuoteResponseModel entityToResponseModel(Quote quote) {
         return QuoteResponseModel.builder()
-            .quoteNumber(quote.getQuoteNumber())
-            .projectIdentifier(quote.getProjectIdentifier())
-            .lotIdentifier(quote.getLotIdentifier() != null ? quote.getLotIdentifier().toString() : null)
-            .category(quote.getCategory())
-            .contractorId(quote.getContractorId())
-            .lineItems(
-                quote.getLineItems().stream()
-                    .map(this::mapLineItemEntityToResponse)
-                    .collect(Collectors.toList())
-            )
-            .totalAmount(quote.getTotalAmount())
-            .createdAt(quote.getCreatedAt())
-            .updatedAt(quote.getUpdatedAt())
-            .status(quote.getStatus())
-            .rejectionReason(quote.getRejectionReason())
-            .approvedAt(quote.getApprovedAt())
-            .approvedBy(quote.getApprovedBy())
-            .build();
+                .quoteNumber(quote.getQuoteNumber())
+                .projectIdentifier(quote.getProjectIdentifier())
+                .lotIdentifier(quote.getLotIdentifier() != null ? quote.getLotIdentifier().toString() : null)
+                .category(quote.getCategory())
+                .contractorId(quote.getContractorId())
+                .lineItems(
+                        quote.getLineItems().stream()
+                                .map(this::mapLineItemEntityToResponse)
+                                .collect(Collectors.toList()))
+                .totalAmount(quote.getTotalAmount())
+                .createdAt(quote.getCreatedAt())
+                .updatedAt(quote.getUpdatedAt())
+                .status(quote.getStatus())
+                .rejectionReason(quote.getRejectionReason())
+                .approvedAt(quote.getApprovedAt())
+                .approvedBy(quote.getApprovedBy())
+                .customerApprovedAt(quote.getCustomerApprovedAt())
+                .customerApprovedBy(quote.getCustomerApprovedBy())
+                .customerAcknowledged(quote.getCustomerAcknowledged())
+                .build();
     }
 
     /**
      * Convert QuoteLineItemRequestModel to QuoteLineItem entity.
      */
     private QuoteLineItem mapLineItemRequestToEntity(
-        QuoteRequestModel.QuoteLineItemRequestModel requestItem,
-        Quote quote
-    ) {
+            QuoteRequestModel.QuoteLineItemRequestModel requestItem,
+            Quote quote) {
         BigDecimal lineTotal = requestItem.getQuantity().multiply(requestItem.getRate());
 
         return QuoteLineItem.builder()
-            .quote(quote)
-            .itemDescription(requestItem.getItemDescription())
-            .quantity(requestItem.getQuantity())
-            .rate(requestItem.getRate())
-            .lineTotal(lineTotal)
-            .displayOrder(requestItem.getDisplayOrder())
-            .build();
+                .quote(quote)
+                .itemDescription(requestItem.getItemDescription())
+                .quantity(requestItem.getQuantity())
+                .rate(requestItem.getRate())
+                .lineTotal(lineTotal)
+                .displayOrder(requestItem.getDisplayOrder())
+                .build();
     }
 
     /**
      * Convert QuoteLineItem entity to QuoteLineItemResponseModel.
      */
     private QuoteResponseModel.QuoteLineItemResponseModel mapLineItemEntityToResponse(
-        QuoteLineItem lineItem
-    ) {
+            QuoteLineItem lineItem) {
         return QuoteResponseModel.QuoteLineItemResponseModel.builder()
-            .lineItemId(lineItem.getLineItemId())
-            .itemDescription(lineItem.getItemDescription())
-            .quantity(lineItem.getQuantity())
-            .rate(lineItem.getRate())
-            .lineTotal(lineItem.getLineTotal())
-            .displayOrder(lineItem.getDisplayOrder())
-            .build();
+                .lineItemId(lineItem.getLineItemId())
+                .itemDescription(lineItem.getItemDescription())
+                .quantity(lineItem.getQuantity())
+                .rate(lineItem.getRate())
+                .lineTotal(lineItem.getLineTotal())
+                .displayOrder(lineItem.getDisplayOrder())
+                .build();
     }
 
     /**
@@ -129,7 +127,7 @@ public class QuoteMapper {
      */
     public static boolean isContractor(Authentication authentication) {
         return authentication.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .anyMatch(auth -> auth.equals("ROLE_CONTRACTOR"));
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(auth -> auth.equals("ROLE_CONTRACTOR"));
     }
 }

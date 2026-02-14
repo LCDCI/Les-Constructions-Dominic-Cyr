@@ -225,4 +225,50 @@ public class QuoteController {
 
         return ResponseEntity.ok(rejectedQuote);
     }
+
+    /**
+     * Customer approves a quote.
+     * 
+     * Accessible to: Only CUSTOMER role
+     * Only customers who own the lot can approve the quote.
+     * Quote must be in OWNER_APPROVED status.
+     * 
+     * @param quoteNumber    The quote number to approve
+     * @param authentication Current user's authentication (customer)
+     * @return The updated quote with CUSTOMER_APPROVED status
+     */
+    @PostMapping("/{quoteNumber}/customer-approve")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<QuoteResponseModel> customerApproveQuote(
+            @PathVariable String quoteNumber,
+            Authentication authentication) {
+        log.info("Customer approving quote: {}", quoteNumber);
+
+        String customerAuth0Id = ((Jwt) authentication.getPrincipal()).getSubject();
+        QuoteResponseModel approvedQuote = quoteService.customerApproveQuote(quoteNumber, customerAuth0Id);
+
+        return ResponseEntity.ok(approvedQuote);
+    }
+
+    /**
+     * Get quotes pending customer approval.
+     * 
+     * Accessible to: Only CUSTOMER role
+     * Returns quotes that are OWNER_APPROVED for lots owned by the authenticated
+     * customer.
+     * 
+     * @param authentication Current user's authentication (customer)
+     * @return List of quotes pending customer approval
+     */
+    @GetMapping("/customer/pending")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<List<QuoteResponseModel>> getCustomerPendingQuotes(
+            Authentication authentication) {
+        log.info("Fetching pending quotes for customer");
+
+        String customerAuth0Id = ((Jwt) authentication.getPrincipal()).getSubject();
+        List<QuoteResponseModel> quotes = quoteService.getCustomerPendingQuotes(customerAuth0Id);
+
+        return ResponseEntity.ok(quotes);
+    }
 }

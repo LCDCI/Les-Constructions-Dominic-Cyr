@@ -117,7 +117,11 @@ const QuoteApprovalPage = () => {
 
     // Filter by status
     if (status && status !== 'ALL') {
-      result = result.filter(q => q.status === status);
+      if (status === 'APPROVED') {
+        result = result.filter(q => ['OWNER_APPROVED', 'CUSTOMER_APPROVED'].includes(q.status));
+      } else {
+        result = result.filter(q => q.status === status);
+      }
     }
 
     // Filter by search query (quote number or contractor name)
@@ -221,7 +225,11 @@ const QuoteApprovalPage = () => {
     switch (status) {
       case 'SUBMITTED':
         return t('quote.approval.submitted') || 'Submitted';
-      case 'APPROVED':
+      case 'OWNER_APPROVED':
+        return t('quote.approval.ownerApproved') || 'Owner Approved';
+      case 'CUSTOMER_APPROVED':
+        return t('quote.approval.customerApproved') || 'Customer Approved';
+      case 'APPROVED': // Fallback
         return t('quote.approval.approved') || 'Approved';
       case 'REJECTED':
         return t('quote.approval.rejected') || 'Rejected';
@@ -288,7 +296,7 @@ const QuoteApprovalPage = () => {
             </thead>
             <tbody>
               {filteredQuotes.map(quote => (
-                <tr key={quote.quoteId}>
+                <tr key={quote.quoteNumber}>
                   <td className="quote-number" data-label={t('quote.number') || 'Quote #'}>{quote.quoteNumber}</td>
                   <td data-label={t('quote.project') || 'Project'}>{quote.projectIdentifier}</td>
                   <td className="quote-contractor" data-label={t('quote.contractor') || 'Contractor'}>

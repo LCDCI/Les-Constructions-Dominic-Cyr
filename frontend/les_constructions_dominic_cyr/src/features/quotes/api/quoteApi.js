@@ -346,4 +346,85 @@ export const quoteApi = {
       }
       throw error;
     }
-  },};
+  },
+
+  /**
+   * Get quotes pending customer approval.
+   * Returns quotes that are OWNER_APPROVED for lots owned by the authenticated customer.
+   *
+   * @param {string} token - Authorization token
+   * @returns {Promise<Array>} List of quotes pending customer approval
+   * @throws {Error} If fetch fails
+   */
+  getCustomerPendingQuotes: async (token) => {
+    try {
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/quotes/customer/pending`, {
+        headers,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch pending quotes (${response.status})`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to API');
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Customer approves a quote.
+   * Only customers who own the lot can approve the quote.
+   * Quote must be in OWNER_APPROVED status.
+   *
+   * @param {string} quoteNumber - Quote number to approve
+   * @param {string} token - Authorization token
+   * @returns {Promise<Object>} Updated quote with CUSTOMER_APPROVED status
+   * @throws {Error} If approval fails
+   */
+  customerApproveQuote: async (quoteNumber, token) => {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/quotes/${quoteNumber}/customer-approve`, {
+        method: 'POST',
+        headers,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = `Failed to approve quote (${response.status})`;
+
+        if (errorText) {
+          try {
+            const errorData = JSON.parse(errorText);
+            errorMessage = errorData.message || errorData.error || errorText;
+          } catch (e) {
+            errorMessage = errorText;
+          }
+        }
+
+        const error = new Error(errorMessage);
+        error.status = response.status;
+        throw error;
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to API');
+      }
+      throw error;
+    }
+  },
+};
