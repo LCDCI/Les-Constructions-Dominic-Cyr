@@ -427,7 +427,7 @@ class FormControllerIntegrationTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(new HashMap<>());
-        history.setSubmittedByCustomerId(testCustomer.getUserIdentifier().getUserId().toString());
+                history.setSubmittedByCustomerId(testCustomer.getUserIdentifier().getUserId());
         history.setSubmittedByCustomerName("Test Customer");
         history.setSubmittedAt(LocalDateTime.now());
         historyRepository.save(history);
@@ -449,11 +449,11 @@ class FormControllerIntegrationTest {
         form.setFormType(FormType.WINDOWS);
         form.setFormStatus(FormStatus.ASSIGNED);
         form.setProjectIdentifier(testProject.getProjectIdentifier());
-        form.setLotIdentifier(testLot.getLotIdentifier().getLotId().toString());
-        form.setCustomerId(testCustomer.getUserIdentifier().getUserId().toString());
+                form.setLotIdentifier(testLot.getLotIdentifier().getLotId());
+        form.setCustomerId(testCustomer.getUserIdentifier().getUserId());
         form.setCustomerName("Test Customer");
         form.setCustomerEmail(testCustomer.getPrimaryEmail());
-        form.setAssignedByUserId(testSalesperson.getUserIdentifier().getUserId().toString());
+        form.setAssignedByUserId(testSalesperson.getUserIdentifier().getUserId());
         form.setAssignedByName("Test Salesperson");
         form.setFormTitle("Window Selection");
         form.setInstructions("Please select windows");
@@ -483,11 +483,11 @@ class FormControllerIntegrationTest {
         form.setFormType(FormType.PAINT);
         form.setFormStatus(FormStatus.ASSIGNED);
         form.setProjectIdentifier(testProject.getProjectIdentifier());
-        form.setLotIdentifier(testLot.getLotIdentifier().getLotId().toString());
-        form.setCustomerId(differentCustomer.getUserIdentifier().getUserId().toString());
+                form.setLotIdentifier(testLot.getLotIdentifier().getLotId());
+        form.setCustomerId(differentCustomer.getUserIdentifier().getUserId());
         form.setCustomerName("Different Customer");
         form.setCustomerEmail(differentCustomer.getPrimaryEmail());
-        form.setAssignedByUserId(testSalesperson.getUserIdentifier().getUserId().toString());
+        form.setAssignedByUserId(testSalesperson.getUserIdentifier().getUserId());
         form.setAssignedByName("Test Salesperson");
         form.setFormTitle("Paint Selection");
         form.setFormData(new HashMap<>());
