@@ -25,10 +25,9 @@ public class TranslationRegistry {
         fileIdMap.put("en.home", "cb5d4f09-eabb-47df-9161-866ba10bce72");
         fileIdMap.put("fr.home", "edfca72f-b970-410c-b88c-2f3a97301662");
 
-        // Contact page translations
-        fileIdMap.put("en.contact", "54897f58-2f88-4e2a-81b2-cced943541bb");
-        fileIdMap.put("fr.contact", "bb7203b2-975a-43be-9d69-5a2847543cec");
-
+        fileIdMap.put("en.contact", "dfdcc350-fdca-4d64-be17-f4c75f0d4a1f");
+        fileIdMap.put("fr.contact", "cc125a16-7546-44f2-933f-ec27f8805a8d");
+        
         // Renovations page translations
         fileIdMap.put("en.renovations", "c73f88fc-934c-4634-a523-917d88ec7dc9");
         fileIdMap.put("fr.renovations", "64d36b39-21d4-4d6a-b5b4-cf1dd670eb0a");
@@ -61,16 +60,16 @@ public class TranslationRegistry {
         fileIdMap.put("fr.lots", "9ee50174-382f-467f-b30c-5f64ca470335");
 
         // Owner Lots page translations
-        fileIdMap.put("en.ownerlots", "62178381-21ab-415a-a604-9d80c5d7774a");
-        fileIdMap.put("fr.ownerlots", "29509c00-9273-4df9-96ae-6fba61a0d1b4");
+        fileIdMap.put("en.ownerlots", "b071f51e-c04d-412c-adb4-4e56cadb734a");
+        fileIdMap.put("fr.ownerlots", "bea7f8ce-9d27-4784-a006-0afaac0b3202");
 
         // Task Details page translations
         fileIdMap.put("en.taskdetails", "0d1566a4-ace6-4341-9b8e-e108bd562091");
         fileIdMap.put("fr.taskdetails", "c4a519cf-957b-46d0-a099-0228e0e933cc");
 
         // Living Environment page translations
-        fileIdMap.put("en.livingenvironment", "99949cf5-8d72-4155-aaea-3df009823664");
-        fileIdMap.put("fr.livingenvironment", "1e49e1c9-1dc8-4ecf-8212-47e51d62abd2");
+        fileIdMap.put("en.livingenvironment", "07950131-c764-4b1e-9a17-6afbb0618615");
+        fileIdMap.put("fr.livingenvironment", "bfad437e-c3e1-43b1-aa10-20978a1e7617");
 
         // Projects page translations
         fileIdMap.put("en.projects", "ba8bdea5-82ff-46a5-80b5-217356ddd314");
@@ -81,8 +80,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.inbox", "7a7c4dba-747d-4228-b34d-6c83b6647337");
 
         // Dashboard page translations
-        fileIdMap.put("en.ownerdashboard", "64afdd86-06a3-4a16-b9c9-628dbc34d475");
-        fileIdMap.put("fr.ownerdashboard", "bf1b332f-7866-4910-99f7-1f09a324ea53");
+        fileIdMap.put("en.ownerdashboard", "fac46b1c-2158-484d-8839-10ff51fdd878");
+        fileIdMap.put("fr.ownerdashboard", "a73f68c8-4a84-49c0-b86e-50039a1444c6");
         fileIdMap.put("en.customerdashboard", "bc1fa28b-dc6e-4653-b3e9-b0a9ce3bfa64");
         fileIdMap.put("fr.customerdashboard", "6742d6a9-bcfd-4780-b2ec-5c50c27e9493");
         fileIdMap.put("en.salespersondashboard", "6792727a-faac-4fa1-af3b-0c850c6ed022");
@@ -101,8 +100,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.ownerinquiriespage", "7a5b33bd-0cf8-4b8d-99e8-85e91dc4c40d");
         fileIdMap.put("en.portallogin", "c2bfbed4-4863-4ece-962d-615d1ef01d94");
         fileIdMap.put("fr.portallogin", "01ec1381-fdab-47ff-b576-80f62cab4d89");
-        fileIdMap.put("en.reportspage", "27cbcb6c-935e-4758-a420-fb81fd62b0b2");
-        fileIdMap.put("fr.reportspage", "1ac3ffaa-0613-4b27-94c2-34cf08b1d62c");
+        fileIdMap.put("en.reportspage", "b5edb946-ecae-4571-b0e5-bbf99910a198");
+        fileIdMap.put("fr.reportspage", "86ec6fcd-af43-4fa1-addd-2ec0366fa1be");
         fileIdMap.put("en.unauthorized", "ec316287-8fde-44db-b51e-e3692b9ce510");
         fileIdMap.put("fr.unauthorized", "8fa54e9d-84eb-444a-aa9f-d7eb986c68a8");
 
@@ -136,6 +135,14 @@ public class TranslationRegistry {
         // Quotes page translations
         fileIdMap.put("en.quotes", "1bdf1f9e-22ff-4a3e-83e8-ba0fc692b6c5");
         fileIdMap.put("fr.quotes", "9e58be85-1a54-4ee4-8a74-04db5c48d231");
+
+        // Customer Forms page translations
+        fileIdMap.put("en.customerforms", "cf04f42b-1442-44cb-839c-7b8ae130a5af");
+        fileIdMap.put("fr.customerforms", "b3915f9d-c967-493f-ae1f-2867dfffac37");
+
+        // Salesperson Forms page translations
+        fileIdMap.put("en.salespersonforms", "bf89b8c0-12d8-43f3-b713-8cf5133a95ac");
+        fileIdMap.put("fr.salespersonforms", "0209707e-6022-4e1e-9a0c-4e166bf715e4");
 
     }
 

@@ -9,6 +9,7 @@ import java.util.List;
 public interface LotService {
     List<LotResponseModel> getAllLots();
     List<LotResponseModel> getAllLotsByProject(String projectIdentifier);
+    List<LotResponseModel> getLotsByProjectAndBothUsersAssigned(String projectIdentifier, String salespersonId, String customerId);
     LotResponseModel getLotById(String lotId);
     LotResponseModel addLotToProject(String projectIdentifier, LotRequestModel lotRequestModel);
     LotResponseModel updateLot(LotRequestModel lotRequestModel, String lotId);

@@ -3,6 +3,8 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.TaskService;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +26,7 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserService userService;
 
     // Owner endpoints - full CRUD operations
     @GetMapping("/owners/tasks")
@@ -196,6 +201,44 @@ public class TaskController {
         } catch (NotFoundException ex) {
             log.error("Task not found for deletion: {}", taskId);
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // Customer endpoints - view tasks for assigned lots
+    @GetMapping("/customers/tasks")
+    @PreAuthorize("hasAuthority('ROLE_CUSTOMER')")
+    public ResponseEntity<?> getCustomerTasks(@AuthenticationPrincipal Jwt jwt) {
+        log.info("Fetching tasks for customer");
+        try {
+            String auth0UserId = jwt.getSubject();
+            UserResponseModel user = userService.getUserByAuth0Id(auth0UserId);
+            List<TaskDetailResponseDTO> tasks = taskService.getTasksForUserAssignedLots(user.getUserIdentifier());
+            return ResponseEntity.ok(tasks);
+        } catch (NotFoundException ex) {
+            log.error("User not found: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            log.error("Error fetching customer tasks: {}", ex.getMessage());
+            return new ResponseEntity<>("An internal error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // Salesperson endpoints - view tasks for assigned lots
+    @GetMapping("/salesperson/tasks")
+    @PreAuthorize("hasAuthority('ROLE_SALESPERSON')")
+    public ResponseEntity<?> getSalespersonTasks(@AuthenticationPrincipal Jwt jwt) {
+        log.info("Fetching tasks for salesperson");
+        try {
+            String auth0UserId = jwt.getSubject();
+            UserResponseModel user = userService.getUserByAuth0Id(auth0UserId);
+            List<TaskDetailResponseDTO> tasks = taskService.getTasksForUserAssignedLots(user.getUserIdentifier());
+            return ResponseEntity.ok(tasks);
+        } catch (NotFoundException ex) {
+            log.error("User not found: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception ex) {
+            log.error("Error fetching salesperson tasks: {}", ex.getMessage());
+            return new ResponseEntity<>("An internal error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
