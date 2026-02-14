@@ -64,11 +64,7 @@ export default function UserStatusModal({
       >
         <div className="modal-header">
           <h2 id="user-status-modal-title">Manage User Status</h2>
-          <button
-            className="modal-close"
-            onClick={onClose}
-            aria-label="Close"
-          >
+          <button className="modal-close" onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>

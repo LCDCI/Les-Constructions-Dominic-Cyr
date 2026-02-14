@@ -109,10 +109,7 @@ const ResidentialProjectsPage = () => {
           <h1 className="projects-title" id="residential-projects-title">
             {t('hero.title', 'Residential Projects')}
           </h1>
-          <p
-            className="projects-subtitle"
-            id="residential-projects-subtitle"
-          >
+          <p className="projects-subtitle" id="residential-projects-subtitle">
             {t(
               'hero.subtitle',
               'Explore our portfolio of residential projects showcasing quality construction and innovative design.'
