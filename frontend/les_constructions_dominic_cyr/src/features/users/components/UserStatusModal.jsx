@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../../styles/users.css';
 
 export default function UserStatusModal({
@@ -12,6 +12,19 @@ export default function UserStatusModal({
   const [action, setAction] = useState('');
 
   if (!isOpen || !user) return null;
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = e => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
 
   const isOwner = currentUser?.userRole === 'OWNER';
   const canDeactivate =
@@ -41,13 +54,28 @@ export default function UserStatusModal({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal-content"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="user-status-modal-title"
+        aria-describedby="user-status-modal-description"
+      >
         <div className="modal-header">
-          <h2>Manage User Status</h2>
-          <button className="modal-close" onClick={onClose}>
+          <h2 id="user-status-modal-title">Manage User Status</h2>
+          <button
+            className="modal-close"
+            onClick={onClose}
+            aria-label="Close"
+          >
             ×
           </button>
         </div>
+
+        <p id="user-status-modal-description" className="sr-only">
+          Review the current status and select an action to continue.
+        </p>
 
         <div className="modal-body">
           <div className="user-status-info">

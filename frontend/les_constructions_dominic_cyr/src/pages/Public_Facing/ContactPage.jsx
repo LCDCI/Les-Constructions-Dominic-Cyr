@@ -72,24 +72,32 @@ export default function ContactPage() {
 
   return (
     <div className="contact-page">
-      <section className="projects-hero">
+      <section
+        className="projects-hero"
+        aria-labelledby="contact-hero-title"
+        aria-describedby="contact-hero-subtitle"
+      >
         <div className="projects-hero-content">
           <p className="section-kicker eyebrow">
             {t('hero.eyebrow', f.hero.eyebrow)}
           </p>
-          <h1 className="projects-title">{t('hero.title', f.hero.title)}</h1>
-          <p className="projects-subtitle subhead">
+          <h1 className="projects-title" id="contact-hero-title">
+            {t('hero.title', f.hero.title)}
+          </h1>
+          <p className="projects-subtitle subhead" id="contact-hero-subtitle">
             {t('hero.subtitle', f.hero.subtitle)}
           </p>
         </div>
       </section>
 
-      <section className="contact-body">
+      <section className="contact-body" aria-labelledby="contact-info-title">
         <div className="contact-grid">
           <InquiryForm className="contact-form-wrapper" />
 
           <div className="contact-card">
-            <h2>{t('contactInfo.title', f.contactInfo.title)}</h2>
+            <h2 id="contact-info-title">
+              {t('contactInfo.title', f.contactInfo.title)}
+            </h2>
             <div className="info-item">
               <strong>
                 {t('contactInfo.companyName', f.contactInfo.companyName)}
@@ -104,7 +112,7 @@ export default function ContactPage() {
                   rel="noreferrer"
                   className="directions-link"
                 >
-                  <HiLocationMarker />
+                  <HiLocationMarker aria-hidden="true" />
                   {t('contactInfo.directions', f.contactInfo.directions)}
                 </a>
               </p>

@@ -56,6 +56,19 @@ const LotFormModal = ({
     setErrors({});
   }, [lot, isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = e => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        if (!isSubmitting) onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, isSubmitting, onClose]);
+
   const handleChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -129,17 +142,29 @@ const LotFormModal = ({
 
   return (
     <div className="lot-modal-overlay" onClick={handleClose}>
-      <div className="lot-modal" onClick={e => e.stopPropagation()}>
+      <div
+        className="lot-modal"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lot-modal-title"
+        aria-describedby="lot-modal-description"
+      >
         <div className="lot-modal-header">
-          <h2>{title}</h2>
+          <h2 id="lot-modal-title">{title}</h2>
           <button
             className="lot-modal-close"
             onClick={handleClose}
             disabled={isSubmitting}
+            aria-label="Close"
           >
             ×
           </button>
         </div>
+
+        <p id="lot-modal-description" className="sr-only">
+          Fill out the lot details and submit the form.
+        </p>
 
         <form onSubmit={handleSubmit} className="lot-form">
           <div className="form-row">

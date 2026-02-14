@@ -124,6 +124,19 @@ const LotsPage = () => {
   ]);
 
   useEffect(() => {
+    if (!selectedLot) return;
+    const handleKeyDown = e => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        setSelectedLot(null);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedLot]);
+
+  useEffect(() => {
     let result = [...lots];
     if (!isOwner) {
       result = result.filter(lot => {
@@ -217,6 +230,10 @@ const LotsPage = () => {
                     style={{ top: coords.top, left: coords.left }}
                     onClick={() => setSelectedLot(lot)}
                     title={`${t('common.lot')} ${lot.lotNumber}`}
+                    aria-label={`${t('common.lot')} ${lot.lotNumber} (${t(
+                      `status.${lot.lotStatus?.toLowerCase()}`,
+                      lot.lotStatus || ''
+                    )})`}
                   />
                 );
               })}
@@ -247,14 +264,18 @@ const LotsPage = () => {
               className="lot-modal-content"
               onClick={e => e.stopPropagation()}
               style={{ borderTop: `5px solid ${projectColors.accent}` }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="lot-details-title"
             >
               <button
                 className="close-modal"
                 onClick={() => setSelectedLot(null)}
+                aria-label={t('common.close', 'Close')}
               >
                 &times;
               </button>
-              <h2>
+              <h2 id="lot-details-title">
                 {t('common.lot')} {selectedLot.lotNumber}
               </h2>
               <hr />
