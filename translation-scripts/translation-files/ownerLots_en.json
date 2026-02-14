@@ -99,6 +99,13 @@
     "errorUpdating": "Error updating lot: ",
     "unknownError": "Unknown error",
     "projectMissing": "Project identifier is missing. Please reopen this page from a project."
+  },
+  "projectSelection": {
+    "title": "Select a Project",
+    "close": "Close",
+    "loading": "Loading projects...",
+    "errorLoading": "Failed to load projects",
+    "retry": "Retry",
+    "noProjects": "No projects found"
   }
 }
-

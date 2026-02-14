@@ -41,8 +41,8 @@ public class ProjectController {
     @GetMapping
     public ResponseEntity<List<ProjectResponseModel>> getAllProjects(
             @RequestParam(required = false) ProjectStatus status,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat. ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO. DATE) LocalDate endDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) String customerId,
             @AuthenticationPrincipal Jwt jwt,
             Authentication authentication
@@ -50,20 +50,16 @@ public class ProjectController {
         List<ProjectResponseModel> projects;
         boolean isOwner = isOwner(authentication);
 
-        // First, get projects based on filters or all projects
         if (status != null || startDate != null || endDate != null || customerId != null) {
             projects = projectService.filterProjects(status, startDate, endDate, customerId, isOwner);
         } else {
             projects = projectService.getAllProjects(isOwner);
         }
 
-        // Then filter by user role and assigned projects — include projects where the
-        // user is assigned to any lot within the project.
         if (!isOwner && jwt != null && authentication != null) {
             String auth0UserId = jwt.getSubject();
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-            // Get the user's identifier for filtering
             UserResponseModel currentUser = null;
             try {
                 currentUser = userService.getUserByAuth0Id(auth0UserId);

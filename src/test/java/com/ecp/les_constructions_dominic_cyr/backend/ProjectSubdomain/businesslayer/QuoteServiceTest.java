@@ -1,5 +1,10 @@
-package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Quote;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.businesslayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Quote.QuoteNumberGenerator;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Quote.QuoteService;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.Quote;
@@ -7,12 +12,14 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.QuoteMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidProjectDataException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +45,12 @@ class QuoteServiceTest {
     private ProjectRepository projectRepository;
 
     @Mock
+    private LotRepository lotRepository;
+
+    @Mock
+    private UsersRepository usersRepository;
+
+    @Mock
     private QuoteNumberGenerator quoteNumberGenerator;
 
     @Mock
@@ -47,16 +61,30 @@ class QuoteServiceTest {
 
     private String projectIdentifier;
     private String contractorId;
+    private String lotIdentifier;
     private QuoteRequestModel validRequestModel;
+    private Project project;
+    private Lot lot;
+    private Users contractorUser;
 
     @BeforeEach
     void setUp() {
         projectIdentifier = "proj-001";
-        contractorId = "contractor-001";
+        contractorId = "auth0|contractor-001";
+        lotIdentifier = UUID.randomUUID().toString();
+        project = new Project();
+        project.setProjectIdentifier(projectIdentifier);
+        lot = new Lot();
+        lot.setLotIdentifier(new LotIdentifier(lotIdentifier));
+        lot.setProject(project);
+        UserIdentifier contractorUserIdentifier = UserIdentifier.newId();
+        contractorUser = new Users();
+        contractorUser.setUserIdentifier(contractorUserIdentifier);
+        lot.setAssignedUsers(List.of(contractorUser));
 
-        // Create a valid request model
         validRequestModel = QuoteRequestModel.builder()
             .projectIdentifier(projectIdentifier)
+            .lotIdentifier(lotIdentifier)
             .lineItems(List.of(
                 QuoteRequestModel.QuoteLineItemRequestModel.builder()
                     .itemDescription("Service 1")
@@ -73,11 +101,6 @@ class QuoteServiceTest {
      */
     @Test
     void createQuote_WithValidData_SuccessfullyCreatesQuote() {
-        // Given: Project exists and contractor is assigned
-        Project project = new Project();
-        project.setProjectIdentifier(projectIdentifier);
-        project.setContractorIds(List.of(contractorId));
-
         Quote mockQuote = Quote.builder()
             .quoteNumber("QT-0000001")
             .projectIdentifier(projectIdentifier)
@@ -101,10 +124,8 @@ class QuoteServiceTest {
         when(quoteRepository.save(any(Quote.class))).thenReturn(mockQuote);
         when(quoteMapper.entityToResponseModel(mockQuote)).thenReturn(mockResponseModel);
 
-        // When: Create quote
         QuoteResponseModel result = quoteService.createQuote(validRequestModel, contractorId);
 
-        // Then: Quote should be created successfully
         assertNotNull(result);
         assertEquals("QT-0000001", result.getQuoteNumber());
         assertEquals(projectIdentifier, result.getProjectIdentifier());
@@ -131,24 +152,25 @@ class QuoteServiceTest {
     }
 
     /**
-     * NEGATIVE TEST: Fail when contractor is not assigned to project.
+     * NEGATIVE TEST: Fail when contractor is not assigned to lot.
      */
     @Test
     void createQuote_WhenContractorNotAssigned_ThrowsException() {
-        // Given: Project exists but contractor is not assigned
-        Project project = new Project();
-        project.setProjectIdentifier(projectIdentifier);
-        project.setContractorIds(new ArrayList<>()); // Empty - contractor not assigned
+        Lot lotNoContractor = new Lot();
+        lotNoContractor.setLotIdentifier(lot.getLotIdentifier());
+        lotNoContractor.setProject(project);
+        lotNoContractor.setAssignedUsers(new ArrayList<>()); // Contractor not in list
 
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(lotIdentifier))).thenReturn(lotNoContractor);
+        when(usersRepository.findByAuth0UserId(contractorId)).thenReturn(Optional.of(contractorUser));
 
-        // When/Then: Should throw InvalidProjectDataException
         InvalidProjectDataException exception = assertThrows(
             InvalidProjectDataException.class,
             () -> quoteService.createQuote(validRequestModel, contractorId)
         );
 
-        assertTrue(exception.getMessage().contains("not assigned to this project"));
+        assertTrue(exception.getMessage().contains("not assigned to this lot"));
         verify(quoteRepository, never()).save(any());
     }
 
@@ -157,13 +179,9 @@ class QuoteServiceTest {
      */
     @Test
     void createQuote_WithInvalidQuantity_ThrowsException() {
-        // Given: Project exists, but line item has invalid quantity
-        Project project = new Project();
-        project.setProjectIdentifier(projectIdentifier);
-        project.setContractorIds(List.of(contractorId));
-
         QuoteRequestModel invalidRequestModel = QuoteRequestModel.builder()
             .projectIdentifier(projectIdentifier)
+            .lotIdentifier(lotIdentifier)
             .lineItems(List.of(
                 QuoteRequestModel.QuoteLineItemRequestModel.builder()
                     .itemDescription("Invalid Item")
@@ -175,8 +193,9 @@ class QuoteServiceTest {
             .build();
 
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(lotIdentifier))).thenReturn(lot);
+        when(usersRepository.findByAuth0UserId(contractorId)).thenReturn(Optional.of(contractorUser));
 
-        // When/Then: Should throw InvalidProjectDataException
         InvalidProjectDataException exception = assertThrows(
             InvalidProjectDataException.class,
             () -> quoteService.createQuote(invalidRequestModel, contractorId)
@@ -186,15 +205,120 @@ class QuoteServiceTest {
         verify(quoteRepository, never()).save(any());
     }
 
-    /**
-     * POSITIVE TEST: Successfully retrieve all quotes for a project.
-     */
+    @Test
+    void createQuote_WhenLotIdentifierBlank_ThrowsInvalidProjectDataException() {
+        validRequestModel.setLotIdentifier("");
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+
+        InvalidProjectDataException exception = assertThrows(
+            InvalidProjectDataException.class,
+            () -> quoteService.createQuote(validRequestModel, contractorId)
+        );
+        assertTrue(exception.getMessage().contains("Lot identifier is required"));
+    }
+
+    @Test
+    void createQuote_WhenLotNotFound_ThrowsNotFoundException() {
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(lotIdentifier))).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () ->
+            quoteService.createQuote(validRequestModel, contractorId));
+    }
+
+    @Test
+    void createQuote_WhenContractorNotFound_ThrowsInvalidProjectDataException() {
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(lotIdentifier))).thenReturn(lot);
+        when(usersRepository.findByAuth0UserId(contractorId)).thenReturn(Optional.empty());
+        when(usersRepository.findByUserIdentifier(contractorId)).thenReturn(Optional.empty());
+
+        assertThrows(InvalidProjectDataException.class, () ->
+            quoteService.createQuote(validRequestModel, contractorId));
+    }
+
+    @Test
+    void createQuote_WithEmptyLineItems_ThrowsInvalidProjectDataException() {
+        validRequestModel.setLineItems(List.of());
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(lotIdentifier))).thenReturn(lot);
+        when(usersRepository.findByAuth0UserId(contractorId)).thenReturn(Optional.of(contractorUser));
+
+        InvalidProjectDataException exception = assertThrows(
+            InvalidProjectDataException.class,
+            () -> quoteService.createQuote(validRequestModel, contractorId)
+        );
+        assertTrue(exception.getMessage().contains("At least one line item is required"));
+    }
+
+    @Test
+    void createQuote_WithNegativeRate_ThrowsInvalidProjectDataException() {
+        validRequestModel.setLineItems(List.of(
+            QuoteRequestModel.QuoteLineItemRequestModel.builder()
+                .itemDescription("Item")
+                .quantity(new BigDecimal("1"))
+                .rate(new BigDecimal("-10"))
+                .displayOrder(0)
+                .build()
+        ));
+        when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId(UUID.fromString(lotIdentifier))).thenReturn(lot);
+        when(usersRepository.findByAuth0UserId(contractorId)).thenReturn(Optional.of(contractorUser));
+
+        InvalidProjectDataException exception = assertThrows(
+            InvalidProjectDataException.class,
+            () -> quoteService.createQuote(validRequestModel, contractorId)
+        );
+        assertTrue(exception.getMessage().contains("Rate cannot be negative"));
+    }
+
+    @Test
+    void getQuotesByLot_ReturnsQuotes() {
+        Quote quote = Quote.builder().quoteNumber("QT-0000001").lotIdentifier(UUID.fromString(lotIdentifier)).build();
+        QuoteResponseModel responseModel = QuoteResponseModel.builder().quoteNumber("QT-0000001").build();
+        when(quoteRepository.findByLotIdentifier(UUID.fromString(lotIdentifier))).thenReturn(List.of(quote));
+        when(quoteMapper.entityToResponseModel(quote)).thenReturn(responseModel);
+
+        List<QuoteResponseModel> result = quoteService.getQuotesByLot(lotIdentifier);
+
+        assertEquals(1, result.size());
+        assertEquals("QT-0000001", result.get(0).getQuoteNumber());
+    }
+
+    @Test
+    void getQuoteByNumber_ReturnsQuote() {
+        Quote quote = Quote.builder().quoteNumber("QT-0000001").build();
+        QuoteResponseModel responseModel = QuoteResponseModel.builder().quoteNumber("QT-0000001").build();
+        when(quoteRepository.findByQuoteNumber("QT-0000001")).thenReturn(Optional.of(quote));
+        when(quoteMapper.entityToResponseModel(quote)).thenReturn(responseModel);
+
+        QuoteResponseModel result = quoteService.getQuoteByNumber("QT-0000001");
+
+        assertEquals("QT-0000001", result.getQuoteNumber());
+    }
+
+    @Test
+    void getQuoteByNumber_NotFound_ThrowsNotFoundException() {
+        when(quoteRepository.findByQuoteNumber("QT-9999999")).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> quoteService.getQuoteByNumber("QT-9999999"));
+    }
+
+    @Test
+    void getQuotesByContractor_ReturnsQuotes() {
+        Quote quote = Quote.builder().quoteNumber("QT-0000001").contractorId(contractorId).build();
+        QuoteResponseModel responseModel = QuoteResponseModel.builder().quoteNumber("QT-0000001").build();
+        when(quoteRepository.findByContractorId(contractorId)).thenReturn(List.of(quote));
+        when(quoteMapper.entityToResponseModel(quote)).thenReturn(responseModel);
+
+        List<QuoteResponseModel> result = quoteService.getQuotesByContractor(contractorId);
+
+        assertEquals(1, result.size());
+        assertEquals("QT-0000001", result.get(0).getQuoteNumber());
+    }
+
     @Test
     void getQuotesByProject_WithValidProject_ReturnsQuotes() {
-        // Given: Project exists with quotes
-        Project project = new Project();
-        project.setProjectIdentifier(projectIdentifier);
-
         Quote quote1 = new Quote();
         quote1.setQuoteNumber("QT-0000001");
 
@@ -206,10 +330,8 @@ class QuoteServiceTest {
         when(quoteRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(List.of(quote1));
         when(quoteMapper.entityToResponseModel(quote1)).thenReturn(responseModel1);
 
-        // When: Get quotes
         List<QuoteResponseModel> results = quoteService.getQuotesByProject(projectIdentifier);
 
-        // Then: Should return quotes
         assertEquals(1, results.size());
         assertEquals("QT-0000001", results.get(0).getQuoteNumber());
         verify(quoteRepository, times(1)).findByProjectIdentifier(projectIdentifier);

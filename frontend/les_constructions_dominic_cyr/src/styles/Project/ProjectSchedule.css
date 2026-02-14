@@ -180,8 +180,9 @@
 }
 
 .rbc-calendar {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
 }
 
 /* Remove empty all-day strip to tighten header-to-hours gap */
@@ -565,8 +566,9 @@
 
 /* Customize react-big-schedule appearance */
 .scheduler-view {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, sans-serif;
 }
 
 .scheduler-view .scheduler-bg-table .scheduler-content td {

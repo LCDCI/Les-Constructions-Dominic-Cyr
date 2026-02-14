@@ -99,6 +99,13 @@
     "errorUpdating": "Erreur lors de la mise à jour du lot : ",
     "unknownError": "Erreur inconnue",
     "projectMissing": "Identifiant du projet manquant. Veuillez rouvrir cette page depuis un projet."
+  },
+  "projectSelection": {
+    "title": "Sélectionner un projet",
+    "close": "Fermer",
+    "loading": "Chargement des projets...",
+    "errorLoading": "Échec du chargement des projets",
+    "retry": "Réessayer",
+    "noProjects": "Aucun projet trouvé"
   }
 }
-

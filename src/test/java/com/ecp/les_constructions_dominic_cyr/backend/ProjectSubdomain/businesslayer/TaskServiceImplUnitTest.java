@@ -1,6 +1,11 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.businesslayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.MailerServiceClient;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.TaskServiceImpl;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskPriority;
@@ -20,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -44,6 +50,15 @@ class TaskServiceImplUnitTest {
 
     @Mock
     private UsersRepository usersRepository;
+
+    @Mock
+    private LotRepository lotRepository;
+
+    @Mock
+    private NotificationService notificationService;
+
+    @Mock
+    private MailerServiceClient mailerServiceClient;
 
     @InjectMocks
     private TaskServiceImpl taskService;
@@ -451,6 +466,107 @@ class TaskServiceImplUnitTest {
     }
 
     @Test
+    void updateTask_shouldSendNotificationsToAssignedLotUsers() {
+        // Setup
+        String taskId = "TASK-001";
+        UUID lotId = UUID.randomUUID();
+        requestDTO.setAssignedToUserId(null); // No user assignment change in this test
+        
+        // Create users
+        Users user1 = new Users();
+        user1.setUserIdentifier(com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier.newId());
+        user1.setFirstName("John");
+        user1.setPrimaryEmail("john@example.com");
+        
+        Users user2 = new Users();
+        user2.setUserIdentifier(com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier.newId());
+        user2.setFirstName("Jane");
+        user2.setPrimaryEmail("jane@example.com");
+        
+        // Create project
+        Project project = new Project();
+        project.setProjectIdentifier("PROJ-001");
+        
+        // Create lot with assigned users and project
+        Lot lot = new Lot();
+        lot.setProject(project);
+        lot.setAssignedUsers(Arrays.asList(user1, user2));
+        
+        // Setup task with lot ID
+        task1.setLotId(lotId);
+        
+        // Mock behavior
+        when(taskRepository.findByTaskIdentifier_TaskId(taskId)).thenReturn(Optional.of(task1));
+        when(taskRepository.save(task1)).thenReturn(task1);
+        when(taskMapper.entityToResponseDTO(task1)).thenReturn(responseDTO1);
+        when(lotRepository.findByLotIdentifier_LotId(lotId)).thenReturn(lot);
+        when(notificationService.createNotification(any(UUID.class), anyString(), anyString(), any(), anyString())).thenReturn(null);
+        when(mailerServiceClient.sendEmail(anyString(), anyString(), anyString(), anyString())).thenReturn(Mono.empty());
+        
+        // Execute
+        TaskDetailResponseDTO result = taskService.updateTask(taskId, requestDTO);
+        
+        // Verify
+        assertNotNull(result);
+        assertEquals("TASK-001", result.getTaskId());
+        
+        // Verify notifications were sent to both users
+        verify(notificationService, times(2)).createNotification(
+            any(UUID.class), 
+            eq("Task Updated"), 
+            anyString(), 
+            any(), 
+            eq("/projects/PROJ-001/lots/" + lotId + "/metadata")
+        );
+        
+        // Verify emails were sent to both users
+        verify(mailerServiceClient, times(2)).sendEmail(
+            anyString(), 
+            eq("Task Updated"), 
+            anyString(), 
+            eq("Les Constructions Dominic Cyr")
+        );
+    }
+
+    @Test
+    void updateTask_shouldHandleNotificationFailureGracefully() {
+        // Setup
+        String taskId = "TASK-001";
+        UUID lotId = UUID.randomUUID();
+        requestDTO.setAssignedToUserId(null); // No user assignment change
+        
+        Users user1 = new Users();
+        user1.setUserIdentifier(com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserIdentifier.newId());
+        user1.setFirstName("John");
+        user1.setPrimaryEmail("john@example.com");
+        
+        Project project = new Project();
+        project.setProjectIdentifier("PROJ-001");
+        
+        Lot lot = new Lot();
+        lot.setProject(project);
+        lot.setAssignedUsers(Arrays.asList(user1));
+        
+        task1.setLotId(lotId);
+        
+        when(taskRepository.findByTaskIdentifier_TaskId(taskId)).thenReturn(Optional.of(task1));
+        when(taskRepository.save(task1)).thenReturn(task1);
+        when(taskMapper.entityToResponseDTO(task1)).thenReturn(responseDTO1);
+        when(lotRepository.findByLotIdentifier_LotId(lotId)).thenReturn(lot);
+        when(notificationService.createNotification(any(UUID.class), anyString(), anyString(), any(), anyString()))
+            .thenThrow(new RuntimeException("Notification service down"));
+        
+        // Execute - should not throw exception
+        TaskDetailResponseDTO result = taskService.updateTask(taskId, requestDTO);
+        
+        // Verify - task update succeeds even if notification fails
+        assertNotNull(result);
+        assertEquals("TASK-001", result.getTaskId());
+        
+        verify(notificationService).createNotification(any(UUID.class), anyString(), anyString(), any(), anyString());
+    }
+
+    @Test
     void deleteTask_shouldDeleteTaskSuccessfully() {
         String taskId = "TASK-001";
 
@@ -698,5 +814,94 @@ class TaskServiceImplUnitTest {
         double progress = testTask.calculateProgress();
 
         assertEquals(100.0, progress, 0.01);
+    }
+
+    @Test
+    void getTasksForUserAssignedLots_shouldReturnTasksForAssignedLots() {
+        String userId = UUID.randomUUID().toString();
+        UUID userUuid = UUID.fromString(userId);
+        UUID lotId1 = UUID.randomUUID();
+        UUID lotId2 = UUID.randomUUID();
+
+        // Setup lots
+        Lot lot1 = new Lot();
+        lot1.setLotIdentifier(new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier(lotId1.toString()));
+        Lot lot2 = new Lot();
+        lot2.setLotIdentifier(new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier(lotId2.toString()));
+
+        List<Lot> assignedLots = Arrays.asList(lot1, lot2);
+
+        // Setup tasks
+        Task task1 = Task.builder()
+                .taskIdentifier(new TaskIdentifier("TASK-001"))
+                .taskTitle("Task 1")
+                .lotId(lotId1)
+                .build();
+        Task task2 = Task.builder()
+                .taskIdentifier(new TaskIdentifier("TASK-002"))
+                .taskTitle("Task 2")
+                .lotId(lotId2)
+                .build();
+
+        List<Task> tasksLot1 = Collections.singletonList(task1);
+        List<Task> tasksLot2 = Collections.singletonList(task2);
+
+        TaskDetailResponseDTO responseDTO1 = TaskDetailResponseDTO.builder()
+                .taskId("TASK-001")
+                .taskTitle("Task 1")
+                .build();
+        TaskDetailResponseDTO responseDTO2 = TaskDetailResponseDTO.builder()
+                .taskId("TASK-002")
+                .taskTitle("Task 2")
+                .build();
+
+        when(lotRepository.findByAssignedUserId(userUuid)).thenReturn(assignedLots);
+        when(taskRepository.findByLotId(lotId1)).thenReturn(tasksLot1);
+        when(taskRepository.findByLotId(lotId2)).thenReturn(tasksLot2);
+        when(taskMapper.entitiesToResponseDTOs(anyList())).thenReturn(Arrays.asList(responseDTO1, responseDTO2));
+
+        List<TaskDetailResponseDTO> result = taskService.getTasksForUserAssignedLots(userId);
+
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        verify(lotRepository).findByAssignedUserId(userUuid);
+        verify(taskRepository).findByLotId(lotId1);
+        verify(taskRepository).findByLotId(lotId2);
+    }
+
+    @Test
+    void getTasksForUserAssignedLots_shouldReturnEmptyListWhenNoAssignedLots() {
+        String userId = UUID.randomUUID().toString();
+        UUID userUuid = UUID.fromString(userId);
+
+        when(lotRepository.findByAssignedUserId(userUuid)).thenReturn(Collections.emptyList());
+
+        List<TaskDetailResponseDTO> result = taskService.getTasksForUserAssignedLots(userId);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(lotRepository).findByAssignedUserId(userUuid);
+        verify(taskRepository, never()).findByLotId(any());
+    }
+
+    @Test
+    void getTasksForUserAssignedLots_shouldReturnEmptyListWhenLotsHaveNoTasks() {
+        String userId = UUID.randomUUID().toString();
+        UUID userUuid = UUID.fromString(userId);
+        UUID lotId1 = UUID.randomUUID();
+
+        Lot lot1 = new Lot();
+        lot1.setLotIdentifier(new com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotIdentifier(lotId1.toString()));
+
+        when(lotRepository.findByAssignedUserId(userUuid)).thenReturn(Collections.singletonList(lot1));
+        when(taskRepository.findByLotId(lotId1)).thenReturn(Collections.emptyList());
+        when(taskMapper.entitiesToResponseDTOs(Collections.emptyList())).thenReturn(Collections.emptyList());
+
+        List<TaskDetailResponseDTO> result = taskService.getTasksForUserAssignedLots(userId);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(lotRepository).findByAssignedUserId(userUuid);
+        verify(taskRepository).findByLotId(lotId1);
     }
 }

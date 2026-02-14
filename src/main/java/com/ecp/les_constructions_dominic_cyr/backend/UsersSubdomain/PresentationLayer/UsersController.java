@@ -107,4 +107,15 @@ public class UsersController {
     public ResponseEntity<List<UserResponseModel>> getActiveCustomers() {
         return ResponseEntity.ok(userService.getActiveCustomers());
     }
+
+    /**
+     * Get active customers that share at least one lot with the authenticated salesperson.
+     * This allows salespersons to only see customers they're working with.
+     */
+    @GetMapping("/customers/shared-lots")
+    public ResponseEntity<List<UserResponseModel>> getCustomersWithSharedLots(
+            @AuthenticationPrincipal Jwt jwt) {
+        String auth0UserId = jwt.getSubject();
+        return ResponseEntity.ok(userService.getCustomersWithSharedLots(auth0UserId));
+    }
 }

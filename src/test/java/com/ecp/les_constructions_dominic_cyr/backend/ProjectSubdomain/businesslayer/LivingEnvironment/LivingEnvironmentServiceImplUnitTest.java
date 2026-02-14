@@ -1,6 +1,7 @@
 
-package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.LivingEnvironment;
+package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.businesslayer.LivingEnvironment;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.LivingEnvironment.LivingEnvironmentServiceImpl;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.LivingEnvironment.LivingEnvironmentContent;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.LivingEnvironment.LivingEnvironmentContentRepository;
 
@@ -158,12 +159,14 @@ class LivingEnvironmentServiceImplUnitTest {
             .thenReturn(Optional.empty());
         when(repository.findByProjectIdentifierAndLanguage("proj-404-content", "fr"))
             .thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> service.getLivingEnvironment("proj-404-content", "fr"));
+        assertThrows(com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException.class,
+            () -> service.getLivingEnvironment("proj-404-content", "fr"));
     }
 
     @Test
     void getLivingEnvironment_Negative_NotFound() {
         when(projectRepository.findByProjectIdentifier("proj-404")).thenReturn(Optional.empty());
-        assertThrows(RuntimeException.class, () -> service.getLivingEnvironment("proj-404", "en"));
+        assertThrows(com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException.class,
+            () -> service.getLivingEnvironment("proj-404", "en"));
     }
 }

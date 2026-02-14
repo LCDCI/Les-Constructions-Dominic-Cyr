@@ -153,12 +153,20 @@ public class SecurityConfig {
                         // =================================================================
                         // 2. SHARED ROLES (Specific Permissions for Multiple Roles)
                         // =================================================================
+                        
+                        // Customer and Salesperson Task Access - MUST come BEFORE generic task rules
+                        .requestMatchers("/api/v1/customers/tasks").hasAuthority("ROLE_CUSTOMER")
+                        .requestMatchers("/api/v1/salesperson/tasks").hasAuthority("ROLE_SALESPERSON")
+                        
                         // Task Management (Owners & Contractors)
                         .requestMatchers(HttpMethod.PUT, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/tasks/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/owners/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
+                        
+                        // Schedule Tasks - Allow GET for all authenticated users (filtered by schedule access)
+                        .requestMatchers(HttpMethod.GET, "/api/v1/schedules/*/tasks/**").authenticated()
                         .requestMatchers("/api/v1/schedules/*/tasks/**").hasAnyAuthority("ROLE_OWNER", "ROLE_CONTRACTOR")
 
                         // =================================================================
