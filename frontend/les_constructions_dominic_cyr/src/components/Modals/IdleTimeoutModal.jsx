@@ -11,7 +11,7 @@ export default function IdleTimeoutModal({
   const seconds = remainingSeconds % 60;
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true">
+    <div className="modal-overlay idle-modal" role="dialog" aria-modal="true">
       <div className="modal-content">
         <div
           style={{

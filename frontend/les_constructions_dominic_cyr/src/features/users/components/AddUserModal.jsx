@@ -49,10 +49,7 @@ export default function AddUserModal({
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">
             <label>
-              <div className="label-row">
-                <span>First Name</span>
-                <span className="required">*</span>
-              </div>
+              <span>First Name<span className="required">*</span></span>
               <input
                 type="text"
                 value={firstName}
@@ -61,10 +58,7 @@ export default function AddUserModal({
               />
             </label>
             <label>
-              <div className="label-row">
-                <span>Last Name</span>
-                <span className="required">*</span>
-              </div>
+              <span>Last Name<span className="required">*</span></span>
               <input
                 type="text"
                 value={lastName}
@@ -76,10 +70,7 @@ export default function AddUserModal({
 
           <div className="form-row">
             <label>
-              <div className="label-row">
-                <span>Primary Email</span>
-                <span className="required">*</span>
-              </div>
+              <span>Primary Email<span className="required">*</span></span>
               <input
                 type="email"
                 value={primaryEmail}
@@ -88,9 +79,7 @@ export default function AddUserModal({
               />
             </label>
             <label>
-              <div className="label-row">
-                <span>Secondary Email</span>
-              </div>
+              <span>Secondary Email</span>
               <input
                 type="email"
                 value={secondaryEmail}
@@ -101,10 +90,7 @@ export default function AddUserModal({
 
           <div className="form-row">
             <label>
-              <div className="label-row">
-                <span>Phone</span>
-                <span className="required">*</span>
-              </div>
+              <span>Phone<span className="required">*</span></span>
               <input
                 type="tel"
                 value={phone}
@@ -114,10 +100,7 @@ export default function AddUserModal({
             </label>
 
             <label>
-              <div className="label-row">
-                <span>Role</span>
-                <span className="required">*</span>
-              </div>
+              <span>Role<span className="required">*</span></span>
               <select
                 value={userRole}
                 onChange={e => setUserRole(e.target.value)}

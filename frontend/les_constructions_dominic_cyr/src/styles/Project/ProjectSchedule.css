@@ -1048,16 +1048,13 @@
 
 .modal-secondary {
   padding: 10px 16px;
-  background: #e5e7eb;
-  color: #1f2937;
-  border: 1px solid #cbd5e1;
   border-radius: 8px;
   cursor: pointer;
+  /* Uses global.css button token system */
 }
 
 .modal-secondary:hover:not(:disabled) {
-  background: #d1d5db;
-  border-color: #9ca3af;
+  /* Uses global.css button hover token */
 }
 
 /* Task details page */

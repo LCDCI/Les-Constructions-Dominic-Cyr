@@ -41,7 +41,7 @@ export default function UserStatusModal({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+      <div className="modal-content status-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Manage User Status</h2>
           <button className="modal-close" onClick={onClose}>

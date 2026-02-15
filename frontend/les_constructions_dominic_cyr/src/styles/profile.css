@@ -36,7 +36,7 @@
 }
 
 .edit-button:hover {
-  background-color: #4a90a4;
+  background-color: #aab2a6;
 }
 
 .profile-content {
@@ -94,8 +94,8 @@
 
 .profile-input:focus {
   outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: #aab2a6;
+  box-shadow: 0 0 0 3px rgba(170, 178, 166, 0.15);
 }
 
 .field-note {
@@ -115,8 +115,8 @@
 
 .save-button {
   padding: 10px 24px;
-  background-color: #2563eb;
-  color: white;
+  background-color: #aab2a6 !important;
+  color: white !important;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -126,18 +126,18 @@
 }
 
 .save-button:hover:not(:disabled) {
-  background-color: #1d4ed8;
+  background-color: #8a9287 !important;
 }
 
 .save-button:disabled {
-  background-color: #9ca3af;
+  background-color: #9ca3af !important;
   cursor: not-allowed;
 }
 
 .cancel-button {
   padding: 10px 24px;
-  background-color: #6b7280;
-  color: white;
+  background-color: #e5e7eb !important;
+  color: #1f2937 !important;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -147,11 +147,11 @@
 }
 
 .cancel-button:hover:not(:disabled) {
-  background-color: #4b5563;
+  background-color: #d1d5db !important;
 }
 
 .cancel-button:disabled {
-  background-color: #9ca3af;
+  background-color: #9ca3af !important;
   cursor: not-allowed;
 }
 

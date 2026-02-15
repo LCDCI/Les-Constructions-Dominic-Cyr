@@ -251,16 +251,15 @@
 }
 
 .btn-secondary {
-  background: #e5e7eb;
-  color: #1f2937;
+  /* Uses global.css button token system */
 }
 
 .btn-secondary:hover {
-  background: #d1d5db;
+  /* Uses global.css button hover token */
 }
 
 .btn-danger {
-  background: #d32f2f;
+  /* Uses global.css danger button token system */
   color: white;
 }
 

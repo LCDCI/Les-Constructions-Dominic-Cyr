@@ -80,30 +80,16 @@
 /* Cancel Button */
 .btn-cancel {
   padding: 10px 20px;
-  border: 1px solid #cbd5e1;
-  background-color: #e5e7eb;
-  color: #1f2937;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-}
-
-.btn-cancel.btn-stay-on-form {
-  background-color: #e5e7eb;
-  border-color: #cbd5e1;
-  color: #1f2937;
+  /* Uses global.css button token system */
 }
 
 .btn-cancel:hover {
-  background-color: #d1d5db;
-  border-color: #9ca3af;
-}
-
-.btn-cancel.btn-stay-on-form:hover {
-  background-color: #d1d5db;
-  border-color: #9ca3af;
+  /* Uses global.css button hover token */
 }
 
 /* Confirm Button (Non-destructive) */
