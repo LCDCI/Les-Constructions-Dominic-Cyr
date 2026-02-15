@@ -917,8 +917,7 @@ const QuoteFormPage = () => {
 
               <div className="preview-section">
                 <h3>Items</h3>
-                <table className="preview-table">
-                  <caption className="sr-only">Quote items</caption>
+                <table className="preview-table" aria-label="Quote items">
                   <thead>
                     <tr>
                       <th>Description</th>
