@@ -70,7 +70,7 @@ const LotDocumentsPage = () => {
     if (lotId && canViewForms) {
       loadFinalizedForms();
     }
-  }, [lotId, canViewForms]);
+  }, [lotId, canViewForms, loadFinalizedForms]);
 
   useEffect(() => {
     // Load images with authentication
