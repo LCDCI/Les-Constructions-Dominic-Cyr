@@ -292,7 +292,6 @@ const CustomerFormsPage = () => {
       setForms(filteredForms);
       setLoading(false);
     } catch (error) {
-      console.error(`[fetchForms] Error:`, error);
       setForms([]);
       setLoading(false);
     }
