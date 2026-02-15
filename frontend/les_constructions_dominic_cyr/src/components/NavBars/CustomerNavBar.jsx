@@ -166,6 +166,20 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
+                  to="/customer/quotes/approval"
+                  className={`navbar-link ${isActive('/customer/quotes/approval')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoFileDiff />
+                  </span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.quotes', 'Quotes')}
+                  </span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
                   to="/projects"
                   className={`navbar-link ${isActive('/projects')}`}
                   onClick={closeMenu}

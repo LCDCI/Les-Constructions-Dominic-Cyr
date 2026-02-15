@@ -1,12 +1,12 @@
 {
   "quote": {
-    "bills": "Factures",
-    "billEstimate": "Estimation de facture",
-    "billNumber": "NUMÉRO DE FACTURE",
-    "createNewBill": "Créer une nouvelle facture",
-    "searchBills": "Rechercher dans les factures",
-    "noBills": "Aucune facture trouvée",
-    "noBillsDesc": "Créez votre première estimation de facture pour commencer",
+    "bills": "Devis",
+    "billEstimate": "Estimation de devis",
+    "billNumber": "NUMÉRO DE DEVIS",
+    "createNewBill": "Créer un nouveau devis",
+    "searchBills": "Rechercher dans les devis",
+    "noBills": "Aucun devis trouvé",
+    "noBillsDesc": "Créez votre premier devis pour commencer",
     "selectLot": "Sélectionner un lot",
     "chooseLot": "Choisir un lot...",
     "noLotsAvailable": "Aucun lot disponible",
@@ -30,7 +30,8 @@
     "itemDetails": "Détails des articles",
     "addItem": "Ajouter un article",
     "hours": "Heures",
-    "rate": "Taux ($/h)",
+    "rate": "Taux",
+    "qty": "Qté",
     "total": "Total",
     "subtotal": "Sous-total",
     "discount": "Rabais",
@@ -57,8 +58,8 @@
     "noProjectsOwner": "Aucun projet disponible.",
     "subtitleContractor": "Voir et gérer vos factures",
     "subtitleOwner": "Voir toutes les factures de vos projets",
-    "createBillEstimate": "Créer une estimation de facture",
-    "newBill": "Nouvelle facture",
+    "createBillEstimate": "Créer une estimation de devis",
+    "newBill": "Nouveau devis",
     "confirmed": "Confirmé",
     "auto": "Généré automatiquement",
     "issuedDate": "Date d'émission",
@@ -68,21 +69,93 @@
     "preview": "Aperçu",
     "createQuote": "Créer une facture",
     "sendFinalInvoice": "Envoyer la facture finale",
-    "common": {
-      "cancel": "Annuler",
-      "back": "Retour",
-      "goBack": "Retour",
-      "submitting": "Envoi en cours..."
+    "rejectionInfo": "Information de rejet",
+    "number": "Devis #",
+    "details": "Détails du devis",
+    "created": "Créé",
+    "projectInfo": "Information du projet",
+    "contractor": "Entrepreneur",
+    "noItems": "Aucun article",
+    "approvalInfo": "Information d'approbation",
+    "approvedDate": "Date d'approbation",
+    "approvedBy": "Approuvé par",
+    "approval": {
+      "submitted": "Soumis",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "ownerApproved": "Approuvé par le propriétaire",
+      "customerApproved": "Approuvé par le client",
+      "rejectionReason": "Raison du rejet",
+      "approveSuccess": "Devis approuvé avec succès",
+      "rejectSuccess": "Devis rejeté avec succès",
+      "title": "Approbation des devis",
+      "subtitle": "Examiner et gérer les devis des entrepreneurs",
+      "searchPlaceholder": "Devis #, Projet, Entrepreneur...",
+      "approve": "Approuver",
+      "reject": "Rejeter"
     },
-    "errors": {
-      "descriptionRequired": "Description requise",
-      "hoursInvalid": "Doit être > 0",
-      "rateInvalid": "Doit être >= 0",
-      "fixErrors": "Veuillez corriger les erreurs dans le formulaire",
-      "noLot": "Aucun lot sélectionné",
-      "createFailed": "Échec de la création de la facture",
-      "atLeastOneItem": "Veuillez ajouter au moins un article à la facture",
-      "notAssignedToLot": "Vous n'êtes pas assigné à ce lot."
-    }
+    "noQuotes": "Aucun devis trouvé correspondant à vos filtres."
+  },
+  "customerApproval": {
+    "title": "Approbation de devis",
+    "subtitle": "Examinez et approuvez les devis pour vos lots",
+    "noQuotes": "Aucun devis en attente d'approbation",
+    "noQuotesDescription": "Tous les devis ont été examinés. Revenez plus tard pour de nouveaux devis.",
+    "modalTitle": "Approuver le devis",
+    "infoMessage": "En approuvant ce devis, vous confirmez avoir pris connaissance des détails et acceptez de procéder aux travaux tels que décrits.",
+      "acknowledgmentText": "Je reconnais avoir pris connaissance de ce devis et j'approuve les travaux.",
+      "acknowledgmentRequired": "Veuillez confirmer que vous avez pris connaissance du devis",
+      "paymentInfo": {
+        "title": "Facturation et Paiement Officiels",
+        "description": "Toute la facturation et les paiements officiels sont traités via notre plateforme partenaire sécurisée. Veuillez créer un compte pour gérer vos factures.",
+        "button": "Accéder au portail de paiement"
+      }
+  },
+  "table": {
+    "quoteNumber": "Devis #",
+    "project": "Projet",
+    "lot": "Lot",
+    "totalAmount": "Montant total",
+    "ownerApprovedAt": "Approuvé par le propriétaire",
+    "actions": "Actions"
+  },
+  "actions": {
+    "refresh": "Actualiser",
+    "retry": "Réessayer",
+    "viewDetails": "Voir détails",
+    "approve": "Approuver"
+  },
+  "search": {
+    "placeholder": "Rechercher par numéro de devis, projet ou lot..."
+  },
+  "loading": {
+    "quotes": "Chargement des devis..."
+  },
+  "errors": {
+    "tokenFetch": "Échec de la récupération du jeton d'authentification",
+    "fetchQuotes": "Échec du chargement des devis. Veuillez réessayer.",
+    "approvalFailed": "Échec de l'approbation du devis. Veuillez réessayer."
+  },
+  "notifications": {
+    "customerApprovalSuccess": "Devis approuvé avec succès !"
+  },
+  "common": {
+    "cancel": "Annuler",
+    "back": "Retour",
+    "goBack": "Retour",
+    "submitting": "Envoi en cours...",
+    "loading": "Chargement...",
+    "processing": "Traitement...",
+    "search": "Rechercher",
+    "status": "Statut",
+    "all": "All",
+    "refresh": "Actualiser",
+    "actions": "Actions",
+    "view": "Voir",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "error": "Erreur",
+    "success": "Succès",
+    "tryAgain": "Réessayer"
   }
 }

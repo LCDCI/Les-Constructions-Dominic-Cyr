@@ -373,9 +373,9 @@ const QuoteFormPage = () => {
         {/* Header */}
         <div className="form-header">
           <div className="header-left">
-            <h1>{t('quote.createBillEstimate') || 'Create Bill Estimate'}</h1>
+            <h1>{t('quote.createBillEstimate') || 'Create Quote Estimate'}</h1>
             <p className="bill-number-label">
-              {t('quote.newBill') || 'New Bill'}:{' '}
+              {t('quote.newBill') || 'New Quote'}:{' '}
               <span className="bill-number-value">QT-XXXXXX</span>
             </p>
           </div>
@@ -402,12 +402,12 @@ const QuoteFormPage = () => {
 
         <div className="form-body-grid">
           <div className="form-main">
-            {/* Bill Details Section */}
+            {/* Quote Details Section */}
             <div className="bill-details-section">
-              <h2 className="section-heading">Bill Details</h2>
+              <h2 className="section-heading">Quote Details</h2>
               <div className="details-grid details-grid-3">
                 <div className="detail-item">
-                  <label>{t('quote.billNumber') || 'Bill Number'}</label>
+                  <label>{t('quote.billNumber') || 'Quote Number'}</label>
                   <p className="detail-value">
                     {generatedQuoteNumber || 'QT-XXXXXX'}
                   </p>
@@ -769,56 +769,6 @@ const QuoteFormPage = () => {
           </aside>
         </div>
 
-        {/* Totals Section */}
-        <div className="totals-section">
-          <div className="totals-row">
-            <span className="totals-label">
-              {t('quote.subtotal') || 'Subtotal'}
-            </span>
-            <span className="totals-value">${subtotal.toFixed(2)}</span>
-          </div>
-          <div className="totals-row discount-row">
-            <span className="totals-label">
-              {t('quote.discount') || 'Discount'} ({discountPercentage}%)
-            </span>
-            <div className="totals-input-group">
-              <span>-${discount.toFixed(2)}</span>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                value={discountPercentage}
-                onChange={e =>
-                  setDiscountPercentage(
-                    Math.max(0, Math.min(100, parseFloat(e.target.value) || 0))
-                  )
-                }
-                className="totals-input"
-              />
-            </div>
-          </div>
-          <div className="totals-row tax-row">
-            <span className="totals-label">
-              {t('quote.gst') || 'GST'} ({gstPercentage}%)
-            </span>
-            <div className="totals-input-group">
-              <span>+${gst.toFixed(2)}</span>
-            </div>
-          </div>
-          <div className="totals-row tax-row">
-            <span className="totals-label">
-              {t('quote.qst') || 'QST'} ({qstPercentage}%)
-            </span>
-            <div className="totals-input-group">
-              <span>+${qst.toFixed(2)}</span>
-            </div>
-          </div>
-          <div className="totals-row totals-total">
-            <span className="totals-label">{t('quote.total') || 'Total'}</span>
-            <span className="totals-value">${total.toFixed(2)}</span>
-          </div>
-        </div>
-
         {/* Action Buttons */}
         <div className="form-actions">
           <button
@@ -834,7 +784,7 @@ const QuoteFormPage = () => {
               onClick={handleCancel}
               className="btn btn-secondary"
             >
-              {t('quote.common.cancel') || 'Cancel'}
+              {t('common.cancel') || 'Cancel'}
             </button>
             <button
               type="submit"
@@ -842,7 +792,7 @@ const QuoteFormPage = () => {
               className="btn btn-primary"
             >
               {isSubmitting
-                ? t('quote.common.submitting') || 'Submitting...'
+                ? t('common.submitting') || 'Submitting...'
                 : t('quote.createQuote') || 'Create Quote'}
             </button>
           </div>

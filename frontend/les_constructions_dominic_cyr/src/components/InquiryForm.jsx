@@ -104,7 +104,7 @@ export default function InquiryForm({ onSuccess, className }) {
     setLoading(true);
     setStatus({ message: '', type: '' });
     try {
-      const res = await fetch('/api/inquiries', {
+      const res = await fetch('/api/v1/inquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

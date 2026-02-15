@@ -22,6 +22,7 @@ const QuoteDetailPage = () => {
   const [error, setError] = useState(null);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [projectInfo, setProjectInfo] = useState(null);
+  const [approvedByName, setApprovedByName] = useState('');
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -75,6 +76,34 @@ const QuoteDetailPage = () => {
             }
           } catch (err) {
             console.error('Error fetching project info:', err);
+          }
+        }
+
+        // Fetch Approver Name
+        if (quote.approvedBy) {
+          try {
+            // Check if it looks like an Auth0 ID (contains '|')
+            if (quote.approvedBy.includes('|')) {
+              const encodedId = encodeURIComponent(quote.approvedBy);
+              const userResponse = await axios.get(
+                `/api/v1/users/auth0/${encodedId}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                }
+              );
+              if (userResponse.data) {
+                const userData = userResponse.data;
+                setApprovedByName(
+                  `${userData.firstName} ${userData.lastName || ''}`.trim()
+                );
+              }
+            } else {
+              // If not an Auth0 ID, display as is (might be 'System' or similar)
+              setApprovedByName(quote.approvedBy);
+            }
+          } catch (err) {
+            console.warn('Error fetching approver info:', err);
+            setApprovedByName(quote.approvedBy); // Fallback to ID on error
           }
         }
       } catch (err) {
@@ -144,13 +173,13 @@ const QuoteDetailPage = () => {
         <div className="quote-detail-container">
           <div className="detail-header">
             <button className="btn btn-back" onClick={handleBack}>
-              <MdArrowBack /> {t('quote.common.back') || 'Back'}
+              <MdArrowBack /> {t('common.back') || 'Back'}
             </button>
           </div>
           <div className="empty-state">
             <h3>{t('quote.notFound') || 'Quote not found'}</h3>
             <button className="btn btn-primary" onClick={handleBack}>
-              {t('quote.common.goBack') || 'Go Back'}
+              {t('common.goBack') || 'Go Back'}
             </button>
           </div>
         </div>
@@ -205,7 +234,7 @@ const QuoteDetailPage = () => {
         {/* Quote Header */}
         <div className="quote-header-section">
           <div className="quote-title">
-            <h1>{t('quote.billEstimate') || 'Bill Estimate'}</h1>
+            <h1>{t('quote.billEstimate') || 'Quote Estimate'}</h1>
             <span className="quote-number">{quote.quoteNumber}</span>
           </div>
           <div className="quote-meta">
@@ -321,6 +350,59 @@ const QuoteDetailPage = () => {
           <div className="quote-notes-section">
             <h3>{t('quote.notes') || 'Notes'}</h3>
             <p>{quote.notes}</p>
+          </div>
+        )}
+
+        {/* Approval Status Section */}
+        {quote.status && (
+          <div
+            className={`approval-status-section status-${quote.status.toLowerCase()}`}
+          >
+            <h3>{t('quote.approvalStatus') || 'Approval Status'}</h3>
+            <div className="status-detail">
+              <div className="status-info">
+                <span className="status-label">
+                  {t('quote.currentStatus') || 'Current Status'}
+                </span>
+                <span
+                  className={`status-badge status-${quote.status.toLowerCase()}`}
+                >
+                  {quote.status}
+                </span>
+              </div>
+              {quote.approvedBy && (
+                <div className="status-info">
+                  <span className="status-label">
+                    {t('quote.approvedBy') || 'Approved By'}
+                  </span>
+                  <span className="status-value">{quote.approvedBy}</span>
+                </div>
+              )}
+              {quote.approvedAt && (
+                <div className="status-info">
+                  <span className="status-label">
+                    {t('quote.approvedDate') || 'Approved Date'}
+                  </span>
+                  <span className="status-value">
+                    {new Date(quote.approvedAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+              )}
+              {quote.rejectionReason && (
+                <div className="status-info rejection-reason">
+                  <span className="status-label">
+                    {t('quote.rejectionReason') || 'Rejection Reason'}
+                  </span>
+                  <p className="reason-text">{quote.rejectionReason}</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

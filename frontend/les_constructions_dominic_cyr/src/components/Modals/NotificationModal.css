@@ -1,0 +1,136 @@
+/* Notification Modal Styles */
+
+.notification-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.notification-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px 24px 24px;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease-out;
+  text-align: center;
+}
+
+.close-button-absolute {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button-absolute:hover {
+  background-color: #f1f5f9;
+  color: #64748b;
+}
+
+.notification-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.notification-icon {
+  font-size: 48px;
+}
+
+.notification-icon.success {
+  color: #10b981;
+}
+
+.notification-icon.error {
+  color: #ef4444;
+}
+
+.notification-icon.info {
+  color: #3b82f6;
+}
+
+.notification-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.notification-title.success {
+  color: #065f46;
+}
+
+.notification-title.error {
+  color: #991b1b;
+}
+
+.notification-title.info {
+  color: #1e40af;
+}
+
+.notification-message {
+  font-size: 15px;
+  color: #475569;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.btn-primary {
+  background: #1e293b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.btn-primary:hover {
+  background: #0f172a;
+  transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

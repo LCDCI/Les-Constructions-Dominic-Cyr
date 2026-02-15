@@ -1,10 +1,24 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -45,17 +59,14 @@ public class Quote {
     @Column(name = "contractor_id", nullable = false)
     private String contractorId;
 
-    @OneToMany(
-        mappedBy = "quote",
-        cascade = CascadeType.ALL,
-        orphanRemoval = true,
-        fetch = FetchType.EAGER
-    )
+    @Builder.Default
+    @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<QuoteLineItem> lineItems = new ArrayList<>();
 
     /**
      * Total amount auto-calculated from all line items.
-     * Precision: DECIMAL(15,2) for currency (supports up to 13 digits before decimal).
+     * Precision: DECIMAL(15,2) for currency (supports up to 13 digits before
+     * decimal).
      */
     @Column(name = "total_amount", nullable = false, columnDefinition = "DECIMAL(15,2) DEFAULT 0.00")
     private BigDecimal totalAmount;
@@ -67,6 +78,51 @@ public class Quote {
     private LocalDateTime updatedAt;
 
     /**
+     * Quote status: SUBMITTED (pending approval), APPROVED, or REJECTED
+     * Default: SUBMITTED
+     */
+    @Column(name = "status", nullable = false, length = 20)
+    @Builder.Default
+    private String status = "SUBMITTED";
+
+    /**
+     * Reason for rejection (only populated if status is REJECTED)
+     */
+    @Column(name = "rejection_reason", nullable = true, length = 500)
+    private String rejectionReason;
+
+    /**
+     * Timestamp when the quote was approved or rejected
+     */
+    @Column(name = "approved_at", nullable = true)
+    private LocalDateTime approvedAt;
+
+    /**
+     * ID of the owner who approved or rejected the quote
+     */
+    @Column(name = "approved_by", nullable = true)
+    private String approvedBy;
+
+    /**
+     * Timestamp when the customer approved the quote
+     */
+    @Column(name = "customer_approved_at", nullable = true)
+    private LocalDateTime customerApprovedAt;
+
+    /**
+     * Auth0 ID of the customer who approved the quote
+     */
+    @Column(name = "customer_approved_by", nullable = true)
+    private String customerApprovedBy;
+
+    /**
+     * Flag indicating customer has acknowledged and read the quote
+     */
+    @Column(name = "customer_acknowledged", nullable = true)
+    @Builder.Default
+    private Boolean customerAcknowledged = false;
+
+    /**
      * Lifecycle hooks to automatically manage timestamps.
      */
     @PrePersist
@@ -75,6 +131,9 @@ public class Quote {
         updatedAt = LocalDateTime.now();
         if (totalAmount == null) {
             totalAmount = BigDecimal.ZERO;
+        }
+        if (status == null) {
+            status = "SUBMITTED";
         }
     }
 
@@ -92,8 +151,8 @@ public class Quote {
             this.totalAmount = BigDecimal.ZERO;
         } else {
             this.totalAmount = lineItems.stream()
-                .map(QuoteLineItem::getLineTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    .map(QuoteLineItem::getLineTotal)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
         }
     }
 }

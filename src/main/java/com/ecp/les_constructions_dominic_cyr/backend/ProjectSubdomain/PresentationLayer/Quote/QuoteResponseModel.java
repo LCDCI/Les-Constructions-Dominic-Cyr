@@ -39,6 +39,41 @@ public class QuoteResponseModel {
 
     private LocalDateTime updatedAt;
 
+    /**
+     * Quote status: SUBMITTED (pending approval), APPROVED, or REJECTED
+     */
+    private String status;
+
+    /**
+     * Reason for rejection (only populated if status is REJECTED)
+     */
+    private String rejectionReason;
+
+    /**
+     * Timestamp when the quote was approved or rejected
+     */
+    private LocalDateTime approvedAt;
+
+    /**
+     * ID of the owner who approved or rejected the quote
+     */
+    private String approvedBy;
+
+    /**
+     * Timestamp when the customer approved the quote
+     */
+    private LocalDateTime customerApprovedAt;
+
+    /**
+     * Auth0 ID of the customer who approved the quote
+     */
+    private String customerApprovedBy;
+
+    /**
+     * Flag indicating customer has acknowledged and read the quote
+     */
+    private Boolean customerAcknowledged;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
