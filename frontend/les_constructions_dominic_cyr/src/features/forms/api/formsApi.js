@@ -34,11 +34,9 @@ export async function getAllForms(token) {
  * @param {string} token - Auth token
  */
 export async function getMyForms(token) {
-  console.log(`[getMyForms] Fetching forms from /forms/my-forms`);
   const response = await axios.get(`${API_BASE}/forms/my-forms`, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
-  console.log(`[getMyForms] Received ${response.data?.length || 0} forms`);
   return response.data;
 }
 
@@ -68,7 +66,6 @@ export async function getFormById(formId, token) {
  * @param {string} token - Auth token
  */
 export async function updateFormData(formId, payload, token) {
-  console.log(`[updateFormData] Sending payload to /forms/${formId}/data:`, payload);
   const response = await axios.put(
     `${API_BASE}/forms/${formId}/data`,
     payload,
@@ -76,7 +73,6 @@ export async function updateFormData(formId, payload, token) {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     }
   );
-  console.log(`[updateFormData] Response received:`, response.data);
   return response.data;
 }
 

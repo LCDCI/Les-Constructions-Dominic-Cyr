@@ -281,7 +281,6 @@ const CustomerFormsPage = () => {
       });
 
       const formsData = await getMyForms(token);
-      console.log(`[fetchForms] Raw formsData received:`, formsData);
       
       // Filter forms by projectId and lotId from URL params
       const filteredForms =
@@ -289,12 +288,6 @@ const CustomerFormsPage = () => {
           form =>
             form.projectIdentifier === projectId && form.lotIdentifier === lotId
         ) || [];
-      
-      console.log(`[fetchForms] Filtered forms (${filteredForms.length}):`, filteredForms.map(f => ({ 
-        formId: f.formId, 
-        type: f.formType, 
-        status: f.formStatus 
-      })));
       
       setForms(filteredForms);
       setLoading(false);
@@ -374,24 +367,16 @@ const CustomerFormsPage = () => {
         },
       });
 
-      console.log(`[handleSubmitForm] Submitting form ${selectedForm.formId} with isSubmitting=true`);
       const submitResponse = await updateFormData(
         selectedForm.formId,
         { formData, isSubmitting: true },
         token
       );
-      console.log(`[handleSubmitForm] Form status after submission:`, submitResponse?.formStatus);
 
       setIsEditModalOpen(false);
       setSelectedForm(null);
       setFormData({});
-      console.log(`[handleSubmitForm] Refreshing forms list...`);
       await fetchForms();
-      console.log(`[handleSubmitForm] Forms list refreshed`);
-    } catch (error) {
-      if (error?.response?.status === 404) {
-        redirectToError(404);
-      } else if (error?.response?.data?.message) {
         setSubmitError(error.response.data.message);
       } else {
         setSubmitError('Failed to submit form. Please try again.');

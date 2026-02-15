@@ -506,63 +506,65 @@ public class FormController {
         Document document = new Document(pdfDocument);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        document.add(new Paragraph("Finalized Form").setBold().setFontSize(18));
-        document.add(new Paragraph(" "));
+        try {
+            document.add(new Paragraph("Finalized Form").setBold().setFontSize(18));
+            document.add(new Paragraph(" "));
 
-        document.add(new Paragraph("Form Summary").setBold().setFontSize(14));
-        document.add(new Paragraph("Form Type: " + formatFormType(form.getFormType())));
-        document.add(new Paragraph("Form ID: " + form.getFormId()));
-        document.add(new Paragraph("Status: " + String.valueOf(form.getFormStatus())));
-        document.add(new Paragraph("Project: " + form.getProjectIdentifier()));
-        document.add(new Paragraph("Lot: " + form.getLotIdentifier()));
-        document.add(new Paragraph(" "));
+            document.add(new Paragraph("Form Summary").setBold().setFontSize(14));
+            document.add(new Paragraph("Form Type: " + formatFormType(form.getFormType())));
+            document.add(new Paragraph("Form ID: " + form.getFormId()));
+            document.add(new Paragraph("Status: " + String.valueOf(form.getFormStatus())));
+            document.add(new Paragraph("Project: " + form.getProjectIdentifier()));
+            document.add(new Paragraph("Lot: " + form.getLotIdentifier()));
+            document.add(new Paragraph(" "));
 
-        document.add(new Paragraph("Customer Details").setBold().setFontSize(14));
-        document.add(new Paragraph("Customer Name: " + safeValue(form.getCustomerName())));
-        document.add(new Paragraph("Customer Email: " + safeValue(form.getCustomerEmail())));
-        document.add(new Paragraph("Customer ID: " + safeValue(form.getCustomerId())));
-        document.add(new Paragraph(" "));
+            document.add(new Paragraph("Customer Details").setBold().setFontSize(14));
+            document.add(new Paragraph("Customer Name: " + safeValue(form.getCustomerName())));
+            document.add(new Paragraph("Customer Email: " + safeValue(form.getCustomerEmail())));
+            document.add(new Paragraph("Customer ID: " + safeValue(form.getCustomerId())));
+            document.add(new Paragraph(" "));
 
-        document.add(new Paragraph("Assignment Details").setBold().setFontSize(14));
-        document.add(new Paragraph("Assigned By: " + safeValue(form.getAssignedByName())));
-        document.add(new Paragraph("Assigned By ID: " + safeValue(form.getAssignedByUserId())));
-        document.add(new Paragraph("Assigned Date: " + safeValue(form.getAssignedDate())));
-        if (form.getInstructions() != null && !form.getInstructions().isEmpty()) {
-            document.add(new Paragraph("Instructions: " + form.getInstructions()));
-        }
-        document.add(new Paragraph(" "));
-
-        document.add(new Paragraph("Timeline").setBold().setFontSize(14));
-        document.add(new Paragraph("First Submitted: " + safeValue(form.getFirstSubmittedDate())));
-        document.add(new Paragraph("Last Submitted: " + safeValue(form.getLastSubmittedDate())));
-        document.add(new Paragraph("Completed: " + safeValue(form.getCompletedDate())));
-        if (form.getReopenedDate() != null) {
-            document.add(new Paragraph("Reopened Date: " + safeValue(form.getReopenedDate())));
-            document.add(new Paragraph("Reopened By: " + safeValue(form.getReopenedByUserId())));
-            document.add(new Paragraph("Reopen Reason: " + safeValue(form.getReopenReason())));
-        }
-        document.add(new Paragraph(" "));
-
-        document.add(new Paragraph("Form Data").setBold().setFontSize(14));
-        Table table = new Table(2).useAllAvailableWidth();
-        table.addHeaderCell(new Cell().add(new Paragraph("Field").setBold()));
-        table.addHeaderCell(new Cell().add(new Paragraph("Value").setBold()));
-
-        if (form.getFormData() != null && !form.getFormData().isEmpty()) {
-            for (Map.Entry<String, Object> entry : form.getFormData().entrySet()) {
-                String value = stringifyValue(entry.getValue(), objectMapper);
-                table.addCell(new Cell().add(new Paragraph(entry.getKey())));
-                table.addCell(new Cell().add(new Paragraph(value)));
+            document.add(new Paragraph("Assignment Details").setBold().setFontSize(14));
+            document.add(new Paragraph("Assigned By: " + safeValue(form.getAssignedByName())));
+            document.add(new Paragraph("Assigned By ID: " + safeValue(form.getAssignedByUserId())));
+            document.add(new Paragraph("Assigned Date: " + safeValue(form.getAssignedDate())));
+            if (form.getInstructions() != null && !form.getInstructions().isEmpty()) {
+                document.add(new Paragraph("Instructions: " + form.getInstructions()));
             }
-        } else {
-            table.addCell(new Cell().add(new Paragraph("(No data)")));
-            table.addCell(new Cell().add(new Paragraph("")));
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph("Timeline").setBold().setFontSize(14));
+            document.add(new Paragraph("First Submitted: " + safeValue(form.getFirstSubmittedDate())));
+            document.add(new Paragraph("Last Submitted: " + safeValue(form.getLastSubmittedDate())));
+            document.add(new Paragraph("Completed: " + safeValue(form.getCompletedDate())));
+            if (form.getReopenedDate() != null) {
+                document.add(new Paragraph("Reopened Date: " + safeValue(form.getReopenedDate())));
+                document.add(new Paragraph("Reopened By: " + safeValue(form.getReopenedByUserId())));
+                document.add(new Paragraph("Reopen Reason: " + safeValue(form.getReopenReason())));
+            }
+            document.add(new Paragraph(" "));
+
+            document.add(new Paragraph("Form Data").setBold().setFontSize(14));
+            Table table = new Table(2).useAllAvailableWidth();
+            table.addHeaderCell(new Cell().add(new Paragraph("Field").setBold()));
+            table.addHeaderCell(new Cell().add(new Paragraph("Value").setBold()));
+
+            if (form.getFormData() != null && !form.getFormData().isEmpty()) {
+                for (Map.Entry<String, Object> entry : form.getFormData().entrySet()) {
+                    String value = stringifyValue(entry.getValue(), objectMapper);
+                    table.addCell(new Cell().add(new Paragraph(entry.getKey())));
+                    table.addCell(new Cell().add(new Paragraph(value)));
+                }
+            } else {
+                table.addCell(new Cell().add(new Paragraph("(No data)")));
+                table.addCell(new Cell().add(new Paragraph("")));
+            }
+
+            document.add(table);
+            return outputStream.toByteArray();
+        } finally {
+            document.close();
         }
-
-        document.add(table);
-        document.close();
-
-        return outputStream.toByteArray();
     }
 
     private String safeValue(Object value) {
@@ -585,7 +587,25 @@ public class FormController {
         }
     }
 
-    private String buildFormFileName(FormResponseModel form) {
+
+        String raw = formType.name().toLowerCase().replace('_', ' ');
+        String[] words = raw.split("\\s+");
+        StringBuilder formatted = new StringBuilder();
+
+        for (String word : words) {
+            if (word.isEmpty()) {
+                continue;
+            }
+            if (formatted.length() > 0) {
+                formatted.append(' ');
+            }
+            formatted.append(Character.toUpperCase(word.charAt(0)));
+            if (word.length() > 1) {
+                formatted.append(word.substring(1));
+            }
+        }
+
+        return formatted.toString();
         String formType = form.getFormType() != null ? form.getFormType().name().toLowerCase() : "form";
         return "form_" + formType + "_" + form.getFormId() + ".pdf";
     }

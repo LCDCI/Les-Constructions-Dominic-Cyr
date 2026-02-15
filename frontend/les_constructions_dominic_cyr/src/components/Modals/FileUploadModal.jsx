@@ -30,16 +30,7 @@ export default function FileUploadModal({
   // Hardcode category to DOCUMENT
   const category = 'DOCUMENT';
 
-  // Debug: Log props when modal opens
-  useEffect(() => {
-    console.log('FileUploadModal props:', {
-      projectId,
-      uploadedBy,
-      uploaderRole,
-      hasUploadedBy: !!uploadedBy,
-      hasUploaderRole: !!uploaderRole,
-    });
-  }, [projectId, uploadedBy, uploaderRole]);
+
 
   const handleFileChange = e => {
     const selectedFile = e.target.files[0];
@@ -119,15 +110,6 @@ export default function FileUploadModal({
 
     const trimmedUploadedBy = uploadedBy.trim();
     const trimmedUploaderRole = uploaderRole.trim().toUpperCase();
-
-    // Debug logging
-    console.log('Uploading file with:', {
-      projectId,
-      uploadedBy: trimmedUploadedBy,
-      uploaderRole: trimmedUploaderRole,
-      fileName: file.name,
-      fileSize: file.size,
-    });
 
     const formData = new FormData();
     formData.append('file', file);
