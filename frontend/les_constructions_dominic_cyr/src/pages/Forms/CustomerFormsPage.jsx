@@ -744,23 +744,22 @@ const CustomerFormsPage = () => {
                         {Object.keys(history.formDataSnapshot || {}).length ===
                         0 ? (
                           <p className="history-data-empty">
-                            {t(
-                              'modal.noFormData',
-                              'No form data available'
-                            )}
+                            {t('modal.noFormData', 'No form data available')}
                           </p>
                         ) : (
                           <div className="history-data-list">
-                            {Object.entries(
-                              history.formDataSnapshot || {}
-                            ).map(([key, value]) => (
-                              <div key={key} className="history-data-row">
-                                <span className="history-data-key">{key}</span>
-                                <span className="history-data-value">
-                                  {formatHistoryValue(value)}
-                                </span>
-                              </div>
-                            ))}
+                            {Object.entries(history.formDataSnapshot || {}).map(
+                              ([key, value]) => (
+                                <div key={key} className="history-data-row">
+                                  <span className="history-data-key">
+                                    {key}
+                                  </span>
+                                  <span className="history-data-value">
+                                    {formatHistoryValue(value)}
+                                  </span>
+                                </div>
+                              )
+                            )}
                           </div>
                         )}
                       </div>
