@@ -176,7 +176,7 @@ const LotDocumentsPage = () => {
     }
   };
 
-  const loadFinalizedForms = async (token = null) => {
+  const loadFinalizedFormsInternal = async (token = null) => {
     try {
       setFormsLoading(true);
       setFormsError(null);
