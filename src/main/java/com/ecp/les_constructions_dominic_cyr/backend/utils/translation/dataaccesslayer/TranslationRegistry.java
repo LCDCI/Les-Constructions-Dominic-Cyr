@@ -27,7 +27,7 @@ public class TranslationRegistry {
 
         fileIdMap.put("en.contact", "dfdcc350-fdca-4d64-be17-f4c75f0d4a1f");
         fileIdMap.put("fr.contact", "cc125a16-7546-44f2-933f-ec27f8805a8d");
-        
+
         // Renovations page translations
         fileIdMap.put("en.renovations", "c73f88fc-934c-4634-a523-917d88ec7dc9");
         fileIdMap.put("fr.renovations", "64d36b39-21d4-4d6a-b5b4-cf1dd670eb0a");
@@ -133,8 +133,8 @@ public class TranslationRegistry {
         fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
         fileIdMap.put("fr.navbar", "c9ed527b-48a8-427f-9248-da9e87efbf24");
         // Quotes page translations
-        fileIdMap.put("en.quotes", "1bdf1f9e-22ff-4a3e-83e8-ba0fc692b6c5");
-        fileIdMap.put("fr.quotes", "9e58be85-1a54-4ee4-8a74-04db5c48d231");
+        fileIdMap.put("en.quotes", "06e78e07-2c2d-404f-9c05-e5f0057c2a35");
+        fileIdMap.put("fr.quotes", "529d23af-29d7-48dc-b560-318a0269e14b");
 
         // Customer Forms page translations
         fileIdMap.put("en.customerforms", "cf04f42b-1442-44cb-839c-7b8ae130a5af");
