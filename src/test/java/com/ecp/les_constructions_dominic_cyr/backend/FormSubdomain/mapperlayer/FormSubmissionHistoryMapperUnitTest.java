@@ -56,7 +56,7 @@ class FormSubmissionHistoryMapperUnitTest {
         assertEquals(1, responseModel.getSubmissionNumber());
         assertEquals(FormStatus.SUBMITTED, responseModel.getStatusAtSubmission());
         assertEquals(formDataSnapshot, responseModel.getFormDataSnapshot());
-        assertEquals("customer-id-123", responseModel.getSubmittedByCustomerId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440001", responseModel.getSubmittedByCustomerId());
         assertEquals("John Customer", responseModel.getSubmittedByCustomerName());
         assertEquals("All selections completed", responseModel.getSubmissionNotes());
         assertNotNull(responseModel.getSubmittedAt());
@@ -86,7 +86,7 @@ class FormSubmissionHistoryMapperUnitTest {
         assertEquals(FormStatus.SUBMITTED, responseModel.getStatusAtSubmission());
         assertNotNull(responseModel.getFormDataSnapshot());
         assertTrue(responseModel.getFormDataSnapshot().isEmpty());
-        assertEquals("customer-id-456", responseModel.getSubmittedByCustomerId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440002", responseModel.getSubmittedByCustomerId());
         assertEquals("Jane Customer", responseModel.getSubmittedByCustomerName());
         assertNull(responseModel.getSubmissionNotes());
     }

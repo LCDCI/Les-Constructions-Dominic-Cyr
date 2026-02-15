@@ -1374,7 +1374,7 @@ class FormServiceImplUnitTest {
                 "project-123", UUID.fromString("customer-123"), FormType.WINDOWS))
                 .thenReturn(true);
 
-        boolean result = formService.hasFormOfType("project-123", "customer-123", FormType.WINDOWS);
+        boolean result = formService.hasFormOfType("project-123", "550e8400-e29b-41d4-a716-446655440011", FormType.WINDOWS);
 
         assertTrue(result);
         verify(formRepository).existsByProjectIdentifierAndCustomerIdAndFormType(
@@ -1821,7 +1821,7 @@ class FormServiceImplUnitTest {
                 .thenReturn(Optional.of(testForm));
         when(formRepository.save(any(Form.class))).thenReturn(testForm);
         when(usersRepository.findByUserIdentifier(CUSTOMER_UUID)).thenReturn(Optional.of(testCustomer));
-        when(usersRepository.findByUserIdentifier("non-existent-user")).thenReturn(Optional.empty());
+        when(usersRepository.findByUserIdentifier_UserId(UUID.fromString("00000000-0000-0000-0000-000000000099"))).thenReturn(Optional.empty());
         when(formMapper.entityToResponseModel(any())).thenReturn(testResponseModel);
         when(historyRepository.countByFormIdentifier(any())).thenReturn(0L);
 
@@ -1896,7 +1896,7 @@ class FormServiceImplUnitTest {
                 history.getFormIdentifier().equals("test-form-id-123") &&
                 "All selections are final".equals(history.getSubmissionNotes()) &&
                 history.getStatusAtSubmission() == FormStatus.SUBMITTED &&
-                history.getSubmittedByCustomerId().equals(CUSTOMER_UUID) &&
+                history.getSubmittedByCustomerId().equals(UUID.fromString(CUSTOMER_UUID)) &&
                 history.getSubmittedByCustomerName().equals("John Customer") &&
                 history.getFormDataSnapshot().containsKey("color") &&
                 history.getFormDataSnapshot().get("color").equals("Blue")

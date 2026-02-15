@@ -40,8 +40,8 @@ class FormMapperUnitTest {
         FormRequestModel requestModel = FormRequestModel.builder()
                 .formType(FormType.WINDOWS)
                 .projectIdentifier("project-123")
-                .lotIdentifier("lot-uuid-456")
-                .customerId("customer-id-123")
+                .lotIdentifier("550e8400-e29b-41d4-a716-446655440000")
+                .customerId("550e8400-e29b-41d4-a716-446655440001")
                 .formTitle("Window Selection")
                 .instructions("Please select windows")
                 .formData(formData)
@@ -56,8 +56,8 @@ class FormMapperUnitTest {
         assertEquals(FormType.WINDOWS, form.getFormType());
         assertEquals(FormStatus.DRAFT, form.getFormStatus());
         assertEquals("project-123", form.getProjectIdentifier());
-        assertEquals("lot-uuid-456", form.getLotIdentifier());
-        assertEquals("customer-id-123", form.getCustomerId());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"), form.getLotIdentifier());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"), form.getCustomerId());
         assertEquals("Window Selection", form.getFormTitle());
         assertEquals("Please select windows", form.getInstructions());
         assertEquals(formData, form.getFormData());
@@ -69,8 +69,8 @@ class FormMapperUnitTest {
         FormRequestModel requestModel = FormRequestModel.builder()
                 .formType(FormType.PAINT)
                 .projectIdentifier("project-123")
-                .lotIdentifier("lot-uuid-456")
-                .customerId("customer-id-123")
+                .lotIdentifier("550e8400-e29b-41d4-a716-446655440000")
+                .customerId("550e8400-e29b-41d4-a716-446655440001")
                 .formTitle("Paint Selection")
                 .build();
 
@@ -89,8 +89,8 @@ class FormMapperUnitTest {
         FormRequestModel requestModel = FormRequestModel.builder()
                 .formType(FormType.EXTERIOR_DOORS)
                 .projectIdentifier("proj-456")
-                .lotIdentifier("lot-789")
-                .customerId("cust-789")
+                .lotIdentifier("550e8400-e29b-41d4-a716-446655440050")
+                .customerId("550e8400-e29b-41d4-a716-446655440051")
                 .build();
 
         // Act
@@ -101,8 +101,8 @@ class FormMapperUnitTest {
         assertNotNull(form.getFormIdentifier());
         assertEquals(FormType.EXTERIOR_DOORS, form.getFormType());
         assertEquals("proj-456", form.getProjectIdentifier());
-        assertEquals("lot-789", form.getLotIdentifier());
-        assertEquals("cust-789", form.getCustomerId());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440050"), form.getLotIdentifier());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440051"), form.getCustomerId());
     }
 
     // ========== Entity To Response Model Tests ==========
@@ -150,11 +150,11 @@ class FormMapperUnitTest {
         assertEquals(FormType.WINDOWS, responseModel.getFormType());
         assertEquals(FormStatus.SUBMITTED, responseModel.getFormStatus());
         assertEquals("project-123", responseModel.getProjectIdentifier());
-        assertEquals("lot-uuid-456", responseModel.getLotIdentifier());
-        assertEquals("customer-id-123", responseModel.getCustomerId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440000", responseModel.getLotIdentifier());
+        assertEquals("550e8400-e29b-41d4-a716-446655440001", responseModel.getCustomerId());
         assertEquals("John Customer", responseModel.getCustomerName());
         assertEquals("john@example.com", responseModel.getCustomerEmail());
-        assertEquals("salesperson-id-456", responseModel.getAssignedByUserId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440002", responseModel.getAssignedByUserId());
         assertEquals("Jane Salesperson", responseModel.getAssignedByName());
         assertEquals("Window Selection", responseModel.getFormTitle());
         assertEquals("Please select windows", responseModel.getInstructions());
@@ -164,7 +164,7 @@ class FormMapperUnitTest {
         assertEquals(now, responseModel.getLastSubmittedDate());
         assertEquals(now.plusDays(1), responseModel.getCompletedDate());
         assertEquals(now.minusHours(2), responseModel.getReopenedDate());
-        assertEquals("reopener-id", responseModel.getReopenedByUserId());
+        assertEquals("550e8400-e29b-41d4-a716-446655440003", responseModel.getReopenedByUserId());
         assertEquals("Need changes", responseModel.getReopenReason());
         assertEquals(2, responseModel.getReopenCount());
         assertEquals(now.minusDays(5), responseModel.getCreatedAt());
@@ -334,8 +334,8 @@ class FormMapperUnitTest {
         FormRequestModel requestModel = FormRequestModel.builder()
                 .formType(FormType.PAINT) // Different type
                 .projectIdentifier("different-project") // Different project
-                .lotIdentifier("different-lot") // Different lot
-                .customerId("different-customer") // Different customer
+                .lotIdentifier("550e8400-e29b-41d4-a716-446655440060") // Different lot
+                .customerId("550e8400-e29b-41d4-a716-446655440061") // Different customer
                 .formTitle("New Title")
                 .instructions("New instructions")
                 .build();
@@ -351,8 +351,8 @@ class FormMapperUnitTest {
         // These should NOT be changed (they're immutable after creation)
         assertEquals(FormType.WINDOWS, form.getFormType());
         assertEquals("original-project", form.getProjectIdentifier());
-        assertEquals("original-lot", form.getLotIdentifier());
-        assertEquals("original-customer", form.getCustomerId());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440030"), form.getLotIdentifier());
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440031"), form.getCustomerId());
     }
 
     // ========== Edge Cases Tests ==========
@@ -364,8 +364,8 @@ class FormMapperUnitTest {
             FormRequestModel requestModel = FormRequestModel.builder()
                     .formType(formType)
                     .projectIdentifier("project-test")
-                    .lotIdentifier("lot-test")
-                    .customerId("customer-test")
+                    .lotIdentifier("550e8400-e29b-41d4-a716-446655440070")
+                    .customerId("550e8400-e29b-41d4-a716-446655440071")
                     .build();
 
             // Act

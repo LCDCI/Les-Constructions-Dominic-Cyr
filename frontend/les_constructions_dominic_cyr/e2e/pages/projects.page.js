@@ -3,6 +3,13 @@ export class ProjectsPage {
     this.page = page;
     // Use the hero h1 as the page title for e2e tests (current design)
     this.pageTitle = page.locator('.projects-hero h1.projects-title');
+
+    // --- Create Project use case: modal trigger and form (same form as standalone) ---
+    this.createProjectButton = page.locator(
+      'button.admin-create-project-button, button:has-text("Create New Project"), button:has-text("Create Project"), button:has-text("Créer le projet"), button:has-text("Créer un nouveau projet")'
+    ).first();
+    this.createFormInModal = page.locator('.create-project-form');
+    this.createFormTitleInModal = page.locator('.create-project-header h1');
     this.searchInput = page.locator(
       'input.search-input, input[placeholder*="Search"]'
     );
@@ -125,5 +132,28 @@ export class ProjectsPage {
 
   async waitForEditFormToClose() {
     await this.page.locator('.edit-project-form').waitFor({ state: 'hidden' });
+  }
+
+  // --- Create Project use case: open/create modal and form title ---
+
+  /** Use case: Open Create Project form (modal on projects page). */
+  async openCreateModal() {
+    await this.createProjectButton.click();
+    await this.createFormInModal.waitFor({ state: 'visible', timeout: 5000 });
+  }
+
+  /** Whether the create project form (modal) is visible. */
+  async isCreateFormVisible() {
+    return await this.createFormInModal.isVisible();
+  }
+
+  /** Get create form title when opened in modal (for U1/U2: title in EN/FR). */
+  async getCreateFormTitleInModal() {
+    return await this.createFormTitleInModal.textContent();
+  }
+
+  /** Wait for create form modal to close. */
+  async waitForCreateFormToClose() {
+    await this.createFormInModal.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
   }
 }

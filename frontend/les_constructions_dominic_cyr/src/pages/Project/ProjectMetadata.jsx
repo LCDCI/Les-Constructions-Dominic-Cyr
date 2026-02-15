@@ -51,9 +51,10 @@ const ProjectMetadata = () => {
             projectIdentifier: projectId,
             token,
           });
-          setLots(lotsData || []);
+          const list = Array.isArray(lotsData) ? lotsData : [];
+          setLots(list);
         } catch (e) {
-          // ignore lots error
+          console.warn('Failed to load project lots:', e?.message || e);
           setLots([]);
         }
 
@@ -236,38 +237,42 @@ const ProjectMetadata = () => {
             <div className="lots-grid">
               {[...lots]
                 .sort((a, b) => {
-                  const idA = a.id ?? a.lotId;
-                  const idB = b.id ?? b.lotId;
-                  return idA - idB;
+                  const idA = String(a.id ?? a.lotId ?? '');
+                  const idB = String(b.id ?? b.lotId ?? '');
+                  return idA.localeCompare(idB, undefined, { numeric: true });
                 })
-                .map(lot => (
-                  <div
-                    key={lot.lotId}
-                    className="lot-card"
-                    style={{ borderColor: metadata.primaryColor }}
-                    onClick={() =>
-                      navigate(
-                        `/projects/${projectId}/lots/${lot.lotId}/metadata`
-                      )
-                    }
-                  >
-                    <h3>{`${t('lot') || 'Lot'} ${lot.id}`}</h3>
-                    {lot.civicAddress && (
-                      <p className="lot-address">{lot.civicAddress}</p>
-                    )}
-                    {lot.lotStatus && (
-                      <div className="lot-status-inline">
-                        <span
-                          className={`status-dot status-${lot.lotStatus.toLowerCase()}`}
-                          aria-hidden="true"
-                        ></span>
-                        <span className="status-label">
-                          {lot.lotStatus.replace('_', ' ')}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                .map(lot => {
+                  const lotId = lot.lotId ?? lot.id;
+                  const displayId = lot.id ?? lot.lotId ?? '—';
+                  return (
+                    <div
+                      key={lotId}
+                      className="lot-card"
+                      style={{ borderColor: metadata.primaryColor }}
+                      onClick={() =>
+                        navigate(
+                          `/projects/${projectId}/lots/${lotId}/metadata`
+                        )
+                      }
+                    >
+                      <h3>{`${t('lot') || 'Lot'} ${displayId}`}</h3>
+                      {lot.civicAddress && (
+                        <p className="lot-address">{lot.civicAddress}</p>
+                      )}
+                      {lot.lotStatus && (
+                        <div className="lot-status-inline">
+                          <span
+                            className={`status-dot status-${lot.lotStatus.toLowerCase()}`}
+                            aria-hidden="true"
+                          ></span>
+                          <span className="status-label">
+                            {lot.lotStatus.replace('_', ' ')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           </section>
         )}

@@ -148,6 +148,7 @@ export default function OwnerInquiriesPage() {
           </table>
         )}
       </div>
+      <HomeFooter />
     </>
   );
 }

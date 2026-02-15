@@ -45,7 +45,7 @@ public class GoogleAnalyticsService {
     public Map<String, Object> fetchAnalyticsData(LocalDateTime startDate, LocalDateTime endDate, String reportType) {
         try {
             GoogleCredentials credentials;
-            
+
             // Check if credentials are provided via environment variable (production)
             if (credentialsJson != null && !credentialsJson.trim().isEmpty()) {
                 try (InputStream is = new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8))) {
