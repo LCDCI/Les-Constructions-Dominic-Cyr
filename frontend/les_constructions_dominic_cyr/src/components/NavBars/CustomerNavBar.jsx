@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUnreadCount } from '../../features/notifications/hooks/useUnreadCount';
+import { clearAppSession } from '../../features/users/api/clearAppSession';
 import '../../styles/NavBars/customerNavbar.css';
 import {
   GoProject,
@@ -165,6 +166,20 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
+                  to="/customer/quotes/approval"
+                  className={`navbar-link ${isActive('/customer/quotes/approval')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoFileDiff />
+                  </span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.quotes', 'Quotes')}
+                  </span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
                   to="/projects"
                   className={`navbar-link ${isActive('/projects')}`}
                   onClick={closeMenu}
@@ -267,9 +282,12 @@ const Navbar = ({
             className="navbar-logout"
             onClick={() => {
               closeMenu();
-              if (isAuthenticated) {
-                logout({ logoutParams: { returnTo: window.location.origin } });
-              }
+              clearAppSession();
+              logout({
+                logoutParams: {
+                  returnTo: window.location.origin,
+                },
+              });
             }}
           >
             <span className="navbar-icon">

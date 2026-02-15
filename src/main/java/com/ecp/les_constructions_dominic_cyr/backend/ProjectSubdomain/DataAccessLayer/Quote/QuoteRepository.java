@@ -12,14 +12,8 @@ import java.util.UUID;
 @Repository
 public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
-    /**
-     * Find a quote by its sequential quote number (QT-XXXXXXX format).
-     */
     Optional<Quote> findByQuoteNumber(String quoteNumber);
 
-    /**
-     * Find all quotes for a specific project.
-     */
     List<Quote> findByProjectIdentifier(String projectIdentifier);
 
     /**
@@ -27,24 +21,25 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
      */
     List<Quote> findByLotIdentifier(UUID lotIdentifier);
 
-    /**
-     * Find all quotes created by a specific contractor.
-     */
     List<Quote> findByContractorId(String contractorId);
 
-    /**
-     * Find quotes by both project and contractor.
-     */
     List<Quote> findByProjectIdentifierAndContractorId(String projectIdentifier, String contractorId);
 
-    /**
-     * Get the highest numeric part from existing quote numbers.
-     * Assumes quote_number format: QT-XXXXXXX (7 digits).
-     * Returns the highest number value (e.g., 5 if "QT-0000005" exists).
-     * Returns NULL if no quotes exist (new series).
-     * 
-     * This is used for atomic sequential ID generation with database-level locking.
-     */
     @Query(value = "SELECT MAX(CAST(SUBSTRING(quote_number, 4) AS INTEGER)) FROM quotes", nativeQuery = true)
     Optional<Integer> findMaxQuoteSequence();
+
+    List<Quote> findByStatus(String status);
+
+    List<Quote> findByProjectIdentifierAndStatus(String projectIdentifier, String status);
+
+    List<Quote> findByLotIdentifierAndStatus(UUID lotIdentifier, String status);
+
+    @Query("SELECT q FROM Quote q WHERE q.projectIdentifier = :projectIdentifier AND q.status = :status ORDER BY q.createdAt DESC")
+    List<Quote> findByProjectAndStatus(@Param("projectIdentifier") String projectIdentifier,
+            @Param("status") String status);
+
+    @Query("SELECT q FROM Quote q WHERE q.contractorId = :contractorId AND q.status = :status ORDER BY q.createdAt DESC")
+    List<Quote> findByContractorAndStatus(@Param("contractorId") String contractorId, @Param("status") String status);
+
+    List<Quote> findAllByOrderByCreatedAtDesc();
 }

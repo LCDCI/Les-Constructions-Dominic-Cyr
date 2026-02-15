@@ -11,6 +11,7 @@ import {
   GoCreditCard,
   GoCommentDiscussion,
   GoBell,
+  GoHome,
 } from 'react-icons/go';
 import './NotificationItem.css';
 
@@ -67,6 +68,8 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
       case 'TASK_COMPLETED':
       case 'TASK_UPDATED':
         return <GoTasklist {...iconProps} />;
+      case 'LOT_ASSIGNED':
+        return <GoHome {...iconProps} />;
       case 'PROJECT_CREATED':
       case 'PROJECT_UPDATED':
       case 'PROJECT_COMPLETED':

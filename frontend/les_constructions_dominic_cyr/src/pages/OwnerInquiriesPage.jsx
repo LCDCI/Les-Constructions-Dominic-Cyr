@@ -9,7 +9,7 @@ const fetchInquiries = async getAccessTokenSilently => {
       audience: import.meta.env.VITE_AUTH0_AUDIENCE,
     },
   });
-  const res = await fetch('/api/inquiries', {
+  const res = await fetch('/api/v1/inquiries', {
     method: 'GET',
     credentials: 'omit',
     headers: {
