@@ -28,39 +28,38 @@ System --> Owner : scheduleForm
 
 Owner -> System : submitSchedule(scheduleRequestDTO)
 
-alt
+alt Schedule Created Successfully
     System --> Owner : scheduleResponseDTO
     
-    loop
-        Owner -> System : createTask(taskRequestDTO)
+    loop Add Tasks to Schedule
+        Owner -> System : createTask(taskRequestDTO, scheduleIdentifier)
         note right
-            **taskForm contains:**
+            **taskRequestDTO contains:**
             - taskTitle: String
             - taskDescription: String
-            - periodStart: Date
-            - periodEnd: Date
+            - periodStart: LocalDate
+            - periodEnd: LocalDate
             - taskStatus: TaskStatus
             - taskPriority: TaskPriority
-            - estimatedHours: Number
+            - estimatedHours: Integer
             - assignedToUserId: String
-            - scheduleId: String
         end note
         
-        alt
-            System --> Owner : taskDetailResponseDTO
-        else
+        alt Task Created Successfully
+            System --> Owner : taskResponseDTO
+        else Task Validation Error
             System --> Owner : validationError(errorMessage)
             Owner -> System : correctTaskData(taskRequestDTO)
-            System --> Owner : taskDetailResponseDTO
+            System --> Owner : taskResponseDTO
         end
     end
     
-    opt
+    opt View Created Schedule
         Owner -> System : getSchedule(scheduleIdentifier)
         System --> Owner : scheduleResponseDTO
     end
     
-else
+else Schedule Validation Error
     System --> Owner : validationError(errorMessage)
     Owner -> System : correctScheduleData(scheduleRequestDTO)
     System --> Owner : scheduleResponseDTO
