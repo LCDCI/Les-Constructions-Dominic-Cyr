@@ -176,25 +176,6 @@ const LotDocumentsPage = () => {
     }
   };
 
-  const loadFinalizedFormsInternal = async (token = null) => {
-    try {
-      setFormsLoading(true);
-      setFormsError(null);
-      const authToken = token || (await getApiToken());
-      const forms = await getFormsByLot(
-        lotId,
-        { status: 'COMPLETED' },
-        authToken
-      );
-      setFinalizedForms(forms || []);
-    } catch (err) {
-      setFormsError(err?.message || 'Failed to load finalized forms');
-      setFinalizedForms([]);
-    } finally {
-      setFormsLoading(false);
-    }
-  };
-
   const applyFilters = () => {
     let filtered = [...documents];
 
