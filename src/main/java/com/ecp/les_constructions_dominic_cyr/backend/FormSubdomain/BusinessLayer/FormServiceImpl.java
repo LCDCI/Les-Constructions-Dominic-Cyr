@@ -186,7 +186,7 @@ public class FormServiceImpl implements FormService {
                 .orElseThrow(() -> new NotFoundException("Form not found with ID: " + formId));
 
         // Verify customer owns this form
-        if (!form.getCustomerId().equals(customerId)) {
+        if (!form.getCustomerId().equals(UUID.fromString(customerId))) {
             throw new InvalidInputException("Customer is not authorized to update this form");
         }
 
@@ -218,7 +218,7 @@ public class FormServiceImpl implements FormService {
                 .orElseThrow(() -> new NotFoundException("Form not found with ID: " + formId));
 
         // Verify customer owns this form
-        if (!form.getCustomerId().equals(customerId)) {
+        if (!form.getCustomerId().equals(UUID.fromString(customerId))) {
             throw new InvalidInputException("Customer is not authorized to submit this form");
         }
 

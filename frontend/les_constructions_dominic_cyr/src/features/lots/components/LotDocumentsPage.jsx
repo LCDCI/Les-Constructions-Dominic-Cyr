@@ -16,7 +16,7 @@ import {
   updateFormData,
   submitForm,
 } from '../../forms/api/formsApi';
-import { uploadFile } from '../../files/api/filesApi';
+import { uploadFile, downloadFile } from '../../files/api/filesApi';
 import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import {
   FaDownload,
@@ -688,6 +688,22 @@ const LotDocumentsPage = () => {
     if (formFileInputRef.current) formFileInputRef.current.value = '';
   };
 
+  const handleDownloadFile = async (fileId, fileName) => {
+    console.log('[LotDocumentsPage] Download attempt:', {
+      fileId,
+      fileName,
+      userRole,
+      userId: user?.sub,
+    });
+    try {
+      await downloadFile(fileId, fileName, userRole, user?.sub);
+    } catch (err) {
+      console.error('Failed to download file:', err);
+      console.error('Error response:', err?.response?.data);
+      setUploadError(t('errors.downloadFailed', 'Failed to download file.'));
+    }
+  };
+
   const handleSaveForm = async () => {
     try {
       setSubmitError(null);
@@ -816,7 +832,16 @@ const LotDocumentsPage = () => {
 
         {fileVal?.fileId ? (
           <div className="forms-file-uploaded">
-            <span className="forms-file-name">📄 {fileVal.fileName}</span>
+            <span
+              className="forms-file-name"
+              onClick={() =>
+                handleDownloadFile(fileVal.fileId, fileVal.fileName)
+              }
+              style={{ cursor: 'pointer', textDecoration: 'underline' }}
+              title={t('forms.downloadFile', 'Click to download')}
+            >
+              📄 {fileVal.fileName}
+            </span>
             {!isViewOnly && (
               <button
                 type="button"

@@ -106,6 +106,15 @@ export async function downloadFile(fileId, fileName, role, userId) {
     url = `${BASE_API_URL}/files/${fileId}`;
   }
 
+  console.log('[downloadFile] Attempting download:', { 
+    fileId, 
+    fileName, 
+    role, 
+    userId, 
+    BASE_API_URL, 
+    fullUrl: url 
+  });
+
   const response = await axios.get(url, {
     responseType: 'blob',
   });

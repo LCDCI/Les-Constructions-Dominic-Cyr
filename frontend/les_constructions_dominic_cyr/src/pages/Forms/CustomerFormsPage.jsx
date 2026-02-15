@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect, useRef } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -7,7 +8,7 @@ import {
   submitForm,
   getFormHistory,
 } from '../../features/forms/api/formsApi';
-import { uploadFile } from '../../features/files/api/filesApi';
+import { uploadFile, downloadFile } from '../../features/files/api/filesApi';
 import '../../styles/Forms/customer-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -409,7 +410,19 @@ const CustomerFormsPage = () => {
 
   const openEditModal = form => {
     setSelectedForm(form);
-    setFormData(form.formData || {});
+    // Normalize file data structure to use fileId consistently
+    const normalizedData = { ...(form.formData || {}) };
+    Object.keys(normalizedData).forEach(key => {
+      const val = normalizedData[key];
+      if (val && typeof val === 'object') {
+        // Convert various ID property names to both id and fileId for consistency
+        const fileId = val.fileId || val.id || val._id || val.uuid || val.UUID;
+        if (fileId) {
+          normalizedData[key] = { ...val, fileId, id: fileId };
+        }
+      }
+    });
+    setFormData(normalizedData);
     setIsEditModalOpen(true);
     setSubmitError(null);
     setUploadError(null);
@@ -438,8 +451,18 @@ const CustomerFormsPage = () => {
 
       const result = await uploadFile(fd);
 
+      // Backend might return id, fileId, _id, uuid, or UUID
+      const uploadedId =
+        result.id || result.fileId || result._id || result.uuid || result.UUID;
+
+      if (!uploadedId) {
+        console.error('No file ID found in upload response. Response:', result);
+        throw new Error('File uploaded but no ID returned from server');
+      }
+
       handleFieldChange(fieldName, {
-        fileId: result.id,
+        fileId: uploadedId,
+        id: uploadedId, // Store both for compatibility
         fileName: result.fileName || file.name,
       });
       setUploadingFile(false);
@@ -454,6 +477,15 @@ const CustomerFormsPage = () => {
   const handleRemoveFile = fieldName => {
     handleFieldChange(fieldName, null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleDownloadFile = async (fileId, fileName) => {
+    try {
+      await downloadFile(fileId, fileName, 'CUSTOMER', user?.sub);
+    } catch (err) {
+      console.error('Failed to download file:', err);
+      setUploadError(t('errors.downloadFailed', 'Failed to download file.'));
+    }
   };
 
   /* ── Save / Submit ────────────────────────────────────── */
@@ -486,7 +518,10 @@ const CustomerFormsPage = () => {
 
     const missingFields = requiredFields.filter(f => {
       const val = formData[f.name];
-      if (f.type === 'file-upload') return !val || !val.fileId;
+      if (f.type === 'file-upload') {
+        const hasFile = val && (val.fileId || val.id);
+        return !hasFile;
+      }
       if (val == null) return true;
       return val.toString().trim() === '';
     });
@@ -591,6 +626,7 @@ const CustomerFormsPage = () => {
 
   const renderFileUpload = field => {
     const fileVal = formData[field.name];
+    const hasFile = fileVal && (fileVal.fileId || fileVal.id);
     return (
       <div key={field.name} className="forms-form-group">
         <label>
@@ -598,9 +634,21 @@ const CustomerFormsPage = () => {
           {field.required && <span className="required">*</span>}
         </label>
 
-        {fileVal?.fileId ? (
+        {hasFile ? (
           <div className="forms-file-uploaded">
-            <span className="forms-file-name">📄 {fileVal.fileName}</span>
+            <span
+              className="forms-file-name forms-file-name-link"
+              onClick={() =>
+                handleDownloadFile(
+                  fileVal.fileId || fileVal.id,
+                  fileVal.fileName
+                )
+              }
+              style={{ cursor: 'pointer', textDecoration: 'underline' }}
+              title="Click to download"
+            >
+              📄 {fileVal.fileName}
+            </span>
             <button
               type="button"
               className="forms-file-remove"
