@@ -4,7 +4,6 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
 import InquiryForm from '../../components/InquiryForm';
 import '../../styles/Public_Facing/contact.css';
 import '../../styles/Public_Facing/residential-projects.css';
-import HomeFooter from '../../components/Footers/HomeFooter';
 
 export default function ContactPage() {
   const { t, isLoading, currentLanguage } = usePageTranslations('contact');

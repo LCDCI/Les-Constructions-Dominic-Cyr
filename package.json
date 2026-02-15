@@ -16,7 +16,7 @@
     "@types/node": "^24.10.1"
   },
   "dependencies": {
-    "axios": "^1.13.4",
+    "axios": "^1.13.5",
     "form-data": "^4.0.5",
     "leaflet": "^1.9.4",
     "react": "^19.0.0-rc.1",

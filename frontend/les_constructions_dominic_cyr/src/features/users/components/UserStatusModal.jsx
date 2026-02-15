@@ -11,8 +11,6 @@ export default function UserStatusModal({
 }) {
   const [action, setAction] = useState('');
 
-  if (!isOpen || !user) return null;
-
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = e => {
@@ -25,6 +23,8 @@ export default function UserStatusModal({
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [isOpen, onClose]);
+
+  if (!isOpen || !user) return null;
 
   const isOwner = currentUser?.userRole === 'OWNER';
   const canDeactivate =
