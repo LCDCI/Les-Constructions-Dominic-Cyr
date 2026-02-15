@@ -587,29 +587,6 @@ public class FormController {
         }
     }
 
-
-        String raw = formType.name().toLowerCase().replace('_', ' ');
-        String[] words = raw.split("\\s+");
-        StringBuilder formatted = new StringBuilder();
-
-        for (String word : words) {
-            if (word.isEmpty()) {
-                continue;
-            }
-            if (formatted.length() > 0) {
-                formatted.append(' ');
-            }
-            formatted.append(Character.toUpperCase(word.charAt(0)));
-            if (word.length() > 1) {
-                formatted.append(word.substring(1));
-            }
-        }
-
-        return formatted.toString();
-        String formType = form.getFormType() != null ? form.getFormType().name().toLowerCase() : "form";
-        return "form_" + formType + "_" + form.getFormId() + ".pdf";
-    }
-
     private String formatFormType(FormType formType) {
         if (formType == null) {
             return "Form";
