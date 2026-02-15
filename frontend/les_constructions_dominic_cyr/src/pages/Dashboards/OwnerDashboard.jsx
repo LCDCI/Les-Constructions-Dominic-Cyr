@@ -66,7 +66,7 @@ const OwnerDashboard = () => {
       {
         icon: <GoFileDiff />,
         title: t('cards.forms.title', 'Forms'),
-        buttonText: t('cards.forms.button', 'Create Form'),
+        buttonText: t('cards.forms.button', 'Review Submitted Forms'),
         action: () => navigate('/owner/forms'),
       },
       {

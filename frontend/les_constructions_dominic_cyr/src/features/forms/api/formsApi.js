@@ -146,3 +146,25 @@ export async function getFormHistory(formId, token) {
   });
   return response.data;
 }
+
+/**
+ * Download finalized form as PDF
+ * @param {string} formId - Form ID
+ * @param {string} token - Auth token
+ */
+export async function downloadFinalizedForm(formId, token) {
+  const response = await axios.get(`${API_BASE}/forms/${formId}/download`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    responseType: 'blob',
+  });
+
+  // Create a download link and trigger download
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', `form_${formId}.pdf`);
+  document.body.appendChild(link);
+  link.click();
+  link.parentNode.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}
