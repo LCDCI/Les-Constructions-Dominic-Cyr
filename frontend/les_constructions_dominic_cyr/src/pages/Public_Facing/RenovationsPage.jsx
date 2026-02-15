@@ -91,7 +91,11 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
   return (
     <div className="renovations-page" aria-live="polite">
       {/* HERO */}
-      <section className="projects-hero">
+      <section
+        className="projects-hero"
+        aria-labelledby="renovations-hero-title"
+        aria-describedby="renovations-hero-subtitle"
+      >
         <div className="hero-background">
           <div className="hero-image renovations-hero-bg" />
           <div className="hero-overlay" />
@@ -99,10 +103,16 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
         <div className="hero-container projects-hero-content">
           <div className="hero-content" data-animate>
             <p className="hero-label">{t('hero.label', 'RENOVATIONS')}</p>
-            <h1 className="hero-heading projects-title">
+            <h1
+              className="hero-heading projects-title"
+              id="renovations-hero-title"
+            >
               {t('hero.heading', 'Custom renovations, delivered with care')}
             </h1>
-            <p className="hero-description projects-subtitle">
+            <p
+              className="hero-description projects-subtitle"
+              id="renovations-hero-subtitle"
+            >
               {t(
                 'hero.lede',
                 'Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity.'
@@ -121,13 +131,16 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
       </section>
 
       {/* FEATURED INTRO SECTION */}
-      <section className="content-section featured-section single-column">
+      <section
+        className="content-section featured-section single-column"
+        aria-labelledby="renovations-intro-title"
+      >
         <div className="section-text-wrapper" data-animate>
           <div className="section-header center renovations-feature-card">
             <span className="section-kicker">
               {t('kicker.renovations', 'Renovations')}
             </span>
-            <h2 className="section-title">
+            <h2 className="section-title" id="renovations-intro-title">
               <em>{t('intro.emphasis', 'Modernize')}</em>{' '}
               {t('intro.rest', 'your space with style')}
             </h2>
@@ -182,7 +195,11 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
 
       {/* EMPTY */}
       {!isLoading && !isError && renovations.length === 0 && (
-        <div className="renovations-page__status renovations-page__status--empty">
+        <div
+          className="renovations-page__status renovations-page__status--empty"
+          role="status"
+          aria-live="polite"
+        >
           <h2>{t('states.empty.title', 'Aucune rénovation pour le moment')}</h2>
           <p>
             {t(
@@ -195,13 +212,16 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
 
       {/* RENOVATIONS LIST */}
       {!isLoading && renovations.length > 0 && (
-        <section className="portfolio-section">
+        <section
+          className="portfolio-section"
+          aria-labelledby="renovations-grid-title"
+        >
           <div className="container">
             <div className="section-header center" data-animate>
               <span className="section-kicker">
                 {t('grid.kicker', 'Our Work')}
               </span>
-              <h2 className="section-title">
+              <h2 className="section-title" id="renovations-grid-title">
                 {t('grid.title', 'Recent Renovations')}
               </h2>
             </div>
