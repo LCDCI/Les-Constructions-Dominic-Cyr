@@ -230,10 +230,14 @@ const LotsPage = () => {
                     style={{ top: coords.top, left: coords.left }}
                     onClick={() => setSelectedLot(lot)}
                     title={`${t('common.lot')} ${lot.lotNumber}`}
-                    aria-label={`${t('common.lot')} ${lot.lotNumber} (${t(
-                      `status.${lot.lotStatus?.toLowerCase()}`,
-                      lot.lotStatus || ''
-                    )})`}
+                    aria-label={
+                      lot.lotStatus
+                        ? `${t('common.lot')} ${lot.lotNumber} (${t(
+                            `status.${lot.lotStatus.toLowerCase()}`,
+                            lot.lotStatus
+                          )})`
+                        : `${t('common.lot')} ${lot.lotNumber}`
+                    }
                   />
                 );
               })}
