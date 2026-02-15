@@ -25,6 +25,7 @@ public enum NotificationCategory {
     QUOTE_SUBMITTED,
     QUOTE_APPROVED,
     QUOTE_REJECTED,
+    LOT_ASSIGNED,
     INQUIRY_RECEIVED,
     GENERAL
 }
