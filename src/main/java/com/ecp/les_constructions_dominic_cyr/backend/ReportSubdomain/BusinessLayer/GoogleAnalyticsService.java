@@ -4,7 +4,10 @@ import com.google.analytics.data.v1beta.*;
 import com.google.auth.oauth2.GoogleCredentials;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -18,6 +21,9 @@ public class GoogleAnalyticsService {
 
     @Value("${google.analytics.credentials-path}")
     private String credentialsPath;
+
+    @Value("${GOOGLE_ANALYTICS_CREDENTIALS:}")
+    private String credentialsJson;
 
 
     private long safeParseLong(String value) {
@@ -39,9 +45,19 @@ public class GoogleAnalyticsService {
     public Map<String, Object> fetchAnalyticsData(LocalDateTime startDate, LocalDateTime endDate, String reportType) {
         try {
             GoogleCredentials credentials;
-            try (FileInputStream fis = new FileInputStream(credentialsPath)) {
-                credentials = GoogleCredentials.fromStream(fis)
-                        .createScoped(Collections.singletonList("https://www.googleapis.com/auth/analytics.readonly"));
+
+            // Check if credentials are provided via environment variable (production)
+            if (credentialsJson != null && !credentialsJson.trim().isEmpty()) {
+                try (InputStream is = new ByteArrayInputStream(credentialsJson.getBytes(StandardCharsets.UTF_8))) {
+                    credentials = GoogleCredentials.fromStream(is)
+                            .createScoped(Collections.singletonList("https://www.googleapis.com/auth/analytics.readonly"));
+                }
+            } else {
+                // Fall back to reading from file (local development)
+                try (FileInputStream fis = new FileInputStream(credentialsPath)) {
+                    credentials = GoogleCredentials.fromStream(fis)
+                            .createScoped(Collections.singletonList("https://www.googleapis.com/auth/analytics.readonly"));
+                }
             }
 
             BetaAnalyticsDataSettings settings = BetaAnalyticsDataSettings.newBuilder()
