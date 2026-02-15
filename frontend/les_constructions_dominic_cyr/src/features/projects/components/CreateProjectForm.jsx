@@ -27,7 +27,6 @@ const translations = {
         status: 'Status',
         startDate: 'Start Date',
         endDate: 'End Date',
-        completionDate: 'Completion Date',
         location: 'Location',
         primaryColor: 'Primary Color',
         tertiaryColor: 'Secondary Color',
@@ -93,7 +92,6 @@ const translations = {
         status: 'Statut',
         startDate: 'Date de début',
         endDate: 'Date de fin',
-        completionDate: "Date d'achèvement",
         location: 'Emplacement',
         primaryColor: 'Couleur principale',
         tertiaryColor: 'Couleur secondaire',
@@ -171,12 +169,13 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     projectDescriptionFr: '',
     // buyerNameFr removed
 
-    // Common fields
+    // Location (bilingual: entered on FR step and EN step)
+    locationFr: '',
+    locationEn: '',
+    // Common fields (only on French step)
     status: 'PLANNED',
     startDate: '',
     endDate: '',
-    completionDate: '',
-    location: '',
     primaryColor: '#4A90A4',
     tertiaryColor: '#33FF57',
     buyerColor: '#3357FF',
@@ -244,28 +243,21 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     return (
       formData.projectNameFr.trim() !== '' &&
       formData.projectDescriptionFr.trim() !== '' &&
-      formData.location.trim() !== '' &&
+      (formData.locationFr ?? formData.location ?? '').trim() !== '' &&
       formData.status !== '' &&
       formData.startDate !== '' &&
-      formData.endDate !== '' &&
       formData.primaryColor !== '' &&
       formData.tertiaryColor !== '' &&
       formData.buyerColor !== ''
     );
   };
 
-  // Check if English form is complete - ALL required fields must be filled
+  // Check if English form is complete - only translatable fields (name, description, location)
   const isEnglishComplete = () => {
     return (
       formData.projectNameEn.trim() !== '' &&
       formData.projectDescriptionEn.trim() !== '' &&
-      formData.location.trim() !== '' &&
-      formData.status !== '' &&
-      formData.startDate !== '' &&
-      formData.endDate !== '' &&
-      formData.primaryColor !== '' &&
-      formData.tertiaryColor !== '' &&
-      formData.buyerColor !== ''
+      (formData.locationEn ?? '').trim() !== ''
     );
   };
 
@@ -285,16 +277,16 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     if (!formData.projectDescriptionFr.trim()) {
       newErrors.projectDescriptionFr = t('form.validation.required');
     }
-    if (!formData.location.trim()) {
-      newErrors.location = t('form.validation.required');
+    if (!(formData.locationFr ?? '').trim()) {
+      newErrors.locationFr = t('form.validation.required');
+    }
+    if (!(formData.locationEn ?? '').trim()) {
+      newErrors.locationEn = t('form.validation.required');
     }
 
     // Validate common fields
     if (!formData.startDate) {
       newErrors.startDate = t('form.validation.required');
-    }
-    if (!formData.endDate) {
-      newErrors.endDate = t('form.validation.required');
     }
     if (
       formData.endDate &&
@@ -355,13 +347,13 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     const translationEn = {
       projectName: formData.projectNameEn,
       projectDescription: formData.projectDescriptionEn,
-      // buyerName removed
+      location: (formData.locationEn ?? '').trim() || '',
     };
 
     const translationFr = {
       projectName: formData.projectNameFr,
       projectDescription: formData.projectDescriptionFr,
-      // buyerName removed
+      location: (formData.locationFr ?? '').trim() || '',
     };
 
     // Convert to JSON strings
@@ -412,52 +404,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     setStep(1);
     setAnimateLangSwitch(true);
     setCurrentLanguage('en');
-    // Scroll the form content into view (closest scrollable ancestor - overlay)
-    // after the content mounts in EN. Use a microtask to ensure DOM updated.
-    setTimeout(() => {
-      // Find closest scrollable ancestor and scroll it to top for a clear "move to top"
-      const getScrollableParent = node => {
-        let el = node;
-        while (el && el !== document.body) {
-          const style = window.getComputedStyle(el);
-          const oy = style.overflowY;
-          if (
-            (oy === 'auto' || oy === 'scroll') &&
-            el.scrollHeight > el.clientHeight
-          ) {
-            return el;
-          }
-          el = el.parentElement;
-        }
-        return window;
-      };
-
-      const target = formContentRef.current;
-      const parent = target ? getScrollableParent(target) : window;
-      try {
-        if (parent === window) {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-          parent.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      } catch (_) {
-        if (parent === window) {
-          window.scrollTo(0, 0);
-        } else {
-          parent.scrollTop = 0;
-        }
-      }
-      // Ensure it reaches the very top even if layout shifts; run once more on next frame
-      requestAnimationFrame(() => {
-        try {
-          if (parent === window) {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          } else {
-            parent.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        } catch (_) {}
-      });
-    }, 0);
+    /* No scroll-to-top: step container has min-height matching Lots step so layout stays stable. */
   };
 
   const handleSubmit = async e => {
@@ -529,9 +476,8 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         projectDescription: formData.projectDescriptionEn, // Use English as default for now
         status: formData.status,
         startDate: formData.startDate,
-        endDate: formData.endDate,
-        completionDate: formData.completionDate || null,
-        location: formData.location?.trim() || null,
+        endDate: formData.endDate || null,
+        location: (formData.locationEn ?? '').trim() || null,
         primaryColor: formData.primaryColor,
         tertiaryColor: formData.tertiaryColor,
         buyerColor: formData.buyerColor,
@@ -698,229 +644,291 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         </div>
       )}
 
-      {/* Step 0: French — Step 1: English (no lots on either) */}
+      {/* Step 0: French — Step 1: English (no lots on either). Same min-height as Lots step to avoid layout jump. */}
       {step < 2 && (
         <div
           key={`lang-${currentLanguage}-${animateLangSwitch ? 'anim' : 'static'}`}
-          className={
-            animateLangSwitch && currentLanguage === 'en'
-              ? 'slide-up-enter'
-              : ''
-          }
+          className={`create-project-step-fields${animateLangSwitch && currentLanguage === 'en' ? ' slide-up-enter' : ''}`}
           ref={formContentRef}
           onAnimationEnd={() => setAnimateLangSwitch(false)}
         >
-          {/* Basic Information Section */}
+          {/* Step 0: French — all fields. Step 1: English — only name, description, location */}
           <div className="form-section">
             <h2>{t('form.sections.basicInfo')}</h2>
 
-            <div className="form-group">
-              <label htmlFor="projectName">
-                {t('form.fields.projectName')} *
-              </label>
-              <input
-                type="text"
-                id="projectName"
-                value={getBilingualValue('projectName')}
-                onChange={e =>
-                  handleBilingualInputChange('projectName', e.target.value)
-                }
-                placeholder={t('form.placeholders.projectName')}
-                className={
-                  errors.projectNameEn || errors.projectNameFr ? 'error' : ''
-                }
-              />
-              {(errors.projectNameEn || errors.projectNameFr) && (
-                <span className="error-message">
-                  {currentLanguage === 'en'
-                    ? errors.projectNameEn
-                    : errors.projectNameFr}
-                </span>
-              )}
-            </div>
+            {step === 0 && (
+              <>
+                <div className="form-group">
+                  <label htmlFor="projectNameFr">
+                    {t('form.fields.projectName')} *
+                  </label>
+                  <input
+                    type="text"
+                    id="projectNameFr"
+                    value={formData.projectNameFr}
+                    onChange={e =>
+                      handleInputChange('projectNameFr', e.target.value)
+                    }
+                    placeholder={t('form.placeholders.projectName')}
+                    className={errors.projectNameFr ? 'error' : ''}
+                  />
+                  {errors.projectNameFr && (
+                    <span className="error-message">
+                      {errors.projectNameFr}
+                    </span>
+                  )}
+                </div>
 
-            <div className="form-group">
-              <label htmlFor="projectDescription">
-                {t('form.fields.projectDescription')} *
-              </label>
-              <textarea
-                id="projectDescription"
-                value={getBilingualValue('projectDescription')}
-                onChange={e =>
-                  handleBilingualInputChange(
-                    'projectDescription',
-                    e.target.value
-                  )
-                }
-                placeholder={t('form.placeholders.projectDescription')}
-                rows={5}
-                className={
-                  errors.projectDescriptionEn || errors.projectDescriptionFr
-                    ? 'error'
-                    : ''
-                }
-              />
-              {(errors.projectDescriptionEn || errors.projectDescriptionFr) && (
-                <span className="error-message">
-                  {currentLanguage === 'en'
-                    ? errors.projectDescriptionEn
-                    : errors.projectDescriptionFr}
-                </span>
-              )}
-            </div>
+                <div className="form-group">
+                  <label htmlFor="projectDescriptionFr">
+                    {t('form.fields.projectDescription')} *
+                  </label>
+                  <textarea
+                    id="projectDescriptionFr"
+                    value={formData.projectDescriptionFr}
+                    onChange={e =>
+                      handleInputChange(
+                        'projectDescriptionFr',
+                        e.target.value
+                      )
+                    }
+                    placeholder={t('form.placeholders.projectDescription')}
+                    rows={5}
+                    className={errors.projectDescriptionFr ? 'error' : ''}
+                  />
+                  {errors.projectDescriptionFr && (
+                    <span className="error-message">
+                      {errors.projectDescriptionFr}
+                    </span>
+                  )}
+                </div>
 
-            <div className="form-group">
-              <label htmlFor="location">{t('form.fields.location')} *</label>
-              <input
-                type="text"
-                id="location"
-                value={formData.location}
-                onChange={e => handleInputChange('location', e.target.value)}
-                placeholder={t('form.placeholders.location')}
-                maxLength={255}
-                className={errors.location ? 'error' : ''}
-              />
-              {errors.location && (
-                <span className="error-message">{errors.location}</span>
-              )}
-            </div>
+                <div className="form-group">
+                  <label htmlFor="locationFr">{t('form.fields.location')} *</label>
+                  <input
+                    type="text"
+                    id="locationFr"
+                    value={formData.locationFr}
+                    onChange={e =>
+                      handleInputChange('locationFr', e.target.value)
+                    }
+                    placeholder={t('form.placeholders.location')}
+                    maxLength={255}
+                    className={errors.locationFr ? 'error' : ''}
+                  />
+                  {errors.locationFr && (
+                    <span className="error-message">
+                      {errors.locationFr}
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
+
+            {step === 1 && (
+              <>
+                <div className="form-group">
+                  <label htmlFor="projectNameEn">
+                    {t('form.fields.projectName')} *
+                  </label>
+                  <input
+                    type="text"
+                    id="projectNameEn"
+                    value={formData.projectNameEn}
+                    onChange={e =>
+                      handleInputChange('projectNameEn', e.target.value)
+                    }
+                    placeholder={t('form.placeholders.projectName')}
+                    className={errors.projectNameEn ? 'error' : ''}
+                  />
+                  {errors.projectNameEn && (
+                    <span className="error-message">
+                      {errors.projectNameEn}
+                    </span>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="projectDescriptionEn">
+                    {t('form.fields.projectDescription')} *
+                  </label>
+                  <textarea
+                    id="projectDescriptionEn"
+                    value={formData.projectDescriptionEn}
+                    onChange={e =>
+                      handleInputChange(
+                        'projectDescriptionEn',
+                        e.target.value
+                      )
+                    }
+                    placeholder={t('form.placeholders.projectDescription')}
+                    rows={5}
+                    className={errors.projectDescriptionEn ? 'error' : ''}
+                  />
+                  {errors.projectDescriptionEn && (
+                    <span className="error-message">
+                      {errors.projectDescriptionEn}
+                    </span>
+                  )}
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="locationEn">{t('form.fields.location')} *</label>
+                  <input
+                    type="text"
+                    id="locationEn"
+                    value={formData.locationEn}
+                    onChange={e =>
+                      handleInputChange('locationEn', e.target.value)
+                    }
+                    placeholder={t('form.placeholders.location')}
+                    maxLength={255}
+                    className={errors.locationEn ? 'error' : ''}
+                  />
+                  {errors.locationEn && (
+                    <span className="error-message">
+                      {errors.locationEn}
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Status & Dates Section */}
-          <div className="form-section">
-            <h2>{t('form.sections.statusDates')}</h2>
+          {/* Status & Dates, Colors, Cover — only on Step 0 (French) */}
+          {step === 0 && (
+            <>
+              <div className="form-section">
+                <h2>{t('form.sections.statusDates')}</h2>
 
-            <div className="form-group">
-              <label htmlFor="status">{t('form.fields.status')} *</label>
-              <select
-                id="status"
-                value={formData.status}
-                onChange={e => handleInputChange('status', e.target.value)}
-              >
-                <option value="PLANNED">PLANNED</option>
-                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="DELAYED">DELAYED</option>
-                <option value="COMPLETED">COMPLETED</option>
-                <option value="CANCELLED">CANCELLED</option>
-              </select>
-            </div>
+                <div className="form-group">
+                  <label htmlFor="status">{t('form.fields.status')} *</label>
+                  <select
+                    id="status"
+                    value={formData.status}
+                    onChange={e => handleInputChange('status', e.target.value)}
+                  >
+                    <option value="PLANNED">PLANNED</option>
+                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                    <option value="DELAYED">DELAYED</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                  </select>
+                </div>
 
-            <div className="form-row">
-              <div className="form-group">
-                <label htmlFor="startDate">
-                  {t('form.fields.startDate')} *
-                </label>
-                <input
-                  type="date"
-                  id="startDate"
-                  value={formData.startDate}
-                  onChange={e => handleInputChange('startDate', e.target.value)}
-                  className={errors.startDate ? 'error' : ''}
-                />
-                {errors.startDate && (
-                  <span className="error-message">{errors.startDate}</span>
-                )}
+                <div className="form-row">
+                  <div className="form-group">
+                    <label htmlFor="startDate">
+                      {t('form.fields.startDate')} *
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      value={formData.startDate}
+                      onChange={e =>
+                        handleInputChange('startDate', e.target.value)
+                      }
+                      className={errors.startDate ? 'error' : ''}
+                    />
+                    {errors.startDate && (
+                      <span className="error-message">
+                        {errors.startDate}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="endDate">
+                      {t('form.fields.endDate')}
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      value={formData.endDate}
+                      onChange={e =>
+                        handleInputChange('endDate', e.target.value)
+                      }
+                      min={formData.startDate}
+                      className={errors.endDate ? 'error' : ''}
+                    />
+                    {errors.endDate && (
+                      <span className="error-message">
+                        {errors.endDate}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="endDate">{t('form.fields.endDate')} *</label>
-                <input
-                  type="date"
-                  id="endDate"
-                  value={formData.endDate}
-                  onChange={e => handleInputChange('endDate', e.target.value)}
-                  min={formData.startDate}
-                  className={errors.endDate ? 'error' : ''}
-                />
-                {errors.endDate && (
-                  <span className="error-message">{errors.endDate}</span>
-                )}
-              </div>
-            </div>
+              {/* Colors Section */}
+              <div className="form-section">
+                <h3>{t('form.sections.colors')}</h3>
 
-            <div className="form-group">
-              <label htmlFor="completionDate">
-                {t('form.fields.completionDate')}
-              </label>
-              <input
-                type="date"
-                id="completionDate"
-                value={formData.completionDate}
-                onChange={e =>
-                  handleInputChange('completionDate', e.target.value)
-                }
-                min={formData.startDate}
-              />
-            </div>
-          </div>
+                <div className="form-row form-row-three-col">
+                  <div className="form-group">
+                    <label htmlFor="primaryColor">
+                      {t('form.fields.primaryColor')} *
+                    </label>
+                    <input
+                      type="color"
+                      id="primaryColor"
+                      value={formData.primaryColor}
+                      onChange={e =>
+                        handleInputChange('primaryColor', e.target.value)
+                      }
+                      className={errors.primaryColor ? 'error' : ''}
+                    />
+                    {errors.primaryColor && (
+                      <span className="error-message">
+                        {errors.primaryColor}
+                      </span>
+                    )}
+                  </div>
 
-          {/* Colors Section — match edit project: h3, side by side */}
-          <div className="form-section">
-            <h3>{t('form.sections.colors')}</h3>
+                  <div className="form-group">
+                    <label htmlFor="tertiaryColor">
+                      {t('form.fields.tertiaryColor')} *
+                    </label>
+                    <input
+                      type="color"
+                      id="tertiaryColor"
+                      value={formData.tertiaryColor}
+                      onChange={e =>
+                        handleInputChange('tertiaryColor', e.target.value)
+                      }
+                      className={errors.tertiaryColor ? 'error' : ''}
+                    />
+                    {errors.tertiaryColor && (
+                      <span className="error-message">
+                        {errors.tertiaryColor}
+                      </span>
+                    )}
+                  </div>
 
-            <div className="form-row form-row-three-col">
-              <div className="form-group">
-                <label htmlFor="primaryColor">
-                  {t('form.fields.primaryColor')} *
-                </label>
-                <input
-                  type="color"
-                  id="primaryColor"
-                  value={formData.primaryColor}
-                  onChange={e =>
-                    handleInputChange('primaryColor', e.target.value)
-                  }
-                  className={errors.primaryColor ? 'error' : ''}
-                />
-                {errors.primaryColor && (
-                  <span className="error-message">{errors.primaryColor}</span>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="tertiaryColor">
-                  {t('form.fields.tertiaryColor')} *
-                </label>
-                <input
-                  type="color"
-                  id="tertiaryColor"
-                  value={formData.tertiaryColor}
-                  onChange={e =>
-                    handleInputChange('tertiaryColor', e.target.value)
-                  }
-                  className={errors.tertiaryColor ? 'error' : ''}
-                />
-                {errors.tertiaryColor && (
-                  <span className="error-message">{errors.tertiaryColor}</span>
-                )}
+                  <div className="form-group">
+                    <label htmlFor="buyerColor">
+                      {t('form.fields.buyerColor')} *
+                    </label>
+                    <input
+                      type="color"
+                      id="buyerColor"
+                      value={formData.buyerColor}
+                      onChange={e =>
+                        handleInputChange('buyerColor', e.target.value)
+                      }
+                      className={errors.buyerColor ? 'error' : ''}
+                    />
+                    {errors.buyerColor && (
+                      <span className="error-message">
+                        {errors.buyerColor}
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              <div className="form-group">
-                <label htmlFor="buyerColor">
-                  {t('form.fields.buyerColor')} *
-                </label>
-                <input
-                  type="color"
-                  id="buyerColor"
-                  value={formData.buyerColor}
-                  onChange={e =>
-                    handleInputChange('buyerColor', e.target.value)
-                  }
-                  className={errors.buyerColor ? 'error' : ''}
-                />
-                {errors.buyerColor && (
-                  <span className="error-message">{errors.buyerColor}</span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Customer & Buyer Section removed */}
-
-          {/* Progress: removed — calculated automatically from lots when project is loaded */}
-
-          {/* Cover Image Section — custom label so "Choose file" / "No file chosen" are translated */}
-          <div className="form-section">
+              {/* Cover Image Section */}
+              <div className="form-section">
             <h2>{t('form.sections.coverImage')}</h2>
             <div className="form-group">
               <label htmlFor="coverImage">{t('form.fields.coverPhoto')}</label>
@@ -984,6 +992,8 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
               )}
             </div>
           </div>
+            </>
+          )}
 
           {/* Form Actions — Step 0: Fill out English | Step 1: Back + Continue to add lots */}
           <div className="form-actions">

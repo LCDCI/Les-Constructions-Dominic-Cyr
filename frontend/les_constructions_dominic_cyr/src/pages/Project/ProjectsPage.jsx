@@ -591,6 +591,7 @@ const ProjectsPage = () => {
       </section>
       {isCreateOpen && (
         <div
+          className="create-project-overlay"
           style={overlayStyle}
           role="dialog"
           aria-modal="true"
@@ -599,7 +600,7 @@ const ProjectsPage = () => {
             if (e.target === e.currentTarget) setShowConfirmClose(true);
           }}
         >
-          <div style={modalStyle}>
+          <div className="create-project-modal" style={modalStyle}>
             <div className="create-project-header">
               <h1>{createProjectTitle}</h1>
             </div>

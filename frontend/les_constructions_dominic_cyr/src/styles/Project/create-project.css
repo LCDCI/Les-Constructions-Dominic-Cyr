@@ -61,11 +61,61 @@
   color: white;
 }
 
+/* Prevent horizontal scroll on create project modal and overlay */
+.create-project-overlay {
+  overflow: hidden !important;
+  /* Overlay does not scroll; only the modal scrolls so scroll cannot go past form */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.create-project-overlay::-webkit-scrollbar {
+  display: none;
+}
+
+.create-project-modal {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-width: 100%;
+  max-height: calc(100vh - 4rem);
+  box-sizing: border-box;
+  /* Modal is the scroll container: scroll stops exactly at end of form */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.create-project-modal::-webkit-scrollbar {
+  display: none;
+}
+
 /* Form Styles */
 .create-project-form {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  overflow-x: hidden;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Step 0 (French) and Step 1 (English) share same min-height as Step 2 (Lots) to avoid layout jump */
+.create-project-step-fields {
+  min-height: 420px;
+  max-height: 70vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.create-project-step-fields::-webkit-scrollbar {
+  display: none;
+}
+
+.create-project-step-fields .form-section {
+  max-width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
 }
 
 .form-section {
@@ -74,6 +124,8 @@
   border-radius: 8px;
   border: 1px solid #e0e0e0;
   margin-bottom: 1.5rem;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .create-project-form .form-section:last-of-type {
@@ -163,11 +215,13 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
+  min-width: 0;
 }
 
 .form-row-three-col,
 .create-project-form .form-row.form-row-three-col {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
 }
 
 /* Hidden native file input — use custom label/button so text is translated */
@@ -224,6 +278,7 @@
   gap: 0.75rem;
   margin-top: 0.75rem;
   width: max-content;
+  max-width: 100%;
 }
 
 /* Force both label and button to fill their grid cell so they stay the same size */
@@ -690,24 +745,20 @@
   transform-origin: bottom center;
 }
 
-/* New, more pronounced enter animation for language switch */
+/* Smoother, subtler enter animation for language switch (French → English) */
 @keyframes langSlideEnter {
   0% {
     opacity: 0;
-    transform: translate3d(0, 80px, 0) scale(0.98);
-  }
-  60% {
-    opacity: 1;
-    transform: translate3d(0, -6px, 0) scale(1);
+    transform: translate3d(0, 16px, 0);
   }
   100% {
     opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 .slide-up-enter {
-  animation: langSlideEnter 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: langSlideEnter 380ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
   will-change: transform, opacity;
 }
 

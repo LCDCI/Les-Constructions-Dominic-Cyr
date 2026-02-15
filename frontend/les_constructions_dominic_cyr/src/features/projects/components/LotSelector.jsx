@@ -24,6 +24,7 @@ const lotTranslations = {
     dimensionsSquareMetersPlaceholder: 'e.g., 465',
     price: 'Price',
     pricePlaceholder: 'Enter price',
+    priceCannotBeNegative: 'Price cannot be negative',
     status: 'Status',
     assignedCustomer: 'Assigned Customer',
     assignedCustomerPlaceholder: 'Select a customer (optional)',
@@ -56,6 +57,7 @@ const lotTranslations = {
     dimensionsSquareMetersPlaceholder: 'ex: 465',
     price: 'Prix',
     pricePlaceholder: 'Entrez le prix',
+    priceCannotBeNegative: 'Le prix ne peut pas être négatif',
     status: 'Statut',
     assignedCustomer: 'Client assigné',
     assignedCustomerPlaceholder: 'Sélectionner un client (optionnel)',
@@ -223,8 +225,13 @@ const LotSelector = ({
       setCreateError(t('dimensionsSquareMeters') + ' is required');
       return;
     }
-    if (!newLotData.price || parseFloat(newLotData.price) <= 0) {
-      setCreateError(t('price') + ' must be greater than 0');
+    const priceNum = parseFloat(newLotData.price);
+    if (newLotData.price === '' || newLotData.price == null || isNaN(priceNum)) {
+      setCreateError(t('price') + ' is required');
+      return;
+    }
+    if (priceNum < 0) {
+      setCreateError(t('priceCannotBeNegative'));
       return;
     }
 
@@ -233,7 +240,7 @@ const LotSelector = ({
       civicAddress: newLotData.civicAddress.trim(),
       dimensionsSquareFeet: newLotData.dimensionsSquareFeet.trim(),
       dimensionsSquareMeters: newLotData.dimensionsSquareMeters.trim(),
-      price: parseFloat(newLotData.price),
+      price: priceNum,
       lotStatus: newLotData.lotStatus,
       assignedCustomerId: newLotData.assignedCustomerId || null,
     };
