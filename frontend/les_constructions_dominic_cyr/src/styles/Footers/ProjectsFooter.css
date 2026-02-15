@@ -38,7 +38,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--icon-primary, #4a90a4);
+  color: var(--icon-primary, #aab2a6);
   margin-bottom: 1%;
 }
 
@@ -76,14 +76,14 @@
 }
 
 .footer-mini-icon {
-  color: var(--icon-primary, #4a90a4);
+  color: var(--icon-primary, #aab2a6);
   font-size: 0.9rem;
   flex-shrink: 0;
 }
 
 .footer-link {
   font-size: 15px;
-  color: var(--icon-primary, #4a90a4);
+  color: var(--icon-primary, #aab2a6);
   text-decoration: none;
   transition: color 0.2s ease;
   line-height: 1.5;

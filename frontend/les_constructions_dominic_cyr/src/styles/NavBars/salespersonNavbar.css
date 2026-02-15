@@ -105,7 +105,7 @@
 .navbar-sidebar-logo-text {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #4a90a4;
+  color: #aab2a6;
 }
 
 .navbar-close {
@@ -163,13 +163,13 @@
 
 .navbar-link:hover {
   background-color: #f5f5f5;
-  border-left-color: #4a90a4;
+  border-left-color: #aab2a6;
 }
 
 .navbar-link.active {
-  background-color: #e8f4f8;
-  border-left-color: #4a90a4;
-  color: #4a90a4;
+  background-color: #f0f2ef;
+  border-left-color: #aab2a6;
+  color: #aab2a6;
   font-weight: 600;
 }
 

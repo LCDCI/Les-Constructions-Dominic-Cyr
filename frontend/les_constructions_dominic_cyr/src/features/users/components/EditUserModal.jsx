@@ -66,7 +66,11 @@ export default function EditUserModal({
         </p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="edit-user-first-name">First Name</label>
+            <label htmlFor="edit-user-first-name">
+              <span>
+                First Name<span className="required">*</span>
+              </span>
+            </label>
             <input
               id="edit-user-first-name"
               type="text"
@@ -77,7 +81,11 @@ export default function EditUserModal({
             />
           </div>
           <div className="form-group">
-            <label htmlFor="edit-user-last-name">Last Name</label>
+            <label htmlFor="edit-user-last-name">
+              <span>
+                Last Name<span className="required">*</span>
+              </span>
+            </label>
             <input
               id="edit-user-last-name"
               type="text"
@@ -142,7 +150,7 @@ export default function EditUserModal({
               type="button"
               onClick={onClose}
               disabled={isSaving}
-              className="btn-secondary"
+              className="btn-cancel"
             >
               Cancel
             </button>
