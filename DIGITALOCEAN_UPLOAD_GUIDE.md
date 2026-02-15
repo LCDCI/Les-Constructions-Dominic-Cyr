@@ -201,7 +201,27 @@ VITE_FILES_SERVICE_URL=https://files-service-app-xubs2.ondigitalocean.app
 VITE_AUTH0_DOMAIN=your-auth0-domain
 VITE_AUTH0_CLIENT_ID=your-client-id
 VITE_AUTH0_AUDIENCE=your-audience
+
+# Google Analytics (for backend reports)
+GOOGLE_ANALYTICS_CREDENTIALS=<paste-json-content-here>  # Mark as encrypted in DigitalOcean
+GA_PROPERTY_ID=your-property-id
 ```
+
+### Setting Up Google Analytics Credentials
+
+The backend needs Google Analytics credentials to generate reports. In DigitalOcean:
+
+1. Go to your backend app -> Settings -> Environment Variables
+2. Add a new variable:
+   - **Key**: `GOOGLE_ANALYTICS_CREDENTIALS`
+   - **Value**: Paste the entire content of `google-analytics-credentials.json`
+   - **Check**: ✅ Encrypt
+3. Add another variable:
+   - **Key**: `GA_PROPERTY_ID`
+   - **Value**: Your Google Analytics property ID
+4. Save and redeploy
+
+The application will automatically detect and use the environment variable in production while still supporting the local file-based credentials for development.
 
 ## Summary Checklist
 
