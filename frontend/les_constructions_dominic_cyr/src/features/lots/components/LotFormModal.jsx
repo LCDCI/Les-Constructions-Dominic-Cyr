@@ -162,7 +162,7 @@ const LotFormModal = ({
           </button>
         </div>
 
-        <p id="lot-modal-description" className="sr-only">
+        <p id="lot-modal-description">
           Fill out the lot details and submit the form.
         </p>
 
