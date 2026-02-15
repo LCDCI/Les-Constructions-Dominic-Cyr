@@ -80,27 +80,24 @@
 /* Cancel Button */
 .btn-cancel {
   padding: 10px 20px;
-  border: 1px solid #d1d5db;
-  background-color: white;
-  color: #374151;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  /* Uses global.css button token system */
 }
 
 .btn-cancel:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
+  /* Uses global.css button hover token */
 }
 
 /* Confirm Button (Non-destructive) */
 .btn-confirm {
   padding: 10px 20px;
   border: none;
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -109,15 +106,15 @@
 }
 
 .btn-confirm:hover {
-  background-color: #2563eb;
+  background-color: var(--button-primary-hover);
 }
 
 /* Confirm Button (Destructive) */
 .btn-confirm-destructive {
   padding: 10px 20px;
   border: none;
-  background-color: #dc2626;
-  color: white;
+  background-color: var(--button-danger-bg);
+  color: var(--button-danger-text);
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -126,7 +123,7 @@
 }
 
 .btn-confirm-destructive:hover {
-  background-color: #b91c1c;
+  background-color: var(--button-danger-hover);
 }
 
 /* Mobile Responsiveness */

@@ -11,7 +11,7 @@ export default function IdleTimeoutModal({
   const seconds = remainingSeconds % 60;
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true">
+    <div className="modal-overlay idle-modal" role="dialog" aria-modal="true">
       <div className="modal-content">
         <div
           style={{
@@ -35,7 +35,11 @@ export default function IdleTimeoutModal({
         </p>
 
         <div className="modal-actions">
-          <button type="button" className="modal-secondary" onClick={onStay}>
+          <button
+            type="button"
+            className="modal-secondary btn-cancel"
+            onClick={onStay}
+          >
             Stay signed in
           </button>
           <button type="button" className="modal-primary" onClick={onLogout}>

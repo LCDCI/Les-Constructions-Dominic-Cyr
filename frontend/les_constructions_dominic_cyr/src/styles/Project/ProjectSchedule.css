@@ -1046,11 +1046,13 @@
 
 .modal-secondary {
   padding: 10px 16px;
-  background: var(--white, #ffffff);
-  color: var(--text-primary, #2c3e50);
-  border: 1px solid var(--card-border, #d7e1ec);
   border-radius: 8px;
   cursor: pointer;
+  /* Uses global.css button token system */
+}
+
+.modal-secondary:hover:not(:disabled) {
+  /* Uses global.css button hover token */
 }
 
 /* Task details page */
