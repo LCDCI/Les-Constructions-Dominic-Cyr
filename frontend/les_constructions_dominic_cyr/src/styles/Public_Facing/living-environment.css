@@ -7,27 +7,22 @@
   padding: 0 0 var(--spacing-xl, 4rem) 0;
 }
 
-/* Header Section */
+/* Header Section - Full width like residential projects page */
 .le-header-section {
-  width: var(--content-width);
-  max-width: var(--content-max-width);
+  width: 100%;
   margin: 0 auto var(--spacing-xxl, 6rem) auto;
   text-align: center;
   margin-top: 0;
-  padding: 1.5rem 0 2.5rem 0;
+  padding: var(--spacing-section, 8rem) var(--spacing-lg, 2rem);
   background: var(--primary-color, #4c4d4f);
-  border-radius: 1.5rem;
   color: #fff;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
 }
 
-/* Full width header variant with 5% side gutters */
+/* Full width header variant - same full width styling */
 .le-header-section.full-width-le {
-  width: calc(100% - 10%);
-  margin: 0 5% var(--spacing-xxl, 6rem);
-  border-radius: 1rem;
-  padding: 2rem 2.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  margin: 0 auto var(--spacing-xxl, 6rem);
+  padding: var(--spacing-section, 8rem) var(--spacing-lg, 2rem);
 }
 
 .le-main-title,
