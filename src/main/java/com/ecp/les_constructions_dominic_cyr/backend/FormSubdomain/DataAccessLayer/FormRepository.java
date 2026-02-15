@@ -94,8 +94,8 @@ public interface FormRepository extends JpaRepository<Form, Long> {
      */
     List<Form> findByProjectIdentifierAndLotIdentifier(String projectIdentifier, UUID lotIdentifier);
 
-        /**
-         * Find all forms for a lot
-         */
-        List<Form> findByLotIdentifier(UUID lotIdentifier);
+    /**
+     * Find all forms for a lot
+     */
+    List<Form> findByLotIdentifier(UUID lotIdentifier);
 }
