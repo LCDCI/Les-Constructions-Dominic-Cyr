@@ -587,6 +587,11 @@ public class FormController {
         }
     }
 
+    private String buildFormFileName(FormResponseModel form) {
+        String formType = form.getFormType() != null ? form.getFormType().name().toLowerCase() : "form";
+        return "form_" + formType + "_" + form.getFormId() + ".pdf";
+    }
+
     private String formatFormType(FormType formType) {
         if (formType == null) {
             return "Form";

@@ -281,14 +281,14 @@ const CustomerFormsPage = () => {
       });
 
       const formsData = await getMyForms(token);
-      
+
       // Filter forms by projectId and lotId from URL params
       const filteredForms =
         formsData?.filter(
           form =>
             form.projectIdentifier === projectId && form.lotIdentifier === lotId
         ) || [];
-      
+
       setForms(filteredForms);
       setLoading(false);
     } catch (error) {
@@ -377,6 +377,8 @@ const CustomerFormsPage = () => {
       setSelectedForm(null);
       setFormData({});
       await fetchForms();
+    } catch (error) {
+      if (error.response?.data?.message) {
         setSubmitError(error.response.data.message);
       } else {
         setSubmitError('Failed to submit form. Please try again.');

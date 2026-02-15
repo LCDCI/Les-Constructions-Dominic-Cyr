@@ -8,10 +8,7 @@ import {
   downloadLotDocument,
   deleteLotDocument,
 } from '../api/lotDocumentsApi';
-import {
-  getFormsByLot,
-  downloadFinalizedForm,
-} from '../../forms/api/formsApi';
+import { getFormsByLot, downloadFinalizedForm } from '../../forms/api/formsApi';
 import { fetchLotById } from '../api/lots';
 import {
   FaDownload,
@@ -466,7 +463,8 @@ const LotDocumentsPage = () => {
                       <span>Form ID: {form.formId}</span>
                       {form.completedDate && (
                         <span>
-                          Completed: {new Date(form.completedDate).toLocaleDateString()}
+                          Completed:{' '}
+                          {new Date(form.completedDate).toLocaleDateString()}
                         </span>
                       )}
                     </div>

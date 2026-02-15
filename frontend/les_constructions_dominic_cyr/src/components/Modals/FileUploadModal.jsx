@@ -30,8 +30,6 @@ export default function FileUploadModal({
   // Hardcode category to DOCUMENT
   const category = 'DOCUMENT';
 
-
-
   const handleFileChange = e => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
