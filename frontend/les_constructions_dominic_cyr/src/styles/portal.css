@@ -29,14 +29,14 @@
   padding: 12px;
   border-radius: 8px;
   border: none;
-  background: #4d85b9;
+  background: #aab2a6;
   color: #ffffff;
   font-size: 15px;
   cursor: pointer;
 }
 
 .portal-card button:hover {
-  background: #1d4ed8;
+  background: #8a9287;
 }
 
 .verification-error-banner {

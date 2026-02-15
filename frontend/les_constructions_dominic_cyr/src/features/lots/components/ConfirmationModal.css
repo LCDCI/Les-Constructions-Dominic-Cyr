@@ -91,12 +91,12 @@
 }
 
 .btn-cancel {
-  background-color: #6c757d;
+  background-color: #dc3545;
   color: white;
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background-color: #5a6268;
+  background-color: #c82333;
 }
 
 .btn-cancel:disabled {

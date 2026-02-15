@@ -117,8 +117,8 @@
 }
 
 .btn-edit {
-  background-color: #2563eb;
-  color: white;
+  background-color: #aab2a6 !important;
+  color: white !important;
   padding: 6px 12px;
   border: none;
   border-radius: 4px;
@@ -128,7 +128,7 @@
 }
 
 .btn-edit:hover {
-  background-color: #1e40af;
+  background-color: #8a9287 !important;
 }
 
 .status-badge {
@@ -179,7 +179,8 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 16px;
+  padding: 8px;
+  overflow: hidden;
 }
 
 .modal-overlay {
@@ -190,25 +191,28 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 16px;
+  padding: 8px;
+  overflow: hidden;
 }
 
 .modal {
   background-color: #ffffff;
   border-radius: 10px;
-  padding: 24px;
-  width: 640px;
+  padding: 16px;
+  width: 560px;
   max-width: 95%;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .modal-content {
   background-color: #ffffff;
   border-radius: 10px;
-  width: 640px;
+  width: 440px;
   max-width: 95%;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-  max-height: 90vh;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.22);
+  max-height: 80vh;
   overflow-y: auto;
 }
 
@@ -216,13 +220,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 24px;
+  padding: 12px 16px;
   border-bottom: 1px solid #e5e7eb;
+  background-color: #f8fafc;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .modal-close {
@@ -247,7 +254,7 @@
 }
 
 .modal-body {
-  padding: 24px;
+  padding: 16px;
 }
 
 .modal h2 {
@@ -276,6 +283,20 @@
   color: #374151;
 }
 
+/* place label text and required star on same line */
+.modal-form label .label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.modal-form label .required {
+  color: #e11d48;
+  font-weight: 600;
+  line-height: 1;
+  font-size: 1rem;
+}
+
 .modal-form input,
 .modal-form select {
   margin-top: 6px;
@@ -288,7 +309,7 @@
 .modal-form input:focus,
 .modal-form select:focus {
   outline: none;
-  border-color: #2563eb;
+  border-color: #aab2a6;
 }
 
 .modal-actions {
@@ -309,22 +330,46 @@
 
 .modal-actions button[type='submit'],
 .modal-actions button:not([type]) {
-  background-color: #2563eb;
-  color: #ffffff;
+  background-color: #aab2a6 !important;
+  background-image: none !important;
+  color: #ffffff !important;
 }
 
 .modal-actions button[type='submit']:hover,
 .modal-actions button:not([type]):hover {
-  background-color: #1e40af;
+  background-color: #8a9287 !important;
+  background-image: none !important;
 }
 
 .modal-actions button[type='button'] {
-  background-color: #e5e7eb;
-  color: #111827;
+  background-color: #e5e7eb !important;
+  color: #1f2937 !important;
 }
 
 .modal-actions button[type='button']:hover {
-  background-color: #d1d5db;
+  background-color: #d1d5db !important;
+}
+
+.users-page .modal-actions .btn-cancel {
+  background-color: var(--button-secondary-bg, #e5e7eb);
+  color: var(--button-secondary-fg, #111827);
+  background-image: none;
+}
+
+.users-page .modal-actions .btn-cancel:hover {
+  background-color: var(--button-secondary-hover-bg, #d1d5db);
+  background-image: none;
+}
+
+.modal-actions button.btn-cancel {
+  background-color: var(--button-secondary-bg, #e5e7eb);
+  color: var(--button-secondary-fg, #111827);
+  background-image: none;
+}
+
+.modal-actions button.btn-cancel:hover {
+  background-color: var(--button-secondary-hover-bg, #d1d5db);
+  background-image: none;
 }
 
 .modal-actions button:disabled {
@@ -335,8 +380,8 @@
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
-  padding: 20px 24px;
+  gap: 10px;
+  padding: 12px 16px;
   border-top: 1px solid #e5e7eb;
 }
 
@@ -363,8 +408,8 @@
 
 .btn-primary {
   padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
+  background-color: #aab2a6 !important;
+  color: white !important;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -374,7 +419,7 @@
 }
 
 .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #8a9287 !important;
 }
 
 .btn-primary:disabled {
@@ -486,43 +531,88 @@
   color: #333333;
 }
 
+/* Scoped status modal — compact layout */
+.status-modal {
+  width: 400px !important;
+  max-width: 95% !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+}
+
+.status-modal .modal-header {
+  padding: 10px 14px;
+  background: #fff;
+}
+
+.status-modal .modal-header h2 {
+  color: #000000;
+}
+
+.status-modal .modal-body {
+  padding: 14px;
+}
+
+.status-modal .modal-footer {
+  padding: 10px 14px;
+}
+
+.status-modal .btn-primary {
+  background-color: #aab2a6 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  opacity: 1 !important;
+}
+
+.status-modal .btn-primary:hover {
+  background-color: #8a9287 !important;
+  background-image: none !important;
+}
+
+.status-modal .btn-primary:disabled {
+  background-color: #aab2a6 !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  opacity: 0.85 !important;
+}
+
 .user-status-info {
   background-color: #f8f9fa;
-  padding: 16px;
+  padding: 12px;
   border-radius: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .user-status-info p {
-  margin: 8px 0;
+  margin: 4px 0;
 }
 
 .action-selection {
-  margin-top: 20px;
+  margin-top: 12px;
 }
 
 .action-selection label {
   display: block;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   color: #333;
-  font-size: 1.05rem;
+  font-size: 1rem;
 }
 
 .action-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .action-btn {
-  padding: 14px 20px;
+  padding: 10px 16px;
   border: 2px solid #dee2e6;
   background-color: white;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 500;
   transition: all 0.3s ease;
   text-align: left;
@@ -693,4 +783,15 @@
   .info-value {
     text-align: left;
   }
+}
+
+/* Idle Timeout Modal - "Stay signed in" button uses navbar color scheme */
+.idle-modal .modal-secondary.btn-cancel {
+  background-color: #aab2a6 !important;
+  color: #ffffff !important;
+  border: 1px solid transparent !important;
+}
+
+.idle-modal .modal-secondary.btn-cancel:hover {
+  background-color: #8a9287 !important;
 }

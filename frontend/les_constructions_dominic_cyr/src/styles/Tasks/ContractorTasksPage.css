@@ -57,8 +57,8 @@
 
 .filter-group select:focus {
   outline: none;
-  border-color: var(--primary-color, #4a90a4);
-  box-shadow: 0 0 0 2px rgba(74, 144, 164, 0.1);
+  border-color: var(--primary-color, #aab2a6);
+  box-shadow: 0 0 0 2px rgba(170, 178, 166, 0.15);
 }
 
 .filter-group select:disabled {
@@ -127,7 +127,7 @@
 }
 
 .project-header {
-  background: var(--primary-color, #4a90a4);
+  background: var(--primary-color, #aab2a6);
   padding: 1rem 1.5rem;
 }
 
@@ -163,7 +163,7 @@
 }
 
 .task-count-badge {
-  background: var(--primary-color, #4a90a4);
+  background: var(--primary-color, #aab2a6);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -329,7 +329,7 @@
 
 .progress-bar-fill {
   height: 100%;
-  background: var(--primary-color, #4a90a4);
+  background: var(--primary-color, #aab2a6);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -355,7 +355,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid var(--border-color, #eee);
-  border-top-color: var(--primary-color, #4a90a4);
+  border-top-color: var(--primary-color, #aab2a6);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -374,7 +374,7 @@
 
 .error-container button {
   padding: 0.5rem 1.5rem;
-  background: var(--primary-color, #4a90a4);
+  background: var(--primary-color, #aab2a6);
   color: white;
   border: none;
   border-radius: 6px;

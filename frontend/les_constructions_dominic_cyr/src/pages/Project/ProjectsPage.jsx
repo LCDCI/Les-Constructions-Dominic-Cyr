@@ -559,7 +559,7 @@ const ProjectsPage = () => {
             >
               <button
                 type="button"
-                className="btn-cancel"
+                className="btn-cancel btn-stay-on-form"
                 onClick={() => setShowConfirmClose(false)}
               >
                 Stay on form
