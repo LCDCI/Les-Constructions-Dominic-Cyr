@@ -30,6 +30,13 @@ public interface FormService {
     FormResponseModel getFormById(String formId);
 
     /**
+     * Get all forms (for privileged roles: owner, salesperson, contractor)
+     * 
+     * @return List of all forms
+     */
+    List<FormResponseModel> getAllForms();
+
+    /**
      * Get all forms for a specific project
      * 
      * @param projectIdentifier Project identifier

@@ -141,13 +141,13 @@ class FormControllerUnitTest {
     void getAllForms_ReturnsFormsList() throws Exception {
         List<FormResponseModel> forms = Arrays.asList(testFormResponse);
         when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
-        when(formService.getFormsCreatedBy(anyString())).thenReturn(forms);
+        when(formService.getAllForms()).thenReturn(forms);
 
         mockMvc.perform(get("/api/v1/forms"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].formId").value("form-id-789"));
 
-        verify(formService).getFormsCreatedBy(anyString());
+        verify(formService).getAllForms();
     }
 
     @Test
@@ -535,7 +535,7 @@ class FormControllerUnitTest {
         List<FormResponseModel> allForms = Arrays.asList(form1, form2);
         
         when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
-        when(formService.getFormsCreatedBy(anyString())).thenReturn(allForms);
+        when(formService.getAllForms()).thenReturn(allForms);
 
         mockMvc.perform(get("/api/v1/forms")
                         .param("status", "ASSIGNED")
@@ -557,7 +557,7 @@ class FormControllerUnitTest {
                 .andExpect(jsonPath("$[0].customerId").value(CUSTOMER_UUID));
 
         verify(formService).getFormsByCustomer(CUSTOMER_UUID);
-        verify(formService, never()).getFormsCreatedBy(anyString());
+        verify(formService, never()).getAllForms();
     }
 
     @Test
@@ -603,7 +603,7 @@ class FormControllerUnitTest {
     }
 
     @Test
-    void getAllForms_AsOwner_ReturnsFormsByCreator() throws Exception {
+    void getAllForms_AsOwner_ReturnsAllForms() throws Exception {
         UserResponseModel owner = new UserResponseModel();
         owner.setUserIdentifier("owner-id-123");
         owner.setUserRole(UserRole.OWNER);
@@ -611,12 +611,12 @@ class FormControllerUnitTest {
         List<FormResponseModel> ownerForms = Arrays.asList(testFormResponse);
         
         when(userService.getUserByAuth0Id(anyString())).thenReturn(owner);
-        when(formService.getFormsCreatedBy("owner-id-123")).thenReturn(ownerForms);
+        when(formService.getAllForms()).thenReturn(ownerForms);
 
         mockMvc.perform(get("/api/v1/forms"))
                 .andExpect(status().isOk());
 
-        verify(formService).getFormsCreatedBy("owner-id-123");
+        verify(formService).getAllForms();
     }
 
     @Test
@@ -636,7 +636,7 @@ class FormControllerUnitTest {
         List<FormResponseModel> allForms = Arrays.asList(windowsForm, paintForm);
         
         when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
-        when(formService.getFormsCreatedBy(anyString())).thenReturn(allForms);
+        when(formService.getAllForms()).thenReturn(allForms);
 
         mockMvc.perform(get("/api/v1/forms")
                         .param("formType", "WINDOWS"))
@@ -825,7 +825,7 @@ class FormControllerUnitTest {
         List<FormResponseModel> allForms = Arrays.asList(assignedForm, submittedForm, inProgressForm);
         
         when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
-        when(formService.getFormsCreatedBy(anyString())).thenReturn(allForms);
+        when(formService.getAllForms()).thenReturn(allForms);
 
         mockMvc.perform(get("/api/v1/forms")
                         .param("status", "ASSIGNED"))
@@ -858,7 +858,7 @@ class FormControllerUnitTest {
         List<FormResponseModel> allForms = Arrays.asList(windowsForm, paintForm, doorsForm);
         
         when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
-        when(formService.getFormsCreatedBy(anyString())).thenReturn(allForms);
+        when(formService.getAllForms()).thenReturn(allForms);
 
         mockMvc.perform(get("/api/v1/forms")
                         .param("formType", "PAINT"))
@@ -897,7 +897,7 @@ class FormControllerUnitTest {
         List<FormResponseModel> allForms = Arrays.asList(match, wrongType, wrongStatus, wrongBoth);
         
         when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
-        when(formService.getFormsCreatedBy(anyString())).thenReturn(allForms);
+        when(formService.getAllForms()).thenReturn(allForms);
 
         mockMvc.perform(get("/api/v1/forms")
                         .param("status", "ASSIGNED")
@@ -1064,13 +1064,246 @@ class FormControllerUnitTest {
         List<FormResponseModel> allForms = Arrays.asList(form1, form2);
         
         when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
-        when(formService.getFormsCreatedBy(anyString())).thenReturn(allForms);
+        when(formService.getAllForms()).thenReturn(allForms);
 
         // Filter for COMPLETED status but none exist
         mockMvc.perform(get("/api/v1/forms")
                         .param("status", "COMPLETED"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    // ========== Tests for Submitted Forms Viewing (Lot Documents Page Functionality) ==========
+
+    @Test
+    void getFormById_SubmittedForm_CustomerCanView_ReturnsFormWithData() throws Exception {
+        // Setup submitted form with customer data
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("pdfFile", Map.of("fileId", "file-123", "fileName", "garage-selection.pdf"));
+        formData.put("additionalNotes", "Customer selected model X with special finish");
+
+        FormResponseModel submittedForm = FormResponseModel.builder()
+                .formId("form-123")
+                .formType(FormType.GARAGE_DOORS)
+                .formStatus(FormStatus.SUBMITTED)
+                .customerId(CUSTOMER_UUID)
+                .projectIdentifier("project-1")
+                .lotIdentifier("lot-1")
+                .formData(formData)
+                .build();
+
+        when(userService.getUserByAuth0Id(anyString())).thenReturn(testCustomer);
+        when(formService.getFormById("form-123")).thenReturn(submittedForm);
+
+        mockMvc.perform(get("/api/v1/forms/form-123"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.formId").value("form-123"))
+                .andExpect(jsonPath("$.formStatus").value("SUBMITTED"))
+                .andExpect(jsonPath("$.formData.additionalNotes").value("Customer selected model X with special finish"))
+                .andExpect(jsonPath("$.formData.pdfFile.fileId").value("file-123"));
+
+        verify(formService).getFormById("form-123");
+    }
+
+    @Test
+    void getFormById_SubmittedForm_SalespersonCanView_ReturnsFormWithData() throws Exception {
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("exteriorColor", "Navy Blue");
+        formData.put("interiorColor", "Warm White");
+
+        FormResponseModel submittedForm = FormResponseModel.builder()
+                .formId("form-456")
+                .formType(FormType.PAINT)
+                .formStatus(FormStatus.SUBMITTED)
+                .customerId(CUSTOMER_UUID)
+                .projectIdentifier("project-1")
+                .lotIdentifier("lot-1")
+                .formData(formData)
+                .build();
+
+        when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
+        when(formService.getFormById("form-456")).thenReturn(submittedForm);
+
+        mockMvc.perform(get("/api/v1/forms/form-456"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.formId").value("form-456"))
+                .andExpect(jsonPath("$.formStatus").value("SUBMITTED"))
+                .andExpect(jsonPath("$.formData.exteriorColor").value("Navy Blue"))
+                .andExpect(jsonPath("$.formData.interiorColor").value("Warm White"));
+
+        verify(formService).getFormById("form-456");
+    }
+
+    @Test
+    void getFormById_SubmittedForm_ContractorCanView_ReturnsFormWithData() throws Exception {
+        UserResponseModel testContractor = new UserResponseModel();
+        testContractor.setUserIdentifier("contractor-uuid");
+        testContractor.setUserRole(UserRole.CONTRACTOR);
+
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("exteriorColorFacade", "Charcoal Gray");
+
+        FormResponseModel submittedForm = FormResponseModel.builder()
+                .formId("form-789")
+                .formType(FormType.WINDOWS)
+                .formStatus(FormStatus.SUBMITTED)
+                .customerId(CUSTOMER_UUID)
+                .projectIdentifier("project-1")
+                .lotIdentifier("lot-1")
+                .formData(formData)
+                .build();
+
+        when(userService.getUserByAuth0Id(anyString())).thenReturn(testContractor);
+        when(formService.getFormById("form-789")).thenReturn(submittedForm);
+
+        mockMvc.perform(get("/api/v1/forms/form-789"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.formId").value("form-789"))
+                .andExpect(jsonPath("$.formStatus").value("SUBMITTED"))
+                .andExpect(jsonPath("$.formData.exteriorColorFacade").value("Charcoal Gray"));
+
+        verify(formService).getFormById("form-789");
+    }
+
+    @Test
+    void getFormById_SubmittedForm_OwnerCanView_ReturnsFormWithData() throws Exception {
+        UserResponseModel testOwner = new UserResponseModel();
+        testOwner.setUserIdentifier("owner-uuid");
+        testOwner.setUserRole(UserRole.OWNER);
+
+        Map<String, Object> formData = new HashMap<>();
+        formData.put("doorModel", "Premium Oak");
+        formData.put("finish", "Stained Walnut");
+
+        FormResponseModel submittedForm = FormResponseModel.builder()
+                .formId("form-999")
+                .formType(FormType.EXTERIOR_DOORS)
+                .formStatus(FormStatus.SUBMITTED)
+                .customerId(CUSTOMER_UUID)
+                .projectIdentifier("project-1")
+                .lotIdentifier("lot-1")
+                .formData(formData)
+                .build();
+
+        when(userService.getUserByAuth0Id(anyString())).thenReturn(testOwner);
+        when(formService.getFormById("form-999")).thenReturn(submittedForm);
+
+        mockMvc.perform(get("/api/v1/forms/form-999"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.formId").value("form-999"))
+                .andExpect(jsonPath("$.formStatus").value("SUBMITTED"))
+                .andExpect(jsonPath("$.formData.doorModel").value("Premium Oak"))
+                .andExpect(jsonPath("$.formData.finish").value("Stained Walnut"));
+
+        verify(formService).getFormById("form-999");
+    }
+
+    @Test
+    void getAllForms_AsPrivilegedRole_ReturnsAllFormsIncludingMultipleLots() throws Exception {
+        FormResponseModel form1 = FormResponseModel.builder()
+                .formId("form-1")
+                .formType(FormType.WINDOWS)
+                .formStatus(FormStatus.ASSIGNED)
+                .lotIdentifier("lot-123")
+                .build();
+
+        FormResponseModel form2 = FormResponseModel.builder()
+                .formId("form-2")
+                .formType(FormType.PAINT)
+                .formStatus(FormStatus.SUBMITTED)
+                .lotIdentifier("lot-123")
+                .build();
+
+        FormResponseModel form3 = FormResponseModel.builder()
+                .formId("form-3")
+                .formType(FormType.GARAGE_DOORS)
+                .formStatus(FormStatus.ASSIGNED)
+                .lotIdentifier("lot-456")
+                .build();
+
+        List<FormResponseModel> allForms = Arrays.asList(form1, form2, form3);
+
+        when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
+        when(formService.getAllForms()).thenReturn(allForms);
+
+        mockMvc.perform(get("/api/v1/forms"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(3));
+
+        verify(formService).getAllForms();
+    }
+
+    @Test
+    void getAllForms_OnlySubmittedStatus_ReturnsSubmittedFormsOnly() throws Exception {
+        FormResponseModel assignedForm = FormResponseModel.builder()
+                .formId("form-assigned")
+                .formType(FormType.WINDOWS)
+                .formStatus(FormStatus.ASSIGNED)
+                .lotIdentifier("lot-123")
+                .build();
+
+        FormResponseModel submittedForm = FormResponseModel.builder()
+                .formId("form-submitted")
+                .formType(FormType.PAINT)
+                .formStatus(FormStatus.SUBMITTED)
+                .lotIdentifier("lot-123")
+                .build();
+
+        FormResponseModel completedForm = FormResponseModel.builder()
+                .formId("form-completed")
+                .formType(FormType.GARAGE_DOORS)
+                .formStatus(FormStatus.COMPLETED)
+                .lotIdentifier("lot-123")
+                .build();
+
+        List<FormResponseModel> allForms = Arrays.asList(assignedForm, submittedForm, completedForm);
+
+        when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);
+        when(formService.getAllForms()).thenReturn(allForms);
+
+        mockMvc.perform(get("/api/v1/forms")
+                        .param("status", "SUBMITTED"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].formId").value("form-submitted"))
+                .andExpect(jsonPath("$[0].formStatus").value("SUBMITTED"));
+    }
+
+    // ========== Contractor Role Tests ==========
+
+    @Test
+    void getAllForms_AsContractor_ReturnsAllForms() throws Exception {
+        UserResponseModel testContractor = new UserResponseModel();
+        testContractor.setUserIdentifier("contractor-uuid");
+        testContractor.setUserRole(UserRole.CONTRACTOR);
+
+        List<FormResponseModel> forms = Arrays.asList(testFormResponse);
+
+        when(userService.getUserByAuth0Id(anyString())).thenReturn(testContractor);
+        when(formService.getAllForms()).thenReturn(forms);
+
+        mockMvc.perform(get("/api/v1/forms"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].formId").value("form-id-789"));
+
+        verify(formService).getAllForms();
+    }
+
+    @Test
+    void getFormsByCustomer_AsContractor_ReturnsOk() throws Exception {
+        UserResponseModel testContractor = new UserResponseModel();
+        testContractor.setUserIdentifier("contractor-uuid");
+        testContractor.setUserRole(UserRole.CONTRACTOR);
+
+        List<FormResponseModel> forms = Arrays.asList(testFormResponse);
+
+        when(userService.getUserByAuth0Id(anyString())).thenReturn(testContractor);
+        when(formService.getFormsByCustomer(CUSTOMER_UUID)).thenReturn(forms);
+
+        mockMvc.perform(get("/api/v1/forms/customer/{customerId}", CUSTOMER_UUID))
+                .andExpect(status().isOk());
+
+        verify(formService).getFormsByCustomer(CUSTOMER_UUID);
     }
 }
 

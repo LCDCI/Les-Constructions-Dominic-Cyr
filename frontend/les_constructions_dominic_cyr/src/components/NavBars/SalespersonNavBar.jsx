@@ -192,7 +192,7 @@ const Navbar = ({
                     <GoFile />
                   </span>
                   <span className="navbar-text">
-                    {t('navbar.menuItems.documents', 'Documents')}
+                    {t('navbar.menuItems.lotDocuments', 'Lot Documents')}
                   </span>
                 </Link>
               </li>

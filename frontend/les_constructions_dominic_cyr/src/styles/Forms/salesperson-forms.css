@@ -190,6 +190,10 @@
   padding: 0 0.5rem;
 }
 
+.forms-error-modal {
+  margin-bottom: 1rem;
+}
+
 .no-forms {
   text-align: center;
   padding: var(--spacing-xxl);

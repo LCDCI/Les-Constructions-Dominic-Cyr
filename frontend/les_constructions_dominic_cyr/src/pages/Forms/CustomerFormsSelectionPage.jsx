@@ -1,19 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
-import { projectApi } from '../../features/projects/api/projectApi';
-import { fetchLots } from '../../features/lots/api/lots';
 import { getMyForms } from '../../features/forms/api/formsApi';
 import '../../styles/Forms/customer-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const CustomerFormsSelectionPage = () => {
   const { t } = usePageTranslations('customerForms');
-  const [projects, setProjects] = useState([]);
-  const [lots, setLots] = useState([]);
-  const [forms, setForms] = useState([]);
+  const [formsByProject, setFormsByProject] = useState({});
   const [loading, setLoading] = useState(true);
-  const [selectedProject, setSelectedProject] = useState('');
 
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
@@ -21,14 +16,6 @@ const CustomerFormsSelectionPage = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-  useEffect(() => {
-    if (selectedProject) {
-      fetchLotsForProject();
-    } else {
-      setLots([]);
-    }
-  }, [selectedProject]);
 
   const fetchData = async () => {
     try {
@@ -41,64 +28,51 @@ const CustomerFormsSelectionPage = () => {
         },
       });
 
-      // First fetch the customer's forms
       const formsData = await getMyForms(token);
-      setForms(formsData || []);
+      const forms = formsData || [];
 
-      // Extract unique project identifiers from forms
-      const projectIdentifiers = [
-        ...new Set((formsData || []).map(form => form.projectIdentifier)),
-      ];
+      // Group forms by project
+      const grouped = forms.reduce((acc, form) => {
+        const projectId = form.projectIdentifier || 'unknown';
+        if (!acc[projectId]) {
+          acc[projectId] = {
+            projectName: form.projectName || projectId,
+            forms: [],
+          };
+        }
+        acc[projectId].forms.push(form);
+        return acc;
+      }, {});
 
-      // Fetch only projects that have forms assigned to this customer
-      if (projectIdentifiers.length > 0) {
-        const allProjects = await projectApi.getAllProjects({}, token);
-        const customerProjects = (allProjects || []).filter(project =>
-          projectIdentifiers.includes(project.projectIdentifier)
-        );
-        setProjects(customerProjects);
-      } else {
-        setProjects([]);
-      }
-
+      setFormsByProject(grouped);
       setLoading(false);
     } catch (error) {
-      setProjects([]);
-      setForms([]);
+      setFormsByProject({});
       setLoading(false);
     }
   };
 
-  const fetchLotsForProject = async () => {
-    try {
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
-        },
-      });
+  const handleFormClick = form => {
+    navigate(
+      `/projects/${form.projectIdentifier}/lots/${form.lotIdentifier}/forms`
+    );
+  };
 
-      // Fetch lots for project - backend will automatically filter by customer assignment
-      const lotsData = await fetchLots({
-        projectIdentifier: selectedProject,
-        token,
-      });
-      setLots(lotsData || []);
-    } catch (error) {
-      setLots([]);
+  const getStatusClass = status => {
+    switch (status) {
+      case 'ASSIGNED':
+        return 'status-assigned';
+      case 'IN_PROGRESS':
+        return 'status-in-progress';
+      case 'SUBMITTED':
+        return 'status-submitted';
+      case 'COMPLETED':
+        return 'status-completed';
+      case 'REOPENED':
+        return 'status-reopened';
+      default:
+        return '';
     }
-  };
-
-  const getFormCountForLot = (projectId, lotId) => {
-    return forms.filter(
-      form =>
-        form.projectIdentifier === projectId && form.lotIdentifier === lotId
-    ).length;
-  };
-
-  const handleLotClick = (projectId, lotId) => {
-    navigate(`/projects/${projectId}/lots/${lotId}/forms`);
   };
 
   if (loading) {
@@ -118,119 +92,83 @@ const CustomerFormsSelectionPage = () => {
     );
   }
 
+  const projectEntries = Object.entries(formsByProject);
+
   return (
     <div className="forms-page">
       <div className="forms-hero">
         <div className="forms-hero-content">
           <h1 className="forms-hero-title">{t('title', 'My Forms')}</h1>
           <p className="forms-hero-subtitle">
-            {t('heroSubtitle', 'Select a project and lot to view your forms')}
+            {t('heroSubtitleAll', 'View and fill out all your assigned forms')}
           </p>
         </div>
       </div>
 
       <div className="forms-content">
         <div className="forms-container">
-          <div className="forms-selection-container">
-            <div className="forms-form-group">
-              <label htmlFor="project">{t('project', 'Project')}</label>
-              <select
-                id="project"
-                value={selectedProject}
-                onChange={e => setSelectedProject(e.target.value)}
-                className="forms-form-select"
-              >
-                <option value="">
-                  {t('selectAProject', 'Select a project')}
-                </option>
-                {projects.map(project => (
-                  <option
-                    key={project.projectIdentifier}
-                    value={project.projectIdentifier}
-                  >
-                    {project.projectName}
-                  </option>
-                ))}
-              </select>
+          {projectEntries.length === 0 ? (
+            <div className="no-forms">
+              <p>
+                {t(
+                  'noFormsAssigned',
+                  'No forms have been assigned to you yet. They will appear here once assigned.'
+                )}
+              </p>
             </div>
-
-            {selectedProject && lots.length > 0 && (
-              <div className="lots-list">
-                <h3>{t('selectLot', 'Select a lot:')}</h3>
-                <div className="forms-list">
-                  {lots.map(lot => {
-                    const formCount = getFormCountForLot(
-                      selectedProject,
-                      lot.lotId
-                    );
-                    return (
+          ) : (
+            <div className="forms-all-projects">
+              {projectEntries.map(([projectId, projectData]) => (
+                <div key={projectId} className="forms-project-group">
+                  <h2 className="forms-project-title">
+                    {projectData.projectName}
+                  </h2>
+                  <div className="forms-list">
+                    {projectData.forms.map(form => (
                       <div
-                        key={lot.lotId}
+                        key={form.formId}
                         className="form-card clickable"
-                        onClick={() =>
-                          handleLotClick(selectedProject, lot.lotId)
-                        }
+                        onClick={() => handleFormClick(form)}
                       >
                         <div className="form-card-header">
                           <h3 className="form-card-title">
-                            {t('lot', 'Lot')} {lot.lotNumber}
+                            {t(
+                              `formTypes.${form.formType}`,
+                              form.formType?.replace(/_/g, ' ') || 'Form'
+                            )}
                           </h3>
-                          {formCount > 0 && (
-                            <span className="form-count-badge">
-                              {formCount}{' '}
-                              {t(
-                                `formCount.${formCount === 1 ? 'one' : 'other'}`,
-                                formCount === 1 ? 'form' : 'forms'
-                              )}
-                            </span>
-                          )}
+                          <span
+                            className={`form-status-badge ${getStatusClass(form.formStatus)}`}
+                          >
+                            {t(
+                              `status.${(form.formStatus || '').toLowerCase()}`,
+                              form.formStatus || 'Unknown'
+                            )}
+                          </span>
                         </div>
                         <div className="form-card-body">
-                          {lot.civicAddress && (
+                          {form.lotNumber && (
                             <p>
-                              <strong>{t('address', 'Address')}:</strong>{' '}
-                              {lot.civicAddress}
+                              <strong>{t('lot', 'Lot')}:</strong>{' '}
+                              {form.lotNumber}
                             </p>
                           )}
-                          {formCount === 0 && (
-                            <p className="no-forms-text">
-                              {t(
-                                'noFormsAssignedToLot',
-                                'No forms assigned yet'
-                              )}
+                          {form.assignedAt && (
+                            <p>
+                              <strong>
+                                {t('labels.assigned', 'Assigned')}:
+                              </strong>{' '}
+                              {new Date(form.assignedAt).toLocaleDateString()}
                             </p>
                           )}
                         </div>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {selectedProject && lots.length === 0 && (
-              <div className="no-forms">
-                <p>{t('noLotsFound', 'No lots found for this project')}</p>
-              </div>
-            )}
-
-            {!selectedProject && (
-              <div className="no-forms">
-                {projects.length === 0 ? (
-                  <p>
-                    {t(
-                      'noFormsAssigned',
-                      'No forms have been assigned to you yet. They will appear here once assigned.'
-                    )}
-                  </p>
-                ) : (
-                  <p>
-                    {t('selectProject', 'Please select a project to view lots')}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
