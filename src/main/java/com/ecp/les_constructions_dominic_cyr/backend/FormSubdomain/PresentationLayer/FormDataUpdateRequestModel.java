@@ -1,5 +1,6 @@
 package com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,7 @@ public class FormDataUpdateRequestModel {
     /**
      * Set to true when customer is submitting the form (not just saving progress)
      */
+    @JsonProperty("isSubmitting")
     @Builder.Default
     private boolean isSubmitting = false;
 }

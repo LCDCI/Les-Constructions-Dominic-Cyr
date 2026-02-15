@@ -62,6 +62,14 @@ public interface FormService {
     List<FormResponseModel> getFormsByStatus(FormStatus status);
 
     /**
+     * Get all forms for a specific lot
+     *
+     * @param lotId Lot identifier
+     * @return List of forms
+     */
+    List<FormResponseModel> getFormsByLot(String lotId);
+
+    /**
      * Update form data (used by customers filling out the form)
      * 
      * @param formId Form identifier

@@ -56,18 +56,23 @@ import InboxPage from './pages/Inbox/InboxPage';
 import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
 import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
 import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
-import ReactGA from 'react-ga4';
-// import { loadTheme } from './utils/themeLoader';
+// import ReactGA from 'react-ga4'; // TODO: Fix build issue with react-ga4 module resolution
+// loadTheme from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
 import useBackendUser from './hooks/useBackendUser';
 
 function PageViewTracker() {
+  // ReactGA tracking temporarily disabled due to build issue
+  // TODO: Re-enable once module resolution is fixed
+  return null;
+  /*
   const location = useLocation();
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: location.pathname });
   }, [location]);
   return null;
+  */
 }
 
 function ContractorLotsDocuments() {
@@ -156,10 +161,11 @@ export default function App() {
   }, [isAuthenticated, getAccessTokenSilently, logout]);
 
   useEffect(() => {
-    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-    if (measurementId) {
-      ReactGA.initialize(measurementId);
-    }
+    // ReactGA initialization temporarily disabled due to build issue
+    // const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    // if (measurementId) {
+    //   ReactGA.initialize(measurementId);
+    // }
   }, []);
 
   /* ----------------------------------

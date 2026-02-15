@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import useBackendUser from '../../../hooks/useBackendUser';
@@ -8,6 +8,7 @@ import {
   downloadLotDocument,
   deleteLotDocument,
 } from '../api/lotDocumentsApi';
+import { getFormsByLot, downloadFinalizedForm } from '../../forms/api/formsApi';
 import { fetchLotById } from '../api/lots';
 import {
   FaDownload,
@@ -39,6 +40,9 @@ const LotDocumentsPage = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [imageDataUrls, setImageDataUrls] = useState({});
+  const [finalizedForms, setFinalizedForms] = useState([]);
+  const [formsLoading, setFormsLoading] = useState(false);
+  const [formsError, setFormsError] = useState(null);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'image', 'file'
@@ -48,6 +52,7 @@ const LotDocumentsPage = () => {
   const searchTimeoutRef = useRef(null);
 
   const canUpload = userRole === 'OWNER' || userRole === 'CONTRACTOR';
+  const canViewForms = userRole === 'OWNER' || userRole === 'CUSTOMER';
   const backLinkTarget =
     userRole === 'OWNER'
       ? '/owner/documents'
@@ -60,6 +65,30 @@ const LotDocumentsPage = () => {
   useEffect(() => {
     loadLotAndDocuments();
   }, [lotId]);
+
+  const loadFinalizedForms = useCallback(async () => {
+    if (!lotId || !canViewForms) {
+      return;
+    }
+    try {
+      setFormsLoading(true);
+      setFormsError(null);
+      const token = await getApiToken();
+      const forms = await getFormsByLot(lotId, token);
+      setFinalizedForms(forms || []);
+    } catch (err) {
+      console.error('Failed to load finalized forms:', err);
+      setFormsError('Impossible de charger les formulaires finalisés.');
+    } finally {
+      setFormsLoading(false);
+    }
+  }, [lotId, canViewForms, getApiToken]);
+
+  useEffect(() => {
+    if (lotId && canViewForms) {
+      loadFinalizedForms();
+    }
+  }, [lotId, canViewForms, loadFinalizedForms]);
 
   useEffect(() => {
     // Load images with authentication
@@ -251,6 +280,15 @@ const LotDocumentsPage = () => {
     }
   };
 
+  const handleFormDownload = async form => {
+    try {
+      const token = await getApiToken();
+      await downloadFinalizedForm(form.formId, token);
+    } catch (err) {
+      alert('Failed to download form: ' + (err.message || 'Unknown error'));
+    }
+  };
+
   const handleDeleteClick = (documentId, fileName) => {
     setDeleteConfirmModal({ documentId, fileName });
   };
@@ -394,6 +432,52 @@ const LotDocumentsPage = () => {
       {uploadError && (
         <div className="error-state" data-testid="lot-documents-upload-error">
           {uploadError}
+        </div>
+      )}
+
+      {canViewForms && (
+        <div className="lot-forms-section" data-testid="lot-forms-section">
+          <div className="lot-forms-header">
+            <h2>Finalized Forms</h2>
+            <p>Download completed forms for this lot.</p>
+          </div>
+
+          {formsLoading ? (
+            <div className="lot-forms-loading">Loading finalized forms...</div>
+          ) : formsError ? (
+            <div className="lot-forms-error">{formsError}</div>
+          ) : finalizedForms.length === 0 ? (
+            <div className="lot-forms-empty">No finalized forms yet.</div>
+          ) : (
+            <div className="lot-forms-list">
+              {finalizedForms.map(form => (
+                <div key={form.formId} className="lot-form-card">
+                  <div className="lot-form-info">
+                    <h3>
+                      {form.formType
+                        ? form.formType.replace(/_/g, ' ')
+                        : 'Form'}
+                    </h3>
+                    <div className="lot-form-meta">
+                      <span>Form ID: {form.formId}</span>
+                      {form.completedDate && (
+                        <span>
+                          Completed:{' '}
+                          {new Date(form.completedDate).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    className="btn btn-secondary lot-form-download"
+                    onClick={() => handleFormDownload(form)}
+                  >
+                    <FaDownload /> Download PDF
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

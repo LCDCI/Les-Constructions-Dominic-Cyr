@@ -7,6 +7,7 @@ import {
   reopenForm,
   completeForm,
   deleteForm,
+  downloadFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import { fetchCustomersWithSharedLots } from '../../features/users/api/usersApi';
 import { projectApi } from '../../features/projects/api/projectApi';
@@ -189,7 +190,7 @@ const SalespersonFormsPage = () => {
       await createForm(payload, token);
 
       handleCloseModal();
-      fetchData();
+      await fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -230,7 +231,7 @@ const SalespersonFormsPage = () => {
       setIsReopenModalOpen(false);
       setFormToReopen(null);
       setReopenReason('');
-      fetchData();
+      await fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -253,13 +254,29 @@ const SalespersonFormsPage = () => {
       });
 
       await completeForm(formId, token);
-      fetchData();
+      await fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
       } else {
         redirectToError();
       }
+    }
+  };
+
+  const handleDownloadForm = async formId => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      await downloadFinalizedForm(formId, token);
+    } catch (error) {
+      setSubmitError('Failed to download form. Please try again.');
     }
   };
 
@@ -277,7 +294,7 @@ const SalespersonFormsPage = () => {
 
       setIsDeleteModalOpen(false);
       setFormToDelete(null);
-      fetchData();
+      await fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -465,6 +482,14 @@ const SalespersonFormsPage = () => {
                           {t('buttons.complete', 'Complete')}
                         </button>
                       </>
+                    )}
+                    {form.formStatus === 'COMPLETED' && (
+                      <button
+                        className="form-action-button form-action-download"
+                        onClick={() => handleDownloadForm(form.formId)}
+                      >
+                        {t('buttons.downloadPdf', 'Download PDF')}
+                      </button>
                     )}
                     {(form.formStatus === 'ASSIGNED' ||
                       form.formStatus === 'DRAFT') && (
