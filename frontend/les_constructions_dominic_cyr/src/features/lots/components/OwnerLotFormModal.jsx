@@ -164,7 +164,20 @@ const OwnerLotFormModal = ({
           </button>
         </div>
 
-        <p id="owner-lot-modal-description" className="sr-only">
+        <p
+          id="owner-lot-modal-description"
+          style={{
+            border: 0,
+            clip: 'rect(0 0 0 0)',
+            height: '1px',
+            margin: '-1px',
+            overflow: 'hidden',
+            padding: 0,
+            position: 'absolute',
+            width: '1px',
+            whiteSpace: 'nowrap',
+          }}
+        >
           Update lot details and assigned users, then submit the form.
         </p>
 
