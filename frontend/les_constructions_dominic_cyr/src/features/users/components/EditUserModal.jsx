@@ -61,7 +61,7 @@ export default function EditUserModal({
         aria-describedby="edit-user-modal-description"
       >
         <h2 id="edit-user-modal-title">Edit User</h2>
-        <p id="edit-user-modal-description" className="sr-only">
+        <p id="edit-user-modal-description">
           Update user profile details and save changes.
         </p>
         <form onSubmit={handleSubmit}>
