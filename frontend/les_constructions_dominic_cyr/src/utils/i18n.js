@@ -4,11 +4,11 @@ import { cookieUtils } from './cookieUtils';
 import { fetchTranslations, fetchPageTranslations } from './translationApi';
 
 const normalizeLang = lng => {
-  if (!lng) return 'en';
+  if (!lng) return 'fr';
   const lower = String(lng).toLowerCase();
   if (lower.startsWith('fr')) return 'fr';
   if (lower.startsWith('en')) return 'en';
-  return 'en';
+  return 'fr';
 };
 
 const getInitialLanguage = () => {
@@ -24,7 +24,7 @@ const initialLanguage = getInitialLanguage();
 
 i18n.use(initReactI18next).init({
   supportedLngs: ['en', 'fr'],
-  fallbackLng: 'en',
+  fallbackLng: 'fr',
   lng: initialLanguage,
   ns: ['translation', 'lots', 'projectoverview', 'livingenvironment'],
   ns: [

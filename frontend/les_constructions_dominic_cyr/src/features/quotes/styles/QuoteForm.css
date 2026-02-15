@@ -1,20 +1,27 @@
-/* Quote Form Styles - Bill Estimate Design */
+/* Quote Form Styles - Modern Minimal Design */
 
 .quote-form-wrapper {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-  padding: 20px;
+  background-color: #fcfcfc;
+  padding: 40px 32px;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: #1e1e1e;
 }
 
 .quote-form {
   max-width: 1000px;
   margin: 0 auto;
   background: white;
+  /* Removed heavy shadow, added subtle border for clean look */
+  border: 1px solid #f0f0f0;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 40px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, sans-serif;
+  padding: 48px;
 }
 
 /* Header Section */
@@ -22,17 +29,17 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 40px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .header-left h1 {
-  font-size: 32px;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-size: 28px;
+  font-weight: 600;
+  color: #111;
   margin: 0;
-  line-height: 1.2;
+  letter-spacing: -0.5px;
 }
 
 .header-right .note {
@@ -41,58 +48,60 @@
   margin: 0;
   text-align: right;
   font-style: italic;
+  font-weight: 500;
 }
 
 /* Error Banner */
 .form-error-banner {
-  background-color: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  color: #721c24;
+  background-color: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 6px;
+  color: #991b1b;
   padding: 12px 16px;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
   font-size: 14px;
   font-weight: 500;
+  display: flex;
+  align-items: center;
 }
 
 /* Item Details Section */
 .item-details-section {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .item-details-section h3 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: #333;
-  margin: 0 0 16px 0;
+  color: #666;
+  margin: 0 0 20px 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .line-items-table-wrapper {
-  margin-bottom: 16px;
-  border: 1px solid #e8e8e8;
-  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
   overflow: hidden;
 }
 
 .line-items-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0;
 }
 
 .line-items-table thead tr {
-  background-color: #f9f9f9;
-  border-bottom: 2px solid #e8e8e8;
+  background-color: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .line-items-table th {
-  padding: 12px 16px;
+  padding: 14px 20px;
   text-align: left;
   font-size: 12px;
   font-weight: 600;
-  color: #666;
+  color: #444;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -104,6 +113,7 @@
 
 .line-items-table tbody tr {
   border-bottom: 1px solid #f5f5f5;
+  background: white;
 }
 
 .line-items-table tbody tr:last-child {
@@ -111,33 +121,30 @@
 }
 
 .line-items-table tbody tr.row-error td {
-  background-color: #fffbf5;
+  background-color: #fffaf0; /* Very subtle warning bg */
 }
 
 .line-items-table td {
-  padding: 16px;
-  vertical-align: middle;
+  padding: 16px 20px;
+  vertical-align: top;
   font-size: 14px;
+  color: #333;
 }
 
 .col-item {
   width: 40%;
 }
-
 .col-amount {
   width: 15%;
-}
-
+} /* Quantity */
 .col-rate {
   width: 20%;
   text-align: right;
 }
-
 .col-total {
   width: 15%;
   text-align: right;
 }
-
 .col-actions {
   width: 10%;
   text-align: center;
@@ -146,24 +153,28 @@
 /* Input Styles */
 .line-items-table input {
   width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
   font-size: 14px;
   font-family: inherit;
   background: white;
-  transition: border-color 0.2s;
+  color: #111;
+  transition: all 0.2s;
 }
 
 .line-items-table input:focus {
   outline: none;
-  border-color: #5dade2;
-  box-shadow: 0 0 0 2px rgba(93, 173, 226, 0.1);
+  border-color: #111; /* Black focus border */
+}
+
+.line-items-table input::placeholder {
+  color: #aaa;
 }
 
 .line-items-table input.input-error {
-  border-color: #d9534f;
-  background-color: #fff5f5;
+  border-color: #ef4444; /* Red border for error */
+  background-color: #fff;
 }
 
 .rate-input {
@@ -174,82 +185,93 @@
 
 .rate-input .currency {
   position: absolute;
-  left: 10px;
-  color: #666;
+  left: 12px;
+  font-size: 14px;
+  color: #999;
   font-weight: 500;
   pointer-events: none;
 }
 
 .rate-input input {
-  padding-left: 24px;
+  padding-left: 28px;
   text-align: right;
 }
 
 .total-value {
   display: inline-block;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-weight: 500;
+  color: #111;
+  padding-top: 10px; /* Align visually with inputs */
 }
 
 .error-hint {
   display: block;
   font-size: 11px;
-  color: #d9534f;
-  margin-top: 4px;
+  color: #ef4444;
+  margin-top: 6px;
+  font-weight: 500;
 }
 
 /* Add Item Link */
 .add-item-link {
-  display: inline-block;
-  color: #5dade2;
+  display: inline-flex;
+  align-items: center;
+  color: #111;
   text-decoration: none;
   font-size: 14px;
-  font-weight: 500;
-  margin-top: 8px;
+  font-weight: 600;
+  margin-top: 12px;
   cursor: pointer;
-  transition: color 0.2s;
+  border: 1px solid #e5e5e5;
+  padding: 10px 16px;
+  border-radius: 6px;
+  background: white;
+  transition: all 0.2s;
 }
 
 .add-item-link:hover {
-  color: #2471a3;
-  text-decoration: underline;
+  background: #f9f9f9;
+  border-color: #ccc;
+  text-decoration: none;
 }
 
-/* Button Styles */
+/* Delete Button */
 .btn-delete {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  background-color: transparent;
+  border: none;
   width: 32px;
   height: 32px;
   cursor: pointer;
   font-size: 18px;
-  color: #d9534f;
+  color: #999;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  border-radius: 4px;
+  margin: 0 auto;
 }
 
 .btn-delete:hover {
-  background-color: #f8d7da;
-  border-color: #d9534f;
+  background-color: #fef2f2;
+  color: #ef4444;
 }
 
 /* Totals Section */
 .totals-section {
   background-color: #fafafa;
   border: 1px solid #f0f0f0;
-  border-radius: 4px;
-  padding: 24px;
-  margin-bottom: 32px;
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 40px;
 }
 
 .totals-grid {
   display: flex;
   flex-direction: column;
   gap: 0;
+  max-width: 400px;
+  margin-left: auto; /* Align to right */
 }
 
 .total-row {
@@ -257,19 +279,23 @@
   grid-template-columns: 1fr auto;
   align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #e5e5e5;
   font-size: 14px;
 }
 
 .total-row:last-child {
   border-bottom: none;
+  padding-bottom: 0;
 }
 
 .total-row.total {
-  border-top: 2px solid #e0e0e0;
-  padding: 16px 0;
+  border-top: 1px solid #111; /* Stronger divider for total */
+  border-bottom: none;
+  padding-top: 20px;
+  margin-top: 8px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
+  color: #111;
 }
 
 .total-row.discount-row {
@@ -283,56 +309,64 @@
 }
 
 .total-row .value {
-  color: #1a1a1a;
+  color: #111;
   text-align: right;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .discount-input,
 .tax-input {
-  width: 60px;
-  padding: 6px 8px;
-  border: 1px solid #ddd;
+  width: 50px;
+  padding: 4px 6px;
+  border: 1px solid #e5e5e5;
   border-radius: 4px;
   font-size: 13px;
   text-align: center;
+  background: white;
+  color: #111;
 }
 
-.discount-amount,
-.tax-amount {
-  color: #d9534f;
+.discount-input:focus,
+.tax-input:focus {
+  outline: none;
+  border-color: #111;
+}
+
+.discount-amount {
+  color: #ef4444; /* Red for negative discount */
 }
 
 /* Actions Section */
 .actions-section {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   justify-content: flex-end;
-  padding-top: 24px;
+  padding-top: 32px;
   border-top: 1px solid #f0f0f0;
 }
 
 .btn {
-  padding: 12px 28px;
-  border-radius: 4px;
+  padding: 12px 24px;
+  border-radius: 6px;
   border: none;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   font-family: inherit;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary {
-  background-color: #28a745;
+  background-color: #111; /* Solid black */
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #218838;
-  box-shadow: 0 2px 8px rgba(33, 136, 56, 0.3);
+  background-color: #333;
 }
 
 .btn-primary:disabled {
@@ -341,22 +375,24 @@
 }
 
 .btn-secondary {
-  background-color: #6c757d;
-  color: white;
+  background-color: white;
+  color: #111;
+  border: 1px solid #e5e5e5;
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: #5a6268;
+  background-color: #f9f9f9;
+  border-color: #ccc;
 }
 
 .btn-outline {
   background-color: white;
-  color: #5dade2;
-  border: 2px solid #5dade2;
+  color: #111;
+  border: 1px solid #111;
 }
 
 .btn-outline:hover:not(:disabled) {
-  background-color: #e8f4f8;
+  background-color: #f5f5f5;
 }
 
 .btn:disabled {
@@ -364,179 +400,63 @@
   cursor: not-allowed;
 }
 
-/* Tablet Responsive */
+/* Responsive */
 @media (max-width: 768px) {
+  .quote-form-wrapper {
+    padding: 24px 16px;
+  }
+
   .quote-form {
     padding: 24px;
   }
 
   .quote-header-section {
     flex-direction: column;
-    gap: 16px;
-  }
-
-  .header-left h1 {
-    font-size: 24px;
-  }
-
-  .header-right {
-    text-align: left;
-  }
-
-  .col-item {
-    width: 35%;
-  }
-
-  .col-amount {
-    width: 20%;
-  }
-
-  .col-rate {
-    width: 25%;
-  }
-
-  .col-total {
-    width: 15%;
-  }
-
-  .col-actions {
-    width: 5%;
-  }
-
-  .line-items-table th,
-  .line-items-table td {
-    padding: 12px 8px;
-    font-size: 12px;
-  }
-
-  .actions-section {
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    padding: 10px 20px;
-    font-size: 13px;
-  }
-
-  .total-row.discount-row {
-    grid-template-columns: 1fr auto auto;
-  }
-}
-
-/* Mobile Responsive */
-@media (max-width: 640px) {
-  .quote-form-wrapper {
-    padding: 12px;
-  }
-
-  .quote-form {
-    padding: 16px;
-    border-radius: 4px;
-  }
-
-  .quote-header-section {
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-  }
-
-  .header-left h1 {
-    font-size: 20px;
+    gap: 12px;
   }
 
   .header-right .note {
-    font-size: 12px;
+    text-align: left;
   }
 
-  .item-details-section h3 {
-    font-size: 14px;
-    margin-bottom: 12px;
-  }
-
-  .line-items-table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+  .totals-grid {
+    max-width: 100%;
+    margin-left: 0;
   }
 
   .line-items-table {
-    min-width: 500px;
+    display: block;
+    overflow-x: auto;
+  }
+
+  /* Compact columns for mobile table */
+  .col-item {
+    width: 30%;
+  }
+  .col-amount {
+    width: 15%;
+  }
+  .col-rate {
+    width: 25%;
+  }
+  .col-total {
+    width: 20%;
+  }
+  .col-actions {
+    width: 10%;
   }
 
   .line-items-table th,
   .line-items-table td {
-    padding: 10px 6px;
-    font-size: 11px;
-  }
-
-  .col-item {
-    width: 30%;
-  }
-
-  .col-amount {
-    width: 25%;
-  }
-
-  .col-rate {
-    width: 25%;
-  }
-
-  .col-total {
-    width: 15%;
-  }
-
-  .col-actions {
-    width: 5%;
-  }
-
-  .line-items-table input {
-    padding: 6px 4px;
-    font-size: 12px;
-  }
-
-  .btn-delete {
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
-  }
-
-  .add-item-link {
+    padding: 12px 10px;
     font-size: 13px;
-  }
-
-  .totals-section {
-    padding: 16px;
-    margin-bottom: 20px;
-  }
-
-  .total-row {
-    padding: 10px 0;
-    font-size: 13px;
-  }
-
-  .total-row.total {
-    padding: 12px 0;
-    font-size: 16px;
   }
 
   .actions-section {
     flex-direction: column-reverse;
-    gap: 8px;
-    padding-top: 16px;
   }
 
   .btn {
     width: 100%;
-    padding: 12px 16px;
-    font-size: 13px;
-  }
-
-  .discount-input,
-  .tax-input {
-    width: 50px;
-    font-size: 12px;
-  }
-
-  .total-row.discount-row {
-    grid-template-columns: 1fr 50px 60px;
-    gap: 8px;
   }
 }

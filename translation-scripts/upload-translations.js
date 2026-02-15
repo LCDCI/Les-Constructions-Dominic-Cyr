@@ -51,6 +51,7 @@ async function uploadTranslationFile(filename, language, pageName) {
     const fileId = response.data.fileId;
     console.log(`✅ Uploaded successfully!`);
     console.log(`   File ID: ${fileId}`);
+    try { fs.appendFileSync('new_ids.txt', `${language}:${fileId}\n`); } catch (e) {}
     
     return { language, fileId, pageName };
   } catch (error) {
