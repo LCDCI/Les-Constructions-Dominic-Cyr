@@ -4,6 +4,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLay
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.FormSubmissionHistoryResponseModel;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 /**
  * Mapper for converting between FormSubmissionHistory entities and presentation models.
  */
@@ -20,7 +22,7 @@ public class FormSubmissionHistoryMapper {
                 .submissionNumber(history.getSubmissionNumber())
                 .statusAtSubmission(history.getStatusAtSubmission())
                 .formDataSnapshot(history.getFormDataSnapshot())
-                .submittedByCustomerId(history.getSubmittedByCustomerId())
+                .submittedByCustomerId(history.getSubmittedByCustomerId().toString())
                 .submittedByCustomerName(history.getSubmittedByCustomerName())
                 .submissionNotes(history.getSubmissionNotes())
                 .submittedAt(history.getSubmittedAt())

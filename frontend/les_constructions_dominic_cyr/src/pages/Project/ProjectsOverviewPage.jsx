@@ -163,18 +163,6 @@ const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal-container" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2 className="modal-title">
-            {t('modal.locationTitle', 'Location')}: {locationAddress}
-          </h2>
-          <button
-            className="modal-close-btn"
-            onClick={handleClose}
-            aria-label={t('modal.closeAriaLabel', 'Close modal')}
-          >
-            &times;
-          </button>
-        </div>
         <div className="modal-body">
           <MapContainer
             center={centerCoords}
@@ -195,11 +183,6 @@ const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
               <Popup>{locationAddress}</Popup>
             </Marker>
           </MapContainer>
-        </div>
-        <div className="modal-footer">
-          <button className="btn-secondary" onClick={handleClose}>
-            {t('modal.close', 'Close')}
-          </button>
         </div>
       </div>
     </div>

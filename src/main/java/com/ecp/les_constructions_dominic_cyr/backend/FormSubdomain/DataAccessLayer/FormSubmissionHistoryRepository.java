@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Repository for managing FormSubmissionHistory entities.
@@ -38,7 +39,7 @@ public interface FormSubmissionHistoryRepository extends JpaRepository<FormSubmi
     /**
      * Find all submissions by a specific customer
      */
-    List<FormSubmissionHistory> findBySubmittedByCustomerIdOrderBySubmittedAtDesc(String customerId);
+    List<FormSubmissionHistory> findBySubmittedByCustomerIdOrderBySubmittedAtDesc(UUID customerId);
 
     /**
      * Get submission history by form and submission number

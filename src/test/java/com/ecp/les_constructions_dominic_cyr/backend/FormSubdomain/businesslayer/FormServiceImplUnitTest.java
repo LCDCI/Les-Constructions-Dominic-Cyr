@@ -133,11 +133,11 @@ class FormServiceImplUnitTest {
         testForm.setFormType(FormType.WINDOWS);
         testForm.setFormStatus(FormStatus.ASSIGNED);
         testForm.setProjectIdentifier("project-123");
-        testForm.setLotIdentifier(testLot.getLotIdentifier().getLotId().toString());
-        testForm.setCustomerId(CUSTOMER_UUID);
+        testForm.setLotIdentifier(testLot.getLotIdentifier().getLotId());
+        testForm.setCustomerId(UUID.fromString(CUSTOMER_UUID));
         testForm.setCustomerName("John Customer");
         testForm.setCustomerEmail("john.customer@example.com");
-        testForm.setAssignedByUserId(SALESPERSON_UUID);
+        testForm.setAssignedByUserId(UUID.fromString(SALESPERSON_UUID));
         testForm.setAssignedByName("Jane Salesperson");
         testForm.setFormTitle("Window Color Selection");
         testForm.setInstructions("Please select colors for all windows");
@@ -174,7 +174,7 @@ class FormServiceImplUnitTest {
         when(projectRepository.findByProjectIdentifier("project-123")).thenReturn(Optional.of(testProject));
         when(lotRepository.findByLotIdentifier_LotIdWithUsers(any(UUID.class))).thenReturn(testLot);
         when(formRepository.existsByProjectIdentifierAndLotIdentifierAndCustomerIdAndFormType(
-                "project-123", testLot.getLotIdentifier().getLotId().toString(), CUSTOMER_UUID, FormType.WINDOWS)).thenReturn(false);
+                "project-123", testLot.getLotIdentifier().getLotId(), UUID.fromString(CUSTOMER_UUID), FormType.WINDOWS)).thenReturn(false);
         when(formMapper.requestModelToEntity(any())).thenReturn(testForm);
         when(formRepository.save(any(Form.class))).thenReturn(testForm);
         when(formMapper.entityToResponseModel(any())).thenReturn(testResponseModel);
@@ -216,7 +216,7 @@ class FormServiceImplUnitTest {
         when(projectRepository.findByProjectIdentifier("project-123")).thenReturn(Optional.of(testProject));
         when(lotRepository.findByLotIdentifier_LotIdWithUsers(any(UUID.class))).thenReturn(testLot);
         when(formRepository.existsByProjectIdentifierAndLotIdentifierAndCustomerIdAndFormType(
-                "project-123", testLot.getLotIdentifier().getLotId().toString(), CUSTOMER_UUID, FormType.WINDOWS)).thenReturn(true);
+                "project-123", testLot.getLotIdentifier().getLotId(), UUID.fromString(CUSTOMER_UUID), FormType.WINDOWS)).thenReturn(true);
 
         // Act & Assert
         assertThrows(InvalidInputException.class, () ->
@@ -550,7 +550,7 @@ class FormServiceImplUnitTest {
     void hasFormOfType_WhenFormExists_ReturnsTrue() {
         // Arrange
         when(formRepository.existsByProjectIdentifierAndCustomerIdAndFormType(
-                "project-123", CUSTOMER_UUID, FormType.WINDOWS)).thenReturn(true);
+                "project-123", UUID.fromString(CUSTOMER_UUID), FormType.WINDOWS)).thenReturn(true);
 
         // Act
         boolean result = formService.hasFormOfType("project-123", CUSTOMER_UUID, FormType.WINDOWS);
@@ -563,7 +563,7 @@ class FormServiceImplUnitTest {
     void hasFormOfType_WhenFormDoesNotExist_ReturnsFalse() {
         // Arrange
         when(formRepository.existsByProjectIdentifierAndCustomerIdAndFormType(
-                "project-123", CUSTOMER_UUID, FormType.PAINT)).thenReturn(false);
+                "project-123", UUID.fromString(CUSTOMER_UUID), FormType.PAINT)).thenReturn(false);
 
         // Act
         boolean result = formService.hasFormOfType("project-123", CUSTOMER_UUID, FormType.PAINT);
@@ -699,7 +699,7 @@ class FormServiceImplUnitTest {
     void getFormsByCustomer_ReturnsAllFormsForCustomer() {
         // Arrange
         List<Form> forms = Arrays.asList(testForm);
-        when(formRepository.findByCustomerId(CUSTOMER_UUID)).thenReturn(forms);
+        when(formRepository.findByCustomerId(UUID.fromString(CUSTOMER_UUID))).thenReturn(forms);
         when(formMapper.entityToResponseModel(any())).thenReturn(testResponseModel);
 
         // Act
@@ -708,14 +708,14 @@ class FormServiceImplUnitTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
-        verify(formRepository).findByCustomerId(CUSTOMER_UUID);
+        verify(formRepository).findByCustomerId(UUID.fromString(CUSTOMER_UUID));
     }
 
     @Test
     void getFormsCreatedBy_ReturnsAllFormsCreatedBySalesperson() {
         // Arrange
         List<Form> forms = Arrays.asList(testForm);
-        when(formRepository.findByAssignedByUserId(SALESPERSON_UUID)).thenReturn(forms);
+        when(formRepository.findByAssignedByUserId(UUID.fromString(SALESPERSON_UUID))).thenReturn(forms);
         when(formMapper.entityToResponseModel(any())).thenReturn(testResponseModel);
 
         // Act
@@ -724,7 +724,7 @@ class FormServiceImplUnitTest {
         // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
-        verify(formRepository).findByAssignedByUserId(SALESPERSON_UUID);
+        verify(formRepository).findByAssignedByUserId(UUID.fromString(SALESPERSON_UUID));
     }
 
     @Test
@@ -1028,7 +1028,7 @@ class FormServiceImplUnitTest {
     void hasFormOfType_WithProjectAndLotAndType_ChecksCorrectly() {
         // Arrange
         when(formRepository.existsByProjectIdentifierAndCustomerIdAndFormType(
-                "project-123", CUSTOMER_UUID, FormType.EXTERIOR_DOORS))
+                "project-123", UUID.fromString(CUSTOMER_UUID), FormType.EXTERIOR_DOORS))
                 .thenReturn(true);
 
         // Act
@@ -1037,7 +1037,7 @@ class FormServiceImplUnitTest {
         // Assert
         assertTrue(result);
         verify(formRepository).existsByProjectIdentifierAndCustomerIdAndFormType(
-                "project-123", CUSTOMER_UUID, FormType.EXTERIOR_DOORS);
+                "project-123", UUID.fromString(CUSTOMER_UUID), FormType.EXTERIOR_DOORS);
     }
 
     // ========== Tests that exercise helper methods through public methods ==========
@@ -1371,14 +1371,14 @@ class FormServiceImplUnitTest {
     @Test
     void hasFormOfType_ChecksRepositoryCorrectly() {
         when(formRepository.existsByProjectIdentifierAndCustomerIdAndFormType(
-                "project-123", "customer-123", FormType.WINDOWS))
+                "project-123", UUID.fromString("customer-123"), FormType.WINDOWS))
                 .thenReturn(true);
 
         boolean result = formService.hasFormOfType("project-123", "customer-123", FormType.WINDOWS);
 
         assertTrue(result);
         verify(formRepository).existsByProjectIdentifierAndCustomerIdAndFormType(
-                "project-123", "customer-123", FormType.WINDOWS);
+                "project-123", UUID.fromString("customer-123"), FormType.WINDOWS);
     }
 
     // ========== Tests for notification subscription lambdas ==========
@@ -1810,7 +1810,7 @@ class FormServiceImplUnitTest {
     @Test
     void sendFormSubmittedNotification_WithMissingAssigner_LogsWarning() {
         // Arrange
-        testForm.setAssignedByUserId("non-existent-user");
+        testForm.setAssignedByUserId(UUID.fromString("non-existent-user"));
         FormDataUpdateRequestModel submitRequest = FormDataUpdateRequestModel.builder()
                 .formData(new HashMap<>())
                 .submissionNotes("Test submission")

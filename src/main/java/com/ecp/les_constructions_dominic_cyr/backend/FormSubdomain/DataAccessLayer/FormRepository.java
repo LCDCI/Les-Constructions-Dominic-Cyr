@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repository for managing Form entities.
@@ -27,12 +28,12 @@ public interface FormRepository extends JpaRepository<Form, Long> {
     /**
      * Find all forms assigned to a specific customer
      */
-    List<Form> findByCustomerId(String customerId);
+    List<Form> findByCustomerId(UUID customerId);
 
     /**
      * Find all forms created by a specific salesperson
      */
-    List<Form> findByAssignedByUserId(String assignedByUserId);
+    List<Form> findByAssignedByUserId(UUID assignedByUserId);
 
     /**
      * Find all forms of a specific type
@@ -52,18 +53,18 @@ public interface FormRepository extends JpaRepository<Form, Long> {
     /**
      * Find all forms assigned to a customer with a specific status
      */
-    List<Form> findByCustomerIdAndFormStatus(String customerId, FormStatus formStatus);
+    List<Form> findByCustomerIdAndFormStatus(UUID customerId, FormStatus formStatus);
 
     /**
      * Find all forms for a project and customer
      */
-    List<Form> findByProjectIdentifierAndCustomerId(String projectIdentifier, String customerId);
+    List<Form> findByProjectIdentifierAndCustomerId(String projectIdentifier, UUID customerId);
 
     /**
      * Find all forms by project, customer, and type
      */
     Optional<Form> findByProjectIdentifierAndCustomerIdAndFormType(
-            String projectIdentifier, String customerId, FormType formType);
+            String projectIdentifier, UUID customerId, FormType formType);
 
     /**
      * Count forms by status for a project
@@ -80,16 +81,16 @@ public interface FormRepository extends JpaRepository<Form, Long> {
      *Check if a customer has a form of a specific type for a project
      */
     boolean existsByProjectIdentifierAndCustomerIdAndFormType(
-            String projectIdentifier, String customerId, FormType formType);
+            String projectIdentifier, UUID customerId, FormType formType);
 
     /**
      * Check if a customer has a form of a specific type for a project and lot
      */
     boolean existsByProjectIdentifierAndLotIdentifierAndCustomerIdAndFormType(
-            String projectIdentifier, String lotIdentifier, String customerId, FormType formType);
+            String projectIdentifier, UUID lotIdentifier, UUID customerId, FormType formType);
 
     /**
      * Find all forms for a project and lot
      */
-    List<Form> findByProjectIdentifierAndLotIdentifier(String projectIdentifier, String lotIdentifier);
+    List<Form> findByProjectIdentifierAndLotIdentifier(String projectIdentifier, UUID lotIdentifier);
 }

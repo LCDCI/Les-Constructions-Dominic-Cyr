@@ -11,6 +11,7 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Entity representing a customer form assignment.
@@ -47,14 +48,14 @@ public class Form {
     /**
      * Lot identifier this form is associated with
      */
-    @Column(name = "lot_identifier", nullable = false)
-    private String lotIdentifier;
+    @Column(name = "lot_identifier", nullable = false, columnDefinition = "UUID")
+    private UUID lotIdentifier;
 
     /**
      * Customer user ID (UUID) this form is assigned to
      */
-    @Column(name = "customer_id", nullable = false)
-    private String customerId;
+    @Column(name = "customer_id", nullable = false, columnDefinition = "UUID")
+    private UUID customerId;
 
     /**
      * Customer's full name (denormalized for display)
@@ -71,8 +72,8 @@ public class Form {
     /**
      * Salesperson user ID who created/assigned this form
      */
-    @Column(name = "assigned_by_user_id", nullable = false)
-    private String assignedByUserId;
+    @Column(name = "assigned_by_user_id", nullable = false, columnDefinition = "UUID")
+    private UUID assignedByUserId;
 
     /**
      * Salesperson's full name who assigned this form
@@ -133,8 +134,8 @@ public class Form {
     /**
      * User ID who reopened the form (if applicable)
      */
-    @Column(name = "reopened_by_user_id")
-    private String reopenedByUserId;
+    @Column(name = "reopened_by_user_id", columnDefinition = "UUID")
+    private UUID reopenedByUserId;
 
     /**
      * Reason for reopening the form
@@ -162,9 +163,9 @@ public class Form {
         this.formType = formType;
         this.formStatus = formStatus;
         this.projectIdentifier = projectIdentifier;
-        this.lotIdentifier = lotIdentifier;
-        this.customerId = customerId;
-        this.assignedByUserId = assignedByUserId;
+        this.lotIdentifier = UUID.fromString(lotIdentifier);
+        this.customerId = UUID.fromString(customerId);
+        this.assignedByUserId = UUID.fromString(assignedByUserId);
         this.reopenCount = 0;
     }
 }
