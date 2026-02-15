@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import useBackendUser from '../../../hooks/useBackendUser';
@@ -65,6 +65,24 @@ const LotDocumentsPage = () => {
   useEffect(() => {
     loadLotAndDocuments();
   }, [lotId]);
+
+  const loadFinalizedForms = useCallback(async () => {
+    if (!lotId || !canViewForms) {
+      return;
+    }
+    try {
+      setFormsLoading(true);
+      setFormsError(null);
+      const token = await getApiToken();
+      const forms = await getFormsByLot(lotId, token);
+      setFinalizedForms(forms || []);
+    } catch (err) {
+      console.error('Failed to load finalized forms:', err);
+      setFormsError('Impossible de charger les formulaires finalisés.');
+    } finally {
+      setFormsLoading(false);
+    }
+  }, [lotId, canViewForms, getApiToken]);
 
   useEffect(() => {
     if (lotId && canViewForms) {
