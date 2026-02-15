@@ -337,6 +337,16 @@
   transform: translateY(-1px);
 }
 
+.form-action-download {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.form-action-download:hover {
+  background-color: #2f3133;
+  transform: translateY(-1px);
+}
+
 /* ========== MODAL ========== */
 .forms-modal-overlay {
   position: fixed;

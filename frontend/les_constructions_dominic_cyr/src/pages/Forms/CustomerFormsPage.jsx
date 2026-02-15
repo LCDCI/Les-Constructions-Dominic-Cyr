@@ -4,8 +4,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   getMyForms,
   updateFormData,
-  submitForm,
   getFormHistory,
+  downloadFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import '../../styles/Forms/customer-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
@@ -281,15 +281,25 @@ const CustomerFormsPage = () => {
       });
 
       const formsData = await getMyForms(token);
+      console.log(`[fetchForms] Raw formsData received:`, formsData);
+      
       // Filter forms by projectId and lotId from URL params
       const filteredForms =
         formsData?.filter(
           form =>
             form.projectIdentifier === projectId && form.lotIdentifier === lotId
         ) || [];
+      
+      console.log(`[fetchForms] Filtered forms (${filteredForms.length}):`, filteredForms.map(f => ({ 
+        formId: f.formId, 
+        type: f.formType, 
+        status: f.formStatus 
+      })));
+      
       setForms(filteredForms);
       setLoading(false);
     } catch (error) {
+      console.error(`[fetchForms] Error:`, error);
       setForms([]);
       setLoading(false);
     }
@@ -326,7 +336,7 @@ const CustomerFormsPage = () => {
       setIsEditModalOpen(false);
       setSelectedForm(null);
       setFormData({});
-      fetchForms();
+      await fetchForms();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -364,15 +374,20 @@ const CustomerFormsPage = () => {
         },
       });
 
-      // Save first, then submit
-      await updateFormData(selectedForm.formId, { formData }, token);
-
-      await submitForm(selectedForm.formId, token);
+      console.log(`[handleSubmitForm] Submitting form ${selectedForm.formId} with isSubmitting=true`);
+      const submitResponse = await updateFormData(
+        selectedForm.formId,
+        { formData, isSubmitting: true },
+        token
+      );
+      console.log(`[handleSubmitForm] Form status after submission:`, submitResponse?.formStatus);
 
       setIsEditModalOpen(false);
       setSelectedForm(null);
       setFormData({});
-      fetchForms();
+      console.log(`[handleSubmitForm] Refreshing forms list...`);
+      await fetchForms();
+      console.log(`[handleSubmitForm] Forms list refreshed`);
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -407,6 +422,22 @@ const CustomerFormsPage = () => {
       } else {
         redirectToError();
       }
+    }
+  };
+
+  const handleDownloadForm = async form => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      await downloadFinalizedForm(form.formId, token);
+    } catch (error) {
+      setSubmitError('Failed to download form. Please try again.');
     }
   };
 
@@ -568,6 +599,14 @@ const CustomerFormsPage = () => {
                         onClick={() => handleViewHistory(form)}
                       >
                         {t('buttons.viewHistory', 'View History')}
+                      </button>
+                    )}
+                    {form.formStatus === 'COMPLETED' && (
+                      <button
+                        className="form-action-button form-action-download"
+                        onClick={() => handleDownloadForm(form)}
+                      >
+                        {t('buttons.downloadPdf', 'Download PDF')}
                       </button>
                     )}
                   </div>

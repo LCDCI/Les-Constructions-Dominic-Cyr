@@ -5,7 +5,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Busi
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationCategory;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.*;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.MapperLayer.FormMapper;
-import com. ecp.les_constructions_dominic_cyr.backend.FormSubdomain.MapperLayer.FormSubmissionHistoryMapper;
+import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.MapperLayer.FormSubmissionHistoryMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.*;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
@@ -170,6 +170,14 @@ public class FormServiceImpl implements FormService {
     }
 
     @Override
+    public List<FormResponseModel> getFormsByLot(String lotId) {
+        log.info("Fetching forms for lot: {}", lotId);
+        return formRepository.findByLotIdentifier(UUID.fromString(lotId)).stream()
+                .map(formMapper::entityToResponseModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public FormResponseModel updateFormData(String formId, FormDataUpdateRequestModel updateRequest, String customerId) {
         log.info("Updating form data for form: {} by customer: {}", formId, customerId);
@@ -178,7 +186,7 @@ public class FormServiceImpl implements FormService {
                 .orElseThrow(() -> new NotFoundException("Form not found with ID: " + formId));
 
         // Verify customer owns this form
-        if (!form.getCustomerId().equals(customerId)) {
+        if (!form.getCustomerId().equals(UUID.fromString(customerId))) {
             throw new InvalidInputException("Customer is not authorized to update this form");
         }
 
@@ -187,8 +195,10 @@ public class FormServiceImpl implements FormService {
             throw new InvalidInputException("Cannot update a completed form");
         }
 
-        // Update form data
-        form.setFormData(updateRequest.getFormData());
+        // Update form data only when payload contains data
+        if (updateRequest.getFormData() != null && !updateRequest.getFormData().isEmpty()) {
+            form.setFormData(updateRequest.getFormData());
+        }
 
         // Update status to IN_PROGRESS if it was ASSIGNED or REOPENED
         if (form.getFormStatus() == FormStatus.ASSIGNED || form.getFormStatus() == FormStatus.REOPENED) {
@@ -210,7 +220,7 @@ public class FormServiceImpl implements FormService {
                 .orElseThrow(() -> new NotFoundException("Form not found with ID: " + formId));
 
         // Verify customer owns this form
-        if (!form.getCustomerId().equals(customerId)) {
+        if (!form.getCustomerId().equals(UUID.fromString(customerId))) {
             throw new InvalidInputException("Customer is not authorized to submit this form");
         }
 
