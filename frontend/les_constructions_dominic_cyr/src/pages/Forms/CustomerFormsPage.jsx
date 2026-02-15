@@ -367,7 +367,7 @@ const CustomerFormsPage = () => {
         },
       });
 
-      const submitResponse = await updateFormData(
+      await updateFormData(
         selectedForm.formId,
         { formData, isSubmitting: true },
         token
