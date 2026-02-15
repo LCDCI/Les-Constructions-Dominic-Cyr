@@ -1371,14 +1371,14 @@ class FormServiceImplUnitTest {
     @Test
     void hasFormOfType_ChecksRepositoryCorrectly() {
         when(formRepository.existsByProjectIdentifierAndCustomerIdAndFormType(
-                "project-123", UUID.fromString("550e8400-e29b-41d4-a716-446655440011"), FormType.WINDOWS))
+                "project-123", UUID.fromString("customer-123"), FormType.WINDOWS))
                 .thenReturn(true);
 
         boolean result = formService.hasFormOfType("project-123", "550e8400-e29b-41d4-a716-446655440011", FormType.WINDOWS);
 
         assertTrue(result);
         verify(formRepository).existsByProjectIdentifierAndCustomerIdAndFormType(
-                "project-123", UUID.fromString("550e8400-e29b-41d4-a716-446655440011"), FormType.WINDOWS);
+                "project-123", UUID.fromString("customer-123"), FormType.WINDOWS);
     }
 
     // ========== Tests for notification subscription lambdas ==========
@@ -1810,7 +1810,7 @@ class FormServiceImplUnitTest {
     @Test
     void sendFormSubmittedNotification_WithMissingAssigner_LogsWarning() {
         // Arrange
-        testForm.setAssignedByUserId(UUID.fromString("00000000-0000-0000-0000-000000000099"));
+        testForm.setAssignedByUserId(UUID.fromString("non-existent-user"));
         FormDataUpdateRequestModel submitRequest = FormDataUpdateRequestModel.builder()
                 .formData(new HashMap<>())
                 .submissionNotes("Test submission")
