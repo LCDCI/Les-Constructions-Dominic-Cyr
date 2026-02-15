@@ -49,7 +49,9 @@ export default function AddUserModal({
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">
             <label>
-              <span>First Name<span className="required">*</span></span>
+              <span>
+                First Name<span className="required">*</span>
+              </span>
               <input
                 type="text"
                 value={firstName}
@@ -58,7 +60,9 @@ export default function AddUserModal({
               />
             </label>
             <label>
-              <span>Last Name<span className="required">*</span></span>
+              <span>
+                Last Name<span className="required">*</span>
+              </span>
               <input
                 type="text"
                 value={lastName}
@@ -70,7 +74,9 @@ export default function AddUserModal({
 
           <div className="form-row">
             <label>
-              <span>Primary Email<span className="required">*</span></span>
+              <span>
+                Primary Email<span className="required">*</span>
+              </span>
               <input
                 type="email"
                 value={primaryEmail}
@@ -90,7 +96,9 @@ export default function AddUserModal({
 
           <div className="form-row">
             <label>
-              <span>Phone<span className="required">*</span></span>
+              <span>
+                Phone<span className="required">*</span>
+              </span>
               <input
                 type="tel"
                 value={phone}
@@ -100,7 +108,9 @@ export default function AddUserModal({
             </label>
 
             <label>
-              <span>Role<span className="required">*</span></span>
+              <span>
+                Role<span className="required">*</span>
+              </span>
               <select
                 value={userRole}
                 onChange={e => setUserRole(e.target.value)}

@@ -41,7 +41,10 @@ export default function UserStatusModal({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content status-modal" onClick={e => e.stopPropagation()}>
+      <div
+        className="modal-content status-modal"
+        onClick={e => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h2>Manage User Status</h2>
           <button className="modal-close" onClick={onClose}>
@@ -73,7 +76,9 @@ export default function UserStatusModal({
               <div className="action-buttons">
                 {canSetInactive && (
                   <button
-                    className={`action-btn ${action === 'inactive' ? 'selected' : ''}`}
+                    className={`action-btn ${
+                      action === 'inactive' ? 'selected' : ''
+                    }`}
                     onClick={() => setAction('inactive')}
                     disabled={isSubmitting}
                   >
@@ -82,7 +87,9 @@ export default function UserStatusModal({
                 )}
                 {canDeactivate && (
                   <button
-                    className={`action-btn danger ${action === 'deactivate' ? 'selected' : ''}`}
+                    className={`action-btn danger ${
+                      action === 'deactivate' ? 'selected' : ''
+                    }`}
                     onClick={() => setAction('deactivate')}
                     disabled={isSubmitting}
                   >
@@ -91,7 +98,9 @@ export default function UserStatusModal({
                 )}
                 {canReactivate && (
                   <button
-                    className={`action-btn success ${action === 'reactivate' ? 'selected' : ''}`}
+                    className={`action-btn success ${
+                      action === 'reactivate' ? 'selected' : ''
+                    }`}
                     onClick={() => setAction('reactivate')}
                     disabled={isSubmitting}
                   >

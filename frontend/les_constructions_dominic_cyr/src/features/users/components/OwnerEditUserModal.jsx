@@ -51,7 +51,9 @@ export default function OwnerEditUserModal({
         <form className="modal-form" onSubmit={handleSubmit}>
           <div className="form-row">
             <label>
-              <span>First Name<span className="required">*</span></span>
+              <span>
+                First Name<span className="required">*</span>
+              </span>
               <input
                 type="text"
                 name="firstName"
@@ -62,7 +64,9 @@ export default function OwnerEditUserModal({
             </label>
 
             <label>
-              <span>Last Name<span className="required">*</span></span>
+              <span>
+                Last Name<span className="required">*</span>
+              </span>
               <input
                 type="text"
                 name="lastName"
@@ -75,7 +79,10 @@ export default function OwnerEditUserModal({
 
           <div className="form-row">
             <label>
-              <span>Primary Email (Login)<span className="required">*</span></span>
+              <span>
+                Primary Email (Login)
+                <span className="required">*</span>
+              </span>
               <input
                 type="email"
                 name="primaryEmail"

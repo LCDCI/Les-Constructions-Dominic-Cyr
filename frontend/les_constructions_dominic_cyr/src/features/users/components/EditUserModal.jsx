@@ -43,7 +43,11 @@ export default function EditUserModal({
         <h2>Edit User</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label><span>First Name<span className="required">*</span></span></label>
+            <label>
+              <span>
+                First Name<span className="required">*</span>
+              </span>
+            </label>
             <input
               type="text"
               name="firstName"
@@ -53,7 +57,11 @@ export default function EditUserModal({
             />
           </div>
           <div className="form-group">
-            <label><span>Last Name<span className="required">*</span></span></label>
+            <label>
+              <span>
+                Last Name<span className="required">*</span>
+              </span>
+            </label>
             <input
               type="text"
               name="lastName"
