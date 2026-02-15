@@ -1119,7 +1119,6 @@ class FormControllerUnitTest {
                 .projectIdentifier("project-1")
                 .lotIdentifier("lot-1")
                 .formData(formData)
-                .createdBy(SALESPERSON_UUID)
                 .build();
 
         when(userService.getUserByAuth0Id(anyString())).thenReturn(testSalesperson);

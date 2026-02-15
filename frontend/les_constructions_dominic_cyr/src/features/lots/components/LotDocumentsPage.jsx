@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -865,7 +866,9 @@ const LotDocumentsPage = () => {
               key={opt.value}
               type="button"
               className={`forms-radio-card${selected === opt.value ? ' selected' : ''}`}
-              onClick={() => !isViewOnly && handleFieldChange(field.name, opt.value)}
+              onClick={() =>
+                !isViewOnly && handleFieldChange(field.name, opt.value)
+              }
               disabled={isViewOnly}
             >
               <span className="forms-radio-indicator" />
@@ -1047,176 +1050,183 @@ const LotDocumentsPage = () => {
       </div>
 
       {viewMode === 'documents' ? (
-      <>
-      {/* Search & Filters */}
-      <div className="documents-toolbar">
-        <div className="search-bar">
-          <FaSearch className="search-icon" />
-          <input
-            type="text"
-            placeholder="Search documents..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            data-testid="lot-documents-search"
-            className="search-input"
-          />
-        </div>
+        <>
+          {/* Search & Filters */}
+          <div className="documents-toolbar">
+            <div className="search-bar">
+              <FaSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search documents..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                data-testid="lot-documents-search"
+                className="search-input"
+              />
+            </div>
 
-        <div className="toolbar-actions">
-          <div className="filter-tabs">
-            <button
-              className={`tab-button ${filterType === 'all' ? 'active' : ''}`}
-              onClick={() => setFilterType('all')}
-              data-testid="lot-documents-tab-all"
-            >
-              All
-            </button>
-            <button
-              className={`tab-button ${filterType === 'image' ? 'active' : ''}`}
-              onClick={() => setFilterType('image')}
-              data-testid="lot-documents-tab-photos"
-            >
-              <FaImage /> Photos
-            </button>
-            <button
-              className={`tab-button ${filterType === 'file' ? 'active' : ''}`}
-              onClick={() => setFilterType('file')}
-              data-testid="lot-documents-tab-files"
-            >
-              <FaFile /> Files
-            </button>
+            <div className="toolbar-actions">
+              <div className="filter-tabs">
+                <button
+                  className={`tab-button ${filterType === 'all' ? 'active' : ''}`}
+                  onClick={() => setFilterType('all')}
+                  data-testid="lot-documents-tab-all"
+                >
+                  All
+                </button>
+                <button
+                  className={`tab-button ${filterType === 'image' ? 'active' : ''}`}
+                  onClick={() => setFilterType('image')}
+                  data-testid="lot-documents-tab-photos"
+                >
+                  <FaImage /> Photos
+                </button>
+                <button
+                  className={`tab-button ${filterType === 'file' ? 'active' : ''}`}
+                  onClick={() => setFilterType('file')}
+                  data-testid="lot-documents-tab-files"
+                >
+                  <FaFile /> Files
+                </button>
+              </div>
+
+              {canUpload && (
+                <button
+                  onClick={handleFileSelect}
+                  disabled={uploading}
+                  className="btn btn-primary upload-button"
+                  data-testid="lot-documents-upload-button"
+                >
+                  <FaUpload /> {uploading ? 'Uploading...' : 'Upload'}
+                </button>
+              )}
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              multiple
+              style={{ display: 'none' }}
+              data-testid="lot-documents-upload-input"
+            />
           </div>
 
-          {canUpload && (
-            <button
-              onClick={handleFileSelect}
-              disabled={uploading}
-              className="btn btn-primary upload-button"
-              data-testid="lot-documents-upload-button"
+          {uploadError && (
+            <div
+              className="error-state"
+              data-testid="lot-documents-upload-error"
             >
-              <FaUpload /> {uploading ? 'Uploading...' : 'Upload'}
-            </button>
+              {uploadError}
+            </div>
           )}
-        </div>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          multiple
-          style={{ display: 'none' }}
-          data-testid="lot-documents-upload-input"
-        />
-      </div>
 
-      {uploadError && (
-        <div className="error-state" data-testid="lot-documents-upload-error">
-          {uploadError}
-        </div>
-      )}
-
-      {/* Documents Display */}
-      <div className="documents-container">
-        {filteredDocuments.length === 0 ? (
-          <div className="empty-state" data-testid="empty-state">
-            <p>No documents found.</p>
-            {canUpload && <p>Upload files to get started.</p>}
-          </div>
-        ) : (
-          <div
-            className={
-              filterType === 'image' || filterType === 'all'
-                ? 'documents-grid'
-                : 'documents-list'
-            }
-            data-testid="lot-documents-list"
-          >
-            {filteredDocuments.map(doc =>
-              doc.isImage ? (
-                // Photo card
-                <div
-                  key={doc.id}
-                  className="document-card photo-card"
-                  data-testid={`lot-document-card-${doc.id}`}
-                >
-                  <div className="photo-preview">
-                    <img
-                      src={imageDataUrls[doc.id] || doc.downloadUrl}
-                      alt={doc.fileName}
-                    />
-                  </div>
-                  <div className="document-info">
-                    <p className="document-name">{doc.fileName}</p>
-                    <p className="document-meta">
-                      {doc.uploaderName} •{' '}
-                      {new Date(doc.uploadedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="document-actions">
-                    <button
-                      onClick={() => handleDownload(doc.id, doc.fileName)}
-                      className="btn-icon"
-                      title="Download"
-                      data-testid={`lot-document-download-${doc.id}`}
+          {/* Documents Display */}
+          <div className="documents-container">
+            {filteredDocuments.length === 0 ? (
+              <div className="empty-state" data-testid="empty-state">
+                <p>No documents found.</p>
+                {canUpload && <p>Upload files to get started.</p>}
+              </div>
+            ) : (
+              <div
+                className={
+                  filterType === 'image' || filterType === 'all'
+                    ? 'documents-grid'
+                    : 'documents-list'
+                }
+                data-testid="lot-documents-list"
+              >
+                {filteredDocuments.map(doc =>
+                  doc.isImage ? (
+                    // Photo card
+                    <div
+                      key={doc.id}
+                      className="document-card photo-card"
+                      data-testid={`lot-document-card-${doc.id}`}
                     >
-                      <FaDownload />
-                    </button>
-                    {canDeleteDocument(doc) && (
-                      <button
-                        onClick={() => handleDeleteClick(doc.id, doc.fileName)}
-                        className="btn-icon btn-danger"
-                        title="Delete"
-                        data-testid={`lot-document-delete-${doc.id}`}
-                      >
-                        <FaTrash />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                // File row
-                <div
-                  key={doc.id}
-                  className="document-row"
-                  data-testid={`lot-document-row-${doc.id}`}
-                >
-                  <div className="document-icon">
-                    <FaFile />
-                  </div>
-                  <div className="document-details">
-                    <p className="document-name">{doc.fileName}</p>
-                    <p className="document-meta">
-                      {doc.uploaderName} •{' '}
-                      {new Date(doc.uploadedAt).toLocaleDateString()} •{' '}
-                      {(doc.sizeBytes / 1024).toFixed(1)} KB
-                    </p>
-                  </div>
-                  <div className="document-actions">
-                    <button
-                      onClick={() => handleDownload(doc.id, doc.fileName)}
-                      className="btn-icon"
-                      title="Download"
-                      data-testid={`lot-document-download-${doc.id}`}
+                      <div className="photo-preview">
+                        <img
+                          src={imageDataUrls[doc.id] || doc.downloadUrl}
+                          alt={doc.fileName}
+                        />
+                      </div>
+                      <div className="document-info">
+                        <p className="document-name">{doc.fileName}</p>
+                        <p className="document-meta">
+                          {doc.uploaderName} •{' '}
+                          {new Date(doc.uploadedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="document-actions">
+                        <button
+                          onClick={() => handleDownload(doc.id, doc.fileName)}
+                          className="btn-icon"
+                          title="Download"
+                          data-testid={`lot-document-download-${doc.id}`}
+                        >
+                          <FaDownload />
+                        </button>
+                        {canDeleteDocument(doc) && (
+                          <button
+                            onClick={() =>
+                              handleDeleteClick(doc.id, doc.fileName)
+                            }
+                            className="btn-icon btn-danger"
+                            title="Delete"
+                            data-testid={`lot-document-delete-${doc.id}`}
+                          >
+                            <FaTrash />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    // File row
+                    <div
+                      key={doc.id}
+                      className="document-row"
+                      data-testid={`lot-document-row-${doc.id}`}
                     >
-                      <FaDownload />
-                    </button>
-                    {canDeleteDocument(doc) && (
-                      <button
-                        onClick={() => handleDeleteClick(doc.id, doc.fileName)}
-                        className="btn-icon btn-danger"
-                        title="Delete"
-                        data-testid={`lot-document-delete-${doc.id}`}
-                      >
-                        <FaTrash />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )
+                      <div className="document-icon">
+                        <FaFile />
+                      </div>
+                      <div className="document-details">
+                        <p className="document-name">{doc.fileName}</p>
+                        <p className="document-meta">
+                          {doc.uploaderName} •{' '}
+                          {new Date(doc.uploadedAt).toLocaleDateString()} •{' '}
+                          {(doc.sizeBytes / 1024).toFixed(1)} KB
+                        </p>
+                      </div>
+                      <div className="document-actions">
+                        <button
+                          onClick={() => handleDownload(doc.id, doc.fileName)}
+                          className="btn-icon"
+                          title="Download"
+                          data-testid={`lot-document-download-${doc.id}`}
+                        >
+                          <FaDownload />
+                        </button>
+                        {canDeleteDocument(doc) && (
+                          <button
+                            onClick={() =>
+                              handleDeleteClick(doc.id, doc.fileName)
+                            }
+                            className="btn-icon btn-danger"
+                            title="Delete"
+                            data-testid={`lot-document-delete-${doc.id}`}
+                          >
+                            <FaTrash />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
             )}
           </div>
-        )}
-      </div>
-      </>
+        </>
       ) : (
         /* Forms View */
         <div className="forms-view-container" data-testid="lot-forms-view">
@@ -1290,8 +1300,14 @@ const LotDocumentsPage = () => {
 
       {/* Form Edit Modal */}
       {isEditModalOpen && selectedForm && (
-        <div className="forms-modal-overlay" onClick={() => setIsEditModalOpen(false)}>
-          <div className="forms-modal forms-modal-large" onClick={e => e.stopPropagation()}>
+        <div
+          className="forms-modal-overlay"
+          onClick={() => setIsEditModalOpen(false)}
+        >
+          <div
+            className="forms-modal forms-modal-large"
+            onClick={e => e.stopPropagation()}
+          >
             <div className="forms-modal-header">
               <h2>
                 {t('modal.editTitle', 'Form')} -{' '}

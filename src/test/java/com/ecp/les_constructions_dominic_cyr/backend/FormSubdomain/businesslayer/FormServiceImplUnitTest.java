@@ -1981,7 +1981,7 @@ class FormServiceImplUnitTest {
         
         testForm.setFormStatus(FormStatus.SUBMITTED);
         testForm.setFormData(customerFormData);
-        testForm.setSubmittedAt(LocalDateTime.now());
+        testForm.setLastSubmittedDate(LocalDateTime.now());
         
         when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
                 .thenReturn(Optional.of(testForm));
@@ -2049,7 +2049,7 @@ class FormServiceImplUnitTest {
         testForm.setFormStatus(FormStatus.SUBMITTED);
         Map<String, Object> newFormData = Map.of("newField", "newValue");
         
-        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+        FormDataUpdateRequestModel updateRequest = FormDataUpdateRequestModel.builder()
                 .formData(newFormData)
                 .build();
         
@@ -2059,7 +2059,7 @@ class FormServiceImplUnitTest {
         // Act & Assert
         InvalidInputException exception = assertThrows(
                 InvalidInputException.class,
-                () -> formService.updateFormData("test-form-id-123", updateRequest)
+                () -> formService.updateFormData("test-form-id-123", updateRequest, CUSTOMER_UUID)
         );
         
         assertTrue(exception.getMessage().contains("Cannot update form data for a submitted form"));
@@ -2072,7 +2072,7 @@ class FormServiceImplUnitTest {
         testForm.setFormStatus(FormStatus.COMPLETED);
         Map<String, Object> newFormData = Map.of("field", "value");
         
-        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+        FormDataUpdateRequestModel updateRequest = FormDataUpdateRequestModel.builder()
                 .formData(newFormData)
                 .build();
         
@@ -2082,7 +2082,7 @@ class FormServiceImplUnitTest {
         // Act & Assert
         InvalidInputException exception = assertThrows(
                 InvalidInputException.class,
-                () -> formService.updateFormData("test-form-id-123", updateRequest)
+                () -> formService.updateFormData("test-form-id-123", updateRequest, CUSTOMER_UUID)
         );
         
         assertTrue(exception.getMessage().contains("Cannot update form data for a completed form") ||
@@ -2098,7 +2098,7 @@ class FormServiceImplUnitTest {
         Map<String, Object> originalData = new HashMap<>();
         testForm.setFormData(originalData);
         
-        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+        FormDataUpdateRequestModel updateRequest = FormDataUpdateRequestModel.builder()
                 .formData(newFormData)
                 .build();
         
@@ -2115,7 +2115,7 @@ class FormServiceImplUnitTest {
         when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
 
         // Act
-        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest);
+        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest, CUSTOMER_UUID);
 
         // Assert
         assertNotNull(result);
@@ -2133,7 +2133,7 @@ class FormServiceImplUnitTest {
         testForm.setFormData(existingData);
         
         Map<String, Object> newFormData = Map.of("field1", "updated", "field2", "new");
-        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+        FormDataUpdateRequestModel updateRequest = FormDataUpdateRequestModel.builder()
                 .formData(newFormData)
                 .build();
         
@@ -2150,7 +2150,7 @@ class FormServiceImplUnitTest {
         when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
 
         // Act
-        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest);
+        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest, CUSTOMER_UUID);
 
         // Assert
         assertNotNull(result);
@@ -2167,7 +2167,7 @@ class FormServiceImplUnitTest {
         testForm.setFormData(formData);
         
         Map<String, Object> newFormData = Map.of("correctedField", "new value");
-        FormUpdateRequestModel updateRequest = FormUpdateRequestModel.builder()
+        FormDataUpdateRequestModel updateRequest = FormDataUpdateRequestModel.builder()
                 .formData(newFormData)
                 .build();
         
@@ -2184,7 +2184,7 @@ class FormServiceImplUnitTest {
         when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
 
         // Act
-        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest);
+        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest, CUSTOMER_UUID);
 
         // Assert
         assertNotNull(result);
@@ -2231,6 +2231,41 @@ class FormServiceImplUnitTest {
         assertNotNull(result);
         assertTrue(result.isEmpty());
         verify(formRepository).findAll();
+    }
+
+    // ========== submitForm Without Specifying Data Tests (Edge Case) ==========
+
+    @Test
+    void updateFormData_WhenReopenedForm_AllowsEditing() {
+        // Arrange
+        testForm.setFormStatus(FormStatus.REOPENED);
+        
+        Map<String, Object> newFormData = new HashMap<>();
+        newFormData.put("correctedField", "new value");
+        
+        FormDataUpdateRequestModel updateRequest = FormDataUpdateRequestModel.builder()
+                .formData(newFormData)
+                .build();
+        
+        when(formRepository.findByFormIdentifier_FormId("test-form-id-123"))
+                .thenReturn(Optional.of(testForm));
+        when(formRepository.save(any(Form.class))).thenReturn(testForm);
+        
+        testResponseModel = FormResponseModel.builder()
+                .formId("test-form-id-123")
+                .formStatus(FormStatus.REOPENED)
+                .formData(newFormData)
+                .build();
+        
+        when(formMapper.entityToResponseModel(any(Form.class))).thenReturn(testResponseModel);
+
+        // Act
+        FormResponseModel result = formService.updateFormData("test-form-id-123", updateRequest, CUSTOMER_UUID);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("new value", result.getFormData().get("correctedField"));
+        verify(formRepository).save(any(Form.class));
     }
 
     // ========== submitForm formData Preservation Tests ==========

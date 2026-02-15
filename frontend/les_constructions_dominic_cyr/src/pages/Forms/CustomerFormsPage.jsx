@@ -931,10 +931,7 @@ const CustomerFormsPage = () => {
           className="forms-modal-overlay"
           onClick={() => setIsSubmitConfirmOpen(false)}
         >
-          <div
-            className="forms-modal"
-            onClick={e => e.stopPropagation()}
-          >
+          <div className="forms-modal" onClick={e => e.stopPropagation()}>
             <div className="forms-modal-header">
               <h2>{t('modal.confirmSubmitTitle', 'Confirm Submission')}</h2>
               <button
@@ -1010,7 +1007,6 @@ const CustomerFormsPage = () => {
                         <strong>{t('modal.date', 'Date')}:</strong>{' '}
                         {new Date(history.submittedAt).toLocaleString()}
                       </p>
-
                     </div>
                   ))}
                 </div>

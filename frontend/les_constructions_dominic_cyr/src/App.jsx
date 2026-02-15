@@ -597,7 +597,12 @@ export default function App() {
               path="/projects/:projectIdentifier/lots/:lotId/documents"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'CONTRACTOR', 'CUSTOMER', 'SALESPERSON']}
+                  allowedRoles={[
+                    'OWNER',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                    'SALESPERSON',
+                  ]}
                   element={<LotDocumentsPage />}
                 />
               }
