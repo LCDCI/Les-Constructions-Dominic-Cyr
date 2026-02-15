@@ -202,3 +202,34 @@ export async function downloadFinalizedForm(formId, token) {
   document.body.removeChild(link);
   window.URL.revokeObjectURL(downloadUrl);
 }
+
+/**
+ * Open a finalized form PDF in a new tab
+ * @param {string} formId - Form ID
+ * @param {string} token - Auth token
+ */
+export async function viewFinalizedForm(formId, token) {
+  const response = await axios.get(`${API_BASE}/forms/${formId}/download`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    responseType: 'blob',
+  });
+
+  const blob = new Blob([response.data], {
+    type: response.headers['content-type'] || 'application/pdf',
+  });
+  const viewUrl = window.URL.createObjectURL(blob);
+  const opened = window.open(viewUrl, '_blank', 'noopener');
+
+  if (!opened) {
+    const link = document.createElement('a');
+    link.href = viewUrl;
+    link.download = `form_${formId}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  setTimeout(() => {
+    window.URL.revokeObjectURL(viewUrl);
+  }, 30000);
+}

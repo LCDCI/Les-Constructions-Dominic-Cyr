@@ -500,51 +500,49 @@ public class FormController {
     }
 
     private byte[] buildFormPdf(FormResponseModel form) {
+        ObjectMapper objectMapper = new ObjectMapper();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(outputStream);
         PdfDocument pdfDocument = new PdfDocument(writer);
         Document document = new Document(pdfDocument);
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            document.add(new Paragraph("Finalized Form").setBold().setFontSize(18));
-            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Finalized Form")
+                .setBold()
+                .setFontSize(20)
+                .setMarginBottom(6));
+            document.add(new Paragraph(formatFormType(form.getFormType()))
+                .setFontSize(14)
+                .setMarginBottom(12));
 
-            document.add(new Paragraph("Form Summary").setBold().setFontSize(14));
-            document.add(new Paragraph("Form Type: " + formatFormType(form.getFormType())));
-            document.add(new Paragraph("Form ID: " + form.getFormId()));
-            document.add(new Paragraph("Status: " + String.valueOf(form.getFormStatus())));
-            document.add(new Paragraph("Project: " + form.getProjectIdentifier()));
-            document.add(new Paragraph("Lot: " + form.getLotIdentifier()));
-            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Summary")
+                .setBold()
+                .setFontSize(14)
+                .setMarginBottom(6));
+            document.add(new Paragraph("Status: " + safeValue(form.getFormStatus())));
+            document.add(new Paragraph("Project: " + safeValue(form.getProjectIdentifier())));
+            document.add(new Paragraph("Lot: " + safeValue(form.getLotIdentifier()))
+                .setMarginBottom(10));
 
-            document.add(new Paragraph("Customer Details").setBold().setFontSize(14));
-            document.add(new Paragraph("Customer Name: " + safeValue(form.getCustomerName())));
-            document.add(new Paragraph("Customer Email: " + safeValue(form.getCustomerEmail())));
-            document.add(new Paragraph("Customer ID: " + safeValue(form.getCustomerId())));
-            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Customer")
+                .setBold()
+                .setFontSize(14)
+                .setMarginBottom(6));
+            document.add(new Paragraph("Name: " + safeValue(form.getCustomerName())));
+            document.add(new Paragraph("Email: " + safeValue(form.getCustomerEmail()))
+                .setMarginBottom(10));
 
-            document.add(new Paragraph("Assignment Details").setBold().setFontSize(14));
-            document.add(new Paragraph("Assigned By: " + safeValue(form.getAssignedByName())));
-            document.add(new Paragraph("Assigned By ID: " + safeValue(form.getAssignedByUserId())));
-            document.add(new Paragraph("Assigned Date: " + safeValue(form.getAssignedDate())));
-            if (form.getInstructions() != null && !form.getInstructions().isEmpty()) {
-                document.add(new Paragraph("Instructions: " + form.getInstructions()));
-            }
-            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Completed")
+                .setBold()
+                .setFontSize(14)
+                .setMarginBottom(6));
+            document.add(new Paragraph("Date: " + safeValue(form.getCompletedDate()))
+                .setMarginBottom(12));
 
-            document.add(new Paragraph("Timeline").setBold().setFontSize(14));
-            document.add(new Paragraph("First Submitted: " + safeValue(form.getFirstSubmittedDate())));
-            document.add(new Paragraph("Last Submitted: " + safeValue(form.getLastSubmittedDate())));
-            document.add(new Paragraph("Completed: " + safeValue(form.getCompletedDate())));
-            if (form.getReopenedDate() != null) {
-                document.add(new Paragraph("Reopened Date: " + safeValue(form.getReopenedDate())));
-                document.add(new Paragraph("Reopened By: " + safeValue(form.getReopenedByUserId())));
-                document.add(new Paragraph("Reopen Reason: " + safeValue(form.getReopenReason())));
-            }
-            document.add(new Paragraph(" "));
-
-            document.add(new Paragraph("Form Data").setBold().setFontSize(14));
+            document.add(new Paragraph("Form Data")
+                .setBold()
+                .setFontSize(14)
+                .setMarginBottom(6));
             Table table = new Table(2).useAllAvailableWidth();
             table.addHeaderCell(new Cell().add(new Paragraph("Field").setBold()));
             table.addHeaderCell(new Cell().add(new Paragraph("Value").setBold()));
@@ -561,10 +559,11 @@ public class FormController {
             }
 
             document.add(table);
-            return outputStream.toByteArray();
         } finally {
             document.close();
         }
+
+        return outputStream.toByteArray();
     }
 
     private String safeValue(Object value) {

@@ -267,6 +267,16 @@
   transform: translateY(-1px);
 }
 
+.form-action-view {
+  background-color: var(--color-secondary);
+  color: var(--color-text);
+}
+
+.form-action-view:hover {
+  background-color: var(--color-light);
+  transform: translateY(-1px);
+}
+
 .form-action-download {
   background-color: var(--color-primary);
   color: var(--color-white);
@@ -461,14 +471,41 @@
   margin-top: var(--spacing-sm);
 }
 
-.history-data pre {
-  background-color: var(--color-white);
+.history-data-empty {
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+}
+
+.history-data-list {
+  margin-top: var(--spacing-sm);
   border: 1px solid var(--color-light);
   border-radius: 6px;
-  padding: var(--spacing-sm);
-  overflow-x: auto;
-  font-size: 0.875rem;
-  line-height: 1.5;
+  background-color: var(--color-white);
+  overflow: hidden;
+}
+
+.history-data-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr;
+  gap: var(--spacing-sm);
+  padding: 0.5rem var(--spacing-sm);
+  border-bottom: 1px solid var(--color-light);
+  font-size: 0.9rem;
+}
+
+.history-data-row:last-child {
+  border-bottom: none;
+}
+
+.history-data-key {
+  font-weight: 600;
+  color: var(--color-text);
+  word-break: break-word;
+}
+
+.history-data-value {
+  color: var(--color-text);
+  word-break: break-word;
 }
 
 /* ========== RESPONSIVE ========== */

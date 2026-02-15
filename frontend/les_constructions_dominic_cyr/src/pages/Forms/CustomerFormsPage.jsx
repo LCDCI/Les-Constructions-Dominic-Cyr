@@ -6,6 +6,7 @@ import {
   updateFormData,
   getFormHistory,
   downloadFinalizedForm,
+  viewFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import '../../styles/Forms/customer-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
@@ -427,12 +428,49 @@ const CustomerFormsPage = () => {
     }
   };
 
+  const handleViewPdf = async form => {
+    try {
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      await viewFinalizedForm(form.formId, token);
+    } catch (error) {
+      setSubmitError('Failed to open form. Please try again.');
+    }
+  };
+
   const canEditForm = form => {
     return (
       form.formStatus === 'ASSIGNED' ||
       form.formStatus === 'IN_PROGRESS' ||
       form.formStatus === 'REOPENED'
     );
+  };
+
+  const formatHistoryValue = value => {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(formatHistoryValue).filter(Boolean).join(', ');
+    }
+
+    if (typeof value === 'object') {
+      return Object.entries(value)
+        .map(([key, nestedValue]) => {
+          const formatted = formatHistoryValue(nestedValue);
+          return formatted ? `${key}: ${formatted}` : key;
+        })
+        .join(', ');
+    }
+
+    return String(value);
   };
 
   const renderFormFields = () => {
@@ -588,12 +626,20 @@ const CustomerFormsPage = () => {
                       </button>
                     )}
                     {form.formStatus === 'COMPLETED' && (
-                      <button
-                        className="form-action-button form-action-download"
-                        onClick={() => handleDownloadForm(form)}
-                      >
-                        {t('buttons.downloadPdf', 'Download PDF')}
-                      </button>
+                      <>
+                        <button
+                          className="form-action-button form-action-view"
+                          onClick={() => handleViewPdf(form)}
+                        >
+                          {t('buttons.viewPdf', 'View PDF')}
+                        </button>
+                        <button
+                          className="form-action-button form-action-download"
+                          onClick={() => handleDownloadForm(form)}
+                        >
+                          {t('buttons.downloadPdf', 'Download PDF')}
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -695,9 +741,28 @@ const CustomerFormsPage = () => {
                       </p>
                       <div className="history-data">
                         <strong>{t('modal.formData', 'Form Data')}:</strong>
-                        <pre>
-                          {JSON.stringify(history.formDataSnapshot, null, 2)}
-                        </pre>
+                        {Object.keys(history.formDataSnapshot || {}).length ===
+                        0 ? (
+                          <p className="history-data-empty">
+                            {t(
+                              'modal.noFormData',
+                              'No form data available'
+                            )}
+                          </p>
+                        ) : (
+                          <div className="history-data-list">
+                            {Object.entries(
+                              history.formDataSnapshot || {}
+                            ).map(([key, value]) => (
+                              <div key={key} className="history-data-row">
+                                <span className="history-data-key">{key}</span>
+                                <span className="history-data-value">
+                                  {formatHistoryValue(value)}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
