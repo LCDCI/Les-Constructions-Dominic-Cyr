@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useUnreadCount } from '../../features/notifications/hooks/useUnreadCount';
+import { clearAppSession } from '../../features/users/api/clearAppSession';
 import '../../styles/NavBars/customerNavbar.css';
 import {
   GoProject,
@@ -267,9 +268,12 @@ const Navbar = ({
             className="navbar-logout"
             onClick={() => {
               closeMenu();
-              if (isAuthenticated) {
-                logout({ logoutParams: { returnTo: window.location.origin } });
-              }
+              clearAppSession();
+              logout({
+                logoutParams: {
+                  returnTo: window.location.origin,
+                },
+              });
             }}
           >
             <span className="navbar-icon">
