@@ -1,7 +1,30 @@
 .owner-review-forms-page {
-  padding: 2rem;
-  max-width: 1400px;
+  padding: 0;
+  max-width: 100%;
   margin: 0 auto;
+}
+
+/* Forms Header Banner - Light Green */
+.forms-header-banner {
+  background-color: #aab2a6;
+  width: 100%;
+  padding: 3.5rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.forms-header-banner h1 {
+  color: #ffffff;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+}
+
+.forms-header-banner .forms-subtitle {
+  color: #ffffff;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  margin: 0;
+  opacity: 0.95;
 }
 
 .forms-header {
@@ -25,6 +48,10 @@
   gap: 1.5rem;
   margin-bottom: 2rem;
   flex-wrap: wrap;
+  padding: 0 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .filter-group {
@@ -67,6 +94,10 @@
 
 .forms-container {
   margin-top: 2rem;
+  padding: 0 2rem;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .no-forms {

@@ -230,20 +230,6 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/uploads"
-                  className={`navbar-link ${isActive('/uploads')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoArrowUp />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.uploads', 'Uploads')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
                   to="/documents"
                   className={`navbar-link ${isActive('/documents')}`}
                   onClick={closeMenu}
@@ -316,20 +302,6 @@ const Navbar = ({
                       'navbar.menuItems.analyticsReports',
                       'Analytics & Reports'
                     )}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/"
-                  className={`navbar-link ${isActive('/')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoHome />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.home', 'Home')}
                   </span>
                 </Link>
               </li>

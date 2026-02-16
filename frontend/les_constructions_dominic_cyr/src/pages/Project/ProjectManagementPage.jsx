@@ -3,7 +3,12 @@ import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Project/project-management.css';
 import '../../styles/Public_Facing/residential-projects.css';
-import { FaUserTie, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
+import {
+  FaUserTie,
+  FaChevronLeft,
+  FaChevronRight,
+  FaTimes,
+} from 'react-icons/fa';
 import { IoIosHammer } from 'react-icons/io';
 import { AiOutlineStock } from 'react-icons/ai';
 import { GrFormSchedule } from 'react-icons/gr';
@@ -17,28 +22,29 @@ export default function ProjectManagementPage() {
   const [currentImageSet, setCurrentImageSet] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const CDN_BASE_URL = 'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16';
+  const CDN_BASE_URL =
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16';
 
   const PM_IMAGES = {
     bromont: {
       url: `${CDN_BASE_URL}/BromontFrl.JPEG`,
       city: 'Bromont',
-      alt: 'Bromont construction project'
+      alt: 'Bromont construction project',
     },
     shefford: {
       urls: [
         `${CDN_BASE_URL}/shefford1.JPG`,
         `${CDN_BASE_URL}/shefford2.JPG`,
-        `${CDN_BASE_URL}/shefford3.JPG`
+        `${CDN_BASE_URL}/shefford3.JPG`,
       ],
       city: 'Shefford',
-      alt: 'Shefford construction project'
+      alt: 'Shefford construction project',
     },
     stHilaire: {
       url: `${CDN_BASE_URL}/st-hilaire.png`,
       city: 'St-Hilaire',
-      alt: 'St-Hilaire construction project'
-    }
+      alt: 'St-Hilaire construction project',
+    },
   };
 
   const openModal = (imageOrImages, index = 0) => {
@@ -71,7 +77,8 @@ export default function ProjectManagementPage() {
 
   const prevImage = () => {
     if (currentImageSet.length > 1) {
-      const newIndex = (currentIndex - 1 + currentImageSet.length) % currentImageSet.length;
+      const newIndex =
+        (currentIndex - 1 + currentImageSet.length) % currentImageSet.length;
       setCurrentIndex(newIndex);
       setCurrentImage(currentImageSet[newIndex]);
     }
@@ -125,7 +132,11 @@ export default function ProjectManagementPage() {
             </div>
 
             <div className="pm-images-grid">
-              <div className="pm-image-card" onClick={() => openModal(PM_IMAGES.bromont.url)} style={{ cursor: 'pointer' }}>
+              <div
+                className="pm-image-card"
+                onClick={() => openModal(PM_IMAGES.bromont.url)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="pm-image-container">
                   <img
                     src={PM_IMAGES.bromont.url}
@@ -135,7 +146,11 @@ export default function ProjectManagementPage() {
                 </div>
                 <p className="pm-image-city">{PM_IMAGES.bromont.city}</p>
               </div>
-              <div className="pm-image-card" onClick={() => openModal(PM_IMAGES.shefford.urls, 0)} style={{ cursor: 'pointer' }}>
+              <div
+                className="pm-image-card"
+                onClick={() => openModal(PM_IMAGES.shefford.urls, 0)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="pm-image-container">
                   <img
                     src={PM_IMAGES.shefford.urls[0]}
@@ -145,7 +160,11 @@ export default function ProjectManagementPage() {
                 </div>
                 <p className="pm-image-city">{PM_IMAGES.shefford.city}</p>
               </div>
-              <div className="pm-image-card" onClick={() => openModal(PM_IMAGES.stHilaire.url)} style={{ cursor: 'pointer' }}>
+              <div
+                className="pm-image-card"
+                onClick={() => openModal(PM_IMAGES.stHilaire.url)}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="pm-image-container">
                   <img
                     src={PM_IMAGES.stHilaire.url}
@@ -257,24 +276,39 @@ export default function ProjectManagementPage() {
       {/* Image Modal */}
       {modalOpen && (
         <div className="pm-image-modal-overlay" onClick={closeModal}>
-          <div className="pm-image-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="pm-modal-close" onClick={closeModal} aria-label="Close modal">
+          <div
+            className="pm-image-modal-content"
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              className="pm-modal-close"
+              onClick={closeModal}
+              aria-label="Close modal"
+            >
               <FaTimes />
             </button>
-            
+
             {currentImageSet.length > 1 && (
               <>
-                <button className="pm-modal-nav pm-modal-prev" onClick={prevImage} aria-label="Previous image">
+                <button
+                  className="pm-modal-nav pm-modal-prev"
+                  onClick={prevImage}
+                  aria-label="Previous image"
+                >
                   <FaChevronLeft />
                 </button>
-                <button className="pm-modal-nav pm-modal-next" onClick={nextImage} aria-label="Next image">
+                <button
+                  className="pm-modal-nav pm-modal-next"
+                  onClick={nextImage}
+                  aria-label="Next image"
+                >
                   <FaChevronRight />
                 </button>
               </>
             )}
-            
+
             <img src={currentImage} alt="Project" className="pm-modal-image" />
-            
+
             {currentImageSet.length > 1 && (
               <div className="pm-modal-indicators">
                 {currentImageSet.map((_, index) => (

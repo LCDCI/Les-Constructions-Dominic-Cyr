@@ -21,10 +21,10 @@ const RenovationCard = ({
 
   // Try to get translated description first, fallback to database description
   const translatedDescription = t(`descriptions.${_renovationIdentifier}`, '');
-  const displayDescription = translatedDescription || description || t(
-    'renovationCard.labels.descriptionFallback',
-    'No description available'
-  );
+  const displayDescription =
+    translatedDescription ||
+    description ||
+    t('renovationCard.labels.descriptionFallback', 'No description available');
 
   const mediaItems = [
     {

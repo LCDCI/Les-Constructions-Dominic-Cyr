@@ -4,10 +4,13 @@
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .fixed-table {
   width: 100% !important; /* Force fill */
+  min-width: 1200px; /* Ensure table doesn't get too compressed on mobile */
   table-layout: fixed; /* Strict column sizing */
   border-collapse: collapse;
 }

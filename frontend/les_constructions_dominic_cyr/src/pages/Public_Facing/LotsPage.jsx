@@ -222,7 +222,14 @@ const LotsPage = () => {
                 style={{ cursor: 'default' }}
               />
             </div>
-            <p style={{ textAlign: 'center', fontSize: '1.1rem', margin: '1.5rem 0', color: '#6b7280' }}>
+            <p
+              style={{
+                textAlign: 'center',
+                fontSize: '1.1rem',
+                margin: '1.5rem 0',
+                color: '#6b7280',
+              }}
+            >
               {t('comingSoon')}
             </p>
           </div>

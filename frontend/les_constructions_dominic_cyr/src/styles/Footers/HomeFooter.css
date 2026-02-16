@@ -156,7 +156,7 @@
   .footer-inner {
     gap: clamp(20px, 4vw, 30px);
   }
-  
+
   .footer-vertical-divider {
     height: clamp(50px, 12vw, 80px);
   }
@@ -172,11 +172,11 @@
     width: 100%;
     max-width: 400px;
   }
-  
+
   .footer-section-middle {
     padding: clamp(10px, 3vw, 20px) 0;
   }
-  
+
   .footer-vertical-divider {
     width: clamp(60px, 20vw, 100px);
     height: 1px;
@@ -186,7 +186,7 @@
   .footer-item-with-icon {
     justify-content: center;
   }
-  
+
   .footer-bottom {
     margin-top: clamp(10px, 3vw, 20px);
     padding-top: clamp(8px, 2vw, 15px);
@@ -197,16 +197,16 @@
   .app-footer {
     padding: clamp(15px, 4vw, 25px) 0;
   }
-  
+
   .footer-inner {
     width: 95%;
     gap: clamp(15px, 4vw, 25px);
   }
-  
+
   .footer-section {
     max-width: 100%;
   }
-  
+
   .footer-contact-link {
     font-size: clamp(11px, 3vw, 13px);
     padding: clamp(8px, 2vw, 10px) clamp(10px, 3vw, 14px);

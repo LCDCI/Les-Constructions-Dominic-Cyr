@@ -472,7 +472,10 @@ const ProjectOverviewPage = () => {
             <div className="location-content">
               <div className="location-text">
                 <p className="section-content">
-                  {t(`locationDescriptions.${projectIdentifier}`, overview.locationDescription)}
+                  {t(
+                    `locationDescriptions.${projectIdentifier}`,
+                    overview.locationDescription
+                  )}
                 </p>
                 {overview.locationAddress && (
                   <div className="location-address">
