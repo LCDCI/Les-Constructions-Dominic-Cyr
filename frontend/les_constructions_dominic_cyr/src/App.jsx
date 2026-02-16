@@ -179,13 +179,6 @@ export default function App() {
     });
   }, [isAuthenticated, getAccessTokenSilently, logout]);
 
-  useEffect(() => {
-    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-    if (measurementId) {
-      ReactGA.initialize(measurementId);
-    }
-  }, []);
-
   /* ----------------------------------
      Idle Timeout Logic
   -----------------------------------*/

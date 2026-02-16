@@ -12,10 +12,17 @@ import EditProjectForm from '../../features/projects/components/EditProjectForm'
 import { fetchLots } from '../../features/lots/api/lots';
 import useBackendUser from '../../hooks/useBackendUser';
 import { canCreateProjects, canEditProjects } from '../../utils/permissions';
+import { useTranslation } from 'react-i18next';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const ProjectsPage = () => {
+  const { i18n } = useTranslation();
   const { t } = usePageTranslations('projects');
+  const createProjectTitle = (i18n.language || '')
+    .toLowerCase()
+    .startsWith('fr')
+    ? 'Créer un nouveau projet'
+    : 'Create New Project';
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,6 +47,32 @@ const ProjectsPage = () => {
   const canEdit = canEditProjects(role);
 
   const filterMenuContainerRef = useRef(null);
+  const originalBodyOverflow = useRef(null);
+
+  // Lock body scroll when any modal is open
+  const isAnyModalOpen =
+    isCreateOpen ||
+    isEditOpen ||
+    showConfirmClose ||
+    isArchiveOpen ||
+    isLotSelectionOpen;
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      if (originalBodyOverflow.current === null) {
+        originalBodyOverflow.current = document.body.style.overflow || '';
+      }
+      document.body.style.overflow = 'hidden';
+    } else if (originalBodyOverflow.current !== null) {
+      document.body.style.overflow = originalBodyOverflow.current;
+      originalBodyOverflow.current = null;
+    }
+    return () => {
+      if (originalBodyOverflow.current !== null) {
+        document.body.style.overflow = originalBodyOverflow.current;
+        originalBodyOverflow.current = null;
+      }
+    };
+  }, [isAnyModalOpen]);
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
@@ -367,7 +400,10 @@ const ProjectsPage = () => {
             {canCreateProjects(role) && (
               <button
                 className="admin-create-project-button"
-                onClick={() => setIsCreateOpen(true)}
+                onClick={() => {
+                  setSubmitError(null);
+                  setIsCreateOpen(true);
+                }}
               >
                 {t('form.buttons.createProject', 'Create New Project')}
               </button>
@@ -387,6 +423,42 @@ const ProjectsPage = () => {
           </div>
         </div>
       </div>
+      {submitError && (
+        <div className="container" style={{ marginBottom: '1rem' }}>
+          <div
+            className="admin-projects-error"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              padding: '1rem 1.25rem',
+              borderRadius: '8px',
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#991b1b',
+            }}
+            role="alert"
+          >
+            <p style={{ margin: 0, flex: 1 }}>{submitError}</p>
+            <button
+              type="button"
+              onClick={() => setSubmitError(null)}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '6px',
+                border: '1px solid #f87171',
+                background: '#fee2e2',
+                color: '#991b1b',
+                cursor: 'pointer',
+                fontWeight: 500,
+              }}
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
       <section className="portfolio-section">
         <div className="container">
           {loading && (
@@ -519,6 +591,7 @@ const ProjectsPage = () => {
       </section>
       {isCreateOpen && (
         <div
+          className="create-project-overlay"
           style={overlayStyle}
           role="dialog"
           aria-modal="true"
@@ -527,9 +600,9 @@ const ProjectsPage = () => {
             if (e.target === e.currentTarget) setShowConfirmClose(true);
           }}
         >
-          <div style={modalStyle}>
+          <div className="create-project-modal" style={modalStyle}>
             <div className="create-project-header">
-              <h1>Create New Project</h1>
+              <h1>{createProjectTitle}</h1>
             </div>
             {submitError && <div className="error-message">{submitError}</div>}
             <CreateProjectForm
@@ -550,13 +623,7 @@ const ProjectsPage = () => {
             <p style={{ margin: '0.5rem 0 1rem 0' }}>
               If you exit now, any information you’ve entered will be lost.
             </p>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '0.5rem',
-              }}
-            >
+            <div className="form-actions">
               <button
                 type="button"
                 className="btn-cancel btn-stay-on-form"

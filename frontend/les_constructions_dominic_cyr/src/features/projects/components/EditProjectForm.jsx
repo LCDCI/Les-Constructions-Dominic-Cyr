@@ -294,7 +294,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="tertiaryColor">Tertiary Color</label>
+            <label htmlFor="tertiaryColor">Secondary Color</label>
             <input
               type="color"
               id="tertiaryColor"
@@ -305,7 +305,7 @@ const EditProjectForm = ({ project, onCancel, onSuccess, onError }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="buyerColor">Buyer Color</label>
+            <label htmlFor="buyerColor">Accent Color</label>
             <input
               type="color"
               id="buyerColor"
