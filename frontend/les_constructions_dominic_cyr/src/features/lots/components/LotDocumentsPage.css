@@ -251,12 +251,11 @@
 }
 
 .btn-secondary {
-  background: #e0e0e0;
-  color: #333;
+  /* Uses global.css button token system */
 }
 
 .btn-secondary:hover {
-  background: #d0d0d0;
+  /* Uses global.css button hover token */
 }
 
 /* Finalized Forms */
@@ -332,7 +331,7 @@
 }
 
 .btn-danger {
-  background: #d32f2f;
+  /* Uses global.css danger button token system */
   color: white;
 }
 
