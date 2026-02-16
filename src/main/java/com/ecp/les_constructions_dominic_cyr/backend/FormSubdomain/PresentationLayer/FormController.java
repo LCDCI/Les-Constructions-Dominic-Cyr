@@ -52,6 +52,7 @@ public class FormController {
 
     private static final String ROLE_OWNER = "ROLE_OWNER";
     private static final String ROLE_SALESPERSON = "ROLE_SALESPERSON";
+    private static final String ROLE_CONTRACTOR = "ROLE_CONTRACTOR";
     private static final String ROLE_CUSTOMER = "ROLE_CUSTOMER";
 
     /**
@@ -114,8 +115,8 @@ public class FormController {
         List<FormResponseModel> forms;
 
         // Determine which forms to retrieve based on role and filters
-        if (isOwnerOrSalesperson(authentication)) {
-            // Owners and salespersons can see all forms, apply filters
+        if (isPrivilegedRole(authentication)) {
+            // Owners, salespersons, and contractors can see all forms, apply filters
             if (projectId != null) {
                 forms = formService.getFormsByProject(projectId);
             } else if (customerId != null) {
@@ -123,10 +124,8 @@ public class FormController {
             } else if (status != null) {
                 forms = formService.getFormsByStatus(status);
             } else {
-                // Get all forms (could be expensive in production, consider pagination)
-                UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
-                String userId = currentUser.getUserIdentifier();
-                forms = formService.getFormsCreatedBy(userId);
+                // Get all forms for privileged roles
+                forms = formService.getAllForms();
             }
         } else {
             // Customers only see their own forms
@@ -215,7 +214,7 @@ public class FormController {
         log.info("GET /api/v1/forms/customer/{}", customerId);
 
         // Customers can only view their own forms
-        if (!isOwnerOrSalesperson(authentication)) {
+        if (!isPrivilegedRole(authentication)) {
             UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
             if (!currentUser.getUserIdentifier().equals(customerId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -261,7 +260,7 @@ public class FormController {
 
         // Verify authorization
         FormResponseModel form = formService.getFormById(formId);
-        if (!form.getCustomerId().equals(userId) && !isOwnerOrSalesperson(authentication)) {
+        if (!form.getCustomerId().equals(userId) && !isPrivilegedRole(authentication)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -431,11 +430,12 @@ public class FormController {
 
     // ========== Helper Methods ==========
 
-    private boolean isOwnerOrSalesperson(Authentication authentication) {
+    private boolean isPrivilegedRole(Authentication authentication) {
         if (authentication == null) return false;
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         return authorities.contains(new SimpleGrantedAuthority(ROLE_OWNER)) ||
-                authorities.contains(new SimpleGrantedAuthority(ROLE_SALESPERSON));
+                authorities.contains(new SimpleGrantedAuthority(ROLE_SALESPERSON)) ||
+                authorities.contains(new SimpleGrantedAuthority(ROLE_CONTRACTOR));
     }
 
     private boolean hasAuthority(Authentication authentication, String role) {
@@ -490,7 +490,7 @@ public class FormController {
     }
 
     private boolean isAuthorizedToViewForm(FormResponseModel form, Jwt jwt, Authentication authentication) {
-        if (isOwnerOrSalesperson(authentication)) {
+        if (isPrivilegedRole(authentication)) {
             return true;
         }
 

@@ -567,6 +567,12 @@ const SalespersonFormsPage = () => {
               </button>
             </div>
             <div className="forms-modal-body">
+              {submitError && (
+                <div className="forms-error forms-error-modal">
+                  <p>{submitError}</p>
+                  <button onClick={() => setSubmitError(null)}>×</button>
+                </div>
+              )}
               <div className="forms-form-group">
                 <label htmlFor="customer">
                   {t('modal.create.customer', 'Customer')}{' '}
@@ -712,6 +718,12 @@ const SalespersonFormsPage = () => {
               </button>
             </div>
             <div className="forms-modal-body">
+              {submitError && (
+                <div className="forms-error forms-error-modal">
+                  <p>{submitError}</p>
+                  <button onClick={() => setSubmitError(null)}>×</button>
+                </div>
+              )}
               <div className="forms-form-group">
                 <label htmlFor="reopenReason">
                   {t('modal.reopen.reasonLabel', 'Reason for Reopening')}{' '}

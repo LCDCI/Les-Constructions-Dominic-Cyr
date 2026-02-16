@@ -130,6 +130,10 @@
   padding: 0 0.5rem;
 }
 
+.forms-error-modal {
+  margin-bottom: 1rem;
+}
+
 .no-forms {
   text-align: center;
   padding: var(--spacing-xxl);
@@ -389,6 +393,7 @@
   font-size: 1rem;
   font-family: var(--font-body);
   transition: border-color 0.3s ease;
+  box-sizing: border-box;
 }
 
 .forms-form-input:focus,
@@ -401,6 +406,196 @@
 .forms-form-textarea {
   resize: vertical;
   min-height: 100px;
+}
+
+/* ── Instructions block ─────────────────────────────────── */
+.forms-instructions {
+  background-color: #f0f4f8;
+  border-left: 4px solid var(--color-accent);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.forms-instructions p {
+  margin: 0;
+}
+
+/* ── External link button ───────────────────────────────── */
+.forms-external-link {
+  margin-bottom: var(--spacing-md);
+}
+
+.forms-external-link a {
+  display: inline-block;
+  padding: 0.625rem 1.25rem;
+  background-color: var(--color-accent);
+  color: var(--color-white);
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.forms-external-link a:hover {
+  background-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+/* ── Section header ─────────────────────────────────────── */
+.forms-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--color-secondary);
+  padding-bottom: 0.5rem;
+  margin: var(--spacing-lg) 0 var(--spacing-md);
+}
+
+.forms-section-header:first-child {
+  margin-top: 0;
+}
+
+.forms-section-header h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.forms-section-ref {
+  font-size: 0.875rem;
+  color: var(--color-accent);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.forms-section-ref:hover {
+  text-decoration: underline;
+}
+
+/* ── File upload ────────────────────────────────────────── */
+.forms-file-dropzone {
+  border: 2px dashed var(--color-secondary);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: border-color 0.3s ease;
+}
+
+.forms-file-dropzone:hover {
+  border-color: var(--color-accent);
+}
+
+.forms-file-dropzone input[type='file'] {
+  font-family: var(--font-body);
+}
+
+.forms-file-uploading {
+  color: var(--color-accent);
+  font-style: italic;
+  margin-top: 0.5rem;
+}
+
+.forms-file-uploaded {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f0fdf4;
+  border: 2px solid #86efac;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.forms-file-name {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.forms-file-remove {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-danger);
+  cursor: pointer;
+  padding: 0 0.25rem;
+  line-height: 1;
+}
+
+.forms-file-remove:hover {
+  transform: scale(1.2);
+}
+
+.forms-field-error {
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Image-radio grid ───────────────────────────────────── */
+.forms-radio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.75rem;
+}
+
+.forms-radio-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0.75rem;
+  border: 2px solid var(--color-light);
+  border-radius: 10px;
+  background: var(--color-white);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+}
+
+.forms-radio-card:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 2px 8px rgba(98, 141, 181, 0.15);
+}
+
+.forms-radio-card.selected {
+  border-color: var(--color-accent);
+  background-color: #eef4fa;
+  box-shadow: 0 0 0 3px rgba(98, 141, 181, 0.25);
+}
+
+.forms-radio-indicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--color-secondary);
+  position: relative;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease;
+}
+
+.forms-radio-card.selected .forms-radio-indicator {
+  border-color: var(--color-accent);
+}
+
+.forms-radio-card.selected .forms-radio-indicator::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+}
+
+.forms-radio-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-transform: capitalize;
 }
 
 /* ========== MODAL BUTTONS ========== */
@@ -544,6 +739,16 @@
   .forms-modal-button {
     width: 100%;
   }
+
+  .forms-radio-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .forms-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
 }
 
 /* ========== CUSTOMER FORMS SELECTION PAGE ========== */
@@ -593,4 +798,61 @@
   font-size: 1.125rem;
   margin-top: var(--spacing-xs);
   opacity: 0.9;
+}
+
+/* ── All-Projects Forms View ─────────────────────── */
+.forms-all-projects {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.forms-project-group {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: #fafafa;
+}
+
+.forms-project-title {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-accent);
+}
+
+.form-status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.form-status-badge.status-assigned {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.form-status-badge.status-in-progress {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.form-status-badge.status-submitted {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.form-status-badge.status-completed {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.form-status-badge.status-reopened {
+  background: #fce4ec;
+  color: #c62828;
 }

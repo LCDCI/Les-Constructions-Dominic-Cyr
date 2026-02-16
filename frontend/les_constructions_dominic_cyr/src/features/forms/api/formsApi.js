@@ -53,13 +53,6 @@ export async function getFormById(formId, token) {
 }
 
 /**
- * Update form data (customer edit)
- * @param {string} formId - Form ID
- * @param {Object} payload - Form data update payload
- * @param {Object} payload.formData - Updated form data
- * @param {string} token - Auth token
- */
-/**
  * Update form data (used by customers filling out forms)
  * @param {string} formId - Form ID
  * @param {Object} payload - Update payload with formData and optional isSubmitting flag
@@ -79,17 +72,29 @@ export async function updateFormData(formId, payload, token) {
 /**
  * Submit a form
  * @param {string} formId - Form ID
- * @param {Object} payload - Submission payload
- * @param {Object} payload.formData - Form data to submit
+ * @param {Object|string} payload - Submission payload or auth token
+ * @param {Object} payload.formData - Optional form data to submit
  * @param {boolean} payload.isSubmitting - Should be true
- * @param {string} token - Auth token
+ * @param {string} token - Auth token (optional if payload is the token)
  */
 export async function submitForm(formId, payload, token) {
+  let requestBody = payload;
+  let authToken = token;
+
+  if (typeof payload === 'string' && token === undefined) {
+    authToken = payload;
+    requestBody = { isSubmitting: true };
+  }
+
+  if (!requestBody) {
+    requestBody = { isSubmitting: true };
+  }
+
   const response = await axios.post(
     `${API_BASE}/forms/${formId}/submit`,
-    payload,
+    requestBody,
     {
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
     }
   );
   return response.data;
