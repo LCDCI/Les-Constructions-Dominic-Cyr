@@ -1,4 +1,3 @@
-
 @startuml
 
 actor "o:Owner" as Owner
@@ -32,7 +31,10 @@ participant "taskRepo:TaskRepository" as TaskRepo
 participant "taskDb:Task" as TaskDb
 participant "taskResDTO:TaskResponseDTO" as TaskResDTO
 
-ref over Owner, Controller : JWT Authentication (Security Filter)
+ref over Owner, Controller
+    <<include>> JWT Authentication
+    (Security Filter validates Owner token)
+end ref
 
 Owner -> Page : input schedule details & submit
 activate Page
@@ -54,6 +56,12 @@ alt Validation Fails
     Service --> Controller : error
     Controller --> Page : HTTP 400 (Invalid input)
     Page --> Owner : Display error message
+    
+    note right of Page
+        <<extend>> Schedule Validation Error
+        Extension point: FDUC Step 3.1
+    end note
+    
 else Validation Passes
     Validator --> Service : void
     deactivate Validator
@@ -75,6 +83,12 @@ else Validation Passes
         Service --> Controller : throw NotFoundException
         Controller --> Page : HTTP 404 (Project not found)
         Page --> Owner : Display error
+        
+        note right of Page
+            <<extend>> Project Not Found
+            Extension point: FDUC Step 4.1
+        end note
+        
     else Project Found
 
         Service -> LotRepo : findByLotIdentifier(reqDTO.getLotId())
@@ -94,6 +108,12 @@ else Validation Passes
             Service --> Controller : throw NotFoundException
             Controller --> Page : HTTP 404 (Lot not found)
             Page --> Owner : Display error
+            
+            note right of Page
+                <<extend>> Lot Not Found
+                Extension point: FDUC Step 4.1
+            end note
+            
         else Lot Found
 
             Service -> Mapper : requestDTOToEntity(reqDTO, proj, lot)
@@ -158,6 +178,12 @@ else Validation Passes
                     TaskService --> TaskController : error
                     TaskController --> Page : HTTP 400 (Invalid task data)
                     Page --> Owner : Display task error
+                    
+                    note right of Page
+                        <<extend>> Task Validation Error
+                        Extension point: Task creation loop
+                    end note
+                    
                 else Task Validation Passes
                     TaskValidator --> TaskService : void
                     deactivate TaskValidator
