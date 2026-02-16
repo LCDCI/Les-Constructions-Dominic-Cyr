@@ -43,29 +43,29 @@ export default function ProjectManagementPage() {
   return (
     <div className="project-management-page">
       {/* Hero Banner Section */}
-      <section className="pm-hero-banner">
+      <section className="pm-hero-banner" aria-labelledby="pm-hero-title">
         <div className="pm-hero-content">
-          <h1 className="pm-hero-title">
+          <h1 className="pm-hero-title" id="pm-hero-title">
             {`${t('hero.line1', 'PROJECT MANAGEMENT,')} ${t('hero.line2', 'FOR PEACE OF MIND')}`}
           </h1>
         </div>
       </section>
 
       {/* Introduction Section with Images */}
-      <section className="pm-intro-section">
+      <section className="pm-intro-section" aria-labelledby="pm-intro-title">
         <div className="pm-intro-container">
           <div className="pm-intro-content">
             {/* Heading Section */}
             <div className="pm-heading-section">
-              <h2 className="pm-main-heading">
+              <h2 className="pm-main-heading" id="pm-intro-title">
                 {t(
                   'intro.heading.title',
                   'Planning, organization, and site follow-up without the friction'
                 )}
               </h2>
-              <div className="pm-pill-row">
+              <div className="pm-pill-row" role="list">
                 {pillars.map((label, index) => (
-                  <span key={index} className="pm-pill">
+                  <span key={index} className="pm-pill" role="listitem">
                     {label}
                   </span>
                 ))}
@@ -125,9 +125,12 @@ export default function ProjectManagementPage() {
       </section>
 
       {/* Advantages Section */}
-      <section className="pm-advantages-section">
+      <section
+        className="pm-advantages-section"
+        aria-labelledby="pm-advantages-title"
+      >
         <div className="pm-advantages-container">
-          <h2 className="pm-advantages-heading">
+          <h2 className="pm-advantages-heading" id="pm-advantages-title">
             {t('advantages.heading', 'Our project management strengths')}
           </h2>
 

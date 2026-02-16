@@ -1,0 +1,58 @@
+{
+  "title": "Révision des formulaires soumis",
+  "subtitle": "Réviser et gérer les soumissions de formulaires clients",
+  "loading": "Chargement des formulaires...",
+  "noForms": "Aucun formulaire trouvé",
+  "filters": {
+    "type": "Type de formulaire",
+    "status": "Statut",
+    "allStatuses": "Tous",
+    "submitted": "Soumis",
+    "reopened": "Réouvert",
+    "completed": "Complété"
+  },
+  "formTypes": {
+    "all": "Tous",
+    "exteriorDoors": "Portes extérieures",
+    "garageDoors": "Portes de garage",
+    "windows": "Fenêtres",
+    "flooring": "Revêtement de sol",
+    "kitchenCabinets": "Armoires de cuisine",
+    "bathroomFixtures": "Équipements de salle de bain",
+    "paint": "Peinture",
+    "lighting": "Éclairage",
+    "roofing": "Toiture",
+    "hvac": "Chauffage et climatisation"
+  },
+  "labels": {
+    "customer": "Client",
+    "project": "Projet",
+    "lot": "Lot",
+    "submitted": "Soumis",
+    "reopened": "Réouvert",
+    "reopenReason": "Raison de la réouverture"
+  },
+  "buttons": {
+    "viewForm": "Voir le formulaire",
+    "reopen": "Demander des modifications",
+    "complete": "Approuver et compléter",
+    "downloadPdf": "Télécharger le PDF",
+    "close": "Fermer"
+  },
+  "modal": {
+    "cancel": "Annuler",
+    "formData": "Données du formulaire",
+    "noFormData": "Aucune donnée de formulaire disponible",
+    "reopen": {
+      "title": "Demander des modifications au formulaire",
+      "reasonLabel": "Raison de la demande de modifications",
+      "reasonPlaceholder": "Expliquez ce qui doit être corrigé...",
+      "instructionsLabel": "Nouvelles instructions",
+      "instructionsPlaceholder": "Fournissez des directives supplémentaires pour le client...",
+      "submit": "Envoyer pour correction"
+    },
+    "view": {
+      "title": "Détails du formulaire"
+    }
+  }
+}

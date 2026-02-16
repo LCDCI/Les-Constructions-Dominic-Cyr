@@ -4,7 +4,10 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.QuoteRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationCategory;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.QuoteMapper;
@@ -17,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -32,6 +36,7 @@ public class QuoteService {
     private final UsersRepository usersRepository;
     private final QuoteNumberGenerator quoteNumberGenerator;
     private final QuoteMapper quoteMapper;
+    private final NotificationService notificationService;
 
     /**
      * Create a new quote for a project.
@@ -231,7 +236,66 @@ public class QuoteService {
         Quote savedQuote = quoteRepository.save(quote);
         log.info("Quote approved: {}", quoteNumber);
 
+        notifyCustomersOfOwnerApprovedQuote(savedQuote);
+
         return quoteMapper.entityToResponseModel(savedQuote);
+    }
+
+    /**
+     * Notify customers assigned to the quote's lot (or the project's customer) that the owner has approved the quote.
+     * Notification lists quote number and project; link goes to customer quote approval page.
+     */
+    private void notifyCustomersOfOwnerApprovedQuote(Quote quote) {
+        List<Users> customers = new ArrayList<>();
+
+        // 1) Customers assigned to the quote's lot (eagerly load assignedUsers to avoid lazy-load issues)
+        if (quote.getLotIdentifier() != null) {
+            Lot lot = lotRepository.findByLotIdentifier_LotIdWithUsers(quote.getLotIdentifier());
+            if (lot != null) {
+                List<Users> lotCustomers = lot.getAssignedUsers().stream()
+                        .filter(user -> user.getUserRole() == UserRole.CUSTOMER)
+                        .collect(Collectors.toList());
+                customers.addAll(lotCustomers);
+            }
+        }
+
+        // 2) Fallback: if no customers on the lot, notify the project's assigned customer
+        if (customers.isEmpty() && quote.getProjectIdentifier() != null) {
+            projectRepository.findByProjectIdentifier(quote.getProjectIdentifier())
+                    .filter(project -> project.getCustomerId() != null && !project.getCustomerId().isBlank())
+                    .flatMap(project -> usersRepository.findByUserIdentifier(project.getCustomerId()))
+                    .filter(user -> user.getUserRole() == UserRole.CUSTOMER)
+                    .ifPresent(customers::add);
+        }
+
+        if (customers.isEmpty()) {
+            log.info("No customer to notify for quote {} (lot: {}, project: {}); ensure the lot has a CUSTOMER in lot_assigned_users or the project has customerId set.",
+                    quote.getQuoteNumber(), quote.getLotIdentifier(), quote.getProjectIdentifier());
+            return;
+        }
+
+        String projectLabel = projectRepository.findByProjectIdentifier(quote.getProjectIdentifier())
+                .map(p -> p.getProjectName())
+                .orElse(quote.getProjectIdentifier());
+        String title = "Quote approved: " + quote.getQuoteNumber();
+        String message = String.format("Quote %s for project %s has been approved by the owner. You can review and approve it from your dashboard.",
+                quote.getQuoteNumber(), projectLabel);
+        String link = "/customer/quotes/approval";
+
+        for (Users customer : customers) {
+            try {
+                notificationService.createNotification(
+                        customer.getUserIdentifier().getUserId(),
+                        title,
+                        message,
+                        NotificationCategory.QUOTE_APPROVED,
+                        link);
+                log.info("Owner-approved quote notification created for customer: {}", customer.getPrimaryEmail());
+            } catch (Exception e) {
+                log.error("Failed to create quote-approved notification for customer {}: {}",
+                        customer.getUserIdentifier().getUserId(), e.getMessage());
+            }
+        }
     }
 
     /**
@@ -294,19 +358,13 @@ public class QuoteService {
                     "Quote must be owner-approved before customer can approve. Current status: " + quote.getStatus());
         }
 
-        // Validate customer owns the lot
-        if (quote.getLotIdentifier() != null) {
-            Users customer = usersRepository.findByAuth0UserId(customerAuth0Id)
-                    .orElseThrow(() -> new NotFoundException("Customer not found"));
+        Users customer = usersRepository.findByAuth0UserId(customerAuth0Id)
+                .orElseThrow(() -> new NotFoundException("Customer not found"));
+        String customerUserIdentifier = customer.getUserIdentifier().getUserId().toString();
 
-            // Check if customer owns the lot
-            Lot lot = lotRepository.findByLotIdentifier_LotId(quote.getLotIdentifier());
-            boolean ownsLot = lot != null && lot.getAssignedUsers().stream()
-                    .anyMatch(u -> u.getAuth0UserId().equals(customerAuth0Id));
-
-            if (!ownsLot) {
-                throw new SecurityException("Customer does not own the lot for this quote");
-            }
+        // Customer may approve if assigned to the quote's lot OR is the project's assigned customer
+        if (!customerCanSeePendingQuote(quote, customerAuth0Id, customerUserIdentifier)) {
+            throw new SecurityException("Customer is not assigned to this quote's lot or project");
         }
 
         quote.setStatus("CUSTOMER_APPROVED");
@@ -322,7 +380,9 @@ public class QuoteService {
 
     /**
      * Get quotes pending customer approval for a specific customer.
-     * Returns quotes that are OWNER_APPROVED for lots owned by the customer.
+     * Returns quotes that are OWNER_APPROVED and either:
+     * - on a lot assigned to this customer, or
+     * - on a project where this customer is the assigned project customer.
      */
     @Transactional(readOnly = true)
     public List<QuoteResponseModel> getCustomerPendingQuotes(String customerAuth0Id) {
@@ -331,19 +391,38 @@ public class QuoteService {
         Users customer = usersRepository.findByAuth0UserId(customerAuth0Id)
                 .orElseThrow(() -> new NotFoundException("Customer not found"));
 
+        String customerUserIdentifier = customer.getUserIdentifier().getUserId().toString();
+
         // Get all OWNER_APPROVED quotes
         List<Quote> ownerApprovedQuotes = quoteRepository.findByStatus("OWNER_APPROVED");
 
-        // Filter for quotes on lots owned by this customer
+        // Include quote if customer is on the quote's lot OR is the project's assigned customer
         return ownerApprovedQuotes.stream()
-                .filter(quote -> quote.getLotIdentifier() != null)
-                .filter(quote -> {
-                    Lot lot = lotRepository.findByLotIdentifier_LotId(quote.getLotIdentifier());
-                    return lot != null && lot.getAssignedUsers().stream()
-                            .anyMatch(u -> u.getAuth0UserId().equals(customerAuth0Id));
-                })
+                .filter(quote -> customerCanSeePendingQuote(quote, customerAuth0Id, customerUserIdentifier))
                 .map(quoteMapper::entityToResponseModel)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * True if this customer is allowed to see and approve the OWNER_APPROVED quote
+     * (assigned to the quote's lot, or assigned as the project's customer).
+     */
+    private boolean customerCanSeePendingQuote(Quote quote, String customerAuth0Id, String customerUserIdentifier) {
+        // 1) Customer is assigned to the quote's lot
+        if (quote.getLotIdentifier() != null) {
+            Lot lot = lotRepository.findByLotIdentifier_LotId(quote.getLotIdentifier());
+            if (lot != null && lot.getAssignedUsers().stream()
+                    .anyMatch(u -> u.getAuth0UserId().equals(customerAuth0Id))) {
+                return true;
+            }
+        }
+        // 2) Customer is the project's assigned customer (same logic as notification fallback)
+        if (quote.getProjectIdentifier() != null) {
+            return projectRepository.findByProjectIdentifier(quote.getProjectIdentifier())
+                    .filter(project -> project.getCustomerId() != null && project.getCustomerId().equals(customerUserIdentifier))
+                    .isPresent();
+        }
+        return false;
     }
 
     /**

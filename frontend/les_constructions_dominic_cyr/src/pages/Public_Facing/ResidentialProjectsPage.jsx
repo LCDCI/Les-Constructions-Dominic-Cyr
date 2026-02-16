@@ -99,13 +99,17 @@ const ResidentialProjectsPage = () => {
   return (
     <div className="projects-page">
       {/* HEADER SECTION */}
-      <section className="projects-hero">
+      <section
+        className="projects-hero"
+        aria-labelledby="residential-projects-title"
+        aria-describedby="residential-projects-subtitle"
+      >
         <div className="projects-hero-content">
           <span className="section-kicker">{t('hero.kicker', 'Our Work')}</span>
-          <h1 className="projects-title">
+          <h1 className="projects-title" id="residential-projects-title">
             {t('hero.title', 'Residential Projects')}
           </h1>
-          <p className="projects-subtitle">
+          <p className="projects-subtitle" id="residential-projects-subtitle">
             {t(
               'hero.subtitle',
               'Explore our portfolio of residential projects showcasing quality construction and innovative design.'
@@ -117,8 +121,14 @@ const ResidentialProjectsPage = () => {
       {/* SEARCH SECTION removed per design, search is hidden on Residential Projects page */}
 
       {/* PORTFOLIO GRID */}
-      <section className="portfolio-section">
+      <section
+        className="portfolio-section"
+        aria-labelledby="residential-projects-gallery"
+      >
         <div className="container">
+          <h2 id="residential-projects-gallery" className="sr-only">
+            {t('gallery.title', 'Residential projects gallery')}
+          </h2>
           {filteredProjects.length > 0 ? (
             <div className="portfolio-grid">
               {paginatedProjects.map(project => (
@@ -127,6 +137,10 @@ const ResidentialProjectsPage = () => {
                   to={`/projects/${project.projectIdentifier}/overview`}
                   className="portfolio-card"
                   data-animate
+                  aria-label={t('gallery.openProject', {
+                    defaultValue: `Open project ${project.projectName}`,
+                    projectName: project.projectName,
+                  })}
                 >
                   <img
                     src={getImageUrl(project.imageIdentifier)}
@@ -140,7 +154,7 @@ const ResidentialProjectsPage = () => {
               ))}
             </div>
           ) : (
-            <div className="no-results">
+            <div className="no-results" role="status" aria-live="polite">
               <p>
                 {t('noResults', `No projects found matching "${searchTerm}"`)}
               </p>

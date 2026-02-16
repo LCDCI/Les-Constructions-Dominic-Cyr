@@ -72,6 +72,19 @@ const QuoteFormPage = () => {
   ];
 
   useEffect(() => {
+    if (!showPreview) return;
+    const handleKeyDown = e => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        setShowPreview(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showPreview]);
+
+  useEffect(() => {
     const initializeForm = async () => {
       try {
         const accessToken = await getAccessTokenSilently();
@@ -805,17 +818,30 @@ const QuoteFormPage = () => {
           className="preview-modal-overlay"
           onClick={() => setShowPreview(false)}
         >
-          <div className="preview-modal" onClick={e => e.stopPropagation()}>
+          <div
+            className="preview-modal"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="quote-preview-title"
+            aria-describedby="quote-preview-description"
+          >
             <div className="preview-header">
-              <h2>{t('quote.preview') || 'Preview'}</h2>
+              <h2 id="quote-preview-title">
+                {t('quote.preview') || 'Preview'}
+              </h2>
               <button
                 type="button"
                 onClick={() => setShowPreview(false)}
                 className="preview-close"
+                aria-label={t('quote.closePreview', 'Close preview')}
               >
                 <MdClose />
               </button>
             </div>
+            <p id="quote-preview-description" className="sr-only">
+              Review the quote summary and items before sending.
+            </p>
             <div className="preview-content">
               <div className="preview-section">
                 <h3>Quote Summary</h3>
@@ -841,7 +867,7 @@ const QuoteFormPage = () => {
 
               <div className="preview-section">
                 <h3>Items</h3>
-                <table className="preview-table">
+                <table className="preview-table" aria-label="Quote items">
                   <thead>
                     <tr>
                       <th>Description</th>
