@@ -20,25 +20,59 @@
   display: flex;
   justify-content: center;
   max-width: 100%;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-.projects-page .portfolio-card {
-  /* Ensure cards keep consistent internal padding without affecting other pages */
-  padding: 0.25rem;
+/* Card and inner wrapper: no outer outline/border anywhere */
+.projects-page .portfolio-card,
+.projects-page .project-hover-card {
+  padding: 0;
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  /* Force square: height = width (no min-height so aspect-ratio is never overridden) */
   aspect-ratio: 1 / 1;
   height: auto;
+  background: linear-gradient(180deg, #f2f2f2 0%, #e5e5e5 100%);
+  overflow: hidden;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none;
 }
 
-/* Keep the image square centered within the card */
+.projects-page .portfolio-card:hover,
+.projects-page .portfolio-card:focus,
+.projects-page .portfolio-card:focus-visible,
+.projects-page .portfolio-card:focus-within,
+.projects-page .project-hover-card:hover,
+.projects-page .project-hover-card:focus,
+.projects-page .project-hover-card:focus-visible,
+.projects-page .project-hover-card:focus-within {
+  border: none !important;
+  outline: none !important;
+}
+
+.projects-page .portfolio-card:hover,
+.projects-page .project-hover-card:hover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.projects-page .portfolio-card .card-image-bg,
+.projects-page .portfolio-card .card-overlay,
+.projects-page .portfolio-card .card-content {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Keep the image square centered within the card; no border/outline */
 .projects-page .portfolio-card .card-image-bg {
   display: block;
   object-fit: cover;
   object-position: center center;
   transform-origin: center center;
+  width: 100%;
+  height: 100%;
 }
 
 /* Hover overlay: all buttons visible, none cropped; no scrolling */
