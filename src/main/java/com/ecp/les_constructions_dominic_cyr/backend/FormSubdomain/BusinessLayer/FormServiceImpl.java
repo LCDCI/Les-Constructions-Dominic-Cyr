@@ -138,6 +138,14 @@ public class FormServiceImpl implements FormService {
     }
 
     @Override
+    public List<FormResponseModel> getAllForms() {
+        log.info("Fetching all forms");
+        return formRepository.findAll().stream()
+                .map(formMapper::entityToResponseModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<FormResponseModel> getFormsByProject(String projectIdentifier) {
         log.info("Fetching forms for project: {}", projectIdentifier);
         return formRepository.findByProjectIdentifier(projectIdentifier).stream()
@@ -178,7 +186,7 @@ public class FormServiceImpl implements FormService {
                 .orElseThrow(() -> new NotFoundException("Form not found with ID: " + formId));
 
         // Verify customer owns this form
-        if (!form.getCustomerId().equals(customerId)) {
+        if (!form.getCustomerId().equals(UUID.fromString(customerId))) {
             throw new InvalidInputException("Customer is not authorized to update this form");
         }
 
@@ -210,7 +218,7 @@ public class FormServiceImpl implements FormService {
                 .orElseThrow(() -> new NotFoundException("Form not found with ID: " + formId));
 
         // Verify customer owns this form
-        if (!form.getCustomerId().equals(customerId)) {
+        if (!form.getCustomerId().equals(UUID.fromString(customerId))) {
             throw new InvalidInputException("Customer is not authorized to submit this form");
         }
 
@@ -219,8 +227,10 @@ public class FormServiceImpl implements FormService {
             throw new InvalidInputException("Form has already been submitted");
         }
 
-        // Update form data
-        form.setFormData(updateRequest.getFormData());
+        // Update form data only if provided (non-empty)
+        if (updateRequest.getFormData() != null && !updateRequest.getFormData().isEmpty()) {
+            form.setFormData(updateRequest.getFormData());
+        }
         form.setFormStatus(FormStatus.SUBMITTED);
         form.setLastSubmittedDate(LocalDateTime.now());
 

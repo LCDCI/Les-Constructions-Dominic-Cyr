@@ -1,129 +1,160 @@
+@startuml
 
-' Professional Minimalist Styling
-skinparam Style strictuml
-skinparam SequenceMessageAlignment center
-skinparam shadowing false
-skinparam ParticipantBackgroundColor #White
-skinparam ParticipantBorderColor #333333
-skinparam ActorBorderColor #333333
-skinparam NoteBackgroundColor #F9F9F9
-skinparam NoteBorderColor #CCCCCC
+actor Owner
 
-actor "o:Owner" as Owner
+participant CreateSchedulePage as Page
+participant ScheduleController as Controller
+participant ScheduleServiceImpl as Service
+participant ScheduleMapper as Mapper
+participant ProjectRepository as ProjectRepo
+participant LotRepository as LotRepo
+participant ScheduleRepository as ScheduleRepo
+participant PostgreSQL as DB
 
-' Tier 1
-participant "view:CreateScheduleForm" as UI
-participant "ctrl:ScheduleController" as Controller
+ref over Owner, Controller
+    <<include>> JWT Authentication
+    (Security Filter validates Owner token)
+end ref
 
-' Tier 2
-participant "svc:ScheduleServiceImpl" as Service
-participant "v:ScheduleValidator" as Validator
-participant "map:ScheduleMapper" as Mapper
+Owner -> Page : input schedule details & submit
+activate Page
 
-' Tier 3
-participant "projRepo:ProjectRepository" as ProjectRepo
-participant "lotRepo:LotRepository" as LotRepo
-participant "schedRepo:ScheduleRepository" as ScheduleRepo
-participant "db:PostgreSQL" as DB
+create "reqDTO:ScheduleRequestDTO" as ReqDTO
+Page -> ReqDTO : <<create>>
 
-ref over Owner, Controller : JWT Authentication (Security Filter)
-
-Owner -> UI : input details & submit
-activate UI
-
-UI -> Controller : POST /api/v1/projects/{id}/schedules (JSON)
+Page -> Controller : POST /api/v1/projects/{projectId}/schedules (reqDTO)
 activate Controller
 
-' Instantiate Incoming DTO
-create "req:ScheduleRequestDTO" as ReqDTO
-Controller -> ReqDTO : <<create>>(payload)
-
-Controller -> Service : addScheduleToProject(id, req)
+Controller -> Service : addScheduleToProject(projectId, reqDTO)
 activate Service
 
-' Logic Validation
-Service -> Validator : validate(req)
-activate Validator
+Service -> Service : validateScheduleRequest(reqDTO)
 
 alt Validation Fails
-    Validator --[#Black]> Service : throw BusinessValidationException
-    Service --[#Black]> Controller : error
-    Controller --[#Black]> UI : HTTP 400 (Invalid input)
-    UI --[#Black]> Owner : Display error message
+    Service --> Controller : throw InvalidInputException
+    Controller --> Page : HTTP 400 (Invalid input)
+    Page --> Owner : Display error message
+    
+    note right of Page
+        <<extend>> Schedule Validation Error
+        Extension point: FDUC Step 3.1
+    end note
+    
 else Validation Passes
-    Validator --> Service : void
-    deactivate Validator
 
-    ' Data Retrieval (Tier 3 Interaction)
-    Service -> ProjectRepo : findByProjectIdentifier(id)
+    Service -> ProjectRepo : findByProjectIdentifier(projectId)
     activate ProjectRepo
-    ProjectRepo -> DB : SELECT * FROM projects...
+    ProjectRepo -> DB : SELECT * FROM projects WHERE project_identifier = ?
     activate DB
-    DB --> ProjectRepo : project_row
+    
+    create "proj:Project" as Project
+    DB -> Project : <<create>>
+    
+    DB --> ProjectRepo : proj
     deactivate DB
-    ProjectRepo --> Service : Optional<Project>
+    ProjectRepo --> Service : proj
     deactivate ProjectRepo
 
     alt Project Not Found
-        Service --[#Black]> Controller : throw NotFoundException
-        Controller --[#Black]> UI : HTTP 404 (Project not found)
+        Service --> Controller : throw NotFoundException
+        Controller --> Page : HTTP 404 (Project not found)
+        Page --> Owner : Display error
+        
+        note right of Page
+            <<extend>> Project Not Found
+            Extension point: FDUC Step 4.1
+        end note
+        
     else Project Found
 
-        Service -> LotRepo : findByLotId(req.getLotId())
+        Service -> LotRepo : findByLotIdentifier(reqDTO.getLotId())
         activate LotRepo
-        LotRepo -> DB : SELECT * FROM lots...
+        LotRepo -> DB : SELECT * FROM lots WHERE lot_identifier = ?
         activate DB
-        DB --> LotRepo : lot_row
+        
+        create "lot:Lot" as Lot
+        DB -> Lot : <<create>>
+        
+        DB --> LotRepo : lot
         deactivate DB
-        LotRepo --> Service : Optional<Lot>
+        LotRepo --> Service : lot
         deactivate LotRepo
 
         alt Lot Not Found
-            Service --[#Black]> Controller : throw NotFoundException
-            Controller --[#Black]> UI : HTTP 404 (Lot not found)
+            Service --> Controller : throw NotFoundException
+            Controller --> Page : HTTP 404 (Lot not found)
+            Page --> Owner : Display error
+            
+            note right of Page
+                <<extend>> Lot Not Found
+                Extension point: FDUC Step 4.1
+            end note
+            
         else Lot Found
 
-            ' Entity Mapping
-            Service -> Mapper : requestDTOToEntity(req)
+            Service -> Mapper : requestDTOToEntity(reqDTO, proj, lot)
             activate Mapper
+            
             create "sched:Schedule" as Schedule
-            Mapper -> Schedule : <<create>> Builder
+            Mapper -> Schedule : <<create>>
+            
             Mapper --> Service : sched
             deactivate Mapper
 
-            ' Persist (Tier 3)
             Service -> ScheduleRepo : save(sched)
             activate ScheduleRepo
-            ScheduleRepo -> DB : INSERT INTO schedules...
+            
+            create "schedDb:Schedule" as ScheduleDb
+            ScheduleRepo -> ScheduleDb : <<create>>
+            
+            ScheduleRepo -> DB : INSERT INTO schedules (schedule_identifier, start_date, end_date, description, project_id, lot_id) VALUES (...)
             activate DB
-            DB --> ScheduleRepo : row_created
+            DB --> ScheduleRepo : row inserted
             deactivate DB
-            ScheduleRepo --> Service : savedSchedule
+            
+            ScheduleRepo --> Service : schedDb
             deactivate ScheduleRepo
 
-            ' Response DTO Instantiation & Logic
-            Service -> Mapper : entityToResponseDTO(savedSchedule)
+            Service -> Mapper : entityToResponseDTO(schedDb)
             activate Mapper
-            create "res:ScheduleResponseDTO" as ResponseDTO
-            Mapper -> ResponseDTO : <<create>>(savedSchedule)
-
-            ' The message after creation you asked for
-            Mapper -> ResponseDTO : prepareViewDetails()
-            note right: Logic applied to DTO post-creation
-
-            ResponseDTO --> Mapper : responseInstance
-            Mapper --> Service : res
+            
+            create "resDTO:ScheduleResponseDTO" as ResDTO
+            Mapper -> ResDTO : <<create>>
+            
+            Mapper --> Service : resDTO
             deactivate Mapper
 
-            Service --> Controller : res
+            Service --> Controller : resDTO
             deactivate Service
 
-            Controller --> UI : HTTP 201 Created (res)
+            Controller --> Page : HTTP 201 Created (resDTO)
             deactivate Controller
 
-            UI --> Owner : Display Success Confirmation
-            deactivate UI
+            Page --> Owner : Display success & schedule details
+            deactivate Page
+
+            loop For each task to add
+                Owner -> Page : input task details & submit
+                activate Page
+                
+                ref over Page, DB
+                    Add Task to Schedule
+                    ---
+                    1. Validate task data (dates, required fields) via TaskService.validateTaskRequest()
+                    2. Map TaskRequestDTO to Task entity
+                    3. Persist task with schedule_id foreign key
+                    4. Return TaskResponseDTO
+                    ---
+                    Follows same three-tier pattern as schedule creation:
+                    TaskController -> TaskService (validates internally) -> TaskMapper -> TaskRepository -> DB
+                    <<extend>> Task Validation Error if validation fails
+                end ref
+                
+                Page --> Owner : Display task added confirmation
+                deactivate Page
+            end
         end
     end
 end
+
 @enduml

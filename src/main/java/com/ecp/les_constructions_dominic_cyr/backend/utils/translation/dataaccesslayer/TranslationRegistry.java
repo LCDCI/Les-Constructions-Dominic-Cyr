@@ -82,10 +82,10 @@ public class TranslationRegistry {
         // Dashboard page translations
         fileIdMap.put("en.ownerdashboard", "fac46b1c-2158-484d-8839-10ff51fdd878");
         fileIdMap.put("fr.ownerdashboard", "a73f68c8-4a84-49c0-b86e-50039a1444c6");
-        fileIdMap.put("en.customerdashboard", "bc1fa28b-dc6e-4653-b3e9-b0a9ce3bfa64");
-        fileIdMap.put("fr.customerdashboard", "6742d6a9-bcfd-4780-b2ec-5c50c27e9493");
-        fileIdMap.put("en.salespersondashboard", "6792727a-faac-4fa1-af3b-0c850c6ed022");
-        fileIdMap.put("fr.salespersondashboard", "3379cd57-8243-414f-b891-2fcc7a19bd6c");
+        fileIdMap.put("en.customerdashboard", "cb174189-a044-442c-a9ae-665cddca66a1");
+        fileIdMap.put("fr.customerdashboard", "1e6e4cc7-5413-4197-80b9-b0a262a065b0");
+        fileIdMap.put("en.salespersondashboard", "d59b185f-d42d-47fb-a4bd-367dd86d0db1");
+        fileIdMap.put("fr.salespersondashboard", "b6e4ab2b-80dd-4029-8342-4be54790883e");
         fileIdMap.put("en.contractordashboard", "129b09a5-32d9-426d-98b9-f5da4e2555da");
         fileIdMap.put("fr.contractordashboard", "6230c4c3-3d42-4b65-bd0c-b402dc24ac9b");
 
@@ -130,15 +130,15 @@ public class TranslationRegistry {
         fileIdMap.put("fr.contractortasks", "a62edee1-b73f-41e6-a727-ab23e29f03a4");
 
         // Navbar translations (for role-specific navbars)
-        fileIdMap.put("en.navbar", "c3d1ed30-20e7-4b87-8c15-8f18ff19489a");
-        fileIdMap.put("fr.navbar", "c9ed527b-48a8-427f-9248-da9e87efbf24");
+        fileIdMap.put("en.navbar", "b20fb667-1007-45f0-8c77-021590ef87e2");
+        fileIdMap.put("fr.navbar", "e2ad19a5-c365-42fe-b869-3a0de82f9964");
         // Quotes page translations
         fileIdMap.put("en.quotes", "4992e027-03c7-4592-afcf-b6b1b0d1102f");
         fileIdMap.put("fr.quotes", "2a0d3030-93dd-49b9-a1e0-3bc7990db2ed");
 
         // Customer Forms page translations
-        fileIdMap.put("en.customerforms", "cf04f42b-1442-44cb-839c-7b8ae130a5af");
-        fileIdMap.put("fr.customerforms", "b3915f9d-c967-493f-ae1f-2867dfffac37");
+        fileIdMap.put("en.customerforms", "341fb5d4-4b0d-4efc-872c-b1e767377b64");
+        fileIdMap.put("fr.customerforms", "5b84a408-6ec7-4b0c-81ad-f33ab7fd3fa0");
 
         // Salesperson Forms page translations
         fileIdMap.put("en.salespersonforms", "bf89b8c0-12d8-43f3-b713-8cf5133a95ac");

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import axios from 'axios';
 
 // For production on DigitalOcean, use the files-service directly
@@ -105,6 +106,15 @@ export async function downloadFile(fileId, fileName, role, userId) {
     // Fallback to regular download if no role/userId (backward compatibility)
     url = `${BASE_API_URL}/files/${fileId}`;
   }
+
+  console.log('[downloadFile] Attempting download:', {
+    fileId,
+    fileName,
+    role,
+    userId,
+    BASE_API_URL,
+    fullUrl: url,
+  });
 
   const response = await axios.get(url, {
     responseType: 'blob',

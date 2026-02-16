@@ -2,6 +2,7 @@
   "title": "Mes formulaires",
   "subtitle": "Remplissez vos formulaires assignés",
   "heroSubtitle": "Sélectionnez un projet et un lot pour voir vos formulaires",
+  "heroSubtitleAll": "Consultez et remplissez tous vos formulaires assignés",
   "loading": "Chargement...",
   "noForms": "Aucun formulaire assigné pour ce projet et ce lot pour le moment",
   "noFormsAssigned": "Aucun formulaire ne vous a encore été assigné. Ils apparaîtront ici une fois assignés.",
@@ -39,6 +40,7 @@
     "cancel": "Annuler",
     "saveDraft": "Sauvegarder le brouillon",
     "submitForm": "Soumettre le formulaire",
+    "confirmSubmit": "Oui, soumettre",
     "close": "Fermer"
   },
   "modal": {
@@ -49,7 +51,11 @@
     "submissionNumber": "Soumission #{{number}}",
     "date": "Date",
     "formData": "Données du formulaire",
-    "required": "*"
+    "required": "*",
+    "uploading": "Téléversement...",
+    "selectOption": "-- Sélectionner --",
+    "confirmSubmitTitle": "Confirmer la soumission",
+    "confirmSubmitMessage": "Êtes-vous sûr de vouloir soumettre ce formulaire ? Vous ne pourrez plus le modifier après la soumission."
   },
   "formTypes": {
     "EXTERIOR_DOORS": "Portes extérieures",
@@ -66,40 +72,95 @@
     "paint": "Peinture"
   },
   "formFields": {
-    "doorType": "Type de porte",
-    "doorColor": "Couleur de porte",
-    "doorSize": "Taille de porte",
-    "numberOfDoors": "Nombre de portes",
-    "hardwareFinish": "Finition de quincaillerie",
     "additionalNotes": "Notes supplémentaires",
-    "doorStyle": "Style de porte",
-    "openerType": "Type d'ouvre-porte",
-    "windowInserts": "Fenêtres décoratives",
-    "windowType": "Type de fenêtre",
-    "frameColor": "Couleur du cadre",
-    "glassType": "Type de verre",
-    "numberOfWindows": "Nombre de fenêtres",
-    "dimensions": "Dimensions (par fenêtre)",
-    "shingleBrand": "Marque de bardeaux",
-    "shingleColor": "Couleur de bardeaux",
-    "shingleStyle": "Style de bardeaux",
-    "roofArea": "Surface du toit (pi²)",
-    "ventilationNeeded": "Ventilation nécessaire",
-    "woodType": "Type de bois",
-    "finish": "Finition",
-    "stainColor": "Couleur de teinture/peinture",
-    "roomsAffected": "Pièces affectées",
-    "trimStyle": "Style de moulures",
-    "paintBrand": "Marque de peinture",
-    "paintFinish": "Finition de peinture (Mat/Satiné/Brillant)",
-    "interiorColors": "Couleurs intérieures",
-    "exteriorColors": "Couleurs extérieures",
-    "roomsToPaint": "Pièces à peindre"
+    "exteriorDoors": {
+      "instructions": "Visitez l'outil de design Novatech pour créer votre design de porte extérieure. Une fois satisfait de votre sélection, téléchargez le design en PDF et téléversez-le ci-dessous.",
+      "linkLabel": "Ouvrir l'outil de design Novatech",
+      "uploadPdf": "Téléverser votre design de porte (PDF)"
+    },
+    "garageDoors": {
+      "instructions": "Visitez le centre de design de Portes Universelles pour configurer votre porte de garage. Une fois terminé, sauvegardez votre sélection en PDF et téléversez-le ci-dessous.",
+      "linkLabel": "Ouvrir le centre de design Portes Universelles",
+      "uploadPdf": "Téléverser votre design de porte de garage (PDF)"
+    },
+    "windows": {
+      "exteriorColorFacade": "Couleur des fenêtres extérieures – Façade",
+      "exteriorColorSidesBack": "Couleur des fenêtres extérieures – Côtés et arrière",
+      "interiorColorFacade": "Couleur des fenêtres intérieures – Façade",
+      "interiorColorSidesBack": "Couleur des fenêtres intérieures – Côtés et arrière",
+      "otherDetails": "Autres détails"
+    },
+    "shingles": {
+      "company": "Compagnie",
+      "collection": "Collection",
+      "color": "Couleur",
+      "steelRoofColor": "Couleur du toit en acier"
+    },
+    "woodwork": {
+      "doorModelSection": "Portes intérieures (Masonite)",
+      "interiorDoorModel": "Modèle de porte intérieure",
+      "viewOnWebsite": "Voir sur le site web",
+      "doors": {
+        "unie": "Unie",
+        "carrara": "Carrara",
+        "coloniale": "Coloniale",
+        "rockport": "Rockport",
+        "logan": "Logan",
+        "lincolnPark": "Lincoln Park",
+        "conmore": "Conmore"
+      },
+      "handleSection": "Poignées intérieures",
+      "interiorHandleModel": "Modèle de poignée",
+      "handles": {
+        "boston": "Boston",
+        "brava": "Brava",
+        "destin": "Destin",
+        "zen": "Zen",
+        "verona": "Verona",
+        "lineaRosetteCarre": "Linea Rosette Carré",
+        "lineaRosetteRonde": "Linea Rosette Ronde",
+        "sanford": "Sanford"
+      },
+      "handleFinish": "Finition de la poignée",
+      "finishes": {
+        "chrome": "Chrome",
+        "satinNickel": "Nickel satiné",
+        "matteBlack": "Noir mat",
+        "antiqueBronze": "Bronze antique",
+        "glossyBlack": "Noir brillant"
+      },
+      "baseboardSection": "Plinthes et moulures",
+      "baseboardModel": "Modèle de plinthe",
+      "baseboards": {
+        "urbaine": "Urbaine",
+        "m1000": "1000",
+        "oblik": "Oblik",
+        "m1500": "1500",
+        "m1249": "1249"
+      },
+      "baseboardHeight": "Hauteur de la plinthe",
+      "quarterRoundSection": "Quart-de-rond",
+      "quarterRoundModel": "Modèle de quart-de-rond",
+      "quarterRounds": {
+        "m1000": "1000",
+        "m1234": "1234",
+        "m1500": "1500",
+        "m2000": "2000"
+      }
+    },
+    "paint": {
+      "brand": "Marque de peinture",
+      "finish": "Finition de peinture (Mat/Satiné/Brillant)",
+      "interiorColors": "Couleurs intérieures",
+      "exteriorColors": "Couleurs extérieures",
+      "roomsToPaint": "Pièces à peindre"
+    }
   },
   "errors": {
     "fetchForms": "Erreur lors de la récupération des formulaires",
     "saveFailed": "Échec de la sauvegarde du formulaire. Veuillez réessayer.",
     "submitFailed": "Échec de la soumission du formulaire. Veuillez réessayer.",
-    "missingFields": "Veuillez remplir tous les champs obligatoires : {{fields}}"
+    "missingFields": "Veuillez remplir tous les champs obligatoires : {{fields}}",
+    "uploadFailed": "Échec du téléversement du fichier. Veuillez réessayer."
   }
 }

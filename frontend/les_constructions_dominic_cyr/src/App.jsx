@@ -82,6 +82,30 @@ function ContractorLotsDocuments() {
   return <LotsListDashboard userId={profile.userId} />;
 }
 
+function CustomerLotsDocuments() {
+  const { profile, loading } = useBackendUser();
+
+  if (loading || !profile) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+    );
+  }
+
+  return <LotsListDashboard userId={profile.userId} isCustomer />;
+}
+
+function SalespersonLotsDocuments() {
+  const { profile, loading } = useBackendUser();
+
+  if (loading || !profile) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+    );
+  }
+
+  return <LotsListDashboard userId={profile.userId} />;
+}
+
 function ConditionalFooter() {
   const location = useLocation();
 
@@ -528,6 +552,26 @@ export default function App() {
             />
 
             <Route
+              path="/customers/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CUSTOMER']}
+                  element={<CustomerLotsDocuments />}
+                />
+              }
+            />
+
+            <Route
+              path="/salesperson/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['SALESPERSON']}
+                  element={<SalespersonLotsDocuments />}
+                />
+              }
+            />
+
+            <Route
               path="/contractors/documents"
               element={
                 <ProtectedRoute
@@ -572,7 +616,12 @@ export default function App() {
               path="/projects/:projectIdentifier/lots/:lotId/documents"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                    'SALESPERSON',
+                  ]}
                   element={<LotDocumentsPage />}
                 />
               }

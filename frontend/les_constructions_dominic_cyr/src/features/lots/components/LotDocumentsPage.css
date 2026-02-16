@@ -414,3 +414,130 @@
     width: 100%;
   }
 }
+
+/* ── View Mode Toggle ─────────────────────────────── */
+.view-mode-toggle {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  width: fit-content;
+}
+
+.view-mode-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.view-mode-button:not(:last-child) {
+  border-right: 1px solid #ddd;
+}
+
+.view-mode-button.active {
+  background: #1976d2;
+  color: #fff;
+}
+
+.view-mode-button:hover:not(.active) {
+  background: #f0f0f0;
+}
+
+/* ── Forms View ───────────────────────────────────── */
+.forms-view-container {
+  margin-top: 1rem;
+}
+
+.lot-forms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lot-form-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lot-form-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.lot-form-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  text-transform: capitalize;
+}
+
+.lot-form-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.lot-form-status-assigned {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.lot-form-status-in_progress {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.lot-form-status-submitted {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.lot-form-status-completed {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.lot-form-status-reopened {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.lot-form-meta {
+  display: flex;
+  gap: 1.5rem;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.lot-form-meta p {
+  margin: 0;
+}
+
+.lot-form-action {
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+}
