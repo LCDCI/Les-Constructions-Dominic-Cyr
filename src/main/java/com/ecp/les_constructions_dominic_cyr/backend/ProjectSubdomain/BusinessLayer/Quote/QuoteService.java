@@ -4,7 +4,10 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.QuoteRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationCategory;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.QuoteMapper;
@@ -32,6 +35,7 @@ public class QuoteService {
     private final UsersRepository usersRepository;
     private final QuoteNumberGenerator quoteNumberGenerator;
     private final QuoteMapper quoteMapper;
+    private final NotificationService notificationService;
 
     /**
      * Create a new quote for a project.
@@ -231,7 +235,53 @@ public class QuoteService {
         Quote savedQuote = quoteRepository.save(quote);
         log.info("Quote approved: {}", quoteNumber);
 
+        notifyCustomersOfOwnerApprovedQuote(savedQuote);
+
         return quoteMapper.entityToResponseModel(savedQuote);
+    }
+
+    /**
+     * Notify customers assigned to the quote's lot that the owner has approved the quote.
+     * Notification lists quote number and project; link goes to customer quote approval page.
+     */
+    private void notifyCustomersOfOwnerApprovedQuote(Quote quote) {
+        if (quote.getLotIdentifier() == null) {
+            return;
+        }
+        Lot lot = lotRepository.findByLotIdentifier_LotId(quote.getLotIdentifier());
+        if (lot == null) {
+            return;
+        }
+        List<Users> customers = lot.getAssignedUsers().stream()
+                .filter(user -> user.getUserRole() == UserRole.CUSTOMER)
+                .collect(Collectors.toList());
+        if (customers.isEmpty()) {
+            log.debug("No customers assigned to lot {} for quote {}; skipping notification", quote.getLotIdentifier(), quote.getQuoteNumber());
+            return;
+        }
+
+        String projectLabel = projectRepository.findByProjectIdentifier(quote.getProjectIdentifier())
+                .map(p -> p.getProjectName())
+                .orElse(quote.getProjectIdentifier());
+        String title = "Quote approved: " + quote.getQuoteNumber();
+        String message = String.format("Quote %s for project %s has been approved by the owner. You can review and approve it from your dashboard.",
+                quote.getQuoteNumber(), projectLabel);
+        String link = "/customer/quotes/approval";
+
+        for (Users customer : customers) {
+            try {
+                notificationService.createNotification(
+                        customer.getUserIdentifier().getUserId(),
+                        title,
+                        message,
+                        NotificationCategory.QUOTE_APPROVED,
+                        link);
+                log.info("Owner-approved quote notification created for customer: {}", customer.getPrimaryEmail());
+            } catch (Exception e) {
+                log.error("Failed to create quote-approved notification for customer {}: {}",
+                        customer.getUserIdentifier().getUserId(), e.getMessage());
+            }
+        }
     }
 
     /**
