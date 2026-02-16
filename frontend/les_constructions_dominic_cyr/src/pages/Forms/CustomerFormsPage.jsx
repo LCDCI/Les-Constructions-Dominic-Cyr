@@ -591,6 +591,17 @@ const CustomerFormsPage = () => {
 
   const handleDownloadForm = async form => {
     try {
+      // If the form has a pdfFile uploaded (like EXTERIOR_DOORS or GARAGE_DOORS),
+      // download that PDF directly instead of a generated finalized form
+      const pdfFile = form.formData?.pdfFile;
+      if (pdfFile && (pdfFile.fileId || pdfFile.id)) {
+        const fileId = pdfFile.fileId || pdfFile.id;
+        const fileName = pdfFile.fileName || 'form.pdf';
+        await handleDownloadFile(fileId, fileName);
+        return;
+      }
+
+      // Otherwise, download the finalized form
       const token = await getAccessTokenSilently({
         authorizationParams: {
           audience:

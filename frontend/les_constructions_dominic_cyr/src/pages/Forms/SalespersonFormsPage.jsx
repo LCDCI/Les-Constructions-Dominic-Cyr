@@ -12,6 +12,7 @@ import {
 import { fetchCustomersWithSharedLots } from '../../features/users/api/usersApi';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchLots } from '../../features/lots/api/lots';
+import { downloadFile } from '../../features/files/api/filesApi';
 import '../../styles/Forms/salesperson-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -47,7 +48,7 @@ const SalespersonFormsPage = () => {
   const [formToDelete, setFormToDelete] = useState(null);
   const [submitError, setSubmitError] = useState(null);
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   const navigate = useNavigate();
   const createModalRef = useRef(null);
 
@@ -266,8 +267,19 @@ const SalespersonFormsPage = () => {
     }
   };
 
-  const handleDownloadForm = async formId => {
+  const handleDownloadForm = async form => {
     try {
+      // If the form has a pdfFile uploaded (like EXTERIOR_DOORS or GARAGE_DOORS),
+      // download that PDF directly instead of a generated finalized form
+      const pdfFile = form.formData?.pdfFile;
+      if (pdfFile && (pdfFile.fileId || pdfFile.id)) {
+        const fileId = pdfFile.fileId || pdfFile.id;
+        const fileName = pdfFile.fileName || 'form.pdf';
+        await downloadFile(fileId, fileName, 'SALESPERSON', user?.sub);
+        return;
+      }
+
+      // Otherwise, download the finalized form
       const token = await getAccessTokenSilently({
         authorizationParams: {
           audience:
@@ -276,7 +288,7 @@ const SalespersonFormsPage = () => {
         },
       });
 
-      await downloadFinalizedForm(formId, token);
+      await downloadFinalizedForm(form.formId, token);
     } catch (error) {
       setSubmitError('Failed to download form. Please try again.');
     }
@@ -532,7 +544,7 @@ const SalespersonFormsPage = () => {
                         </button>
                         <button
                           className="form-action-button form-action-download"
-                          onClick={() => handleDownloadForm(form.formId)}
+                          onClick={() => handleDownloadForm(form)}
                         >
                           {t('buttons.downloadPdf', 'Download PDF')}
                         </button>
