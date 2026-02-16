@@ -123,7 +123,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
             scheduleStartDate: LocalDate
             scheduleEndDate: LocalDate
             scheduleDescription: String
-            lotId: String
+            lotId: UUID
             createdAt: LocalDateTime
             updatedAt: LocalDateTime
         }
@@ -141,6 +141,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
             hoursSpent: Double
             taskProgress: Double
             scheduleId: String
+            lotId: UUID
         }
 
         VALUE_OBJECT(TaskIdentifier) #Bisque {
@@ -347,25 +348,28 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
     'Project Relationships'
     Project "1" *-- "1" ProjectStatus
     Project "1" --> "0..*" Schedule
+    Schedule "*" --> "1" Project
     Schedule "1" --> "0..*" Task
-    Schedule "1" --> "1" Project
+    Schedule "1" --> "1" Lot
     Task "1" *-- "1" TaskIdentifier
     Task "1" *-- "1" TaskStatus
     Task "1" *-- "1" TaskPriority
-    Task "1" --> "0..1" UserIdentifier
+    Task "1" --> "0..1" Users : assignedTo
+    Task "1" --> "0..1" Lot
     TaskIdentifier "1" <-- "1" Task
     
     Project "1" --> "0..*" Lot
     Lot "1" *-- "1" LotIdentifier
     Lot "1" *-- "1" LotStatus
     Lot "1" --> "1" Project
-    Lot "1" --> "0..*" UserIdentifier
+    Lot "0..*" --> "0..*" Users : assignedUsers
     LotIdentifier "1" <-- "1" Lot
     
     Quote "1" --> "1..*" QuoteLineItem
     QuoteLineItem "1" --> "1" Quote
+    Quote "1" --> "1" Project
     Quote "1" --> "0..1" LotIdentifier
-    Quote "1" --> "1" UserIdentifier
+    Quote "1" --> "1" UserIdentifier : contractorId
     
     Realization "1" *-- "1" RealizationIdentifier
     RealizationIdentifier "1" <-- "1" Realization
@@ -373,16 +377,23 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
     Renovation "1" *-- "1" RenovationIdentifier
     RenovationIdentifier "1" <-- "1" Renovation
     
+    Project "1" --> "0..1" ProjectOverviewContent
     ProjectOverviewContent "1" --> "0..*" ProjectGalleryImage
     ProjectOverviewContent "1" --> "0..*" ProjectFeature
+    ProjectGalleryImage "1" --> "1" Project
+    ProjectFeature "1" --> "1" Project
     
+    Project "1" --> "0..*" LivingEnvironmentContent
     LivingEnvironmentContent "1" --> "0..*" LivingEnvironmentAmenity
-    LivingEnvironmentAmenity "1" --> "1" LivingEnvironmentContent
+    LivingEnvironmentAmenity "*" --> "1" LivingEnvironmentContent
     
     LotDocument "1" --> "1" Lot
     LotDocument "1" --> "1" UserIdentifier
     
+    Project "1" --> "0..*" ProjectActivityLog
     ProjectActivityLog "1" *-- "1" ActivityType
+    ProjectActivityLog "1" --> "1" UserIdentifier : userIdentifier
+    ProjectActivityLog "1" --> "1" UserIdentifier : changedBy
 }
 
 
@@ -540,6 +551,7 @@ rectangle "Form Subdomain" as FormContext #Lavender {
     Form "1" *-- "1" FormIdentifier
     Form "1" *-- "1" FormType
     Form "1" *-- "1" FormStatus
+    Form "1" --> "1" Project
     Form "1" --> "1" UserIdentifier : customerId
     Form "1" --> "1" UserIdentifier : assignedByUserId
     Form "1" --> "1" LotIdentifier : lotIdentifier
