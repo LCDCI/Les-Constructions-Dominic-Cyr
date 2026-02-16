@@ -1903,7 +1903,7 @@ class FormServiceImplUnitTest {
                 history.getFormIdentifier().equals("test-form-id-123") &&
                 "All selections are final".equals(history.getSubmissionNotes()) &&
                 history.getStatusAtSubmission() == FormStatus.SUBMITTED &&
-                history.getSubmittedByCustomerId().equals(CUSTOMER_UUID) &&
+                history.getSubmittedByCustomerId().toString().equals(CUSTOMER_UUID) &&
                 history.getSubmittedByCustomerName().equals("John Customer") &&
                 history.getFormDataSnapshot().containsKey("color") &&
                 history.getFormDataSnapshot().get("color").equals("Blue")
