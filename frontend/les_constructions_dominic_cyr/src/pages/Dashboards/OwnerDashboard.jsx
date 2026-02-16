@@ -28,12 +28,6 @@ const OwnerDashboard = () => {
   const dashboardCards = useMemo(
     () => [
       {
-        icon: <GoArrowUp />,
-        title: t('cards.uploads.title', 'Uploads'),
-        buttonText: t('cards.uploads.button', 'Begin Upload'),
-        action: () => navigate('/owner/uploads'),
-      },
-      {
         icon: <GoGraph />,
         title: t('cards.analytics.title', 'Analytics & Reports'),
         buttonText: t('cards.analytics.button', 'View Reports'),
@@ -62,12 +56,6 @@ const OwnerDashboard = () => {
         title: t('cards.users.title', 'Users'),
         buttonText: t('cards.users.button', 'View Users'),
         action: () => navigate('/users'),
-      },
-      {
-        icon: <GoFileDiff />,
-        title: t('cards.forms.title', 'Forms'),
-        buttonText: t('cards.forms.button', 'Review Submitted Forms'),
-        action: () => navigate('/owner/forms'),
       },
       {
         icon: <FaMapLocationDot />,

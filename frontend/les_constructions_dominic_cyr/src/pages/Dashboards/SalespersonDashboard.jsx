@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useSchedules from '../../features/schedules/hooks/ownerUseSchedules';
+import useSchedules from '../../features/schedules/hooks/salespersonUseSchedules';
 import ScheduleList from '../../features/schedules/components/ScheduleList';
 import DashboardCard from '../../components/DashboardCard';
 import '../../styles/Dashboards/SalespersonDashboard.css';
