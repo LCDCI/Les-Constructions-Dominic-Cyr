@@ -4,11 +4,12 @@
   padding-right: var(--spacing-md);
 }
 
-.projects-page .portfolio-grid {
+/* More specific selector to override base styles */
+.projects-page .portfolio-section .portfolio-grid {
   /* Increase spacing between project cards on Residential Projects page only */
-  gap: calc(var(--spacing-lg) * 1.8);
-  column-gap: calc(var(--spacing-lg) * 1.8);
-  row-gap: calc(var(--spacing-lg) * 1.2);
+  gap: calc(var(--spacing-lg) * 2.5) !important;
+  column-gap: calc(var(--spacing-lg) * 2.5) !important;
+  row-gap: calc(var(--spacing-lg) * 2) !important;
   justify-content: center;
   justify-items: center;
   /* Equal column widths; min 360px so hover overlay fits all buttons without cropping */

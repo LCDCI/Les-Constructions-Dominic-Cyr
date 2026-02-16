@@ -40,13 +40,9 @@
 }
 
 .project-hero {
-  padding: var(--spacing-section, 8rem) var(--spacing-lg);
+  padding: 6.4rem var(--spacing-lg);
   /* Use project color CSS variables set by page */
-  background: linear-gradient(
-    145deg,
-    var(--primary-color, #aab2a6),
-    var(--tertiary-color, #8a9287)
-  );
+  background: var(--primary-color, #aab2a6);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,8 +55,8 @@
   position: absolute;
   top: var(--spacing-lg, 2rem);
   left: var(--spacing-lg, 2rem);
-  width: 80px;
-  height: 80px;
+  width: 104px;
+  height: 104px;
   z-index: 1;
 }
 
@@ -81,8 +77,8 @@
   height: 240px;
   border-radius: 8px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  background: transparent;
+  box-shadow: none;
   z-index: 2;
   margin-bottom: 1rem;
 }
@@ -213,7 +209,7 @@
 .section-description {
   font-size: 1rem;
   line-height: 1.7;
-  color: rgba(0, 0, 0, 0.5);
+  color: #6b7280;
   font-weight: 300;
   text-align: center;
   max-width: 100%;
@@ -294,7 +290,7 @@
 .feature-description {
   font-size: 1rem;
   line-height: 1.7;
-  color: var(--text-primary, var(--color-text, #666));
+  color: #6b7280;
 }
 
 /* Lots Section */
@@ -574,15 +570,12 @@
 
 .back-button-container {
   display: flex;
-  /* This pushes the buttons to the far left and right */
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  /* Use a max-width so they aren't touching the very edges of huge screens */
   max-width: var(--content-max-width, 1200px);
   margin: 0 auto;
   padding: var(--spacing-xxl, 3rem) var(--spacing-lg, 2rem);
   width: 100%;
-  /* Prevents wrapping to a second line */
   flex-wrap: nowrap;
   box-sizing: border-box;
 }

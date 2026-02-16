@@ -43,11 +43,17 @@ export default function ProjectManagementPage() {
   return (
     <div className="project-management-page">
       {/* Hero Banner Section */}
-      <section className="pm-hero-banner" aria-labelledby="pm-hero-title">
-        <div className="pm-hero-content">
-          <h1 className="pm-hero-title" id="pm-hero-title">
-            {`${t('hero.line1', 'PROJECT MANAGEMENT,')} ${t('hero.line2', 'FOR PEACE OF MIND')}`}
+      <section className="projects-hero" aria-labelledby="pm-hero-title">
+        <div className="projects-hero-content">
+          <span className="section-kicker">
+            {t('hero.kicker', 'Our Services')}
+          </span>
+          <h1 className="projects-title" id="pm-hero-title">
+            {t('hero.title', 'Project Management')}
           </h1>
+          <p className="projects-subtitle">
+            {t('hero.subtitle', 'For Peace of Mind')}
+          </p>
         </div>
       </section>
 
