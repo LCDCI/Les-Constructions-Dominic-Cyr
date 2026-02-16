@@ -1,0 +1,72 @@
+@startuml C4-2_Container_Diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title C4-2: Container Diagram : Les Constructions Dominic Cyr Web Application
+
+Person(owner, "Owner", "Administers system, manages schedules, users, and  financial reports")
+Person(salesman, "Salesman", "Creates forms, quotes, and documents")
+Person(contractor, "Contractor", "Updates timelines, submits invoices")
+Person(customer, "Customer", "Views project progress, schedules, photos")
+
+System_Boundary(webapp_boundary, "Les Constructions Dominic Cyr Web Application") {
+    Container(web_app, "React Web Application", "JavaScript, React 18", "Provides bilingual UI for all user interactions, project tracking, and document management")
+    
+    Container(api_gateway, "API Gateway / Spring Boot Backend", "Java 17, Spring Boot 3", "Handles business logic, validation, authentication, and data orchestration across subdomains")
+    
+    ContainerDb(main_db, "PostgreSQL Database", "PostgreSQL 15", "Stores users, projects, lots, schedules, tasks, forms, quotes, notifications, and analytics")
+    
+    Container(files_service, "Files Microservice", "Go, Gin", "Manages file uploads, storage, retrieval, and archiving for project documents and photos")
+    
+    ContainerDb(files_db, "Files Database", "PostgreSQL 15", "Stores file metadata, project associations, and upload tracking")
+    
+    Container(mailer_service, "Mailer Microservice", "Go, SMTP", "Sends automated emails for notifications, reminders, and weekly schedules")
+}
+
+System_Ext(auth0, "Auth0", "Authentication and authorization service with JWT")
+System_Ext(email_service, "Mailgun/Brevo", "Email delivery service for transactional emails")
+System_Ext(digital_ocean_spaces, "DigitalOcean Spaces", "S3-compatible object storage for files")
+
+' User interactions
+Rel(owner, web_app, "Uses", "HTTPS")
+Rel(salesman, web_app, "Uses", "HTTPS")
+Rel(contractor, web_app, "Uses", "HTTPS")
+Rel(customer, web_app, "Uses", "HTTPS")
+
+' Internal container relationships
+Rel(web_app, api_gateway, "Makes API calls to", "HTTPS/REST")
+Rel(api_gateway, main_db, "Reads from and writes to", "TCP/SQL")
+Rel(api_gateway, files_service, "Uploads/downloads files via", "HTTP/REST")
+Rel(api_gateway, mailer_service, "Sends email requests to", "HTTP/REST")
+Rel(files_service, files_db, "Reads from and writes to", "TCP/SQL")
+Rel(files_service, digital_ocean_spaces, "Stores and retrieves files", "S3 API")
+Rel(mailer_service, email_service, "Sends emails via", "SMTP/HTTPS")
+
+' External system relationships
+Rel(web_app, auth0, "Authenticates users with", "HTTPS/OAuth2")
+Rel(api_gateway, auth0, "Validates JWT tokens with", "HTTPS")
+
+' Notes
+note right of api_gateway
+  **Subdomains:**
+  - Users Subdomain (Users, Auth)
+  - Project Subdomain (Project, Lot, Schedule, Task,
+    Quote, Portfolio, Content, Living Environment, Activity)
+  - Communication Subdomain (Notification, Inquiry)
+  - Form Subdomain (Form, FormSubmissionHistory)
+  - Report Subdomain (AnalyticsReport, PDF/XLSX generation)
+end note
+
+note right of files_service
+  Independent microservice
+  for file management
+  (separate codebase in Go)
+end note
+
+note right of mailer_service
+  Independent microservice
+  for email delivery
+  (separate codebase in Go)
+end note
+
+@enduml

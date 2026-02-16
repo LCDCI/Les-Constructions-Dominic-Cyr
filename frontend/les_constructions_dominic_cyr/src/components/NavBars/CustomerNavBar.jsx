@@ -208,15 +208,15 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/documents"
-                  className={`navbar-link ${isActive('/documents')}`}
+                  to="/customers/documents"
+                  className={`navbar-link ${isActive('/customers/documents')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">
                     <GoFile />
                   </span>
                   <span className="navbar-text">
-                    {t('navbar.menuItems.documents', 'Documents')}
+                    {t('navbar.menuItems.lotDocuments', 'Lot Documents')}
                   </span>
                 </Link>
               </li>

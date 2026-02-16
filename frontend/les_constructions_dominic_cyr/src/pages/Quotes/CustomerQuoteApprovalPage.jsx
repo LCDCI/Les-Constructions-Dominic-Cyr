@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
+import axios from 'axios';
 import { quoteApi } from '../../features/quotes/api/quoteApi';
 import {
   MdCheckCircle,
@@ -27,6 +28,7 @@ const CustomerQuoteApprovalPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
+  const [quotesWithDetails, setQuotesWithDetails] = useState({});
 
   // Notification state
   const [notification, setNotification] = useState({
@@ -70,6 +72,52 @@ const CustomerQuoteApprovalPage = () => {
       setQuotes(data);
       setFilteredQuotes(data);
       setError(null);
+
+      // Resolve lot and project details for each quote
+      const details = {};
+      for (const quote of data) {
+        try {
+          // Fetch project info
+          let projectName = quote.projectIdentifier;
+          if (quote.projectIdentifier) {
+            try {
+              const projectRes = await axios.get(
+                `/api/v1/projects/${quote.projectIdentifier}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+              if (projectRes.data?.projectName) {
+                projectName = projectRes.data.projectName;
+              }
+            } catch (err) {
+              console.warn('Failed to fetch project info:', err);
+            }
+          }
+
+          // Fetch lot info
+          let lotNumber = quote.lotIdentifier;
+          if (quote.lotIdentifier && quote.projectIdentifier) {
+            try {
+              const lotRes = await axios.get(
+                `/api/v1/projects/${quote.projectIdentifier}/lots/${quote.lotIdentifier}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+              if (lotRes.data?.lotNumber) {
+                lotNumber = lotRes.data.lotNumber;
+              }
+            } catch (err) {
+              console.warn('Failed to fetch lot info:', err);
+            }
+          }
+
+          details[quote.quoteNumber] = { projectName, lotNumber };
+        } catch (err) {
+          console.warn(
+            `Error resolving details for quote ${quote.quoteNumber}:`,
+            err
+          );
+        }
+      }
+      setQuotesWithDetails(details);
     } catch (err) {
       console.error('Error fetching pending quotes:', err);
       setError(t('errors.fetchQuotes'));
@@ -239,8 +287,16 @@ const CustomerQuoteApprovalPage = () => {
               {filteredQuotes.map(quote => (
                 <tr key={quote.quoteNumber}>
                   <td className="quote-number">{quote.quoteNumber}</td>
-                  <td>{quote.projectName || '-'}</td>
-                  <td>{quote.lotNumber || '-'}</td>
+                  <td>
+                    {quotesWithDetails[quote.quoteNumber]?.projectName ||
+                      quote.projectIdentifier ||
+                      '-'}
+                  </td>
+                  <td>
+                    {quotesWithDetails[quote.quoteNumber]?.lotNumber ||
+                      quote.lotIdentifier ||
+                      '-'}
+                  </td>
                   <td className="amount">
                     $
                     {quote.totalAmount?.toLocaleString('en-US', {

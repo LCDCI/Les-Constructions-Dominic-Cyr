@@ -3,12 +3,23 @@ package com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.Presentation
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.BusinessLayer.FormService;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.FormStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.FormType;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -18,8 +29,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -34,9 +48,11 @@ public class FormController {
 
     private final FormService formService;
     private final UserService userService;
+    private final LotRepository lotRepository;
 
     private static final String ROLE_OWNER = "ROLE_OWNER";
     private static final String ROLE_SALESPERSON = "ROLE_SALESPERSON";
+    private static final String ROLE_CONTRACTOR = "ROLE_CONTRACTOR";
     private static final String ROLE_CUSTOMER = "ROLE_CUSTOMER";
 
     /**
@@ -99,8 +115,8 @@ public class FormController {
         List<FormResponseModel> forms;
 
         // Determine which forms to retrieve based on role and filters
-        if (isOwnerOrSalesperson(authentication)) {
-            // Owners and salespersons can see all forms, apply filters
+        if (isPrivilegedRole(authentication)) {
+            // Owners, salespersons, and contractors can see all forms, apply filters
             if (projectId != null) {
                 forms = formService.getFormsByProject(projectId);
             } else if (customerId != null) {
@@ -108,10 +124,8 @@ public class FormController {
             } else if (status != null) {
                 forms = formService.getFormsByStatus(status);
             } else {
-                // Get all forms (could be expensive in production, consider pagination)
-                UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
-                String userId = currentUser.getUserIdentifier();
-                forms = formService.getFormsCreatedBy(userId);
+                // Get all forms for privileged roles
+                forms = formService.getAllForms();
             }
         } else {
             // Customers only see their own forms
@@ -129,6 +143,48 @@ public class FormController {
         if (formType != null) {
             forms = forms.stream()
                     .filter(f -> f.getFormType() == formType)
+                    .collect(Collectors.toList());
+        }
+
+        return ResponseEntity.ok(forms);
+    }
+
+    /**
+     * Get all forms for a specific lot
+     * Accessible by owner, salesperson assigned to the lot, or the customer who owns the forms
+     */
+    @GetMapping("/lot/{lotId}")
+    public ResponseEntity<List<FormResponseModel>> getFormsByLot(
+            @PathVariable String lotId,
+            @RequestParam(required = false) FormStatus status,
+            @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication
+    ) {
+        log.info("GET /api/v1/forms/lot/{}", lotId);
+
+        if (jwt == null || authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
+        String userId = currentUser.getUserIdentifier();
+
+        if (!isAuthorizedForLotForms(lotId, userId, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        List<FormResponseModel> forms = formService.getFormsByLot(lotId);
+
+        if (hasAuthority(authentication, ROLE_CUSTOMER)) {
+            forms = forms.stream()
+                    .filter(form -> userId.equals(form.getCustomerId()))
+                    .collect(Collectors.toList());
+        }
+
+        if (status != null) {
+            FormStatus requestedStatus = status;
+            forms = forms.stream()
+                    .filter(form -> form.getFormStatus() == requestedStatus)
                     .collect(Collectors.toList());
         }
 
@@ -158,7 +214,7 @@ public class FormController {
         log.info("GET /api/v1/forms/customer/{}", customerId);
 
         // Customers can only view their own forms
-        if (!isOwnerOrSalesperson(authentication)) {
+        if (!isPrivilegedRole(authentication)) {
             UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
             if (!currentUser.getUserIdentifier().equals(customerId)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -197,23 +253,26 @@ public class FormController {
             @AuthenticationPrincipal Jwt jwt,
             Authentication authentication
     ) {
-        log.info("PUT /api/v1/forms/{}/data", formId);
+        log.info("PUT /api/v1/forms/{}/data, isSubmitting: {}", formId, updateRequest.isSubmitting());
 
         UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
         String userId = currentUser.getUserIdentifier();
 
         // Verify authorization
         FormResponseModel form = formService.getFormById(formId);
-        if (!form.getCustomerId().equals(userId) && !isOwnerOrSalesperson(authentication)) {
+        if (!form.getCustomerId().equals(userId) && !isPrivilegedRole(authentication)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         // If the request indicates submission, use submitForm instead
         if (updateRequest.isSubmitting()) {
+            log.info("Routing to submitForm for form: {}", formId);
             FormResponseModel updatedForm = formService.submitForm(formId, updateRequest, userId);
+            log.info("Form submitted, new status: {}", updatedForm.getFormStatus());
             return ResponseEntity.ok(updatedForm);
         }
 
+        log.info("Routing to updateFormData (save only) for form: {}", formId);
         FormResponseModel updatedForm = formService.updateFormData(formId, updateRequest, userId);
         return ResponseEntity.ok(updatedForm);
     }
@@ -271,6 +330,43 @@ public class FormController {
         FormResponseModel updatedForm = formService.completeForm(formId, auth0UserId);
 
         return ResponseEntity.ok(updatedForm);
+    }
+
+    /**
+     * Download a finalized form as PDF
+     * Accessible by owner, salesperson assigned to the lot, or the customer who owns the form
+     */
+    @GetMapping("/{formId}/download")
+    public ResponseEntity<byte[]> downloadForm(
+            @PathVariable String formId,
+            @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication
+    ) {
+        log.info("GET /api/v1/forms/{}/download", formId);
+
+        if (jwt == null || authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        FormResponseModel form = formService.getFormById(formId);
+        if (form.getFormStatus() != FormStatus.COMPLETED) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
+        String userId = currentUser.getUserIdentifier();
+
+        if (!isAuthorizedForFormDownload(form, userId, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        byte[] pdfBytes = buildFormPdf(form);
+        String fileName = buildFormFileName(form);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .body(pdfBytes);
     }
 
     /**
@@ -334,21 +430,172 @@ public class FormController {
 
     // ========== Helper Methods ==========
 
-    private boolean isOwnerOrSalesperson(Authentication authentication) {
+    private boolean isPrivilegedRole(Authentication authentication) {
         if (authentication == null) return false;
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         return authorities.contains(new SimpleGrantedAuthority(ROLE_OWNER)) ||
-                authorities.contains(new SimpleGrantedAuthority(ROLE_SALESPERSON));
+                authorities.contains(new SimpleGrantedAuthority(ROLE_SALESPERSON)) ||
+                authorities.contains(new SimpleGrantedAuthority(ROLE_CONTRACTOR));
+    }
+
+    private boolean hasAuthority(Authentication authentication, String role) {
+        if (authentication == null) return false;
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        return authorities.contains(new SimpleGrantedAuthority(role));
+    }
+
+    private boolean isAuthorizedForLotForms(String lotId, String userId, Authentication authentication) {
+        if (hasAuthority(authentication, ROLE_OWNER)) {
+            return true;
+        }
+
+        if (!hasAuthority(authentication, ROLE_SALESPERSON) && !hasAuthority(authentication, ROLE_CUSTOMER)) {
+            return false;
+        }
+
+        return isAssignedToLot(lotId, userId);
+    }
+
+    private boolean isAuthorizedForFormDownload(FormResponseModel form, String userId, Authentication authentication) {
+        if (hasAuthority(authentication, ROLE_OWNER)) {
+            return true;
+        }
+
+        if (hasAuthority(authentication, ROLE_CUSTOMER)) {
+            return userId.equals(form.getCustomerId()) && isAssignedToLot(form.getLotIdentifier(), userId);
+        }
+
+        if (hasAuthority(authentication, ROLE_SALESPERSON)) {
+            return isAssignedToLot(form.getLotIdentifier(), userId);
+        }
+
+        return false;
+    }
+
+    private boolean isAssignedToLot(String lotId, String userId) {
+        if (lotId == null || userId == null) {
+            return false;
+        }
+
+        try {
+            UUID userUuid = UUID.fromString(userId);
+            UUID lotUuid = UUID.fromString(lotId);
+            List<Lot> assignedLots = lotRepository.findByAssignedUserId(userUuid);
+            return assignedLots.stream()
+                    .anyMatch(lot -> lot.getLotIdentifier().getLotId().equals(lotUuid));
+        } catch (IllegalArgumentException ex) {
+            // Invalid UUID format for userId or lotId; treat as not assigned
+            return false;
+        }
     }
 
     private boolean isAuthorizedToViewForm(FormResponseModel form, Jwt jwt, Authentication authentication) {
-        if (isOwnerOrSalesperson(authentication)) {
+        if (isPrivilegedRole(authentication)) {
             return true;
         }
 
         // Check if customer owns the form
         UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
         return form.getCustomerId().equals(currentUser.getUserIdentifier());
+    }
+
+    private byte[] buildFormPdf(FormResponseModel form) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(outputStream);
+        PdfDocument pdfDocument = new PdfDocument(writer);
+        Document document = new Document(pdfDocument);
+
+        try {
+            document.add(new Paragraph("Finalized Form")
+                .setBold()
+                .setFontSize(20)
+                .setMarginBottom(6));
+            document.add(new Paragraph(formatFormType(form.getFormType()))
+                .setFontSize(14)
+                .setMarginBottom(12));
+
+            document.add(new Paragraph("Summary")
+                .setBold()
+                .setFontSize(14)
+                .setMarginBottom(6));
+            document.add(new Paragraph("Status: " + safeValue(form.getFormStatus())));
+            document.add(new Paragraph("Project: " + safeValue(form.getProjectIdentifier())));
+            document.add(new Paragraph("Lot: " + safeValue(form.getLotIdentifier()))
+                .setMarginBottom(10));
+
+            document.add(new Paragraph("Customer")
+                .setBold()
+                .setFontSize(14)
+                .setMarginBottom(6));
+            document.add(new Paragraph("Name: " + safeValue(form.getCustomerName())));
+            document.add(new Paragraph("Email: " + safeValue(form.getCustomerEmail()))
+                .setMarginBottom(10));
+
+            document.add(new Paragraph("Completed")
+                .setBold()
+                .setFontSize(14)
+                .setMarginBottom(6));
+            document.add(new Paragraph("Date: " + safeValue(form.getCompletedDate()))
+                .setMarginBottom(12));
+
+            document.add(new Paragraph("Form Data")
+                .setBold()
+                .setFontSize(14)
+                .setMarginBottom(6));
+            Table table = new Table(2).useAllAvailableWidth();
+            table.addHeaderCell(new Cell().add(new Paragraph("Field").setBold()));
+            table.addHeaderCell(new Cell().add(new Paragraph("Value").setBold()));
+
+            if (form.getFormData() != null && !form.getFormData().isEmpty()) {
+                for (Map.Entry<String, Object> entry : form.getFormData().entrySet()) {
+                    String value = stringifyValue(entry.getValue(), objectMapper);
+                    table.addCell(new Cell().add(new Paragraph(entry.getKey())));
+                    table.addCell(new Cell().add(new Paragraph(value)));
+                }
+            } else {
+                table.addCell(new Cell().add(new Paragraph("(No data)")));
+                table.addCell(new Cell().add(new Paragraph("")));
+            }
+
+            document.add(table);
+        } finally {
+            document.close();
+        }
+
+        return outputStream.toByteArray();
+    }
+
+    private String safeValue(Object value) {
+        return value == null ? "" : String.valueOf(value);
+    }
+
+    private String stringifyValue(Object value, ObjectMapper objectMapper) {
+        if (value == null) {
+            return "";
+        }
+
+        if (value instanceof String || value instanceof Number || value instanceof Boolean) {
+            return String.valueOf(value);
+        }
+
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(value);
+        } catch (Exception e) {
+            return String.valueOf(value);
+        }
+    }
+
+    private String buildFormFileName(FormResponseModel form) {
+        String formType = form.getFormType() != null ? form.getFormType().name().toLowerCase() : "form";
+        return "form_" + formType + "_" + form.getFormId() + ".pdf";
+    }
+
+    private String formatFormType(FormType formType) {
+        if (formType == null) {
+            return "Form";
+        }
+        return formType.name().replace('_', ' ').toLowerCase();
     }
 
     private UserResponseModel getUserByAuth0Id(String auth0UserId) {
