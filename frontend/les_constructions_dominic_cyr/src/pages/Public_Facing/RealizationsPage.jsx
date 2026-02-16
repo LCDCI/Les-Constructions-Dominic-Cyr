@@ -59,17 +59,23 @@ const RealizationsPage = () => {
   return (
     <div className="realizations-page">
       {/* Hero Banner Section */}
-      <section className="projects-hero">
+      <section className="projects-hero" aria-labelledby="realizations-title">
         <div className="projects-hero-content">
-          <h1 className="projects-title">
+          <h1 className="projects-title" id="realizations-title">
             {t('hero.title', 'Our Realizations')}
           </h1>
         </div>
       </section>
 
       {/* Intro Text Section */}
-      <section className="realizations-intro">
+      <section
+        className="realizations-intro"
+        aria-labelledby="realizations-intro-title"
+      >
         <div className="realizations-intro-content">
+          <h2 id="realizations-intro-title" className="sr-only">
+            {t('intro.title', 'Realizations overview')}
+          </h2>
           <p className="realizations-intro-text">
             {t(
               'intro.description',
@@ -80,7 +86,13 @@ const RealizationsPage = () => {
       </section>
 
       {/* Gallery Section */}
-      <section className="realizations-gallery-section">
+      <section
+        className="realizations-gallery-section"
+        aria-labelledby="realizations-gallery-title"
+      >
+        <h2 id="realizations-gallery-title" className="sr-only">
+          {t('gallery.title', 'Realizations gallery')}
+        </h2>
         <div className="realizations-gallery-container">
           <button
             className="gallery-arrow gallery-arrow-left"
@@ -90,7 +102,7 @@ const RealizationsPage = () => {
             <MdArrowBackIos size={32} />
           </button>
 
-          <div className="realizations-gallery">
+          <div className="realizations-gallery" role="group" aria-live="polite">
             {REALIZATION_IMAGE_IDS.length > 0 ? (
               <div className="gallery-image-item">
                 <img
@@ -100,7 +112,7 @@ const RealizationsPage = () => {
                 />
               </div>
             ) : (
-              <p style={{ textAlign: 'center', padding: '5%' }}>
+              <p style={{ textAlign: 'center', padding: '5%' }} role="status">
                 {t('gallery.noResults', 'No realizations found')}
               </p>
             )}
@@ -116,7 +128,7 @@ const RealizationsPage = () => {
         </div>
 
         {REALIZATION_IMAGE_IDS.length > 0 && (
-          <div className="gallery-counter">
+          <div className="gallery-counter" role="status" aria-live="polite">
             {currentIndex + 1} / {REALIZATION_IMAGE_IDS.length}
           </div>
         )}

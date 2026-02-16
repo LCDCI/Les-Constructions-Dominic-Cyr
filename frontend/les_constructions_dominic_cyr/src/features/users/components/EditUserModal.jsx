@@ -25,6 +25,19 @@ export default function EditUserModal({
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = e => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const handleChange = e => {
@@ -39,16 +52,27 @@ export default function EditUserModal({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <h2>Edit User</h2>
+      <div
+        className="modal-content"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-user-modal-title"
+        aria-describedby="edit-user-modal-description"
+      >
+        <h2 id="edit-user-modal-title">Edit User</h2>
+        <p id="edit-user-modal-description">
+          Update user profile details and save changes.
+        </p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>
+            <label htmlFor="edit-user-first-name">
               <span>
                 First Name<span className="required">*</span>
               </span>
             </label>
             <input
+              id="edit-user-first-name"
               type="text"
               name="firstName"
               value={formData.firstName}
@@ -57,12 +81,13 @@ export default function EditUserModal({
             />
           </div>
           <div className="form-group">
-            <label>
+            <label htmlFor="edit-user-last-name">
               <span>
                 Last Name<span className="required">*</span>
               </span>
             </label>
             <input
+              id="edit-user-last-name"
               type="text"
               name="lastName"
               value={formData.lastName}
@@ -72,8 +97,9 @@ export default function EditUserModal({
           </div>
 
           <div className="form-group">
-            <label>Primary Email</label>
+            <label htmlFor="edit-user-primary-email">Primary Email</label>
             <input
+              id="edit-user-primary-email"
               type="email"
               value={user?.primaryEmail || ''}
               disabled
@@ -83,8 +109,9 @@ export default function EditUserModal({
           </div>
 
           <div className="form-group">
-            <label>Secondary Email</label>
+            <label htmlFor="edit-user-secondary-email">Secondary Email</label>
             <input
+              id="edit-user-secondary-email"
               type="email"
               name="secondaryEmail"
               value={formData.secondaryEmail}
@@ -93,8 +120,9 @@ export default function EditUserModal({
           </div>
 
           <div className="form-group">
-            <label>Phone</label>
+            <label htmlFor="edit-user-phone">Phone</label>
             <input
+              id="edit-user-phone"
               type="tel"
               name="phone"
               value={formData.phone}
@@ -103,8 +131,9 @@ export default function EditUserModal({
           </div>
 
           <div className="form-group">
-            <label>Role</label>
+            <label htmlFor="edit-user-role">Role</label>
             <input
+              id="edit-user-role"
               type="text"
               value={user?.userRole || ''}
               disabled

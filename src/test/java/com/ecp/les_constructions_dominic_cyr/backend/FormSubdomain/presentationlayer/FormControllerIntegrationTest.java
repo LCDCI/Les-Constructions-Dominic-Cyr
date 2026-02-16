@@ -427,7 +427,7 @@ class FormControllerIntegrationTest {
         history.setSubmissionNumber(1);
         history.setStatusAtSubmission(FormStatus.SUBMITTED);
         history.setFormDataSnapshot(new HashMap<>());
-        history.setSubmittedByCustomerId(testCustomer.getUserIdentifier().getUserId());
+                history.setSubmittedByCustomerId(testCustomer.getUserIdentifier().getUserId());
         history.setSubmittedByCustomerName("Test Customer");
         history.setSubmittedAt(LocalDateTime.now());
         historyRepository.save(history);
@@ -449,7 +449,7 @@ class FormControllerIntegrationTest {
         form.setFormType(FormType.WINDOWS);
         form.setFormStatus(FormStatus.ASSIGNED);
         form.setProjectIdentifier(testProject.getProjectIdentifier());
-        form.setLotIdentifier(testLot.getLotIdentifier().getLotId());
+                form.setLotIdentifier(testLot.getLotIdentifier().getLotId());
         form.setCustomerId(testCustomer.getUserIdentifier().getUserId());
         form.setCustomerName("Test Customer");
         form.setCustomerEmail(testCustomer.getPrimaryEmail());
@@ -483,7 +483,7 @@ class FormControllerIntegrationTest {
         form.setFormType(FormType.PAINT);
         form.setFormStatus(FormStatus.ASSIGNED);
         form.setProjectIdentifier(testProject.getProjectIdentifier());
-        form.setLotIdentifier(testLot.getLotIdentifier().getLotId());
+                form.setLotIdentifier(testLot.getLotIdentifier().getLotId());
         form.setCustomerId(differentCustomer.getUserIdentifier().getUserId());
         form.setCustomerName("Different Customer");
         form.setCustomerEmail(differentCustomer.getPrimaryEmail());
