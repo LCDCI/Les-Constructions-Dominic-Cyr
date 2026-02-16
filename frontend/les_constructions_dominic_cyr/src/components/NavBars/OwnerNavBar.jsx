@@ -195,7 +195,9 @@ const Navbar = ({
                   <span className="navbar-icon">
                     <GoCheckCircle />
                   </span>
-                  <span className="navbar-text">Quote Approval</span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.quoteApproval', 'Quote Approval')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Project/project-management.css';
 import '../../styles/Public_Facing/residential-projects.css';
-import { FaUserTie } from 'react-icons/fa';
+import { FaUserTie, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
 import { IoIosHammer } from 'react-icons/io';
 import { AiOutlineStock } from 'react-icons/ai';
 import { GrFormSchedule } from 'react-icons/gr';
@@ -12,26 +12,69 @@ import { CiStopwatch } from 'react-icons/ci';
 
 export default function ProjectManagementPage() {
   const { t } = usePageTranslations('projectManagement');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [currentImageSet, setCurrentImageSet] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const PM_IMAGE_IDS = {
-    professionals: '1659ff85-b160-4111-b419-84834eb4375a',
-    floorPlan: '48f50cea-f368-41d6-91c3-ae55157bd868',
-    tools: 'bb6dd250-ed32-4041-8b4e-020e2ef45e2f',
+  const CDN_BASE_URL = 'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16';
+
+  const PM_IMAGES = {
+    bromont: {
+      url: `${CDN_BASE_URL}/BromontFrl.JPEG`,
+      city: 'Bromont',
+      alt: 'Bromont construction project'
+    },
+    shefford: {
+      urls: [
+        `${CDN_BASE_URL}/shefford1.JPG`,
+        `${CDN_BASE_URL}/shefford2.JPG`,
+        `${CDN_BASE_URL}/shefford3.JPG`
+      ],
+      city: 'Shefford',
+      alt: 'Shefford construction project'
+    },
+    stHilaire: {
+      url: `${CDN_BASE_URL}/st-hilaire.png`,
+      city: 'St-Hilaire',
+      alt: 'St-Hilaire construction project'
+    }
   };
 
-  const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL ||
-    (typeof window !== 'undefined' &&
-    window.location.hostname.includes('constructions-dominiccyr')
-      ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : typeof window !== 'undefined' &&
-          window.location.hostname === 'localhost'
-        ? 'http://localhost:8082'
-        : `${window.location.origin}/files`);
+  const openModal = (imageOrImages, index = 0) => {
+    if (Array.isArray(imageOrImages)) {
+      setCurrentImageSet(imageOrImages);
+      setCurrentIndex(index);
+      setCurrentImage(imageOrImages[index]);
+    } else {
+      setCurrentImageSet([imageOrImages]);
+      setCurrentIndex(0);
+      setCurrentImage(imageOrImages);
+    }
+    setModalOpen(true);
+  };
 
-  const getImageUrl = imageIdentifier => {
-    if (!imageIdentifier) return '';
-    return `${filesServiceUrl}/files/${imageIdentifier}`;
+  const closeModal = () => {
+    setModalOpen(false);
+    setCurrentImage(null);
+    setCurrentImageSet([]);
+    setCurrentIndex(0);
+  };
+
+  const nextImage = () => {
+    if (currentImageSet.length > 1) {
+      const newIndex = (currentIndex + 1) % currentImageSet.length;
+      setCurrentIndex(newIndex);
+      setCurrentImage(currentImageSet[newIndex]);
+    }
+  };
+
+  const prevImage = () => {
+    if (currentImageSet.length > 1) {
+      const newIndex = (currentIndex - 1 + currentImageSet.length) % currentImageSet.length;
+      setCurrentIndex(newIndex);
+      setCurrentImage(currentImageSet[newIndex]);
+    }
   };
 
   const pillars = [
@@ -82,38 +125,35 @@ export default function ProjectManagementPage() {
             </div>
 
             <div className="pm-images-grid">
-              <div className="pm-image-card">
+              <div className="pm-image-card" onClick={() => openModal(PM_IMAGES.bromont.url)} style={{ cursor: 'pointer' }}>
                 <div className="pm-image-container">
                   <img
-                    src={getImageUrl(PM_IMAGE_IDS.professionals)}
-                    alt={t(
-                      'intro.image1.alt',
-                      'Professionals collaborating on project'
-                    )}
+                    src={PM_IMAGES.bromont.url}
+                    alt={PM_IMAGES.bromont.alt}
                     className="pm-image"
                   />
                 </div>
+                <p className="pm-image-city">{PM_IMAGES.bromont.city}</p>
               </div>
-              <div className="pm-image-card">
+              <div className="pm-image-card" onClick={() => openModal(PM_IMAGES.shefford.urls, 0)} style={{ cursor: 'pointer' }}>
                 <div className="pm-image-container">
                   <img
-                    src={getImageUrl(PM_IMAGE_IDS.floorPlan)}
-                    alt={t('intro.image2.alt', '3D floor plan rendering')}
+                    src={PM_IMAGES.shefford.urls[0]}
+                    alt={PM_IMAGES.shefford.alt}
                     className="pm-image"
                   />
                 </div>
+                <p className="pm-image-city">{PM_IMAGES.shefford.city}</p>
               </div>
-              <div className="pm-image-card">
+              <div className="pm-image-card" onClick={() => openModal(PM_IMAGES.stHilaire.url)} style={{ cursor: 'pointer' }}>
                 <div className="pm-image-container">
                   <img
-                    src={getImageUrl(PM_IMAGE_IDS.tools)}
-                    alt={t(
-                      'intro.image3.alt',
-                      'Construction tools and materials'
-                    )}
+                    src={PM_IMAGES.stHilaire.url}
+                    alt={PM_IMAGES.stHilaire.alt}
                     className="pm-image"
                   />
                 </div>
+                <p className="pm-image-city">{PM_IMAGES.stHilaire.city}</p>
               </div>
             </div>
 
@@ -213,6 +253,45 @@ export default function ProjectManagementPage() {
           </div>
         </div>
       </section>
+
+      {/* Image Modal */}
+      {modalOpen && (
+        <div className="pm-image-modal-overlay" onClick={closeModal}>
+          <div className="pm-image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="pm-modal-close" onClick={closeModal} aria-label="Close modal">
+              <FaTimes />
+            </button>
+            
+            {currentImageSet.length > 1 && (
+              <>
+                <button className="pm-modal-nav pm-modal-prev" onClick={prevImage} aria-label="Previous image">
+                  <FaChevronLeft />
+                </button>
+                <button className="pm-modal-nav pm-modal-next" onClick={nextImage} aria-label="Next image">
+                  <FaChevronRight />
+                </button>
+              </>
+            )}
+            
+            <img src={currentImage} alt="Project" className="pm-modal-image" />
+            
+            {currentImageSet.length > 1 && (
+              <div className="pm-modal-indicators">
+                {currentImageSet.map((_, index) => (
+                  <span
+                    key={index}
+                    className={`pm-modal-indicator ${index === currentIndex ? 'active' : ''}`}
+                    onClick={() => {
+                      setCurrentIndex(index);
+                      setCurrentImage(currentImageSet[index]);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

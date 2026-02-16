@@ -113,6 +113,11 @@
   opacity: 0.8;
 }
 
+/* Project Overview Page Specific Override */
+.project-overview-page .footer-inner {
+  padding: 0 5% 0 20%;
+}
+
 /* Tablet Responsive */
 @media (max-width: 1024px) {
   .app-footer {

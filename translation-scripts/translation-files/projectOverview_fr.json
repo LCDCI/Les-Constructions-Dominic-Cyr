@@ -46,6 +46,9 @@
     "address": "Adresse",
     "phone": "Téléphone",
     "email": "Courriel",
-    "copyright": "Droits d'auteur © 2024. Tous droits réservés."
+    "copyright": "Droits d'auteur © 2026. Tous droits réservés."
+  },
+  "locationDescriptions": {
+    "proj-001-foresta": "Föresta est situé à St-Alphonse-de-Granby, offrant un accès facile aux sentiers naturels, aux commodités locales et aux autoroutes principales. L'équilibre parfait entre isolement et commodité."
   }
 }

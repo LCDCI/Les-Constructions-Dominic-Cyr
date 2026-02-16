@@ -46,6 +46,7 @@
   "errors": {
     "fetchFailed": "Failed to fetch lots."
   },
-  "backToProject": "Back to Residential Project"
+  "backToProject": "Back to residential project",
+  "comingSoon": "More information about available housing coming soon"
   }
 }

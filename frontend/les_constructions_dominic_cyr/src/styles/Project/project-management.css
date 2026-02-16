@@ -586,3 +586,137 @@
     border-radius: var(--border-radius);
   }
 }
+
+/* City Name Labels */
+.pm-image-city {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+  letter-spacing: 0.02em;
+}
+
+/* Image Modal */
+.pm-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.pm-image-modal-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pm-modal-image {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.pm-modal-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 10px;
+  transition: opacity 0.2s ease;
+  z-index: 10001;
+}
+
+.pm-modal-close:hover {
+  opacity: 0.7;
+}
+
+.pm-modal-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 15px 20px;
+  transition: background 0.2s ease;
+  z-index: 10001;
+  border-radius: 4px;
+}
+
+.pm-modal-nav:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.pm-modal-prev {
+  left: 20px;
+}
+
+.pm-modal-next {
+  right: 20px;
+}
+
+.pm-modal-indicators {
+  position: absolute;
+  bottom: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 10001;
+}
+
+.pm-modal-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.pm-modal-indicator.active {
+  background: white;
+}
+
+.pm-modal-indicator:hover {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 768px) {
+  .pm-modal-nav {
+    font-size: 1.5rem;
+    padding: 10px 15px;
+  }
+
+  .pm-modal-prev {
+    left: 10px;
+  }
+
+  .pm-modal-next {
+    right: 10px;
+  }
+
+  .pm-modal-close {
+    top: -30px;
+    font-size: 1.5rem;
+  }
+}
