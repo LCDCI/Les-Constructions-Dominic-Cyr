@@ -79,6 +79,9 @@
     "approvalInfo": "Approval Information",
     "approvedDate": "Approved Date",
     "approvedBy": "Approved By",
+    "approvalStatus": "Approval Status",
+    "currentStatus": "Current Status",
+    "currentStatusPending": "Pending",
     "approval": {
       "submitted": "Submitted",
       "approved": "Approved",
@@ -92,7 +95,13 @@
       "subtitle": "Review and manage contractor quotes",
       "searchPlaceholder": "Quote #, Project, Contractor...",
       "approve": "Approve",
-      "reject": "Reject"
+      "reject": "Reject",
+      "confirmApprove": "Approve Quote",
+      "confirmReject": "Reject Quote",
+      "reasonRequired": "Please provide a rejection reason",
+      "reasonPlaceholder": "Explain why this quote is being rejected...",
+      "approveMessage": "Are you sure you want to approve this quote? It will be marked as valid for sending to customers.",
+      "rejectMessage": "Are you sure you want to reject this quote? A reason must be provided and the contractor will be notified."
     },
     "noQuotes": "No quotes found matching your filters."
   },

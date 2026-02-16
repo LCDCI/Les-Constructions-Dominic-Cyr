@@ -23,6 +23,9 @@ const QuoteDetailPage = () => {
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
   const [projectInfo, setProjectInfo] = useState(null);
   const [approvedByName, setApprovedByName] = useState('');
+  const [contractorInfo, setContractorInfo] = useState(null);
+  const [customerInfo, setCustomerInfo] = useState(null);
+  const [lotInfo, setLotInfo] = useState(null);
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -76,6 +79,55 @@ const QuoteDetailPage = () => {
             }
           } catch (err) {
             console.error('Error fetching project info:', err);
+          }
+        }
+
+        // Fetch Contractor Info
+        if (quote.contractorId) {
+          try {
+            let contractorResponse;
+            if (quote.contractorId.includes('|')) {
+              const encodedId = encodeURIComponent(quote.contractorId);
+              contractorResponse = await axios.get(
+                `/api/v1/users/auth0/${encodedId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+            } else {
+              contractorResponse = await axios.get(
+                `/api/v1/users/${quote.contractorId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+            }
+            if (contractorResponse.data) {
+              setContractorInfo(contractorResponse.data);
+            }
+          } catch (err) {
+            console.warn('Error fetching contractor info:', err);
+          }
+        }
+
+        // Fetch Lot Info (for customer and address)
+        if (quote.lotIdentifier && quote.projectIdentifier) {
+          try {
+            const lotResponse = await axios.get(
+              `/api/v1/projects/${quote.projectIdentifier}/lots/${quote.lotIdentifier}`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (lotResponse.data) {
+              setLotInfo(lotResponse.data);
+              // Get customer info from assigned users
+              const assignedUsers = lotResponse.data.assignedUsers || [];
+              if (assignedUsers.length > 0) {
+                const customer = assignedUsers[0];
+                setCustomerInfo({
+                  name: `${customer.firstName || ''} ${customer.lastName || ''}`.trim(),
+                  phone: customer.phoneNumber || customer.phone || '',
+                  email: customer.email || customer.primaryEmail || '',
+                });
+              }
+            }
+          } catch (err) {
+            console.warn('Error fetching lot info:', err);
           }
         }
 
@@ -269,20 +321,24 @@ const QuoteDetailPage = () => {
         <div className="quote-party-section">
           <div className="party-card">
             <span className="party-label">{t('quote.from') || 'From'}</span>
-            <h3>{quote.contractorName || '—'}</h3>
-            <p>{quote.contractorPhone || '—'}</p>
+            <h3>
+              {contractorInfo
+                ? `${contractorInfo.firstName} ${contractorInfo.lastName || ''}`.trim()
+                : '—'}
+            </h3>
+            <p>{contractorInfo?.phoneNumber || contractorInfo?.phone || '—'}</p>
           </div>
           <div className="party-card">
             <span className="party-label">{t('quote.to') || 'To'}</span>
-            <h3>{quote.customerName || '—'}</h3>
-            <p>{quote.customerPhone || '—'}</p>
+            <h3>{customerInfo?.name || '—'}</h3>
+            <p>{customerInfo?.phone || '—'}</p>
           </div>
           <div className="party-card">
             <span className="party-label">
               {t('quote.project') || 'Project'}
             </span>
             <h3>{projectInfo?.projectName || quote.projectIdentifier}</h3>
-            <p>{quote.lotAddress || '—'}</p>
+            <p>{lotInfo?.civicAddress || lotInfo?.address || '—'}</p>
           </div>
         </div>
 
@@ -367,7 +423,7 @@ const QuoteDetailPage = () => {
                 <span
                   className={`status-badge status-${quote.status.toLowerCase()}`}
                 >
-                  {quote.status}
+                  {getStatusLabel(quote.status)}
                 </span>
               </div>
               {quote.approvedBy && (
@@ -375,7 +431,7 @@ const QuoteDetailPage = () => {
                   <span className="status-label">
                     {t('quote.approvedBy') || 'Approved By'}
                   </span>
-                  <span className="status-value">{quote.approvedBy}</span>
+                  <span className="status-value">{approvedByName || '—'}</span>
                 </div>
               )}
               {quote.approvedAt && (

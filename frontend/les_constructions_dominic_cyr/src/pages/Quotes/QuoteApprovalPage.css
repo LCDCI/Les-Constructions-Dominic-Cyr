@@ -45,6 +45,7 @@
     0 4px 6px -1px rgba(0, 0, 0, 0.05),
     0 2px 4px -1px rgba(0, 0, 0, 0.03);
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .filter-group {
@@ -87,7 +88,7 @@
 }
 
 .btn-refresh {
-  padding: 12px 20px;
+  padding: 16px;
   background: white;
   color: #64748b;
   border: 2px solid #e2e8f0;
@@ -95,11 +96,16 @@
   font-size: 15px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  height: 48px; /* Match input height */
-  width: 48px;
+  height: 64px !important;
+  width: 64px !important;
+  min-width: 64px !important;
+  max-width: 64px !important;
+  max-height: 64px !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
 }
 
 .btn-refresh:hover {
