@@ -144,6 +144,10 @@ public class TranslationRegistry {
         fileIdMap.put("en.salespersonforms", "bf89b8c0-12d8-43f3-b713-8cf5133a95ac");
         fileIdMap.put("fr.salespersonforms", "0209707e-6022-4e1e-9a0c-4e166bf715e4");
 
+        // Owner Review Forms page translations
+        fileIdMap.put("en.ownerreviewforms", "3bea59f8-9011-4258-90b2-25ef587deff6");
+        fileIdMap.put("fr.ownerreviewforms", "f6bbaa26-b7ef-4bf9-b28f-637950d8d196");
+
     }
 
     /**

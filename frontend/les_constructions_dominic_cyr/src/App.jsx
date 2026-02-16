@@ -56,6 +56,7 @@ import InboxPage from './pages/Inbox/InboxPage';
 import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
 import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
 import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
+import OwnerReviewFormsPage from './pages/Forms/OwnerReviewFormsPage';
 // import ReactGA from 'react-ga4'; // TODO: Fix build issue with react-ga4 module resolution
 // loadTheme from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
@@ -356,6 +357,15 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['OWNER']}
                   element={<OwnerDashboard />}
+                />
+              }
+            />
+            <Route
+              path="/owner/forms"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<OwnerReviewFormsPage />}
                 />
               }
             />

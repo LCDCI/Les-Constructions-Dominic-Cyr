@@ -537,7 +537,7 @@ public class FormServiceImpl implements FormService {
                     notificationLink
             );
 
-            // Send email
+            // Send email to customer
             String emailSubject = "Form Reopened: " + formTypeName;
             String emailBody = buildFormReopenedEmailBody(form, customer, reopenReason);
 
@@ -551,6 +551,24 @@ public class FormServiceImpl implements FormService {
                     error -> log.error("Failed to send form reopened email to {}: {}", customer.getPrimaryEmail(), error.getMessage()),
                     () -> log.info("Form reopened email sent to: {}", customer.getPrimaryEmail())
             );
+
+            // Also notify the salesperson who assigned the form
+            Users salesperson = usersRepository.findByUserIdentifier_UserId(form.getAssignedByUserId()).orElse(null);
+            if (salesperson != null) {
+                String salespersonNotificationMessage = String.format(
+                        "The %s form for customer %s (project %s) has been reopened by owner. Reason: %s",
+                        formTypeName, getFullName(customer), form.getProjectIdentifier(), reopenReason
+                );
+                
+                notificationService.createNotification(
+                        salesperson.getUserIdentifier().getUserId(),
+                        notificationTitle,
+                        salespersonNotificationMessage,
+                        NotificationCategory.FORM_REOPENED,
+                        notificationLink
+                );
+                log.info("Form reopened notification sent to salesperson: {}", salesperson.getUserIdentifier().getUserId());
+            }
 
         } catch (Exception e) {
             log.error("Error sending form reopened notification: {}", e.getMessage(), e);
