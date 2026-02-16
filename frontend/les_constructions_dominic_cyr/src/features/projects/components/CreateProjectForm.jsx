@@ -488,8 +488,6 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         progressPercentage: formData.progressPercentage,
       };
 
-      console.log('Submitting project data:', projectData);
-
       // Note: Translation files will be uploaded separately after project creation
       // Backend will need to be updated to store references to translation files
 
@@ -503,7 +501,6 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
       });
 
       const createdProject = await projectApi.createProject(projectData, token);
-      console.log('Project created successfully:', createdProject);
 
       const nonBlockingErrors = [];
 

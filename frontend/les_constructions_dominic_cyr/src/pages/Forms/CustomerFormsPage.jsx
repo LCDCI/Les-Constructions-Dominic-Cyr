@@ -5,8 +5,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   getMyForms,
   updateFormData,
-  submitForm,
   getFormHistory,
+  downloadFinalizedForm,
+  viewFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import { uploadFile, downloadFile } from '../../features/files/api/filesApi';
 import '../../styles/Forms/customer-forms.css';
@@ -364,6 +365,7 @@ const CustomerFormsPage = () => {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
+  const [isViewOnly, setIsViewOnly] = useState(false);
   const fileInputRef = useRef(null);
 
   const { getAccessTokenSilently, user } = useAuth0();
@@ -395,11 +397,13 @@ const CustomerFormsPage = () => {
       setLoading(true);
       const token = await getToken();
       const formsData = await getMyForms(token);
+      // Filter forms by projectId and lotId from URL params
       const filteredForms =
         formsData?.filter(
           form =>
             form.projectIdentifier === projectId && form.lotIdentifier === lotId
         ) || [];
+
       setForms(filteredForms);
       setLoading(false);
     } catch (error) {
@@ -408,8 +412,9 @@ const CustomerFormsPage = () => {
     }
   };
 
-  const openEditModal = form => {
+  const openEditModal = (form, readOnly = false) => {
     setSelectedForm(form);
+    setIsViewOnly(readOnly);
     // Normalize file data structure to use fileId consistently
     const normalizedData = { ...(form.formData || {}) };
     Object.keys(normalizedData).forEach(key => {
@@ -497,7 +502,7 @@ const CustomerFormsPage = () => {
       setIsEditModalOpen(false);
       setSelectedForm(null);
       setFormData({});
-      fetchForms();
+      await fetchForms();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -546,19 +551,19 @@ const CustomerFormsPage = () => {
     try {
       setSubmitError(null);
       setIsSubmitConfirmOpen(false);
-
       const token = await getToken();
-      await updateFormData(selectedForm.formId, { formData }, token);
-      await submitForm(selectedForm.formId, token);
+      await updateFormData(
+        selectedForm.formId,
+        { formData, isSubmitting: true },
+        token
+      );
 
       setIsEditModalOpen(false);
       setSelectedForm(null);
       setFormData({});
-      fetchForms();
+      await fetchForms();
     } catch (error) {
-      if (error?.response?.status === 404) {
-        redirectToError(404);
-      } else if (error?.response?.data?.message) {
+      if (error.response?.data?.message) {
         setSubmitError(error.response.data.message);
       } else {
         setSubmitError(t('errors.submitFailed', 'Failed to submit form.'));
@@ -584,12 +589,60 @@ const CustomerFormsPage = () => {
     }
   };
 
+  const handleDownloadForm = async form => {
+    try {
+      // If the form has a pdfFile uploaded (like EXTERIOR_DOORS or GARAGE_DOORS),
+      // download that PDF directly instead of a generated finalized form
+      const pdfFile = form.formData?.pdfFile;
+      if (pdfFile && (pdfFile.fileId || pdfFile.id)) {
+        const fileId = pdfFile.fileId || pdfFile.id;
+        const fileName = pdfFile.fileName || 'form.pdf';
+        await handleDownloadFile(fileId, fileName);
+        return;
+      }
+
+      // Otherwise, download the finalized form
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      await downloadFinalizedForm(form.formId, token);
+    } catch (error) {
+      setSubmitError('Failed to download form. Please try again.');
+    }
+  };
+
   const canEditForm = form => {
     return (
       form.formStatus === 'ASSIGNED' ||
       form.formStatus === 'IN_PROGRESS' ||
       form.formStatus === 'REOPENED'
     );
+  };
+
+  const formatHistoryValue = value => {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(formatHistoryValue).filter(Boolean).join(', ');
+    }
+
+    if (typeof value === 'object') {
+      return Object.entries(value)
+        .map(([key, nestedValue]) => {
+          const formatted = formatHistoryValue(nestedValue);
+          return formatted ? `${key}: ${formatted}` : key;
+        })
+        .join(', ');
+    }
+
+    return String(value);
   };
 
   /* ── Field renderers ──────────────────────────────────── */
@@ -649,29 +702,32 @@ const CustomerFormsPage = () => {
             >
               📄 {fileVal.fileName}
             </span>
-            <button
-              type="button"
-              className="forms-file-remove"
-              onClick={() => handleRemoveFile(field.name)}
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div className="forms-file-dropzone">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={field.accept || '.pdf'}
-              onChange={e => handleFileUpload(field.name, e.target.files[0])}
-              disabled={uploadingFile}
-            />
-            {uploadingFile && (
-              <p className="forms-file-uploading">
-                {t('modal.uploading', 'Uploading...')}
-              </p>
+            {!isViewOnly && (
+              <button
+                className="forms-file-remove"
+                onClick={() => handleRemoveFile(field.name)}
+              >
+                ×
+              </button>
             )}
           </div>
+        ) : (
+          !isViewOnly && (
+            <div className="forms-file-dropzone">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={field.accept || '.pdf'}
+                onChange={e => handleFileUpload(field.name, e.target.files[0])}
+                disabled={uploadingFile}
+              />
+              {uploadingFile && (
+                <p className="forms-file-uploading">
+                  {t('modal.uploading', 'Uploading...')}
+                </p>
+              )}
+            </div>
+          )
         )}
 
         {uploadError && <p className="forms-field-error">{uploadError}</p>}
@@ -693,7 +749,10 @@ const CustomerFormsPage = () => {
               key={opt.value}
               type="button"
               className={`forms-radio-card${selected === opt.value ? ' selected' : ''}`}
-              onClick={() => handleFieldChange(field.name, opt.value)}
+              onClick={() =>
+                !isViewOnly && handleFieldChange(field.name, opt.value)
+              }
+              disabled={isViewOnly}
             >
               <span className="forms-radio-indicator" />
               <span className="forms-radio-label">
@@ -718,6 +777,7 @@ const CustomerFormsPage = () => {
         value={formData[field.name] || ''}
         onChange={e => handleFieldChange(field.name, e.target.value)}
         className="forms-form-input"
+        disabled={isViewOnly}
       />
     </div>
   );
@@ -734,6 +794,7 @@ const CustomerFormsPage = () => {
         onChange={e => handleFieldChange(field.name, e.target.value)}
         className="forms-form-textarea"
         rows="4"
+        disabled={isViewOnly}
       />
     </div>
   );
@@ -749,6 +810,7 @@ const CustomerFormsPage = () => {
         value={formData[field.name] || ''}
         onChange={e => handleFieldChange(field.name, e.target.value)}
         className="forms-form-select"
+        disabled={isViewOnly}
       >
         <option value="">{t('modal.selectOption', '-- Select --')}</option>
         {(field.options || []).map(opt => (
@@ -900,12 +962,36 @@ const CustomerFormsPage = () => {
                       </button>
                     )}
                     {form.formStatus === 'SUBMITTED' && (
-                      <button
-                        className="form-action-button form-action-history"
-                        onClick={() => handleViewHistory(form)}
-                      >
-                        {t('buttons.viewHistory', 'View History')}
-                      </button>
+                      <>
+                        <button
+                          className="form-action-button form-action-history"
+                          onClick={() => handleViewHistory(form)}
+                        >
+                          {t('buttons.viewHistory', 'View History')}
+                        </button>
+                        <button
+                          className="form-action-button form-action-download"
+                          onClick={() => handleDownloadForm(form)}
+                        >
+                          {t('buttons.downloadPdf', 'Download PDF')}
+                        </button>
+                      </>
+                    )}
+                    {form.formStatus === 'COMPLETED' && (
+                      <>
+                        <button
+                          className="form-action-button form-action-history"
+                          onClick={() => handleViewHistory(form)}
+                        >
+                          {t('buttons.viewHistory', 'View History')}
+                        </button>
+                        <button
+                          className="form-action-button form-action-download"
+                          onClick={() => handleDownloadForm(form)}
+                        >
+                          {t('buttons.downloadPdf', 'Download PDF')}
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
@@ -954,20 +1040,26 @@ const CustomerFormsPage = () => {
                 className="forms-modal-button forms-modal-button-secondary"
                 onClick={() => setIsEditModalOpen(false)}
               >
-                {t('buttons.cancel', 'Cancel')}
+                {isViewOnly
+                  ? t('buttons.close', 'Close')
+                  : t('buttons.cancel', 'Cancel')}
               </button>
-              <button
-                className="forms-modal-button forms-modal-button-primary"
-                onClick={handleSaveForm}
-              >
-                {t('buttons.saveDraft', 'Save Draft')}
-              </button>
-              <button
-                className="forms-modal-button forms-modal-button-success"
-                onClick={handleSubmitFormClick}
-              >
-                {t('buttons.submitForm', 'Submit Form')}
-              </button>
+              {!isViewOnly && (
+                <>
+                  <button
+                    className="forms-modal-button forms-modal-button-primary"
+                    onClick={handleSaveForm}
+                  >
+                    {t('buttons.saveDraft', 'Save Draft')}
+                  </button>
+                  <button
+                    className="forms-modal-button forms-modal-button-success"
+                    onClick={handleSubmitFormClick}
+                  >
+                    {t('buttons.submitForm', 'Submit Form')}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -1055,6 +1147,30 @@ const CustomerFormsPage = () => {
                         <strong>{t('modal.date', 'Date')}:</strong>{' '}
                         {new Date(history.submittedAt).toLocaleString()}
                       </p>
+                      <div className="history-data">
+                        <strong>{t('modal.formData', 'Form Data')}:</strong>
+                        {Object.keys(history.formDataSnapshot || {}).length ===
+                        0 ? (
+                          <p className="history-data-empty">
+                            {t('modal.noFormData', 'No form data available')}
+                          </p>
+                        ) : (
+                          <div className="history-data-list">
+                            {Object.entries(history.formDataSnapshot || {}).map(
+                              ([key, value]) => (
+                                <div key={key} className="history-data-row">
+                                  <span className="history-data-key">
+                                    {key}
+                                  </span>
+                                  <span className="history-data-value">
+                                    {formatHistoryValue(value)}
+                                  </span>
+                                </div>
+                              )
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -13,11 +13,24 @@ import {
   GoBell,
   GoHome,
 } from 'react-icons/go';
+import useBackendUser from '../../../hooks/useBackendUser';
 import './NotificationItem.css';
 
 const NotificationItem = ({ notification, onMarkAsRead }) => {
   const navigate = useNavigate();
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { role } = useBackendUser();
+
+  const resolveNotificationLink = link => {
+    if (!link) return link;
+    if (link === '/forms') {
+      if (!role) {
+        return link;
+      }
+      return role === 'CUSTOMER' ? '/customers/forms' : '/salesperson/forms';
+    }
+    return link;
+  };
 
   const handleClick = async () => {
     // Mark as read if not already read
@@ -34,7 +47,10 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
 
     // Navigate to the link if provided
     if (notification.link) {
-      navigate(notification.link);
+      const targetLink = resolveNotificationLink(notification.link);
+      if (targetLink) {
+        navigate(targetLink);
+      }
     }
   };
 

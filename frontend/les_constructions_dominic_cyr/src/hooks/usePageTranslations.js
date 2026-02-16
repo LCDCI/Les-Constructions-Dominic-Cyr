@@ -50,9 +50,6 @@ export const usePageTranslations = pageName => {
             true,
             true
           );
-          console.log(
-            `[usePageTranslations] Loaded translations for ${pageName} (${currentLanguage})`
-          );
 
           // Always update nav and footer in 'translation' namespace when page loads
           // This ensures navbar shows the correct translations for the current page
@@ -75,9 +72,6 @@ export const usePageTranslations = pageName => {
             // Force a re-render by emitting a language change event
             // This ensures the navbar updates with the latest translations
             i18nInstance.emit('languageChanged', currentLanguage);
-            console.log(
-              `[usePageTranslations] Updated nav/footer in 'translation' namespace for ${currentLanguage}`
-            );
           }
         } else {
           console.warn(
@@ -136,9 +130,6 @@ export const usePageTranslations = pageName => {
               );
               // Force a re-render to ensure navbar updates
               i18nInstance.emit('languageChanged', currentLanguage);
-              console.log(
-                `[usePageTranslations] Updated nav/footer in 'translation' namespace for ${currentLanguage} (language change)`
-              );
             }
           }
         } catch (error) {

@@ -53,10 +53,9 @@ export async function getFormById(formId, token) {
 }
 
 /**
- * Update form data (customer edit)
+ * Update form data (used by customers filling out forms)
  * @param {string} formId - Form ID
- * @param {Object} payload - Form data update payload
- * @param {Object} payload.formData - Updated form data
+ * @param {Object} payload - Update payload with formData and optional isSubmitting flag
  * @param {string} token - Auth token
  */
 export async function updateFormData(formId, payload, token) {
@@ -73,16 +72,29 @@ export async function updateFormData(formId, payload, token) {
 /**
  * Submit a form
  * @param {string} formId - Form ID
- * @param {string} token - Auth token
+ * @param {Object|string} payload - Submission payload or auth token
+ * @param {Object} payload.formData - Optional form data to submit
+ * @param {boolean} payload.isSubmitting - Should be true
+ * @param {string} token - Auth token (optional if payload is the token)
  */
-export async function submitForm(formId, token) {
+export async function submitForm(formId, payload, token) {
+  let requestBody = payload;
+  let authToken = token;
+
+  if (typeof payload === 'string' && token === undefined) {
+    authToken = payload;
+    requestBody = { isSubmitting: true };
+  }
+
+  if (!requestBody) {
+    requestBody = { isSubmitting: true };
+  }
+
   const response = await axios.post(
     `${API_BASE}/forms/${formId}/submit`,
+    requestBody,
     {
-      isSubmitting: true,
-    },
-    {
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
     }
   );
   return response.data;
@@ -144,4 +156,85 @@ export async function getFormHistory(formId, token) {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
   return response.data;
+}
+
+/**
+ * Get forms for a lot (optionally filtered by status)
+ * @param {string} lotId - Lot ID
+ * @param {Object} options - Optional filters
+ * @param {string} options.status - Optional status filter
+ * @param {string} token - Auth token
+ */
+export async function getFormsByLot(lotId, options = {}, token) {
+  const params = new URLSearchParams();
+  if (options?.status) {
+    params.append('status', options.status);
+  }
+
+  const response = await axios.get(
+    `${API_BASE}/forms/lot/${lotId}${params.toString() ? `?${params}` : ''}`,
+    {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    }
+  );
+  return response.data;
+}
+
+/**
+ * Download a finalized form as PDF
+ * @param {string} formId - Form ID
+ * @param {string} token - Auth token
+ */
+export async function downloadFinalizedForm(formId, token) {
+  const response = await axios.get(`${API_BASE}/forms/${formId}/download`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    responseType: 'blob',
+  });
+
+  const contentDisposition = response.headers['content-disposition'] || '';
+  const fileNameMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+  const fileName = fileNameMatch?.[1] || `form_${formId}.pdf`;
+
+  const blob = new Blob([response.data], {
+    type: response.headers['content-type'] || 'application/pdf',
+  });
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = downloadUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(downloadUrl);
+}
+
+/**
+ * Open a finalized form PDF in a new tab
+ * @param {string} formId - Form ID
+ * @param {string} token - Auth token
+ */
+export async function viewFinalizedForm(formId, token) {
+  const response = await axios.get(`${API_BASE}/forms/${formId}/download`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    responseType: 'blob',
+  });
+
+  const blob = new Blob([response.data], {
+    type: response.headers['content-type'] || 'application/pdf',
+  });
+  const viewUrl = window.URL.createObjectURL(blob);
+  const opened = window.open(viewUrl, '_blank', 'noopener');
+
+  if (!opened) {
+    const link = document.createElement('a');
+    link.href = viewUrl;
+    link.download = `form_${formId}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  setTimeout(() => {
+    window.URL.revokeObjectURL(viewUrl);
+  }, 30000);
 }
