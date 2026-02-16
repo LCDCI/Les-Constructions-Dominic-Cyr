@@ -687,10 +687,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                     id="projectDescriptionFr"
                     value={formData.projectDescriptionFr}
                     onChange={e =>
-                      handleInputChange(
-                        'projectDescriptionFr',
-                        e.target.value
-                      )
+                      handleInputChange('projectDescriptionFr', e.target.value)
                     }
                     placeholder={t('form.placeholders.projectDescription')}
                     rows={5}
@@ -704,7 +701,9 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="locationFr">{t('form.fields.location')} *</label>
+                  <label htmlFor="locationFr">
+                    {t('form.fields.location')} *
+                  </label>
                   <input
                     type="text"
                     id="locationFr"
@@ -717,9 +716,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                     className={errors.locationFr ? 'error' : ''}
                   />
                   {errors.locationFr && (
-                    <span className="error-message">
-                      {errors.locationFr}
-                    </span>
+                    <span className="error-message">{errors.locationFr}</span>
                   )}
                 </div>
               </>
@@ -756,10 +753,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                     id="projectDescriptionEn"
                     value={formData.projectDescriptionEn}
                     onChange={e =>
-                      handleInputChange(
-                        'projectDescriptionEn',
-                        e.target.value
-                      )
+                      handleInputChange('projectDescriptionEn', e.target.value)
                     }
                     placeholder={t('form.placeholders.projectDescription')}
                     rows={5}
@@ -773,7 +767,9 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="locationEn">{t('form.fields.location')} *</label>
+                  <label htmlFor="locationEn">
+                    {t('form.fields.location')} *
+                  </label>
                   <input
                     type="text"
                     id="locationEn"
@@ -786,9 +782,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                     className={errors.locationEn ? 'error' : ''}
                   />
                   {errors.locationEn && (
-                    <span className="error-message">
-                      {errors.locationEn}
-                    </span>
+                    <span className="error-message">{errors.locationEn}</span>
                   )}
                 </div>
               </>
@@ -831,16 +825,12 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                       className={errors.startDate ? 'error' : ''}
                     />
                     {errors.startDate && (
-                      <span className="error-message">
-                        {errors.startDate}
-                      </span>
+                      <span className="error-message">{errors.startDate}</span>
                     )}
                   </div>
 
                   <div className="form-group">
-                    <label htmlFor="endDate">
-                      {t('form.fields.endDate')}
-                    </label>
+                    <label htmlFor="endDate">{t('form.fields.endDate')}</label>
                     <input
                       type="date"
                       id="endDate"
@@ -852,9 +842,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                       className={errors.endDate ? 'error' : ''}
                     />
                     {errors.endDate && (
-                      <span className="error-message">
-                        {errors.endDate}
-                      </span>
+                      <span className="error-message">{errors.endDate}</span>
                     )}
                   </div>
                 </div>
@@ -919,9 +907,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                       className={errors.buyerColor ? 'error' : ''}
                     />
                     {errors.buyerColor && (
-                      <span className="error-message">
-                        {errors.buyerColor}
-                      </span>
+                      <span className="error-message">{errors.buyerColor}</span>
                     )}
                   </div>
                 </div>
@@ -929,69 +915,71 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
               {/* Cover Image Section */}
               <div className="form-section">
-            <h2>{t('form.sections.coverImage')}</h2>
-            <div className="form-group">
-              <label htmlFor="coverImage">{t('form.fields.coverPhoto')}</label>
-              <input
-                ref={coverImageInputRef}
-                type="file"
-                id="coverImage"
-                accept="image/png, image/jpeg, image/webp"
-                onChange={e => handleCoverImageChange(e.target.files?.[0])}
-                className="create-project-file-input-hidden"
-                aria-label={t('form.fields.coverPhoto')}
-              />
-              {!coverImageFile ? (
-                <div className="create-project-file-trigger-wrap">
-                  <label
-                    htmlFor="coverImage"
-                    className="create-project-file-trigger"
-                  >
-                    {t('form.buttons.chooseImage')}
-                  </label>
-                  <span className="create-project-file-status">
-                    {t('form.labels.noFileChosen')}
-                  </span>
-                </div>
-              ) : (
+                <h2>{t('form.sections.coverImage')}</h2>
                 <div className="form-group">
-                  <img
-                    src={coverImagePreviewUrl}
-                    alt="Cover preview"
-                    className="create-project-cover-preview"
+                  <label htmlFor="coverImage">
+                    {t('form.fields.coverPhoto')}
+                  </label>
+                  <input
+                    ref={coverImageInputRef}
+                    type="file"
+                    id="coverImage"
+                    accept="image/png, image/jpeg, image/webp"
+                    onChange={e => handleCoverImageChange(e.target.files?.[0])}
+                    className="create-project-file-input-hidden"
+                    aria-label={t('form.fields.coverPhoto')}
                   />
-                  <div className="create-project-cover-actions">
-                    <button
-                      type="button"
-                      className="btn-cancel create-project-cover-btn"
-                      onClick={() => coverImageInputRef.current?.click()}
-                      disabled={isSubmitting}
-                      aria-label={t('form.buttons.changeImage')}
-                    >
-                      {t('form.buttons.changeImage')}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn-cancel create-project-cover-btn"
-                      onClick={() => {
-                        setCoverImageFile(null);
-                        setCoverImagePreviewUrl(null);
-                        if (coverImageInputRef.current) {
-                          coverImageInputRef.current.value = '';
-                        }
-                      }}
-                      disabled={isSubmitting}
-                    >
-                      {t('form.buttons.removeImage')}
-                    </button>
-                  </div>
+                  {!coverImageFile ? (
+                    <div className="create-project-file-trigger-wrap">
+                      <label
+                        htmlFor="coverImage"
+                        className="create-project-file-trigger"
+                      >
+                        {t('form.buttons.chooseImage')}
+                      </label>
+                      <span className="create-project-file-status">
+                        {t('form.labels.noFileChosen')}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="form-group">
+                      <img
+                        src={coverImagePreviewUrl}
+                        alt="Cover preview"
+                        className="create-project-cover-preview"
+                      />
+                      <div className="create-project-cover-actions">
+                        <button
+                          type="button"
+                          className="btn-cancel create-project-cover-btn"
+                          onClick={() => coverImageInputRef.current?.click()}
+                          disabled={isSubmitting}
+                          aria-label={t('form.buttons.changeImage')}
+                        >
+                          {t('form.buttons.changeImage')}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-cancel create-project-cover-btn"
+                          onClick={() => {
+                            setCoverImageFile(null);
+                            setCoverImagePreviewUrl(null);
+                            if (coverImageInputRef.current) {
+                              coverImageInputRef.current.value = '';
+                            }
+                          }}
+                          disabled={isSubmitting}
+                        >
+                          {t('form.buttons.removeImage')}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {errors.coverImage && (
+                    <span className="error-message">{errors.coverImage}</span>
+                  )}
                 </div>
-              )}
-              {errors.coverImage && (
-                <span className="error-message">{errors.coverImage}</span>
-              )}
-            </div>
-          </div>
+              </div>
             </>
           )}
 

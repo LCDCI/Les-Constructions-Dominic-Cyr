@@ -226,7 +226,11 @@ const LotSelector = ({
       return;
     }
     const priceNum = parseFloat(newLotData.price);
-    if (newLotData.price === '' || newLotData.price == null || isNaN(priceNum)) {
+    if (
+      newLotData.price === '' ||
+      newLotData.price == null ||
+      isNaN(priceNum)
+    ) {
       setCreateError(t('price') + ' is required');
       return;
     }
