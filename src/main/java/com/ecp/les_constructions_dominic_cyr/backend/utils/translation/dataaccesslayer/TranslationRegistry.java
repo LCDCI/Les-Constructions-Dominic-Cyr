@@ -41,8 +41,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.residentialprojects", "edc7a148-3150-48e5-b20f-e399f0d9911c");
 
         // Project Management page translations
-        fileIdMap.put("en.projectmanagement", "94942154-b27b-4b48-a830-8623cd1275a8");
-        fileIdMap.put("fr.projectmanagement", "a33e3eb0-83f0-4af6-8691-5684d9253298");
+        fileIdMap.put("en.projectmanagement", "a1541a14-2566-4504-b909-7858ccec0ef6");
+        fileIdMap.put("fr.projectmanagement", "995a61c9-1563-450f-ba90-f0ff8b4d390f");
 
         // 404 Not Found page translations
         fileIdMap.put("en.notfound", "c0e10c2b-51e6-4ac3-9802-81f8b5ed7686");
