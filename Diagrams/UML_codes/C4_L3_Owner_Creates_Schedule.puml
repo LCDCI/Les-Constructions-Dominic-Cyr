@@ -1,0 +1,176 @@
+@startuml C4-3_Component_Diagram_Owner_Creates_Schedule
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4-3: Component Diagram - Owner Creates Project Schedule
+
+Person(owner, "Owner", "Creates and manages project schedules")
+
+System_Boundary(react_app, "React Web Application") {
+    Component(schedule_page, "CreateSchedulePage", "React Component", "Schedule creation form with date picker, description input, and lot selector")
+    Component(api_client, "AxiosAPIClient", "Axios HTTP Client", "Handles API requests with JWT authentication headers")
+}
+
+System_Boundary(spring_boot, "Spring Boot Backend - Schedule Management") {
+    
+    ' Security Layer
+    Component(security_filter, "JwtAuthenticationFilter", "Spring Security Filter", "Validates JWT tokens from Auth0 and extracts user claims")
+    
+    ' Presentation Layer (Controllers)
+    Component(schedule_controller, "ScheduleController", "REST Controller", "POST /api/v1/projects/{projectId}/schedules - Creates new schedule")
+    Component(task_controller, "TaskController", "REST Controller", "POST /api/v1/owners/tasks - Adds tasks to schedule")
+    
+    ' Business Layer (Services)
+    Component(schedule_service, "ScheduleServiceImpl", "Service", "Orchestrates schedule creation:\n- Validates schedule dates\n- Resolves project and lot\n- Persists schedule with tasks\n- Triggers notifications")
+    Component(task_service, "TaskServiceImpl", "Service", "Manages task operations:\n- Validates task data\n- Associates tasks with schedule\n- Updates task status")
+    Component(notification_service, "NotificationService", "Service", "Creates in-app notifications for stakeholders")
+    Component(mailer_client, "MailerServiceClient", "WebClient", "Sends HTTP requests to mailer microservice")
+    
+    ' Mapper Layer
+    Component(schedule_mapper, "ScheduleMapper", "Mapper Component", "Maps ScheduleRequestDTO → Schedule entity\nMaps Schedule entity → ScheduleResponseDTO")
+    Component(task_mapper, "TaskMapper", "Mapper Component", "Maps TaskRequestDTO → Task entity\nMaps Task entity → TaskDetailResponseDTO")
+    
+    ' Data Access Layer (Repositories)
+    Component(schedule_repo, "ScheduleRepository", "JPA Repository", "CRUD operations for Schedule aggregate\nQueries: findByScheduleIdentifier(), findByProjectIdentifier()")
+    Component(task_repo, "TaskRepository", "JPA Repository", "CRUD operations for Task entities\nQueries: findByScheduleId(), findByTaskIdentifier()")
+    Component(project_repo, "ProjectRepository", "JPA Repository", "Validates project existence\nQuery: findByProjectIdentifier()")
+    Component(lot_repo, "LotRepository", "JPA Repository", "Validates lot existence and project membership\nQuery: findByLotIdentifier_LotId()")
+    Component(notification_repo, "NotificationRepository", "JPA Repository", "Persists notification records")
+}
+
+ContainerDb(postgres, "PostgreSQL Database", "PostgreSQL 15", "Stores schedules, tasks, projects, lots, users, notifications")
+Container(mailer_service, "Mailer Microservice", "Go, SMTP", "Sends schedule creation emails via Mailgun/Brevo")
+System_Ext(auth0, "Auth0", "Validates JWT tokens and provides user identity")
+
+' === MAIN FLOW: Owner Creates Schedule ===
+
+' Step 1: User interaction
+Rel(owner, schedule_page, "1. Fills schedule form:\n- Start/end dates\n- Description\n- Lot selection")
+
+' Step 2: Frontend to backend
+Rel(schedule_page, api_client, "2. Submits form data")
+Rel(api_client, security_filter, "3. POST /api/v1/projects/{projectId}/schedules", "HTTPS + JWT Bearer token")
+
+' Step 3: Security validation
+Rel(security_filter, auth0, "4. Validates JWT token signature", "HTTPS")
+Rel(security_filter, schedule_controller, "5. Forwards authenticated request\nwith user claims")
+
+' Step 4: Controller to service
+Rel(schedule_controller, schedule_service, "6. addScheduleToProject(projectId, scheduleRequestDTO)")
+
+' Step 5: Business logic orchestration
+Rel(schedule_service, project_repo, "7a. findByProjectIdentifier(projectId)\n[Validates project exists]")
+Rel(schedule_service, lot_repo, "7b. findByLotIdentifier_LotId(lotId)\n[Validates lot exists & belongs to project]")
+Rel(schedule_service, schedule_mapper, "8. requestDTOToEntity(scheduleRequestDTO)")
+Rel(schedule_mapper, task_mapper, "Uses for mapping\ntasks collection", "Internal")
+Rel(schedule_service, schedule_repo, "9. save(schedule)\n[Cascade persists tasks]")
+
+' Step 6: Repository to database
+Rel(schedule_repo, postgres, "INSERT INTO schedules\nINSERT INTO tasks (cascade)", "JDBC/SQL")
+Rel(project_repo, postgres, "SELECT FROM projects", "JDBC/SQL")
+Rel(lot_repo, postgres, "SELECT FROM lots", "JDBC/SQL")
+
+' Step 7: Response back to frontend
+Rel(schedule_controller, api_client, "10. HTTP 201 Created\n+ ScheduleResponseDTO", "JSON")
+Rel(api_client, schedule_page, "11. Displays success message\nand created schedule")
+
+' === EXTENDED FLOW: Owner Adds Tasks to Schedule ===
+
+Rel(owner, schedule_page, "[Optional] Adds tasks to schedule", "Dashed")
+Rel(schedule_page, task_controller, "POST /api/v1/owners/tasks", "HTTPS + JWT")
+Rel(task_controller, task_service, "addTask(taskRequestDTO)")
+Rel(task_service, schedule_repo, "findByScheduleIdentifier()\n[Validates schedule exists]")
+Rel(task_service, task_mapper, "requestDTOToEntity()")
+Rel(task_service, task_repo, "save(task)")
+Rel(task_repo, postgres, "INSERT INTO tasks", "JDBC/SQL")
+
+' === NOTES ===
+
+note right of schedule_service
+  **Schedule Creation Business Logic:**
+  1. validateScheduleRequest(dto)
+     - Check startDate is not null
+     - Check endDate is not null
+     - Check description not blank
+     - Check lot ID not blank
+  
+  2. Resolve dependencies
+     - Project must exist (NotFoundException if not)
+     - Lot must exist (NotFoundException if not)
+  
+  3. Map and persist
+     - Generate schedule identifier (UUID)
+     - Set project and lot references
+     - Cascade persist tasks (if any)
+  
+  **Transaction Boundary:**
+  @Transactional ensures atomicity
+  
+  **Note:** Notifications/emails are only sent
+  on schedule UPDATE, not on creation.
+end note
+
+note right of schedule_repo
+  **Aggregate Root Pattern:**
+  - Schedule is the aggregate root
+  - Tasks are child entities
+  - Repository only exposes Schedule operations
+  - Tasks persisted via cascade (CascadeType.ALL)
+  
+  **JPA Relationship:**
+  @OneToMany(cascade = ALL, orphanRemoval = true)
+  private List<Task> tasks;
+  
+  **Orphan Removal:**
+  Deleting schedule auto-deletes all tasks
+end note
+
+note right of schedule_mapper
+  **DTO-Entity Mapping:**
+  
+  ScheduleRequestDTO fields:
+  - scheduleStartDate: LocalDate
+  - scheduleEndDate: LocalDate
+  - scheduleDescription: String
+  - lotId: String (UUID)
+  
+  Schedule entity fields:
+  - id: Integer (PK, auto-generated)
+  - scheduleIdentifier: String (UUID)
+  - scheduleStartDate: LocalDate
+  - scheduleEndDate: LocalDate
+  - scheduleDescription: String
+  - lotId: UUID
+  - project: Project (ManyToOne)
+  - tasks: List<Task> (OneToMany)
+  - createdAt: LocalDateTime
+  - updatedAt: LocalDateTime
+end note
+
+note bottom of postgres
+  **Database Schema:**
+  
+  schedules table:
+  - id (PK, SERIAL)
+  - schedule_identifier (UNIQUE, NOT NULL)
+  - schedule_start_date (DATE, NOT NULL)
+  - schedule_end_date (DATE, NOT NULL)
+  - schedule_description (VARCHAR(500), NOT NULL)
+  - lot_id (UUID, NOT NULL)
+  - project_id (VARCHAR, FK → projects.project_identifier)
+  - created_at (TIMESTAMP)
+  - updated_at (TIMESTAMP)
+  - CONSTRAINT: CHECK (schedule_start_date <= schedule_end_date)
+  
+  tasks table:
+  - id (PK, SERIAL)
+  - task_identifier (UNIQUE, NOT NULL)
+  - task_title (VARCHAR(255), NOT NULL)
+  - schedule_id (VARCHAR, FK → schedules.schedule_identifier)
+  - task_status (VARCHAR, NOT NULL)
+  - period_start (DATE)
+  - period_end (DATE)
+  - ON DELETE CASCADE (when schedule deleted)
+end note
+
+@enduml
