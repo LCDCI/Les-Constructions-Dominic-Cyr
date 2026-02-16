@@ -26,7 +26,7 @@ const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter] = useState('ACTIVE'); // ACTIVE | ARCHIVED | ALL
+  const [statusFilter, setStatusFilter] = useState('ACTIVE'); // ACTIVE | ARCHIVED | ALL
   const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -409,17 +409,39 @@ const ProjectsPage = () => {
               </button>
             )}
           </div>
-          <div className="search-box">
-            <input
-              type="text"
-              className="search-input admin-search-input"
-              placeholder={t(
-                'search.placeholder',
-                'Search projects by name...'
-              )}
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
+          <div
+            style={{
+              display: 'flex',
+              gap: '1rem',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div className="search-box" style={{ flex: 1, minWidth: '250px' }}>
+              <input
+                type="text"
+                className="search-input admin-search-input"
+                placeholder={t(
+                  'search.placeholder',
+                  'Search projects by name...'
+                )}
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <select
+              className="status-filter"
+              value={statusFilter}
+              onChange={e => setStatusFilter(e.target.value)}
+            >
+              <option value="ACTIVE">
+                {t('filter.active', 'Active Projects')}
+              </option>
+              <option value="ARCHIVED">
+                {t('filter.archived', 'Archived Projects')}
+              </option>
+              <option value="ALL">{t('filter.all', 'All Projects')}</option>
+            </select>
           </div>
         </div>
       </div>

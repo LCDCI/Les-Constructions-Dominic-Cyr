@@ -301,40 +301,27 @@ const OwnerLotsPage = () => {
   return (
     <div className="lots-page">
       <div className="lots-content">
-        <div className="lots-header-section">
-          <div className="header-content">
-            <button
-              className="back-btn"
-              onClick={() => navigate('/projects')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                marginRight: '16px',
-                padding: '8px 16px',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                background: 'white',
-                cursor: 'pointer',
-              }}
-            >
-              <FiArrowLeft size={18} />
-              {t('backToProjects')}
-            </button>
-            <h1>
-              {projectName
-                ? `${projectName} - ${t('pageTitle')}`
-                : t('pageTitle')}
-            </h1>
-            <button
-              className="add-lot-btn"
-              onClick={handleAddLot}
-              disabled={loading}
-            >
-              <FiPlus size={18} />
-              {t('addLot')}
-            </button>
-          </div>
+        <div className="lots-header-section manage-lots-header">
+          <h1>
+            {projectName
+              ? `${projectName} - ${t('pageTitle')}`
+              : t('pageTitle')}
+          </h1>
+        </div>
+
+        <div className="manage-lots-actions">
+          <button className="back-btn" onClick={() => navigate('/projects')}>
+            <FiArrowLeft size={18} />
+            {t('backToProjects')}
+          </button>
+          <button
+            className="add-lot-btn"
+            onClick={handleAddLot}
+            disabled={loading}
+          >
+            <FiPlus size={18} />
+            {t('addLot')}
+          </button>
         </div>
 
         <div className="toolbar-section">

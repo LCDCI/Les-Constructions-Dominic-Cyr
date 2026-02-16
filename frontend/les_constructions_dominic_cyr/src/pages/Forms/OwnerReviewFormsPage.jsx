@@ -204,7 +204,7 @@ const OwnerReviewFormsPage = () => {
 
   return (
     <div className="owner-review-forms-page">
-      <div className="forms-header">
+      <div className="forms-header-banner">
         <h1>{t('title', 'Review Submitted Forms')}</h1>
         <p className="forms-subtitle">
           {t('subtitle', 'Review and manage customer form submissions')}

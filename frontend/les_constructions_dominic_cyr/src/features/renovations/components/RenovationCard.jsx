@@ -19,6 +19,13 @@ const RenovationCard = ({
   const buildImageSrc = identifier =>
     identifier ? resolveAssetUrl(identifier) : '';
 
+  // Try to get translated description first, fallback to database description
+  const translatedDescription = t(`descriptions.${_renovationIdentifier}`, '');
+  const displayDescription =
+    translatedDescription ||
+    description ||
+    t('renovationCard.labels.descriptionFallback', 'No description available');
+
   const mediaItems = [
     {
       slot: 'before',
@@ -52,11 +59,7 @@ const RenovationCard = ({
             </h3>
           )}
           <p className="project-card__description renovation-card__description">
-            {description ||
-              t(
-                'renovationCard.labels.descriptionFallback',
-                'No description available'
-              )}
+            {displayDescription}
           </p>
         </div>
 

@@ -160,8 +160,6 @@ button {
   background-color: var(--button-danger-hover) !important;
 }
 
-
-
 a {
   text-decoration: none;
   transition: var(--transition);

@@ -212,6 +212,29 @@ const LotsPage = () => {
           </div>
         )}
 
+        {resolvedProjectId === 'proj-002-panorama' && (
+          <div className="lots-image-section">
+            <div className="map-wrapper">
+              <img
+                src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/panorama.png"
+                alt="Panorama Map"
+                className="phase-map-image"
+                style={{ cursor: 'default' }}
+              />
+            </div>
+            <p
+              style={{
+                textAlign: 'center',
+                fontSize: '1.1rem',
+                margin: '1.5rem 0',
+                color: '#6b7280',
+              }}
+            >
+              {t('comingSoon')}
+            </p>
+          </div>
+        )}
+
         {resolvedProjectId === 'proj-001-foresta' && (
           <div className="lots-image-section">
             <div className="map-wrapper">
@@ -368,6 +391,7 @@ const LotsPage = () => {
         >
           <button
             className="btn btn-secondary"
+            style={{ maxWidth: '300px' }}
             onClick={() => navigate(`/projects/${resolvedProjectId}/overview`)}
           >
             {t('backToProject', 'Back to Residential Project')}

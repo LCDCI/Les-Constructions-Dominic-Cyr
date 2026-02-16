@@ -23,11 +23,98 @@
 .lots-header-section {
   width: 100%;
   margin-top: 0;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 0;
   text-align: center;
   /* Background color is now provided by React inline style */
   padding: var(--spacing-xl) var(--spacing-md);
   transition: background-color 0.4s ease;
+}
+
+/* Manage Lots Header - Light Green Banner */
+.manage-lots-header {
+  background-color: #aab2a6 !important;
+  padding: 5rem 2rem;
+}
+
+.manage-lots-header h1 {
+  color: #ffffff !important;
+  margin: 0.5rem 0;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 600;
+}
+
+/* Manage Lots Actions - Buttons Below Banner */
+.manage-lots-actions {
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 1.5rem 0;
+  margin: 0 auto 2rem;
+}
+
+.manage-lots-actions .back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  color: #1e293b;
+}
+
+.manage-lots-actions .back-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #aab2a6;
+  transform: translateY(-1px);
+}
+
+.manage-lots-actions .add-lot-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: #aab2a6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(170, 178, 166, 0.3);
+}
+
+.manage-lots-actions .add-lot-btn:hover:not(:disabled) {
+  background-color: #96a18e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(170, 178, 166, 0.4);
+}
+
+.manage-lots-actions .add-lot-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .manage-lots-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .manage-lots-actions .back-btn,
+  .manage-lots-actions .add-lot-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .lots-header-section h1 {
@@ -51,62 +138,6 @@
   height: 2px;
   /* Color is provided by React inline style */
   transition: background-color 0.4s ease;
-}
-
-/* Header content layout */
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.header-content h1 {
-  margin: 0;
-  color: #1e293b;
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.add-lot-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
-  background-color: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-}
-
-.add-lot-btn:hover:not(:disabled) {
-  background-color: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
-}
-
-.add-lot-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-@media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .add-lot-btn {
-    align-self: center;
-    width: fit-content;
-  }
 }
 
 /* Toolbar Layout */

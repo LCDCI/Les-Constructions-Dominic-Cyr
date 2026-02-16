@@ -46,6 +46,9 @@
     "address": "Address",
     "phone": "Phone",
     "email": "Email",
-    "copyright": "Copyright © 2024. All rights reserved."
+    "copyright": "Copyright © 2026. All rights reserved."
+  },
+  "locationDescriptions": {
+    "proj-001-foresta": "Foresta is located in St-Alphonse-de-Granby, offering easy access to nature trails, local amenities, and major highways. The perfect balance between seclusion and convenience."
   }
 }

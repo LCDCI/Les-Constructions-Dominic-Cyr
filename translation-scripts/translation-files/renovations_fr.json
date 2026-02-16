@@ -47,17 +47,6 @@
   "footer": {
     "company": "Construction Dominic Cyr Inc.",
     "copyright": "© 2025 Construction Dominic Cyr. Tous droits réservés."
-  }
-}
-  "states": {
-    "empty": {
-      "title": "Aucune rénovation pour le moment",
-      "body": "Revenez bientôt pour voir nos derniers projets de rénovation !"
-    },
-    "error": {
-      "message": "Impossible de charger les rénovations. Veuillez réessayer.",
-      "retry": "Réessayer"
-    }
   },
   "renovationCard": {
     "labels": {
@@ -71,5 +60,8 @@
       "after": "Après",
       "sectionLabel": "Images de la rénovation"
     }
+  },
+  "descriptions": {
+    "78cc74d2-0dae-4be9-be91-d3750311da94": "Cette rénovation comprend une refonte complète de la cuisine avec de nouvelles armoires, comptoirs et appareils électroménagers, ainsi que la mise à jour du revêtement de sol dans les principaux espaces de vie."
   }
 }

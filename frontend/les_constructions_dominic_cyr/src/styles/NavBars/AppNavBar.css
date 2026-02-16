@@ -12,10 +12,11 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 12px 0;
   gap: 24px;
   min-height: 70px;
+  position: relative;
 }
 
 .brand {
@@ -30,7 +31,7 @@
 }
 
 .logo-image {
-  height: 70px;
+  height: 91px;
   width: auto;
   object-fit: contain;
   cursor: pointer;
@@ -69,6 +70,8 @@
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+  position: absolute;
+  right: 0;
 }
 
 .dashboard-toggle {
@@ -362,7 +365,7 @@
   }
 
   .logo-image {
-    height: 55px;
+    height: 72px;
   }
 }
 
@@ -380,6 +383,6 @@
   }
 
   .logo-image {
-    height: 50px;
+    height: 65px;
   }
 }

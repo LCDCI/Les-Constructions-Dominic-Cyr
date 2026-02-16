@@ -16,7 +16,7 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 2.5%;
   margin-bottom: 4%;
   padding: 0 1%;
@@ -170,31 +170,26 @@
   font-size: clamp(0.9rem, 2.2vw, 1rem);
 }
 
-@media (min-width: 1600px) {
-  .salesperson-dashboard {
-    max-width: 1600px;
-    padding: 2% 5%;
-  }
-
+@media (min-width: 1200px) {
   .dashboard-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 2%;
   }
 }
 
-@media (min-width: 1200px) and (max-width: 1599px) {
+@media (min-width: 1600px) {
+  .salesperson-dashboard {
+    max-width: 1600px;
+    padding: 2% 5%;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1199px) {
   .salesperson-dashboard {
     max-width: 1400px;
     padding: 2.5% 4%;
   }
 
-  .dashboard-grid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2%;
-  }
-}
-
-@media (min-width: 900px) and (max-width: 1199px) {
   .dashboard-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 2.5%;

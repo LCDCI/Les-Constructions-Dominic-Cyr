@@ -277,6 +277,7 @@ const LivingEnvironmentPage = () => {
         >
           <button
             className="btn btn-secondary"
+            style={{ maxWidth: '300px' }}
             onClick={() => navigate(`/projects/${projectIdentifier}/overview`)}
           >
             {t('backToProject', 'Back to Residential Project')}

@@ -47,17 +47,6 @@
   "footer": {
     "company": "Dominic Cyr Construction Inc.",
     "copyright": "© 2025 Dominic Cyr Construction. All rights reserved."
-  }
-}
-  "states": {
-    "empty": {
-      "title": "No renovations yet",
-      "body": "Check back soon to see our latest renovation projects!"
-    },
-    "error": {
-      "message": "Unable to load renovations. Please try again.",
-      "retry": "Retry"
-    }
   },
   "renovationCard": {
     "labels": {
@@ -71,5 +60,8 @@
       "after": "After",
       "sectionLabel": "Renovation images"
     }
+  },
+  "descriptions": {
+    "78cc74d2-0dae-4be9-be91-d3750311da94": "This renovation includes a complete kitchen remodel with new cabinets, countertops, and appliances, as well as updated flooring throughout the main living areas."
   }
 }
