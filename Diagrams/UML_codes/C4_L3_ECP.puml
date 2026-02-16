@@ -1,0 +1,174 @@
+@startuml C4-3_Component_Diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title C4-3: Component Diagram - Spring Boot Backend (All Subdomains)
+
+Container_Boundary(backend_boundary, "Spring Boot Backend - All Subdomains") {
+    
+    ' Security Layer
+    Component(security_filter, "JwtAuthenticationFilter", "Spring Security Filter", "Validates JWT tokens and extracts user claims")
+    Component(auth_service, "Auth0ManagementService", "WebClient", "Communicates with Auth0 for user management")
+    
+    ' === PROJECT SUBDOMAIN ===
+    
+    ' Schedule Management
+    Component(schedule_controller, "ScheduleController", "REST Controller", "Handles schedule operations (CRUD)")
+    Component(schedule_service, "ScheduleServiceImpl", "Service", "Orchestrates schedule creation and business logic")
+    Component(schedule_repo, "ScheduleRepository", "JPA Repository", "Persists schedules")
+    
+    ' Task Management
+    Component(task_controller, "TaskController", "REST Controller", "Handles task operations (CRUD)")
+    Component(task_service, "TaskServiceImpl", "Service", "Manages task lifecycle within schedules")
+    Component(task_repo, "TaskRepository", "JPA Repository", "Persists tasks")
+    
+    ' Project Core
+    Component(project_controller, "ProjectController", "REST Controller", "Handles project operations")
+    Component(project_service, "ProjectServiceImpl", "Service", "Manages project operations")
+    Component(project_repo, "ProjectRepository", "JPA Repository", "Persists projects")
+    
+    ' Lot Management
+    Component(lot_controller, "LotController", "REST Controller", "Handles lot operations")
+    Component(lot_service, "LotServiceImpl", "Service", "Manages lot operations and assignments")
+    Component(lot_repo, "LotRepository", "JPA Repository", "Persists lots")
+    
+    ' === FORM SUBDOMAIN ===
+    Component(form_controller, "FormController", "REST Controller", "Handles form operations (create, assign, submit)")
+    Component(form_service, "FormServiceImpl", "Service", "Manages form lifecycle and submissions")
+    Component(form_repo, "FormRepository", "JPA Repository", "Persists forms")
+    Component(form_history_repo, "FormSubmissionHistoryRepository", "JPA Repository", "Tracks form submission history")
+    
+    ' === REPORT SUBDOMAIN ===
+    Component(report_controller, "ReportController", "REST Controller", "Generates PDF/XLSX reports")
+    Component(report_service, "ReportServiceImpl", "Service", "Orchestrates report generation")
+    Component(pdf_generator, "PDFReportGenerator", "Service", "Generates PDF reports")
+    Component(xlsx_generator, "XLSXReportGenerator", "Service", "Generates XLSX reports")
+    Component(report_repo, "AnalyticsReportRepository", "JPA Repository", "Stores report metadata")
+    
+    ' === USERS SUBDOMAIN ===
+    Component(user_service, "UserServiceImpl", "Service", "Manages user operations")
+    Component(user_repo, "UsersRepository", "JPA Repository", "Persists users")
+    
+    ' === COMMUNICATION SUBDOMAIN ===
+    Component(notification_service, "NotificationService", "Service", "Creates in-app notifications")
+    Component(notification_repo, "NotificationRepository", "JPA Repository", "Persists notifications")
+    
+    ' === SHARED COMPONENTS ===
+    Component(mailer_client, "MailerServiceClient", "WebClient", "Communicates with mailer microservice")
+    Component(schedule_mapper, "ScheduleMapper", "Mapper", "Maps Schedule DTOs ↔ Entities")
+    Component(task_mapper, "TaskMapper", "Mapper", "Maps Task DTOs ↔ Entities")
+    Component(form_mapper, "FormMapper", "Mapper", "Maps Form DTOs ↔ Entities")
+}
+
+ContainerDb(main_db, "PostgreSQL Database", "PostgreSQL 15", "Stores all application data")
+Container(files_service, "Files Microservice", "Go", "Manages file uploads")
+Container(mailer_service, "Mailer Microservice", "Go", "Sends emails")
+System_Ext(auth0, "Auth0", "Authentication service")
+System_Ext(storage, "DigitalOcean Spaces", "File storage")
+
+' === Security Flow ===
+Rel(security_filter, auth0, "Validates JWT token", "HTTPS")
+
+' === Project Subdomain: Schedule Management Flow ===
+Rel(security_filter, schedule_controller, "Forwards authenticated request")
+Rel(schedule_controller, schedule_service, "addScheduleToProject()")
+Rel(schedule_service, project_repo, "findByProjectIdentifier()")
+Rel(schedule_service, lot_repo, "findByLotIdentifier_LotId()")
+Rel(schedule_service, schedule_mapper, "requestDTOToEntity()")
+Rel(schedule_service, schedule_repo, "save(schedule)")
+Rel(schedule_service, notification_service, "createNotification()")
+Rel(schedule_service, mailer_client, "sendScheduleCreatedEmail()")
+
+' === Project Subdomain: Task Management Flow ===
+Rel(security_filter, task_controller, "Forwards authenticated request")
+Rel(task_controller, task_service, "addTask(), updateTask()")
+Rel(task_service, schedule_repo, "findByScheduleIdentifier()")
+Rel(task_service, task_mapper, "requestDTOToEntity()")
+Rel(task_service, task_repo, "save(task)")
+Rel(task_service, user_repo, "findByUserIdentifier() (for assignments)")
+
+' === Form Subdomain Flow ===
+Rel(security_filter, form_controller, "Forwards authenticated request")
+Rel(form_controller, form_service, "createAndAssignForm(), submitForm()")
+Rel(form_service, project_repo, "findByProjectIdentifier()")
+Rel(form_service, lot_repo, "findByLotIdentifier_LotIdWithUsers()")
+Rel(form_service, user_repo, "findByUserIdentifier_UserId()")
+Rel(form_service, form_mapper, "requestModelToEntity()")
+Rel(form_service, form_repo, "save(form)")
+Rel(form_service, form_history_repo, "save(history)")
+Rel(form_service, notification_service, "createFormNotification()")
+Rel(form_service, mailer_client, "sendFormAssignedEmail()")
+
+' === Report Subdomain Flow ===
+Rel(security_filter, report_controller, "Forwards authenticated request")
+Rel(report_controller, report_service, "generateReport()")
+Rel(report_service, pdf_generator, "generatePDFReport() (if PDF)")
+Rel(report_service, xlsx_generator, "generateXLSXReport() (if XLSX)")
+Rel(report_service, project_repo, "Queries project data")
+Rel(report_service, schedule_repo, "Queries schedule data")
+Rel(report_service, task_repo, "Queries task data")
+Rel(report_service, report_repo, "save(reportMetadata)")
+Rel(pdf_generator, storage, "Uploads generated PDF", "S3 API")
+Rel(xlsx_generator, storage, "Uploads generated XLSX", "S3 API")
+
+' === Project Core Flow ===
+Rel(security_filter, project_controller, "Forwards authenticated request")
+Rel(project_controller, project_service, "getProject(), updateProject()")
+Rel(project_service, project_repo, "findByProjectIdentifier()")
+
+' === Lot Management Flow ===
+Rel(security_filter, lot_controller, "Forwards authenticated request")
+Rel(lot_controller, lot_service, "getLot(), updateLot(), assignUsers()")
+Rel(lot_service, lot_repo, "findByLotIdentifier_LotId()")
+Rel(lot_service, user_repo, "findByUserIdentifier() (for assignments)")
+
+' === Repository → Database Relationships ===
+Rel(schedule_repo, main_db, "CRUD operations", "JDBC/SQL")
+Rel(task_repo, main_db, "CRUD operations", "JDBC/SQL")
+Rel(project_repo, main_db, "CRUD operations", "JDBC/SQL")
+Rel(lot_repo, main_db, "CRUD operations", "JDBC/SQL")
+Rel(form_repo, main_db, "CRUD operations", "JDBC/SQL")
+Rel(form_history_repo, main_db, "CRUD operations", "JDBC/SQL")
+Rel(report_repo, main_db, "CRUD operations", "JDBC/SQL")
+Rel(user_repo, main_db, "CRUD operations", "JDBC/SQL")
+Rel(notification_repo, main_db, "CRUD operations", "JDBC/SQL")
+
+' === External Microservices ===
+Rel(mailer_client, mailer_service, "POST /send-email", "HTTP/REST")
+
+note right of backend_boundary
+  **Architecture Patterns:**
+  - Three-Tier: Controllers → Services → Repositories
+  - DDD: Aggregate roots, bounded contexts
+  - Microservices: Files & Mailer services
+  
+  **Subdomains:**
+  - Project: Schedule, Task, Lot, Quote
+  - Form: Customer form management
+  - Report: PDF/XLSX generation
+  - Users: Authentication & authorization
+  - Communication: Notifications
+end note
+
+note right of form_service
+  **Form Lifecycle:**
+  1. DRAFT → Owner/Salesperson creates
+  2. ASSIGNED → Customer receives notification
+  3. IN_PROGRESS → Customer fills form
+  4. SUBMITTED → Customer submits
+  5. REOPENED → (if needed) Salesperson reopens
+  6. COMPLETED → Salesperson marks complete
+end note
+
+note right of report_service
+  **Report Types:**
+  - PDF: Business intelligence dashboard
+  - XLSX: Raw data export for Excel
+  
+  **Data Sources:**
+  - Projects, Schedules, Tasks
+  - Forms, Quotes, Lots
+  - User activities, Analytics
+end note
+
+@enduml
