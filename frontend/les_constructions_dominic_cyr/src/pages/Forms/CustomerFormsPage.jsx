@@ -962,20 +962,12 @@ const CustomerFormsPage = () => {
                       </button>
                     )}
                     {form.formStatus === 'SUBMITTED' && (
-                      <>
-                        <button
-                          className="form-action-button form-action-history"
-                          onClick={() => handleViewHistory(form)}
-                        >
-                          {t('buttons.viewHistory', 'View History')}
-                        </button>
-                        <button
-                          className="form-action-button form-action-download"
-                          onClick={() => handleDownloadForm(form)}
-                        >
-                          {t('buttons.downloadPdf', 'Download PDF')}
-                        </button>
-                      </>
+                      <button
+                        className="form-action-button form-action-history"
+                        onClick={() => handleViewHistory(form)}
+                      >
+                        {t('buttons.viewHistory', 'View History')}
+                      </button>
                     )}
                     {form.formStatus === 'COMPLETED' && (
                       <>

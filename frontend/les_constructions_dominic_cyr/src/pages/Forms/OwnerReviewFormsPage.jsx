@@ -35,6 +35,8 @@ const OwnerReviewFormsPage = () => {
   const [reopenReason, setReopenReason] = useState('');
   const [newInstructions, setNewInstructions] = useState('');
   const [submitError, setSubmitError] = useState(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [formToView, setFormToView] = useState(null);
 
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
@@ -147,6 +149,37 @@ const OwnerReviewFormsPage = () => {
     } catch (error) {
       setSubmitError('Failed to download form. Please try again.');
     }
+  };
+
+  const handleViewForm = form => {
+    setFormToView(form);
+    setIsViewModalOpen(true);
+  };
+
+  const closeViewModal = () => {
+    setIsViewModalOpen(false);
+    setFormToView(null);
+  };
+
+  const formatFormValue = value => {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(formatFormValue).filter(Boolean).join(', ');
+    }
+
+    if (typeof value === 'object') {
+      return Object.entries(value)
+        .map(([key, nestedValue]) => {
+          const formatted = formatFormValue(nestedValue);
+          return formatted ? `${key}: ${formatted}` : key;
+        })
+        .join(', ');
+    }
+
+    return String(value);
   };
 
   const filteredForms = forms.filter(form => {
@@ -281,6 +314,12 @@ const OwnerReviewFormsPage = () => {
                     {form.formStatus === 'SUBMITTED' && (
                       <>
                         <button
+                          className="form-action-button form-action-view"
+                          onClick={() => handleViewForm(form)}
+                        >
+                          {t('buttons.viewForm', 'View Form')}
+                        </button>
+                        <button
                           className="form-action-button form-action-reopen"
                           onClick={() => {
                             setFormToReopen(form);
@@ -390,6 +429,68 @@ const OwnerReviewFormsPage = () => {
                 onClick={handleReopenForm}
               >
                 {t('modal.reopen.submit', 'Send for Correction')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Form Modal */}
+      {isViewModalOpen && formToView && (
+        <div className="forms-modal-overlay" onClick={closeViewModal}>
+          <div
+            className="forms-modal forms-modal-large"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="forms-modal-header">
+              <h2>{t('modal.view.title', 'Form Details')}</h2>
+              <button className="forms-modal-close" onClick={closeViewModal}>
+                ×
+              </button>
+            </div>
+            <div className="forms-modal-body">
+              <div className="forms-view-summary">
+                <p>
+                  <strong>{t('labels.customer', 'Customer')}:</strong>{' '}
+                  {formToView.customerName || 'N/A'}
+                </p>
+                <p>
+                  <strong>{t('labels.project', 'Project')}:</strong>{' '}
+                  {formToView.projectIdentifier}
+                </p>
+                <p>
+                  <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
+                  {formToView.lotIdentifier}
+                </p>
+              </div>
+              <div className="forms-data-block">
+                <strong>{t('modal.formData', 'Form Data')}:</strong>
+                {Object.keys(formToView.formData || {}).length === 0 ? (
+                  <p className="forms-data-empty">
+                    {t('modal.noFormData', 'No form data available')}
+                  </p>
+                ) : (
+                  <div className="forms-data-list">
+                    {Object.entries(formToView.formData || {}).map(
+                      ([key, value]) => (
+                        <div key={key} className="forms-data-row">
+                          <span className="forms-data-key">{key}</span>
+                          <span className="forms-data-value">
+                            {formatFormValue(value)}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="forms-modal-footer">
+              <button
+                className="forms-modal-button forms-modal-button-secondary"
+                onClick={closeViewModal}
+              >
+                {t('buttons.close', 'Close')}
               </button>
             </div>
           </div>
