@@ -18,7 +18,7 @@ skinparam rectangle {
 
 rectangle "Users Subdomain" as UserManagementContext #LightBlue {
     
-    package "User Management Context" #AliceBlue {
+    package "User Management Context" #F5F5F5 {
         ENTITY(Users) #lightpink {
             userIdentifier: UserIdentifier
             firstName: String
@@ -57,7 +57,7 @@ rectangle "Users Subdomain" as UserManagementContext #LightBlue {
 
 rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
     
-    package "Project Core Context" #LightYellow {
+    package "Project Core Context" #F5F5F5 {
         AGGREGATE_ROOT(Project) #lightpink {
             projectId: Long
             projectIdentifier: String
@@ -116,7 +116,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
         }
     }
 
-    package "Schedule Management Context" #LightCyan {
+    package "Schedule Management Context" #F5F5F5 {
         ENTITY(Schedule) #lightpink {
             id: Integer
             scheduleIdentifier: String
@@ -164,7 +164,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
         }
     }
 
-    package "Lot Management Context" #Wheat {
+    package "Lot Management Context" #F5F5F5 {
         ENTITY(Lot) #lightpink {
             id: Integer
             lotIdentifier: LotIdentifier
@@ -201,7 +201,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
         }
     }
 
-    package "Quote Management Context" #LightSalmon {
+    package "Quote Management Context" #F5F5F5 {
         ENTITY(Quote) #lightpink {
             quoteId: Long
             quoteNumber: String
@@ -224,7 +224,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
         }
     }
 
-    package "Portfolio Context" #Lavender {
+    package "Portfolio Context" #F5F5F5 {
         ENTITY(Realization) #lightpink {
             id: Integer
             realizationIdentifier: RealizationIdentifier
@@ -255,7 +255,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
         }
     }
 
-    package "Content Management Context" #LightSteelBlue {
+    package "Content Management Context" #F5F5F5 {
         ENTITY(ProjectOverviewContent) #lightpink {
             id: Long
             projectIdentifier: String
@@ -303,7 +303,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
         }
     }
 
-    package "Living Environment Context" #PaleGreen {
+    package "Living Environment Context" #F5F5F5 {
         ENTITY(LivingEnvironmentContent) #lightpink {
             id: Long
             projectIdentifier: String
@@ -327,7 +327,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
         }
     }
 
-    package "Shared Types" #WhiteSmoke {
+    package "Shared Types" #F5F5F5 {
         ENUM(ImageType) {
             PNG
             JPEG
@@ -388,7 +388,7 @@ rectangle "Project Subdomain" as ProjectManagementContext #LightGreen {
 
 rectangle "Communication Subdomain" as CommunicationContext #YellowGreen {
     
-    package "Notification Context" #LemonChiffon {
+    package "Notification Context" #F5F5F5 {
         ENTITY(Notification) #lightpink {
             notificationId: UUID
             userId: UUID
@@ -429,7 +429,7 @@ rectangle "Communication Subdomain" as CommunicationContext #YellowGreen {
         }
     }
 
-    package "Inquiry Context" #PeachPuff {
+    package "Inquiry Context" #F5F5F5 {
         ENTITY(Inquiry) #lightpink {
             id: Long
             name: String
@@ -447,7 +447,7 @@ rectangle "Communication Subdomain" as CommunicationContext #YellowGreen {
 
 rectangle "Report Subdomain" as ReportContext #Khaki {
     
-    package "Analytics Context" #Cornsilk {
+    package "Analytics Context" #F5F5F5 {
         ENTITY(AnalyticsReport) #lightpink {
             id: UUID
             ownerId: String
@@ -467,6 +467,85 @@ rectangle "Report Subdomain" as ReportContext #Khaki {
         'Report Relationships'
         AnalyticsReport "1" --> "1" UserIdentifier
     }
+}
+
+rectangle "Form Subdomain" as FormContext #Lavender {
+    
+    package "Form Management Context" #F5F5F5 {
+        AGGREGATE_ROOT(Form) #lightpink {
+            id: Long
+            formIdentifier: FormIdentifier
+            formType: FormType
+            formStatus: FormStatus
+            projectIdentifier: String
+            lotIdentifier: UUID
+            customerId: UUID
+            customerName: String
+            customerEmail: String
+            assignedByUserId: UUID
+            assignedByName: String
+            formTitle: String
+            instructions: String
+            formData: Map<String Object>
+            assignedDate: LocalDateTime
+            firstSubmittedDate: LocalDateTime
+            lastSubmittedDate: LocalDateTime
+            reopenedDate: LocalDateTime
+            reopenCount: Integer
+            createdAt: LocalDateTime
+            updatedAt: LocalDateTime
+        }
+
+        ENTITY(FormSubmissionHistory) #lightpink {
+            id: Long
+            formIdentifier: String
+            submissionNumber: Integer
+            statusAtSubmission: FormStatus
+            formDataSnapshot: Map<String Object>
+            submittedByCustomerId: UUID
+            submittedByCustomerName: String
+            submittedAt: LocalDateTime
+        }
+
+        VALUE_OBJECT(FormIdentifier) #Bisque {
+            formId: String
+        }
+
+        ENUM(FormType) {
+            EXTERIOR_DOORS
+            GARAGE_DOORS
+            WINDOWS
+            PAINT
+            FLOORING
+            KITCHEN
+            BATHROOM
+            ELECTRICAL
+            PLUMBING
+            OTHER
+        }
+
+        ENUM(FormStatus) {
+            DRAFT
+            ASSIGNED
+            SUBMITTED
+            REVIEWED
+            APPROVED
+            REJECTED
+            REOPENED
+            COMPLETED
+        }
+    }
+
+    'Form Relationships'
+    Form "1" *-- "1" FormIdentifier
+    Form "1" *-- "1" FormType
+    Form "1" *-- "1" FormStatus
+    Form "1" --> "1" UserIdentifier : customerId
+    Form "1" --> "1" UserIdentifier : assignedByUserId
+    Form "1" --> "1" LotIdentifier : lotIdentifier
+    Form "1" --> "0..*" FormSubmissionHistory
+    FormSubmissionHistory "*" --> "1" Form
+    FormIdentifier "1" <-- "1" Form
 }
 
 @enduml
