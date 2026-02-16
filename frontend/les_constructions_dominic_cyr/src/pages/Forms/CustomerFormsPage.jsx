@@ -738,7 +738,9 @@ const CustomerFormsPage = () => {
               key={opt.value}
               type="button"
               className={`forms-radio-card${selected === opt.value ? ' selected' : ''}`}
-              onClick={() => !isViewOnly && handleFieldChange(field.name, opt.value)}
+              onClick={() =>
+                !isViewOnly && handleFieldChange(field.name, opt.value)
+              }
               disabled={isViewOnly}
             >
               <span className="forms-radio-indicator" />
@@ -1027,7 +1029,9 @@ const CustomerFormsPage = () => {
                 className="forms-modal-button forms-modal-button-secondary"
                 onClick={() => setIsEditModalOpen(false)}
               >
-                {isViewOnly ? t('buttons.close', 'Close') : t('buttons.cancel', 'Cancel')}
+                {isViewOnly
+                  ? t('buttons.close', 'Close')
+                  : t('buttons.cancel', 'Cancel')}
               </button>
               {!isViewOnly && (
                 <>
