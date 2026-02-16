@@ -279,6 +279,10 @@ public class LotServiceImpl implements LotService {
                 // Create portal notification - link to projects page
                 String link = "/projects";
 
+                String lotId = lot.getLotIdentifier() != null
+                        ? lot.getLotIdentifier().getLotId().toString()
+                        : lot.getId().toString();
+
                 notificationService.createNotification(
                         user.getUserIdentifier().getUserId(),
                         "Assigned to Lot " + lot.getLotNumber(),
