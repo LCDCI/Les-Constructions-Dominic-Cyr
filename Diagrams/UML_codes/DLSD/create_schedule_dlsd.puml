@@ -1,35 +1,15 @@
 @startuml
 
-actor "o:Owner" as Owner
+actor Owner
 
-participant "page:CreateSchedulePage" as Page
-participant "reqDTO:ScheduleRequestDTO" as ReqDTO
-participant "ctrl:ScheduleController" as Controller
-
-participant "svc:ScheduleServiceImpl" as Service
-participant "validator:ScheduleValidator" as Validator
-participant "mapper:ScheduleMapper" as Mapper
-
-participant "projRepo:ProjectRepository" as ProjectRepo
-participant "proj:Project" as Project
-participant "lotRepo:LotRepository" as LotRepo
-participant "lot:Lot" as Lot
-participant "sched:Schedule" as Schedule
-participant "schedRepo:ScheduleRepository" as ScheduleRepo
-participant "schedDb:Schedule" as ScheduleDb
-participant "db:PostgreSQL" as DB
-
-participant "resDTO:ScheduleResponseDTO" as ResDTO
-
-participant "taskReqDTO:TaskRequestDTO" as TaskReqDTO
-participant "taskCtrl:TaskController" as TaskController
-participant "taskSvc:TaskServiceImpl" as TaskService
-participant "taskValidator:TaskValidator" as TaskValidator
-participant "taskMapper:TaskMapper" as TaskMapper
-participant "task:Task" as Task
-participant "taskRepo:TaskRepository" as TaskRepo
-participant "taskDb:Task" as TaskDb
-participant "taskResDTO:TaskResponseDTO" as TaskResDTO
+participant CreateSchedulePage as Page
+participant ScheduleController as Controller
+participant ScheduleServiceImpl as Service
+participant ScheduleMapper as Mapper
+participant ProjectRepository as ProjectRepo
+participant LotRepository as LotRepo
+participant ScheduleRepository as ScheduleRepo
+participant PostgreSQL as DB
 
 ref over Owner, Controller
     <<include>> JWT Authentication
@@ -39,7 +19,7 @@ end ref
 Owner -> Page : input schedule details & submit
 activate Page
 
-create ReqDTO
+create "reqDTO:ScheduleRequestDTO" as ReqDTO
 Page -> ReqDTO : <<create>>
 
 Page -> Controller : POST /api/v1/projects/{projectId}/schedules (reqDTO)
@@ -48,12 +28,10 @@ activate Controller
 Controller -> Service : addScheduleToProject(projectId, reqDTO)
 activate Service
 
-Service -> Validator : validate(reqDTO)
-activate Validator
+Service -> Service : validateScheduleRequest(reqDTO)
 
 alt Validation Fails
-    Validator --> Service : throw BusinessValidationException
-    Service --> Controller : error
+    Service --> Controller : throw InvalidInputException
     Controller --> Page : HTTP 400 (Invalid input)
     Page --> Owner : Display error message
     
@@ -63,15 +41,13 @@ alt Validation Fails
     end note
     
 else Validation Passes
-    Validator --> Service : void
-    deactivate Validator
 
     Service -> ProjectRepo : findByProjectIdentifier(projectId)
     activate ProjectRepo
     ProjectRepo -> DB : SELECT * FROM projects WHERE project_identifier = ?
     activate DB
     
-    create Project
+    create "proj:Project" as Project
     DB -> Project : <<create>>
     
     DB --> ProjectRepo : proj
@@ -96,7 +72,7 @@ else Validation Passes
         LotRepo -> DB : SELECT * FROM lots WHERE lot_identifier = ?
         activate DB
         
-        create Lot
+        create "lot:Lot" as Lot
         DB -> Lot : <<create>>
         
         DB --> LotRepo : lot
@@ -119,7 +95,7 @@ else Validation Passes
             Service -> Mapper : requestDTOToEntity(reqDTO, proj, lot)
             activate Mapper
             
-            create Schedule
+            create "sched:Schedule" as Schedule
             Mapper -> Schedule : <<create>>
             
             Mapper --> Service : sched
@@ -128,7 +104,7 @@ else Validation Passes
             Service -> ScheduleRepo : save(sched)
             activate ScheduleRepo
             
-            create ScheduleDb
+            create "schedDb:Schedule" as ScheduleDb
             ScheduleRepo -> ScheduleDb : <<create>>
             
             ScheduleRepo -> DB : INSERT INTO schedules (schedule_identifier, start_date, end_date, description, project_id, lot_id) VALUES (...)
@@ -142,7 +118,7 @@ else Validation Passes
             Service -> Mapper : entityToResponseDTO(schedDb)
             activate Mapper
             
-            create ResDTO
+            create "resDTO:ScheduleResponseDTO" as ResDTO
             Mapper -> ResDTO : <<create>>
             
             Mapper --> Service : resDTO
@@ -161,74 +137,21 @@ else Validation Passes
                 Owner -> Page : input task details & submit
                 activate Page
                 
-                create TaskReqDTO
-                Page -> TaskReqDTO : <<create>>
+                ref over Page, DB
+                    Add Task to Schedule
+                    ---
+                    1. Validate task data (dates, required fields) via TaskService.validateTaskRequest()
+                    2. Map TaskRequestDTO to Task entity
+                    3. Persist task with schedule_id foreign key
+                    4. Return TaskResponseDTO
+                    ---
+                    Follows same three-tier pattern as schedule creation:
+                    TaskController -> TaskService (validates internally) -> TaskMapper -> TaskRepository -> DB
+                    <<extend>> Task Validation Error if validation fails
+                end ref
                 
-                Page -> TaskController : POST /api/v1/schedules/{scheduleId}/tasks (taskReqDTO)
-                activate TaskController
-                
-                TaskController -> TaskService : addTaskToSchedule(scheduleId, taskReqDTO)
-                activate TaskService
-                
-                TaskService -> TaskValidator : validate(taskReqDTO)
-                activate TaskValidator
-                
-                alt Task Validation Fails
-                    TaskValidator --> TaskService : throw BusinessValidationException
-                    TaskService --> TaskController : error
-                    TaskController --> Page : HTTP 400 (Invalid task data)
-                    Page --> Owner : Display task error
-                    
-                    note right of Page
-                        <<extend>> Task Validation Error
-                        Extension point: Task creation loop
-                    end note
-                    
-                else Task Validation Passes
-                    TaskValidator --> TaskService : void
-                    deactivate TaskValidator
-                    
-                    TaskService -> TaskMapper : requestDTOToEntity(taskReqDTO, schedDb)
-                    activate TaskMapper
-                    
-                    create Task
-                    TaskMapper -> Task : <<create>>
-                    
-                    TaskMapper --> TaskService : task
-                    deactivate TaskMapper
-                    
-                    TaskService -> TaskRepo : save(task)
-                    activate TaskRepo
-                    
-                    create TaskDb
-                    TaskRepo -> TaskDb : <<create>>
-                    
-                    TaskRepo -> DB : INSERT INTO tasks (task_identifier, title, description, start_date, end_date, status, priority, estimated_hours, assigned_user_id, schedule_id) VALUES (...)
-                    activate DB
-                    DB --> TaskRepo : row inserted
-                    deactivate DB
-                    
-                    TaskRepo --> TaskService : taskDb
-                    deactivate TaskRepo
-                    
-                    TaskService -> TaskMapper : entityToResponseDTO(taskDb)
-                    activate TaskMapper
-                    
-                    create TaskResDTO
-                    TaskMapper -> TaskResDTO : <<create>>
-                    
-                    TaskMapper --> TaskService : taskResDTO
-                    deactivate TaskMapper
-                    
-                    TaskService --> TaskController : taskResDTO
-                    deactivate TaskService
-                    
-                    TaskController --> Page : HTTP 201 Created (taskResDTO)
-                    deactivate TaskController
-                    
-                    Page --> Owner : Display task added confirmation
-                    deactivate Page
-                end
+                Page --> Owner : Display task added confirmation
+                deactivate Page
             end
         end
     end

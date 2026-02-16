@@ -23,17 +23,6 @@ class ScheduleServiceImpl implements ScheduleService {
     - projectRepository: ProjectRepository
     - lotRepository: LotRepository
     - scheduleMapper: ScheduleMapper
-    - scheduleValidator: ScheduleValidator
-    + addSchedule(scheduleRequestDTO: ScheduleRequestDTO): ScheduleResponseDTO
-    + getScheduleByIdentifier(scheduleIdentifier: String): ScheduleResponseDTO
-    + updateSchedule(scheduleIdentifier: String, scheduleRequestDTO: ScheduleRequestDTO): ScheduleResponseDTO
-    + deleteSchedule(scheduleIdentifier: String): void
-    + getAllSchedules(): List<ScheduleResponseDTO>
-}
-
-class ScheduleValidator {
-    + validate(scheduleRequestDTO: ScheduleRequestDTO): void
-    + validateDateRange(startDate: LocalDate, endDate: LocalDate): boolean
 }
 
 class ScheduleMapper {
@@ -159,7 +148,6 @@ ScheduleServiceImpl --> ScheduleRepository
 ScheduleServiceImpl --> ProjectRepository
 ScheduleServiceImpl --> LotRepository
 ScheduleServiceImpl --> ScheduleMapper
-ScheduleServiceImpl --> ScheduleValidator
 
 Schedule *-- ScheduleIdentifier
 Schedule "1" *-- "0..*" Task
@@ -177,7 +165,6 @@ LotRepository ..> Lot
 ScheduleMapper ..> ScheduleRequestDTO
 ScheduleMapper ..> ScheduleResponseDTO
 ScheduleMapper ..> Schedule
-ScheduleValidator ..> ScheduleRequestDTO
 
 ScheduleResponseDTO *-- TaskSummaryDTO
 
