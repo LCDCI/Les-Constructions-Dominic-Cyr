@@ -1,11 +1,102 @@
+.projects-page .portfolio-section .container {
+  box-sizing: border-box;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
 .projects-page .portfolio-grid {
   /* Increase spacing between project cards on Residential Projects page only */
   gap: calc(var(--spacing-lg) * 1.8);
   column-gap: calc(var(--spacing-lg) * 1.8);
   row-gap: calc(var(--spacing-lg) * 1.2);
+  justify-content: center;
+  justify-items: center;
+  /* Equal column widths; min 360px so hover overlay fits all buttons without cropping */
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
 }
 
-.projects-page .portfolio-card {
-  /* Ensure cards keep consistent internal padding without affecting other pages */
-  padding: 0.25rem;
+.projects-page .project-item {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Card and inner wrapper: no outer outline/border anywhere */
+.projects-page .portfolio-card,
+.projects-page .project-hover-card {
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  background: linear-gradient(180deg, #f2f2f2 0%, #e5e5e5 100%);
+  overflow: hidden;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none;
+}
+
+.projects-page .portfolio-card:hover,
+.projects-page .portfolio-card:focus,
+.projects-page .portfolio-card:focus-visible,
+.projects-page .portfolio-card:focus-within,
+.projects-page .project-hover-card:hover,
+.projects-page .project-hover-card:focus,
+.projects-page .project-hover-card:focus-visible,
+.projects-page .project-hover-card:focus-within {
+  border: none !important;
+  outline: none !important;
+}
+
+.projects-page .portfolio-card:hover,
+.projects-page .project-hover-card:hover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.projects-page .portfolio-card .card-image-bg,
+.projects-page .portfolio-card .card-overlay,
+.projects-page .portfolio-card .card-content {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Keep the image square centered within the card; no border/outline */
+.projects-page .portfolio-card .card-image-bg {
+  display: block;
+  object-fit: cover;
+  object-position: center center;
+  transform-origin: center center;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hover overlay: all buttons visible, none cropped; no scrolling */
+.projects-page .project-hover-content {
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.projects-page .project-hover-content .card-title {
+  margin-bottom: 0.75rem;
+  flex-shrink: 0;
+}
+
+.projects-page .project-hover-content .admin-project-actions {
+  margin-top: 1rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.projects-page .project-hover-content .admin-project-button,
+.projects-page .project-hover-content .admin-edit-button,
+.projects-page .project-hover-content .admin-lots-button,
+.projects-page .project-hover-content .archive-button {
+  margin: 0.2rem 0;
 }

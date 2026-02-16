@@ -34,6 +34,8 @@ public class ProjectMapper {
         } else {
             project.setLotIdentifiers(new ArrayList<>());
         }
+        // Deprecated single lot_identifier column: DB may have NOT NULL; set empty string so insert succeeds
+        project.setLotIdentifier("");
         project.setProgressPercentage(requestModel.getProgressPercentage());
         project.setLocation(requestModel.getLocation());
         return project;

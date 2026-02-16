@@ -24,6 +24,7 @@ const lotTranslations = {
     dimensionsSquareMetersPlaceholder: 'e.g., 465',
     price: 'Price',
     pricePlaceholder: 'Enter price',
+    priceCannotBeNegative: 'Price cannot be negative',
     status: 'Status',
     assignedCustomer: 'Assigned Customer',
     assignedCustomerPlaceholder: 'Select a customer (optional)',
@@ -36,6 +37,8 @@ const lotTranslations = {
     removeImage: 'Remove Image',
     invalidImageType: 'Invalid image type. Allowed: PNG, JPG, JPEG, WEBP',
     loadingCustomers: 'Loading customers...',
+    draftLotsTitle: 'New lots (to be created with project)',
+    newLabel: 'New',
   },
   fr: {
     searchPlaceholder: 'Rechercher des lots par emplacement...',
@@ -54,6 +57,7 @@ const lotTranslations = {
     dimensionsSquareMetersPlaceholder: 'ex: 465',
     price: 'Prix',
     pricePlaceholder: 'Entrez le prix',
+    priceCannotBeNegative: 'Le prix ne peut pas être négatif',
     status: 'Statut',
     assignedCustomer: 'Client assigné',
     assignedCustomerPlaceholder: 'Sélectionner un client (optionnel)',
@@ -66,6 +70,8 @@ const lotTranslations = {
     removeImage: "Supprimer l'image",
     invalidImageType: "Type d'image invalide. Autorisés: PNG, JPG, JPEG, WEBP",
     loadingCustomers: 'Chargement des clients...',
+    draftLotsTitle: 'Nouveaux lots (créés avec le projet)',
+    newLabel: 'Nouveau',
   },
 };
 
@@ -75,17 +81,23 @@ const LotSelector = ({
   onChange,
   onLotCreated,
   projectIdentifier,
+  // Draft lots (create-project flow: no project yet; lots created after project is saved)
+  draftLots = [],
+  onDraftLotAdded,
+  onDraftLotRemoved,
   // Props to persist lot form state across language switches
   lotFormData,
   onLotFormDataChange,
   showLotCreateForm,
   onShowLotCreateFormChange,
 }) => {
+  const isDraftMode =
+    !projectIdentifier && typeof onDraftLotAdded === 'function';
   const t = key => lotTranslations[currentLanguage]?.[key] || key;
   const { user, getAccessTokenSilently } = useAuth0();
   const [availableLots, setAvailableLots] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!isDraftMode);
   const [error, setError] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createError, setCreateError] = useState(null);
@@ -114,9 +126,14 @@ const LotSelector = ({
   const setShowCreateForm = onShowLotCreateFormChange || setLocalShowCreateForm;
 
   useEffect(() => {
-    loadLots();
     loadCustomersAndRole();
-  }, []);
+    if (isDraftMode) {
+      setAvailableLots([]);
+      setIsLoading(false);
+    } else {
+      loadLots();
+    }
+  }, [isDraftMode]);
 
   const loadCustomersAndRole = async () => {
     try {
@@ -208,8 +225,44 @@ const LotSelector = ({
       setCreateError(t('dimensionsSquareMeters') + ' is required');
       return;
     }
-    if (!newLotData.price || parseFloat(newLotData.price) <= 0) {
-      setCreateError(t('price') + ' must be greater than 0');
+    const priceNum = parseFloat(newLotData.price);
+    if (
+      newLotData.price === '' ||
+      newLotData.price == null ||
+      isNaN(priceNum)
+    ) {
+      setCreateError(t('price') + ' is required');
+      return;
+    }
+    if (priceNum < 0) {
+      setCreateError(t('priceCannotBeNegative'));
+      return;
+    }
+
+    const lotData = {
+      lotNumber: newLotData.lotNumber.trim(),
+      civicAddress: newLotData.civicAddress.trim(),
+      dimensionsSquareFeet: newLotData.dimensionsSquareFeet.trim(),
+      dimensionsSquareMeters: newLotData.dimensionsSquareMeters.trim(),
+      price: priceNum,
+      lotStatus: newLotData.lotStatus,
+      assignedCustomerId: newLotData.assignedCustomerId || null,
+    };
+
+    // Draft mode: no project yet (create-project step 3); add to draft list and create after project is saved
+    if (isDraftMode) {
+      onDraftLotAdded(lotData);
+      setNewLotData({
+        lotNumber: '',
+        civicAddress: '',
+        dimensionsSquareFeet: '',
+        dimensionsSquareMeters: '',
+        price: '',
+        lotStatus: 'AVAILABLE',
+        assignedCustomerId: '',
+      });
+      setShowCreateForm(false);
+      setCreateError(null);
       return;
     }
 
@@ -223,16 +276,6 @@ const LotSelector = ({
     setIsCreating(true);
     try {
       const token = await getAccessTokenSilently();
-
-      const lotData = {
-        lotNumber: newLotData.lotNumber.trim(),
-        civicAddress: newLotData.civicAddress.trim(),
-        dimensionsSquareFeet: newLotData.dimensionsSquareFeet.trim(),
-        dimensionsSquareMeters: newLotData.dimensionsSquareMeters.trim(),
-        price: parseFloat(newLotData.price),
-        lotStatus: newLotData.lotStatus,
-        assignedCustomerId: newLotData.assignedCustomerId || null,
-      };
 
       const createdLot = await createLot({
         projectIdentifier,
@@ -293,8 +336,8 @@ const LotSelector = ({
     return <div className="lot-selector-loading">{t('loading')}</div>;
   }
 
-  // Show error if there's an error and no lots loaded
-  if (error && availableLots.length === 0) {
+  // Show error and block UI only if not in draft mode (draft mode: no project yet, so loading lots may fail; still show form to add draft lots)
+  if (error && availableLots.length === 0 && !isDraftMode) {
     return (
       <div className="lot-selector">
         <div className="lot-selector-error">
@@ -313,253 +356,264 @@ const LotSelector = ({
 
   return (
     <div className="lot-selector">
-      <div className="lot-selector-header">
-        <button
-          type="button"
-          className="btn-create-lot"
-          onClick={() => setShowCreateForm(!showCreateForm)}
-        >
-          {showCreateForm ? t('cancelCreate') : t('createNew')}
-        </button>
+      <div className="create-lot-form create-lot-form-always-open">
+        <h3>{t('createLotTitle')}</h3>
+        <div className="form-group">
+          <label htmlFor="newLotNumber">{t('lotNumber')} *</label>
+          <input
+            type="text"
+            id="newLotNumber"
+            value={newLotData.lotNumber}
+            onChange={e =>
+              setNewLotData({ ...newLotData, lotNumber: e.target.value })
+            }
+            placeholder={t('lotNumberPlaceholder')}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="newLotCivicAddress">{t('civicAddress')} *</label>
+          <input
+            type="text"
+            id="newLotCivicAddress"
+            value={newLotData.civicAddress}
+            onChange={e =>
+              setNewLotData({ ...newLotData, civicAddress: e.target.value })
+            }
+            placeholder={t('civicAddressPlaceholder')}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="newLotDimensionsSquareFeet">
+            {t('dimensionsSquareFeet')} *
+          </label>
+          <input
+            type="text"
+            id="newLotDimensionsSquareFeet"
+            value={newLotData.dimensionsSquareFeet}
+            onChange={e =>
+              setNewLotData({
+                ...newLotData,
+                dimensionsSquareFeet: e.target.value,
+              })
+            }
+            placeholder={t('dimensionsSquareFeetPlaceholder')}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="newLotDimensionsSquareMeters">
+            {t('dimensionsSquareMeters')} *
+          </label>
+          <input
+            type="text"
+            id="newLotDimensionsSquareMeters"
+            value={newLotData.dimensionsSquareMeters}
+            onChange={e =>
+              setNewLotData({
+                ...newLotData,
+                dimensionsSquareMeters: e.target.value,
+              })
+            }
+            placeholder={t('dimensionsSquareMetersPlaceholder')}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="newLotPrice">{t('price')} *</label>
+          <input
+            type="number"
+            id="newLotPrice"
+            value={newLotData.price}
+            onChange={e =>
+              setNewLotData({ ...newLotData, price: e.target.value })
+            }
+            placeholder={t('pricePlaceholder')}
+            min="0"
+            step="0.01"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="newLotStatus">{t('status')} *</label>
+          <select
+            id="newLotStatus"
+            value={newLotData.lotStatus}
+            onChange={e =>
+              setNewLotData({ ...newLotData, lotStatus: e.target.value })
+            }
+          >
+            <option value="AVAILABLE">AVAILABLE</option>
+            <option value="SOLD">SOLD</option>
+            <option value="PENDING">PENDING</option>
+          </select>
+        </div>
+
+        {userRole === 'OWNER' && (
+          <div className="form-group">
+            <label htmlFor="newLotAssignedCustomer">
+              {t('assignedCustomer')}
+            </label>
+            {isLoadingCustomers ? (
+              <div>{t('loadingCustomers')}</div>
+            ) : (
+              <select
+                id="newLotAssignedCustomer"
+                value={newLotData.assignedCustomerId}
+                onChange={e =>
+                  setNewLotData({
+                    ...newLotData,
+                    assignedCustomerId: e.target.value,
+                  })
+                }
+              >
+                <option value="">{t('assignedCustomerPlaceholder')}</option>
+                {customers.map(customer => (
+                  <option key={customer.userId} value={customer.userId}>
+                    {customer.firstName} {customer.lastName} (
+                    {customer.primaryEmail})
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
+
+        {/* Image upload removed - not supported by backend Lot entity */}
+
+        {createError && (
+          <div
+            className="error-message"
+            style={{
+              color: '#d32f2f',
+              backgroundColor: '#ffebee',
+              padding: '10px',
+              borderRadius: '4px',
+              marginBottom: '10px',
+              border: '1px solid #d32f2f',
+            }}
+          >
+            <strong>Error:</strong> {createError}
+          </div>
+        )}
+
+        <div className="create-lot-actions">
+          <button
+            type="button"
+            className="btn-submit"
+            disabled={isCreating}
+            onClick={handleCreateLot}
+          >
+            {isCreating ? t('creating') : t('createButton')}
+          </button>
+        </div>
       </div>
 
-      {showCreateForm && (
-        <div className="create-lot-form">
-          <h3>{t('createLotTitle')}</h3>
-          <div className="form-group">
-            <label htmlFor="newLotNumber">{t('lotNumber')} *</label>
+      {!isDraftMode && (
+        <>
+          <div className="lot-selector-search">
             <input
               type="text"
-              id="newLotNumber"
-              value={newLotData.lotNumber}
-              onChange={e =>
-                setNewLotData({ ...newLotData, lotNumber: e.target.value })
-              }
-              placeholder={t('lotNumberPlaceholder')}
-              required
+              placeholder={t('searchPlaceholder')}
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="lot-search-input"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="newLotCivicAddress">{t('civicAddress')} *</label>
-            <input
-              type="text"
-              id="newLotCivicAddress"
-              value={newLotData.civicAddress}
-              onChange={e =>
-                setNewLotData({ ...newLotData, civicAddress: e.target.value })
-              }
-              placeholder={t('civicAddressPlaceholder')}
-              required
-            />
+          <div className="lot-selector-list">
+            {filteredLots.length > 0 ? (
+              filteredLots.map(lot => {
+                if (!lot || !lot.lotId) {
+                  return null;
+                }
+                const isSelected = (selectedLots || []).includes(lot.lotId);
+                return (
+                  <div
+                    key={lot.lotId}
+                    className={`lot-item ${isSelected ? 'selected' : ''}`}
+                    onClick={() => handleToggleLot(lot.lotId)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => handleToggleLot(lot.lotId)}
+                      onClick={e => e.stopPropagation()}
+                    />
+                    <div className="lot-item-details">
+                      <div className="lot-item-location">
+                        {lot.civicAddress || 'Unknown Location'}
+                      </div>
+                      <div className="lot-item-info">
+                        <span>Lot #: {lot.lotNumber || 'N/A'}</span>
+                        <span>
+                          Dimensions: {lot.dimensionsSquareFeet || 'N/A'} sq ft
+                          / {lot.dimensionsSquareMeters || 'N/A'} sq m
+                        </span>
+                        {lot.price && (
+                          <span>Price: ${lot.price.toLocaleString()}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="lot-selector-empty">
+                {searchTerm ? t('noLotsFound') : t('noLotsAvailable')}
+              </div>
+            )}
           </div>
+        </>
+      )}
 
-          <div className="form-group">
-            <label htmlFor="newLotDimensionsSquareFeet">
-              {t('dimensionsSquareFeet')} *
-            </label>
-            <input
-              type="text"
-              id="newLotDimensionsSquareFeet"
-              value={newLotData.dimensionsSquareFeet}
-              onChange={e =>
-                setNewLotData({
-                  ...newLotData,
-                  dimensionsSquareFeet: e.target.value,
-                })
-              }
-              placeholder={t('dimensionsSquareFeetPlaceholder')}
-              required
-            />
+      {draftLots.length > 0 && (
+        <div className="draft-lots-section">
+          <div className="selected-lots-header">
+            {t('draftLotsTitle')} ({draftLots.length}):
           </div>
-
-          <div className="form-group">
-            <label htmlFor="newLotDimensionsSquareMeters">
-              {t('dimensionsSquareMeters')} *
-            </label>
-            <input
-              type="text"
-              id="newLotDimensionsSquareMeters"
-              value={newLotData.dimensionsSquareMeters}
-              onChange={e =>
-                setNewLotData({
-                  ...newLotData,
-                  dimensionsSquareMeters: e.target.value,
-                })
-              }
-              placeholder={t('dimensionsSquareMetersPlaceholder')}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="newLotPrice">{t('price')} *</label>
-            <input
-              type="number"
-              id="newLotPrice"
-              value={newLotData.price}
-              onChange={e =>
-                setNewLotData({ ...newLotData, price: e.target.value })
-              }
-              placeholder={t('pricePlaceholder')}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="newLotStatus">{t('status')} *</label>
-            <select
-              id="newLotStatus"
-              value={newLotData.lotStatus}
-              onChange={e =>
-                setNewLotData({ ...newLotData, lotStatus: e.target.value })
-              }
-              required
-            >
-              <option value="AVAILABLE">AVAILABLE</option>
-              <option value="SOLD">SOLD</option>
-              <option value="PENDING">PENDING</option>
-            </select>
-          </div>
-
-          {userRole === 'OWNER' && (
-            <div className="form-group">
-              <label htmlFor="newLotAssignedCustomer">
-                {t('assignedCustomer')}
-              </label>
-              {isLoadingCustomers ? (
-                <div>{t('loadingCustomers')}</div>
-              ) : (
-                <select
-                  id="newLotAssignedCustomer"
-                  value={newLotData.assignedCustomerId}
-                  onChange={e =>
-                    setNewLotData({
-                      ...newLotData,
-                      assignedCustomerId: e.target.value,
-                    })
-                  }
-                >
-                  <option value="">{t('assignedCustomerPlaceholder')}</option>
-                  {customers.map(customer => (
-                    <option key={customer.userId} value={customer.userId}>
-                      {customer.firstName} {customer.lastName} (
-                      {customer.primaryEmail})
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-          )}
-
-          {/* Image upload removed - not supported by backend Lot entity */}
-
-          {createError && (
-            <div
-              className="error-message"
-              style={{
-                color: '#d32f2f',
-                backgroundColor: '#ffebee',
-                padding: '10px',
-                borderRadius: '4px',
-                marginBottom: '10px',
-                border: '1px solid #d32f2f',
-              }}
-            >
-              <strong>Error:</strong> {createError}
-            </div>
-          )}
-
-          <div className="create-lot-actions">
-            <button
-              type="button"
-              className="btn-cancel"
-              onClick={() => {
-                setShowCreateForm(false);
-                setCreateError(null);
-                setNewLotData({
-                  lotNumber: '',
-                  civicAddress: '',
-                  dimensionsSquareFeet: '',
-                  dimensionsSquareMeters: '',
-                  price: '',
-                  lotStatus: 'AVAILABLE',
-                  assignedCustomerId: '',
-                });
-              }}
-              disabled={isCreating}
-            >
-              {t('cancel')}
-            </button>
-            <button
-              type="button"
-              className="btn-submit"
-              disabled={isCreating}
-              onClick={handleCreateLot}
-            >
-              {isCreating ? t('creating') : t('createButton')}
-            </button>
+          <div className="lot-selector-list">
+            {draftLots.map((draft, index) => (
+              <div key={`draft-${index}`} className="lot-item lot-item-draft">
+                <div className="lot-item-details">
+                  <div className="lot-item-location">
+                    {draft.civicAddress || 'Unknown Location'}
+                  </div>
+                  <div className="lot-item-info">
+                    <span>Lot #: {draft.lotNumber || 'N/A'}</span>
+                    <span>
+                      Dimensions: {draft.dimensionsSquareFeet || 'N/A'} sq ft /{' '}
+                      {draft.dimensionsSquareMeters || 'N/A'} sq m
+                    </span>
+                    {draft.price != null && draft.price !== '' && (
+                      <span>
+                        Price: $
+                        {typeof draft.price === 'number'
+                          ? draft.price.toLocaleString()
+                          : Number(draft.price).toLocaleString()}
+                      </span>
+                    )}
+                    {draft.lotStatus && <span>Status: {draft.lotStatus}</span>}
+                  </div>
+                </div>
+                {typeof onDraftLotRemoved === 'function' && (
+                  <button
+                    type="button"
+                    onClick={() => onDraftLotRemoved(index)}
+                    className="lot-item-draft-remove"
+                    aria-label="Remove draft lot"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-      <div className="lot-selector-search">
-        <input
-          type="text"
-          placeholder={t('searchPlaceholder')}
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          className="lot-search-input"
-        />
-      </div>
-
-      <div className="lot-selector-list">
-        {filteredLots.length > 0 ? (
-          filteredLots.map(lot => {
-            if (!lot || !lot.lotId) {
-              return null;
-            }
-            const isSelected = (selectedLots || []).includes(lot.lotId);
-            return (
-              <div
-                key={lot.lotId}
-                className={`lot-item ${isSelected ? 'selected' : ''}`}
-                onClick={() => handleToggleLot(lot.lotId)}
-              >
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  onChange={() => handleToggleLot(lot.lotId)}
-                  onClick={e => e.stopPropagation()}
-                />
-                <div className="lot-item-details">
-                  <div className="lot-item-location">
-                    {lot.civicAddress || 'Unknown Location'}
-                  </div>
-                  <div className="lot-item-info">
-                    <span>Lot #: {lot.lotNumber || 'N/A'}</span>
-                    <span>
-                      Dimensions: {lot.dimensionsSquareFeet || 'N/A'} sq ft /{' '}
-                      {lot.dimensionsSquareMeters || 'N/A'} sq m
-                    </span>
-                    {lot.price && (
-                      <span>Price: ${lot.price.toLocaleString()}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="lot-selector-empty">
-            {searchTerm ? t('noLotsFound') : t('noLotsAvailable')}
-          </div>
-        )}
-      </div>
-
-      {selectedLots.length > 0 && (
+      {!isDraftMode && selectedLots.length > 0 && (
         <div className="selected-lots">
           <div className="selected-lots-header">
             {t('selectedCount')} ({selectedLots.length}):
@@ -594,6 +648,9 @@ LotSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   onLotCreated: PropTypes.func,
   projectIdentifier: PropTypes.string,
+  draftLots: PropTypes.arrayOf(PropTypes.object),
+  onDraftLotAdded: PropTypes.func,
+  onDraftLotRemoved: PropTypes.func,
   // Optional props for persisting lot form state across language switches
   lotFormData: PropTypes.object,
   onLotFormDataChange: PropTypes.func,

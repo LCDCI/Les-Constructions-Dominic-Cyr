@@ -84,6 +84,9 @@
     "approvalInfo": "Information d'approbation",
     "approvedDate": "Date d'approbation",
     "approvedBy": "Approuvé par",
+    "approvalStatus": "Statut d'approbation",
+    "currentStatus": "Statut actuel",
+    "currentStatusPending": "En attente",
     "approval": {
       "submitted": "Soumis",
       "approved": "Approuvé",
@@ -97,7 +100,13 @@
       "subtitle": "Examiner et gérer les devis des entrepreneurs",
       "searchPlaceholder": "Devis #, Projet, Entrepreneur...",
       "approve": "Approuver",
-      "reject": "Rejeter"
+      "reject": "Rejeter",
+      "confirmApprove": "Approuver le devis",
+      "confirmReject": "Rejeter le devis",
+      "reasonRequired": "Veuillez fournir une raison de rejet",
+      "reasonPlaceholder": "Expliquez pourquoi ce devis est rejeté...",
+      "approveMessage": "Êtes-vous sûr de vouloir approuver ce devis ? Il sera marqué comme valide pour l'envoi aux clients.",
+      "rejectMessage": "Êtes-vous sûr de vouloir rejeter ce devis ? Une raison doit être fournie et l'entrepreneur sera notifié."
     },
     "noQuotes": "Aucun devis trouvé correspondant à vos filtres."
   },
@@ -115,14 +124,6 @@
       "description": "Toute la facturation et les paiements officiels sont traités via notre plateforme partenaire sécurisée. Veuillez créer un compte pour gérer vos factures.",
       "button": "Accéder au portail de paiement"
     }
-  },
-  "approval": {
-    "reasonPlaceholder": "Expliquez pourquoi ce devis est rejeté...",
-    "rejectMessage": "Êtes-vous sûr de vouloir rejeter ce devis ? Une raison doit être fournie et l'entrepreneur sera notifié.",
-    "approveMessage": "Êtes-vous sûr de vouloir approuver ce devis ? Il sera marqué comme valide pour l'envoi aux clients.",
-    "confirmApprove": "Approuver le devis",
-    "confirmReject": "Rejeter le devis",
-    "reasonRequired": "Veuillez fournir une raison de rejet"
   },
   "table": {
     "quoteNumber": "Devis #",

@@ -1,380 +1,171 @@
 @startuml
-title Design-Level Class Diagram - Owner Creates Project Schedule
+title DLCD for Owner Creates Project Schedule
 
-' Professional Minimalist Styling
-skinparam classAttributeIconSize 0
-skinparam classFontSize 11
-skinparam shadowing false
-skinparam backgroundColor #FFFFFF
-skinparam defaultFontName Arial
-
-' ========================================
-' PRESENTATION LAYER (Tier 1)
-' ========================================
-package "Presentation Layer" <<Rectangle>> #E8F4F8 {
-
-    class ScheduleController <<Controller>> {
-        - scheduleService: ScheduleService
-        __
-        + createOwnerSchedule(scheduleRequestDTO: ScheduleRequestDTO): ResponseEntity<ScheduleResponseDTO>
-        + getOwnerScheduleByIdentifier(scheduleIdentifier: String): ResponseEntity<ScheduleResponseDTO>
-        + updateOwnerSchedule(scheduleIdentifier: String, scheduleRequestDTO: ScheduleRequestDTO): ResponseEntity<ScheduleResponseDTO>
-        + deleteOwnerSchedule(scheduleIdentifier: String): ResponseEntity<Void>
-        + getOwnerAllSchedules(): ResponseEntity<List<ScheduleResponseDTO>>
-        - handleException(ex: Exception): ResponseEntity<String>
-    }
-
-    class ScheduleRequestDTO <<DTO>> {
-        - scheduleStartDate: LocalDate
-        - scheduleEndDate: LocalDate
-        - scheduleDescription: String
-        - lotId: String
-        - projectIdentifier: String
-        __
-        + validateDates(): boolean
-        + toJSON(): String
-    }
-
-    class ScheduleResponseDTO <<DTO>> {
-        - scheduleIdentifier: String
-        - scheduleStartDate: LocalDate
-        - scheduleEndDate: LocalDate
-        - scheduleDescription: String
-        - lotId: String
-        - projectIdentifier: String
-        - tasks: List<TaskSummaryDTO>
-        - createdAt: LocalDateTime
-        - updatedAt: LocalDateTime
-        __
-        + getDurationInDays(): long
-        + isActive(): boolean
-        + getTaskCount(): int
-    }
-
-    class TaskSummaryDTO <<DTO>> {
-        - taskIdentifier: String
-        - taskTitle: String
-        - taskStatus: TaskStatus
-        - taskPriority: TaskPriority
-        - periodStart: LocalDate
-        - periodEnd: LocalDate
-    }
+class ScheduleController {
+    - scheduleService: ScheduleService
+    + createOwnerSchedule(scheduleRequestDTO: ScheduleRequestDTO): ResponseEntity<ScheduleResponseDTO>
+    + getOwnerScheduleByIdentifier(scheduleIdentifier: String): ResponseEntity<ScheduleResponseDTO>
+    + updateOwnerSchedule(scheduleIdentifier: String, scheduleRequestDTO: ScheduleRequestDTO): ResponseEntity<ScheduleResponseDTO>
+    + deleteOwnerSchedule(scheduleIdentifier: String): ResponseEntity<Void>
+    + getOwnerAllSchedules(): ResponseEntity<List<ScheduleResponseDTO>>
 }
 
-' ========================================
-' BUSINESS LAYER (Tier 2)
-' ========================================
-package "Business Layer" <<Rectangle>> #FFF4E6 {
-
-    interface ScheduleService <<Interface>> {
-        + addSchedule(scheduleRequestDTO: ScheduleRequestDTO): ScheduleResponseDTO
-        + getScheduleByIdentifier(scheduleIdentifier: String): ScheduleResponseDTO
-        + updateSchedule(scheduleIdentifier: String, scheduleRequestDTO: ScheduleRequestDTO): ScheduleResponseDTO
-        + deleteSchedule(scheduleIdentifier: String): void
-        + getAllSchedules(): List<ScheduleResponseDTO>
-        + getCurrentWeekSchedules(): List<ScheduleResponseDTO>
-        + validateScheduleDateRange(startDate: LocalDate, endDate: LocalDate): void
-    }
-
-    class ScheduleServiceImpl <<Service>> {
-        - scheduleRepository: ScheduleRepository
-        - projectRepository: ProjectRepository
-        - lotRepository: LotRepository
-        - scheduleMapper: ScheduleMapper
-        - scheduleValidator: ScheduleValidator
-        - notificationService: NotificationService
-        __
-        + addSchedule(scheduleRequestDTO: ScheduleRequestDTO): ScheduleResponseDTO
-        + getScheduleByIdentifier(scheduleIdentifier: String): ScheduleResponseDTO
-        + updateSchedule(scheduleIdentifier: String, scheduleRequestDTO: ScheduleRequestDTO): ScheduleResponseDTO
-        + deleteSchedule(scheduleIdentifier: String): void
-        + getAllSchedules(): List<ScheduleResponseDTO>
-        + getCurrentWeekSchedules(): List<ScheduleResponseDTO>
-        + validateScheduleDateRange(startDate: LocalDate, endDate: LocalDate): void
-        - validateScheduleRequest(dto: ScheduleRequestDTO): void
-        - resolveLot(lotId: String): Lot
-        - resolveProject(projectId: String): Project
-        - sendScheduleCreatedNotification(schedule: Schedule): void
-    }
-
-    class ScheduleValidator <<Validator>> {
-        __
-        + validate(scheduleRequestDTO: ScheduleRequestDTO): void
-        + validateDateRange(startDate: LocalDate, endDate: LocalDate): boolean
-        + validateLotExists(lotId: String): boolean
-        + validateProjectExists(projectId: String): boolean
-        + validateBusinessRules(dto: ScheduleRequestDTO): void
-        - checkDateLogic(start: LocalDate, end: LocalDate): void
-        - ensureFutureDate(date: LocalDate): void
-    }
-
-    class ScheduleMapper <<Mapper>> {
-        __
-        + requestDTOToEntity(dto: ScheduleRequestDTO): Schedule
-        + entityToResponseDTO(schedule: Schedule): ScheduleResponseDTO
-        + entitiesToResponseDTOs(schedules: List<Schedule>): List<ScheduleResponseDTO>
-        + updateEntityFromRequestDTO(schedule: Schedule, dto: ScheduleRequestDTO): void
-        - mapTasksToSummaryDTOs(tasks: List<Task>): List<TaskSummaryDTO>
-        - generateScheduleIdentifier(): String
-    }
+interface ScheduleService {
+    + addSchedule(scheduleRequestDTO: ScheduleRequestDTO): ScheduleResponseDTO
+    + getScheduleByIdentifier(scheduleIdentifier: String): ScheduleResponseDTO
+    + updateSchedule(scheduleIdentifier: String, scheduleRequestDTO: ScheduleRequestDTO): ScheduleResponseDTO
+    + deleteSchedule(scheduleIdentifier: String): void
+    + getAllSchedules(): List<ScheduleResponseDTO>
 }
 
-' ========================================
-' DATA ACCESS LAYER (Tier 3)
-' ========================================
-package "Data Access Layer" <<Rectangle>> #F5E6FF {
-
-    class Schedule <<Entity, Aggregate Root>> {
-        - id: Integer
-        - scheduleIdentifier: ScheduleIdentifier
-        - scheduleStartDate: LocalDate
-        - scheduleEndDate: LocalDate
-        - scheduleDescription: String
-        - lotId: String
-        - project: Project
-        - tasks: List<Task>
-        - createdAt: LocalDateTime
-        - updatedAt: LocalDateTime
-        __
-        + addTask(task: Task): void
-        + removeTask(taskId: String): void
-        + updateDates(start: LocalDate, end: LocalDate): void
-        + calculateDuration(): long
-        + isOverlapping(other: Schedule): boolean
-        + isActive(): boolean
-        + getTaskCount(): int
-        + getCompletedTaskCount(): int
-        + getProgress(): double
-        + validateInvariants(): void
-    }
-
-    class ScheduleIdentifier <<Value Object>> {
-        - scheduleId: String
-        __
-        + ScheduleIdentifier()
-        + equals(obj: Object): boolean
-        + hashCode(): int
-        + toString(): String
-    }
-
-    class Task <<Entity>> {
-        - id: Integer
-        - taskIdentifier: TaskIdentifier
-        - taskTitle: String
-        - taskDescription: String
-        - taskStatus: TaskStatus
-        - taskPriority: TaskPriority
-        - periodStart: LocalDate
-        - periodEnd: LocalDate
-        - estimatedHours: Integer
-        - assignedToUserId: String
-        - assignedUser: Users
-        __
-        + updateStatus(newStatus: TaskStatus): void
-        + assignTo(userId: String): void
-        + calculateDuration(): long
-        + isOverdue(): boolean
-        + isCompleted(): boolean
-        + canStart(): boolean
-    }
-
-    class TaskIdentifier <<Value Object>> {
-        - taskId: String
-        __
-        + TaskIdentifier()
-        + equals(obj: Object): boolean
-        + hashCode(): int
-    }
-
-    enum TaskStatus <<Enumeration>> {
-        NOT_STARTED
-        IN_PROGRESS
-        COMPLETED
-        BLOCKED
-        CANCELLED
-    }
-
-    enum TaskPriority <<Enumeration>> {
-        LOW
-        MEDIUM
-        HIGH
-        CRITICAL
-    }
-
-    interface ScheduleRepository <<Repository>> {
-        + save(schedule: Schedule): Schedule
-        + findByScheduleIdentifier(scheduleIdentifier: String): Optional<Schedule>
-        + findAll(): List<Schedule>
-        + delete(schedule: Schedule): void
-        + findByScheduleStartDateBetween(start: LocalDate, end: LocalDate): List<Schedule>
-        + findCurrentWeekSchedules(start: LocalDate, end: LocalDate): List<Schedule>
-        + existsByScheduleIdentifier(scheduleIdentifier: String): boolean
-    }
-
-    interface ProjectRepository <<Repository>> {
-        + findByProjectIdentifier(projectIdentifier: String): Optional<Project>
-        + existsByProjectIdentifier(projectIdentifier: String): boolean
-    }
-
-    interface LotRepository <<Repository>> {
-        + findByLotIdentifier_LotId(lotId: Long): Optional<Lot>
-        + existsByLotIdentifier_LotId(lotId: Long): boolean
-    }
-
-    class Project <<Entity, Aggregate Root>> {
-        - id: Integer
-        - projectIdentifier: ProjectIdentifier
-        - projectName: String
-        - projectDescription: String
-        - status: ProjectStatus
-        - lots: List<Lot>
-        - schedules: List<Schedule>
-        __
-        + addSchedule(schedule: Schedule): void
-        + hasActiveLot(lotId: String): boolean
-        + isActive(): boolean
-    }
-
-    class Lot <<Entity>> {
-        - id: Integer
-        - lotIdentifier: LotIdentifier
-        - lotNumber: String
-        - lotDescription: String
-        - status: LotStatus
-        - project: Project
-        __
-        + isAvailable(): boolean
-        + validateForSchedule(): void
-    }
+class ScheduleServiceImpl implements ScheduleService {
+    - scheduleRepository: ScheduleRepository
+    - projectRepository: ProjectRepository
+    - lotRepository: LotRepository
+    - scheduleMapper: ScheduleMapper
 }
 
-' ========================================
-' RELATIONSHIPS
-' ========================================
+class ScheduleMapper {
+    + requestDTOToEntity(dto: ScheduleRequestDTO): Schedule
+    + entityToResponseDTO(schedule: Schedule): ScheduleResponseDTO
+    + entitiesToResponseDTOs(schedules: List<Schedule>): List<ScheduleResponseDTO>
+}
 
-' Presentation to Business
-ScheduleController --> ScheduleService : uses
-ScheduleController ..> ScheduleRequestDTO : receives
-ScheduleController ..> ScheduleResponseDTO : returns
+class ScheduleRequestDTO {
+    - scheduleStartDate: LocalDate
+    - scheduleEndDate: LocalDate
+    - scheduleDescription: String
+    - lotId: String
+    - projectIdentifier: String
+}
 
-ScheduleResponseDTO *-- TaskSummaryDTO : contains
+class ScheduleResponseDTO {
+    - scheduleIdentifier: String
+    - scheduleStartDate: LocalDate
+    - scheduleEndDate: LocalDate
+    - scheduleDescription: String
+    - lotId: String
+    - projectIdentifier: String
+    - tasks: List<TaskSummaryDTO>
+    - createdAt: LocalDateTime
+    - updatedAt: LocalDateTime
+}
 
-' Business Layer Internal
-ScheduleService <|.. ScheduleServiceImpl : implements
-ScheduleServiceImpl --> ScheduleRepository : uses
-ScheduleServiceImpl --> ProjectRepository : uses
-ScheduleServiceImpl --> LotRepository : uses
-ScheduleServiceImpl --> ScheduleMapper : uses
-ScheduleServiceImpl --> ScheduleValidator : uses
+class TaskSummaryDTO {
+    - taskIdentifier: String
+    - taskTitle: String
+    - taskStatus: TaskStatus
+    - taskPriority: TaskPriority
+    - periodStart: LocalDate
+    - periodEnd: LocalDate
+}
 
-ScheduleMapper ..> ScheduleRequestDTO : reads
-ScheduleMapper ..> ScheduleResponseDTO : creates
-ScheduleMapper ..> Schedule : transforms
+class Schedule {
+    - id: Integer
+    - scheduleIdentifier: ScheduleIdentifier
+    - scheduleStartDate: LocalDate
+    - scheduleEndDate: LocalDate
+    - scheduleDescription: String
+    - lotId: String
+    - project: Project
+    - tasks: List<Task>
+    - createdAt: LocalDateTime
+    - updatedAt: LocalDateTime
+}
 
-ScheduleValidator ..> ScheduleRequestDTO : validates
+class ScheduleIdentifier {
+    - scheduleId: String
+}
 
-' Data Access Layer Internal
-Schedule *-- ScheduleIdentifier : contains
-Schedule "1" *-- "0..*" Task : aggregates
-Schedule --> Project : belongs to
-Task *-- TaskIdentifier : contains
-Task --> TaskStatus : has
-Task --> TaskPriority : has
-Project "1" *-- "0..*" Lot : contains
-Project "1" *-- "0..*" Schedule : contains
-Lot --> Project : belongs to
+class Task {
+    - id: Integer
+    - taskIdentifier: TaskIdentifier
+    - taskTitle: String
+    - taskDescription: String
+    - taskStatus: TaskStatus
+    - taskPriority: TaskPriority
+    - periodStart: LocalDate
+    - periodEnd: LocalDate
+    - estimatedHours: Integer
+    - assignedToUserId: String
+}
 
-' Repository relationships
-ScheduleRepository ..> Schedule : persists
-ProjectRepository ..> Project : persists
-LotRepository ..> Lot : persists
+class TaskIdentifier {
+    - taskId: String
+}
 
-' Design Notes
-note top of ScheduleController
-    **Presentation Tier** (Controller)
-    Handles HTTP requests, delegates to service layer.
-    Does NOT access repositories directly.
-    [[https://docs.spring.io/spring-framework/docs/current/reference/html/web.html RESTful Controller Pattern]]
-end note
+enum TaskStatus {
+    NOT_STARTED
+    IN_PROGRESS
+    COMPLETED
+    BLOCKED
+    CANCELLED
+}
 
-note top of ScheduleServiceImpl
-    **Business Tier** (Service)
-    Contains business logic, orchestrates operations.
-    Accesses repositories through dependency injection.
-    Enforces domain invariants and validation rules.
-    [[https://martinfowler.com/eaaCatalog/serviceLayer.html Service Layer Pattern]]
-end note
+enum TaskPriority {
+    LOW
+    MEDIUM
+    HIGH
+    CRITICAL
+}
 
-note top of Schedule
-    **Data Access Tier** (Entity/Aggregate Root)
-    Domain model with rich behavior.
-    Enforces invariant: Schedule must belong to valid Project.
-    Maintains consistency of Task collection.
-    [[https://martinfowler.com/bliki/DDD_Aggregate.html Aggregate Pattern]]
-end note
+interface ScheduleRepository {
+    + save(schedule: Schedule): Schedule
+    + findByScheduleIdentifier(scheduleIdentifier: String): Optional<Schedule>
+    + findAll(): List<Schedule>
+    + delete(schedule: Schedule): void
+}
 
-note right of ScheduleMapper
-    **Mapper/Translator**
-    Transforms between DTO and Entity representations.
-    Isolates domain model from presentation concerns.
-    [[https://martinfowler.com/eaaCatalog/dataTransferObject.html DTO Pattern]]
-end note
+interface ProjectRepository {
+    + findByProjectIdentifier(projectIdentifier: String): Optional<Project>
+}
 
-note as N1
-    **3-Tier Architecture**
-    
-    Tier 1 (Presentation): Controllers + DTOs
-    • Handles HTTP communication
-    • Input validation (format)
-    • Response formatting
-    
-    Tier 2 (Business): Services + Validators + Mappers
-    • Business logic execution
-    • Business rule validation
-    • Transaction management
-    • Cross-cutting concerns
-    
-    Tier 3 (Data Access): Entities + Repositories
-    • Domain model (rich objects)
-    • Data persistence
-    • Query operations
-    • Aggregate boundaries
-end note
+interface LotRepository {
+    + findByLotIdentifier_LotId(lotId: Long): Optional<Lot>
+}
 
-note as N2
-    **Design Principle: Separation of Concerns**
-    
-    Controllers receive DTOs (not entities)
-    Services orchestrate business logic
-    Repositories handle persistence
-    
-    **No Direct Repository Access from Controller**
-    This maintains bounded context integrity
-    and supports testability/maintainability.
-end note
+class Project {
+    - id: Integer
+    - projectIdentifier: ProjectIdentifier
+    - projectName: String
+    - projectDescription: String
+    - status: ProjectStatus
+    - lots: List<Lot>
+    - schedules: List<Schedule>
+}
 
-note as N3
-    **Runtime Object Instantiation (Objects, Not Just Classes)**
-    
-    During execution, these classes become objects:
-    • ctrl:ScheduleController (singleton bean - created at startup)
-    • req:ScheduleRequestDTO (request-scoped object - created per HTTP request)
-    • svc:ScheduleServiceImpl (singleton bean - application lifecycle)
-    • v:ScheduleValidator (singleton bean - reused across requests)
-    • map:ScheduleMapper (singleton bean - transformation utility)
-    • schedule:Schedule (entity object - created by mapper, persisted to DB)
-    • response:ScheduleResponseDTO (request-scoped - returned to client)
-    
-    **Object Collaboration:**
-    ctrl object calls svc.addSchedule(req object)
-    svc object calls v.validate(req object)
-    map object transforms req into schedule entity object
-    schedRepo persists schedule object to database
-    map object transforms schedule into response object
-    
-    **Key Point:** Classes define structure; objects realize behavior.
-    See DLSD for detailed object interactions and lifecycles.
-    [[./DLSD/create_schedule_dlsd.puml DLSD Diagram]]
-end note
+class Lot {
+    - id: Integer
+    - lotIdentifier: LotIdentifier
+    - lotNumber: String
+    - lotDescription: String
+    - status: LotStatus
+    - project: Project
+}
+
+ScheduleController --> ScheduleService
+ScheduleServiceImpl --> ScheduleRepository
+ScheduleServiceImpl --> ProjectRepository
+ScheduleServiceImpl --> LotRepository
+ScheduleServiceImpl --> ScheduleMapper
+
+Schedule *-- ScheduleIdentifier
+Schedule "1" *-- "0..*" Task
+Schedule --> Project
+Task *-- TaskIdentifier
+Task --> TaskStatus
+Task --> TaskPriority
+Project "1" *-- "0..*" Lot
+Project "1" *-- "0..*" Schedule
+
+ScheduleRepository ..> Schedule
+ProjectRepository ..> Project
+LotRepository ..> Lot
+
+ScheduleMapper ..> ScheduleRequestDTO
+ScheduleMapper ..> ScheduleResponseDTO
+ScheduleMapper ..> Schedule
+
+ScheduleResponseDTO *-- TaskSummaryDTO
 
 @enduml

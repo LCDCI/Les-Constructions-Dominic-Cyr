@@ -7,10 +7,12 @@ import {
   reopenForm,
   completeForm,
   deleteForm,
+  downloadFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import { fetchCustomersWithSharedLots } from '../../features/users/api/usersApi';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchLots } from '../../features/lots/api/lots';
+import { downloadFile } from '../../features/files/api/filesApi';
 import '../../styles/Forms/salesperson-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -40,11 +42,13 @@ const SalespersonFormsPage = () => {
   const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
   const [formToReopen, setFormToReopen] = useState(null);
   const [reopenReason, setReopenReason] = useState('');
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [formToView, setFormToView] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formToDelete, setFormToDelete] = useState(null);
   const [submitError, setSubmitError] = useState(null);
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   const navigate = useNavigate();
   const createModalRef = useRef(null);
 
@@ -189,7 +193,7 @@ const SalespersonFormsPage = () => {
       await createForm(payload, token);
 
       handleCloseModal();
-      fetchData();
+      await fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -230,7 +234,7 @@ const SalespersonFormsPage = () => {
       setIsReopenModalOpen(false);
       setFormToReopen(null);
       setReopenReason('');
-      fetchData();
+      await fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -253,7 +257,7 @@ const SalespersonFormsPage = () => {
       });
 
       await completeForm(formId, token);
-      fetchData();
+      await fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -261,6 +265,64 @@ const SalespersonFormsPage = () => {
         redirectToError();
       }
     }
+  };
+
+  const handleDownloadForm = async form => {
+    try {
+      // If the form has a pdfFile uploaded (like EXTERIOR_DOORS or GARAGE_DOORS),
+      // download that PDF directly instead of a generated finalized form
+      const pdfFile = form.formData?.pdfFile;
+      if (pdfFile && (pdfFile.fileId || pdfFile.id)) {
+        const fileId = pdfFile.fileId || pdfFile.id;
+        const fileName = pdfFile.fileName || 'form.pdf';
+        await downloadFile(fileId, fileName, 'SALESPERSON', user?.sub);
+        return;
+      }
+
+      // Otherwise, download the finalized form
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience:
+            import.meta.env.VITE_AUTH0_AUDIENCE ||
+            'https://construction-api.loca',
+        },
+      });
+
+      await downloadFinalizedForm(form.formId, token);
+    } catch (error) {
+      setSubmitError('Failed to download form. Please try again.');
+    }
+  };
+
+  const handleViewForm = form => {
+    setFormToView(form);
+    setIsViewModalOpen(true);
+  };
+
+  const closeViewModal = () => {
+    setIsViewModalOpen(false);
+    setFormToView(null);
+  };
+
+  const formatFormValue = value => {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(formatFormValue).filter(Boolean).join(', ');
+    }
+
+    if (typeof value === 'object') {
+      return Object.entries(value)
+        .map(([key, nestedValue]) => {
+          const formatted = formatFormValue(nestedValue);
+          return formatted ? `${key}: ${formatted}` : key;
+        })
+        .join(', ');
+    }
+
+    return String(value);
   };
 
   const handleDeleteForm = async () => {
@@ -277,7 +339,7 @@ const SalespersonFormsPage = () => {
 
       setIsDeleteModalOpen(false);
       setFormToDelete(null);
-      fetchData();
+      await fetchData();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -450,6 +512,12 @@ const SalespersonFormsPage = () => {
                     {form.formStatus === 'SUBMITTED' && (
                       <>
                         <button
+                          className="form-action-button form-action-view"
+                          onClick={() => handleViewForm(form)}
+                        >
+                          {t('buttons.viewHistory', 'View History')}
+                        </button>
+                        <button
                           className="form-action-button form-action-reopen"
                           onClick={() => {
                             setFormToReopen(form);
@@ -463,6 +531,22 @@ const SalespersonFormsPage = () => {
                           onClick={() => handleCompleteForm(form.formId)}
                         >
                           {t('buttons.complete', 'Complete')}
+                        </button>
+                      </>
+                    )}
+                    {form.formStatus === 'COMPLETED' && (
+                      <>
+                        <button
+                          className="form-action-button form-action-view"
+                          onClick={() => handleViewForm(form)}
+                        >
+                          {t('buttons.viewHistory', 'View History')}
+                        </button>
+                        <button
+                          className="form-action-button form-action-download"
+                          onClick={() => handleDownloadForm(form)}
+                        >
+                          {t('buttons.downloadPdf', 'Download PDF')}
                         </button>
                       </>
                     )}
@@ -501,6 +585,12 @@ const SalespersonFormsPage = () => {
               </button>
             </div>
             <div className="forms-modal-body">
+              {submitError && (
+                <div className="forms-error forms-error-modal">
+                  <p>{submitError}</p>
+                  <button onClick={() => setSubmitError(null)}>×</button>
+                </div>
+              )}
               <div className="forms-form-group">
                 <label htmlFor="customer">
                   {t('modal.create.customer', 'Customer')}{' '}
@@ -646,6 +736,12 @@ const SalespersonFormsPage = () => {
               </button>
             </div>
             <div className="forms-modal-body">
+              {submitError && (
+                <div className="forms-error forms-error-modal">
+                  <p>{submitError}</p>
+                  <button onClick={() => setSubmitError(null)}>×</button>
+                </div>
+              )}
               <div className="forms-form-group">
                 <label htmlFor="reopenReason">
                   {t('modal.reopen.reasonLabel', 'Reason for Reopening')}{' '}
@@ -676,6 +772,68 @@ const SalespersonFormsPage = () => {
                 onClick={handleReopenForm}
               >
                 {t('modal.reopen.buttonReopen', 'Reopen Form')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Form Modal */}
+      {isViewModalOpen && formToView && (
+        <div className="forms-modal-overlay" onClick={closeViewModal}>
+          <div
+            className="forms-modal forms-modal-large"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="forms-modal-header">
+              <h2>{t('modal.view.title', 'Form Details')}</h2>
+              <button className="forms-modal-close" onClick={closeViewModal}>
+                ×
+              </button>
+            </div>
+            <div className="forms-modal-body">
+              <div className="forms-view-summary">
+                <p>
+                  <strong>{t('labels.customer', 'Customer')}:</strong>{' '}
+                  {getCustomerName(formToView.customerId)}
+                </p>
+                <p>
+                  <strong>{t('labels.project', 'Project')}:</strong>{' '}
+                  {getProjectName(formToView.projectIdentifier)}
+                </p>
+                <p>
+                  <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
+                  {formToView.lotIdentifier}
+                </p>
+              </div>
+              <div className="forms-data-block">
+                <strong>{t('modal.formData', 'Form Data')}:</strong>
+                {Object.keys(formToView.formData || {}).length === 0 ? (
+                  <p className="forms-data-empty">
+                    {t('modal.noFormData', 'No form data available')}
+                  </p>
+                ) : (
+                  <div className="forms-data-list">
+                    {Object.entries(formToView.formData || {}).map(
+                      ([key, value]) => (
+                        <div key={key} className="forms-data-row">
+                          <span className="forms-data-key">{key}</span>
+                          <span className="forms-data-value">
+                            {formatFormValue(value)}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="forms-modal-footer">
+              <button
+                className="forms-modal-button forms-modal-button-secondary"
+                onClick={closeViewModal}
+              >
+                {t('buttons.close', 'Close')}
               </button>
             </div>
           </div>

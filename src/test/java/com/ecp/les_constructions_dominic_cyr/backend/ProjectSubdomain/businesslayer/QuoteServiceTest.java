@@ -118,6 +118,8 @@ class QuoteServiceTest {
             .build();
 
         when(projectRepository.findByProjectIdentifier(projectIdentifier)).thenReturn(Optional.of(project));
+        when(lotRepository.findByLotIdentifier_LotId(any(UUID.class))).thenReturn(lot);
+        when(usersRepository.findByAuth0UserId(contractorId)).thenReturn(Optional.of(contractorUser));
         when(quoteNumberGenerator.generateNextQuoteNumber()).thenReturn("QT-0000001");
         when(quoteMapper.requestModelToEntity(validRequestModel, "QT-0000001", contractorId))
             .thenReturn(mockQuote);

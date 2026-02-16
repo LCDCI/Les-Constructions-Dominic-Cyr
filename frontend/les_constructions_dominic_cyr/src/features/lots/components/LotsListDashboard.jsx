@@ -8,7 +8,7 @@ import './LotsListDashboard.css';
 /**
  * LotsListDashboard - Displays user's assigned lots grouped by project with navigation to lot documents
  */
-const LotsListDashboard = ({ userId }) => {
+const LotsListDashboard = ({ userId, isCustomer = false }) => {
   const [lotsByProject, setLotsByProject] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -88,12 +88,14 @@ const LotsListDashboard = ({ userId }) => {
         <div key={projectId} className="project-section">
           <div className="project-header">
             <h2 className="project-title">{projectData.projectName}</h2>
-            <Link
-              to={`/projects/${projectData.projectIdentifier}/manage-lots`}
-              className="btn btn-secondary"
-            >
-              Manage Lots
-            </Link>
+            {!isCustomer && (
+              <Link
+                to={`/projects/${projectData.projectIdentifier}/manage-lots`}
+                className="btn btn-secondary"
+              >
+                Manage Lots
+              </Link>
+            )}
           </div>
 
           <div className="lots-table">
@@ -159,6 +161,7 @@ const LotsListDashboard = ({ userId }) => {
 
 LotsListDashboard.propTypes = {
   userId: PropTypes.string.isRequired,
+  isCustomer: PropTypes.bool,
 };
 
 export default LotsListDashboard;

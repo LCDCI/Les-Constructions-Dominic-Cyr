@@ -57,21 +57,50 @@ import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
 import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
 import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
 import OwnerReviewFormsPage from './pages/Forms/OwnerReviewFormsPage';
-import ReactGA from 'react-ga4';
-// import { loadTheme } from './utils/themeLoader';
+// import ReactGA from 'react-ga4'; // TODO: Fix build issue with react-ga4 module resolution
+// loadTheme from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
 import useBackendUser from './hooks/useBackendUser';
 
 function PageViewTracker() {
+  // ReactGA tracking temporarily disabled due to build issue
+  // TODO: Re-enable once module resolution is fixed
+  return null;
+  /*
   const location = useLocation();
   useEffect(() => {
     ReactGA.send({ hitType: 'pageview', page: location.pathname });
   }, [location]);
   return null;
+  */
 }
 
 function ContractorLotsDocuments() {
+  const { profile, loading } = useBackendUser();
+
+  if (loading || !profile) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+    );
+  }
+
+  return <LotsListDashboard userId={profile.userId} />;
+}
+
+function CustomerLotsDocuments() {
+  const { profile, loading } = useBackendUser();
+
+  if (loading || !profile) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+    );
+  }
+
+  return <LotsListDashboard userId={profile.userId} isCustomer />;
+}
+
+function SalespersonLotsDocuments() {
   const { profile, loading } = useBackendUser();
 
   if (loading || !profile) {
@@ -155,13 +184,6 @@ export default function App() {
       });
     });
   }, [isAuthenticated, getAccessTokenSilently, logout]);
-
-  useEffect(() => {
-    const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
-    if (measurementId) {
-      ReactGA.initialize(measurementId);
-    }
-  }, []);
 
   /* ----------------------------------
      Idle Timeout Logic
@@ -538,6 +560,26 @@ export default function App() {
             />
 
             <Route
+              path="/customers/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['CUSTOMER']}
+                  element={<CustomerLotsDocuments />}
+                />
+              }
+            />
+
+            <Route
+              path="/salesperson/documents"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['SALESPERSON']}
+                  element={<SalespersonLotsDocuments />}
+                />
+              }
+            />
+
+            <Route
               path="/contractors/documents"
               element={
                 <ProtectedRoute
@@ -582,7 +624,12 @@ export default function App() {
               path="/projects/:projectIdentifier/lots/:lotId/documents"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={[
+                    'OWNER',
+                    'CONTRACTOR',
+                    'CUSTOMER',
+                    'SALESPERSON',
+                  ]}
                   element={<LotDocumentsPage />}
                 />
               }

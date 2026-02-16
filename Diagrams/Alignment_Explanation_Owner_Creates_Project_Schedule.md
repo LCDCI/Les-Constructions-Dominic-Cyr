@@ -83,22 +83,12 @@ The DLCD must come **first** in the design process because it establishes the st
      - `resolveLot(lotId: String): Lot` - Fetches lot entity via repository
      - `resolveProject(projectId: String): Project` - Fetches project entity via repository
      - `sendScheduleCreatedNotification(schedule: Schedule): void` - Triggers notification subsystem
+     - `validateScheduleRequest(scheduleRequestDTO: ScheduleRequestDTO): void` - Private validation method
+     - `resolveLot(lotId: String): Lot` - Private method to fetch lot entity
    - **3-Tier Compliance:** Service accesses repositories (Tier 3), not Controller (Tier 1)
-   - **Usage in DLSD:** Instantiated as singleton bean `svc:ScheduleServiceImpl`, orchestrates all business operations
+   - **Usage in DLSD:** Instantiated as singleton bean `svc:ScheduleServiceImpl`, orchestrates all business operations including validation
 
-6. **ScheduleValidator (Validator Class)**
-   - **Purpose:** Encapsulates business rule validation logic
-   - **Key Methods:**
-     - `validate(scheduleRequestDTO: ScheduleRequestDTO): void` - Primary validation entry point
-     - `validateDateRange(startDate: LocalDate, endDate: LocalDate): boolean` - Date logic validation
-     - `validateLotExists(lotId: String): boolean` - Lot existence check
-     - `validateProjectExists(projectId: String): boolean` - Project existence check
-     - `validateBusinessRules(dto: ScheduleRequestDTO): void` - Domain rule enforcement
-     - `checkDateLogic(start: LocalDate, end: LocalDate): void` - Date consistency verification
-     - `ensureFutureDate(date: LocalDate): void` - Temporal constraint enforcement
-   - **Usage in DLSD:** Called by service as `v:ScheduleValidator` object to validate request before persistence
-
-7. **ScheduleMapper (Mapper Class)**
+6. **ScheduleMapper (Mapper Class)**
    - **Purpose:** Transforms between DTO and entity representations
    - **Key Methods:**
      - `requestDTOToEntity(dto: ScheduleRequestDTO): Schedule` - Converts DTO to domain entity
@@ -176,7 +166,7 @@ The DLCD defines **classes**, but the actual implementation involves **objects**
 2. **Service Objects (Singleton Scope):**
    - `ctrl:ScheduleController` is a singleton bean instantiated at application startup
    - `svc:ScheduleServiceImpl` is a singleton bean with application-wide lifecycle
-   - `v:ScheduleValidator` and `map:ScheduleMapper` are singleton beans
+   - `svc:ScheduleServiceImpl` and `map:ScheduleMapper` are singleton beans
    - These objects persist and handle multiple requests
 
 3. **Entity Objects (Transactional Scope):**
@@ -234,7 +224,7 @@ The SSD includes **two alternate paths** (shown with `alt` fragments):
    - Owner corrects data with `correctScheduleData(scheduleRequestDTO)`
    - System re-validates and returns `scheduleResponseDTO`
    - **Extends Relationship:** This corresponds to an `<<extend>>` relationship in the use case diagram
-   - **DLCD Realization:** `ScheduleValidator.validate()` throws `BusinessValidationException`, caught by `ScheduleController.handleException()`
+   - **DLCD Realization:** `ScheduleServiceImpl.validateScheduleRequest()` throws `InvalidInputException`, caught by `ScheduleController` exception handler
 
 2. **Task Validation Error Path:**
    - System returns `validationError(errorMessage)` during task creation
@@ -263,9 +253,8 @@ The DLSD shows **runtime object creation and method invocations**, not just clas
 1. **`view:CreateScheduleForm`** - UI component object (Presentation tier)
 2. **`ctrl:ScheduleController`** - Controller object (singleton bean)
 3. **`req:ScheduleRequestDTO`** - **<<create>>** explicitly shown in DLSD (request-scoped object)
-4. **`svc:ScheduleServiceImpl`** - Service object (singleton bean)
-5. **`v:ScheduleValidator`** - Validator object (singleton bean)
-6. **`map:ScheduleMapper`** - Mapper object (singleton bean)
+4. **`svc:ScheduleServiceImpl`** - Service object (singleton bean) - handles validation internally
+5. **`map:ScheduleMapper`** - Mapper object (singleton bean)
 7. **`projRepo:ProjectRepository`** - Repository proxy object
 8. **`lotRepo:LotRepository`** - Repository proxy object
 9. **`schedRepo:ScheduleRepository`** - Repository proxy object
@@ -280,8 +269,7 @@ The DLSD demonstrates **multiple methods** from DLCD classes being invoked:
 |--------|-------------|-------------|---------|
 | `ctrl` | `createOwnerSchedule(req)` | `ScheduleController.createOwnerSchedule()` | Controller entry point |
 | `svc` | `addSchedule(req)` | `ScheduleServiceImpl.addSchedule()` | Service orchestration |
-| `v` | `validate(req)` | `ScheduleValidator.validate()` | Business rule validation |
-| `v` | `validateDateRange(start, end)` | `ScheduleValidator.validateDateRange()` | Date logic check |
+| `svc` | `validateScheduleRequest(req)` | `ScheduleServiceImpl.validateScheduleRequest()` | Business rule validation (private method) |
 | `projRepo` | `findByProjectIdentifier(id)` | `ProjectRepository.findByProjectIdentifier()` | Fetch project entity |
 | `lotRepo` | `findByLotId(lotId)` | `LotRepository.findByLotIdentifier_LotId()` | Fetch lot entity |
 | `map` | `requestDTOToEntity(req)` | `ScheduleMapper.requestDTOToEntity()` | DTO-to-entity transformation |
@@ -297,7 +285,7 @@ The DLSD demonstrates **multiple methods** from DLCD classes being invoked:
 
 | SSD Message | DLSD Object Collaboration |
 |-------------|---------------------------|
-| `submitSchedule(scheduleRequestDTO)` | `Owner → UI → ctrl → svc → v → projRepo → lotRepo → map → schedule → schedRepo → map → ctrl → UI → Owner` |
+| `submitSchedule(scheduleRequestDTO)` | `Owner → UI → ctrl → svc (validates internally) → projRepo → lotRepo → map → schedule → schedRepo → map → ctrl → UI → Owner` |
 | `scheduleResponseDTO` (return) | Final `ScheduleResponseDTO` object created by `map:ScheduleMapper` and returned through controller |
 
 **Key Realization:** The single SSD message `submitSchedule()` is realized by **15+ object interactions** across three tiers in the DLSD.
@@ -308,10 +296,9 @@ The DLSD demonstrates **multiple methods** from DLCD classes being invoked:
 
 **DLSD Realization:**
 1. `svc:ScheduleServiceImpl` receives `req:ScheduleRequestDTO`
-2. `svc` calls `v.validate(req)` → invokes `ScheduleValidator.validate()` method from DLCD
-3. `v` calls `v.validateDateRange(req.startDate, req.endDate)` → invokes `ScheduleValidator.validateDateRange()` method from DLCD
-4. If validation fails, `v` throws `BusinessValidationException` (alternate path)
-5. If validation passes, `schedule:Schedule` entity later calls `schedule.validateInvariants()` → invokes `Schedule.validateInvariants()` method from DLCD
+2. `svc` calls `svc.validateScheduleRequest(req)` → self-invokes private validation method from DLCD
+3. If validation fails, `svc` throws `InvalidInputException` (alternate path)
+4. If validation passes, `schedule:Schedule` entity later calls `schedule.validateInvariants()` → invokes `Schedule.validateInvariants()` method from DLCD
 
 **This demonstrates:** The DLCD defines the method `validateInvariants()`, and the DLSD shows **when and how** this method is invoked by the `schedule` object.
 
@@ -441,8 +428,7 @@ The design strictly adheres to a **3-tier layered architecture** with clear sepa
 - **Does NOT:** Handle HTTP concerns or construct SQL queries
 
 **Objects at Runtime:**
-- `svc:ScheduleServiceImpl` - singleton bean
-- `v:ScheduleValidator` - singleton bean
+- `svc:ScheduleServiceImpl` - singleton bean (includes validation)
 - `map:ScheduleMapper` - singleton bean
 
 **Transaction Management:**
@@ -515,10 +501,10 @@ Alternate scenarios represent exception paths, extensions, and variations from t
 **Extends** relationships represent **optional extensions** to the base use case that occur under specific conditions:
 
 1. **Schedule Validation Error (Extend)**
-   - **Condition:** `ScheduleValidator.validate()` fails
+   - **Condition:** `ScheduleServiceImpl.validateScheduleRequest()` fails
    - **Extension Point:** After `submitSchedule()` in main flow
    - **Diagram:** DLSD_Schedule_Validation_Error (referenced in main DLSD)
-   - **DLCD Objects:** `v:ScheduleValidator` throws `BusinessValidationException`, caught by `ctrl:ScheduleController.handleException()`
+   - **DLCD Objects:** `svc:ScheduleServiceImpl` throws `InvalidInputException`, caught by `ctrl:ScheduleController` exception handler
    - **SSD Representation:** Shown as `alt` fragment with `validationError(errorMessage)` return
 
 2. **Project Not Found (Extend)**
