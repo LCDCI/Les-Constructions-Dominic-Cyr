@@ -94,7 +94,7 @@ const ScheduleFormModal = ({
 
           <div className="form-row">
             <label>
-              <span>Lot / Phase</span>
+              <span>Lot</span>
               <select
                 value={schedule.lotId}
                 onChange={e => handleFieldChange('lotId', e.target.value)}
