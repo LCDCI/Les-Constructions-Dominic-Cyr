@@ -605,22 +605,6 @@ const CustomerFormsPage = () => {
     }
   };
 
-  const handleViewPdf = async form => {
-    try {
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
-        },
-      });
-
-      await viewFinalizedForm(form.formId, token);
-    } catch (error) {
-      setSubmitError('Failed to open form. Please try again.');
-    }
-  };
-
   const canEditForm = form => {
     return (
       form.formStatus === 'ASSIGNED' ||
