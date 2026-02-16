@@ -410,15 +410,13 @@ const LotDocumentsPage = () => {
       setFinalizedFormsLoading(true);
       setFinalizedFormsError(null);
       const token = await getApiToken();
-      const forms = await getFormsByLot(
-        lotId,
-        { status: 'COMPLETED' },
-        token
-      );
+      const forms = await getFormsByLot(lotId, { status: 'COMPLETED' }, token);
       setFinalizedForms(forms || []);
     } catch (err) {
       console.error('Failed to load finalized forms:', err);
-      setFinalizedFormsError('Impossible de charger les formulaires finalisés.');
+      setFinalizedFormsError(
+        'Impossible de charger les formulaires finalisés.'
+      );
     } finally {
       setFinalizedFormsLoading(false);
     }
