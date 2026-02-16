@@ -284,3 +284,4 @@ test.describe('Lot Metadata E2E', () => {
     await page.waitForURL('**/tasks/TASK-001');
     expect(page.url()).toContain('/tasks/TASK-001');
   });
+});
