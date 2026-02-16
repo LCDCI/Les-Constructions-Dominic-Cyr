@@ -500,6 +500,12 @@ const SalespersonFormsPage = () => {
                     {form.formStatus === 'SUBMITTED' && (
                       <>
                         <button
+                          className="form-action-button form-action-view"
+                          onClick={() => handleViewForm(form)}
+                        >
+                          {t('buttons.viewHistory', 'View History')}
+                        </button>
+                        <button
                           className="form-action-button form-action-reopen"
                           onClick={() => {
                             setFormToReopen(form);
@@ -522,7 +528,7 @@ const SalespersonFormsPage = () => {
                           className="form-action-button form-action-view"
                           onClick={() => handleViewForm(form)}
                         >
-                          {t('buttons.viewForm', 'View Form')}
+                          {t('buttons.viewHistory', 'View History')}
                         </button>
                         <button
                           className="form-action-button form-action-download"

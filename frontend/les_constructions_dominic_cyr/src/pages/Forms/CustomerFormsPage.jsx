@@ -365,6 +365,7 @@ const CustomerFormsPage = () => {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
+  const [isViewOnly, setIsViewOnly] = useState(false);
   const fileInputRef = useRef(null);
 
   const { getAccessTokenSilently, user } = useAuth0();
@@ -411,8 +412,9 @@ const CustomerFormsPage = () => {
     }
   };
 
-  const openEditModal = form => {
+  const openEditModal = (form, readOnly = false) => {
     setSelectedForm(form);
+    setIsViewOnly(readOnly);
     // Normalize file data structure to use fileId consistently
     const normalizedData = { ...(form.formData || {}) };
     Object.keys(normalizedData).forEach(key => {
@@ -550,8 +552,11 @@ const CustomerFormsPage = () => {
       setSubmitError(null);
       setIsSubmitConfirmOpen(false);
       const token = await getToken();
-      await updateFormData(selectedForm.formId, { formData }, token);
-      await submitForm(selectedForm.formId, token);
+      await updateFormData(
+        selectedForm.formId,
+        { formData, isSubmitting: true },
+        token
+      );
 
       setIsEditModalOpen(false);
       setSelectedForm(null);
@@ -702,28 +707,32 @@ const CustomerFormsPage = () => {
             >
               📄 {fileVal.fileName}
             </span>
-            <button
-              className="forms-file-remove"
-              onClick={() => handleRemoveFile(field.name)}
-            >
-              ×
-            </button>
-          </div>
-        ) : (
-          <div className="forms-file-dropzone">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept={field.accept || '.pdf'}
-              onChange={e => handleFileUpload(field.name, e.target.files[0])}
-              disabled={uploadingFile}
-            />
-            {uploadingFile && (
-              <p className="forms-file-uploading">
-                {t('modal.uploading', 'Uploading...')}
-              </p>
+            {!isViewOnly && (
+              <button
+                className="forms-file-remove"
+                onClick={() => handleRemoveFile(field.name)}
+              >
+                ×
+              </button>
             )}
           </div>
+        ) : (
+          !isViewOnly && (
+            <div className="forms-file-dropzone">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={field.accept || '.pdf'}
+                onChange={e => handleFileUpload(field.name, e.target.files[0])}
+                disabled={uploadingFile}
+              />
+              {uploadingFile && (
+                <p className="forms-file-uploading">
+                  {t('modal.uploading', 'Uploading...')}
+                </p>
+              )}
+            </div>
+          )
         )}
 
         {uploadError && <p className="forms-field-error">{uploadError}</p>}
@@ -745,7 +754,8 @@ const CustomerFormsPage = () => {
               key={opt.value}
               type="button"
               className={`forms-radio-card${selected === opt.value ? ' selected' : ''}`}
-              onClick={() => handleFieldChange(field.name, opt.value)}
+              onClick={() => !isViewOnly && handleFieldChange(field.name, opt.value)}
+              disabled={isViewOnly}
             >
               <span className="forms-radio-indicator" />
               <span className="forms-radio-label">
@@ -770,6 +780,7 @@ const CustomerFormsPage = () => {
         value={formData[field.name] || ''}
         onChange={e => handleFieldChange(field.name, e.target.value)}
         className="forms-form-input"
+        disabled={isViewOnly}
       />
     </div>
   );
@@ -786,6 +797,7 @@ const CustomerFormsPage = () => {
         onChange={e => handleFieldChange(field.name, e.target.value)}
         className="forms-form-textarea"
         rows="4"
+        disabled={isViewOnly}
       />
     </div>
   );
@@ -801,6 +813,7 @@ const CustomerFormsPage = () => {
         value={formData[field.name] || ''}
         onChange={e => handleFieldChange(field.name, e.target.value)}
         className="forms-form-select"
+        disabled={isViewOnly}
       >
         <option value="">{t('modal.selectOption', '-- Select --')}</option>
         {(field.options || []).map(opt => (
@@ -952,20 +965,28 @@ const CustomerFormsPage = () => {
                       </button>
                     )}
                     {form.formStatus === 'SUBMITTED' && (
-                      <button
-                        className="form-action-button form-action-history"
-                        onClick={() => handleViewHistory(form)}
-                      >
-                        {t('buttons.viewHistory', 'View History')}
-                      </button>
+                      <>
+                        <button
+                          className="form-action-button form-action-history"
+                          onClick={() => handleViewHistory(form)}
+                        >
+                          {t('buttons.viewHistory', 'View History')}
+                        </button>
+                        <button
+                          className="form-action-button form-action-download"
+                          onClick={() => handleDownloadForm(form)}
+                        >
+                          {t('buttons.downloadPdf', 'Download PDF')}
+                        </button>
+                      </>
                     )}
                     {form.formStatus === 'COMPLETED' && (
                       <>
                         <button
-                          className="form-action-button form-action-view"
-                          onClick={() => handleViewPdf(form)}
+                          className="form-action-button form-action-history"
+                          onClick={() => handleViewHistory(form)}
                         >
-                          {t('buttons.viewPdf', 'View PDF')}
+                          {t('buttons.viewHistory', 'View History')}
                         </button>
                         <button
                           className="form-action-button form-action-download"
@@ -1022,20 +1043,24 @@ const CustomerFormsPage = () => {
                 className="forms-modal-button forms-modal-button-secondary"
                 onClick={() => setIsEditModalOpen(false)}
               >
-                {t('buttons.cancel', 'Cancel')}
+                {isViewOnly ? t('buttons.close', 'Close') : t('buttons.cancel', 'Cancel')}
               </button>
-              <button
-                className="forms-modal-button forms-modal-button-primary"
-                onClick={handleSaveForm}
-              >
-                {t('buttons.saveDraft', 'Save Draft')}
-              </button>
-              <button
-                className="forms-modal-button forms-modal-button-success"
-                onClick={handleSubmitFormClick}
-              >
-                {t('buttons.submitForm', 'Submit Form')}
-              </button>
+              {!isViewOnly && (
+                <>
+                  <button
+                    className="forms-modal-button forms-modal-button-primary"
+                    onClick={handleSaveForm}
+                  >
+                    {t('buttons.saveDraft', 'Save Draft')}
+                  </button>
+                  <button
+                    className="forms-modal-button forms-modal-button-success"
+                    onClick={handleSubmitFormClick}
+                  >
+                    {t('buttons.submitForm', 'Submit Form')}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

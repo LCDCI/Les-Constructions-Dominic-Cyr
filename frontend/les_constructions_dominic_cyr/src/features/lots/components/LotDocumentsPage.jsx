@@ -800,8 +800,11 @@ const LotDocumentsPage = () => {
       setIsSubmitConfirmOpen(false);
 
       const token = await getApiToken();
-      await updateFormData(selectedForm.formId, { formData }, token);
-      await submitForm(selectedForm.formId, token);
+      await updateFormData(
+        selectedForm.formId,
+        { formData, isSubmitting: true },
+        token
+      );
 
       setIsEditModalOpen(false);
       setSelectedForm(null);
