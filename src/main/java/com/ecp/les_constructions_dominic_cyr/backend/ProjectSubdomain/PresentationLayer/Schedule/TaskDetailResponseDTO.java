@@ -28,4 +28,8 @@ public class TaskDetailResponseDTO {
     private String assignedToUserId;
     private String assignedToUserName;
     private String scheduleId;
+    private String projectIdentifier;
+    private String projectName;
+    private String lotId;
+    private String lotNumber;
 }

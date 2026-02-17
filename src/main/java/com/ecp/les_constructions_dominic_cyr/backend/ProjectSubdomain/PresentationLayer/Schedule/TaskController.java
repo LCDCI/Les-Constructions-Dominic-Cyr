@@ -104,10 +104,29 @@ public class TaskController {
     // Contractor endpoints - read-only access to assigned tasks
     @GetMapping("/contractors/tasks/all")
     @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_CONTRACTOR')")
-    public ResponseEntity<List<TaskDetailResponseDTO>> getAllTasksForContractorView() {
-        log.info("Fetching all tasks for contractor view");
-        List<TaskDetailResponseDTO> tasks = taskService.getAllTasks();
-        return ResponseEntity.ok(tasks);
+    public ResponseEntity<?> getAllTasksForContractorView(
+            @AuthenticationPrincipal Jwt jwt) {
+        try {
+            String auth0UserId = jwt.getSubject();
+            log.info("Fetching tasks assigned to contractor with Auth0 ID: {}", auth0UserId);
+            
+            // Get the backend user from Auth0 ID
+            UserResponseModel user = userService.getUserByAuth0Id(auth0UserId);
+            String backendUserId = user.getUserIdentifier();
+            
+            log.info("Mapped to backend user ID: {}", backendUserId);
+            List<TaskDetailResponseDTO> tasks = taskService.getTasksForContractor(backendUserId);
+            return ResponseEntity.ok(tasks);
+        } catch (NotFoundException ex) {
+            log.error("User or contractor not found: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidInputException ex) {
+            log.error("Invalid input: {}", ex.getMessage());
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex) {
+            log.error("Error fetching contractor tasks: {}", ex.getMessage(), ex);
+            return new ResponseEntity<>("An error occurred while fetching tasks", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("/contractors/tasks")

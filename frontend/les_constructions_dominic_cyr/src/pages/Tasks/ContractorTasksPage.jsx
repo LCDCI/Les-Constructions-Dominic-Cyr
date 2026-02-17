@@ -269,7 +269,6 @@ const ContractorTasksPage = () => {
       <div className="page-header">
         <h1>{t('title', 'My Assigned Tasks')}</h1>
         <p className="subtitle">
-          {filteredTasks.length}{' '}
           {t('tasksFound', { count: filteredTasks.length })}
         </p>
       </div>
@@ -377,7 +376,6 @@ const ContractorTasksPage = () => {
                       })}
                     </h3>
                     <span className="task-count-badge">
-                      {lotData.tasks.length}{' '}
                       {t('tasksCount', {
                         count: lotData.tasks.length,
                       })}
