@@ -1,12 +1,17 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.mapperlayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.ScheduleMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.TaskMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,7 +19,15 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
+
 class ScheduleMapperWithProjectTest {
+
+    @Mock
+    private ScheduleRepository scheduleRepository;
+
+    @Mock
+    private LotRepository lotRepository;
 
     private ScheduleMapper scheduleMapper;
     private TaskMapper taskMapper;
@@ -22,7 +35,7 @@ class ScheduleMapperWithProjectTest {
 
     @BeforeEach
     void setUp() {
-        taskMapper = new TaskMapper();
+        taskMapper = new TaskMapper(scheduleRepository, lotRepository);
         scheduleMapper = new ScheduleMapper(taskMapper);
     }
 

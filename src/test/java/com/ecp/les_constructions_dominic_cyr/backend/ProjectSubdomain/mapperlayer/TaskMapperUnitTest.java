@@ -1,5 +1,7 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.mapperlayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskPriority;
@@ -13,6 +15,9 @@ import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLa
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -21,7 +26,15 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
+
 class TaskMapperUnitTest {
+
+    @Mock
+    private ScheduleRepository scheduleRepository;
+
+    @Mock
+    private LotRepository lotRepository;
 
     private TaskMapper taskMapper;
     private Users testContractor;
@@ -30,7 +43,7 @@ class TaskMapperUnitTest {
 
     @BeforeEach
     void setUp() {
-        taskMapper = new TaskMapper();
+        taskMapper = new TaskMapper(scheduleRepository, lotRepository);
 
         testContractor = new Users();
         // set first name to "John" to match the expected "John Contractor" in assertions

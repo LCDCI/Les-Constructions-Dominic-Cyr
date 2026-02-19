@@ -431,7 +431,7 @@ class TaskControllerUnitTest {
         List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2);
         when(taskService.getAllTasks()).thenReturn(tasks);
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -446,7 +446,7 @@ class TaskControllerUnitTest {
     void getAllTasksForContractorView_shouldReturnEmptyListWithOkStatus() {
         when(taskService.getAllTasks()).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -474,7 +474,7 @@ class TaskControllerUnitTest {
         List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2, completedTask, onHoldTask);
         when(taskService.getAllTasks()).thenReturn(tasks);
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -622,7 +622,7 @@ class TaskControllerUnitTest {
         List<TaskDetailResponseDTO> tasks = Collections.singletonList(taskResponseDTO1);
         when(taskService.getAllTasks()).thenReturn(tasks);
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView();
+        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
