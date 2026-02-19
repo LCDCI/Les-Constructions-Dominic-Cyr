@@ -428,31 +428,56 @@ class TaskControllerUnitTest {
 
     @Test
     void getAllTasksForContractorView_shouldReturnAllTasksWithOkStatus() {
+        String auth0UserId = "auth0|contractor123";
+        String backendUserId = "contractor-backend-123";
+        
+        UserResponseModel contractorUser = new UserResponseModel();
+        contractorUser.setUserIdentifier(backendUserId);
+        contractorUser.setUserRole(UserRole.CONTRACTOR);
+        
         List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2);
-        when(taskService.getAllTasks()).thenReturn(tasks);
+        
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenReturn(contractorUser);
+        when(taskService.getTasksForContractor(backendUserId)).thenReturn(tasks);
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
+        ResponseEntity<?> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
-        assertEquals("TASK-001", response.getBody().get(0).getTaskId());
-        assertEquals("TASK-002", response.getBody().get(1).getTaskId());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseBody = (List<TaskDetailResponseDTO>) response.getBody();
+        assertEquals(2, responseBody.size());
+        assertEquals("TASK-001", responseBody.get(0).getTaskId());
+        assertEquals("TASK-002", responseBody.get(1).getTaskId());
 
-        verify(taskService).getAllTasks();
+        verify(userService).getUserByAuth0Id(auth0UserId);
+        verify(taskService).getTasksForContractor(backendUserId);
     }
 
     @Test
     void getAllTasksForContractorView_shouldReturnEmptyListWithOkStatus() {
-        when(taskService.getAllTasks()).thenReturn(Collections.emptyList());
+        String auth0UserId = "auth0|contractor123";
+        String backendUserId = "contractor-backend-123";
+        
+        UserResponseModel contractorUser = new UserResponseModel();
+        contractorUser.setUserIdentifier(backendUserId);
+        contractorUser.setUserRole(UserRole.CONTRACTOR);
+        
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenReturn(contractorUser);
+        when(taskService.getTasksForContractor(backendUserId)).thenReturn(Collections.emptyList());
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
+        ResponseEntity<?> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertTrue(response.getBody().isEmpty());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseBody = (List<TaskDetailResponseDTO>) response.getBody();
+        assertTrue(responseBody.isEmpty());
 
-        verify(taskService).getAllTasks();
+        verify(userService).getUserByAuth0Id(auth0UserId);
+        verify(taskService).getTasksForContractor(backendUserId);
     }
 
     @Test
@@ -471,16 +496,29 @@ class TaskControllerUnitTest {
                 .taskProgress(25.0)
                 .build();
 
+        String auth0UserId = "auth0|contractor123";
+        String backendUserId = "contractor-backend-123";
+        
+        UserResponseModel contractorUser = new UserResponseModel();
+        contractorUser.setUserIdentifier(backendUserId);
+        contractorUser.setUserRole(UserRole.CONTRACTOR);
+        
         List<TaskDetailResponseDTO> tasks = Arrays.asList(taskResponseDTO1, taskResponseDTO2, completedTask, onHoldTask);
-        when(taskService.getAllTasks()).thenReturn(tasks);
+        
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenReturn(contractorUser);
+        when(taskService.getTasksForContractor(backendUserId)).thenReturn(tasks);
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
+        ResponseEntity<?> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(4, response.getBody().size());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseBody = (List<TaskDetailResponseDTO>) response.getBody();
+        assertEquals(4, responseBody.size());
 
-        verify(taskService).getAllTasks();
+        verify(userService).getUserByAuth0Id(auth0UserId);
+        verify(taskService).getTasksForContractor(backendUserId);
     }
 
     // ========================
@@ -619,16 +657,29 @@ class TaskControllerUnitTest {
 
     @Test
     void getAllTasksForContractorView_shouldHandleSingleTask() {
+        String auth0UserId = "auth0|contractor123";
+        String backendUserId = "contractor-backend-123";
+        
+        UserResponseModel contractorUser = new UserResponseModel();
+        contractorUser.setUserIdentifier(backendUserId);
+        contractorUser.setUserRole(UserRole.CONTRACTOR);
+        
         List<TaskDetailResponseDTO> tasks = Collections.singletonList(taskResponseDTO1);
-        when(taskService.getAllTasks()).thenReturn(tasks);
+        
+        when(jwt.getSubject()).thenReturn(auth0UserId);
+        when(userService.getUserByAuth0Id(auth0UserId)).thenReturn(contractorUser);
+        when(taskService.getTasksForContractor(backendUserId)).thenReturn(tasks);
 
-        ResponseEntity<List<TaskDetailResponseDTO>> response = taskController.getAllTasksForContractorView(jwt);
+        ResponseEntity<?> response = taskController.getAllTasksForContractorView(jwt);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
+        @SuppressWarnings("unchecked")
+        List<TaskDetailResponseDTO> responseBody = (List<TaskDetailResponseDTO>) response.getBody();
+        assertEquals(1, responseBody.size());
 
-        verify(taskService).getAllTasks();
+        verify(userService).getUserByAuth0Id(auth0UserId);
+        verify(taskService).getTasksForContractor(backendUserId);
     }
 
     @Test
