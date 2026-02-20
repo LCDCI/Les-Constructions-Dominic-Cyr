@@ -22,7 +22,8 @@ const OwnerDashboard = () => {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   const handleSeeMore = () => {
-    navigate('/owner/schedules/all');
+    const projectId = schedules?.[0]?.projectIdentifier;
+    navigate(projectId ? `/projects/${projectId}/schedule` : '/projects');
   };
 
   const dashboardCards = useMemo(
