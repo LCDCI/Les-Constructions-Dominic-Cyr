@@ -10,8 +10,9 @@ const RealizationsPage = () => {
   const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Image IDs from file storage - add your image IDs here
+  // Image IDs from file storage (can be file ID or full CDN URL)
   const REALIZATION_IMAGE_IDS = [
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/3262-1.jpeg',
     '1242c6c5-6a3d-4ca0-bac0-06d25bebb0bd',
     '1634e9ee-2680-41d1-b28a-47353f842d9c',
     '1659ff85-b160-4111-b419-84834eb4375a',
@@ -22,6 +23,13 @@ const RealizationsPage = () => {
     'bb6dd250-ed32-4041-8b4e-020e2ef45e2f',
   ];
 
+  const PORTFOLIO_IMAGES = [
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/seigneurie.png',
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/fourche.jpg',
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/niverville.jpg',
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/ruisseau.jpg',
+  ];
+
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
     (typeof window !== 'undefined' &&
@@ -30,6 +38,7 @@ const RealizationsPage = () => {
       : `${window.location.origin}/files`);
 
   const getImageUrl = imageIdentifier => {
+    if (imageIdentifier.startsWith('http')) return imageIdentifier;
     return `${filesServiceUrl}/files/${imageIdentifier}`;
   };
 
@@ -62,8 +71,11 @@ const RealizationsPage = () => {
       <section className="projects-hero" aria-labelledby="realizations-title">
         <div className="projects-hero-content">
           <h1 className="projects-title" id="realizations-title">
-            {t('hero.title', 'Our Realizations')}
+            {t('hero.title', 'Realizations')}
           </h1>
+          <p className="realizations-hero-subtitle">
+            {t('hero.subtitle', 'When vision becomes reality')}
+          </p>
         </div>
       </section>
 
@@ -79,7 +91,7 @@ const RealizationsPage = () => {
           <p className="realizations-intro-text">
             {t(
               'intro.description',
-              'Explore our portfolio of completed projects. Each realization represents our commitment to quality craftsmanship, attention to detail, and customer satisfaction. From residential renovations to commercial builds, we bring your vision to life.'
+              'Our realizations reflect our expertise and commitment to quality. Each project is crafted with care to deliver lasting, well-designed spaces tailored to the needs of our clients.'
             )}
           </p>
         </div>
@@ -128,10 +140,36 @@ const RealizationsPage = () => {
         </div>
 
         {REALIZATION_IMAGE_IDS.length > 0 && (
-          <div className="gallery-counter" role="status" aria-live="polite">
-            {currentIndex + 1} / {REALIZATION_IMAGE_IDS.length}
-          </div>
+          <div className="gallery-counter-hidden" aria-hidden="true" />
         )}
+      </section>
+
+      {/* Portfolio Text */}
+      <section className="realizations-portfolio-text-section">
+        <p className="realizations-portfolio-text">
+          {t(
+            'intro.portfolioText',
+            'Here is a portfolio of projects completed in recent years.'
+          )}
+        </p>
+      </section>
+
+      {/* Portfolio 2x2 Grid */}
+      <section
+        className="realizations-portfolio-grid-section"
+        aria-label="Portfolio"
+      >
+        <div className="realizations-portfolio-grid">
+          {PORTFOLIO_IMAGES.map((url, idx) => (
+            <div key={idx} className="realizations-portfolio-grid-item">
+              <img
+                src={url}
+                alt={`Portfolio ${idx + 1}`}
+                className="realizations-portfolio-grid-img"
+              />
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   );

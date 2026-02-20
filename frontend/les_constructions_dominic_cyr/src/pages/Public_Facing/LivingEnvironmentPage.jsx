@@ -20,6 +20,7 @@ import {
   FaHotel,
 } from 'react-icons/fa';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
 
@@ -284,6 +285,7 @@ const LivingEnvironmentPage = () => {
           </button>
         </div>
       </div>
+      <ProjectsFooter projectId={projectIdentifier} />
     </div>
   );
 };

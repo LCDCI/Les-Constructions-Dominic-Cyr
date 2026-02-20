@@ -8,6 +8,7 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaTimes,
+  FaClipboardCheck,
 } from 'react-icons/fa';
 import { IoIosHammer } from 'react-icons/io';
 import { AiOutlineStock } from 'react-icons/ai';
@@ -84,12 +85,6 @@ export default function ProjectManagementPage() {
     }
   };
 
-  const pillars = [
-    t('intro.heading.line1', 'Planning'),
-    t('intro.heading.line2', 'Organization'),
-    t('intro.heading.line3', 'Site follow-up'),
-  ];
-
   return (
     <div className="project-management-page">
       {/* Hero Banner Section */}
@@ -116,16 +111,9 @@ export default function ProjectManagementPage() {
               <h2 className="pm-main-heading" id="pm-intro-title">
                 {t(
                   'intro.heading.title',
-                  'Planning, organization, and site follow-up without the friction'
+                  'Planning, organization, and work follow-up'
                 )}
               </h2>
-              <div className="pm-pill-row" role="list">
-                {pillars.map((label, index) => (
-                  <span key={index} className="pm-pill" role="listitem">
-                    {label}
-                  </span>
-                ))}
-              </div>
               <p className="pm-tagline">
                 {t('intro.tagline', 'We handle it for you!')}
               </p>
@@ -246,6 +234,14 @@ export default function ProjectManagementPage() {
               </span>
               <span className="pm-adv-text">
                 {t('advantages.item6', 'Rigorous follow-up')}
+              </span>
+            </li>
+            <li>
+              <span className="pm-adv-emoji" aria-hidden="true">
+                <FaClipboardCheck />
+              </span>
+              <span className="pm-adv-text">
+                {t('advantages.item7', 'Compliance assurance')}
               </span>
             </li>
           </ul>

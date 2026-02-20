@@ -1,16 +1,13 @@
 {
   "hero": {
-    "label": "RÉNOVATIONS",
-    "heading": "Rénovations sur mesure, réalisées avec soin",
-    "lede": "Cuisines, sous-sols, espaces ouverts ou façades — nous modernisons chaque secteur avec précision et créativité."
-  },
-  "kicker": {
-    "renovations": "Rénovations"
+    "label": "Rénover, Moderniser & transformer",
+    "heading": "Rénovations",
+    "lede": "Votre maison mérite ce qu'il y a de mieux"
   },
   "intro": {
-    "emphasis": "Modernisez",
-    "rest": "votre espace avec style",
-    "description": "Que vous vouliez rafraîchir votre cuisine, repenser votre sous-sol, ouvrir des espaces ou améliorer votre façade, nous réalisons votre projet avec précision, rigueur et créativité.",
+    "emphasis": "Transformez",
+    "rest": "votre maison en un espace de vie dont vous rêvez !",
+    "description": "Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité.\n\n\nNous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien.\n\n\nConfiez votre rénovation à des professionnels passionnés !",
     "cta": "Parlez à un expert"
   },
   "grid": {
@@ -60,8 +57,5 @@
       "after": "Après",
       "sectionLabel": "Images de la rénovation"
     }
-  },
-  "descriptions": {
-    "78cc74d2-0dae-4be9-be91-d3750311da94": "Cette rénovation comprend une refonte complète de la cuisine avec de nouvelles armoires, comptoirs et appareils électroménagers, ainsi que la mise à jour du revêtement de sol dans les principaux espaces de vie."
   }
 }

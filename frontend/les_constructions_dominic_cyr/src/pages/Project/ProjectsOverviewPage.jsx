@@ -394,7 +394,12 @@ const ProjectOverviewPage = () => {
               {t('sections.overview', 'Overview')}
             </h2>
             {overview.heroDescription && (
-              <p className="section-description">{overview.heroDescription}</p>
+              <p className="section-description">
+                {t(
+                  `overviewDescriptions.${projectIdentifier}`,
+                  overview.heroDescription
+                )}
+              </p>
             )}
           </div>
           <div className="project-features-grid">

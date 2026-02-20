@@ -15,10 +15,12 @@
     "email": "constructions.dcyr@gmail.com"
   },
   "hero": {
-    "title": "Nos réalisations"
+    "title": "Réalisations",
+    "subtitle": "Quand la vision devient réalité"
   },
   "intro": {
-    "description": "Explorez notre portefeuille de projets réalisés. Chaque réalisation représente notre engagement envers la qualité de l'artisanat, l'attention aux détails et la satisfaction des clients. Des rénovations résidentielles aux constructions commerciales, nous concrétisons votre vision."
+    "description": "Nos réalisations témoignent de notre savoir-faire et de notre engagement envers la qualité. Chaque projet est conçu avec soin afin d'offrir des espaces durables, bien pensés et adaptés aux besoins de nos clients.",
+    "portfolioText": "Voici un portfolio de projets réalisés dans les dernières années."
   },
   "gallery": {
     "previousAriaLabel": "Image précédente",
