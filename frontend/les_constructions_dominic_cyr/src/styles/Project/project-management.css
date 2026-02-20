@@ -261,6 +261,13 @@
   border-color: rgba(12, 61, 45, 0.2);
 }
 
+/* Center the 7th advantage item on wide screens (3-column layout) */
+@media (min-width: 750px) {
+  .pm-advantages-list li:nth-child(7) {
+    grid-column: 2 / 3;
+  }
+}
+
 /* Separator Lines */
 .pm-separator {
   display: flex;
