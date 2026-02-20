@@ -580,13 +580,19 @@ const LotSelector = ({
                         {lot.civicAddress || t('unknownLocation')}
                       </div>
                       <div className="lot-item-info">
-                        <span>{t('lotNumberLabel')} {lot.lotNumber || t('na')}</span>
                         <span>
-                          {t('dimensionsLabel')} {lot.dimensionsSquareFeet || t('na')} {t('sqFt')}
-                          {' / '}{lot.dimensionsSquareMeters || t('na')} {t('sqM')}
+                          {t('lotNumberLabel')} {lot.lotNumber || t('na')}
+                        </span>
+                        <span>
+                          {t('dimensionsLabel')}{' '}
+                          {lot.dimensionsSquareFeet || t('na')} {t('sqFt')}
+                          {' / '}
+                          {lot.dimensionsSquareMeters || t('na')} {t('sqM')}
                         </span>
                         {lot.price && (
-                          <span>{t('priceLabel')} ${lot.price.toLocaleString()}</span>
+                          <span>
+                            {t('priceLabel')} ${lot.price.toLocaleString()}
+                          </span>
                         )}
                       </div>
                     </div>
@@ -615,10 +621,14 @@ const LotSelector = ({
                     {draft.civicAddress || t('unknownLocation')}
                   </div>
                   <div className="lot-item-info">
-                    <span>{t('lotNumberLabel')} {draft.lotNumber || t('na')}</span>
                     <span>
-                      {t('dimensionsLabel')} {draft.dimensionsSquareFeet || t('na')} {t('sqFt')}
-                      {' / '}{draft.dimensionsSquareMeters || t('na')} {t('sqM')}
+                      {t('lotNumberLabel')} {draft.lotNumber || t('na')}
+                    </span>
+                    <span>
+                      {t('dimensionsLabel')}{' '}
+                      {draft.dimensionsSquareFeet || t('na')} {t('sqFt')}
+                      {' / '}
+                      {draft.dimensionsSquareMeters || t('na')} {t('sqM')}
                     </span>
                     {draft.price != null && draft.price !== '' && (
                       <span>
@@ -628,12 +638,18 @@ const LotSelector = ({
                           : Number(draft.price).toLocaleString()}
                       </span>
                     )}
-                    {draft.lotStatus && <span>{t('statusLabel')} {
-                      draft.lotStatus === 'AVAILABLE' ? t('statusAvailable')
-                        : draft.lotStatus === 'SOLD' ? t('statusSold')
-                        : draft.lotStatus === 'PENDING' ? t('statusPending')
-                        : draft.lotStatus
-                    }</span>}
+                    {draft.lotStatus && (
+                      <span>
+                        {t('statusLabel')}{' '}
+                        {draft.lotStatus === 'AVAILABLE'
+                          ? t('statusAvailable')
+                          : draft.lotStatus === 'SOLD'
+                            ? t('statusSold')
+                            : draft.lotStatus === 'PENDING'
+                              ? t('statusPending')
+                              : draft.lotStatus}
+                      </span>
+                    )}
                   </div>
                 </div>
                 {typeof onDraftLotRemoved === 'function' && (

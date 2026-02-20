@@ -175,7 +175,9 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
   const { role } = useBackendUser();
   const { i18n } = useTranslation();
   // App-level language (what the user chose before opening the form)
-  const appLanguage = (i18n.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'en';
+  const appLanguage = (i18n.language || '').toLowerCase().startsWith('fr')
+    ? 'fr'
+    : 'en';
   // Start with French form first
   const [currentLanguage, setCurrentLanguage] = useState('fr');
 
@@ -698,7 +700,11 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         >
           {/* Step 0: French — all fields. Step 1: English — only name, description, location */}
           <div className="form-section">
-            <h2>{step === 0 ? t('form.sections.basicInfoFr') : t('form.sections.basicInfoEn')}</h2>
+            <h2>
+              {step === 0
+                ? t('form.sections.basicInfoFr')
+                : t('form.sections.basicInfoEn')}
+            </h2>
 
             {step === 0 && (
               <>
@@ -846,11 +852,21 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                     value={formData.status}
                     onChange={e => handleInputChange('status', e.target.value)}
                   >
-                    <option value="PLANNED">{t('form.statusOptions.planned')}</option>
-                    <option value="IN_PROGRESS">{t('form.statusOptions.inProgress')}</option>
-                    <option value="DELAYED">{t('form.statusOptions.delayed')}</option>
-                    <option value="COMPLETED">{t('form.statusOptions.completed')}</option>
-                    <option value="CANCELLED">{t('form.statusOptions.cancelled')}</option>
+                    <option value="PLANNED">
+                      {t('form.statusOptions.planned')}
+                    </option>
+                    <option value="IN_PROGRESS">
+                      {t('form.statusOptions.inProgress')}
+                    </option>
+                    <option value="DELAYED">
+                      {t('form.statusOptions.delayed')}
+                    </option>
+                    <option value="COMPLETED">
+                      {t('form.statusOptions.completed')}
+                    </option>
+                    <option value="CANCELLED">
+                      {t('form.statusOptions.cancelled')}
+                    </option>
                   </select>
                 </div>
 
