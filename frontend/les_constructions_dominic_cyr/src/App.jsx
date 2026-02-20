@@ -53,10 +53,12 @@ import NavigationSetter from './components/NavigationSetter';
 import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import ReportsPage from './pages/ReportsPage';
 import InboxPage from './pages/Inbox/InboxPage';
+// RoleBasedRedirect removed — / now shows Home for all users; PortalLogin handles login redirect
 import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
 import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
 import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
 import OwnerReviewFormsPage from './pages/Forms/OwnerReviewFormsPage';
+import ComingSoonPage from './pages/ComingSoonPage';
 // import ReactGA from 'react-ga4'; // TODO: Fix build issue with react-ga4 module resolution
 // loadTheme from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
@@ -77,6 +79,18 @@ function PageViewTracker() {
 }
 
 function ContractorLotsDocuments() {
+  const { profile, loading } = useBackendUser();
+
+  if (loading || !profile) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>Loading...</div>
+    );
+  }
+
+  return <LotsListDashboard userId={profile.userId} />;
+}
+
+function OwnerLotsDocuments() {
   const { profile, loading } = useBackendUser();
 
   if (loading || !profile) {
@@ -598,7 +612,7 @@ export default function App() {
               element={
                 <ProtectedRoute
                   allowedRoles={['OWNER']}
-                  element={<ContractorLotsDocuments />}
+                  element={<OwnerLotsDocuments />}
                 />
               }
             />
@@ -767,6 +781,8 @@ export default function App() {
             />
 
             <Route path="/unauthorized" element={<Unauthorized />} />
+            <Route path="/account" element={<ComingSoonPage />} />
+            <Route path="/notifications" element={<ComingSoonPage />} />
             <Route
               path="/projects/:projectIdentifier/overview"
               element={<ProjectsOverviewPage />}

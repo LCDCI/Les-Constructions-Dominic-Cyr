@@ -493,9 +493,10 @@ const ProjectSchedulePage = () => {
           mapScheduleToEvent(schedule, index + 1)
         );
 
-        const firstDate = mappedEvents[0]?.start ?? new Date();
-        setDefaultDate(firstDate);
-        setCurrentDate(firstDate);
+        // Always default to current date, not the first schedule's date
+        const today = new Date();
+        setDefaultDate(today);
+        setCurrentDate(today);
 
         setEvents(mappedEvents);
         setSchedules(scheduleWithIds);

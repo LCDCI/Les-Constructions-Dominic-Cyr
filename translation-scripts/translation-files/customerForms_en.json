@@ -161,6 +161,55 @@
     "saveFailed": "Failed to save form. Please try again.",
     "submitFailed": "Failed to submit form. Please try again.",
     "missingFields": "Please fill in all required fields: {{fields}}",
-    "uploadFailed": "Failed to upload file. Please try again."
+    "uploadFailed": "Failed to upload file. Please try again.",
+    "downloadFailed": "Failed to download file."
+  },
+  "page": {
+    "loading": "Loading...",
+    "backToDocuments": "Back to Lot Documents",
+    "lotDocumentsTitle": "Lot {{lotNumber}} Documents",
+    "addressNotAvailable": "Address not available"
+  },
+  "tabs": {
+    "documents": "Documents",
+    "forms": "Forms"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Search documents...",
+    "filterAll": "All",
+    "filterPhotos": "Photos",
+    "filterFiles": "Files",
+    "uploading": "Uploading...",
+    "upload": "Upload"
+  },
+  "documentsList": {
+    "noDocumentsFound": "No documents found.",
+    "uploadToGetStarted": "Upload files to get started.",
+    "downloadTitle": "Download",
+    "deleteTitle": "Delete"
+  },
+  "lotForms": {
+    "loadingForms": "Loading forms...",
+    "noFormsAssigned": "No forms assigned for this lot.",
+    "fillForm": "Fill Form",
+    "viewForm": "View Form",
+    "assignedLabel": "Assigned:",
+    "submittedLabel": "Submitted:"
+  },
+  "finalizedForms": {
+    "title": "Finalized Forms",
+    "description": "Download completed forms for this lot.",
+    "loading": "Loading finalized forms...",
+    "noForms": "No finalized forms yet.",
+    "formId": "Form ID:",
+    "completedLabel": "Completed:",
+    "downloadPdf": "Download PDF"
+  },
+  "deleteModal": {
+    "title": "Confirm Deletion",
+    "message": "Are you sure you want to delete \"{{fileName}}\"?",
+    "warning": "This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete"
   }
 }

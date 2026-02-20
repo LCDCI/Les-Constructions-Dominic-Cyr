@@ -17,7 +17,8 @@ const ContractorDashboard = () => {
   const navigate = useNavigate();
 
   const handleSeeMore = () => {
-    navigate('/contractor/tasks');
+    const projectId = schedules?.[0]?.projectIdentifier;
+    navigate(projectId ? `/projects/${projectId}/schedule` : '/projects');
   };
 
   const dashboardCards = useMemo(
@@ -58,8 +59,6 @@ const ContractorDashboard = () => {
 
   return (
     <div className="contractor-dashboard">
-      <h1 className="dashboard-title">{t('title', 'Contractor Dashboard')}</h1>
-
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard

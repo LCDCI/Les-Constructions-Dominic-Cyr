@@ -1,11 +1,16 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer;
 
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskDetailResponseDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.TaskRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -15,10 +20,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class TaskMapper {
 
+    private final ScheduleRepository scheduleRepository;
+    private final LotRepository lotRepository;
+
     public TaskDetailResponseDTO entityToResponseDTO(Task task) {
-        return TaskDetailResponseDTO.builder()
+        TaskDetailResponseDTO.TaskDetailResponseDTOBuilder builder = TaskDetailResponseDTO.builder()
                 .taskId(task.getTaskIdentifier() != null ? task.getTaskIdentifier().getTaskId() : null)
                 .taskStatus(task.getTaskStatus())
                 .taskTitle(task.getTaskTitle())
@@ -33,8 +42,30 @@ public class TaskMapper {
                     ? task.getAssignedTo().getUserIdentifier().getUserId().toString() : null)
                 .assignedToUserName(task.getAssignedTo() != null 
                     ? task.getAssignedTo().getFirstName() + " " + task.getAssignedTo().getLastName() : null)
-                .scheduleId(task.getScheduleId())
-                .build();
+                .scheduleId(task.getScheduleId());
+        
+        // Fetch schedule to get project information
+        if (task.getScheduleId() != null) {
+            scheduleRepository.findByScheduleIdentifier(task.getScheduleId()).ifPresent(schedule -> {
+                if (schedule.getProject() != null) {
+                    builder.projectIdentifier(schedule.getProject().getProjectIdentifier())
+                           .projectName(schedule.getProject().getProjectName());
+                }
+            });
+        }
+        
+        // Add lot information
+        if (task.getLotId() != null) {
+            builder.lotId(task.getLotId().toString());
+            Lot lot = lotRepository.findByLotIdentifier_LotId(task.getLotId());
+            if (lot != null) {
+                builder.lotNumber(lot.getLotNumber());
+            } else {
+                builder.lotNumber(task.getLotId().toString());
+            }
+        }
+        
+        return builder.build();
     }
 
     public List<TaskDetailResponseDTO> entitiesToResponseDTOs(List<Task> tasks) {
