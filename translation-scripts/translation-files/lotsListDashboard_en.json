@@ -1,9 +1,12 @@
 {
   "pageTitle": "My Lot Documents",
+  "heroKicker": "Documents",
   "loading": "Loading your lots...",
   "error": "Failed to load lots",
   "noLotsAssigned": "No lots assigned to you yet.",
-  "manageLots": "Manage Lots",
+  "noLotsForProject": "No lots assigned for this project.",
+  "allProjects": "All Projects",
+  "filterByProject": "Filter by project",
   "columns": {
     "identifier": "Identifier",
     "lotNumber": "Lot #",

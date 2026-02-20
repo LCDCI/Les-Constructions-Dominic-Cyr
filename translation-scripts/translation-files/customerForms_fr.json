@@ -167,7 +167,7 @@
   "page": {
     "loading": "Chargement...",
     "backToDocuments": "Retour aux documents du lot",
-    "lotDocumentsTitle": "Documents du lot {{lotNumber}}",
+    "lotDocumentsTitle": "Documents du Lot {{lotNumber}}",
     "addressNotAvailable": "Adresse non disponible"
   },
   "tabs": {

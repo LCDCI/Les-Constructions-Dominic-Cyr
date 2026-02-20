@@ -40,3 +40,7 @@ en:7a05d6c4-1dc5-429e-9b8e-f3d139a6433f
 fr:b83a8c8d-701f-413d-82b0-ffe203564c16
 en:04e7fe1f-6cd3-422d-9717-af8efa050033
 fr:c0e054ae-c4ce-46db-b712-67aa8998c1d1
+en:29afb49d-0d39-4ce4-a91c-d31e0b72fd92
+fr:dec0ecbd-6da2-4d41-a099-f5c98842809a
+en:edc60ff8-12f4-4cb5-bd79-f0415ce314b9
+fr:bb5d5ef7-0ebc-487c-b192-51e873a2aadf
