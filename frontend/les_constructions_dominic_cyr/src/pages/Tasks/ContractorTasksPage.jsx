@@ -402,8 +402,13 @@ const ContractorTasksPage = () => {
                             onClick={() => handleTaskClick(task)}
                             className="task-row clickable"
                           >
-                            <td className="task-title">{task.taskTitle}</td>
-                            <td>
+                            <td
+                              className="task-title"
+                              data-label={t('table.title', 'Title')}
+                            >
+                              {task.taskTitle}
+                            </td>
+                            <td data-label={t('table.status', 'Status')}>
                               <span
                                 className={`status-badge ${getStatusClass(
                                   task.taskStatus
@@ -415,7 +420,7 @@ const ContractorTasksPage = () => {
                                 )}
                               </span>
                             </td>
-                            <td>
+                            <td data-label={t('table.priority', 'Priority')}>
                               <span
                                 className={`priority-badge ${getPriorityClass(
                                   task.taskPriority
@@ -427,10 +432,18 @@ const ContractorTasksPage = () => {
                                 )}
                               </span>
                             </td>
-                            <td>{formatDate(task.periodStart)}</td>
-                            <td>{formatDate(task.periodEnd)}</td>
-                            <td>{task.assignedToUserName || '—'}</td>
-                            <td>
+                            <td data-label={t('table.startDate', 'Start Date')}>
+                              {formatDate(task.periodStart)}
+                            </td>
+                            <td data-label={t('table.endDate', 'End Date')}>
+                              {formatDate(task.periodEnd)}
+                            </td>
+                            <td
+                              data-label={t('table.assignedTo', 'Assigned To')}
+                            >
+                              {task.assignedToUserName || '—'}
+                            </td>
+                            <td data-label={t('table.progress', 'Progress')}>
                               <div className="progress-cell">
                                 <div className="progress-bar-container">
                                   <div
