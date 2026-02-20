@@ -49,6 +49,11 @@
     "copyright": "Copyright © 2026. All rights reserved."
   },
   "locationDescriptions": {
-    "proj-001-foresta": "Foresta is located in St-Alphonse-de-Granby, offering easy access to nature trails, local amenities, and major highways. The perfect balance between seclusion and convenience."
+    "proj-001-foresta": "Foresta is located in St-Alphonse-de-Granby, offering easy access to nature trails, local amenities, and major highways. The perfect balance between seclusion and convenience.",
+    "proj-002-panorama": "Its lively village center, its cafés, galleries, and local shops give it a friendly and authentic atmosphere, where it is good to live all year round!"
+  },
+  "overviewDescriptions": {
+    "proj-001-foresta": "Located 50 minutes from Montreal and 10 minutes from Granby, in a wooded area of St-Alphonse-de-Granby, the F\u00f6resta project stands out with its concept of single-family homes built on large lots in the heart of nature. Controlled clearing and the preservation of wild buffer zones offer the privacy you seek to live in full harmony with nature!",
+    "proj-002-panorama": "Located in the picturesque village of Sutton in the Eastern Townships, the Pan\u00d8rama condo project redefines the art of living. Each unit has been designed with meticulous attention to detail, combining contemporary architecture, premium materials, and sustainable solutions. Offering bright spaces, breathtaking views, and absolute comfort in all seasons, this project provides an exclusive residential experience where prestige, nature, and serenity converge."
   }
 }

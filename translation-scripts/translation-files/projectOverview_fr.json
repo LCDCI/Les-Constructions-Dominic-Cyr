@@ -4,8 +4,8 @@
   "backToProjects": "Retour aux projets résidentiels",
   "addressLabel": "Adresse",
   "features": {
-    "livingEnvironment": "Environnement de vie",
-    "livingEnvironmentTitle": "Environnement de vie",
+    "livingEnvironment": "milieu de vie",
+    "livingEnvironmentTitle": "milieu de vie",
     "lots": "Terrains",
     "lotsTitle": "Terrains"
   },
@@ -19,11 +19,11 @@
   },
   "sections": {
     "overview": "Aperçu",
-    "location": "Localisation",
+    "location": "emplacement",
     "lots": "Terrains"
   },
   "modal": {
-    "locationTitle": "Localisation",
+    "locationTitle": "emplacement",
     "closeAriaLabel": "Fermer la modale",
     "close": "Fermer"
   },
@@ -49,6 +49,11 @@
     "copyright": "Droits d'auteur © 2026. Tous droits réservés."
   },
   "locationDescriptions": {
-    "proj-001-foresta": "Föresta est situé à St-Alphonse-de-Granby, offrant un accès facile aux sentiers naturels, aux commodités locales et aux autoroutes principales. L'équilibre parfait entre isolement et commodité."
+    "proj-001-foresta": "Föresta est situé à St-Alphonse-de-Granby, offrant un accès facile aux sentiers naturels, aux commodités locales et aux autoroutes principales. L'équilibre parfait entre isolement et commodité.",
+    "proj-002-panorama": "Son c\u0153ur villageois animé, ses cafés, galeries et commerces locaux lui donnent une atmosphère conviviale et authentique, où il fait bon vivre toute l'année!"
+  },
+  "overviewDescriptions": {
+    "proj-001-foresta": "Situé à 50 minutes de Montréal et à 10 minutes de Granby, dans un secteur boisé de St-Alphonse-de-Granby, le projet Föresta se distingue par son concept de maisons unifamiliales construites sur de grands terrains en pleine nature. Le déboisement contrôlé et la préservation de bandes sauvages offrent l'intimité dont vous recherchez pour vivre pleinement en harmonie avec la nature !",
+    "proj-002-panorama": "Situé dans le pittoresque village de Sutton dans les Cantons-de-l'Est, le projet de condos Pan\u00d8rama redéfinit l'art de vivre. Chaque unité a été conçue avec une attention méticuleuse des détails, alliant architecture contemporaine, matériaux nobles et solutions durables. Offrant des espaces lumineux, des vues imprenables et un confort absolu en toute saison, ce projet propose une expérience résidentielle exclusive où prestige, nature et sérénité se rencontrent."
   }
 }

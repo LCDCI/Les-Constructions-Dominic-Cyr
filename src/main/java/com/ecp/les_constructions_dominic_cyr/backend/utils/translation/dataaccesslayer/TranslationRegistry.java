@@ -53,8 +53,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.servererror", "f54a08b1-b0f6-4fda-9469-dac983b1ef42");
 
         // Project Overview page translations
-        fileIdMap.put("en.projectoverview", "fd831fd2-54b5-4f9f-b873-491f6ceac645");
-        fileIdMap.put("fr.projectoverview", "4138e502-a944-4350-a582-9a1b7d97bcc2");
+        fileIdMap.put("en.projectoverview", "76ff0e02-6599-4f44-b730-2e3d654ff5ca");
+        fileIdMap.put("fr.projectoverview", "8d4bb23a-8b6b-4f6b-a42a-4419d5dcf306");
 
         fileIdMap.put("en.lots", "5cb664b1-c10d-4fe1-92a7-52b9bb818e90");
         fileIdMap.put("fr.lots", "cf2ce42b-3fa1-4d3f-8d6e-76c63a4d684e");

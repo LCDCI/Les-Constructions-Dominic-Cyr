@@ -193,6 +193,9 @@ const LotsPage = () => {
           className="lots-header-section"
           style={{ backgroundColor: projectColors.primary }}
         >
+          {resolvedProjectId === 'proj-001-foresta' && (
+            <p className="exclusive-tag">{t('foresta.exclusiveCount')}</p>
+          )}
           <h1 style={{ color: projectColors.secondary }}>
             {projectName
               ? t('header.projectLots', { name: projectName })
@@ -202,15 +205,11 @@ const LotsPage = () => {
               style={{ backgroundColor: projectColors.accent }}
             ></span>
           </h1>
+          {resolvedProjectId === 'proj-001-foresta' && (
+            <p className="peace-tag">{t('foresta.peaceTagline')}</p>
+          )}
           {/* Button moved below all content */}
         </div>
-
-        {resolvedProjectId === 'proj-001-foresta' && (
-          <div className="lots-hero-text">
-            <h2 className="exclusive-tag">{t('foresta.exclusiveCount')}</h2>
-            <p className="peace-tag">{t('foresta.peaceTagline')}</p>
-          </div>
-        )}
 
         {resolvedProjectId === 'proj-002-panorama' && (
           <div className="lots-image-section">
