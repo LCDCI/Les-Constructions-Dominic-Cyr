@@ -378,7 +378,8 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     // Store as DOCUMENT under the project's folder in MinIO
     // Files-service (deployed) requires uploadedBy and uploaderRole
     const uploadedBy = user?.sub ?? '';
-    const uploaderRoleVal = (role && role.trim() !== '') ? role.trim().toUpperCase() : 'OWNER';
+    const uploaderRoleVal =
+      role && role.trim() !== '' ? role.trim().toUpperCase() : 'OWNER';
 
     const formDataEn = new FormData();
     formDataEn.append('file', fileEn);
@@ -523,7 +524,10 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
           form.append('projectId', createdProject.projectIdentifier);
           // Files-service (deployed) requires uploadedBy and uploaderRole
           form.append('uploadedBy', user?.sub ?? '');
-          form.append('uploaderRole', (role && role.trim() !== '') ? role.trim().toUpperCase() : 'OWNER');
+          form.append(
+            'uploaderRole',
+            role && role.trim() !== '' ? role.trim().toUpperCase() : 'OWNER'
+          );
 
           const uploadResult = await uploadFile(form);
           const uploadedId = uploadResult.fileId || uploadResult.id;
