@@ -15,10 +15,12 @@
     "email": "constructions.dcyr@gmail.com"
   },
   "hero": {
-    "title": "Our Realizations"
+    "title": "Realizations",
+    "subtitle": "When vision becomes reality"
   },
   "intro": {
-    "description": "Explore our portfolio of completed projects. Each realization represents our commitment to quality craftsmanship, attention to detail, and customer satisfaction. From residential renovations to commercial builds, we bring your vision to life."
+    "description": "Our realizations reflect our expertise and commitment to quality. Each project is crafted with care to deliver lasting, well-designed spaces tailored to the needs of our clients.",
+    "portfolioText": "Here is a portfolio of projects completed in recent years."
   },
   "gallery": {
     "previousAriaLabel": "Previous image",
