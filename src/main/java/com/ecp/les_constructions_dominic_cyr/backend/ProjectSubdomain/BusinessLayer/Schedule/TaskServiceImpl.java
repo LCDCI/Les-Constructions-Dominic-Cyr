@@ -5,6 +5,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.Busi
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationCategory;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.ScheduleRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Task;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.TaskStatus;
@@ -34,6 +36,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskMapper taskMapper;
     private final UsersRepository usersRepository;
     private final LotRepository lotRepository;
+    private final ScheduleRepository scheduleRepository;
     private final NotificationService notificationService;
     private final MailerServiceClient mailerServiceClient;
 
@@ -64,6 +67,14 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task task = taskMapper.requestDTOToEntity(taskRequestDTO, assignedUser);
+        
+        // Set lotId from the schedule
+        if (taskRequestDTO.getScheduleId() != null && !taskRequestDTO.getScheduleId().isBlank()) {
+            Schedule schedule = scheduleRepository.findByScheduleIdentifier(taskRequestDTO.getScheduleId())
+                    .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + taskRequestDTO.getScheduleId()));
+            task.setLotId(schedule.getLotId());
+        }
+        
         Task savedTask = taskRepository.save(task);
 
         log.info("Task created with identifier: {}", savedTask.getTaskIdentifier().getTaskId());
@@ -85,6 +96,14 @@ public class TaskServiceImpl implements TaskService {
         }
 
         taskMapper.updateEntityFromRequestDTO(existingTask, taskRequestDTO, assignedUser);
+        
+        // Update lotId from the schedule if scheduleId was changed
+        if (taskRequestDTO.getScheduleId() != null && !taskRequestDTO.getScheduleId().isBlank()) {
+            Schedule schedule = scheduleRepository.findByScheduleIdentifier(taskRequestDTO.getScheduleId())
+                    .orElseThrow(() -> new NotFoundException("Schedule not found with identifier: " + taskRequestDTO.getScheduleId()));
+            existingTask.setLotId(schedule.getLotId());
+        }
+        
         Task updatedTask = taskRepository.save(existingTask);
 
         // --- Notification logic ---
