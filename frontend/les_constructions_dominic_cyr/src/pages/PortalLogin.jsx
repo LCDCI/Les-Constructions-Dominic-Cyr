@@ -54,7 +54,9 @@ export default function PortalLogin() {
                 prompt: 'login',
               },
               appState: {
-                returnTo: (location.state && location.state.returnTo) || '/portal/login',
+                returnTo:
+                  (location.state && location.state.returnTo) ||
+                  '/portal/login',
               },
             })
           }

@@ -1104,9 +1104,15 @@ const LotDocumentsPage = () => {
   const projectColor = project?.primaryColor || '#aab2a6';
   const lotDisplayTitle =
     lotIndex !== null
-      ? t('page.lotDocumentsTitle', { lotNumber: lotIndex, defaultValue: 'Lot {{lotNumber}} Documents' })
+      ? t('page.lotDocumentsTitle', {
+          lotNumber: lotIndex,
+          defaultValue: 'Lot {{lotNumber}} Documents',
+        })
       : lot?.lotNumber
-        ? t('page.lotDocumentsTitle', { lotNumber: lot.lotNumber, defaultValue: 'Lot {{lotNumber}} Documents' })
+        ? t('page.lotDocumentsTitle', {
+            lotNumber: lot.lotNumber,
+            defaultValue: 'Lot {{lotNumber}} Documents',
+          })
         : t('page.documentsTitle', 'Documents');
 
   return (

@@ -58,12 +58,18 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
       <div className="lots-list-dashboard" data-testid="lots-list">
         <section className="lld-hero projects-hero">
           <div className="projects-hero-content">
-            <span className="section-kicker">{t('heroKicker', 'Documents')}</span>
-            <h1 className="projects-title">{t('pageTitle', 'My Lot Documents')}</h1>
+            <span className="section-kicker">
+              {t('heroKicker', 'Documents')}
+            </span>
+            <h1 className="projects-title">
+              {t('pageTitle', 'My Lot Documents')}
+            </h1>
           </div>
         </section>
         <div className="lld-content">
-          <div className="loading-state">{t('loading', 'Loading your lots...')}</div>
+          <div className="loading-state">
+            {t('loading', 'Loading your lots...')}
+          </div>
         </div>
       </div>
     );
@@ -74,12 +80,18 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
       <div className="lots-list-dashboard" data-testid="lots-list">
         <section className="lld-hero projects-hero">
           <div className="projects-hero-content">
-            <span className="section-kicker">{t('heroKicker', 'Documents')}</span>
-            <h1 className="projects-title">{t('pageTitle', 'My Lot Documents')}</h1>
+            <span className="section-kicker">
+              {t('heroKicker', 'Documents')}
+            </span>
+            <h1 className="projects-title">
+              {t('pageTitle', 'My Lot Documents')}
+            </h1>
           </div>
         </section>
         <div className="lld-content">
-          <div className="error-state" data-testid="error-state">{error}</div>
+          <div className="error-state" data-testid="error-state">
+            {error}
+          </div>
         </div>
       </div>
     );
@@ -95,7 +107,9 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
       <section className="lld-hero projects-hero">
         <div className="projects-hero-content">
           <span className="section-kicker">{t('heroKicker', 'Documents')}</span>
-          <h1 className="projects-title">{t('pageTitle', 'My Lot Documents')}</h1>
+          <h1 className="projects-title">
+            {t('pageTitle', 'My Lot Documents')}
+          </h1>
         </div>
       </section>
 
@@ -133,19 +147,40 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
 
               {lots.length === 0 ? (
                 <div className="project-no-lots">
-                  <p>{t('noLotsForProject', 'No lots assigned for this project.')}</p>
+                  <p>
+                    {t(
+                      'noLotsForProject',
+                      'No lots assigned for this project.'
+                    )}
+                  </p>
                 </div>
               ) : (
                 <div className="lots-table">
                   <div className="lots-table-header">
-                    <div className="lots-cell">{t('columns.identifier', 'Identifier')}</div>
-                    <div className="lots-cell">{t('columns.lotNumber', 'Lot #')}</div>
-                    <div className="lots-cell">{t('columns.civicAddress', 'Civic Address')}</div>
-                    <div className="lots-cell">{t('columns.areaSquareFeet', 'Area (sqft)')}</div>
-                    <div className="lots-cell">{t('columns.areaSquareMeters', 'Area (m²)')}</div>
-                    <div className="lots-cell">{t('columns.price', 'Price')}</div>
-                    <div className="lots-cell">{t('columns.status', 'Status')}</div>
-                    <div className="lots-cell lots-cell-actions">{t('columns.actions', 'Actions')}</div>
+                    <div className="lots-cell">
+                      {t('columns.identifier', 'Identifier')}
+                    </div>
+                    <div className="lots-cell">
+                      {t('columns.lotNumber', 'Lot #')}
+                    </div>
+                    <div className="lots-cell">
+                      {t('columns.civicAddress', 'Civic Address')}
+                    </div>
+                    <div className="lots-cell">
+                      {t('columns.areaSquareFeet', 'Area (sqft)')}
+                    </div>
+                    <div className="lots-cell">
+                      {t('columns.areaSquareMeters', 'Area (m²)')}
+                    </div>
+                    <div className="lots-cell">
+                      {t('columns.price', 'Price')}
+                    </div>
+                    <div className="lots-cell">
+                      {t('columns.status', 'Status')}
+                    </div>
+                    <div className="lots-cell lots-cell-actions">
+                      {t('columns.actions', 'Actions')}
+                    </div>
                   </div>
 
                   {lots.map((lot, lotIndex) => (
@@ -157,17 +192,25 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
                       <div className="lots-cell">{lot.lotNumber || '—'}</div>
                       <div className="lots-cell">{`Lot ${lotIndex + 1}`}</div>
                       <div className="lots-cell">{lot.civicAddress || '—'}</div>
-                      <div className="lots-cell">{lot.dimensionsSquareFeet || '—'}</div>
-                      <div className="lots-cell">{lot.dimensionsSquareMeters || '—'}</div>
+                      <div className="lots-cell">
+                        {lot.dimensionsSquareFeet || '—'}
+                      </div>
+                      <div className="lots-cell">
+                        {lot.dimensionsSquareMeters || '—'}
+                      </div>
                       <div className="lots-cell">
                         {lot.price ? `$${lot.price.toLocaleString()}` : '—'}
                       </div>
                       <div className="lots-cell">
                         {lot.lotStatus ? (
-                          <span className={`lot-status lot-status-${lot.lotStatus?.toLowerCase()}`}>
+                          <span
+                            className={`lot-status lot-status-${lot.lotStatus?.toLowerCase()}`}
+                          >
                             {lot.lotStatus}
                           </span>
-                        ) : '—'}
+                        ) : (
+                          '—'
+                        )}
                       </div>
                       <div className="lots-cell lots-cell-actions">
                         <Link
