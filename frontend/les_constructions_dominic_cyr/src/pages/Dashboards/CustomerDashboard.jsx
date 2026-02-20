@@ -51,8 +51,6 @@ const CustomerDashboard = () => {
 
   return (
     <div className="customer-dashboard">
-      <h1 className="dashboard-title">{t('title', 'Customer Dashboard')}</h1>
-
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard

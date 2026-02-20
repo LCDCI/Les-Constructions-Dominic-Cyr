@@ -51,8 +51,6 @@ const SalespersonDashboard = () => {
 
   return (
     <div className="salesperson-dashboard">
-      <h1 className="dashboard-title">{t('title', 'Salesperson Dashboard')}</h1>
-
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard

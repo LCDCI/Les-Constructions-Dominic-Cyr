@@ -1060,7 +1060,7 @@ const LotDocumentsPage = () => {
   if (loading) {
     return (
       <div className="lot-documents-page" data-testid="lot-documents-page">
-        <div className="loading-state">Loading...</div>
+        <div className="loading-state">{t('page.loading', 'Loading...')}</div>
       </div>
     );
   }
@@ -1074,7 +1074,7 @@ const LotDocumentsPage = () => {
             onClick={() => navigate(backLinkTarget)}
             className="btn btn-secondary"
           >
-            Back to Lot Documents
+            {t('page.backToDocuments', 'Back to Lot Documents')}
           </button>
         </div>
       </div>
@@ -1086,13 +1086,13 @@ const LotDocumentsPage = () => {
       {/* Header */}
       <div className="page-header">
         <Link to={backLinkTarget} className="back-link">
-          <FaArrowLeft /> Back to Lot Documents
+          <FaArrowLeft /> {t('page.backToDocuments', 'Back to Lot Documents')}
         </Link>
         <div className="page-header-title">
-          <h1>Lot {lot?.lotNumber || lotId} Documents</h1>
+          <h1>{t('page.lotDocumentsTitle', 'Lot {{lotNumber}} Documents', { lotNumber: lot?.lotNumber || lotId })}</h1>
           <div className="page-header-subtitle">
             <span className="lot-address">
-              {lot?.civicAddress || 'Address not available'}
+              {lot?.civicAddress || t('page.addressNotAvailable', 'Address not available')}
             </span>
             {lot?.lotStatus && (
               <span
@@ -1112,14 +1112,14 @@ const LotDocumentsPage = () => {
           onClick={() => setViewMode('documents')}
           data-testid="view-mode-documents"
         >
-          <FaFile /> Documents
+          <FaFile /> {t('tabs.documents', 'Documents')}
         </button>
         <button
           className={`view-mode-button ${viewMode === 'forms' ? 'active' : ''}`}
           onClick={() => setViewMode('forms')}
           data-testid="view-mode-forms"
         >
-          <GoFileDiff /> Forms
+          <GoFileDiff /> {t('tabs.forms', 'Forms')}
         </button>
       </div>
 
@@ -1146,21 +1146,21 @@ const LotDocumentsPage = () => {
                   onClick={() => setFilterType('all')}
                   data-testid="lot-documents-tab-all"
                 >
-                  All
+                  {t('toolbar.filterAll', 'All')}
                 </button>
                 <button
                   className={`tab-button ${filterType === 'image' ? 'active' : ''}`}
                   onClick={() => setFilterType('image')}
                   data-testid="lot-documents-tab-photos"
                 >
-                  <FaImage /> Photos
+                  <FaImage /> {t('toolbar.filterPhotos', 'Photos')}
                 </button>
                 <button
                   className={`tab-button ${filterType === 'file' ? 'active' : ''}`}
                   onClick={() => setFilterType('file')}
                   data-testid="lot-documents-tab-files"
                 >
-                  <FaFile /> Files
+                  <FaFile /> {t('toolbar.filterFiles', 'Files')}
                 </button>
               </div>
 
@@ -1171,7 +1171,7 @@ const LotDocumentsPage = () => {
                   className="btn btn-primary upload-button"
                   data-testid="lot-documents-upload-button"
                 >
-                  <FaUpload /> {uploading ? 'Uploading...' : 'Upload'}
+                  <FaUpload /> {uploading ? t('toolbar.uploading', 'Uploading...') : t('toolbar.upload', 'Upload')}
                 </button>
               )}
             </div>
@@ -1198,8 +1198,8 @@ const LotDocumentsPage = () => {
           <div className="documents-container">
             {filteredDocuments.length === 0 ? (
               <div className="empty-state" data-testid="empty-state">
-                <p>No documents found.</p>
-                {canUpload && <p>Upload files to get started.</p>}
+                <p>{t('documentsList.noDocumentsFound', 'No documents found.')}</p>
+                {canUpload && <p>{t('documentsList.uploadToGetStarted', 'Upload files to get started.')}</p>}
               </div>
             ) : (
               <div
@@ -1235,7 +1235,7 @@ const LotDocumentsPage = () => {
                         <button
                           onClick={() => handleDownload(doc.id, doc.fileName)}
                           className="btn-icon"
-                          title="Download"
+                          title={t('documentsList.downloadTitle', 'Download')}
                           data-testid={`lot-document-download-${doc.id}`}
                         >
                           <FaDownload />
@@ -1246,7 +1246,7 @@ const LotDocumentsPage = () => {
                               handleDeleteClick(doc.id, doc.fileName)
                             }
                             className="btn-icon btn-danger"
-                            title="Delete"
+                            title={t('documentsList.deleteTitle', 'Delete')}
                             data-testid={`lot-document-delete-${doc.id}`}
                           >
                             <FaTrash />
@@ -1276,7 +1276,7 @@ const LotDocumentsPage = () => {
                         <button
                           onClick={() => handleDownload(doc.id, doc.fileName)}
                           className="btn-icon"
-                          title="Download"
+                          title={t('documentsList.downloadTitle', 'Download')}
                           data-testid={`lot-document-download-${doc.id}`}
                         >
                           <FaDownload />
@@ -1287,7 +1287,7 @@ const LotDocumentsPage = () => {
                               handleDeleteClick(doc.id, doc.fileName)
                             }
                             className="btn-icon btn-danger"
-                            title="Delete"
+                            title={t('documentsList.deleteTitle', 'Delete')}
                             data-testid={`lot-document-delete-${doc.id}`}
                           >
                             <FaTrash />
@@ -1305,10 +1305,10 @@ const LotDocumentsPage = () => {
         /* Forms View */
         <div className="forms-view-container" data-testid="lot-forms-view">
           {lotFormsLoading ? (
-            <div className="loading-state">Loading forms...</div>
+            <div className="loading-state">{t('lotForms.loadingForms', 'Loading forms...')}</div>
           ) : lotForms.length === 0 ? (
             <div className="empty-state" data-testid="no-forms-state">
-              <p>No forms assigned for this lot.</p>
+              <p>{t('lotForms.noFormsAssigned', 'No forms assigned for this lot.')}</p>
             </div>
           ) : (
             <div className="lot-forms-list">
@@ -1331,13 +1331,13 @@ const LotDocumentsPage = () => {
                   <div className="lot-form-meta">
                     {form.assignedAt && (
                       <p>
-                        Assigned:{' '}
+                        {t('lotForms.assignedLabel', 'Assigned:')}{' '}
                         {new Date(form.assignedAt).toLocaleDateString()}
                       </p>
                     )}
                     {form.submittedAt && (
                       <p>
-                        Submitted:{' '}
+                        {t('lotForms.submittedLabel', 'Submitted:')}{' '}
                         {new Date(form.submittedAt).toLocaleDateString()}
                       </p>
                     )}
@@ -1352,7 +1352,7 @@ const LotDocumentsPage = () => {
                         className="btn btn-primary lot-form-action"
                         data-testid={`lot-form-fill-${form.formId}`}
                       >
-                        Fill Form
+                        {t('lotForms.fillForm', 'Fill Form')}
                       </button>
                     )}
                   {/* Show View Form button only for submitted forms (all users) */}
@@ -1362,7 +1362,7 @@ const LotDocumentsPage = () => {
                       className="btn btn-secondary lot-form-action"
                       data-testid={`lot-form-view-${form.formId}`}
                     >
-                      View Form
+                      {t('lotForms.viewForm', 'View Form')}
                     </button>
                   )}
                 </div>
@@ -1375,16 +1375,16 @@ const LotDocumentsPage = () => {
       {canViewForms && (
         <div className="lot-forms-section" data-testid="lot-forms-section">
           <div className="lot-forms-header">
-            <h2>Finalized Forms</h2>
-            <p>Download completed forms for this lot.</p>
+            <h2>{t('finalizedForms.title', 'Finalized Forms')}</h2>
+            <p>{t('finalizedForms.description', 'Download completed forms for this lot.')}</p>
           </div>
 
           {finalizedFormsLoading ? (
-            <div className="lot-forms-loading">Loading finalized forms...</div>
+            <div className="lot-forms-loading">{t('finalizedForms.loading', 'Loading finalized forms...')}</div>
           ) : finalizedFormsError ? (
             <div className="lot-forms-error">{finalizedFormsError}</div>
           ) : finalizedForms.length === 0 ? (
-            <div className="lot-forms-empty">No finalized forms yet.</div>
+            <div className="lot-forms-empty">{t('finalizedForms.noForms', 'No finalized forms yet.')}</div>
           ) : (
             <div className="lot-forms-list">
               {finalizedForms.map(form => (
@@ -1396,10 +1396,10 @@ const LotDocumentsPage = () => {
                         : 'Form'}
                     </h3>
                     <div className="lot-form-meta">
-                      <span>Form ID: {form.formId}</span>
+                      <span>{t('finalizedForms.formId', 'Form ID:')} {form.formId}</span>
                       {form.completedDate && (
                         <span>
-                          Completed:{' '}
+                          {t('finalizedForms.completedLabel', 'Completed:')}{' '}
                           {new Date(form.completedDate).toLocaleDateString()}
                         </span>
                       )}
@@ -1409,7 +1409,7 @@ const LotDocumentsPage = () => {
                     className="btn btn-secondary lot-form-download"
                     onClick={() => handleFormDownload(form)}
                   >
-                    <FaDownload /> Download PDF
+                    <FaDownload /> {t('finalizedForms.downloadPdf', 'Download PDF')}
                   </button>
                 </div>
               ))}
@@ -1534,25 +1534,25 @@ const LotDocumentsPage = () => {
       {deleteConfirmModal && (
         <div className="modal-overlay" data-testid="confirm-delete-modal">
           <div className="modal-content">
-            <h3>Confirm Deletion</h3>
+            <h3>{t('deleteModal.title', 'Confirm Deletion')}</h3>
             <p>
-              Are you sure you want to delete "{deleteConfirmModal.fileName}"?
+              {t('deleteModal.message', 'Are you sure you want to delete "{{fileName}}"?', { fileName: deleteConfirmModal.fileName })}
             </p>
-            <p className="modal-warning">This action cannot be undone.</p>
+            <p className="modal-warning">{t('deleteModal.warning', 'This action cannot be undone.')}</p>
             <div className="modal-actions">
               <button
                 onClick={handleDeleteCancel}
                 className="btn btn-secondary"
                 data-testid="confirm-delete-no"
               >
-                Cancel
+                {t('deleteModal.cancel', 'Cancel')}
               </button>
               <button
                 onClick={handleDeleteConfirm}
                 className="btn btn-danger"
                 data-testid="confirm-delete-yes"
               >
-                Delete
+                {t('deleteModal.delete', 'Delete')}
               </button>
             </div>
           </div>

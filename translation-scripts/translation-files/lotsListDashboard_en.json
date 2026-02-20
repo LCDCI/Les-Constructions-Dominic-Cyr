@@ -1,0 +1,18 @@
+{
+  "pageTitle": "My Lot Documents",
+  "loading": "Loading your lots...",
+  "error": "Failed to load lots",
+  "noLotsAssigned": "No lots assigned to you yet.",
+  "manageLots": "Manage Lots",
+  "columns": {
+    "identifier": "Identifier",
+    "lotNumber": "Lot #",
+    "civicAddress": "Civic Address",
+    "areaSquareFeet": "Area (sqft)",
+    "areaSquareMeters": "Area (m²)",
+    "price": "Price",
+    "status": "Status",
+    "actions": "Actions"
+  },
+  "viewDocuments": "View Documents"
+}

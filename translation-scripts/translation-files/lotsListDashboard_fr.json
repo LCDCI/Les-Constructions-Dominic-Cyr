@@ -1,0 +1,18 @@
+{
+  "pageTitle": "Mes documents de lot",
+  "loading": "Chargement de vos lots...",
+  "error": "Échec du chargement des lots",
+  "noLotsAssigned": "Aucun lot ne vous a encore été assigné.",
+  "manageLots": "Gérer les lots",
+  "columns": {
+    "identifier": "Identifiant",
+    "lotNumber": "Lot #",
+    "civicAddress": "Adresse civique",
+    "areaSquareFeet": "Superficie (pi²)",
+    "areaSquareMeters": "Superficie (m²)",
+    "price": "Prix",
+    "status": "Statut",
+    "actions": "Actions"
+  },
+  "viewDocuments": "Voir les documents"
+}

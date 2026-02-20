@@ -69,8 +69,6 @@ const OwnerDashboard = () => {
 
   return (
     <div className="owner-dashboard">
-      <h1 className="dashboard-title">{t('title', 'Owner Dashboard')}</h1>
-
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard
