@@ -147,16 +147,26 @@ const RealizationsPage = () => {
       {/* Portfolio Text */}
       <section className="realizations-portfolio-text-section">
         <p className="realizations-portfolio-text">
-          {t('intro.portfolioText', 'Here is a portfolio of projects completed in recent years.')}
+          {t(
+            'intro.portfolioText',
+            'Here is a portfolio of projects completed in recent years.'
+          )}
         </p>
       </section>
 
       {/* Portfolio 2x2 Grid */}
-      <section className="realizations-portfolio-grid-section" aria-label="Portfolio">
+      <section
+        className="realizations-portfolio-grid-section"
+        aria-label="Portfolio"
+      >
         <div className="realizations-portfolio-grid">
           {PORTFOLIO_IMAGES.map((url, idx) => (
             <div key={idx} className="realizations-portfolio-grid-item">
-              <img src={url} alt={`Portfolio ${idx + 1}`} className="realizations-portfolio-grid-img" />
+              <img
+                src={url}
+                alt={`Portfolio ${idx + 1}`}
+                className="realizations-portfolio-grid-img"
+              />
             </div>
           ))}
         </div>

@@ -216,7 +216,9 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   aspect-ratio: 4 / 3;
   background: #ffffff;
-  transition: transform 0.3s var(--easing), box-shadow 0.3s var(--easing);
+  transition:
+    transform 0.3s var(--easing),
+    box-shadow 0.3s var(--easing);
 }
 
 .realizations-portfolio-grid-item:hover {

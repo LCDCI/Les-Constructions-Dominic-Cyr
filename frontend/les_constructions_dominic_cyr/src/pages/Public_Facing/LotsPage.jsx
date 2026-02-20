@@ -198,7 +198,9 @@ const LotsPage = () => {
             <p className="exclusive-tag">{t('foresta.exclusiveCount')}</p>
           )}
           {resolvedProjectId === 'proj-002-panorama' && (
-            <p className="exclusive-tag" style={{ whiteSpace: 'pre-line' }}>{t('panorama.preTitle')}</p>
+            <p className="exclusive-tag" style={{ whiteSpace: 'pre-line' }}>
+              {t('panorama.preTitle')}
+            </p>
           )}
           <h1 style={{ color: projectColors.secondary }}>
             {resolvedProjectId === 'proj-002-panorama'

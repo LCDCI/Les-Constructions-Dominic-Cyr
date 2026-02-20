@@ -130,12 +130,15 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
           <div className="section-header center renovations-feature-card">
             <h2 className="section-title" id="renovations-intro-title">
               <em>{t('intro.emphasis', 'Transform')}</em>{' '}
-              {t('intro.rest', 'your home into the living space of your dreams!')}
+              {t(
+                'intro.rest',
+                'your home into the living space of your dreams!'
+              )}
             </h2>
             <p className="section-subtitle" style={{ whiteSpace: 'pre-line' }}>
               {t(
                 'intro.description',
-                'Whether it\'s modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\n\nEntrust your renovation to passionate professionals!'
+                "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\n\nEntrust your renovation to passionate professionals!"
               )}
             </p>
             <Link to="/contact" className="link-arrow">
@@ -197,7 +200,6 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
           </p>
         </div>
       )}
-
     </div>
   );
 };

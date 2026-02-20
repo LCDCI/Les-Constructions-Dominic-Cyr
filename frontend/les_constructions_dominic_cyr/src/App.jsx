@@ -118,7 +118,10 @@ function ConditionalFooter() {
   const isProjectPage =
     matchPath('/projects/:projectIdentifier/overview', location.pathname) ||
     matchPath('/projects/:projectIdentifier/lots', location.pathname) ||
-    matchPath('/projects/:projectIdentifier/living-environment', location.pathname);
+    matchPath(
+      '/projects/:projectIdentifier/living-environment',
+      location.pathname
+    );
 
   const isContactPage = location.pathname === '/contact';
   const isPortalLoginPage = location.pathname === '/portal/login';
