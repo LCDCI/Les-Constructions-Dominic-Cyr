@@ -29,8 +29,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.contact", "cc125a16-7546-44f2-933f-ec27f8805a8d");
 
         // Renovations page translations
-        fileIdMap.put("en.renovations", "af51f1ba-55d3-4ab4-b8f3-863065186dcc");
-        fileIdMap.put("fr.renovations", "01e4cdb3-bab2-4009-bf54-5808f2ad3fd1");
+        fileIdMap.put("en.renovations", "103eac6c-d8c7-4579-83c9-df458c8a44e7");
+        fileIdMap.put("fr.renovations", "3d39d3b1-ec2c-44e2-a1ba-9afaafa6bb44");
 
         // Realizations page translations
         fileIdMap.put("en.realizations", "cbb6c67a-bd74-4c07-8a04-95706446183a");

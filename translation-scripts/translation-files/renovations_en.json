@@ -1,16 +1,13 @@
 {
   "hero": {
-    "label": "RENOVATIONS",
-    "heading": "Custom renovations, delivered with care",
-    "lede": "Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity."
-  },
-  "kicker": {
-    "renovations": "Renovations"
+    "label": "Renovate, Modernize & Transform",
+    "heading": "Renovations",
+    "lede": "Your home deserves the very best"
   },
   "intro": {
-    "emphasis": "Modernize",
-    "rest": "your space with style",
-    "description": "Whether you want to refresh your kitchen, rethink your basement, open up spaces, or enhance your façade, we deliver with precision, rigor, and creativity.",
+    "emphasis": "Transform",
+    "rest": "your home into the living space of your dreams!",
+    "description": "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\nEntrust your renovation to passionate professionals!",
     "cta": "Talk to an expert"
   },
   "grid": {
@@ -60,8 +57,5 @@
       "after": "After",
       "sectionLabel": "Renovation images"
     }
-  },
-  "descriptions": {
-    "78cc74d2-0dae-4be9-be91-d3750311da94": "This renovation includes a complete kitchen remodel with new cabinets, countertops, and appliances, as well as updated flooring throughout the main living areas."
   }
 }
