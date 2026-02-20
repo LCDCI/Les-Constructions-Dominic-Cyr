@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useTranslation } from 'react-i18next';
 import useBackendUser from '../../../hooks/useBackendUser';
 import LotSelector from './LotSelector';
 import { projectApi } from '../api/projectApi';
@@ -15,6 +16,8 @@ const translations = {
     form: {
       sections: {
         basicInfo: 'Basic Information',
+        basicInfoFr: 'Basic Information (French)',
+        basicInfoEn: 'Basic Information (English)',
         statusDates: 'Status & Dates',
         colors: 'Colors',
         customerBuyer: 'Customer & Buyer',
@@ -32,7 +35,6 @@ const translations = {
         primaryColor: 'Primary Color',
         tertiaryColor: 'Secondary Color',
         buyerColor: 'Accent Color',
-        // Removed in UI: buyerName, customerId
         progressPercentage: 'Progress Percentage',
         coverPhoto: 'Cover Photo',
       },
@@ -40,14 +42,13 @@ const translations = {
         projectName: 'Enter project name',
         projectDescription: 'Enter project description',
         location: 'Enter project location',
-        // Removed in UI: buyerName, customerId
         coverPhoto: 'Choose an image file...',
       },
       buttons: {
         createProject: 'Create Project',
         cancel: 'Cancel',
         submitting: 'Creating...',
-        fillOutEnglish: 'Fill out English',
+        nextStep: 'Next',
         continue: 'Continue',
         continueToLots: 'Continue to add lots',
         back: 'Back',
@@ -57,11 +58,25 @@ const translations = {
       },
       labels: {
         noFileChosen: 'No file chosen',
+        formStep: 'Form step',
+        coverPreview: 'Cover preview',
+      },
+      tabs: {
+        frenchInfo: 'French Info',
+        englishInfo: 'English Info',
+        lots: 'Lots',
       },
       steps: {
         one: 'Step 1 of 3',
         two: 'Step 2 of 3',
         three: 'Step 3 of 3',
+      },
+      statusOptions: {
+        planned: 'Planned',
+        inProgress: 'In Progress',
+        delayed: 'Delayed',
+        completed: 'Completed',
+        cancelled: 'Cancelled',
       },
       validation: {
         required: 'This field is required',
@@ -69,7 +84,6 @@ const translations = {
         invalidImageType: 'Invalid image type. Allowed: PNG, JPG, JPEG, WEBP',
       },
       messages: {
-        fillOutEnglish: 'Please fill out the English version of the form',
         missingFields:
           'Some required fields are missing. Please complete the highlighted fields.',
       },
@@ -80,6 +94,8 @@ const translations = {
     form: {
       sections: {
         basicInfo: 'Informations de base',
+        basicInfoFr: 'Informations de base (français)',
+        basicInfoEn: 'Informations de base (anglais)',
         statusDates: 'Statut et dates',
         colors: 'Couleurs',
         customerBuyer: 'Client et acheteur',
@@ -97,7 +113,6 @@ const translations = {
         primaryColor: 'Couleur principale',
         tertiaryColor: 'Couleur secondaire',
         buyerColor: "Couleur d'accent",
-        // Removed in UI: buyerName, customerId
         progressPercentage: 'Pourcentage de progression',
         coverPhoto: 'Photo de couverture',
       },
@@ -105,14 +120,13 @@ const translations = {
         projectName: 'Entrez le nom du projet',
         projectDescription: 'Entrez la description du projet',
         location: "Entrez l'emplacement du projet",
-        // Removed in UI: buyerName, customerId
         coverPhoto: 'Choisissez une image...',
       },
       buttons: {
         createProject: 'Créer le projet',
         cancel: 'Annuler',
         submitting: 'Création en cours...',
-        fillOutEnglish: "Remplir l'anglais",
+        nextStep: 'Suivant',
         continue: 'Continuer',
         continueToLots: 'Continuer vers les lots',
         back: 'Retour',
@@ -122,11 +136,25 @@ const translations = {
       },
       labels: {
         noFileChosen: 'Aucun fichier choisi',
+        formStep: 'Étape du formulaire',
+        coverPreview: 'Aperçu de la couverture',
+      },
+      tabs: {
+        frenchInfo: 'Info français',
+        englishInfo: 'Info anglais',
+        lots: 'Lots',
       },
       steps: {
         one: 'Étape 1 sur 3',
         two: 'Étape 2 sur 3',
         three: 'Étape 3 sur 3',
+      },
+      statusOptions: {
+        planned: 'Planifié',
+        inProgress: 'En cours',
+        delayed: 'Retardé',
+        completed: 'Terminé',
+        cancelled: 'Annulé',
       },
       validation: {
         required: 'Ce champ est requis',
@@ -135,7 +163,6 @@ const translations = {
           "Type d'image invalide. Autorisés: PNG, JPG, JPEG, WEBP",
       },
       messages: {
-        fillOutEnglish: 'Veuillez remplir la version anglaise du formulaire',
         missingFields:
           'Des champs obligatoires sont manquants. Veuillez compléter les champs en surbrillance.',
       },
@@ -146,13 +173,16 @@ const translations = {
 const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
   const { getAccessTokenSilently, user } = useAuth0();
   const { role } = useBackendUser();
+  const { i18n } = useTranslation();
+  // App-level language (what the user chose before opening the form)
+  const appLanguage = (i18n.language || '').toLowerCase().startsWith('fr') ? 'fr' : 'en';
   // Start with French form first
   const [currentLanguage, setCurrentLanguage] = useState('fr');
 
-  // Get translations based on current language
+  // All UI text uses the app language so the entire form is in one language
   const t = key => {
     const keys = key.split('.');
-    let value = translations[currentLanguage];
+    let value = translations[appLanguage];
     for (const k of keys) {
       value = value?.[k];
     }
@@ -639,16 +669,16 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
       <div
         className="language-switcher step-indicator"
         role="tablist"
-        aria-label="Form step"
+        aria-label={t('form.labels.formStep')}
       >
         <span className={`lang-indicator ${step === 0 ? 'active' : ''}`}>
-          Français
+          {t('form.tabs.frenchInfo')}
         </span>
         <span className={`lang-indicator ${step === 1 ? 'active' : ''}`}>
-          English
+          {t('form.tabs.englishInfo')}
         </span>
         <span className={`lang-indicator ${step === 2 ? 'active' : ''}`}>
-          Lots
+          {t('form.tabs.lots')}
         </span>
       </div>
 
@@ -668,7 +698,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         >
           {/* Step 0: French — all fields. Step 1: English — only name, description, location */}
           <div className="form-section">
-            <h2>{t('form.sections.basicInfo')}</h2>
+            <h2>{step === 0 ? t('form.sections.basicInfoFr') : t('form.sections.basicInfoEn')}</h2>
 
             {step === 0 && (
               <>
@@ -816,11 +846,11 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                     value={formData.status}
                     onChange={e => handleInputChange('status', e.target.value)}
                   >
-                    <option value="PLANNED">PLANNED</option>
-                    <option value="IN_PROGRESS">IN_PROGRESS</option>
-                    <option value="DELAYED">DELAYED</option>
-                    <option value="COMPLETED">COMPLETED</option>
-                    <option value="CANCELLED">CANCELLED</option>
+                    <option value="PLANNED">{t('form.statusOptions.planned')}</option>
+                    <option value="IN_PROGRESS">{t('form.statusOptions.inProgress')}</option>
+                    <option value="DELAYED">{t('form.statusOptions.delayed')}</option>
+                    <option value="COMPLETED">{t('form.statusOptions.completed')}</option>
+                    <option value="CANCELLED">{t('form.statusOptions.cancelled')}</option>
                   </select>
                 </div>
 
@@ -960,7 +990,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                     <div className="form-group">
                       <img
                         src={coverImagePreviewUrl}
-                        alt="Cover preview"
+                        alt={t('form.labels.coverPreview')}
                         className="create-project-cover-preview"
                       />
                       <div className="create-project-cover-actions">
@@ -1015,7 +1045,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                 onClick={handleSwitchToEnglish}
                 disabled={isSubmitting || !isFrenchComplete()}
               >
-                {t('form.buttons.fillOutEnglish')}
+                {t('form.buttons.nextStep')}
               </button>
             )}
             {step === 1 && (
@@ -1050,7 +1080,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         <div className="form-section" ref={formContentRef}>
           <h2>{t('form.sections.lots')}</h2>
           <LotSelector
-            currentLanguage={currentLanguage}
+            currentLanguage={appLanguage}
             selectedLots={formData.lotIdentifiers || []}
             onChange={lotIds => {
               handleInputChange('lotIdentifiers', lotIds || []);

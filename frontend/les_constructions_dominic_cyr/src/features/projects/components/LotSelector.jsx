@@ -39,6 +39,23 @@ const lotTranslations = {
     loadingCustomers: 'Loading customers...',
     draftLotsTitle: 'New lots (to be created with project)',
     newLabel: 'New',
+    // Lot detail labels
+    lotNumberLabel: 'Lot #:',
+    dimensionsLabel: 'Dimensions:',
+    sqFt: 'sq ft',
+    sqM: 'sq m',
+    priceLabel: 'Price:',
+    statusLabel: 'Status:',
+    unknownLocation: 'Unknown Location',
+    na: 'N/A',
+    retry: 'Retry',
+    isRequired: 'is required',
+    errorPrefix: 'Error:',
+    removeDraftLot: 'Remove draft lot',
+    // Status option labels
+    statusAvailable: 'Available',
+    statusSold: 'Sold',
+    statusPending: 'Pending',
   },
   fr: {
     searchPlaceholder: 'Rechercher des lots par emplacement...',
@@ -72,6 +89,23 @@ const lotTranslations = {
     loadingCustomers: 'Chargement des clients...',
     draftLotsTitle: 'Nouveaux lots (créés avec le projet)',
     newLabel: 'Nouveau',
+    // Lot detail labels
+    lotNumberLabel: 'Lot n° :',
+    dimensionsLabel: 'Dimensions :',
+    sqFt: 'pi²',
+    sqM: 'm²',
+    priceLabel: 'Prix :',
+    statusLabel: 'Statut :',
+    unknownLocation: 'Emplacement inconnu',
+    na: 'N/D',
+    retry: 'Réessayer',
+    isRequired: 'est requis',
+    errorPrefix: 'Erreur :',
+    removeDraftLot: 'Supprimer le lot brouillon',
+    // Status option labels
+    statusAvailable: 'Disponible',
+    statusSold: 'Vendu',
+    statusPending: 'En attente',
   },
 };
 
@@ -210,19 +244,19 @@ const LotSelector = ({
 
     // Validate
     if (!newLotData.lotNumber.trim()) {
-      setCreateError(t('lotNumber') + ' is required');
+      setCreateError(t('lotNumber') + ' ' + t('isRequired'));
       return;
     }
     if (!newLotData.civicAddress.trim()) {
-      setCreateError(t('civicAddress') + ' is required');
+      setCreateError(t('civicAddress') + ' ' + t('isRequired'));
       return;
     }
     if (!newLotData.dimensionsSquareFeet.trim()) {
-      setCreateError(t('dimensionsSquareFeet') + ' is required');
+      setCreateError(t('dimensionsSquareFeet') + ' ' + t('isRequired'));
       return;
     }
     if (!newLotData.dimensionsSquareMeters.trim()) {
-      setCreateError(t('dimensionsSquareMeters') + ' is required');
+      setCreateError(t('dimensionsSquareMeters') + ' ' + t('isRequired'));
       return;
     }
     const priceNum = parseFloat(newLotData.price);
@@ -231,7 +265,7 @@ const LotSelector = ({
       newLotData.price == null ||
       isNaN(priceNum)
     ) {
-      setCreateError(t('price') + ' is required');
+      setCreateError(t('price') + ' ' + t('isRequired'));
       return;
     }
     if (priceNum < 0) {
@@ -347,7 +381,7 @@ const LotSelector = ({
             onClick={loadLots}
             style={{ marginTop: '10px', padding: '5px 10px' }}
           >
-            Retry
+            {t('retry')}
           </button>
         </div>
       </div>
@@ -444,9 +478,9 @@ const LotSelector = ({
               setNewLotData({ ...newLotData, lotStatus: e.target.value })
             }
           >
-            <option value="AVAILABLE">AVAILABLE</option>
-            <option value="SOLD">SOLD</option>
-            <option value="PENDING">PENDING</option>
+            <option value="AVAILABLE">{t('statusAvailable')}</option>
+            <option value="SOLD">{t('statusSold')}</option>
+            <option value="PENDING">{t('statusPending')}</option>
           </select>
         </div>
 
@@ -494,7 +528,7 @@ const LotSelector = ({
               border: '1px solid #d32f2f',
             }}
           >
-            <strong>Error:</strong> {createError}
+            <strong>{t('errorPrefix')}</strong> {createError}
           </div>
         )}
 
@@ -543,16 +577,16 @@ const LotSelector = ({
                     />
                     <div className="lot-item-details">
                       <div className="lot-item-location">
-                        {lot.civicAddress || 'Unknown Location'}
+                        {lot.civicAddress || t('unknownLocation')}
                       </div>
                       <div className="lot-item-info">
-                        <span>Lot #: {lot.lotNumber || 'N/A'}</span>
+                        <span>{t('lotNumberLabel')} {lot.lotNumber || t('na')}</span>
                         <span>
-                          Dimensions: {lot.dimensionsSquareFeet || 'N/A'} sq ft
-                          / {lot.dimensionsSquareMeters || 'N/A'} sq m
+                          {t('dimensionsLabel')} {lot.dimensionsSquareFeet || t('na')} {t('sqFt')}
+                          {' / '}{lot.dimensionsSquareMeters || t('na')} {t('sqM')}
                         </span>
                         {lot.price && (
-                          <span>Price: ${lot.price.toLocaleString()}</span>
+                          <span>{t('priceLabel')} ${lot.price.toLocaleString()}</span>
                         )}
                       </div>
                     </div>
@@ -578,23 +612,28 @@ const LotSelector = ({
               <div key={`draft-${index}`} className="lot-item lot-item-draft">
                 <div className="lot-item-details">
                   <div className="lot-item-location">
-                    {draft.civicAddress || 'Unknown Location'}
+                    {draft.civicAddress || t('unknownLocation')}
                   </div>
                   <div className="lot-item-info">
-                    <span>Lot #: {draft.lotNumber || 'N/A'}</span>
+                    <span>{t('lotNumberLabel')} {draft.lotNumber || t('na')}</span>
                     <span>
-                      Dimensions: {draft.dimensionsSquareFeet || 'N/A'} sq ft /{' '}
-                      {draft.dimensionsSquareMeters || 'N/A'} sq m
+                      {t('dimensionsLabel')} {draft.dimensionsSquareFeet || t('na')} {t('sqFt')}
+                      {' / '}{draft.dimensionsSquareMeters || t('na')} {t('sqM')}
                     </span>
                     {draft.price != null && draft.price !== '' && (
                       <span>
-                        Price: $
+                        {t('priceLabel')} $
                         {typeof draft.price === 'number'
                           ? draft.price.toLocaleString()
                           : Number(draft.price).toLocaleString()}
                       </span>
                     )}
-                    {draft.lotStatus && <span>Status: {draft.lotStatus}</span>}
+                    {draft.lotStatus && <span>{t('statusLabel')} {
+                      draft.lotStatus === 'AVAILABLE' ? t('statusAvailable')
+                        : draft.lotStatus === 'SOLD' ? t('statusSold')
+                        : draft.lotStatus === 'PENDING' ? t('statusPending')
+                        : draft.lotStatus
+                    }</span>}
                   </div>
                 </div>
                 {typeof onDraftLotRemoved === 'function' && (
@@ -602,7 +641,7 @@ const LotSelector = ({
                     type="button"
                     onClick={() => onDraftLotRemoved(index)}
                     className="lot-item-draft-remove"
-                    aria-label="Remove draft lot"
+                    aria-label={t('removeDraftLot')}
                   >
                     ×
                   </button>
