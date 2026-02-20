@@ -224,14 +224,17 @@
   min-width: 0;
 }
 
-/* Hidden native file input — use custom label/button so text is translated */
+/* Hidden native file input — use custom label/button so text is translated.
+   position:fixed off-screen so the browser cannot scroll any container when it
+   returns focus to this input after the file-picker dialog closes. */
 .create-project-file-input-hidden {
-  position: absolute;
-  width: 0.1px;
-  height: 0.1px;
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 1px;
+  height: 1px;
   opacity: 0;
-  overflow: hidden;
-  z-index: -1;
+  pointer-events: none;
 }
 
 .create-project-file-trigger-wrap {
@@ -269,6 +272,8 @@
 .create-project-cover-preview {
   width: 100%;
   max-width: 400px;
+  max-height: 240px;
+  object-fit: contain;
   border-radius: 6px;
   border: 1px solid #e0e0e0;
   display: block;

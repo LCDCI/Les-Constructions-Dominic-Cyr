@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
+import useBackendUser from '../../../hooks/useBackendUser';
 import LotSelector from './LotSelector';
 import { projectApi } from '../api/projectApi';
 import { uploadFile } from '../../files/api/filesApi';
@@ -143,7 +144,8 @@ const translations = {
 };
 
 const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
+  const { role } = useBackendUser();
   // Start with French form first
   const [currentLanguage, setCurrentLanguage] = useState('fr');
 
@@ -374,15 +376,23 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
     // Upload to file service
     // Store as DOCUMENT under the project's folder in MinIO
+    // Files-service (deployed) requires uploadedBy and uploaderRole
+    const uploadedBy = user?.sub ?? '';
+    const uploaderRoleVal = (role && role.trim() !== '') ? role.trim().toUpperCase() : 'OWNER';
+
     const formDataEn = new FormData();
     formDataEn.append('file', fileEn);
     formDataEn.append('category', 'DOCUMENT');
     formDataEn.append('projectId', projectIdentifier);
+    formDataEn.append('uploadedBy', uploadedBy);
+    formDataEn.append('uploaderRole', uploaderRoleVal);
 
     const formDataFr = new FormData();
     formDataFr.append('file', fileFr);
     formDataFr.append('category', 'DOCUMENT');
     formDataFr.append('projectId', projectIdentifier);
+    formDataFr.append('uploadedBy', uploadedBy);
+    formDataFr.append('uploaderRole', uploaderRoleVal);
 
     try {
       const [resultEn, resultFr] = await Promise.all([
@@ -511,6 +521,9 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
           form.append('file', coverImageFile);
           form.append('category', 'PHOTO');
           form.append('projectId', createdProject.projectIdentifier);
+          // Files-service (deployed) requires uploadedBy and uploaderRole
+          form.append('uploadedBy', user?.sub ?? '');
+          form.append('uploaderRole', (role && role.trim() !== '') ? role.trim().toUpperCase() : 'OWNER');
 
           const uploadResult = await uploadFile(form);
           const uploadedId = uploadResult.fileId || uploadResult.id;
@@ -924,6 +937,7 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
                     accept="image/png, image/jpeg, image/webp"
                     onChange={e => handleCoverImageChange(e.target.files?.[0])}
                     className="create-project-file-input-hidden"
+                    tabIndex={-1}
                     aria-label={t('form.fields.coverPhoto')}
                   />
                   {!coverImageFile ? (
