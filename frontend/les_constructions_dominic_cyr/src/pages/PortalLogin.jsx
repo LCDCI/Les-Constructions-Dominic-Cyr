@@ -1,24 +1,30 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Navigate } from 'react-router-dom';
 import '../styles/portal.css';
 import { usePageTranslations } from '../hooks/usePageTranslations';
+import useBackendUser from '../hooks/useBackendUser';
+
+const ROLE_DASHBOARD = {
+  OWNER: '/owner/dashboard',
+  SALESPERSON: '/salesperson/dashboard',
+  CONTRACTOR: '/contractor/dashboard',
+  CUSTOMER: '/customer/dashboard',
+};
 
 export default function PortalLogin() {
   const { t } = usePageTranslations('portalLogin');
   const { loginWithRedirect, isAuthenticated, isLoading, error } = useAuth0();
+  const { role, loading: roleLoading } = useBackendUser();
   const location = useLocation();
 
-  if (isLoading) {
+  if (isLoading || (isAuthenticated && roleLoading)) {
     return <div className="portal-page">{t('loading', 'Loading...')}</div>;
   }
 
   if (isAuthenticated) {
-    return (
-      <div className="portal-page">
-        <h1>{t('alreadyLoggedIn', 'You are already logged in')}</h1>
-      </div>
-    );
+    const destination = ROLE_DASHBOARD[role] || '/';
+    return <Navigate to={destination} replace />;
   }
 
   return (
@@ -48,7 +54,9 @@ export default function PortalLogin() {
                 prompt: 'login',
               },
               appState: {
-                returnTo: (location.state && location.state.returnTo) || '/',
+                returnTo:
+                  (location.state && location.state.returnTo) ||
+                  '/portal/login',
               },
             })
           }

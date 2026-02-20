@@ -1,45 +1,40 @@
 .lot-documents-page {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  background: var(--color-white, #fff);
+}
+
+/* Padded body below the hero */
+.ldp-content {
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-.page-header {
-  margin-bottom: 2rem;
-}
-
-.page-header-title h1 {
-  font-size: 2rem;
-  color: #333;
-  margin: 0 0 0.35rem 0;
-}
-
-.page-header-subtitle {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.back-link {
+/* Back link inside the hero banner */
+.ldp-back-link {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: #1976d2;
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   transition: color 0.2s;
 }
 
-.back-link:hover {
-  color: #1565c0;
+.ldp-back-link:hover {
+  color: #fff;
 }
 
-.lot-address {
-  color: #666;
-  font-weight: normal;
-  font-size: 1rem;
+/* Override projects-subtitle inside the hero for address */
+.ldp-hero .projects-subtitle {
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+  opacity: 0.9;
 }
 
 /* Toolbar */

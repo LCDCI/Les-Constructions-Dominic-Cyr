@@ -10,7 +10,8 @@ import {
   deleteLotDocument,
 } from '../api/lotDocumentsApi';
 import { getFormsByLot, downloadFinalizedForm } from '../../forms/api/formsApi';
-import { fetchLotById } from '../api/lots';
+import { fetchLotById, fetchLots } from '../api/lots';
+import { projectApi } from '../../projects/api/projectApi';
 import {
   getAllForms,
   getFormById,
@@ -31,6 +32,7 @@ import {
 import { GoFileDiff } from 'react-icons/go';
 import './LotDocumentsPage.css';
 import '../../../styles/Forms/customer-forms.css';
+import '../../../styles/Public_Facing/residential-projects.css';
 
 /**
  * Form field configuration for each form type.
@@ -343,7 +345,7 @@ const FORM_FIELDS = {
 
 const LotDocumentsPage = () => {
   const { t } = usePageTranslations('customerForms');
-  const { lotId } = useParams();
+  const { lotId, projectIdentifier } = useParams();
   const navigate = useNavigate();
   const { getAccessTokenSilently, user } = useAuth0();
   const { role: userRole, profile: userProfile } = useBackendUser();
@@ -357,6 +359,8 @@ const LotDocumentsPage = () => {
   );
 
   const [lot, setLot] = useState(null);
+  const [project, setProject] = useState(null);
+  const [lotIndex, setLotIndex] = useState(null);
   const [documents, setDocuments] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -488,9 +492,25 @@ const LotDocumentsPage = () => {
       setError(null);
       const token = await getApiToken();
 
-      // Fetch lot details
-      const lotData = await fetchLotById({ lotId, token });
+      const [lotData, projectData, allLots] = await Promise.all([
+        fetchLotById({ lotId, projectIdentifier, token }),
+        projectIdentifier
+          ? projectApi
+              .getProjectById(projectIdentifier, token)
+              .catch(() => null)
+          : Promise.resolve(null),
+        projectIdentifier
+          ? fetchLots({ projectIdentifier, token }).catch(() => null)
+          : Promise.resolve(null),
+      ]);
+
       setLot(lotData);
+      setProject(projectData);
+
+      if (allLots) {
+        const idx = allLots.findIndex(l => l.lotId === lotId);
+        setLotIndex(idx >= 0 ? idx + 1 : null);
+      }
 
       // Fetch documents
       await loadDocuments(token);
@@ -1060,7 +1080,7 @@ const LotDocumentsPage = () => {
   if (loading) {
     return (
       <div className="lot-documents-page" data-testid="lot-documents-page">
-        <div className="loading-state">Loading...</div>
+        <div className="loading-state">{t('page.loading', 'Loading...')}</div>
       </div>
     );
   }
@@ -1074,490 +1094,537 @@ const LotDocumentsPage = () => {
             onClick={() => navigate(backLinkTarget)}
             className="btn btn-secondary"
           >
-            Back to Lot Documents
+            {t('page.backToDocuments', 'Back to Lot Documents')}
           </button>
         </div>
       </div>
     );
   }
 
+  const projectColor = project?.primaryColor || '#aab2a6';
+  const lotDisplayTitle =
+    lotIndex !== null
+      ? t('page.lotDocumentsTitle', {
+          lotNumber: lotIndex,
+          defaultValue: 'Lot {{lotNumber}} Documents',
+        })
+      : lot?.lotNumber
+        ? t('page.lotDocumentsTitle', {
+            lotNumber: lot.lotNumber,
+            defaultValue: 'Lot {{lotNumber}} Documents',
+          })
+        : t('page.documentsTitle', 'Documents');
+
   return (
     <div className="lot-documents-page" data-testid="lot-documents-page">
-      {/* Header */}
-      <div className="page-header">
-        <Link to={backLinkTarget} className="back-link">
-          <FaArrowLeft /> Back to Lot Documents
-        </Link>
-        <div className="page-header-title">
-          <h1>Lot {lot?.lotNumber || lotId} Documents</h1>
-          <div className="page-header-subtitle">
-            <span className="lot-address">
-              {lot?.civicAddress || 'Address not available'}
-            </span>
-            {lot?.lotStatus && (
-              <span
-                className={`lot-status lot-status-${String(lot.lotStatus).toLowerCase()}`}
-              >
-                {lot.lotStatus}
-              </span>
-            )}
-          </div>
+      {/* Hero Banner */}
+      <section
+        className="ldp-hero projects-hero"
+        style={{ background: projectColor }}
+      >
+        <div className="projects-hero-content">
+          <Link to={backLinkTarget} className="ldp-back-link">
+            <FaArrowLeft /> {t('page.backToDocuments', 'Back to Lot Documents')}
+          </Link>
+          <h1 className="projects-title">{lotDisplayTitle}</h1>
+          {lot?.civicAddress && (
+            <p className="projects-subtitle">{lot.civicAddress}</p>
+          )}
         </div>
-      </div>
+      </section>
 
-      {/* View Mode Toggle */}
-      <div className="view-mode-toggle">
-        <button
-          className={`view-mode-button ${viewMode === 'documents' ? 'active' : ''}`}
-          onClick={() => setViewMode('documents')}
-          data-testid="view-mode-documents"
-        >
-          <FaFile /> Documents
-        </button>
-        <button
-          className={`view-mode-button ${viewMode === 'forms' ? 'active' : ''}`}
-          onClick={() => setViewMode('forms')}
-          data-testid="view-mode-forms"
-        >
-          <GoFileDiff /> Forms
-        </button>
-      </div>
+      <div className="ldp-content">
+        {/* View Mode Toggle */}
+        <div className="view-mode-toggle">
+          <button
+            className={`view-mode-button ${viewMode === 'documents' ? 'active' : ''}`}
+            onClick={() => setViewMode('documents')}
+            data-testid="view-mode-documents"
+          >
+            <FaFile /> {t('tabs.documents', 'Documents')}
+          </button>
+          <button
+            className={`view-mode-button ${viewMode === 'forms' ? 'active' : ''}`}
+            onClick={() => setViewMode('forms')}
+            data-testid="view-mode-forms"
+          >
+            <GoFileDiff /> {t('tabs.forms', 'Forms')}
+          </button>
+        </div>
 
-      {viewMode === 'documents' ? (
-        <>
-          {/* Search & Filters */}
-          <div className="documents-toolbar">
-            <div className="search-bar">
-              <FaSearch className="search-icon" />
+        {viewMode === 'documents' ? (
+          <>
+            {/* Search & Filters */}
+            <div className="documents-toolbar">
+              <div className="search-bar">
+                <FaSearch className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search documents..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  data-testid="lot-documents-search"
+                  className="search-input"
+                />
+              </div>
+
+              <div className="toolbar-actions">
+                <div className="filter-tabs">
+                  <button
+                    className={`tab-button ${filterType === 'all' ? 'active' : ''}`}
+                    onClick={() => setFilterType('all')}
+                    data-testid="lot-documents-tab-all"
+                  >
+                    {t('toolbar.filterAll', 'All')}
+                  </button>
+                  <button
+                    className={`tab-button ${filterType === 'image' ? 'active' : ''}`}
+                    onClick={() => setFilterType('image')}
+                    data-testid="lot-documents-tab-photos"
+                  >
+                    <FaImage /> {t('toolbar.filterPhotos', 'Photos')}
+                  </button>
+                  <button
+                    className={`tab-button ${filterType === 'file' ? 'active' : ''}`}
+                    onClick={() => setFilterType('file')}
+                    data-testid="lot-documents-tab-files"
+                  >
+                    <FaFile /> {t('toolbar.filterFiles', 'Files')}
+                  </button>
+                </div>
+
+                {canUpload && (
+                  <button
+                    onClick={handleFileSelect}
+                    disabled={uploading}
+                    className="btn btn-primary upload-button"
+                    data-testid="lot-documents-upload-button"
+                  >
+                    <FaUpload />{' '}
+                    {uploading
+                      ? t('toolbar.uploading', 'Uploading...')
+                      : t('toolbar.upload', 'Upload')}
+                  </button>
+                )}
+              </div>
               <input
-                type="text"
-                placeholder="Search documents..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                data-testid="lot-documents-search"
-                className="search-input"
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                multiple
+                style={{ display: 'none' }}
+                data-testid="lot-documents-upload-input"
               />
             </div>
 
-            <div className="toolbar-actions">
-              <div className="filter-tabs">
-                <button
-                  className={`tab-button ${filterType === 'all' ? 'active' : ''}`}
-                  onClick={() => setFilterType('all')}
-                  data-testid="lot-documents-tab-all"
-                >
-                  All
-                </button>
-                <button
-                  className={`tab-button ${filterType === 'image' ? 'active' : ''}`}
-                  onClick={() => setFilterType('image')}
-                  data-testid="lot-documents-tab-photos"
-                >
-                  <FaImage /> Photos
-                </button>
-                <button
-                  className={`tab-button ${filterType === 'file' ? 'active' : ''}`}
-                  onClick={() => setFilterType('file')}
-                  data-testid="lot-documents-tab-files"
-                >
-                  <FaFile /> Files
-                </button>
+            {uploadError && (
+              <div
+                className="error-state"
+                data-testid="lot-documents-upload-error"
+              >
+                {uploadError}
               </div>
+            )}
 
-              {canUpload && (
-                <button
-                  onClick={handleFileSelect}
-                  disabled={uploading}
-                  className="btn btn-primary upload-button"
-                  data-testid="lot-documents-upload-button"
+            {/* Documents Display */}
+            <div className="documents-container">
+              {filteredDocuments.length === 0 ? (
+                <div className="empty-state" data-testid="empty-state">
+                  <p>
+                    {t('documentsList.noDocumentsFound', 'No documents found.')}
+                  </p>
+                  {canUpload && (
+                    <p>
+                      {t(
+                        'documentsList.uploadToGetStarted',
+                        'Upload files to get started.'
+                      )}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className={
+                    filterType === 'image' || filterType === 'all'
+                      ? 'documents-grid'
+                      : 'documents-list'
+                  }
+                  data-testid="lot-documents-list"
                 >
-                  <FaUpload /> {uploading ? 'Uploading...' : 'Upload'}
-                </button>
+                  {filteredDocuments.map(doc =>
+                    doc.isImage ? (
+                      // Photo card
+                      <div
+                        key={doc.id}
+                        className="document-card photo-card"
+                        data-testid={`lot-document-card-${doc.id}`}
+                      >
+                        <div className="photo-preview">
+                          <img
+                            src={imageDataUrls[doc.id] || doc.downloadUrl}
+                            alt={doc.fileName}
+                          />
+                        </div>
+                        <div className="document-info">
+                          <p className="document-name">{doc.fileName}</p>
+                          <p className="document-meta">
+                            {doc.uploaderName} •{' '}
+                            {new Date(doc.uploadedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="document-actions">
+                          <button
+                            onClick={() => handleDownload(doc.id, doc.fileName)}
+                            className="btn-icon"
+                            title={t('documentsList.downloadTitle', 'Download')}
+                            data-testid={`lot-document-download-${doc.id}`}
+                          >
+                            <FaDownload />
+                          </button>
+                          {canDeleteDocument(doc) && (
+                            <button
+                              onClick={() =>
+                                handleDeleteClick(doc.id, doc.fileName)
+                              }
+                              className="btn-icon btn-danger"
+                              title={t('documentsList.deleteTitle', 'Delete')}
+                              data-testid={`lot-document-delete-${doc.id}`}
+                            >
+                              <FaTrash />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      // File row
+                      <div
+                        key={doc.id}
+                        className="document-row"
+                        data-testid={`lot-document-row-${doc.id}`}
+                      >
+                        <div className="document-icon">
+                          <FaFile />
+                        </div>
+                        <div className="document-details">
+                          <p className="document-name">{doc.fileName}</p>
+                          <p className="document-meta">
+                            {doc.uploaderName} •{' '}
+                            {new Date(doc.uploadedAt).toLocaleDateString()} •{' '}
+                            {(doc.sizeBytes / 1024).toFixed(1)} KB
+                          </p>
+                        </div>
+                        <div className="document-actions">
+                          <button
+                            onClick={() => handleDownload(doc.id, doc.fileName)}
+                            className="btn-icon"
+                            title={t('documentsList.downloadTitle', 'Download')}
+                            data-testid={`lot-document-download-${doc.id}`}
+                          >
+                            <FaDownload />
+                          </button>
+                          {canDeleteDocument(doc) && (
+                            <button
+                              onClick={() =>
+                                handleDeleteClick(doc.id, doc.fileName)
+                              }
+                              className="btn-icon btn-danger"
+                              title={t('documentsList.deleteTitle', 'Delete')}
+                              data-testid={`lot-document-delete-${doc.id}`}
+                            >
+                              <FaTrash />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  )}
+                </div>
               )}
             </div>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              multiple
-              style={{ display: 'none' }}
-              data-testid="lot-documents-upload-input"
-            />
-          </div>
-
-          {uploadError && (
-            <div
-              className="error-state"
-              data-testid="lot-documents-upload-error"
-            >
-              {uploadError}
-            </div>
-          )}
-
-          {/* Documents Display */}
-          <div className="documents-container">
-            {filteredDocuments.length === 0 ? (
-              <div className="empty-state" data-testid="empty-state">
-                <p>No documents found.</p>
-                {canUpload && <p>Upload files to get started.</p>}
+          </>
+        ) : (
+          /* Forms View */
+          <div className="forms-view-container" data-testid="lot-forms-view">
+            {lotFormsLoading ? (
+              <div className="loading-state">
+                {t('lotForms.loadingForms', 'Loading forms...')}
+              </div>
+            ) : lotForms.length === 0 ? (
+              <div className="empty-state" data-testid="no-forms-state">
+                <p>
+                  {t(
+                    'lotForms.noFormsAssigned',
+                    'No forms assigned for this lot.'
+                  )}
+                </p>
               </div>
             ) : (
-              <div
-                className={
-                  filterType === 'image' || filterType === 'all'
-                    ? 'documents-grid'
-                    : 'documents-list'
-                }
-                data-testid="lot-documents-list"
-              >
-                {filteredDocuments.map(doc =>
-                  doc.isImage ? (
-                    // Photo card
-                    <div
-                      key={doc.id}
-                      className="document-card photo-card"
-                      data-testid={`lot-document-card-${doc.id}`}
-                    >
-                      <div className="photo-preview">
-                        <img
-                          src={imageDataUrls[doc.id] || doc.downloadUrl}
-                          alt={doc.fileName}
-                        />
-                      </div>
-                      <div className="document-info">
-                        <p className="document-name">{doc.fileName}</p>
-                        <p className="document-meta">
-                          {doc.uploaderName} •{' '}
-                          {new Date(doc.uploadedAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="document-actions">
-                        <button
-                          onClick={() => handleDownload(doc.id, doc.fileName)}
-                          className="btn-icon"
-                          title="Download"
-                          data-testid={`lot-document-download-${doc.id}`}
-                        >
-                          <FaDownload />
-                        </button>
-                        {canDeleteDocument(doc) && (
-                          <button
-                            onClick={() =>
-                              handleDeleteClick(doc.id, doc.fileName)
-                            }
-                            className="btn-icon btn-danger"
-                            title="Delete"
-                            data-testid={`lot-document-delete-${doc.id}`}
-                          >
-                            <FaTrash />
-                          </button>
-                        )}
-                      </div>
+              <div className="lot-forms-list">
+                {lotForms.map(form => (
+                  <div
+                    key={form.formId}
+                    className="lot-form-card"
+                    data-testid={`lot-form-card-${form.formId}`}
+                  >
+                    <div className="lot-form-info">
+                      <h3 className="lot-form-title">
+                        {form.formType?.replace(/_/g, ' ') || 'Form'}
+                      </h3>
+                      <span
+                        className={`lot-form-status lot-form-status-${(form.formStatus || '').toLowerCase()}`}
+                      >
+                        {form.formStatus || 'Unknown'}
+                      </span>
                     </div>
-                  ) : (
-                    // File row
-                    <div
-                      key={doc.id}
-                      className="document-row"
-                      data-testid={`lot-document-row-${doc.id}`}
-                    >
-                      <div className="document-icon">
-                        <FaFile />
-                      </div>
-                      <div className="document-details">
-                        <p className="document-name">{doc.fileName}</p>
-                        <p className="document-meta">
-                          {doc.uploaderName} •{' '}
-                          {new Date(doc.uploadedAt).toLocaleDateString()} •{' '}
-                          {(doc.sizeBytes / 1024).toFixed(1)} KB
+                    <div className="lot-form-meta">
+                      {form.assignedAt && (
+                        <p>
+                          {t('lotForms.assignedLabel', 'Assigned:')}{' '}
+                          {new Date(form.assignedAt).toLocaleDateString()}
                         </p>
-                      </div>
-                      <div className="document-actions">
-                        <button
-                          onClick={() => handleDownload(doc.id, doc.fileName)}
-                          className="btn-icon"
-                          title="Download"
-                          data-testid={`lot-document-download-${doc.id}`}
-                        >
-                          <FaDownload />
-                        </button>
-                        {canDeleteDocument(doc) && (
-                          <button
-                            onClick={() =>
-                              handleDeleteClick(doc.id, doc.fileName)
-                            }
-                            className="btn-icon btn-danger"
-                            title="Delete"
-                            data-testid={`lot-document-delete-${doc.id}`}
-                          >
-                            <FaTrash />
-                          </button>
-                        )}
-                      </div>
+                      )}
+                      {form.submittedAt && (
+                        <p>
+                          {t('lotForms.submittedLabel', 'Submitted:')}{' '}
+                          {new Date(form.submittedAt).toLocaleDateString()}
+                        </p>
+                      )}
                     </div>
-                  )
-                )}
+                    {/* Show Fill Form button only for customers on non-submitted forms */}
+                    {userRole === 'CUSTOMER' &&
+                      (form.formStatus === 'ASSIGNED' ||
+                        form.formStatus === 'IN_PROGRESS' ||
+                        form.formStatus === 'REOPENED') && (
+                        <button
+                          onClick={() => openFormModal(form)}
+                          className="btn btn-primary lot-form-action"
+                          data-testid={`lot-form-fill-${form.formId}`}
+                        >
+                          {t('lotForms.fillForm', 'Fill Form')}
+                        </button>
+                      )}
+                    {/* Show View Form button only for submitted forms (all users) */}
+                    {form.formStatus === 'SUBMITTED' && (
+                      <button
+                        onClick={() => handleViewForm(form)}
+                        className="btn btn-secondary lot-form-action"
+                        data-testid={`lot-form-view-${form.formId}`}
+                      >
+                        {t('lotForms.viewForm', 'View Form')}
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>
-        </>
-      ) : (
-        /* Forms View */
-        <div className="forms-view-container" data-testid="lot-forms-view">
-          {lotFormsLoading ? (
-            <div className="loading-state">Loading forms...</div>
-          ) : lotForms.length === 0 ? (
-            <div className="empty-state" data-testid="no-forms-state">
-              <p>No forms assigned for this lot.</p>
-            </div>
-          ) : (
-            <div className="lot-forms-list">
-              {lotForms.map(form => (
-                <div
-                  key={form.formId}
-                  className="lot-form-card"
-                  data-testid={`lot-form-card-${form.formId}`}
-                >
-                  <div className="lot-form-info">
-                    <h3 className="lot-form-title">
-                      {form.formType?.replace(/_/g, ' ') || 'Form'}
-                    </h3>
-                    <span
-                      className={`lot-form-status lot-form-status-${(form.formStatus || '').toLowerCase()}`}
-                    >
-                      {form.formStatus || 'Unknown'}
-                    </span>
-                  </div>
-                  <div className="lot-form-meta">
-                    {form.assignedAt && (
-                      <p>
-                        Assigned:{' '}
-                        {new Date(form.assignedAt).toLocaleDateString()}
-                      </p>
-                    )}
-                    {form.submittedAt && (
-                      <p>
-                        Submitted:{' '}
-                        {new Date(form.submittedAt).toLocaleDateString()}
-                      </p>
-                    )}
-                  </div>
-                  {/* Show Fill Form button only for customers on non-submitted forms */}
-                  {userRole === 'CUSTOMER' &&
-                    (form.formStatus === 'ASSIGNED' ||
-                      form.formStatus === 'IN_PROGRESS' ||
-                      form.formStatus === 'REOPENED') && (
-                      <button
-                        onClick={() => openFormModal(form)}
-                        className="btn btn-primary lot-form-action"
-                        data-testid={`lot-form-fill-${form.formId}`}
-                      >
-                        Fill Form
-                      </button>
-                    )}
-                  {/* Show View Form button only for submitted forms (all users) */}
-                  {form.formStatus === 'SUBMITTED' && (
-                    <button
-                      onClick={() => handleViewForm(form)}
-                      className="btn btn-secondary lot-form-action"
-                      data-testid={`lot-form-view-${form.formId}`}
-                    >
-                      View Form
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+        )}
 
-      {canViewForms && (
-        <div className="lot-forms-section" data-testid="lot-forms-section">
-          <div className="lot-forms-header">
-            <h2>Finalized Forms</h2>
-            <p>Download completed forms for this lot.</p>
-          </div>
-
-          {finalizedFormsLoading ? (
-            <div className="lot-forms-loading">Loading finalized forms...</div>
-          ) : finalizedFormsError ? (
-            <div className="lot-forms-error">{finalizedFormsError}</div>
-          ) : finalizedForms.length === 0 ? (
-            <div className="lot-forms-empty">No finalized forms yet.</div>
-          ) : (
-            <div className="lot-forms-list">
-              {finalizedForms.map(form => (
-                <div key={form.formId} className="lot-form-card">
-                  <div className="lot-form-info">
-                    <h3>
-                      {form.formType
-                        ? form.formType.replace(/_/g, ' ')
-                        : 'Form'}
-                    </h3>
-                    <div className="lot-form-meta">
-                      <span>Form ID: {form.formId}</span>
-                      {form.completedDate && (
-                        <span>
-                          Completed:{' '}
-                          {new Date(form.completedDate).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <button
-                    className="btn btn-secondary lot-form-download"
-                    onClick={() => handleFormDownload(form)}
-                  >
-                    <FaDownload /> Download PDF
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-      {/* Form Edit Modal */}
-      {isEditModalOpen && selectedForm && (
-        <div
-          className="forms-modal-overlay"
-          onClick={() => setIsEditModalOpen(false)}
-        >
-          <div
-            className="forms-modal forms-modal-large"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="forms-modal-header">
-              <h2>
-                {t('modal.editTitle', 'Form')} -{' '}
+        {canViewForms && (
+          <div className="lot-forms-section" data-testid="lot-forms-section">
+            <div className="lot-forms-header">
+              <h2>{t('finalizedForms.title', 'Finalized Forms')}</h2>
+              <p>
                 {t(
-                  `formTypes.${selectedForm.formType}`,
-                  selectedForm.formType?.replace(/_/g, ' ') || 'Form'
+                  'finalizedForms.description',
+                  'Download completed forms for this lot.'
                 )}
-              </h2>
-              <button
-                className="forms-modal-close"
-                onClick={() => setIsEditModalOpen(false)}
-              >
-                ×
-              </button>
+              </p>
             </div>
-            <div className="forms-modal-body">
-              {submitError && (
-                <div className="forms-error forms-error-modal">
-                  <p>{submitError}</p>
-                  <button onClick={() => setSubmitError(null)}>×</button>
-                </div>
-              )}
-              {renderFormFields()}
-            </div>
-            <div className="forms-modal-footer">
-              {isViewOnlyForm() || userRole !== 'CUSTOMER' ? (
-                // View-only mode: Only show Close button
+
+            {finalizedFormsLoading ? (
+              <div className="lot-forms-loading">
+                {t('finalizedForms.loading', 'Loading finalized forms...')}
+              </div>
+            ) : finalizedFormsError ? (
+              <div className="lot-forms-error">{finalizedFormsError}</div>
+            ) : finalizedForms.length === 0 ? (
+              <div className="lot-forms-empty">
+                {t('finalizedForms.noForms', 'No finalized forms yet.')}
+              </div>
+            ) : (
+              <div className="lot-forms-list">
+                {finalizedForms.map(form => (
+                  <div key={form.formId} className="lot-form-card">
+                    <div className="lot-form-info">
+                      <h3>
+                        {form.formType
+                          ? form.formType.replace(/_/g, ' ')
+                          : 'Form'}
+                      </h3>
+                      <div className="lot-form-meta">
+                        <span>
+                          {t('finalizedForms.formId', 'Form ID:')} {form.formId}
+                        </span>
+                        {form.completedDate && (
+                          <span>
+                            {t('finalizedForms.completedLabel', 'Completed:')}{' '}
+                            {new Date(form.completedDate).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      className="btn btn-secondary lot-form-download"
+                      onClick={() => handleFormDownload(form)}
+                    >
+                      <FaDownload />{' '}
+                      {t('finalizedForms.downloadPdf', 'Download PDF')}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        {/* Form Edit Modal */}
+        {isEditModalOpen && selectedForm && (
+          <div
+            className="forms-modal-overlay"
+            onClick={() => setIsEditModalOpen(false)}
+          >
+            <div
+              className="forms-modal forms-modal-large"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="forms-modal-header">
+                <h2>
+                  {t('modal.editTitle', 'Form')} -{' '}
+                  {t(
+                    `formTypes.${selectedForm.formType}`,
+                    selectedForm.formType?.replace(/_/g, ' ') || 'Form'
+                  )}
+                </h2>
                 <button
-                  className="forms-modal-button forms-modal-button-secondary"
+                  className="forms-modal-close"
                   onClick={() => setIsEditModalOpen(false)}
                 >
-                  {t('buttons.close', 'Close')}
+                  ×
                 </button>
-              ) : (
-                // Edit mode: Show all action buttons (only for customers on non-submitted forms)
-                <>
+              </div>
+              <div className="forms-modal-body">
+                {submitError && (
+                  <div className="forms-error forms-error-modal">
+                    <p>{submitError}</p>
+                    <button onClick={() => setSubmitError(null)}>×</button>
+                  </div>
+                )}
+                {renderFormFields()}
+              </div>
+              <div className="forms-modal-footer">
+                {isViewOnlyForm() || userRole !== 'CUSTOMER' ? (
+                  // View-only mode: Only show Close button
                   <button
                     className="forms-modal-button forms-modal-button-secondary"
                     onClick={() => setIsEditModalOpen(false)}
                   >
-                    {t('buttons.cancel', 'Cancel')}
+                    {t('buttons.close', 'Close')}
                   </button>
-                  <button
-                    className="forms-modal-button forms-modal-button-primary"
-                    onClick={handleSaveForm}
-                  >
-                    {t('buttons.saveDraft', 'Save Draft')}
-                  </button>
-                  <button
-                    className="forms-modal-button forms-modal-button-success"
-                    onClick={handleSubmitFormClick}
-                  >
-                    {t('buttons.submitForm', 'Submit Form')}
-                  </button>
-                </>
-              )}
+                ) : (
+                  // Edit mode: Show all action buttons (only for customers on non-submitted forms)
+                  <>
+                    <button
+                      className="forms-modal-button forms-modal-button-secondary"
+                      onClick={() => setIsEditModalOpen(false)}
+                    >
+                      {t('buttons.cancel', 'Cancel')}
+                    </button>
+                    <button
+                      className="forms-modal-button forms-modal-button-primary"
+                      onClick={handleSaveForm}
+                    >
+                      {t('buttons.saveDraft', 'Save Draft')}
+                    </button>
+                    <button
+                      className="forms-modal-button forms-modal-button-success"
+                      onClick={handleSubmitFormClick}
+                    >
+                      {t('buttons.submitForm', 'Submit Form')}
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Submit Confirmation Modal */}
-      {isSubmitConfirmOpen && (
-        <div
-          className="forms-modal-overlay"
-          onClick={() => setIsSubmitConfirmOpen(false)}
-        >
-          <div className="forms-modal" onClick={e => e.stopPropagation()}>
-            <div className="forms-modal-header">
-              <h2>{t('modal.confirmSubmitTitle', 'Confirm Submission')}</h2>
-              <button
-                className="forms-modal-close"
-                onClick={() => setIsSubmitConfirmOpen(false)}
-              >
-                &times;
-              </button>
+        {/* Submit Confirmation Modal */}
+        {isSubmitConfirmOpen && (
+          <div
+            className="forms-modal-overlay"
+            onClick={() => setIsSubmitConfirmOpen(false)}
+          >
+            <div className="forms-modal" onClick={e => e.stopPropagation()}>
+              <div className="forms-modal-header">
+                <h2>{t('modal.confirmSubmitTitle', 'Confirm Submission')}</h2>
+                <button
+                  className="forms-modal-close"
+                  onClick={() => setIsSubmitConfirmOpen(false)}
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="forms-modal-body">
+                <p>
+                  {t(
+                    'modal.confirmSubmitMessage',
+                    'Are you sure you want to submit this form? You will not be able to edit it after submission.'
+                  )}
+                </p>
+              </div>
+              <div className="forms-modal-footer">
+                <button
+                  className="forms-modal-button forms-modal-button-secondary"
+                  onClick={() => setIsSubmitConfirmOpen(false)}
+                >
+                  {t('buttons.cancel', 'Cancel')}
+                </button>
+                <button
+                  className="forms-modal-button forms-modal-button-success"
+                  onClick={handleSubmitForm}
+                >
+                  {t('buttons.confirmSubmit', 'Yes, Submit')}
+                </button>
+              </div>
             </div>
-            <div className="forms-modal-body">
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteConfirmModal && (
+          <div className="modal-overlay" data-testid="confirm-delete-modal">
+            <div className="modal-content">
+              <h3>{t('deleteModal.title', 'Confirm Deletion')}</h3>
               <p>
                 {t(
-                  'modal.confirmSubmitMessage',
-                  'Are you sure you want to submit this form? You will not be able to edit it after submission.'
+                  'deleteModal.message',
+                  'Are you sure you want to delete "{{fileName}}"?',
+                  { fileName: deleteConfirmModal.fileName }
                 )}
               </p>
-            </div>
-            <div className="forms-modal-footer">
-              <button
-                className="forms-modal-button forms-modal-button-secondary"
-                onClick={() => setIsSubmitConfirmOpen(false)}
-              >
-                {t('buttons.cancel', 'Cancel')}
-              </button>
-              <button
-                className="forms-modal-button forms-modal-button-success"
-                onClick={handleSubmitForm}
-              >
-                {t('buttons.confirmSubmit', 'Yes, Submit')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {deleteConfirmModal && (
-        <div className="modal-overlay" data-testid="confirm-delete-modal">
-          <div className="modal-content">
-            <h3>Confirm Deletion</h3>
-            <p>
-              Are you sure you want to delete "{deleteConfirmModal.fileName}"?
-            </p>
-            <p className="modal-warning">This action cannot be undone.</p>
-            <div className="modal-actions">
-              <button
-                onClick={handleDeleteCancel}
-                className="btn btn-secondary"
-                data-testid="confirm-delete-no"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeleteConfirm}
-                className="btn btn-danger"
-                data-testid="confirm-delete-yes"
-              >
-                Delete
-              </button>
+              <p className="modal-warning">
+                {t('deleteModal.warning', 'This action cannot be undone.')}
+              </p>
+              <div className="modal-actions">
+                <button
+                  onClick={handleDeleteCancel}
+                  className="btn btn-secondary"
+                  data-testid="confirm-delete-no"
+                >
+                  {t('deleteModal.cancel', 'Cancel')}
+                </button>
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="btn btn-danger"
+                  data-testid="confirm-delete-yes"
+                >
+                  {t('deleteModal.delete', 'Delete')}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

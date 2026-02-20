@@ -1,0 +1,98 @@
+.coming-soon-page {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5% 5%;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--color-white, #ffffff);
+  margin: 0;
+  position: relative;
+  text-align: center;
+}
+
+.coming-soon-content {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  padding: 2.5% 1.5%;
+  position: relative;
+  z-index: 1;
+}
+
+.coming-soon-logo {
+  width: 200px;
+  max-width: 70%;
+  height: auto;
+  margin-bottom: 2rem;
+  object-fit: contain;
+}
+
+.coming-soon-page h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0 0 1% 0;
+  color: var(--color-primary, #4c4d4f);
+}
+
+.coming-soon-message {
+  font-size: 18px;
+  color: var(--color-text, #333333);
+  margin: 0 0 0.75% 0;
+  font-weight: 500;
+}
+
+.coming-soon-description {
+  font-size: 16px;
+  color: var(--color-text-muted, #6b7280);
+  margin: 0 0 2% 0;
+  line-height: 1.6;
+}
+
+.coming-soon-button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--color-secondary, #aab2a6);
+  color: var(--color-white, #ffffff);
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  margin-top: 1rem;
+}
+
+.coming-soon-button:hover {
+  background: var(--color-secondary, #aab2a6);
+  filter: brightness(0.85);
+  color: var(--color-white, #ffffff);
+}
+
+.coming-soon-button:active {
+  background: var(--color-secondary, #aab2a6);
+  filter: brightness(0.75);
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .coming-soon-page {
+    min-height: calc(100vh - 150px);
+    padding: 5% 8%;
+  }
+
+  .coming-soon-logo {
+    width: 150px;
+  }
+
+  .coming-soon-page h1 {
+    font-size: 26px;
+  }
+
+  .coming-soon-message {
+    font-size: 16px;
+  }
+
+  .coming-soon-description {
+    font-size: 14px;
+  }
+}

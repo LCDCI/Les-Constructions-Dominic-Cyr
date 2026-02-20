@@ -22,7 +22,8 @@ const OwnerDashboard = () => {
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   const handleSeeMore = () => {
-    navigate('/owner/schedules/all');
+    const projectId = schedules?.[0]?.projectIdentifier;
+    navigate(projectId ? `/projects/${projectId}/schedule` : '/projects');
   };
 
   const dashboardCards = useMemo(
@@ -69,8 +70,6 @@ const OwnerDashboard = () => {
 
   return (
     <div className="owner-dashboard">
-      <h1 className="dashboard-title">{t('title', 'Owner Dashboard')}</h1>
-
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard

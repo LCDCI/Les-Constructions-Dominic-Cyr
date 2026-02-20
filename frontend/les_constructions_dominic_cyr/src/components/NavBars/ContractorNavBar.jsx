@@ -194,8 +194,8 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/documents"
-                  className={`navbar-link ${isActive('/documents')}`}
+                  to="/contractors/documents"
+                  className={`navbar-link ${isActive('/contractors/documents')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">

@@ -18,6 +18,10 @@
     "uploads": {
       "title": "Téléchargements",
       "button": "Commencer le téléchargement"
+    },
+    "forms": {
+      "title": "Formulaires",
+      "button": "Assigner des formulaires"
     }
   }
 }

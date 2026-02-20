@@ -161,6 +161,53 @@
     "saveFailed": "Échec de la sauvegarde du formulaire. Veuillez réessayer.",
     "submitFailed": "Échec de la soumission du formulaire. Veuillez réessayer.",
     "missingFields": "Veuillez remplir tous les champs obligatoires : {{fields}}",
-    "uploadFailed": "Échec du téléversement du fichier. Veuillez réessayer."
+    "uploadFailed": "Échec du téléversement du fichier. Veuillez réessayer.",
+    "downloadFailed": "Échec du téléchargement du fichier."
+  },
+  "page": {
+    "loading": "Chargement...",
+    "backToDocuments": "Retour aux documents du lot",
+    "lotDocumentsTitle": "Documents du Lot {{lotNumber}}",
+    "addressNotAvailable": "Adresse non disponible"
+  },
+  "tabs": {
+    "documents": "Documents",
+    "forms": "Formulaires"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Rechercher des documents...",
+    "filterAll": "Tous",
+    "filterPhotos": "Photos",
+    "filterFiles": "Fichiers",
+    "uploading": "Téléversement...",
+    "upload": "Téléverser"
+  },
+  "documentsList": {
+    "noDocumentsFound": "Aucun document trouvé.",
+    "uploadToGetStarted": "Téléversez des fichiers pour commencer.",
+    "downloadTitle": "Télécharger",
+    "deleteTitle": "Supprimer"
+  },
+  "lotForms": {
+    "loadingForms": "Chargement des formulaires...",
+    "noFormsAssigned": "Aucun formulaire assigné pour ce lot.",
+    "fillForm": "Remplir le formulaire",
+    "viewForm": "Voir le formulaire",
+    "assignedLabel": "Assigné :",
+    "submittedLabel": "Soumis :"
+  },
+  "finalizedForms": {
+    "title": "Formulaires finalisés",
+    "description": "Téléchargez les formulaires complétés pour ce lot.",
+    "loading": "Chargement des formulaires finalisés...",
+    "noForms": "Aucun formulaire finalisé pour le moment.",
+    "formId": "ID du formulaire :",
+    "completedLabel": "Complété :",
+    "downloadPdf": "Télécharger le PDF"
+  },
+  "deleteModal": {
+    "title": "Confirmer la suppression",    "message": "\u00cates-vous s\u00fbr de vouloir supprimer \"{{fileName}}\" ?",    "warning": "Cette action est irréversible.",
+    "cancel": "Annuler",
+    "delete": "Supprimer"
   }
 }

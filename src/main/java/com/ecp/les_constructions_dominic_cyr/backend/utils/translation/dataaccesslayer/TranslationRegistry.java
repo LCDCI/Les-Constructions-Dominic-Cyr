@@ -84,8 +84,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.ownerdashboard", "a73f68c8-4a84-49c0-b86e-50039a1444c6");
         fileIdMap.put("en.customerdashboard", "cb174189-a044-442c-a9ae-665cddca66a1");
         fileIdMap.put("fr.customerdashboard", "1e6e4cc7-5413-4197-80b9-b0a262a065b0");
-        fileIdMap.put("en.salespersondashboard", "d59b185f-d42d-47fb-a4bd-367dd86d0db1");
-        fileIdMap.put("fr.salespersondashboard", "b6e4ab2b-80dd-4029-8342-4be54790883e");
+        fileIdMap.put("en.salespersondashboard", "51cf8dbf-4d8c-4cc4-8575-b2a7397bbcc3");
+        fileIdMap.put("fr.salespersondashboard", "78d36821-f798-4a60-be10-36ad0abf66e0");
         fileIdMap.put("en.contractordashboard", "129b09a5-32d9-426d-98b9-f5da4e2555da");
         fileIdMap.put("fr.contractordashboard", "6230c4c3-3d42-4b65-bd0c-b402dc24ac9b");
 
@@ -137,8 +137,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.quotes", "2a0d3030-93dd-49b9-a1e0-3bc7990db2ed");
 
         // Customer Forms page translations
-        fileIdMap.put("en.customerforms", "341fb5d4-4b0d-4efc-872c-b1e767377b64");
-        fileIdMap.put("fr.customerforms", "5b84a408-6ec7-4b0c-81ad-f33ab7fd3fa0");
+        fileIdMap.put("en.customerforms", "edc60ff8-12f4-4cb5-bd79-f0415ce314b9");
+        fileIdMap.put("fr.customerforms", "bb5d5ef7-0ebc-487c-b192-51e873a2aadf");
 
         // Salesperson Forms page translations
         fileIdMap.put("en.salespersonforms", "bf89b8c0-12d8-43f3-b713-8cf5133a95ac");
@@ -147,6 +147,14 @@ public class TranslationRegistry {
         // Owner Review Forms page translations
         fileIdMap.put("en.ownerreviewforms", "3bea59f8-9011-4258-90b2-25ef587deff6");
         fileIdMap.put("fr.ownerreviewforms", "f6bbaa26-b7ef-4bf9-b28f-637950d8d196");
+
+        // Coming Soon page translations
+        fileIdMap.put("en.comingsoon", "04e7fe1f-6cd3-422d-9717-af8efa050033");
+        fileIdMap.put("fr.comingsoon", "c0e054ae-c4ce-46db-b712-67aa8998c1d1");
+
+        // Lots List Dashboard page translations
+        fileIdMap.put("en.lotslistdashboard", "29afb49d-0d39-4ce4-a91c-d31e0b72fd92");
+        fileIdMap.put("fr.lotslistdashboard", "dec0ecbd-6da2-4d41-a099-f5c98842809a");
 
     }
 

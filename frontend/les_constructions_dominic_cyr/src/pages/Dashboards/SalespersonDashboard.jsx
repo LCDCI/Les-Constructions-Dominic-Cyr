@@ -16,7 +16,8 @@ const SalespersonDashboard = () => {
   const navigate = useNavigate();
 
   const handleSeeMore = () => {
-    navigate('/salesperson/schedules/all');
+    const projectId = schedules?.[0]?.projectIdentifier;
+    navigate(projectId ? `/projects/${projectId}/schedule` : '/projects');
   };
 
   const dashboardCards = useMemo(
@@ -51,8 +52,6 @@ const SalespersonDashboard = () => {
 
   return (
     <div className="salesperson-dashboard">
-      <h1 className="dashboard-title">{t('title', 'Salesperson Dashboard')}</h1>
-
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard
