@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import HomeFooter from '../components/Footers/HomeFooter';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 
 const fetchInquiries = async getAccessTokenSilently => {
@@ -148,7 +147,6 @@ export default function OwnerInquiriesPage() {
           </table>
         )}
       </div>
-      <HomeFooter />
     </>
   );
 }
