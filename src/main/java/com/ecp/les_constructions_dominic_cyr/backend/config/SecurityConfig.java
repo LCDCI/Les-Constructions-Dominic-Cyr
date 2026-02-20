@@ -114,6 +114,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/translations/registry/**"))
                 .authorizeHttpRequests(auth -> auth
                         // --- 1. PUBLIC ENDPOINTS (Originals + New Public Lots) ---
                         .requestMatchers("/actuator/**", "/api/theme").permitAll()

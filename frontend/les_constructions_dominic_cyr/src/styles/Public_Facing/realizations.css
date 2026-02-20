@@ -163,6 +163,90 @@
   letter-spacing: 0.05em;
 }
 
+.gallery-counter-hidden {
+  display: none;
+}
+
+/* Hero Subtitle */
+.realizations-hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.88);
+  margin: 10px 0 0 0;
+  letter-spacing: 0.03em;
+  font-style: italic;
+}
+
+/* Portfolio Text Below Carousel */
+.realizations-portfolio-text-section {
+  width: 100%;
+  padding: var(--spacing-lg) var(--spacing-lg) 0;
+  display: flex;
+  justify-content: center;
+}
+
+.realizations-portfolio-text {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-text);
+  text-align: center;
+  max-width: 800px;
+  margin: 0;
+}
+
+/* Portfolio 2x2 Grid */
+.realizations-portfolio-grid-section {
+  width: 100%;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-xl);
+  display: flex;
+  justify-content: center;
+}
+
+.realizations-portfolio-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  width: 100%;
+  max-width: 500px;
+}
+
+.realizations-portfolio-grid-item {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  aspect-ratio: 4 / 3;
+  background: #ffffff;
+  transition:
+    transform 0.3s var(--easing),
+    box-shadow 0.3s var(--easing);
+}
+
+.realizations-portfolio-grid-item:hover {
+  transform: scale(1.02);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+}
+
+.realizations-portfolio-grid-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+@media (max-width: 600px) {
+  .realizations-portfolio-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .realizations-portfolio-text-section {
+    padding: var(--spacing-md) var(--spacing-md) 0;
+  }
+
+  .realizations-portfolio-grid-section {
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .real-hero-banner {

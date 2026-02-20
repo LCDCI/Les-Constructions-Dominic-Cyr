@@ -4,7 +4,6 @@ import { FiRefreshCw } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchRenovations } from '../../features/renovations/api/renovations';
-import RenovationCard from '../../features/renovations/components/RenovationCard';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Public_Facing/RenovationsPage.css';
 import '../../styles/Public_Facing/residential-projects.css';
@@ -118,14 +117,6 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
                 'Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity.'
               )}
             </p>
-            <div className="hero-buttons">
-              <Link to="/realizations" className="btn btn-primary">
-                {t('cta.discover', 'Discover')}
-              </Link>
-              <Link to="/contact" className="btn btn-secondary">
-                {t('cta.contact', 'Contact')}
-              </Link>
-            </div>
           </div>
         </div>
       </section>
@@ -137,17 +128,17 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
       >
         <div className="section-text-wrapper" data-animate>
           <div className="section-header center renovations-feature-card">
-            <span className="section-kicker">
-              {t('kicker.renovations', 'Renovations')}
-            </span>
             <h2 className="section-title" id="renovations-intro-title">
-              <em>{t('intro.emphasis', 'Modernize')}</em>{' '}
-              {t('intro.rest', 'your space with style')}
+              <em>{t('intro.emphasis', 'Transform')}</em>{' '}
+              {t(
+                'intro.rest',
+                'your home into the living space of your dreams!'
+              )}
             </h2>
-            <p className="section-subtitle">
+            <p className="section-subtitle" style={{ whiteSpace: 'pre-line' }}>
               {t(
                 'intro.description',
-                'Whether you want to refresh your kitchen, rethink your basement, open up spaces, or enhance your façade, we deliver with precision, rigor, and creativity.'
+                "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\n\nEntrust your renovation to passionate professionals!"
               )}
             </p>
             <Link to="/contact" className="link-arrow">
@@ -208,38 +199,6 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
             )}
           </p>
         </div>
-      )}
-
-      {/* RENOVATIONS LIST */}
-      {!isLoading && renovations.length > 0 && (
-        <section
-          className="portfolio-section"
-          aria-labelledby="renovations-grid-title"
-        >
-          <div className="container">
-            <div className="section-header center" data-animate>
-              <span className="section-kicker">
-                {t('grid.kicker', 'Our Work')}
-              </span>
-              <h2 className="section-title" id="renovations-grid-title">
-                {t('grid.title', 'Recent Renovations')}
-              </h2>
-            </div>
-            <div className="renovations-page__grid">
-              {renovations.map(({ renovationId, description }) => (
-                <RenovationCard
-                  key={renovationId}
-                  renovationIdentifier={renovationId}
-                  beforeImageIdentifier={''}
-                  afterImageIdentifier={''}
-                  description={description}
-                  resolveAssetUrl={() => ''}
-                  showTitle={false}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
       )}
     </div>
   );

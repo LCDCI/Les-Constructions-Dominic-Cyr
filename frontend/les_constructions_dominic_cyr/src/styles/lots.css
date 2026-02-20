@@ -282,6 +282,19 @@
   opacity: 0.85;
 }
 
+/* When inside the header banner, use light colors */
+.lots-header-section .exclusive-tag {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.lots-header-section .peace-tag {
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: var(--spacing-sm);
+  opacity: 1;
+}
+
 .list-section {
   width: var(--content-width);
   max-width: var(--content-max-width);

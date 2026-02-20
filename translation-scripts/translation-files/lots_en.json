@@ -7,6 +7,11 @@
     "exclusiveCount": "26 EXCLUSIVE LOTS",
     "peaceTagline": "A true haven of peace"
   },
+  "panorama": {
+    "headerTitle": "PANØRAMA Units",
+    "preTitle": "AN INTEGRATED\nHOUSING PROJECT",
+    "tagline": "Luxury and nature united"
+  },
   "common": {
     "lot": "Lot",
     "loading": "Loading...",
@@ -47,6 +52,6 @@
     "fetchFailed": "Failed to fetch lots."
   },
   "backToProject": "Back to residential project",
-  "comingSoon": "More information about available housing coming soon"
+  "comingSoon": "The new PanØrama project neighbourhood in Sutton will feature 6 buildings with 12 units each. All units have a view of the mountain and/or the river that borders the project on the west side."
   }
 }

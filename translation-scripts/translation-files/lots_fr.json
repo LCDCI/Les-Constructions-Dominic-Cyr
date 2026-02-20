@@ -7,6 +7,11 @@
     "exclusiveCount": "26 TERRAINS EXCLUSIFS",
     "peaceTagline": "Un véritable havre de paix"
   },
+  "panorama": {
+    "headerTitle": "Unités de PANØRAMA",
+    "preTitle": "UN PROJET D'HABITATION\nINTÉGRÉ",
+    "tagline": "Luxe et nature réunis"
+  },
   "common": {
     "lot": "Terrain",
     "loading": "Chargement...",
@@ -47,6 +52,6 @@
     "fetchFailed": "Échec de la récupération des terrains."
   },
   "backToProject": "Retour au projet résidentiel",
-  "comingSoon": "Plus d'informations sur les habitations disponibles à venir"
+  "comingSoon": "Le nouveau quartier du projet PanØrama à Sutton comptera 6 immeubles de 12 unités chacun. Toutes les unités ont une vue sur la montagne et/ou sur la rivière qui borde le projet du côté ouest."
   }
 }
