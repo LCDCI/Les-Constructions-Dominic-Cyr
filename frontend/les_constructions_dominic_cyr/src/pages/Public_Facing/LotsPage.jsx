@@ -197,10 +197,15 @@ const LotsPage = () => {
           {resolvedProjectId === 'proj-001-foresta' && (
             <p className="exclusive-tag">{t('foresta.exclusiveCount')}</p>
           )}
+          {resolvedProjectId === 'proj-002-panorama' && (
+            <p className="exclusive-tag" style={{ whiteSpace: 'pre-line' }}>{t('panorama.preTitle')}</p>
+          )}
           <h1 style={{ color: projectColors.secondary }}>
-            {projectName
-              ? t('header.projectLots', { name: projectName })
-              : t('header.defaultTitle')}
+            {resolvedProjectId === 'proj-002-panorama'
+              ? t('panorama.headerTitle', 'Unités de PANØRAMA')
+              : projectName
+                ? t('header.projectLots', { name: projectName })
+                : t('header.defaultTitle')}
             <span
               className="header-underline"
               style={{ backgroundColor: projectColors.accent }}
@@ -209,6 +214,9 @@ const LotsPage = () => {
           {resolvedProjectId === 'proj-001-foresta' && (
             <p className="peace-tag">{t('foresta.peaceTagline')}</p>
           )}
+          {resolvedProjectId === 'proj-002-panorama' && (
+            <p className="peace-tag">{t('panorama.tagline')}</p>
+          )}
           {/* Button moved below all content */}
         </div>
 
@@ -216,7 +224,7 @@ const LotsPage = () => {
           <div className="lots-image-section">
             <div className="map-wrapper">
               <img
-                src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/panorama.png"
+                src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/panorama.png"
                 alt="Panorama Map"
                 className="phase-map-image"
                 style={{ cursor: 'default' }}
@@ -226,8 +234,9 @@ const LotsPage = () => {
               style={{
                 textAlign: 'center',
                 fontSize: '1.1rem',
-                margin: '1.5rem 0',
+                margin: '1.5rem auto',
                 color: '#6b7280',
+                maxWidth: '75%',
               }}
             >
               {t('comingSoon')}
