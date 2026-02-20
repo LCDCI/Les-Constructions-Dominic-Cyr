@@ -27,6 +27,10 @@
   padding: 0 10%;
 }
 
+.app-footer[data-project] .footer-inner {
+  padding: 0 10% 0 30%;
+}
+
 .footer-section {
   display: flex;
   flex-direction: column;

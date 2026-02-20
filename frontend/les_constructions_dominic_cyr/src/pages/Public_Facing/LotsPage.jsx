@@ -8,6 +8,7 @@ import {
 } from '../../features/lots/api/lots';
 import { projectApi } from '../../features/projects/api/projectApi';
 import LotList from '../../features/lots/components/LotList';
+import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import '../../styles/lots.css';
 import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
 
@@ -397,6 +398,7 @@ const LotsPage = () => {
           </button>
         </div>
       </div>
+      <ProjectsFooter projectId={resolvedProjectId} />
     </div>
   );
 };

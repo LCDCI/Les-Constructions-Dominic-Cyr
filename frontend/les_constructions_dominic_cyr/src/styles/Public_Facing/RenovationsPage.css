@@ -256,6 +256,18 @@
   align-self: center;
 }
 
+.renovations-page .renovations-feature-card.section-header {
+  align-items: center;
+}
+
+.renovations-page .renovations-feature-card .section-subtitle {
+  font-size: calc(1rem + 4pt);
+}
+
+.renovations-page .renovations-feature-card .link-arrow {
+  margin-top: 2.5rem;
+}
+
 @media (max-width: 1024px) {
   .renovations-page .hero {
     padding: var(--spacing-xl) var(--spacing-lg);

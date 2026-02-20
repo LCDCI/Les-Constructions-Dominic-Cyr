@@ -135,7 +135,7 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
             <p className="section-subtitle" style={{ whiteSpace: 'pre-line' }}>
               {t(
                 'intro.description',
-                'Whether it\'s modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\nEntrust your renovation to passionate professionals!'
+                'Whether it\'s modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\n\nEntrust your renovation to passionate professionals!'
               )}
             </p>
             <Link to="/contact" className="link-arrow">
