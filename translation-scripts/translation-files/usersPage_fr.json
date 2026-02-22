@@ -9,6 +9,20 @@
     "inactive": "Inactif",
     "all": "Tous"
   },
+  "table": {
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "primaryEmail": "Courriel principal",
+    "secondaryEmail": "Courriel secondaire",
+    "phone": "Téléphone",
+    "role": "Rôle",
+    "status": "Statut",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "manageStatus": "Gérer le statut",
+    "noUsersFound": "Aucun utilisateur trouvé.",
+    "notAvailable": "N/D"
+  },
   "errors": {
     "createFailed": "Échec de la création de l'utilisateur. Veuillez réessayer.",
     "updateFailed": "Échec de la mise à jour de l'utilisateur. Veuillez réessayer.",

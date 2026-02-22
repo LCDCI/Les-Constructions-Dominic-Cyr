@@ -9,6 +9,20 @@
     "inactive": "Inactive",
     "all": "All"
   },
+  "table": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "primaryEmail": "Primary Email",
+    "secondaryEmail": "Secondary Email",
+    "phone": "Phone",
+    "role": "Role",
+    "status": "Status",
+    "actions": "Actions",
+    "edit": "Edit",
+    "manageStatus": "Manage Status",
+    "noUsersFound": "No users found.",
+    "notAvailable": "N/A"
+  },
   "errors": {
     "createFailed": "Failed to create user. Please try again.",
     "updateFailed": "Failed to update user. Please try again.",

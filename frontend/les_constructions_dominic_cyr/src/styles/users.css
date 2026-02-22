@@ -1,10 +1,9 @@
 .page.users-page {
-  width: 80%;
+  width: 95%;
+  max-width: 1600px;
   margin: 0 auto;
   padding: 24px;
   padding-bottom: 10%;
-  /* Ensures the page doesn't cause body-level overflow */
-  max-width: 100%;
   box-sizing: border-box;
 }
 
@@ -14,10 +13,7 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 16px;
-  /* Keep everything on one line to match screenshot 2 */
-  flex-wrap: nowrap;
-  /* Enable horizontal scroll for the header items if they collide */
-  overflow-x: auto;
+  flex-wrap: wrap;
   padding-bottom: 8px;
 }
 
@@ -30,8 +26,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  /* Prevent the actions group from shrinking */
-  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .filter-container {
@@ -92,10 +87,9 @@
   margin-top: 16px;
   background-color: #ffffff;
   border-radius: 8px;
-  /* Applied globally to ensure horizontal scrollbar is always available below full screen */
   display: block;
   overflow-x: auto;
-  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
 }
 
 .users-table th,
@@ -731,10 +725,32 @@
 
 /* --- Responsive Adjustments --- */
 
+@media (max-width: 1200px) {
+  .page.users-page {
+    width: 98%;
+    padding: 20px;
+  }
+}
+
 @media (max-width: 900px) {
   .page.users-page {
-    width: 92%;
+    width: 100%;
     padding: 16px;
+  }
+
+  .page.users-page .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .filter-container {
+    flex: 1;
   }
 }
 
