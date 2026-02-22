@@ -62,7 +62,7 @@
 .forms-hero-title {
   font-family: var(--font-heading);
   font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 700;
+  font-weight: 400;
   margin: 0;
 }
 
