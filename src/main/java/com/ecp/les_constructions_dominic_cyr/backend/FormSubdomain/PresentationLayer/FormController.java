@@ -461,12 +461,13 @@ public class FormController {
             return true;
         }
 
-        if (hasAuthority(authentication, ROLE_CUSTOMER)) {
-            return userId.equals(form.getCustomerId()) && isAssignedToLot(form.getLotIdentifier(), userId);
+        // Salespersons can manage all forms, so they can also download any form
+        if (hasAuthority(authentication, ROLE_SALESPERSON)) {
+            return true;
         }
 
-        if (hasAuthority(authentication, ROLE_SALESPERSON)) {
-            return isAssignedToLot(form.getLotIdentifier(), userId);
+        if (hasAuthority(authentication, ROLE_CUSTOMER)) {
+            return userId.equals(form.getCustomerId()) && isAssignedToLot(form.getLotIdentifier(), userId);
         }
 
         return false;
