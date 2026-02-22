@@ -114,7 +114,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/translations/registry/**"))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // --- 1. PUBLIC ENDPOINTS (Originals + New Public Lots) ---
                         .requestMatchers("/actuator/**", "/api/theme").permitAll()
@@ -176,7 +177,9 @@ public class SecurityConfig {
                         // Owner Only (Admin actions)
                         .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers("/api/v1/reports/**").hasAuthority("ROLE_OWNER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/{deactivate|inactive|reactivate}").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/deactivate").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/inactive").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/reactivate").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.POST, "/api/v1/lots").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")

@@ -81,15 +81,19 @@
   margin-top: 12px;
 }
 
-.users-table {
+.users-table-wrapper {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 16px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  display: block;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  margin-top: 16px;
+}
+
+.users-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border-radius: 8px;
 }
 
 .users-table th,
