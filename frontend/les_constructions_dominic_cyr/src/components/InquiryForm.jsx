@@ -30,6 +30,7 @@ export default function InquiryForm({ onSuccess, className }) {
       requiredFields: 'Veuillez remplir tous les champs obligatoires.',
       invalidEmail: 'Veuillez entrer une adresse courriel valide.',
       networkError: 'Erreur réseau. Veuillez réessayer plus tard.',
+      submissionFailed: 'Échec de la soumission.',
     },
     en: {
       title: 'Send us a message',
@@ -46,6 +47,7 @@ export default function InquiryForm({ onSuccess, className }) {
       requiredFields: 'Please fill out all required fields.',
       invalidEmail: 'Please enter a valid email address.',
       networkError: 'Network error. Please try again later.',
+      submissionFailed: 'Submission failed.',
     },
   };
 
@@ -118,7 +120,7 @@ export default function InquiryForm({ onSuccess, className }) {
         setForm({ name: '', email: '', phone: '', message: '' });
         onSuccess && onSuccess(message);
       } else {
-        let errorMessage = 'Submission failed.';
+        let errorMessage = t('inquiryForm.submissionFailed', f.submissionFailed);
         try {
           const data = await res.json();
           if (data && typeof data.message === 'string') {
@@ -127,7 +129,7 @@ export default function InquiryForm({ onSuccess, className }) {
             errorMessage = data.error;
           }
         } catch {
-          errorMessage = 'Submission failed.';
+          errorMessage = t('inquiryForm.submissionFailed', f.submissionFailed);
         }
         setStatus({ message: errorMessage, type: 'error' });
       }

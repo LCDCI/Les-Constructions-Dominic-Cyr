@@ -66,8 +66,8 @@ public class SecurityConfig {
     @Order(0)
     public SecurityFilterChain inquiriesSubmitFilterChain(HttpSecurity http) throws Exception {
         RequestMatcher inquiriesPostMatcher = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/inquiries", "POST"),
-            new AntPathRequestMatcher("/api/inquiries", "OPTIONS")
+            new AntPathRequestMatcher("/api/v1/inquiries", "POST"),
+            new AntPathRequestMatcher("/api/v1/inquiries", "OPTIONS")
         );
         
         http
@@ -87,8 +87,8 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain inquiriesOwnerFilterChain(HttpSecurity http) throws Exception {
         RequestMatcher inquiriesGetMatcher = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/inquiries", "GET"),
-            new AntPathRequestMatcher("/api/inquiries/**", "GET")
+            new AntPathRequestMatcher("/api/v1/inquiries", "GET"),
+            new AntPathRequestMatcher("/api/v1/inquiries/**", "GET")
         );
         
         http
@@ -126,7 +126,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/contact/**").permitAll()
                         
                         // Public inquiry submission (POST only, handled by inquiriesSubmitFilterChain but fallback here)
-                        .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").permitAll()
 
                     // Public Living Environment (GET Only)
                     .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/living-environment").permitAll()
