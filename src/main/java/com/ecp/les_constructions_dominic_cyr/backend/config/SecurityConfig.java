@@ -66,8 +66,8 @@ public class SecurityConfig {
     @Order(0)
     public SecurityFilterChain inquiriesSubmitFilterChain(HttpSecurity http) throws Exception {
         RequestMatcher inquiriesPostMatcher = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/inquiries", "POST"),
-            new AntPathRequestMatcher("/api/inquiries", "OPTIONS")
+            new AntPathRequestMatcher("/api/v1/inquiries", "POST"),
+            new AntPathRequestMatcher("/api/v1/inquiries", "OPTIONS")
         );
         
         http
@@ -87,8 +87,8 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain inquiriesOwnerFilterChain(HttpSecurity http) throws Exception {
         RequestMatcher inquiriesGetMatcher = new OrRequestMatcher(
-            new AntPathRequestMatcher("/api/inquiries", "GET"),
-            new AntPathRequestMatcher("/api/inquiries/**", "GET")
+            new AntPathRequestMatcher("/api/v1/inquiries", "GET"),
+            new AntPathRequestMatcher("/api/v1/inquiries/**", "GET")
         );
         
         http
@@ -114,7 +114,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/v1/translations/registry/**"))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // --- 1. PUBLIC ENDPOINTS (Originals + New Public Lots) ---
                         .requestMatchers("/actuator/**", "/api/theme").permitAll()
@@ -126,7 +127,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/contact/**").permitAll()
                         
                         // Public inquiry submission (POST only, handled by inquiriesSubmitFilterChain but fallback here)
-                        .requestMatchers(HttpMethod.POST, "/api/inquiries").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").permitAll()
 
                     // Public Living Environment (GET Only)
                     .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/living-environment").permitAll()
@@ -176,7 +177,9 @@ public class SecurityConfig {
                         // Owner Only (Admin actions)
                         .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers("/api/v1/reports/**").hasAuthority("ROLE_OWNER")
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/{deactivate|inactive|reactivate}").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/deactivate").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/inactive").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/reactivate").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.POST, "/api/v1/lots").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")

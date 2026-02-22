@@ -90,8 +90,8 @@ public class TranslationRegistry {
         fileIdMap.put("fr.contractordashboard", "6230c4c3-3d42-4b65-bd0c-b402dc24ac9b");
 
         // User management page translations
-        fileIdMap.put("en.userspage", "9dd08e21-bfad-452f-9461-8db4c4a9f53a");
-        fileIdMap.put("fr.userspage", "8b464bee-4e4b-49cc-b679-0154bfbe5a07");
+        fileIdMap.put("en.userspage", "861ec6cd-1bf0-405e-83f4-4dc1c31a98b7");
+        fileIdMap.put("fr.userspage", "b44dba45-75ec-41b3-8985-51ba838936e1");
         fileIdMap.put("en.profilepage", "18a23a69-2f38-4fc4-8d73-748d815ec849");
         fileIdMap.put("fr.profilepage", "31ed222a-2651-4d7f-8624-5a19f5a15b88");
 

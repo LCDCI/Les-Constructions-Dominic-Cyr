@@ -9,6 +9,38 @@
     "inactive": "Inactive",
     "all": "All"
   },
+  "table": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "primaryEmail": "Primary Email",
+    "secondaryEmail": "Secondary Email",
+    "phone": "Phone",
+    "role": "Role",
+    "status": "Status",
+    "actions": "Actions",
+    "edit": "Edit",
+    "manageStatus": "Manage Status",
+    "noUsersFound": "No users found.",
+    "notAvailable": "N/A"
+  },
+  "statusModal": {
+    "title": "Manage User Status",
+    "description": "Review the current status and select an action to continue.",
+    "userLabel": "User:",
+    "emailLabel": "Email:",
+    "currentStatusLabel": "Current Status:",
+    "selectAction": "Select Action:",
+    "setInactive": "Set as Inactive",
+    "deactivateUser": "Deactivate User",
+    "reactivateUser": "Reactivate User",
+    "deactivateDescription": "Deactivating this user will prevent them from logging in and they will not appear in active assignment lists. Historical data will remain available.",
+    "inactiveDescription": "Setting this user as inactive will keep them visible in the dashboard but signal the end of their current project. They can still log in.",
+    "reactivateDescription": "Reactivating this user will restore their full access to the system.",
+    "noPermission": "You do not have permission to change user status.",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "processing": "Processing..."
+  },
   "errors": {
     "createFailed": "Failed to create user. Please try again.",
     "updateFailed": "Failed to update user. Please try again.",

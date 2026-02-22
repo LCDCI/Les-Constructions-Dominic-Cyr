@@ -9,6 +9,38 @@
     "inactive": "Inactif",
     "all": "Tous"
   },
+  "table": {
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "primaryEmail": "Courriel principal",
+    "secondaryEmail": "Courriel secondaire",
+    "phone": "Téléphone",
+    "role": "Rôle",
+    "status": "Statut",
+    "actions": "Actions",
+    "edit": "Modifier",
+    "manageStatus": "Gérer le statut",
+    "noUsersFound": "Aucun utilisateur trouvé.",
+    "notAvailable": "N/D"
+  },
+  "statusModal": {
+    "title": "Gérer le statut de l'utilisateur",
+    "description": "Consultez le statut actuel et sélectionnez une action pour continuer.",
+    "userLabel": "Utilisateur :",
+    "emailLabel": "Courriel :",
+    "currentStatusLabel": "Statut actuel :",
+    "selectAction": "Sélectionner une action :",
+    "setInactive": "Définir comme inactif",
+    "deactivateUser": "Désactiver l'utilisateur",
+    "reactivateUser": "Réactiver l'utilisateur",
+    "deactivateDescription": "La désactivation de cet utilisateur l'empêchera de se connecter et il n'apparaêtra plus dans les listes d'assignation actives. Les données historiques resteront disponibles.",
+    "inactiveDescription": "Définir cet utilisateur comme inactif le gardera visible dans le tableau de bord, mais signalera la fin de son projet actuel. Il pourra toujours se connecter.",
+    "reactivateDescription": "La réactivation de cet utilisateur lui restituera un accès complet au système.",
+    "noPermission": "Vous n'avez pas la permission de modifier le statut de l'utilisateur.",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "processing": "Traitement en cours..."
+  },
   "errors": {
     "createFailed": "Échec de la création de l'utilisateur. Veuillez réessayer.",
     "updateFailed": "Échec de la mise à jour de l'utilisateur. Veuillez réessayer.",
