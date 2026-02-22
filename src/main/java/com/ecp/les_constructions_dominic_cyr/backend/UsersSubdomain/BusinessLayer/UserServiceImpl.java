@@ -80,7 +80,6 @@ public class UserServiceImpl implements UserService {
     public List<UserResponseModel> getAllUsers() {
         return usersRepository.findAll()
                 .stream()
-                .filter(user -> user.getUserStatus() != UserStatus.DEACTIVATED)
                 .map(user -> UserMapper.toResponseModel(user, null))
                 .toList();
     }

@@ -189,7 +189,9 @@ export default function UsersPage() {
       if (action === 'deactivate') {
         updatedUser = await deactivateUser(managingUser.userIdentifier, token);
         setUsers(prev =>
-          prev.filter(u => u.userIdentifier !== managingUser.userIdentifier)
+          prev.map(u =>
+            u.userIdentifier === updatedUser.userIdentifier ? updatedUser : u
+          )
         );
       } else if (action === 'inactive') {
         updatedUser = await setUserInactive(managingUser.userIdentifier, token);
