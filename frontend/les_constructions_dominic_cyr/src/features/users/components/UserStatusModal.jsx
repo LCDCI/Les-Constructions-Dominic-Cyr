@@ -44,11 +44,20 @@ export default function UserStatusModal({
   const getActionText = () => {
     switch (action) {
       case 'deactivate':
-        return t('statusModal.deactivateDescription', 'Deactivating this user will prevent them from logging in and they will not appear in active assignment lists. Historical data will remain available.');
+        return t(
+          'statusModal.deactivateDescription',
+          'Deactivating this user will prevent them from logging in and they will not appear in active assignment lists. Historical data will remain available.'
+        );
       case 'inactive':
-        return t('statusModal.inactiveDescription', 'Setting this user as inactive will keep them visible in the dashboard but signal the end of their current project. They can still log in.');
+        return t(
+          'statusModal.inactiveDescription',
+          'Setting this user as inactive will keep them visible in the dashboard but signal the end of their current project. They can still log in.'
+        );
       case 'reactivate':
-        return t('statusModal.reactivateDescription', 'Reactivating this user will restore their full access to the system.');
+        return t(
+          'statusModal.reactivateDescription',
+          'Reactivating this user will restore their full access to the system.'
+        );
       default:
         return '';
     }
@@ -65,26 +74,35 @@ export default function UserStatusModal({
         aria-describedby="user-status-modal-description"
       >
         <div className="modal-header">
-          <h2 id="user-status-modal-title">{t('statusModal.title', 'Manage User Status')}</h2>
+          <h2 id="user-status-modal-title">
+            {t('statusModal.title', 'Manage User Status')}
+          </h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>
 
         <p id="user-status-modal-description" className="sr-only">
-          {t('statusModal.description', 'Review the current status and select an action to continue.')}
+          {t(
+            'statusModal.description',
+            'Review the current status and select an action to continue.'
+          )}
         </p>
 
         <div className="modal-body">
           <div className="user-status-info">
             <p>
-              <strong>{t('statusModal.userLabel', 'User:')}</strong> {user.firstName} {user.lastName}
+              <strong>{t('statusModal.userLabel', 'User:')}</strong>{' '}
+              {user.firstName} {user.lastName}
             </p>
             <p>
-              <strong>{t('statusModal.emailLabel', 'Email:')}</strong> {user.primaryEmail}
+              <strong>{t('statusModal.emailLabel', 'Email:')}</strong>{' '}
+              {user.primaryEmail}
             </p>
             <p>
-              <strong>{t('statusModal.currentStatusLabel', 'Current Status:')}</strong>{' '}
+              <strong>
+                {t('statusModal.currentStatusLabel', 'Current Status:')}
+              </strong>{' '}
               <span
                 className={`status-badge status-${user.userStatus?.toLowerCase()}`}
               >
@@ -142,7 +160,10 @@ export default function UserStatusModal({
 
           {!isOwner && (
             <p className="error-text">
-              {t('statusModal.noPermission', 'You do not have permission to change user status.')}
+              {t(
+                'statusModal.noPermission',
+                'You do not have permission to change user status.'
+              )}
             </p>
           )}
         </div>
@@ -161,7 +182,9 @@ export default function UserStatusModal({
               onClick={handleConfirm}
               disabled={isSubmitting || !action}
             >
-              {isSubmitting ? t('statusModal.processing', 'Processing...') : t('statusModal.confirm', 'Confirm')}
+              {isSubmitting
+                ? t('statusModal.processing', 'Processing...')
+                : t('statusModal.confirm', 'Confirm')}
             </button>
           )}
         </div>

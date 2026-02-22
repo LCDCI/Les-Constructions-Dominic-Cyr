@@ -120,7 +120,10 @@ export default function InquiryForm({ onSuccess, className }) {
         setForm({ name: '', email: '', phone: '', message: '' });
         onSuccess && onSuccess(message);
       } else {
-        let errorMessage = t('inquiryForm.submissionFailed', f.submissionFailed);
+        let errorMessage = t(
+          'inquiryForm.submissionFailed',
+          f.submissionFailed
+        );
         try {
           const data = await res.json();
           if (data && typeof data.message === 'string') {
