@@ -162,7 +162,12 @@ const CustomerQuoteApprovalPage = () => {
 
   // Handle approve click
   const handleApproveClick = quote => {
-    setSelectedQuote(quote);
+    const details = quotesWithDetails[quote.quoteNumber] || {};
+    setSelectedQuote({
+      ...quote,
+      projectName: details.projectName || quote.projectIdentifier,
+      lotNumber: details.lotNumber || quote.lotIdentifier,
+    });
     setShowApprovalModal(true);
   };
 

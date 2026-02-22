@@ -8,6 +8,7 @@ import { GoInbox } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
 import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
+import { MdOutlineRequestQuote } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const CustomerDashboard = () => {
@@ -45,6 +46,12 @@ const CustomerDashboard = () => {
         title: t('cards.forms.title', 'Forms'),
         buttonText: t('cards.forms.button', 'Fill Out Forms'),
         action: () => navigate('/customers/forms'),
+      },
+      {
+        icon: <MdOutlineRequestQuote />,
+        title: t('cards.quotes.title', 'Quotes'),
+        buttonText: t('cards.quotes.button', 'View Quotes'),
+        action: () => navigate('/customer/quotes/approval'),
       },
     ],
     [t, navigate]

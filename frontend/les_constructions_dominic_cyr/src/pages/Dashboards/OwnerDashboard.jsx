@@ -13,6 +13,7 @@ import { GoPackage } from 'react-icons/go';
 import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { FaMapLocationDot } from 'react-icons/fa6';
+import { MdOutlineRequestQuote } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const OwnerDashboard = () => {
@@ -63,6 +64,12 @@ const OwnerDashboard = () => {
         title: t('cards.lots.title', 'Lots'),
         buttonText: t('cards.lots.button', 'View Lots'),
         action: () => setIsProjectModalOpen(true),
+      },
+      {
+        icon: <MdOutlineRequestQuote />,
+        title: t('cards.quotes.title', 'Quotes'),
+        buttonText: t('cards.quotes.button', 'View Quotes'),
+        action: () => navigate('/quotes/approval'),
       },
     ],
     [t, navigate]

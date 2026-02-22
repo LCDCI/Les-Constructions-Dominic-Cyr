@@ -28,6 +28,7 @@ const QuoteApprovalPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [contractorNames, setContractorNames] = useState({});
+  const [projectNames, setProjectNames] = useState({});
   const [token, setToken] = useState(null);
 
   // Notification state
@@ -57,7 +58,6 @@ const QuoteApprovalPage = () => {
         const accessToken = await getAccessTokenSilently();
         setToken(accessToken);
         await fetchQuotes(accessToken);
-        fetchContractorNames(accessToken);
       } catch (err) {
         console.error('Error initializing:', err);
         setError('Failed to initialize');
@@ -77,6 +77,8 @@ const QuoteApprovalPage = () => {
       const allQuotes = await quoteApi.getAllQuotes(authToken);
       setQuotes(allQuotes);
       applyFilters(allQuotes, filterStatus, searchTerm, sortBy);
+      fetchContractorNames(allQuotes, authToken);
+      fetchProjectNames(allQuotes, authToken);
     } catch (err) {
       console.error('Error fetching quotes:', err);
       const message =
@@ -89,28 +91,73 @@ const QuoteApprovalPage = () => {
     }
   };
 
-  const fetchContractorNames = async (accessToken = token) => {
+  const fetchContractorNames = async (quotesToProcess, accessToken = token) => {
     try {
       const authToken = accessToken || (await getAccessTokenSilently());
-      const response = await fetch('/api/v1/users', {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      if (!response.ok) {
-        console.warn('Failed to fetch contractor names');
-        return;
-      }
-      const users = await response.json();
+      const uniqueIds = [
+        ...new Set(
+          quotesToProcess.map(q => q.contractorId).filter(Boolean)
+        ),
+      ];
       const nameMap = {};
-      users.forEach(user => {
-        if (user.userId) {
-          nameMap[user.userId] = user.firstName + ' ' + (user.lastName || '');
-        }
-      });
+      await Promise.all(
+        uniqueIds.map(async contractorId => {
+          try {
+            let response;
+            if (contractorId.includes('|')) {
+              const encodedId = encodeURIComponent(contractorId);
+              response = await fetch(`/api/v1/users/auth0/${encodedId}`, {
+                headers: { Authorization: `Bearer ${authToken}` },
+              });
+            } else {
+              response = await fetch(`/api/v1/users/${contractorId}`, {
+                headers: { Authorization: `Bearer ${authToken}` },
+              });
+            }
+            if (response.ok) {
+              const user = await response.json();
+              nameMap[contractorId] =
+                `${user.firstName || ''} ${user.lastName || ''}`.trim() ||
+                contractorId;
+            }
+          } catch (err) {
+            console.warn(`Failed to resolve contractor ${contractorId}:`, err);
+          }
+        })
+      );
       setContractorNames(nameMap);
     } catch (err) {
       console.warn('Error fetching contractor names:', err);
+    }
+  };
+
+  const fetchProjectNames = async (quotesToProcess, accessToken = token) => {
+    try {
+      const authToken = accessToken || (await getAccessTokenSilently());
+      const uniqueIds = [
+        ...new Set(
+          quotesToProcess.map(q => q.projectIdentifier).filter(Boolean)
+        ),
+      ];
+      const nameMap = {};
+      await Promise.all(
+        uniqueIds.map(async projectId => {
+          try {
+            const response = await fetch(`/api/v1/projects/${projectId}`, {
+              headers: { Authorization: `Bearer ${authToken}` },
+            });
+            if (response.ok) {
+              const project = await response.json();
+              nameMap[projectId] = project.projectName || projectId;
+            }
+          } catch (err) {
+            console.warn(`Failed to resolve project ${projectId}:`, err);
+          }
+        })
+      );
+      setProjectNames(nameMap);
+    } catch (err) {
+      console.warn('Error fetching project names:', err);
     }
   };
 
@@ -161,7 +208,7 @@ const QuoteApprovalPage = () => {
   // Updates when filters change
   useEffect(() => {
     applyFilters(quotes);
-  }, [filterStatus, searchTerm, sortBy, contractorNames]);
+  }, [filterStatus, searchTerm, sortBy, contractorNames, projectNames]);
 
   const handleApproveClick = quote => {
     setSelectedQuote(quote);
@@ -348,7 +395,7 @@ const QuoteApprovalPage = () => {
                     {quote.quoteNumber}
                   </td>
                   <td data-label={t('quote.project') || 'Project'}>
-                    {quote.projectIdentifier}
+                    {projectNames[quote.projectIdentifier] || quote.projectIdentifier}
                   </td>
                   <td
                     className="quote-contractor"

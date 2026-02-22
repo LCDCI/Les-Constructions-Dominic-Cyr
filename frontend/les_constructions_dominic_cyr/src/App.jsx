@@ -53,7 +53,7 @@ import NavigationSetter from './components/NavigationSetter';
 import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import ReportsPage from './pages/ReportsPage';
 import InboxPage from './pages/Inbox/InboxPage';
-// RoleBasedRedirect removed — / now shows Home for all users; PortalLogin handles login redirect
+import RoleBasedRedirect from './components/RoleBasedRedirect';
 import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
 import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
 import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
@@ -309,7 +309,7 @@ export default function App() {
 
         <main style={{ padding: '16px' }}>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<RoleBasedRedirect fallback={<Home />} />} />
             <Route
               path="/projects"
               element={

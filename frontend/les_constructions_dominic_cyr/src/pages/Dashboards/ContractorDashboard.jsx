@@ -32,8 +32,8 @@ const ContractorDashboard = () => {
       {
         icon: <MdOutlineRequestQuote />,
         title: t('cards.quotes.title', 'Quotes'),
-        buttonText: t('cards.quotes.button', 'Upload Quote'),
-        action: () => navigate('/contractors/quotes'),
+        buttonText: t('cards.quotes.button', 'View Quotes'),
+        action: () => navigate('/quotes'),
       },
       {
         icon: <GoPackage />,
