@@ -151,8 +151,9 @@ export default function InquiryForm({ onSuccess, className }) {
       <h2>{t('inquiryForm.title', f.title)}</h2>
       <form onSubmit={onSubmit}>
         <div className="form-group">
-          <label>{t('inquiryForm.nameLabel', f.nameLabel)} *</label>
+          <label htmlFor="inquiry-name">{t('inquiryForm.nameLabel', f.nameLabel)} *</label>
           <input
+            id="inquiry-name"
             name="name"
             value={form.name}
             onChange={onChange}
@@ -162,8 +163,9 @@ export default function InquiryForm({ onSuccess, className }) {
           />
         </div>
         <div className="form-group">
-          <label>{t('inquiryForm.emailLabel', f.emailLabel)} *</label>
+          <label htmlFor="inquiry-email">{t('inquiryForm.emailLabel', f.emailLabel)} *</label>
           <input
+            id="inquiry-email"
             name="email"
             type="email"
             value={form.email}
@@ -174,8 +176,9 @@ export default function InquiryForm({ onSuccess, className }) {
           />
         </div>
         <div className="form-group">
-          <label>{t('inquiryForm.phoneLabel', f.phoneLabel)}</label>
+          <label htmlFor="inquiry-phone">{t('inquiryForm.phoneLabel', f.phoneLabel)}</label>
           <PhoneInput
+            id="inquiry-phone"
             placeholder={t('inquiryForm.phonePlaceholder', f.phonePlaceholder)}
             value={form.phone}
             onChange={value => setForm({ ...form, phone: value })}
@@ -184,8 +187,9 @@ export default function InquiryForm({ onSuccess, className }) {
           />
         </div>
         <div className="form-group">
-          <label>{t('inquiryForm.messageLabel', f.messageLabel)} *</label>
+          <label htmlFor="inquiry-message">{t('inquiryForm.messageLabel', f.messageLabel)} *</label>
           <textarea
+            id="inquiry-message"
             name="message"
             value={form.message}
             onChange={onChange}
