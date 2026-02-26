@@ -95,9 +95,7 @@ const QuoteApprovalPage = () => {
     try {
       const authToken = accessToken || (await getAccessTokenSilently());
       const uniqueIds = [
-        ...new Set(
-          quotesToProcess.map(q => q.contractorId).filter(Boolean)
-        ),
+        ...new Set(quotesToProcess.map(q => q.contractorId).filter(Boolean)),
       ];
       const nameMap = {};
       await Promise.all(
@@ -395,7 +393,8 @@ const QuoteApprovalPage = () => {
                     {quote.quoteNumber}
                   </td>
                   <td data-label={t('quote.project') || 'Project'}>
-                    {projectNames[quote.projectIdentifier] || quote.projectIdentifier}
+                    {projectNames[quote.projectIdentifier] ||
+                      quote.projectIdentifier}
                   </td>
                   <td
                     className="quote-contractor"

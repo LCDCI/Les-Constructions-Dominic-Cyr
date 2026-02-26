@@ -309,7 +309,10 @@ export default function App() {
 
         <main style={{ padding: '16px' }}>
           <Routes>
-            <Route path="/" element={<RoleBasedRedirect fallback={<Home />} />} />
+            <Route
+              path="/"
+              element={<RoleBasedRedirect fallback={<Home />} />}
+            />
             <Route
               path="/projects"
               element={
