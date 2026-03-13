@@ -23,13 +23,6 @@ const RealizationsPage = () => {
     'bb6dd250-ed32-4041-8b4e-020e2ef45e2f',
   ];
 
-  const PORTFOLIO_IMAGES = [
-    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/seigneurie.png',
-    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/fourche.jpg',
-    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/niverville.jpg',
-    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/ruisseau.jpg',
-  ];
-
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
     (typeof window !== 'undefined' &&
@@ -144,33 +137,6 @@ const RealizationsPage = () => {
         )}
       </section>
 
-      {/* Portfolio Text */}
-      <section className="realizations-portfolio-text-section">
-        <p className="realizations-portfolio-text">
-          {t(
-            'intro.portfolioText',
-            'Here is a portfolio of projects completed in recent years.'
-          )}
-        </p>
-      </section>
-
-      {/* Portfolio 2x2 Grid */}
-      <section
-        className="realizations-portfolio-grid-section"
-        aria-label="Portfolio"
-      >
-        <div className="realizations-portfolio-grid">
-          {PORTFOLIO_IMAGES.map((url, idx) => (
-            <div key={idx} className="realizations-portfolio-grid-item">
-              <img
-                src={url}
-                alt={`Portfolio ${idx + 1}`}
-                className="realizations-portfolio-grid-img"
-              />
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   );
 };

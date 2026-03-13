@@ -38,7 +38,7 @@ const OwnerLotsPage = () => {
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({
-    key: 'none',
+    key: 'lotNumber',
     direction: 'asc',
   });
 
@@ -268,15 +268,10 @@ const OwnerLotsPage = () => {
     }
     if (sortConfig.key !== 'none') {
       result.sort((a, b) => {
-        const valA = a[sortConfig.key] || 0;
-        const valB = b[sortConfig.key] || 0;
-        return sortConfig.direction === 'asc'
-          ? valA > valB
-            ? 1
-            : -1
-          : valA < valB
-            ? 1
-            : -1;
+        const valA = String(a[sortConfig.key] ?? '');
+        const valB = String(b[sortConfig.key] ?? '');
+        const cmp = valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+        return sortConfig.direction === 'asc' ? cmp : -cmp;
       });
     }
     setFilteredLots(result);
@@ -355,6 +350,8 @@ const OwnerLotsPage = () => {
               }}
             >
               <option value="none-asc">{t('sort.sortBy')}</option>
+              <option value="lotNumber-asc">{t('sort.lotNumberAsc', 'Lot # (low → high)')}</option>
+              <option value="lotNumber-desc">{t('sort.lotNumberDesc', 'Lot # (high → low)')}</option>
               <option value="price-asc">{t('sort.priceLowHigh')}</option>
               <option value="price-desc">{t('sort.priceHighLow')}</option>
               <option value="dimensionsSquareFeet-asc">

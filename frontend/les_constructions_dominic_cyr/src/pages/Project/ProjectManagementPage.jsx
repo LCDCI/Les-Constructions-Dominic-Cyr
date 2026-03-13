@@ -43,8 +43,8 @@ export default function ProjectManagementPage() {
     },
     stHilaire: {
       url: `${CDN_BASE_URL}/st-hilaire.png`,
-      city: 'St-Hilaire',
-      alt: 'St-Hilaire construction project',
+      city: 'St-Bruno',
+      alt: 'St-Bruno construction project',
     },
   };
 

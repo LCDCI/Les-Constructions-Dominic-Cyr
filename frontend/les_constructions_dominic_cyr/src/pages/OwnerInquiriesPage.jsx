@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 
@@ -66,6 +66,18 @@ export default function OwnerInquiriesPage() {
     return textarea.value || str;
   };
 
+  const decodedInquiries = useMemo(
+    () =>
+      inquiries.map(inq => ({
+        ...inq,
+        name: unescapeHtml(inq.name),
+        email: unescapeHtml(inq.email),
+        phone: unescapeHtml(inq.phone),
+        message: unescapeHtml(inq.message),
+      })),
+    [inquiries]
+  );
+
   return (
     <>
       <div style={{ padding: '2rem', minHeight: 'calc(100vh - 200px)' }}>
@@ -104,7 +116,7 @@ export default function OwnerInquiriesPage() {
               </tr>
             </thead>
             <tbody>
-              {inquiries.length === 0 ? (
+              {decodedInquiries.length === 0 ? (
                 <tr>
                   <td
                     colSpan={5}
@@ -114,7 +126,7 @@ export default function OwnerInquiriesPage() {
                   </td>
                 </tr>
               ) : (
-                inquiries.map(inq => (
+                decodedInquiries.map(inq => (
                   <tr key={inq.id}>
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
                       {inq.name}
