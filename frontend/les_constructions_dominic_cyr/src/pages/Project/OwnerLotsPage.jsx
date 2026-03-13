@@ -270,7 +270,10 @@ const OwnerLotsPage = () => {
       result.sort((a, b) => {
         const valA = String(a[sortConfig.key] ?? '');
         const valB = String(b[sortConfig.key] ?? '');
-        const cmp = valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+        const cmp = valA.localeCompare(valB, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        });
         return sortConfig.direction === 'asc' ? cmp : -cmp;
       });
     }
@@ -350,8 +353,12 @@ const OwnerLotsPage = () => {
               }}
             >
               <option value="none-asc">{t('sort.sortBy')}</option>
-              <option value="lotNumber-asc">{t('sort.lotNumberAsc', 'Lot # (low → high)')}</option>
-              <option value="lotNumber-desc">{t('sort.lotNumberDesc', 'Lot # (high → low)')}</option>
+              <option value="lotNumber-asc">
+                {t('sort.lotNumberAsc', 'Lot # (low → high)')}
+              </option>
+              <option value="lotNumber-desc">
+                {t('sort.lotNumberDesc', 'Lot # (high → low)')}
+              </option>
               <option value="price-asc">{t('sort.priceLowHigh')}</option>
               <option value="price-desc">{t('sort.priceHighLow')}</option>
               <option value="dimensionsSquareFeet-asc">

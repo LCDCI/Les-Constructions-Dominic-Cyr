@@ -136,7 +136,6 @@ const RealizationsPage = () => {
           <div className="gallery-counter-hidden" aria-hidden="true" />
         )}
       </section>
-
     </div>
   );
 };
