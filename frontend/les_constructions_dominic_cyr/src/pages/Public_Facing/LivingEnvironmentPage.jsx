@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Public_Facing/living-environment.css';
+import '../../styles/lots.css';
 import {
   FaSkiing,
   FaGolfBall,
@@ -30,6 +31,9 @@ const LivingEnvironmentPage = () => {
   const t = (key, defaultValue) => tLivingEnv(key, defaultValue);
   const navigate = useNavigate();
   const { projectIdentifier } = useParams();
+  const isFrench = i18n.language?.startsWith('fr');
+  const isForesta = projectIdentifier === 'proj-001-foresta';
+  const isPanorama = projectIdentifier === 'proj-002-panorama';
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -158,6 +162,15 @@ const LivingEnvironmentPage = () => {
     return lower.charAt(0).toUpperCase() + lower.slice(1);
   };
 
+  const introSectionTitle = isForesta
+    ? isFrench
+      ? 'Un milieu de vie exceptionnel'
+      : 'An exceptional living environment'
+    : [data?.headerTitle, data?.headerSubtitle, data?.headerSubtitleLast]
+        .filter(Boolean)
+        .map(toSentenceCase)
+        .join(' ');
+
   if (loading) {
     return (
       <div className="living-environment-page">
@@ -215,34 +228,75 @@ const LivingEnvironmentPage = () => {
 
   return (
     <div className="living-environment-page">
-      {/* Header Section: full-width with 5% side gutters */}
-      <section className="le-header-section full-width-le">
-        <h1 className="le-main-title" style={{ color: '#fff' }}>
-          {toSentenceCase(data.headerTitle)}
-        </h1>
-        <h2 className="le-subtitle" style={{ color: '#fff' }}>
-          {toSentenceCase(data.headerSubtitle)}
-        </h2>
-        <h3 className="le-subtitle-last" style={{ color: '#fff' }}>
-          {toSentenceCase(data.headerSubtitleLast)}
-        </h3>
-        <p
-          className="le-tagline"
-          style={{ color: 'var(--tertiary-color, #aab2a6)' }}
+      {/* Header Section */}
+      {isForesta ? (
+        <section
+          className="lots-header-section le-header-section full-width-le"
+          style={{ backgroundColor: 'var(--primary-color, #4c4d4f)' }}
         >
-          {toSentenceCase(data.headerTagline)}
-        </p>
-      </section>
+          <h1 style={{ color: '#ffffff' }}>
+            Föresta
+            <span
+              className="header-underline"
+              style={{ backgroundColor: 'var(--tertiary-color, #aab2a6)' }}
+            ></span>
+          </h1>
+
+          <p className="peace-tag" style={{ color: '#ffffff' }}>
+            {isFrench ? 'Au rythme de la nature' : 'In Rhythm with Nature'}
+          </p>
+        </section>
+      ) : isPanorama ? (
+        <section
+          className="lots-header-section le-header-section full-width-le"
+          style={{ backgroundColor: 'var(--primary-color, #4c4d4f)' }}
+        >
+          <h1 style={{ color: '#ffffff' }}>
+            {data.projectName || 'Panorama'}
+            <span
+              className="header-underline"
+              style={{ backgroundColor: 'var(--tertiary-color, #aab2a6)' }}
+            ></span>
+          </h1>
+
+          <p className="peace-tag" style={{ color: '#ffffff' }}>
+            {toSentenceCase(data.headerTagline)}
+          </p>
+        </section>
+      ) : (
+        <section className="le-header-section full-width-le">
+          <h1 className="le-main-title" style={{ color: '#fff' }}>
+            {toSentenceCase(data.headerTitle)}
+          </h1>
+          <h2 className="le-subtitle" style={{ color: '#fff' }}>
+            {toSentenceCase(data.headerSubtitle)}
+          </h2>
+          <h3 className="le-subtitle-last" style={{ color: '#fff' }}>
+            {toSentenceCase(data.headerSubtitleLast)}
+          </h3>
+          <p
+            className="le-tagline"
+            style={{ color: 'var(--tertiary-color, #aab2a6)' }}
+          >
+            {toSentenceCase(data.headerTagline)}
+          </p>
+        </section>
+      )}
 
       <div className="container">
         {/* Description Section */}
         <section className="le-description-section">
+          {introSectionTitle && (
+            <h2 className="le-section-title">{introSectionTitle}</h2>
+          )}
           <p className="le-description-text">{data.descriptionText}</p>
         </section>
 
         {/* Proximity Section */}
         <section className="le-proximity-section">
-          <h2 className="le-proximity-title">{data.proximityTitle}</h2>
+          <h2 className="le-section-title">
+            {toSentenceCase(data.proximityTitle)}
+          </h2>
 
           <div className="le-amenities-grid">
             {data.amenities &&

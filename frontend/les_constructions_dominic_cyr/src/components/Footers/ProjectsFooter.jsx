@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FaClock, FaPhoneAlt, FaEnvelope } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaClock, FaPhoneAlt, FaEnvelope, FaArrowRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
-import '../../styles/Footers/ProjectsFooter.css';
+import '../../styles/Footers/HomeFooter.css';
 
 const PROJECT_INFO = {
   'proj-001-foresta': {
@@ -43,6 +44,7 @@ const PROJECT_INFO = {
 
 export default function ProjectsFooter({ projectId }) {
   const { t } = useTranslation();
+  const currentYear = new Date().getFullYear();
 
   const projectData =
     PROJECT_INFO[projectId] || PROJECT_INFO['proj-001-foresta'];
@@ -51,25 +53,33 @@ export default function ProjectsFooter({ projectId }) {
     <footer className="app-footer" data-project={projectId}>
       <div className="footer-inner">
         <div className="footer-section">
-          <div className="footer-icon">
-            <FaClock />
+          <div className="footer-title-group">
+            <FaClock className="footer-section-icon" />
+            <h3 className="footer-title">
+              {t('footer.hoursTitle', "Heures d'ouverture")}
+            </h3>
           </div>
-          <h3 className="footer-title">
-            {t('footer.hoursTitle', "Heures d'ouverture")}
-          </h3>
           <div className="footer-content">
             <p className="footer-item">{projectData.hours.weekdays}</p>
             <p className="footer-item">{projectData.hours.weekend}</p>
           </div>
         </div>
 
+        <div className="footer-section footer-section-middle">
+          <div className="footer-vertical-divider"></div>
+          <Link to="/contact" className="footer-contact-link">
+            {t('footer.contactUs', 'Contactez-nous')}
+            <FaArrowRight className="footer-arrow-icon" />
+          </Link>
+        </div>
+
         <div className="footer-section">
-          <div className="footer-icon">
-            <FaPhoneAlt />
+          <div className="footer-title-group">
+            <FaPhoneAlt className="footer-section-icon" />
+            <h3 className="footer-title">
+              {t('footer.contactTitle', 'Contact')}
+            </h3>
           </div>
-          <h3 className="footer-title">
-            {t('footer.contactTitle', 'Contact')}
-          </h3>
           <div className="footer-content">
             <p className="footer-item">
               <strong>{projectData.contact.name}</strong>
@@ -99,7 +109,8 @@ export default function ProjectsFooter({ projectId }) {
         <p className="footer-copyright">
           {t(
             'footer.copyright',
-            '© 2025 Les Constructions Dominic Cyr. Tous droits réservés.'
+            '© {{year}} Les Constructions Dominic Cyr Inc. Tous droits réservés.',
+            { year: currentYear }
           )}
         </p>
       </div>

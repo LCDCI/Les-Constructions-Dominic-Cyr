@@ -27,6 +27,19 @@ const QuotesPage = () => {
   // Get user role from decoded token
   const [userRole, setUserRole] = useState(null);
 
+  const sortProjectsWithForestaFirst = projects => {
+    if (!Array.isArray(projects)) return projects;
+
+    const foresta = projects.find(
+      p => p.projectIdentifier === 'proj-001-foresta'
+    );
+    const others = projects.filter(
+      p => p.projectIdentifier !== 'proj-001-foresta'
+    );
+
+    return foresta ? [foresta, ...others] : projects;
+  };
+
   useEffect(() => {
     const initializePage = async () => {
       try {
@@ -54,9 +67,10 @@ const QuotesPage = () => {
         });
 
         if (projectsResponse.data && Array.isArray(projectsResponse.data)) {
-          setProjects(projectsResponse.data);
-          if (projectsResponse.data.length > 0) {
-            setSelectedProject(projectsResponse.data[0]);
+          const sorted = sortProjectsWithForestaFirst(projectsResponse.data);
+          setProjects(sorted);
+          if (sorted.length > 0) {
+            setSelectedProject(sorted[0]);
           }
         }
       } catch (err) {

@@ -27,6 +27,19 @@ const QuoteListPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [token, setToken] = useState(null);
 
+  const sortProjectsWithForestaFirst = projects => {
+    if (!Array.isArray(projects)) return projects;
+
+    const foresta = projects.find(
+      p => p.projectIdentifier === 'proj-001-foresta'
+    );
+    const others = projects.filter(
+      p => p.projectIdentifier !== 'proj-001-foresta'
+    );
+
+    return foresta ? [foresta, ...others] : projects;
+  };
+
   useEffect(() => {
     const initializePage = async () => {
       try {
@@ -44,11 +57,12 @@ const QuoteListPage = () => {
         });
 
         if (projectsResponse.data && Array.isArray(projectsResponse.data)) {
-          setProjects(projectsResponse.data);
+          const sorted = sortProjectsWithForestaFirst(projectsResponse.data);
+          setProjects(sorted);
 
           // Fetch lots for each project and flatten them
           const allLots = [];
-          for (const project of projectsResponse.data) {
+          for (const project of sorted) {
             try {
               const lotsResponse = await axios.get(
                 `/api/v1/projects/${project.projectIdentifier}/lots`,
@@ -76,6 +90,13 @@ const QuoteListPage = () => {
               );
             }
           }
+
+          // Sort all lots by lotNumber (numeric)
+          allLots.sort((a, b) => {
+            const numA = parseInt(a.lotNumber, 10) || 0;
+            const numB = parseInt(b.lotNumber, 10) || 0;
+            return numA - numB;
+          });
 
           setLots(allLots);
           if (allLots.length > 0) {

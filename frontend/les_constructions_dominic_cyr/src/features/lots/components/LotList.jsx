@@ -3,18 +3,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './LotList.css';
 
-function formatPrice(p, isOwner) {
-  if (!isOwner) return '—';
-  if (!p) return '—';
-  const n = typeof p === 'number' ? p : Number(p);
-  return !Number.isNaN(n)
-    ? new Intl.NumberFormat('en-CA', {
-        style: 'currency',
-        currency: 'CAD',
-      }).format(n)
-    : String(p);
-}
-
 export default function LotList({ lots = [], isOwner = false }) {
   const { t } = useTranslation('lots');
 
@@ -65,10 +53,7 @@ export default function LotList({ lots = [], isOwner = false }) {
             <th style={{ width: '12%' }}>
               {t('table.areaSqm', { defaultValue: 'Area (m²)' })}
             </th>
-            <th style={{ width: '15%' }}>
-              {t('table.price', { defaultValue: 'Price' })}
-            </th>
-            <th style={{ width: '11%' }}>
+            <th style={{ width: '16%' }}>
               {t('table.status', { defaultValue: 'Status' })}
             </th>
           </tr>
@@ -87,7 +72,6 @@ export default function LotList({ lots = [], isOwner = false }) {
               <td className="address-cell">{l.civicAddress || '—'}</td>
               <td>{l.dimensionsSquareFeet || '—'}</td>
               <td>{l.dimensionsSquareMeters || '—'}</td>
-              <td className="price-cell">{formatPrice(l.price, isOwner)}</td>
               <td>
                 <span
                   className={`status-pill ${String(l.lotStatus || '').toLowerCase()}`}

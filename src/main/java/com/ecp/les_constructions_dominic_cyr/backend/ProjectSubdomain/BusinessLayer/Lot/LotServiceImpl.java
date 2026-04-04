@@ -39,6 +39,7 @@ public class LotServiceImpl implements LotService {
     @Override
     public List<LotResponseModel> getAllLots() {
         List<Lot> lots = lotRepository.findAll();
+        lots.sort((a, b) -> a.getLotIdentifier().getLotId().compareTo(b.getLotIdentifier().getLotId()));
         return mapLotsToResponses(lots);
     }
 

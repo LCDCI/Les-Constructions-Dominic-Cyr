@@ -20,6 +20,19 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
   const { getAccessTokenSilently } = useAuth0();
   const { t } = usePageTranslations('lotsListDashboard');
 
+  const sortProjectsWithForestaFirst = projects => {
+    if (!Array.isArray(projects)) return projects;
+
+    const foresta = projects.find(
+      p => p.projectIdentifier === 'proj-001-foresta'
+    );
+    const others = projects.filter(
+      p => p.projectIdentifier !== 'proj-001-foresta'
+    );
+
+    return foresta ? [foresta, ...others] : projects;
+  };
+
   useEffect(() => {
     loadData();
   }, [userId]);
@@ -35,7 +48,7 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
         projectApi.getAllProjects({}, token),
       ]);
 
-      // Group lots by project identifier
+      // Group lots by project identifier and sort by lotId
       const grouped = (userLots || []).reduce((acc, lot) => {
         const projectId = lot.projectIdentifier || 'unknown';
         if (!acc[projectId]) acc[projectId] = [];
@@ -43,8 +56,17 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
         return acc;
       }, {});
 
+      // Sort lots within each project by lotNumber (numeric)
+      Object.keys(grouped).forEach(projectId => {
+        grouped[projectId].sort((a, b) => {
+          const numA = parseInt(a.lotNumber, 10) || 0;
+          const numB = parseInt(b.lotNumber, 10) || 0;
+          return numA - numB;
+        });
+      });
+
       setLotsByProject(grouped);
-      setAllProjects(projects || []);
+      setAllProjects(sortProjectsWithForestaFirst(projects || []));
     } catch (err) {
       console.error('Failed to load data:', err);
       setError(t('error', 'Failed to load lots'));

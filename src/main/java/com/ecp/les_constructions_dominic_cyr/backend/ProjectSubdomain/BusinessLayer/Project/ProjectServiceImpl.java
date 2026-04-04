@@ -58,10 +58,22 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public List<ProjectResponseModel> getAllProjects(boolean includeArchived) {
-        return projectRepository.findAll().stream()
+        List<ProjectResponseModel> allProjects = projectRepository.findAll().stream()
                 .filter(project -> includeArchived || project.getStatus() != ProjectStatus.ARCHIVED)
                 .map(projectMapper::entityToResponseModel)
                 .collect(Collectors.toList());
+        
+        // Sort to ensure Foresta appears first
+        allProjects.sort((a, b) -> {
+            boolean aIsForesta = "proj-001-foresta".equals(a.getProjectIdentifier());
+            boolean bIsForesta = "proj-001-foresta".equals(b.getProjectIdentifier());
+            
+            if (aIsForesta && !bIsForesta) return -1;
+            if (!aIsForesta && bIsForesta) return 1;
+            return 0;
+        });
+        
+        return allProjects;
     }
 
     @Override
@@ -200,9 +212,21 @@ public class ProjectServiceImpl implements ProjectService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-        return projectRepository.findAll(spec).stream()
+        List<ProjectResponseModel> filtered = projectRepository.findAll(spec).stream()
                 .map(projectMapper::entityToResponseModel)
                 .collect(Collectors.toList());
+        
+        // Sort to ensure Foresta appears first
+        filtered.sort((a, b) -> {
+            boolean aIsForesta = "proj-001-foresta".equals(a.getProjectIdentifier());
+            boolean bIsForesta = "proj-001-foresta".equals(b.getProjectIdentifier());
+            
+            if (aIsForesta && !bIsForesta) return -1;
+            if (!aIsForesta && bIsForesta) return 1;
+            return 0;
+        });
+        
+        return filtered;
     }
 
     private void validateProjectRequestForCreate(ProjectRequestModel requestModel) {

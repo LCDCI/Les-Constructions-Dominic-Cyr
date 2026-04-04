@@ -16,13 +16,14 @@ public interface LotRepository extends JpaRepository<Lot, Integer> {
     @Query("SELECT l FROM Lot l LEFT JOIN FETCH l.assignedUsers WHERE l.lotIdentifier.lotId = :lotId")
     Lot findByLotIdentifier_LotIdWithUsers(@Param("lotId") UUID lotId);
     
-    List<Lot> findByProject_ProjectIdentifier(String projectIdentifier);
+    @Query("SELECT l FROM Lot l WHERE l.project.projectIdentifier = :projectIdentifier ORDER BY l.lotIdentifier.lotId ASC")
+    List<Lot> findByProject_ProjectIdentifier(@Param("projectIdentifier") String projectIdentifier);
 
     // Find lots by assigned user (using the ManyToMany relationship)
-    @Query("SELECT l FROM Lot l JOIN l.assignedUsers u WHERE u = :user")
+    @Query("SELECT l FROM Lot l JOIN l.assignedUsers u WHERE u = :user ORDER BY l.lotIdentifier.lotId ASC")
     List<Lot> findByAssignedUser(@Param("user") Users user);
 
-    @Query("SELECT l FROM Lot l JOIN l.assignedUsers u WHERE u.userIdentifier.userId = :userId")
+    @Query("SELECT l FROM Lot l JOIN l.assignedUsers u WHERE u.userIdentifier.userId = :userId ORDER BY l.lotIdentifier.lotId ASC")
     List<Lot> findByAssignedUserId(@Param("userId") UUID userId);
 
     // Find lots in a project where both salesperson and customer are assigned
@@ -31,7 +32,8 @@ public interface LotRepository extends JpaRepository<Lot, Integer> {
            "JOIN l.assignedUsers u2 " +
            "WHERE u1.userIdentifier.userId = :salespersonId " +
            "AND u2.userIdentifier.userId = :customerId " +
-           "AND l.project.projectIdentifier = :projectIdentifier")
+           "AND l.project.projectIdentifier = :projectIdentifier " +
+           "ORDER BY l.lotIdentifier.lotId ASC")
     List<Lot> findByProjectAndBothUsersAssigned(
         @Param("projectIdentifier") String projectIdentifier,
         @Param("salespersonId") UUID salespersonId,

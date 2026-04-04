@@ -37,12 +37,27 @@ const ResidentialProjectsPage = () => {
     try {
       const response = await fetch(`${apiBaseUrl}/projects`);
       const data = await response.json();
-      setProjects(data);
-      setFilteredProjects(data);
+      // Sort to ensure Foresta appears first
+      const sorted = sortProjectsWithForestaFirst(data);
+      setProjects(sorted);
+      setFilteredProjects(sorted);
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
+  };
+
+  const sortProjectsWithForestaFirst = projects => {
+    if (!Array.isArray(projects)) return projects;
+
+    const foresta = projects.find(
+      p => p.projectIdentifier === 'proj-001-foresta'
+    );
+    const others = projects.filter(
+      p => p.projectIdentifier !== 'proj-001-foresta'
+    );
+
+    return foresta ? [foresta, ...others] : projects;
   };
 
   const filterProjects = () => {
@@ -71,6 +86,16 @@ const ResidentialProjectsPage = () => {
 
   const handleViewProject = projectIdentifier => {
     navigate(`/projects/${projectIdentifier}/overview`);
+  };
+
+  const getProjectCity = project => {
+    const raw = String(project?.location || '').trim();
+    if (!raw) {
+      return t('card.cityFallback', 'City unavailable');
+    }
+
+    const firstCommaIndex = raw.indexOf(',');
+    return (firstCommaIndex >= 0 ? raw.slice(0, firstCommaIndex) : raw).trim();
   };
 
   if (loading) {
@@ -105,7 +130,6 @@ const ResidentialProjectsPage = () => {
         aria-describedby="residential-projects-subtitle"
       >
         <div className="projects-hero-content">
-          <span className="section-kicker">{t('hero.kicker', 'Our Work')}</span>
           <h1 className="projects-title" id="residential-projects-title">
             {t('hero.title', 'Residential Projects')}
           </h1>
@@ -132,25 +156,32 @@ const ResidentialProjectsPage = () => {
           {filteredProjects.length > 0 ? (
             <div className="portfolio-grid">
               {paginatedProjects.map(project => (
-                <Link
+                <div
                   key={project.projectIdentifier}
-                  to={`/projects/${project.projectIdentifier}/overview`}
-                  className="portfolio-card"
-                  data-animate
-                  aria-label={t('gallery.openProject', {
-                    defaultValue: `Open project ${project.projectName}`,
-                    projectName: project.projectName,
-                  })}
+                  className="residential-project-card"
                 >
-                  <img
-                    src={getImageUrl(project.imageIdentifier)}
-                    alt={project.projectName}
-                    loading="lazy"
-                    onError={handleImageError}
-                    className="card-image-bg"
-                  />
-                  <div className="card-overlay" />
-                </Link>
+                  <Link
+                    to={`/projects/${project.projectIdentifier}/overview`}
+                    className="portfolio-card"
+                    data-animate
+                    aria-label={t('gallery.openProject', {
+                      defaultValue: `Open project ${project.projectName}`,
+                      projectName: project.projectName,
+                    })}
+                  >
+                    <img
+                      src={getImageUrl(project.imageIdentifier)}
+                      alt={project.projectName}
+                      loading="lazy"
+                      onError={handleImageError}
+                      className="card-image-bg"
+                    />
+                    <div className="card-overlay" />
+                  </Link>
+                  <p className="residential-project-city">
+                    {getProjectCity(project)}
+                  </p>
+                </div>
               ))}
             </div>
           ) : (

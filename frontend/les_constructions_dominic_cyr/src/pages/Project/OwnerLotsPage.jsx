@@ -86,8 +86,14 @@ const OwnerLotsPage = () => {
         const data = await fetchLots({ projectIdentifier: resolved, token });
 
         if (!cancelled) {
-          setLots(data);
-          setFilteredLots(data);
+          // Sort the fetched lots by lotNumber (numeric)
+          const sortedData = (data || []).sort((a, b) => {
+            const numA = parseInt(a.lotNumber, 10) || 0;
+            const numB = parseInt(b.lotNumber, 10) || 0;
+            return numA - numB;
+          });
+          setLots(sortedData);
+          setFilteredLots(sortedData);
         }
       } catch (err) {
         if (!cancelled) setError(err.message || 'Failed to fetch');
@@ -266,6 +272,12 @@ const OwnerLotsPage = () => {
           lot.lotNumber?.toLowerCase().includes(term)
       );
     }
+    // Sort by lotNumber (numeric) by default
+    result.sort((a, b) => {
+      const numA = parseInt(a.lotNumber, 10) || 0;
+      const numB = parseInt(b.lotNumber, 10) || 0;
+      return numA - numB;
+    });
     if (sortConfig.key !== 'none') {
       result.sort((a, b) => {
         const valA = String(a[sortConfig.key] ?? '');
@@ -359,8 +371,6 @@ const OwnerLotsPage = () => {
               <option value="lotNumber-desc">
                 {t('sort.lotNumberDesc', 'Lot # (high → low)')}
               </option>
-              <option value="price-asc">{t('sort.priceLowHigh')}</option>
-              <option value="price-desc">{t('sort.priceHighLow')}</option>
               <option value="dimensionsSquareFeet-asc">
                 {t('sort.sizeSmallest')}
               </option>

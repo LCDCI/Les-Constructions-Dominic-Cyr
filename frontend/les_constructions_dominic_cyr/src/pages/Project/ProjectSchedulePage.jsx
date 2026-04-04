@@ -558,7 +558,14 @@ const ProjectSchedulePage = () => {
       }
 
       const response = await fetchLots({ projectIdentifier: projectId, token });
-      setLots(Array.isArray(response) ? response : []);
+      const lotsArray = Array.isArray(response) ? response : [];
+      // Sort lots by lotNumber (numeric)
+      const sortedLots = lotsArray.sort((a, b) => {
+        const numA = parseInt(a.lotNumber, 10) || 0;
+        const numB = parseInt(b.lotNumber, 10) || 0;
+        return numA - numB;
+      });
+      setLots(sortedLots);
       setLotsError(null);
     } catch (err) {
       console.error('Lots loading error:', err);
