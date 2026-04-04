@@ -164,6 +164,12 @@ const LotsPage = () => {
           lot.lotNumber?.toLowerCase().includes(term)
       );
     }
+    // Sort by lotNumber (numeric) by default, then apply any additional sorting
+    result.sort((a, b) => {
+      const numA = parseInt(a.lotNumber, 10) || 0;
+      const numB = parseInt(b.lotNumber, 10) || 0;
+      return numA - numB;
+    });
     if (sortConfig.key !== 'none') {
       result.sort((a, b) => {
         const valA = a[sortConfig.key] || 0;

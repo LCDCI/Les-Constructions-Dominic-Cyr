@@ -77,6 +77,13 @@ const QuoteListPage = () => {
             }
           }
 
+          // Sort all lots by lotNumber (numeric)
+          allLots.sort((a, b) => {
+            const numA = parseInt(a.lotNumber, 10) || 0;
+            const numB = parseInt(b.lotNumber, 10) || 0;
+            return numA - numB;
+          });
+
           setLots(allLots);
           if (allLots.length > 0) {
             setSelectedLot(allLots[0]);

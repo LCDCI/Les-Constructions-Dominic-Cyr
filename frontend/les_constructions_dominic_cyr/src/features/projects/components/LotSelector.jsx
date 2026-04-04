@@ -197,7 +197,13 @@ const LotSelector = ({
       setError(null);
       const token = await getAccessTokenSilently();
       const lots = await fetchLots({ projectIdentifier, token });
-      setAvailableLots(lots || []);
+      // Sort lots by lotNumber (numeric)
+      const sortedLots = (lots || []).sort((a, b) => {
+        const numA = parseInt(a.lotNumber, 10) || 0;
+        const numB = parseInt(b.lotNumber, 10) || 0;
+        return numA - numB;
+      });
+      setAvailableLots(sortedLots);
     } catch (err) {
       setError(err.message || 'Failed to load lots');
       setAvailableLots([]);

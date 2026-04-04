@@ -35,13 +35,22 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
         projectApi.getAllProjects({}, token),
       ]);
 
-      // Group lots by project identifier
+      // Group lots by project identifier and sort by lotId
       const grouped = (userLots || []).reduce((acc, lot) => {
         const projectId = lot.projectIdentifier || 'unknown';
         if (!acc[projectId]) acc[projectId] = [];
         acc[projectId].push(lot);
         return acc;
       }, {});
+
+      // Sort lots within each project by lotNumber (numeric)
+      Object.keys(grouped).forEach(projectId => {
+        grouped[projectId].sort((a, b) => {
+          const numA = parseInt(a.lotNumber, 10) || 0;
+          const numB = parseInt(b.lotNumber, 10) || 0;
+          return numA - numB;
+        });
+      });
 
       setLotsByProject(grouped);
       setAllProjects(projects || []);

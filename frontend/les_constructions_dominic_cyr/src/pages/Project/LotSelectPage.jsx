@@ -32,7 +32,13 @@ export default function LotSelectPage() {
             u => u.userId === myId || u.userIdentifier === myId
           )
         );
-        if (!cancelled) setLots(assigned);
+        // Sort assigned lots by lotNumber (numeric)
+        const sortedAssigned = assigned.sort((a, b) => {
+          const numA = parseInt(a.lotNumber, 10) || 0;
+          const numB = parseInt(b.lotNumber, 10) || 0;
+          return numA - numB;
+        });
+        if (!cancelled) setLots(sortedAssigned);
       } catch (err) {
         // fallback: empty
         if (!cancelled) setLots([]);

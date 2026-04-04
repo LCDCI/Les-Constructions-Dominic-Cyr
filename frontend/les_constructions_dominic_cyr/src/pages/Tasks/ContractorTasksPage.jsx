@@ -99,7 +99,11 @@ const ContractorTasksPage = () => {
           lotSet.add(task.lotId);
         }
       });
-      return Array.from(lotSet).sort();
+      return Array.from(lotSet).sort((a, b) => {
+        const numA = parseInt(a, 10) || 0;
+        const numB = parseInt(b, 10) || 0;
+        return numA - numB;
+      });
     }
 
     const projectTasks = myTasks.filter(
@@ -111,7 +115,11 @@ const ContractorTasksPage = () => {
         lotSet.add(task.lotId);
       }
     });
-    return Array.from(lotSet).sort();
+    return Array.from(lotSet).sort((a, b) => {
+      const numA = parseInt(a, 10) || 0;
+      const numB = parseInt(b, 10) || 0;
+      return numA - numB;
+    });
   }, [tasks, selectedProject, userId]);
 
   // Filter tasks based on selections

@@ -146,7 +146,13 @@ const SalespersonFormsPage = () => {
         customerId: selectedCustomer, // Filter lots by both salesperson and customer
         token,
       });
-      setLots(lotsData || []);
+      // Sort lots by lotNumber (numeric)
+      const sortedLots = (lotsData || []).sort((a, b) => {
+        const numA = parseInt(a.lotNumber, 10) || 0;
+        const numB = parseInt(b.lotNumber, 10) || 0;
+        return numA - numB;
+      });
+      setLots(sortedLots);
     } catch (error) {
       setLots([]);
     }
