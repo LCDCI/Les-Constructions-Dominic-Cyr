@@ -73,6 +73,16 @@ const ResidentialProjectsPage = () => {
     navigate(`/projects/${projectIdentifier}/overview`);
   };
 
+  const getProjectCity = project => {
+    const raw = String(project?.location || '').trim();
+    if (!raw) {
+      return t('card.cityFallback', 'City unavailable');
+    }
+
+    const firstCommaIndex = raw.indexOf(',');
+    return (firstCommaIndex >= 0 ? raw.slice(0, firstCommaIndex) : raw).trim();
+  };
+
   if (loading) {
     return (
       <div className="projects-page loading-state">
@@ -131,25 +141,32 @@ const ResidentialProjectsPage = () => {
           {filteredProjects.length > 0 ? (
             <div className="portfolio-grid">
               {paginatedProjects.map(project => (
-                <Link
+                <div
                   key={project.projectIdentifier}
-                  to={`/projects/${project.projectIdentifier}/overview`}
-                  className="portfolio-card"
-                  data-animate
-                  aria-label={t('gallery.openProject', {
-                    defaultValue: `Open project ${project.projectName}`,
-                    projectName: project.projectName,
-                  })}
+                  className="residential-project-card"
                 >
-                  <img
-                    src={getImageUrl(project.imageIdentifier)}
-                    alt={project.projectName}
-                    loading="lazy"
-                    onError={handleImageError}
-                    className="card-image-bg"
-                  />
-                  <div className="card-overlay" />
-                </Link>
+                  <Link
+                    to={`/projects/${project.projectIdentifier}/overview`}
+                    className="portfolio-card"
+                    data-animate
+                    aria-label={t('gallery.openProject', {
+                      defaultValue: `Open project ${project.projectName}`,
+                      projectName: project.projectName,
+                    })}
+                  >
+                    <img
+                      src={getImageUrl(project.imageIdentifier)}
+                      alt={project.projectName}
+                      loading="lazy"
+                      onError={handleImageError}
+                      className="card-image-bg"
+                    />
+                    <div className="card-overlay" />
+                  </Link>
+                  <p className="residential-project-city">
+                    {getProjectCity(project)}
+                  </p>
+                </div>
               ))}
             </div>
           ) : (
