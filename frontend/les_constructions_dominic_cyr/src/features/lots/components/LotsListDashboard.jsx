@@ -20,6 +20,19 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
   const { getAccessTokenSilently } = useAuth0();
   const { t } = usePageTranslations('lotsListDashboard');
 
+  const sortProjectsWithForestaFirst = projects => {
+    if (!Array.isArray(projects)) return projects;
+
+    const foresta = projects.find(
+      p => p.projectIdentifier === 'proj-001-foresta'
+    );
+    const others = projects.filter(
+      p => p.projectIdentifier !== 'proj-001-foresta'
+    );
+
+    return foresta ? [foresta, ...others] : projects;
+  };
+
   useEffect(() => {
     loadData();
   }, [userId]);
@@ -53,7 +66,7 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
       });
 
       setLotsByProject(grouped);
-      setAllProjects(projects || []);
+      setAllProjects(sortProjectsWithForestaFirst(projects || []));
     } catch (err) {
       console.error('Failed to load data:', err);
       setError(t('error', 'Failed to load lots'));

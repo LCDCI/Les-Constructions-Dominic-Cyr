@@ -4,6 +4,23 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 import { getFilesServiceBase } from '../../../utils/filesService';
 const FILES_SERVICE_BASE_URL = getFilesServiceBase();
 
+/**
+ * Sorts projects to ensure Foresta appears first, followed by other projects
+ * in their original order
+ */
+const sortProjectsWithForestaFirst = projects => {
+  if (!Array.isArray(projects)) return projects;
+
+  const foresta = projects.find(
+    p => p.projectIdentifier === 'proj-001-foresta'
+  );
+  const others = projects.filter(
+    p => p.projectIdentifier !== 'proj-001-foresta'
+  );
+
+  return foresta ? [foresta, ...others] : projects;
+};
+
 export const projectApi = {
   getAllProjects: async (filters = {}, token = null) => {
     const params = new URLSearchParams();
@@ -25,7 +42,8 @@ export const projectApi = {
     if (!response.ok) {
       throw new Error('Failed to fetch projects');
     }
-    return response.json();
+    const projects = await response.json();
+    return sortProjectsWithForestaFirst(projects);
   },
 
   getProjectById: async (projectIdentifier, token) => {

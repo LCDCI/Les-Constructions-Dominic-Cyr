@@ -294,7 +294,9 @@ const LivingEnvironmentPage = () => {
 
         {/* Proximity Section */}
         <section className="le-proximity-section">
-          <h2 className="le-section-title">{toSentenceCase(data.proximityTitle)}</h2>
+          <h2 className="le-section-title">
+            {toSentenceCase(data.proximityTitle)}
+          </h2>
 
           <div className="le-amenities-grid">
             {data.amenities &&

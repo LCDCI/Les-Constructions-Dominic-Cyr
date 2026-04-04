@@ -119,6 +119,19 @@ const ProjectsPage = () => {
     };
   }, [isFilterMenuOpen]);
 
+  const sortProjectsWithForestaFirst = projects => {
+    if (!Array.isArray(projects)) return projects;
+
+    const foresta = projects.find(
+      p => p.projectIdentifier === 'proj-001-foresta'
+    );
+    const others = projects.filter(
+      p => p.projectIdentifier !== 'proj-001-foresta'
+    );
+
+    return foresta ? [foresta, ...others] : projects;
+  };
+
   const fetchProjects = async () => {
     try {
       setError(null);
@@ -178,8 +191,9 @@ const ProjectsPage = () => {
           }
         }
 
-        setProjects(merged);
-        setFilteredProjects(merged);
+        const sortedMerged = sortProjectsWithForestaFirst(merged);
+        setProjects(sortedMerged);
+        setFilteredProjects(sortedMerged);
       } else if (statusFilter === 'ARCHIVED') {
         const response = await fetch(`${baseUrl}?status=ARCHIVED`, { headers });
         if (!response.ok) {
@@ -187,8 +201,9 @@ const ProjectsPage = () => {
           throw new Error(`Failed to fetch: ${response.status} - ${errorText}`);
         }
         const data = await response.json();
-        setProjects(data || []);
-        setFilteredProjects(data || []);
+        const sorted = sortProjectsWithForestaFirst(data || []);
+        setProjects(sorted);
+        setFilteredProjects(sorted);
       } else {
         const response = await fetch(baseUrl, { headers });
         if (!response.ok) {
@@ -197,8 +212,9 @@ const ProjectsPage = () => {
         }
         const data = await response.json();
         const active = (data || []).filter(p => p.status !== 'ARCHIVED');
-        setProjects(active);
-        setFilteredProjects(active);
+        const sorted = sortProjectsWithForestaFirst(active);
+        setProjects(sorted);
+        setFilteredProjects(sorted);
       }
 
       setLoading(false);

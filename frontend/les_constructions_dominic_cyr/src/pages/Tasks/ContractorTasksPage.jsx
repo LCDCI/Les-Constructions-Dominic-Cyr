@@ -43,6 +43,19 @@ const ContractorTasksPage = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
 
+  const sortProjectsWithForestaFirst = projects => {
+    if (!Array.isArray(projects)) return projects;
+
+    const foresta = projects.find(
+      p => p.projectIdentifier === 'proj-001-foresta'
+    );
+    const others = projects.filter(
+      p => p.projectIdentifier !== 'proj-001-foresta'
+    );
+
+    return foresta ? [foresta, ...others] : projects;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -69,7 +82,8 @@ const ContractorTasksPage = () => {
         // Fetch projects for filter dropdown
         try {
           const projectsData = await projectApi.getAllProjects(token);
-          setProjects(projectsData || []);
+          const sorted = sortProjectsWithForestaFirst(projectsData || []);
+          setProjects(sorted);
         } catch (projErr) {
           console.error('Error fetching projects:', projErr);
           setProjects([]);

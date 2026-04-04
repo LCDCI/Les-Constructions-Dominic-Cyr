@@ -37,12 +37,27 @@ const ResidentialProjectsPage = () => {
     try {
       const response = await fetch(`${apiBaseUrl}/projects`);
       const data = await response.json();
-      setProjects(data);
-      setFilteredProjects(data);
+      // Sort to ensure Foresta appears first
+      const sorted = sortProjectsWithForestaFirst(data);
+      setProjects(sorted);
+      setFilteredProjects(sorted);
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
+  };
+
+  const sortProjectsWithForestaFirst = projects => {
+    if (!Array.isArray(projects)) return projects;
+
+    const foresta = projects.find(
+      p => p.projectIdentifier === 'proj-001-foresta'
+    );
+    const others = projects.filter(
+      p => p.projectIdentifier !== 'proj-001-foresta'
+    );
+
+    return foresta ? [foresta, ...others] : projects;
   };
 
   const filterProjects = () => {
