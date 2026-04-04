@@ -64,6 +64,18 @@
   padding: 0 var(--spacing-md, 2rem);
 }
 
+.le-section-title {
+  text-align: center;
+  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
+  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  line-height: 1.55;
+  max-width: 26ch;
+  margin: 0 auto var(--spacing-md, 2rem) auto;
+  color: var(--primary-color, #4c4d4f);
+}
+
 .le-description-text {
   font-size: clamp(1rem, 2vw, 1.2rem);
   line-height: 1.8;
@@ -78,16 +90,6 @@
 .le-proximity-section {
   margin-bottom: var(--spacing-xxl, 6rem);
   padding: 0 var(--spacing-md, 2rem);
-}
-
-.le-proximity-title {
-  text-align: center;
-  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
-  font-weight: 400;
-  color: var(--primary-color, var(--color-primary, #4c4d4f));
-  margin-bottom: var(--spacing-xl, 4rem);
-  letter-spacing: 0.05em;
 }
 
 /* Amenities Grid */
@@ -225,9 +227,11 @@
     text-align: left;
   }
 
-  .le-proximity-title {
-    font-size: clamp(1.5rem, 5vw, 1.8rem);
+  .le-section-title {
+    font-size: clamp(1.2rem, 4.5vw, 1.45rem);
     margin-bottom: var(--spacing-md, 2rem);
+    max-width: 24ch;
+    letter-spacing: 0.16em;
   }
 
   .le-amenities-grid {
@@ -280,9 +284,11 @@
     font-size: 0.95rem;
   }
 
-  .le-proximity-title {
-    font-size: 1.5rem;
+  .le-section-title {
+    font-size: 1.12rem;
     margin-bottom: var(--spacing-md, 2rem);
+    max-width: 22ch;
+    letter-spacing: 0.14em;
   }
 
   .le-amenities-grid {
