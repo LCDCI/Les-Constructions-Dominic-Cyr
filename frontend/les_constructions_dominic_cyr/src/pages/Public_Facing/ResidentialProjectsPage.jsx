@@ -105,7 +105,6 @@ const ResidentialProjectsPage = () => {
         aria-describedby="residential-projects-subtitle"
       >
         <div className="projects-hero-content">
-          <span className="section-kicker">{t('hero.kicker', 'Our Work')}</span>
           <h1 className="projects-title" id="residential-projects-title">
             {t('hero.title', 'Residential Projects')}
           </h1>

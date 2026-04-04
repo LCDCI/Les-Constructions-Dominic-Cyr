@@ -90,9 +90,6 @@ export default function ProjectManagementPage() {
       {/* Hero Banner Section */}
       <section className="projects-hero" aria-labelledby="pm-hero-title">
         <div className="projects-hero-content">
-          <span className="section-kicker">
-            {t('hero.kicker', 'Our Services')}
-          </span>
           <h1 className="projects-title" id="pm-hero-title">
             {t('hero.title', 'Project Management')}
           </h1>

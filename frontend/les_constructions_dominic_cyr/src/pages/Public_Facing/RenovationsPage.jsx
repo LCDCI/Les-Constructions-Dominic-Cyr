@@ -101,7 +101,6 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
         </div>
         <div className="hero-container projects-hero-content">
           <div className="hero-content" data-animate>
-            <p className="hero-label">{t('hero.label', 'RENOVATIONS')}</p>
             <h1
               className="hero-heading projects-title"
               id="renovations-hero-title"

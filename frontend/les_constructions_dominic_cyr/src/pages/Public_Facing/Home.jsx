@@ -296,9 +296,6 @@ export default function Home() {
       <section className="portfolio-section">
         <div className="container">
           <div className="section-header center" data-animate>
-            <span className="section-kicker">
-              {t('portfolio.kicker', 'Our Work')}
-            </span>
             <h2 className="section-title">
               {t('portfolio.title', 'Projects & Achievements')}
             </h2>
