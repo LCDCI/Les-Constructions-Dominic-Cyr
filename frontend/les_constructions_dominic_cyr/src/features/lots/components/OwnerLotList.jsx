@@ -76,11 +76,10 @@ export default function OwnerLotList({ lots = [], onEdit, onDelete }) {
             <th style={{ width: '22%' }}>{t('table.assignedUsers')}</th>
             <th style={{ width: '10%' }}>{t('table.lotNumber')}</th>
             <th style={{ width: '20%' }}>{t('table.civicAddress')}</th>
-            <th style={{ width: '10%' }}>{t('table.areaSqft')}</th>
-            <th style={{ width: '10%' }}>{t('table.areaSqm')}</th>
-            <th style={{ width: '12%' }}>{t('table.price')}</th>
-            <th style={{ width: '10%' }}>{t('table.status')}</th>
-            <th style={{ width: '8%' }}>{t('table.actions')}</th>
+            <th style={{ width: '12%' }}>{t('table.areaSqft')}</th>
+            <th style={{ width: '12%' }}>{t('table.areaSqm')}</th>
+            <th style={{ width: '12%' }}>{t('table.status')}</th>
+            <th style={{ width: '12%' }}>{t('table.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -110,7 +109,6 @@ export default function OwnerLotList({ lots = [], onEdit, onDelete }) {
               <td className="address-cell">{l.civicAddress || '—'}</td>
               <td>{l.dimensionsSquareFeet || '—'}</td>
               <td>{l.dimensionsSquareMeters || '—'}</td>
-              <td className="price-cell">{formatPrice(l.price, lang)}</td>
               <td>
                 <span
                   className={`status-pill ${String(l.lotStatus || '').toLowerCase()}`}

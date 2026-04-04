@@ -371,8 +371,6 @@ const OwnerLotsPage = () => {
               <option value="lotNumber-desc">
                 {t('sort.lotNumberDesc', 'Lot # (high → low)')}
               </option>
-              <option value="price-asc">{t('sort.priceLowHigh')}</option>
-              <option value="price-desc">{t('sort.priceHighLow')}</option>
               <option value="dimensionsSquareFeet-asc">
                 {t('sort.sizeSmallest')}
               </option>
