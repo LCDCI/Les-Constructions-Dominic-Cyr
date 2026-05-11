@@ -17,8 +17,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import java.util.UUID;
-import java.util.Set;
-
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;

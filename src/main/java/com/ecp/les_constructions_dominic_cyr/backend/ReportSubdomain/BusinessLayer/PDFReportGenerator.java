@@ -11,14 +11,10 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.borders.SolidBorder;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.ChartUtils;
 import org.springframework.stereotype.Service;
-
-import java.awt.BasicStroke;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

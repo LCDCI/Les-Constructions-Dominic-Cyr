@@ -4,8 +4,6 @@ import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLay
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.FormSubmissionHistoryResponseModel;
 import org.springframework.stereotype.Component;
 
-import java.util.UUID;
-
 /**
  * Mapper for converting between FormSubmissionHistory entities and presentation models.
  */
