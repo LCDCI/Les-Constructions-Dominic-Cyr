@@ -13,6 +13,9 @@ const RealizationsPage = () => {
   // Image IDs from file storage (can be file ID or full CDN URL)
   const REALIZATION_IMAGE_IDS = [
     'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/3262-1.jpeg',
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_1.jpeg',
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_2.jpeg',
+    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_3.jpeg',
     '1242c6c5-6a3d-4ca0-bac0-06d25bebb0bd',
     '1634e9ee-2680-41d1-b28a-47353f842d9c',
     '1659ff85-b160-4111-b419-84834eb4375a',
