@@ -3,9 +3,10 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 
 const fetchInquiries = async getAccessTokenSilently => {
+  const { getAuthAudience } = await import('../utils/authConfig');
   const token = await getAccessTokenSilently({
     authorizationParams: {
-      audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      audience: getAuthAudience(),
     },
   });
   const res = await fetch('/api/v1/inquiries', {
@@ -61,9 +62,44 @@ export default function OwnerInquiriesPage() {
 
   const unescapeHtml = str => {
     if (!str) return str;
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = str;
-    return textarea.value || str;
+    // Decode numeric and common named HTML entities without using innerHTML
+    return String(str).replace(
+      /&(#x[0-9a-fA-F]+|#\d+|[a-zA-Z]+);/g,
+      (match, code) => {
+        if (!code) return match;
+        if (code[0] === '#') {
+          // Numeric entity
+          try {
+            if (code[1] === 'x' || code[1] === 'X') {
+              const num = parseInt(code.slice(2), 16);
+              return isNaN(num) ? match : String.fromCharCode(num);
+            }
+            const num = parseInt(code.slice(1), 10);
+            return isNaN(num) ? match : String.fromCharCode(num);
+          } catch (_) {
+            return match;
+          }
+        }
+
+        // Common named entities
+        switch (code) {
+          case 'amp':
+            return '&';
+          case 'lt':
+            return '<';
+          case 'gt':
+            return '>';
+          case 'quot':
+            return '"';
+          case 'apos':
+            return "'";
+          case 'nbsp':
+            return '\u00A0';
+          default:
+            return match;
+        }
+      }
+    );
   };
 
   const decodedInquiries = useMemo(

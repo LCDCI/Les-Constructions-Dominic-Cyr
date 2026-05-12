@@ -142,11 +142,10 @@ const ProjectsPage = () => {
       const headers = {};
       if (isAuthenticated) {
         try {
+          const { getAuthAudience } = await import('../../utils/authConfig');
           const token = await getAccessTokenSilently({
             authorizationParams: {
-              audience:
-                import.meta.env.VITE_AUTH0_AUDIENCE ||
-                'https://construction-api.loca',
+              audience: getAuthAudience() || 'https://construction-api.loca',
             },
           });
           headers.Authorization = `Bearer ${token}`;
@@ -260,10 +259,9 @@ const ProjectsPage = () => {
       let token = null;
       if (isAuthenticated) {
         try {
+          const { getAuthAudience } = await import('../../utils/authConfig');
           token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            },
+            authorizationParams: { audience: getAuthAudience() },
           });
         } catch (tokenErr) {
           console.warn('Could not get token for lots fetch');
@@ -737,13 +735,18 @@ const ProjectsPage = () => {
                 onClick={async () => {
                   try {
                     const token = isAuthenticated
-                      ? await getAccessTokenSilently({
-                          authorizationParams: {
-                            audience:
-                              import.meta.env.VITE_AUTH0_AUDIENCE ||
-                              'https://construction-api.loca',
-                          },
-                        }).catch(() => null)
+                      ? await (async () => {
+                          const { getAuthAudience } = await import(
+                            '../../utils/authConfig'
+                          );
+                          return getAccessTokenSilently({
+                            authorizationParams: {
+                              audience:
+                                getAuthAudience() ||
+                                'https://construction-api.loca',
+                            },
+                          }).catch(() => null);
+                        })()
                       : null;
 
                     await (

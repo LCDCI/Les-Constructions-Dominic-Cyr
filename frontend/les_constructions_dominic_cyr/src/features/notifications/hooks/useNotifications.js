@@ -23,10 +23,9 @@ export const useNotifications = () => {
     try {
       setLoading(true);
       setError(null);
+      const { getAuthAudience } = await import('../../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        },
+        authorizationParams: { audience: getAuthAudience() },
       });
       const data = await fetchNotifications(token);
       setNotifications(data);
@@ -44,10 +43,9 @@ export const useNotifications = () => {
     }
 
     try {
+      const { getAuthAudience } = await import('../../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        },
+        authorizationParams: { audience: getAuthAudience() },
       });
       const count = await fetchUnreadCount(token);
       setUnreadCount(count);
@@ -63,10 +61,9 @@ export const useNotifications = () => {
       }
 
       try {
+        const { getAuthAudience } = await import('../../../utils/authConfig');
         const token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-          },
+          authorizationParams: { audience: getAuthAudience() },
         });
         await markNotificationAsRead(notificationId, token);
         // Update local state
@@ -93,10 +90,9 @@ export const useNotifications = () => {
     }
 
     try {
+      const { getAuthAudience } = await import('../../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        },
+        authorizationParams: { audience: getAuthAudience() },
       });
       await markAllNotificationsAsRead(token);
       // Update local state

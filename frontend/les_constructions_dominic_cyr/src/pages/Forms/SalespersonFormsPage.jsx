@@ -86,11 +86,10 @@ const SalespersonFormsPage = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -113,11 +112,10 @@ const SalespersonFormsPage = () => {
 
   const fetchProjectsForCustomer = async () => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -133,11 +131,10 @@ const SalespersonFormsPage = () => {
 
   const fetchLotsForProject = async () => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -180,11 +177,10 @@ const SalespersonFormsPage = () => {
         return;
       }
 
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -226,11 +222,10 @@ const SalespersonFormsPage = () => {
         return;
       }
 
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -253,11 +248,10 @@ const SalespersonFormsPage = () => {
 
   const handleCompleteForm = async formId => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -274,11 +268,10 @@ const SalespersonFormsPage = () => {
 
   const handleDownloadForm = async form => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -321,11 +314,10 @@ const SalespersonFormsPage = () => {
 
   const handleDeleteForm = async () => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 

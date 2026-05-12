@@ -55,10 +55,9 @@ export default function ProfilePage() {
           setLoading(false);
           return;
         }
+        const { getAuthAudience } = await import('../utils/authConfig');
         const token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-          },
+          authorizationParams: { audience: getAuthAudience() },
         });
         const currentUser = await fetchUserByAuth0Id(auth0UserId, token);
         setUser(currentUser);
@@ -107,8 +106,9 @@ export default function ProfilePage() {
     try {
       setIsSaving(true);
       setSaveError(null);
+      const { getAuthAudience } = await import('../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
+        authorizationParams: { audience: getAuthAudience() },
       });
       const updatedUser = await updateUser(
         user.userIdentifier,

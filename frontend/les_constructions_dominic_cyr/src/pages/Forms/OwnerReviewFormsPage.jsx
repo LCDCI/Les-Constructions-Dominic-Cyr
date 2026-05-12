@@ -56,11 +56,10 @@ const OwnerReviewFormsPage = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -84,11 +83,10 @@ const OwnerReviewFormsPage = () => {
         return;
       }
 
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -116,11 +114,10 @@ const OwnerReviewFormsPage = () => {
 
   const handleCompleteForm = async formId => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
@@ -137,11 +134,10 @@ const OwnerReviewFormsPage = () => {
 
   const handleDownloadForm = async formId => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 

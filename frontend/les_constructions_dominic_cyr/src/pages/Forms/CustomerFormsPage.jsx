@@ -371,14 +371,14 @@ const CustomerFormsPage = () => {
   const { getAccessTokenSilently, user } = useAuth0();
   const navigate = useNavigate();
 
-  const getToken = () =>
-    getAccessTokenSilently({
+  const getToken = async () => {
+    const { getAuthAudience } = await import('../../utils/authConfig');
+    return getAccessTokenSilently({
       authorizationParams: {
-        audience:
-          import.meta.env.VITE_AUTH0_AUDIENCE ||
-          'https://construction-api.loca',
+        audience: getAuthAudience() || 'https://construction-api.loca',
       },
     });
+  };
 
   const redirectToError = (status = 500) => {
     if (status === 404) {
@@ -591,11 +591,10 @@ const CustomerFormsPage = () => {
 
   const handleDownloadForm = async form => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 
