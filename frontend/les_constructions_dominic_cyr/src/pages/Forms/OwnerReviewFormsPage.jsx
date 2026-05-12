@@ -58,7 +58,9 @@ const OwnerReviewFormsPage = () => {
       setLoading(true);
       const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
+        authorizationParams: {
+          audience: getAuthAudience() || 'https://construction-api.loca',
+        },
       });
 
       const formsData = await getAllForms(token);
@@ -83,7 +85,9 @@ const OwnerReviewFormsPage = () => {
 
       const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
+        authorizationParams: {
+          audience: getAuthAudience() || 'https://construction-api.loca',
+        },
       });
 
       const payload = { reopenReason };
@@ -112,7 +116,9 @@ const OwnerReviewFormsPage = () => {
     try {
       const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
+        authorizationParams: {
+          audience: getAuthAudience() || 'https://construction-api.loca',
+        },
       });
 
       await completeForm(formId, token);
@@ -130,7 +136,9 @@ const OwnerReviewFormsPage = () => {
     try {
       const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
+        authorizationParams: {
+          audience: getAuthAudience() || 'https://construction-api.loca',
+        },
       });
 
       await downloadFinalizedForm(formId, token);

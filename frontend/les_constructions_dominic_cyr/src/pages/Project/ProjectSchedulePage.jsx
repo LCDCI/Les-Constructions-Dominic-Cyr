@@ -891,10 +891,12 @@ const ProjectSchedulePage = () => {
     try {
       let token = null;
       if (isAuthenticated) {
-          try {
-            const { getAuthAudience } = await import('../../utils/authConfig');
-            token = await getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() } });
-          } catch (tokenErr) {}
+        try {
+          const { getAuthAudience } = await import('../../utils/authConfig');
+          token = await getAccessTokenSilently({
+            authorizationParams: { audience: getAuthAudience() },
+          });
+        } catch (tokenErr) {}
       }
 
       const payload = {
@@ -1057,10 +1059,12 @@ const ProjectSchedulePage = () => {
     try {
       let token = null;
       if (isAuthenticated) {
-          try {
-            const { getAuthAudience } = await import('../../utils/authConfig');
-            token = await getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() } });
-          } catch (tokenErr) {}
+        try {
+          const { getAuthAudience } = await import('../../utils/authConfig');
+          token = await getAccessTokenSilently({
+            authorizationParams: { audience: getAuthAudience() },
+          });
+        } catch (tokenErr) {}
       }
 
       if (tasksToDelete.length) {
@@ -1174,7 +1178,9 @@ const ProjectSchedulePage = () => {
       if (isAuthenticated) {
         try {
           const { getAuthAudience } = await import('../../utils/authConfig');
-          token = await getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() } });
+          token = await getAccessTokenSilently({
+            authorizationParams: { audience: getAuthAudience() },
+          });
         } catch (tokenErr) {}
       }
 
@@ -1279,7 +1285,9 @@ const ProjectSchedulePage = () => {
       if (isAuthenticated) {
         try {
           const { getAuthAudience } = await import('../../utils/authConfig');
-          token = await getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() } });
+          token = await getAccessTokenSilently({
+            authorizationParams: { audience: getAuthAudience() },
+          });
         } catch (tokenErr) {}
       }
 

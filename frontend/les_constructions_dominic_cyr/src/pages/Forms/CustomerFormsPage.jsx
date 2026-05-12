@@ -374,7 +374,9 @@ const CustomerFormsPage = () => {
   const getToken = async () => {
     const { getAuthAudience } = await import('../../utils/authConfig');
     return getAccessTokenSilently({
-      authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
+      authorizationParams: {
+        audience: getAuthAudience() || 'https://construction-api.loca',
+      },
     });
   };
 
@@ -591,7 +593,9 @@ const CustomerFormsPage = () => {
     try {
       const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
+        authorizationParams: {
+          audience: getAuthAudience() || 'https://construction-api.loca',
+        },
       });
 
       await downloadFinalizedForm(form.formId, token);

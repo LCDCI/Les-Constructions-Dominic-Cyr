@@ -350,15 +350,12 @@ const LotDocumentsPage = () => {
   const { getAccessTokenSilently, user } = useAuth0();
   const { role: userRole, profile: userProfile } = useBackendUser();
 
-  const getApiToken = useCallback(
-    async () => {
-      const { getAuthAudience } = await import('../../../utils/authConfig');
-      return getAccessTokenSilently({
-        authorizationParams: { audience: getAuthAudience() },
-      });
-    },
-    [getAccessTokenSilently]
-  );
+  const getApiToken = useCallback(async () => {
+    const { getAuthAudience } = await import('../../../utils/authConfig');
+    return getAccessTokenSilently({
+      authorizationParams: { audience: getAuthAudience() },
+    });
+  }, [getAccessTokenSilently]);
 
   const [lot, setLot] = useState(null);
   const [project, setProject] = useState(null);

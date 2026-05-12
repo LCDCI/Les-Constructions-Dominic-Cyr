@@ -53,12 +53,12 @@ const TaskDetailsPage = () => {
 
         let token = null;
         if (isAuthenticated) {
-            try {
-              const { getAuthAudience } = await import('../../utils/authConfig');
-              token = await getAccessTokenSilently({
-                authorizationParams: { audience: getAuthAudience() },
-              });
-            } catch (tokenErr) {
+          try {
+            const { getAuthAudience } = await import('../../utils/authConfig');
+            token = await getAccessTokenSilently({
+              authorizationParams: { audience: getAuthAudience() },
+            });
+          } catch (tokenErr) {
             //no error message
           }
         }

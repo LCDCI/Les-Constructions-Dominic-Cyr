@@ -33,9 +33,55 @@ export function useBackendUser() {
       setLoading(true);
       setError(null);
       const { getAuthAudience } = await import('../utils/authConfig');
-      const token = await getAccessTokenSilently({
-        authorizationParams: { audience: getAuthAudience() },
-      });
+
+      // Try to obtain an access token for the API audience, fall back to a default token
+      let token = null;
+      let attemptedAudience = getAuthAudience();
+      try {
+        token = await getAccessTokenSilently({
+          authorizationParams: { audience: attemptedAudience },
+        });
+      } catch (audErr) {
+        // Log and attempt fallback without audience to help debugging local setups
+        console.warn(
+          '[useBackendUser] token request with audience failed:',
+          audErr?.message || audErr
+        );
+        try {
+          token = await getAccessTokenSilently();
+          attemptedAudience = '(none)';
+        } catch (noAudErr) {
+          console.error(
+            '[useBackendUser] token request fallback failed:',
+            noAudErr?.message || noAudErr
+          );
+          throw noAudErr;
+        }
+      }
+
+      // Debug: log token audience claims to help diagnose 401s (will not log token body in production)
+      try {
+        const parts = String(token || '').split('.');
+        if (parts.length >= 2) {
+          const payload = JSON.parse(
+            atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+          );
+          console.info(
+            '[useBackendUser] obtained token for audience(s):',
+            payload.aud || payload.scope || '(no aud)'
+          );
+        } else {
+          console.info(
+            '[useBackendUser] obtained non-JWT token or empty token'
+          );
+        }
+      } catch (decErr) {
+        console.warn(
+          '[useBackendUser] failed to decode token payload:',
+          decErr?.message || decErr
+        );
+      }
+
       const data = await fetchUserByAuth0Id(auth0User.sub, token);
       setProfile(data);
     } catch (err) {

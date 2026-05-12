@@ -3,7 +3,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
-import { getAuthAudience, AUTH0_CLIENT_ID, AUTH0_DOMAIN } from './utils/authConfig';
+import {
+  getAuthAudience,
+  AUTH0_CLIENT_ID,
+  AUTH0_DOMAIN,
+} from './utils/authConfig';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import './styles/global.css';

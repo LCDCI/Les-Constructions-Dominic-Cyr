@@ -144,7 +144,9 @@ const ProjectsPage = () => {
         try {
           const { getAuthAudience } = await import('../../utils/authConfig');
           const token = await getAccessTokenSilently({
-            authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
+            authorizationParams: {
+              audience: getAuthAudience() || 'https://construction-api.loca',
+            },
           });
           headers.Authorization = `Bearer ${token}`;
         } catch (tokenError) {
@@ -734,8 +736,16 @@ const ProjectsPage = () => {
                   try {
                     const token = isAuthenticated
                       ? await (async () => {
-                          const { getAuthAudience } = await import('../../utils/authConfig');
-                          return getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' } }).catch(() => null);
+                          const { getAuthAudience } = await import(
+                            '../../utils/authConfig'
+                          );
+                          return getAccessTokenSilently({
+                            authorizationParams: {
+                              audience:
+                                getAuthAudience() ||
+                                'https://construction-api.loca',
+                            },
+                          }).catch(() => null);
                         })()
                       : null;
 
