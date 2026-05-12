@@ -49,7 +49,6 @@ export function useBackendUser() {
         );
         try {
           token = await getAccessTokenSilently();
-          attemptedAudience = '(none)';
         } catch (noAudErr) {
           console.error(
             '[useBackendUser] token request fallback failed:',
