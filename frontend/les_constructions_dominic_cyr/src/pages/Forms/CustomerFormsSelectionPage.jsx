@@ -20,12 +20,9 @@ const CustomerFormsSelectionPage = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
-        },
+        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
       });
 
       const formsData = await getMyForms(token);

@@ -461,10 +461,9 @@ const ProjectSchedulePage = () => {
 
         if (isAuthenticated) {
           try {
+            const { getAuthAudience } = await import('../../utils/authConfig');
             token = await getAccessTokenSilently({
-              authorizationParams: {
-                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-              },
+              authorizationParams: { audience: getAuthAudience() },
             });
           } catch (tokenErr) {}
         }
@@ -549,10 +548,9 @@ const ProjectSchedulePage = () => {
       let token = null;
       if (isAuthenticated) {
         try {
+          const { getAuthAudience } = await import('../../utils/authConfig');
           token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            },
+            authorizationParams: { audience: getAuthAudience() },
           });
         } catch (tokenErr) {}
       }
@@ -596,10 +594,9 @@ const ProjectSchedulePage = () => {
       let token = null;
       if (isAuthenticated) {
         try {
+          const { getAuthAudience } = await import('../../utils/authConfig');
           token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            },
+            authorizationParams: { audience: getAuthAudience() },
           });
         } catch (tokenErr) {}
       }
@@ -894,13 +891,10 @@ const ProjectSchedulePage = () => {
     try {
       let token = null;
       if (isAuthenticated) {
-        try {
-          token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            },
-          });
-        } catch (tokenErr) {}
+          try {
+            const { getAuthAudience } = await import('../../utils/authConfig');
+            token = await getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() } });
+          } catch (tokenErr) {}
       }
 
       const payload = {
@@ -1063,13 +1057,10 @@ const ProjectSchedulePage = () => {
     try {
       let token = null;
       if (isAuthenticated) {
-        try {
-          token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            },
-          });
-        } catch (tokenErr) {}
+          try {
+            const { getAuthAudience } = await import('../../utils/authConfig');
+            token = await getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() } });
+          } catch (tokenErr) {}
       }
 
       if (tasksToDelete.length) {
@@ -1182,11 +1173,8 @@ const ProjectSchedulePage = () => {
       let token = null;
       if (isAuthenticated) {
         try {
-          token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            },
-          });
+          const { getAuthAudience } = await import('../../utils/authConfig');
+          token = await getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() } });
         } catch (tokenErr) {}
       }
 
@@ -1290,11 +1278,8 @@ const ProjectSchedulePage = () => {
       let token = null;
       if (isAuthenticated) {
         try {
-          token = await getAccessTokenSilently({
-            authorizationParams: {
-              audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-            },
-          });
+          const { getAuthAudience } = await import('../../utils/authConfig');
+          token = await getAccessTokenSilently({ authorizationParams: { audience: getAuthAudience() } });
         } catch (tokenErr) {}
       }
 

@@ -351,10 +351,12 @@ const LotDocumentsPage = () => {
   const { role: userRole, profile: userProfile } = useBackendUser();
 
   const getApiToken = useCallback(
-    () =>
-      getAccessTokenSilently({
-        authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
-      }),
+    async () => {
+      const { getAuthAudience } = await import('../../../utils/authConfig');
+      return getAccessTokenSilently({
+        authorizationParams: { audience: getAuthAudience() },
+      });
+    },
     [getAccessTokenSilently]
   );
 

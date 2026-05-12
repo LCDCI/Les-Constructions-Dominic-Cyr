@@ -535,11 +535,10 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
       // Backend will need to be updated to store references to translation files
 
       // Get auth token
+      const { getAuthAudience } = await import('../../../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
+          audience: getAuthAudience() || 'https://construction-api.loca',
         },
       });
 

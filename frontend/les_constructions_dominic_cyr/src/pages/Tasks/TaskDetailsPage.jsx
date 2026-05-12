@@ -53,13 +53,12 @@ const TaskDetailsPage = () => {
 
         let token = null;
         if (isAuthenticated) {
-          try {
-            token = await getAccessTokenSilently({
-              authorizationParams: {
-                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-              },
-            });
-          } catch (tokenErr) {
+            try {
+              const { getAuthAudience } = await import('../../utils/authConfig');
+              token = await getAccessTokenSilently({
+                authorizationParams: { audience: getAuthAudience() },
+              });
+            } catch (tokenErr) {
             //no error message
           }
         }
@@ -231,10 +230,9 @@ const TaskDetailsPage = () => {
     try {
       let token = null;
       if (isAuthenticated) {
+        const { getAuthAudience } = await import('../../utils/authConfig');
         token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-          },
+          authorizationParams: { audience: getAuthAudience() },
         });
       }
 
@@ -302,10 +300,9 @@ const TaskDetailsPage = () => {
     try {
       let token = null;
       if (isAuthenticated) {
+        const { getAuthAudience } = await import('../../utils/authConfig');
         token = await getAccessTokenSilently({
-          authorizationParams: {
-            audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-          },
+          authorizationParams: { audience: getAuthAudience() },
         });
       }
 

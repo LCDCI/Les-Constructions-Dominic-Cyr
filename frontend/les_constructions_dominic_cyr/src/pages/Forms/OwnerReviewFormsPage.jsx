@@ -56,12 +56,9 @@ const OwnerReviewFormsPage = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
-        },
+        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
       });
 
       const formsData = await getAllForms(token);
@@ -84,12 +81,9 @@ const OwnerReviewFormsPage = () => {
         return;
       }
 
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
-        },
+        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
       });
 
       const payload = { reopenReason };
@@ -116,12 +110,9 @@ const OwnerReviewFormsPage = () => {
 
   const handleCompleteForm = async formId => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
-        },
+        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
       });
 
       await completeForm(formId, token);
@@ -137,12 +128,9 @@ const OwnerReviewFormsPage = () => {
 
   const handleDownloadForm = async formId => {
     try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience:
-            import.meta.env.VITE_AUTH0_AUDIENCE ||
-            'https://construction-api.loca',
-        },
+        authorizationParams: { audience: getAuthAudience() || 'https://construction-api.loca' },
       });
 
       await downloadFinalizedForm(formId, token);

@@ -18,10 +18,9 @@ export const useUnreadCount = (refreshInterval = 30000) => {
     }
 
     try {
+      const { getAuthAudience } = await import('../../../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-        },
+        authorizationParams: { audience: getAuthAudience() },
       });
       const count = await fetchUnreadCount(token);
       setUnreadCount(count);

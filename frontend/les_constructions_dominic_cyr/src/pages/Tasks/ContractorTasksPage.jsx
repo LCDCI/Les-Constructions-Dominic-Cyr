@@ -65,10 +65,9 @@ const ContractorTasksPage = () => {
         let token = null;
         if (isAuthenticated) {
           try {
+            const { getAuthAudience } = await import('../../utils/authConfig');
             token = await getAccessTokenSilently({
-              authorizationParams: {
-                audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-              },
+              authorizationParams: { audience: getAuthAudience() },
             });
           } catch (tokenErr) {
             console.error('Error getting token:', tokenErr);

@@ -3,6 +3,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
+import { getAuthAudience, AUTH0_CLIENT_ID, AUTH0_DOMAIN } from './utils/authConfig';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import './styles/global.css';
@@ -20,11 +21,11 @@ const onRedirectCallback = appState => {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <ErrorBoundary>
     <Auth0Provider
-      domain={import.meta.env.VITE_AUTH0_DOMAIN}
-      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      domain={AUTH0_DOMAIN}
+      clientId={AUTH0_CLIENT_ID}
       authorizationParams={{
         redirect_uri: window.location.origin,
-        audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+        audience: getAuthAudience(),
       }}
       useRefreshTokens
       cacheLocation="localstorage"

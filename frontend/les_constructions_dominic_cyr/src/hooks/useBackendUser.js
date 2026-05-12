@@ -32,8 +32,9 @@ export function useBackendUser() {
     try {
       setLoading(true);
       setError(null);
+      const { getAuthAudience } = await import('../utils/authConfig');
       const token = await getAccessTokenSilently({
-        authorizationParams: { audience: import.meta.env.VITE_AUTH0_AUDIENCE },
+        authorizationParams: { audience: getAuthAudience() },
       });
       const data = await fetchUserByAuth0Id(auth0User.sub, token);
       setProfile(data);
