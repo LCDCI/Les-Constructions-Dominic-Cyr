@@ -5,9 +5,9 @@ FROM node:20-alpine AS build
 
 WORKDIR /app
 
-# Install dependencies (deterministic)
+# Install dependencies inside the container so platform-specific optional packages resolve correctly
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .

@@ -1,4 +1,4 @@
-FROM golang:1.24 AS builder
+FROM golang:1.25 AS builder
 WORKDIR /app/GoMailer
 # Build context is root directory, copy from mailer-service subdirectory
 COPY mailer-service/ .

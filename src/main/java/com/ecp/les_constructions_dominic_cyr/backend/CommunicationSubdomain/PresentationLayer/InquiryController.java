@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 import java.util.List;
 import java.util.Map;
-import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/v1/inquiries")
