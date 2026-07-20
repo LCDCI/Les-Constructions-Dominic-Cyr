@@ -49,7 +49,7 @@ RUN npm install && npm run build
 ############################################################
 # 3) FILES-SERVICE BUILD (Go)
 ############################################################
-FROM golang:1.24-alpine AS files-service-build
+FROM golang:1.25-alpine AS files-service-build
 WORKDIR /files-service
 
 # Copy go module files
@@ -66,7 +66,7 @@ RUN go build -o file-service ./cmd
 ############################################################
 # 4) MAILER-SERVICE BUILD (Go)
 ############################################################
-FROM golang:1.24-alpine AS mailer-service-build
+FROM golang:1.25-alpine AS mailer-service-build
 WORKDIR /mailer-service
 
 # Copy go module files
