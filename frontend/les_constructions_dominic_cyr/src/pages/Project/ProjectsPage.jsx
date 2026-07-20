@@ -736,9 +736,8 @@ const ProjectsPage = () => {
                   try {
                     const token = isAuthenticated
                       ? await (async () => {
-                          const { getAuthAudience } = await import(
-                            '../../utils/authConfig'
-                          );
+                          const { getAuthAudience } =
+                            await import('../../utils/authConfig');
                           return getAccessTokenSilently({
                             authorizationParams: {
                               audience:
