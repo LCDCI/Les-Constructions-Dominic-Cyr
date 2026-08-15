@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -54,14 +53,13 @@ public class QuoteController {
      * Accessible to:
      * - Owner (all quotes)
      * - Salesperson (all quotes for assigned projects)
-     * - Customer (quotes for their projects)
      * - Contractor (their own quotes)
      * 
      * @param projectIdentifier The project identifier
      * @return List of quotes for the project
      */
     @GetMapping("/project/{projectIdentifier}")
-    @PreAuthorize("hasAnyRole('OWNER', 'SALESPERSON', 'CUSTOMER', 'CONTRACTOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALESPERSON', 'CONTRACTOR')")
     public ResponseEntity<List<QuoteResponseModel>> getQuotesByProject(
             @PathVariable String projectIdentifier) {
         log.info("Fetching quotes for project: {}", projectIdentifier);
@@ -76,14 +74,13 @@ public class QuoteController {
      * Accessible to:
      * - Owner (all quotes)
      * - Salesperson (all quotes for assigned lots)
-     * - Customer (quotes for their lots)
      * - Contractor (their own quotes for the lot)
      * 
      * @param lotIdentifier The lot identifier (UUID)
      * @return List of quotes for the lot
      */
     @GetMapping("/lot/{lotIdentifier}")
-    @PreAuthorize("hasAnyRole('OWNER', 'SALESPERSON', 'CUSTOMER', 'CONTRACTOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALESPERSON', 'CONTRACTOR')")
     public ResponseEntity<List<QuoteResponseModel>> getQuotesByLot(
             @PathVariable String lotIdentifier) {
         log.info("Fetching quotes for lot: {}", lotIdentifier);
@@ -99,7 +96,7 @@ public class QuoteController {
      * @return The quote details
      */
     @GetMapping("/{quoteNumber}")
-    @PreAuthorize("hasAnyRole('OWNER', 'SALESPERSON', 'CUSTOMER', 'CONTRACTOR')")
+    @PreAuthorize("hasAnyRole('OWNER', 'SALESPERSON', 'CONTRACTOR')")
     public ResponseEntity<QuoteResponseModel> getQuoteByNumber(
             @PathVariable String quoteNumber) {
         log.info("Fetching quote: {}", quoteNumber);
@@ -226,49 +223,4 @@ public class QuoteController {
         return ResponseEntity.ok(rejectedQuote);
     }
 
-    /**
-     * Customer approves a quote.
-     * 
-     * Accessible to: Only CUSTOMER role
-     * Only customers who own the lot can approve the quote.
-     * Quote must be in OWNER_APPROVED status.
-     * 
-     * @param quoteNumber    The quote number to approve
-     * @param authentication Current user's authentication (customer)
-     * @return The updated quote with CUSTOMER_APPROVED status
-     */
-    @PostMapping("/{quoteNumber}/customer-approve")
-    @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<QuoteResponseModel> customerApproveQuote(
-            @PathVariable String quoteNumber,
-            Authentication authentication) {
-        log.info("Customer approving quote: {}", quoteNumber);
-
-        String customerAuth0Id = ((Jwt) authentication.getPrincipal()).getSubject();
-        QuoteResponseModel approvedQuote = quoteService.customerApproveQuote(quoteNumber, customerAuth0Id);
-
-        return ResponseEntity.ok(approvedQuote);
-    }
-
-    /**
-     * Get quotes pending customer approval.
-     * 
-     * Accessible to: Only CUSTOMER role
-     * Returns quotes that are OWNER_APPROVED for lots owned by the authenticated
-     * customer.
-     * 
-     * @param authentication Current user's authentication (customer)
-     * @return List of quotes pending customer approval
-     */
-    @GetMapping("/customer/pending")
-    @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<List<QuoteResponseModel>> getCustomerPendingQuotes(
-            Authentication authentication) {
-        log.info("Fetching pending quotes for customer");
-
-        String customerAuth0Id = ((Jwt) authentication.getPrincipal()).getSubject();
-        List<QuoteResponseModel> quotes = quoteService.getCustomerPendingQuotes(customerAuth0Id);
-
-        return ResponseEntity.ok(quotes);
-    }
 }
