@@ -2,7 +2,6 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Schedule.ScheduleService;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.BusinessLayer.UserService;
-import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.PresentationLayer.UserResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.BadRequestException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
@@ -13,12 +12,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -122,21 +125,36 @@ public class ScheduleController {
 
     // Salesperson endpoints
     @GetMapping("/salesperson/schedules")
-    public ResponseEntity<List<ScheduleResponseDTO>> getSalespersonCurrentWeekSchedules() {
-        List<ScheduleResponseDTO> schedules = scheduleService.getCurrentWeekSchedules();
-        return ResponseEntity.ok(schedules);
+    public ResponseEntity<List<ScheduleResponseDTO>> getSalespersonCurrentWeekSchedules(
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(getCurrentWeekSchedulesForAssignedLots(jwt));
     }
 
     @GetMapping("/salesperson/schedules/all")
-    public ResponseEntity<List<ScheduleResponseDTO>> getSalespersonAllSchedules() {
-        List<ScheduleResponseDTO> schedules = scheduleService.getAllSchedules();
-        return ResponseEntity.ok(schedules);
+    public ResponseEntity<List<ScheduleResponseDTO>> getSalespersonAllSchedules(
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(getSchedulesForAssignedLots(jwt));
     }
 
     @GetMapping("/salesperson/schedules/{scheduleIdentifier}")
-    public ResponseEntity<ScheduleResponseDTO> getSalespersonScheduleByIdentifier(@PathVariable String scheduleIdentifier) {
+    public ResponseEntity<ScheduleResponseDTO> getSalespersonScheduleByIdentifier(
+            @PathVariable String scheduleIdentifier,
+            @AuthenticationPrincipal Jwt jwt) {
         try {
+            if (jwt == null) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
             ScheduleResponseDTO schedule = scheduleService.getScheduleByIdentifier(scheduleIdentifier);
+            UserResponseModel user = getCurrentUser(jwt);
+            if (!scheduleBelongsToAssignedLots(schedule, user.getUserIdentifier())) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             return ResponseEntity.ok(schedule);
         } catch (NotFoundException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -147,21 +165,36 @@ public class ScheduleController {
 
     // Contractor endpoints
     @GetMapping("/contractors/schedules")
-    public ResponseEntity<List<ScheduleResponseDTO>> getContractorCurrentWeekSchedules() {
-        List<ScheduleResponseDTO> schedules = scheduleService.getCurrentWeekSchedules();
-        return ResponseEntity.ok(schedules);
+    public ResponseEntity<List<ScheduleResponseDTO>> getContractorCurrentWeekSchedules(
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(getCurrentWeekSchedulesForAssignedLots(jwt));
     }
 
     @GetMapping("/contractors/schedules/all")
-    public ResponseEntity<List<ScheduleResponseDTO>> getContractorAllSchedules() {
-        List<ScheduleResponseDTO> schedules = scheduleService.getAllSchedules();
-        return ResponseEntity.ok(schedules);
+    public ResponseEntity<List<ScheduleResponseDTO>> getContractorAllSchedules(
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(getSchedulesForAssignedLots(jwt));
     }
 
     @GetMapping("/contractors/schedules/{scheduleIdentifier}")
-    public ResponseEntity<ScheduleResponseDTO> getContractorScheduleByIdentifier(@PathVariable String scheduleIdentifier) {
+    public ResponseEntity<ScheduleResponseDTO> getContractorScheduleByIdentifier(
+            @PathVariable String scheduleIdentifier,
+            @AuthenticationPrincipal Jwt jwt) {
         try {
+            if (jwt == null) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
             ScheduleResponseDTO schedule = scheduleService.getScheduleByIdentifier(scheduleIdentifier);
+            UserResponseModel user = getCurrentUser(jwt);
+            if (!scheduleBelongsToAssignedLots(schedule, user.getUserIdentifier())) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             return ResponseEntity.ok(schedule);
         } catch (NotFoundException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -205,21 +238,36 @@ public class ScheduleController {
 
     // Customer endpoints
     @GetMapping("/customers/schedules")
-    public ResponseEntity<List<ScheduleResponseDTO>> getCustomerCurrentWeekSchedules() {
-        List<ScheduleResponseDTO> schedules = scheduleService.getCurrentWeekSchedules();
-        return ResponseEntity.ok(schedules);
+    public ResponseEntity<List<ScheduleResponseDTO>> getCustomerCurrentWeekSchedules(
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(getCurrentWeekSchedulesForAssignedLots(jwt));
     }
 
     @GetMapping("/customers/schedules/all")
-    public ResponseEntity<List<ScheduleResponseDTO>> getCustomerAllSchedules() {
-        List<ScheduleResponseDTO> schedules = scheduleService.getAllSchedules();
-        return ResponseEntity.ok(schedules);
+    public ResponseEntity<List<ScheduleResponseDTO>> getCustomerAllSchedules(
+            @AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(getSchedulesForAssignedLots(jwt));
     }
 
     @GetMapping("/customers/schedules/{scheduleIdentifier}")
-    public ResponseEntity<ScheduleResponseDTO> getCustomerScheduleByIdentifier(@PathVariable String scheduleIdentifier) {
+    public ResponseEntity<ScheduleResponseDTO> getCustomerScheduleByIdentifier(
+            @PathVariable String scheduleIdentifier,
+            @AuthenticationPrincipal Jwt jwt) {
         try {
+            if (jwt == null) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
             ScheduleResponseDTO schedule = scheduleService.getScheduleByIdentifier(scheduleIdentifier);
+            UserResponseModel user = getCurrentUser(jwt);
+            if (!scheduleBelongsToAssignedLots(schedule, user.getUserIdentifier())) {
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
             return ResponseEntity.ok(schedule);
         } catch (NotFoundException ex) {
             return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
@@ -238,21 +286,17 @@ public class ScheduleController {
             log.info("Fetching schedules for project identifier: {}", projectIdentifier);
             
             // Get the current user
-            String auth0UserId = jwt.getSubject();
-            UserResponseModel user = userService.getUserByAuth0Id(auth0UserId);
-            
+            UserResponseModel user = getCurrentUser(jwt);
+
             List<ScheduleResponseDTO> schedules;
-            
-            // Filter by assigned lots for customers and salespersons
-            if (user.getUserRole() == UserRole.CUSTOMER || user.getUserRole() == UserRole.SALESPERSON) {
-                log.info("Filtering schedules for {} with role {}", user.getUserIdentifier(), user.getUserRole());
-                schedules = scheduleService.getSchedulesByProjectIdentifierAndUserAssignedLots(
-                    projectIdentifier, 
-                    user.getUserIdentifier()
-                );
-            } else {
-                // Owners and contractors can see all schedules
+
+            if (isOwner(user)) {
                 schedules = scheduleService.getSchedulesByProjectIdentifier(projectIdentifier);
+            } else {
+                log.info("Filtering schedules for {} using assigned lots", user.getUserIdentifier());
+                schedules = scheduleService.getSchedulesByProjectIdentifierAndUserAssignedLots(
+                        projectIdentifier,
+                        user.getUserIdentifier());
             }
             
             log.info("Successfully fetched {} schedules for project: {}", schedules.size(), projectIdentifier);
@@ -282,6 +326,36 @@ public class ScheduleController {
             log.error("Error fetching schedule {} for project {}: {}", scheduleIdentifier, projectIdentifier, ex.getMessage(), ex);
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private List<ScheduleResponseDTO> getSchedulesForAssignedLots(Jwt jwt) {
+        UserResponseModel user = getCurrentUser(jwt);
+        return scheduleService.getSchedulesForUserAssignedLots(user.getUserIdentifier());
+    }
+
+    private List<ScheduleResponseDTO> getCurrentWeekSchedulesForAssignedLots(Jwt jwt) {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate endOfWeek = today.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
+        return getSchedulesForAssignedLots(jwt).stream()
+                .filter(schedule -> schedule.getScheduleStartDate() != null)
+                .filter(schedule -> !schedule.getScheduleStartDate().isBefore(startOfWeek))
+                .filter(schedule -> !schedule.getScheduleStartDate().isAfter(endOfWeek))
+                .collect(Collectors.toList());
+    }
+
+    private UserResponseModel getCurrentUser(Jwt jwt) {
+        return userService.getUserByAuth0Id(jwt.getSubject());
+    }
+
+    private boolean scheduleBelongsToAssignedLots(ScheduleResponseDTO schedule, String userIdentifier) {
+        return scheduleService.getSchedulesForUserAssignedLots(userIdentifier).stream()
+                .anyMatch(assigned -> assigned.getScheduleIdentifier().equals(schedule.getScheduleIdentifier()));
+    }
+
+    private boolean isOwner(UserResponseModel user) {
+        return user != null && user.getUserRole() != null && user.getUserRole().name().equals("OWNER");
     }
 
     // Create a new schedule for a specific project
