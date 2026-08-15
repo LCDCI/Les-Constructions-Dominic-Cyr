@@ -43,7 +43,6 @@ import QuoteListPage from './pages/Quotes/QuoteListPage';
 import QuoteFormPage from './pages/Quotes/QuoteFormPage';
 import QuoteDetailPage from './pages/Quotes/QuoteDetailPage';
 import QuoteApprovalPage from './pages/Quotes/QuoteApprovalPage';
-import CustomerQuoteApprovalPage from './pages/Quotes/CustomerQuoteApprovalPage';
 import Unauthorized from './pages/Errors/Unauthorized';
 import NotFound from './pages/Errors/NotFound';
 import ProjectsOverviewPage from './pages/Project/ProjectsOverviewPage';
@@ -465,16 +464,6 @@ export default function App() {
             />
 
             <Route
-              path="/customer/quotes/approval"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['CUSTOMER']}
-                  element={<CustomerQuoteApprovalPage />}
-                />
-              }
-            />
-
-            <Route
               path="/salesperson/dashboard"
               element={
                 <ProtectedRoute
@@ -680,7 +669,7 @@ export default function App() {
               path="/quotes/:quoteNumber"
               element={
                 <ProtectedRoute
-                  allowedRoles={['OWNER', 'CONTRACTOR', 'CUSTOMER']}
+                  allowedRoles={['OWNER', 'CONTRACTOR']}
                   element={<QuoteDetailPage />}
                 />
               }
