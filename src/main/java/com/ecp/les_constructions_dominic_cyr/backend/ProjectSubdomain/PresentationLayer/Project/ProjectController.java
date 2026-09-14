@@ -45,17 +45,13 @@ public class ProjectController {
         List<ProjectResponseModel> projects;
         boolean isOwner = isOwner(authentication);
 
-        if (!isOwner && (jwt == null || authentication == null)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(List.of());
-        }
-
         if (status != null || startDate != null || endDate != null || customerId != null) {
             projects = projectService.filterProjects(status, startDate, endDate, customerId, isOwner);
         } else {
             projects = projectService.getAllProjects(isOwner);
         }
 
-        if (!isOwner) {
+        if (!isOwner && jwt != null && authentication != null) {
             String auth0UserId = jwt.getSubject();
 
             UserResponseModel currentUser = null;
