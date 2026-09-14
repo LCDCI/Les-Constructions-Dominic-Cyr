@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.HtmlUtils;
 import java.util.List;
 import java.util.Map;
 
@@ -20,14 +19,6 @@ public class InquiryController {
 
     @PostMapping
     public ResponseEntity<?> submit(@Valid @RequestBody InquiryRequestModel request) {
-        // Input sanitization
-        request.setName(HtmlUtils.htmlEscape(request.getName()));
-        request.setEmail(HtmlUtils.htmlEscape(request.getEmail()));
-        if (request.getPhone() != null) {
-            request.setPhone(HtmlUtils.htmlEscape(request.getPhone()));
-        }
-        request.setMessage(HtmlUtils.htmlEscape(request.getMessage()));
-        
         service.submitInquiry(request);
         return ResponseEntity.ok(Map.of("message", "Thank you! Your inquiry has been received."));
     }
