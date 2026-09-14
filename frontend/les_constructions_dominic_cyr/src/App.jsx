@@ -125,21 +125,60 @@ function SalespersonLotsDocuments() {
   return <LotsListDashboard userId={profile.userId} />;
 }
 
+const PRIVATE_FOOTER_ROUTE_PATTERNS = [
+  '/projects',
+  '/projects/create',
+  '/projects/:projectIdentifier',
+  '/projects/:projectId/metadata',
+  '/projects/:projectId/lots/:lotId/metadata',
+  '/projects/:projectId/files',
+  '/projects/:projectId/photos',
+  '/projects/:projectId/schedule',
+  '/projects/:projectIdentifier/lots/select',
+  '/projects/:projectIdentifier/lots/:lotId/documents',
+  '/projects/:projectIdentifier/lots/:lotId/forms',
+  '/projects/:projectIdentifier/manage-lots',
+  '/projects/:projectIdentifier/overview',
+  '/projects/:projectIdentifier/living-environment',
+  '/projects/:projectIdentifier/lots',
+  '/reports',
+  '/inquiries',
+  '/users',
+  '/owner/dashboard',
+  '/owner/forms',
+  '/owner/documents',
+  '/owner/inbox',
+  '/salesperson/dashboard',
+  '/salesperson/forms',
+  '/salesperson/documents',
+  '/salesperson/inbox',
+  '/contractor/dashboard',
+  '/contractors/documents',
+  '/contractors/inbox',
+  '/contractor/tasks',
+  '/customer/dashboard',
+  '/customers/forms',
+  '/customers/documents',
+  '/customers/inbox',
+  '/dashboard/lots/:lotId/documents',
+  '/inbox',
+  '/lots',
+  '/quotes',
+  '/quotes/create',
+  '/quotes/:quoteNumber',
+  '/quotes/approval',
+  '/tasks/:taskId',
+  '/profile',
+];
+
 function ConditionalFooter() {
   const location = useLocation();
 
-  const isProjectPage =
-    matchPath('/projects/:projectIdentifier/overview', location.pathname) ||
-    matchPath('/projects/:projectIdentifier/lots', location.pathname) ||
-    matchPath(
-      '/projects/:projectIdentifier/living-environment',
-      location.pathname
-    );
+  const isPrivateRoute = PRIVATE_FOOTER_ROUTE_PATTERNS.some(pattern =>
+    matchPath(pattern, location.pathname)
+  );
 
-  const isContactPage = location.pathname === '/contact';
-  const isPortalLoginPage = location.pathname === '/portal/login';
-
-  if (isProjectPage || isContactPage || isPortalLoginPage) {
+  if (isPrivateRoute) {
     return null;
   }
 
