@@ -1,0 +1,21 @@
+{
+  "nav": {
+    "projects": "Projets résidentiels",
+    "renovations": "Rénovations",
+    "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois"
+  },
+  "deleteModal": {
+    "title": "Supprimer la tâche",
+    "message": "Êtes-vous sûr de vouloir supprimer cette tâche? Cette action ne peut pas être annulée et supprimera la tâche de toutes les vues.",
+    "confirmText": "Supprimer la tâche",
+    "confirmTextDeleting": "Suppression...",
+    "cancelText": "Annuler"
+  }
+}
+

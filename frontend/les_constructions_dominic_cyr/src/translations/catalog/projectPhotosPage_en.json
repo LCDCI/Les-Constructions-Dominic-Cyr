@@ -1,0 +1,28 @@
+{
+  "title": "Project Photos",
+  "uploadPhoto": "Upload Photo",
+  "syncPhotos": "Sync Photos",
+  "syncing": "Syncing...",
+  "active": "Active",
+  "archived": "Archived",
+  "loading": "Loading photos...",
+  "error": "Error loading photos",
+  "noPhotos": "No photos found.",
+  "unknown": "Unknown",
+  "errors": {
+    "userIdentifier": "Cannot determine your user identifier. Please reload and try again.",
+    "deleteFailed": "Failed to delete photo.",
+    "archiveFailed": "Failed to archive photo.",
+    "unarchiveFailed": "Failed to unarchive photo."
+  },
+  "confirm": {
+    "deleteTitle": "Delete Photo",
+    "deleteMessage": "Are you sure you want to delete this photo? This action cannot be undone.",
+    "archiveTitle": "Archive Photo",
+    "archiveMessage": "Are you sure you want to archive this photo?",
+    "unarchiveTitle": "Unarchive Photo",
+    "unarchiveMessage": "Are you sure you want to restore this photo?",
+    "confirm": "Confirm",
+    "cancel": "Cancel"
+  }
+}

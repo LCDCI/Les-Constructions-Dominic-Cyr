@@ -18,7 +18,7 @@ const localTranslationsPlugin = () => {
       if (id !== resolvedVirtualModuleId) return undefined;
 
       const translationsDirectory = fileURLToPath(
-        new URL('../../translation-scripts/translation-files', import.meta.url)
+        new URL('./src/translations/catalog', import.meta.url)
       );
       const translations = { en: {}, fr: {} };
 
@@ -28,7 +28,7 @@ const localTranslationsPlugin = () => {
 
         const [, pageName, language] = match;
         const filePath = new URL(
-          `../../translation-scripts/translation-files/${fileName}`,
+          `./src/translations/catalog/${fileName}`,
           import.meta.url
         );
         translations[language.toLowerCase()][pageName.toLowerCase()] =
@@ -77,9 +77,6 @@ export default defineConfig(async () => {
       },
     ],
     server: {
-      fs: {
-        allow: [fileURLToPath(new URL('../../translation-scripts', import.meta.url))],
-      },
       proxy: {
         '/api/v1': {
           target: `http://localhost:${BACKEND_PORT}`,

@@ -1,0 +1,215 @@
+{
+  "title": "My Forms",
+  "subtitle": "Fill out your assigned forms",
+  "heroSubtitle": "Select a project and lot to view your forms",
+  "heroSubtitleAll": "View and fill out all your assigned forms",
+  "loading": "Loading...",
+  "noForms": "No forms assigned for this project and lot yet",
+  "noFormsAssigned": "No forms have been assigned to you yet. They will appear here once assigned.",
+  "selectProject": "Please select a project to view lots",
+  "selectLot": "Select a lot:",
+  "project": "Project",
+  "selectAProject": "Select a project",
+  "noProjects": "No projects available",
+  "noLotsFound": "No lots found for this project",
+  "lot": "Lot",
+  "address": "Address",
+  "formCount": {
+    "one": "form",
+    "other": "forms"
+  },
+  "noFormsAssignedToLot": "No forms assigned yet",
+  "status": {
+    "draft": "Draft",
+    "assigned": "Assigned",
+    "inProgress": "In Progress",
+    "submitted": "Submitted",
+    "reopened": "Reopened",
+    "completed": "Completed"
+  },
+  "labels": {
+    "assigned": "Assigned",
+    "submitted": "Submitted",
+    "completed": "Completed",
+    "reopenReason": "Reopen Reason"
+  },
+  "buttons": {
+    "fillForm": "Fill Form",
+    "editForm": "Edit Form",
+    "viewHistory": "View History",
+    "cancel": "Cancel",
+    "saveDraft": "Save Draft",
+    "submitForm": "Submit Form",
+    "confirmSubmit": "Yes, Submit",
+    "close": "Close"
+  },
+  "modal": {
+    "editTitle": "Form",
+    "historyTitle": "Submission History",
+    "historyLoading": "Loading history...",
+    "noHistory": "No submission history available",
+    "submissionNumber": "Submission #{{number}}",
+    "date": "Date",
+    "formData": "Form Data",
+    "required": "*",
+    "uploading": "Uploading...",
+    "selectOption": "-- Select --",
+    "confirmSubmitTitle": "Confirm Submission",
+    "confirmSubmitMessage": "Are you sure you want to submit this form? You will not be able to edit it after submission."
+  },
+  "formTypes": {
+    "EXTERIOR_DOORS": "Exterior Doors",
+    "GARAGE_DOORS": "Garage Doors",
+    "WINDOWS": "Windows",
+    "ASPHALT_SHINGLES": "Asphalt Shingles",
+    "WOODWORK": "Woodwork",
+    "PAINT": "Paint",
+    "exteriorDoors": "Exterior Doors",
+    "garageDoors": "Garage Doors",
+    "windows": "Windows",
+    "asphaltShingles": "Asphalt Shingles",
+    "woodwork": "Woodwork",
+    "paint": "Paint"
+  },
+  "formFields": {
+    "additionalNotes": "Additional Notes",
+    "exteriorDoors": {
+      "instructions": "Visit the Novatech design tool to create your exterior door design. Once you are satisfied with your selection, download the design as a PDF and upload it below.",
+      "linkLabel": "Open Novatech Design Tool",
+      "uploadPdf": "Upload your door design (PDF)"
+    },
+    "garageDoors": {
+      "instructions": "Visit the Portes Universelles design centre to configure your garage door. Once finished, save your selection as a PDF and upload it below.",
+      "linkLabel": "Open Portes Universelles Design Centre",
+      "uploadPdf": "Upload your garage door design (PDF)"
+    },
+    "windows": {
+      "exteriorColorFacade": "Exterior Window Color – Facade",
+      "exteriorColorSidesBack": "Exterior Window Color – Sides & Back",
+      "interiorColorFacade": "Interior Window Color – Facade",
+      "interiorColorSidesBack": "Interior Window Color – Sides & Back",
+      "otherDetails": "Other Details"
+    },
+    "shingles": {
+      "company": "Company",
+      "collection": "Collection",
+      "color": "Color",
+      "steelRoofColor": "Steel Roof Color"
+    },
+    "woodwork": {
+      "doorModelSection": "Interior Doors (Masonite)",
+      "interiorDoorModel": "Interior Door Model",
+      "viewOnWebsite": "View on website",
+      "doors": {
+        "unie": "Unie",
+        "carrara": "Carrara",
+        "coloniale": "Coloniale",
+        "rockport": "Rockport",
+        "logan": "Logan",
+        "lincolnPark": "Lincoln Park",
+        "conmore": "Conmore"
+      },
+      "handleSection": "Interior Handles",
+      "interiorHandleModel": "Handle Model",
+      "handles": {
+        "boston": "Boston",
+        "brava": "Brava",
+        "destin": "Destin",
+        "zen": "Zen",
+        "verona": "Verona",
+        "lineaRosetteCarre": "Linea Rosette Carré",
+        "lineaRosetteRonde": "Linea Rosette Ronde",
+        "sanford": "Sanford"
+      },
+      "handleFinish": "Handle Finish",
+      "finishes": {
+        "chrome": "Chrome",
+        "satinNickel": "Satin Nickel",
+        "matteBlack": "Matte Black",
+        "antiqueBronze": "Antique Bronze",
+        "glossyBlack": "Glossy Black"
+      },
+      "baseboardSection": "Baseboards & Trim",
+      "baseboardModel": "Baseboard Model",
+      "baseboards": {
+        "urbaine": "Urbaine",
+        "m1000": "1000",
+        "oblik": "Oblik",
+        "m1500": "1500",
+        "m1249": "1249"
+      },
+      "baseboardHeight": "Baseboard Height",
+      "quarterRoundSection": "Quarter-Round",
+      "quarterRoundModel": "Quarter-Round Model",
+      "quarterRounds": {
+        "m1000": "1000",
+        "m1234": "1234",
+        "m1500": "1500",
+        "m2000": "2000"
+      }
+    },
+    "paint": {
+      "brand": "Paint Brand",
+      "finish": "Paint Finish (Matte/Satin/Gloss)",
+      "interiorColors": "Interior Colors",
+      "exteriorColors": "Exterior Colors",
+      "roomsToPaint": "Rooms to Paint"
+    }
+  },
+  "errors": {
+    "fetchForms": "Error fetching forms",
+    "saveFailed": "Failed to save form. Please try again.",
+    "submitFailed": "Failed to submit form. Please try again.",
+    "missingFields": "Please fill in all required fields: {{fields}}",
+    "uploadFailed": "Failed to upload file. Please try again.",
+    "downloadFailed": "Failed to download file."
+  },
+  "page": {
+    "loading": "Loading...",
+    "backToDocuments": "Back to Lot Documents",
+    "lotDocumentsTitle": "Lot {{lotNumber}} Documents",
+    "addressNotAvailable": "Address not available"
+  },
+  "tabs": {
+    "documents": "Documents",
+    "forms": "Forms"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Search documents...",
+    "filterAll": "All",
+    "filterPhotos": "Photos",
+    "filterFiles": "Files",
+    "uploading": "Uploading...",
+    "upload": "Upload"
+  },
+  "documentsList": {
+    "noDocumentsFound": "No documents found.",
+    "uploadToGetStarted": "Upload files to get started.",
+    "downloadTitle": "Download",
+    "deleteTitle": "Delete"
+  },
+  "lotForms": {
+    "loadingForms": "Loading forms...",
+    "noFormsAssigned": "No forms assigned for this lot.",
+    "fillForm": "Fill Form",
+    "viewForm": "View Form",
+    "assignedLabel": "Assigned:",
+    "submittedLabel": "Submitted:"
+  },
+  "finalizedForms": {
+    "title": "Finalized Forms",
+    "description": "Download completed forms for this lot.",
+    "loading": "Loading finalized forms...",
+    "noForms": "No finalized forms yet.",
+    "formId": "Form ID:",
+    "completedLabel": "Completed:",
+    "downloadPdf": "Download PDF"
+  },
+  "deleteModal": {
+    "title": "Confirm Deletion",
+    "message": "Are you sure you want to delete \"{{fileName}}\"?",
+    "warning": "This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  }
+}

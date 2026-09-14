@@ -1,0 +1,9 @@
+{
+  "loading": "Loading...",
+  "title": "Choose a lot",
+  "subtitle": "Select a lot to view its information.",
+  "noLots": "No lots assigned to you for this project.",
+  "viewLotInfo": "View lot information",
+  "backToProjects": "Back to projects",
+  "lot": "Lot"
+}

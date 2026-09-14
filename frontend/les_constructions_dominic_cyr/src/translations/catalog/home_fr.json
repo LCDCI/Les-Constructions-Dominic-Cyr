@@ -1,0 +1,118 @@
+{
+  "hero": {
+    "label": "CONCEPTION & CONSTRUCTION",
+    "title": "Créer l'espace de vos rêves",
+    "subtitle": "Construction de qualité, design intemporel, depuis 2006",
+    "button1": "Découvrir",
+    "button2": "Contactez-nous",
+    "scroll": "Défilez"
+  },
+  "think": {
+    "title": "Pensez des espaces intelligents, pratiques et confortables",
+    "subtitle": "Passionnés par l'architecture et le design, notre mission est de vous offrir une expérience unique et mémorable.",
+    "link": "Découvrir"
+  },
+  "build": {
+    "title": "Construisez une relation solide et un partenariat de qualité",
+    "subtitle": "Guidés par notre désir de perfection, nous faisons tout pour que vous soyez plus que satisfait de nos travaux.",
+    "link": "Contactez-nous"
+  },
+  "live": {
+    "title": "Nous Collaborons avec vous à la réalisation de vos rêves ! ",
+    "subtitle": "Votre maison constitue l'un des plus importants investissements que vous ferez dans votre vie. Optez pour une valeur sûre et sans pareil avec Les Constructions Dominic Cyr Inc. ",
+    "link": "Explorer les projets"
+  },
+  "portfolio": {
+    "kicker": "Notre travail",
+    "title": "Projets et réalisations",
+    "foresta": "Foresta",
+    "forestaSubtitle": "Projet résidentiel",
+    "panorama": "Panorama",
+    "panoramaSubtitle": "Condominiums",
+    "management": "Gestion",
+    "managementSubtitle": "Services de projet",
+    "achievements": "Réalisations",
+    "achievementsSubtitle": "Portefeuille"
+  },
+  "features": {
+    "kicker": "Pourquoi nous choisir",
+    "title": "Un accompagnement sur mesure",
+    "intro": "Les Constructions Dominic Cyr Inc. est une entreprise familiale et dynamique qui compte plus de 20 ans d'expérience dans le domaine de la construction résidentielle. Nous sommes là pour vous accompagnez dans la réalisation de vos idées et de vos projets, en assurant un service personnalisé et professionnel misant sur la transparence.",
+    "feature1": "Passionné et professionnel",
+    "feature2": "Approche créative",
+    "feature3": "Souci du détail",
+    "feature4": "Pratiques écologiques",
+    "feature5": "Normes d'excellence",
+    "feature6": "Service après-vente"
+  },
+  "contact": {
+    "kicker": "Contactez-nous",
+    "title": "Construisons ensemble votre maison de rêve",
+    "description": "Votre maison est l'un des investissements les plus importants que vous ferez jamais. Choisissez un partenaire de confiance avec Construction Dominic Cyr Inc.",
+    "button": "Contactez-nous"
+  },
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets résidentiels",
+    "renovation": "Rénovations",
+    "renovations": "Rénovations",
+    "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
+    "contact": "Contact",
+    "accessPortal": "Portail d'accès",
+    "logout": "Déconnexion"
+  },
+  "footer": {
+    "company": "Construction Dominic Cyr Inc.",
+    "copyright": "© {{year}} Construction Dominic Cyr. Tous droits réservés.",
+    "contact": "Contact",
+    "contactUs": "Contactez-nous",
+    "information": "Information",
+    "phone": "514-705-7848",
+    "email": "constructions.dcyr@gmail.com",
+    "location": "Localisation",
+    "address1": "155 rue Bourgeois",
+    "address2": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
+    "accreditations": "Accréditations",
+    "rbqLabel": "Régie du Bâtiment du Québec",
+    "rbq": "8356-0169-03",
+    "rbqLink": "rbq.gouv.qc.ca",
+    "gcrLabel": "Garantie Construction Résidentielle",
+    "gcr": "11084",
+    "gcrLink": "garantiegcr.com"
+  },
+
+  "projects": {
+    "foresta": {
+      "title": "FORESTA",
+      "subtitle": "PROJET DOMICILIAIRE"
+    },
+    "panorama": {
+      "title": "Panorama",
+      "subtitle": "condos"
+    },
+    "management": {
+      "title": "Gestion",
+      "subtitle": "de projet"
+    },
+    "renovation": {
+      "title": "Rénovations"
+    },
+    "realisations": {
+      "title": "Réalisations"
+    }
+  },
+  "collaboration": {
+    "title": "NOUS COLLABORONS AVEC VOUS À LA RÉALISATION DE VOS RÊVES !",
+    "description": "Votre maison constitue l'un des plus importants investissements que vous ferez dans votre vie. Optez pour une valeur sûre et sans pareil avec Les Constructions Dominic Cyr Inc."
+  },
+  "gallery": {
+    "forest": "Forêt panoramique",
+    "modernHouse": "Maison moderne illuminée",
+    "terrace": "Terrasse moderne",
+    "pool": "Piscine et résidence",
+    "cabin": "Chalet traditionnel",
+    "stackedHouse": "Maison empilée moderne",
+    "interior": "Intérieur contemporain"
+  }
+ }

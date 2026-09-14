@@ -1,0 +1,7 @@
+{
+  "title": "🚫 Accès refusé",
+  "message": "Vous n'avez pas la permission d'accéder à cette page ou à cette fonctionnalité.",
+  "hint": "Cette zone est restreinte en fonction de votre rôle. Si vous pensez qu'il s'agit d'une erreur, veuillez contacter votre administrateur.",
+  "goToDashboard": "Aller au tableau de bord",
+  "goHome": "Aller à l'accueil"
+}

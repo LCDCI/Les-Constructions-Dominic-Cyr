@@ -67,8 +67,8 @@ services:
   #######################################################################
   frontend:
     build:
-      context: .
-      dockerfile: frontend/les_constructions_dominic_cyr/Dockerfile
+      context: ./frontend/les_constructions_dominic_cyr
+      dockerfile: Dockerfile
       args:
         - VITE_API_BASE=${VITE_API_BASE:-/api/v1}
         - VITE_AUTH0_DOMAIN=${VITE_AUTH0_DOMAIN:-${AUTH0_DOMAIN}}

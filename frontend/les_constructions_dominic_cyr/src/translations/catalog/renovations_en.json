@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "label": "Renovate, Modernize & Transform",
+    "heading": "Renovations",
+    "lede": "Your home deserves the very best"
+  },
+  "intro": {
+    "emphasis": "Transform",
+    "rest": "your home into the living space of your dreams!",
+    "description": "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\n\nEntrust your renovation to passionate professionals!",
+    "cta": "Talk to an expert"
+  },
+  "grid": {
+    "kicker": "Our Work",
+    "title": "Recent Renovations"
+  },
+  "states": {
+    "empty": {
+      "title": "No renovations currently available",
+      "body": "Check back soon to see our latest renovation projects!"
+    },
+    "error": {
+      "message": "Unable to load renovations",
+      "retry": "Retry"
+    }
+  },
+  "cta": {
+    "kicker": "Where to start?",
+    "title": "Let's talk about your project",
+    "subtitle": "Get tailored support to transform your space into a place that reflects you.",
+    "button": "Contact Us",
+    "discover": "Discover",
+    "contact": "Contact"
+  },
+  "nav": {
+    "home": "Home",
+    "projects": "Residential Projects",
+    "renovation": "Renovations",
+    "renovations": "Renovations",
+    "projectManagement": "Project Management",
+    "realizations": "Realizations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "company": "Dominic Cyr Construction Inc.",
+    "copyright": "© 2025 Dominic Cyr Construction. All rights reserved."
+  },
+  "renovationCard": {
+    "labels": {
+      "identifier": "Identifier",
+      "cardType": "Renovation",
+      "description": "Description",
+      "descriptionFallback": "No description available"
+    },
+    "media": {
+      "before": "Before",
+      "after": "After",
+      "sectionLabel": "Renovation images"
+    }
+  }
+}

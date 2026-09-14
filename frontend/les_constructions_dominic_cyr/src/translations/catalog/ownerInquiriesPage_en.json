@@ -1,0 +1,13 @@
+{
+  "title": "Inquiry Review",
+  "loading": "Loading inquiries...",
+  "error": "Error:",
+  "noInquiries": "No inquiries found.",
+  "table": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "timestamp": "Timestamp"
+  }
+}

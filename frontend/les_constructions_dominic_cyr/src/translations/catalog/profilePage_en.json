@@ -1,0 +1,28 @@
+{
+  "title": "My Profile",
+  "editProfile": "Edit Profile",
+  "loading": "Loading profile...",
+  "errors": {
+    "notLoggedIn": "You must be logged in to view your profile.",
+    "invalidAuth": "Invalid authentication data. Please log in again.",
+    "notFound": "Your user profile was not found. Please contact support.",
+    "loadFailed": "Failed to load profile information. Please try again later.",
+    "updateFailed": "Failed to update profile. Please try again."
+  },
+  "noUserInfo": "No user information available.",
+  "personalInfo": "Personal Information",
+  "fields": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "secondaryEmail": "Secondary Email",
+    "phone": "Phone",
+    "role": "Role"
+  },
+  "notProvided": "Not provided",
+  "emailCannotChange": "Email cannot be changed",
+  "roleCannotChange": "Role cannot be changed",
+  "saving": "Saving...",
+  "saveChanges": "Save Changes",
+  "cancel": "Cancel"
+}

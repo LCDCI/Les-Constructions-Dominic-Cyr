@@ -1,0 +1,21 @@
+{
+  "title": "Boîte de réception",
+  "unread": "non lu",
+  "markAllAsRead": "Marquer tout comme lu",
+  "searchPlaceholder": "Rechercher des notifications...",
+  "filters": {
+    "all": "Toutes les notifications",
+    "unread": "Non lues uniquement",
+    "read": "Lues uniquement"
+  },
+  "sort": {
+    "newest": "Plus récentes d'abord",
+    "oldest": "Plus anciennes d'abord"
+  },
+  "loading": "Chargement des notifications...",
+  "error": "Erreur lors du chargement des notifications : {{error}}",
+  "empty": {
+    "noFilters": "Aucune notification pour le moment",
+    "withFilters": "Aucune notification ne correspond à vos filtres"
+  }
+}

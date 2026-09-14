@@ -1,0 +1,27 @@
+{
+  "title": "Contractor Dashboard",
+  "upcomingTasks": "Here are your upcoming tasks:",
+  "seeMore": "See more",
+  "cards": {
+    "myTasks": {
+      "title": "My Tasks",
+      "button": "View My Tasks"
+    },
+    "quotes": {
+      "title": "Quotes",
+      "button": "Upload Quote"
+    },
+    "projects": {
+      "title": "Projects",
+      "button": "View Projects"
+    },
+    "inbox": {
+      "title": "Inbox",
+      "button": "View Inbox"
+    },
+    "documents": {
+      "title": "Documents",
+      "button": "View Documents"
+    }
+  }
+}

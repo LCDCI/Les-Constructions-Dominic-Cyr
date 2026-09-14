@@ -1,0 +1,9 @@
+{
+  "loading": "Chargement...",
+  "title": "Choisir un lot",
+  "subtitle": "Sélectionnez un lot pour voir ses informations.",
+  "noLots": "Aucun lot ne vous est assigné pour ce projet.",
+  "viewLotInfo": "Voir les informations du lot",
+  "backToProjects": "Retour aux projets",
+  "lot": "Lot"
+}

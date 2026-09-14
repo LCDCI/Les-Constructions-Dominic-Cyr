@@ -1,0 +1,21 @@
+{
+  "title": "Inbox",
+  "unread": "unread",
+  "markAllAsRead": "Mark all as read",
+  "searchPlaceholder": "Search notifications...",
+  "filters": {
+    "all": "All Notifications",
+    "unread": "Unread Only",
+    "read": "Read Only"
+  },
+  "sort": {
+    "newest": "Newest First",
+    "oldest": "Oldest First"
+  },
+  "loading": "Loading notifications...",
+  "error": "Error loading notifications: {{error}}",
+  "empty": {
+    "noFilters": "No notifications yet",
+    "withFilters": "No notifications match your filters"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "nav": {
+    "home": "Home",
+    "projects": "Residential Projects",
+    "renovation": "Renovations",
+    "renovations": "Renovations",
+    "projectManagement": "Project Management",
+    "realizations": "Realizations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "companyName": "Les Constructions Dominic Cyr Inc.",
+    "address": "155 rue Bourgeois",
+    "phone": "514-705-7848",
+    "email": "constructions.dcyr@gmail.com"
+  },
+  "hero": {
+    "title": "Realizations",
+    "subtitle": "When vision becomes reality"
+  },
+  "intro": {
+    "description": "Our realizations reflect our expertise and commitment to quality. Each project is crafted with care to deliver lasting, well-designed spaces tailored to the needs of our clients.",
+    "portfolioText": "Here is a portfolio of projects completed in recent years."
+  },
+  "gallery": {
+    "previousAriaLabel": "Previous image",
+    "nextAriaLabel": "Next image",
+    "imageAlt": "Realization",
+    "noResults": "No realizations found"
+  }
+}

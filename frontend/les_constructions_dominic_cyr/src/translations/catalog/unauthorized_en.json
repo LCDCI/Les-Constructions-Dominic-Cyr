@@ -1,0 +1,7 @@
+{
+  "title": "🚫 Access Denied",
+  "message": "You do not have permission to access this page or feature.",
+  "hint": "This area is restricted based on your role. If you believe this is an error, please contact your administrator.",
+  "goToDashboard": "Go to Dashboard",
+  "goHome": "Go Home"
+}

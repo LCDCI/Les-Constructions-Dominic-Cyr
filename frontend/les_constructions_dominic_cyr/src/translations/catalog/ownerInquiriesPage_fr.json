@@ -1,0 +1,13 @@
+{
+  "title": "Révision des demandes",
+  "loading": "Chargement des demandes...",
+  "error": "Erreur :",
+  "noInquiries": "Aucune demande trouvée.",
+  "table": {
+    "name": "Nom",
+    "email": "Courriel",
+    "phone": "Téléphone",
+    "message": "Message",
+    "timestamp": "Horodatage"
+  }
+}

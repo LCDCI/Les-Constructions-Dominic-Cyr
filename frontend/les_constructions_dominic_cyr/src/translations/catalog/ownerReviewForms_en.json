@@ -1,0 +1,58 @@
+{
+  "title": "Review Submitted Forms",
+  "subtitle": "Review and manage customer form submissions",
+  "loading": "Loading forms...",
+  "noForms": "No forms found",
+  "filters": {
+    "type": "Form Type",
+    "status": "Status",
+    "allStatuses": "All",
+    "submitted": "Submitted",
+    "reopened": "Reopened",
+    "completed": "Completed"
+  },
+  "formTypes": {
+    "all": "All",
+    "exteriorDoors": "Exterior Doors",
+    "garageDoors": "Garage Doors",
+    "windows": "Windows",
+    "flooring": "Flooring",
+    "kitchenCabinets": "Kitchen Cabinets",
+    "bathroomFixtures": "Bathroom Fixtures",
+    "paint": "Paint",
+    "lighting": "Lighting",
+    "roofing": "Roofing",
+    "hvac": "HVAC"
+  },
+  "labels": {
+    "customer": "Customer",
+    "project": "Project",
+    "lot": "Lot",
+    "submitted": "Submitted",
+    "reopened": "Reopened",
+    "reopenReason": "Reopen Reason"
+  },
+  "buttons": {
+    "viewForm": "View Form",
+    "reopen": "Request Changes",
+    "complete": "Approve & Complete",
+    "downloadPdf": "Download PDF",
+    "close": "Close"
+  },
+  "modal": {
+    "cancel": "Cancel",
+    "formData": "Form Data",
+    "noFormData": "No form data available",
+    "reopen": {
+      "title": "Request Form Changes",
+      "reasonLabel": "Reason for Requesting Changes",
+      "reasonPlaceholder": "Explain what needs to be corrected...",
+      "instructionsLabel": "New Instructions",
+      "instructionsPlaceholder": "Provide additional guidance for the customer...",
+      "submit": "Send for Correction"
+    },
+    "view": {
+      "title": "Form Details"
+    }
+  }
+}

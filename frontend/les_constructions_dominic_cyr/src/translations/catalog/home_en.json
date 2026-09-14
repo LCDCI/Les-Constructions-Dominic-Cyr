@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "label": "DESIGN & BUILD",
+    "title": "Crafting Your Dream Space",
+    "subtitle": "Quality construction, timeless design, since 2006",
+    "button1": "Discover",
+    "button2": "Get In Touch",
+    "scroll": "Scroll"  
+  },
+  "think": {
+    "title": "Think intelligent, practical and comfortable spaces",
+    "subtitle": "Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.",
+    "link": "Discover"
+  },
+  "build": {
+    "title": "Build a strong relationship and quality partnership",
+    "subtitle": "Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.",
+    "link": "Contact Us"
+  },
+  "live": {
+    "title": "We Collaborate with You to Make Your Dreams a Reality! ",
+    "subtitle": "Your home is one of the most important investments you will make in your life. Choose a sure and unparalleled value with Les Constructions Dominic Cyr Inc. ",
+    "link": "Explore Projects"
+  },
+  "portfolio": {
+    "kicker": "Our Work",
+    "title": "Projects & Achievements",
+    "foresta": "Foresta",
+    "forestaSubtitle": "Residential Project",
+    "panorama": "Panorama",
+    "panoramaSubtitle": "Condominiums",
+    "management": "Management",
+    "managementSubtitle": "Project Services",
+    "achievements": "Achievements",
+    "achievementsSubtitle": "Portfolio"
+  },
+  "features": {
+    "kicker": "Why Choose Us",
+    "title": "Tailored Support",
+    "intro": "Les Constructions Dominic Cyr Inc. is a dynamic family business with over 20 years of experience in residential construction. We are here to guide you in bringing your ideas and projects to life, providing personalized, professional service built on transparency.",
+    "feature1": "Passionate & Professional",
+    "feature2": "Creative Approach",
+    "feature3": "Attention to Detail",
+    "feature4": "Eco-Friendly Practices",
+    "feature5": "Excellence Standards",
+    "feature6": "After-Sales Service"
+  },
+  "contact": {
+    "kicker": "Get In Touch",
+    "title": "Let's Build Your Dream Home Together",
+    "description": "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc.",
+    "button": "Contact Us"
+  },
+  "nav": {
+    "home": "Home",
+    "projects": "Residential Projects",
+    "renovation": "Renovations",
+    "renovations": "Renovations",
+    "projectManagement": "Project Management",
+    "realizations": "Realizations",
+    "contact": "Contact",
+    "accessPortal": "Access Portal",
+    "logout": "Logout"
+  },
+  "footer": {
+    "company": "Dominic Cyr Construction Inc.",
+    "copyright": "© {{year}} Dominic Cyr Construction. All rights reserved.",
+    "contact": "Contact",
+    "contactUs": "Contact Us",
+    "information": "Information",
+    "phone": "514-705-7848",
+    "email": "constructions.dcyr@gmail.com",
+    "location": "Location",
+    "address1": "155 rue Bourgeois",
+    "address2": "St-Mathieu-de-Beloeil (Québec) J3G 0M9",
+    "accreditations": "Accreditations",
+    "rbqLabel": "Régie du Bâtiment du Québec",
+    "rbq": "8356-0169-03",
+    "rbqLink": "rbq.gouv.qc.ca",
+    "gcrLabel": "Garantie Construction Résidentielle",
+    "gcr": "11084",
+    "gcrLink": "garantiegcr.com"
+  }
+}
+

@@ -1,0 +1,88 @@
+{
+  "title": "Customer Forms",
+  "subtitle": "Assign and Manage Customer Forms",
+  "loading": "Loading...",
+  "noForms": "No forms found",
+  "createButton": "Assign New Form",
+  "searchPlaceholder": "Search forms...",
+  "filters": {
+    "allStatuses": "All Statuses",
+    "assigned": "Assigned",
+    "inProgress": "In Progress",
+    "submitted": "Submitted",
+    "reopened": "Reopened",
+    "completed": "Completed"
+  },
+  "status": {
+    "draft": "Draft",
+    "assigned": "Assigned",
+    "inProgress": "In Progress",
+    "submitted": "Submitted",
+    "reopened": "Reopened",
+    "completed": "Completed"
+  },
+  "labels": {
+    "customer": "Customer",
+    "project": "Project",
+    "lot": "Lot",
+    "assigned": "Assigned",
+    "submitted": "Submitted",
+    "reopened": "Reopened"
+  },
+  "buttons": {
+    "reopen": "Reopen",
+    "complete": "Complete",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "assignForm": "Assign Form"
+  },
+  "formTypes": {
+    "EXTERIOR_DOORS": "Exterior Doors",
+    "GARAGE_DOORS": "Garage Doors",
+    "WINDOWS": "Windows",
+    "ASPHALT_SHINGLES": "Asphalt Shingles",
+    "WOODWORK": "Woodwork",
+    "PAINT": "Paint",
+    "exteriorDoors": "Exterior Doors",
+    "garageDoors": "Garage Doors",
+    "windows": "Windows",
+    "asphaltShingles": "Asphalt Shingles",
+    "woodwork": "Woodwork",
+    "paint": "Paint"
+  },
+  "modal": {
+    "create": {
+      "title": "Assign New Form",
+      "customer": "Customer",
+      "selectCustomer": "Select a customer",
+      "project": "Project",
+      "selectProject": "Select a project",
+      "selectCustomerFirst": "Select a customer first",
+      "noProjectsAvailable": "No projects available for this customer",
+      "lot": "Lot",
+      "selectLot": "Select a lot",
+      "selectProjectFirst": "Select a project first",
+      "noAddress": "No address",
+      "formType": "Form Type",
+      "selectFormType": "Select a form type",
+      "required": "*",
+      "errorAllFields": "Please select a customer, project, lot, and form type",
+      "errorInvalidCustomer": "Invalid customer selected",
+      "errorCreateFailed": "Failed to create form. Please try again."
+    },
+    "reopen": {
+      "title": "Reopen Form",
+      "reasonLabel": "Reason for Reopening",
+      "reasonPlaceholder": "Explain why this form needs to be reopened...",
+      "required": "*",
+      "buttonReopen": "Reopen Form",
+      "errorReasonRequired": "Please provide a reason for reopening",
+      "errorReopenFailed": "Failed to reopen form. Please try again."
+    },
+    "delete": {
+      "title": "Delete Form",
+      "message": "Are you sure you want to delete this form? This action cannot be undone.",
+      "buttonDelete": "Delete"
+    }
+  }
+}

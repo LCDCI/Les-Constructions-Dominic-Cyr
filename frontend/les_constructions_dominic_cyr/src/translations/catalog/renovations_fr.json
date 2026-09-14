@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "label": "Rénover, Moderniser & transformer",
+    "heading": "Rénovations",
+    "lede": "Votre maison mérite ce qu'il y a de mieux"
+  },
+  "intro": {
+    "emphasis": "Transformez",
+    "rest": "votre maison en un espace de vie dont vous rêvez !",
+    "description": "Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité.\n\n\nNous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien.\n\n\nConfiez votre rénovation à des professionnels passionnés !",
+    "cta": "Parlez à un expert"
+  },
+  "grid": {
+    "kicker": "Notre travail",
+    "title": "Rénovations récentes"
+  },
+  "states": {
+    "empty": {
+      "title": "Aucune rénovation disponible actuellement",
+      "body": "Revenez bientôt pour voir nos derniers projets de rénovation !"
+    },
+    "error": {
+      "message": "Impossible de charger les rénovations",
+      "retry": "Réessayer"
+    }
+  },
+  "cta": {
+    "kicker": "Par où commencer ?",
+    "title": "Parlons de votre projet",
+    "subtitle": "Recevez un soutien adapté pour transformer votre espace en un lieu qui vous ressemble.",
+    "button": "Contactez-nous",
+    "discover": "Découvrir",
+    "contact": "Contact"
+  },
+  "nav": {
+    "home": "Accueil",
+    "projects": "Projets résidentiels",
+    "renovation": "Rénovations",
+    "renovations": "Rénovations",
+    "projectManagement": "Gestion de projet",
+    "realizations": "Réalisations",
+    "contact": "Contact"
+  },
+  "footer": {
+    "company": "Construction Dominic Cyr Inc.",
+    "copyright": "© 2025 Construction Dominic Cyr. Tous droits réservés."
+  },
+  "renovationCard": {
+    "labels": {
+      "identifier": "Identifiant",
+      "cardType": "Rénovation",
+      "description": "Description",
+      "descriptionFallback": "Aucune description disponible"
+    },
+    "media": {
+      "before": "Avant",
+      "after": "Après",
+      "sectionLabel": "Images de la rénovation"
+    }
+  }
+}

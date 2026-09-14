@@ -1,0 +1,9 @@
+{
+  "loading": "Chargement...",
+  "alreadyLoggedIn": "Vous êtes déjà connecté",
+  "verificationRequired": "Vérification requise :",
+  "verificationMessage": "Veuillez vérifier votre courriel et cliquer sur le lien de vérification avant de vous connecter.",
+  "title": "Accéder au portail",
+  "subtitle": "Connectez-vous pour accéder à votre tableau de bord",
+  "continueLogin": "Continuer vers la connexion →"
+}

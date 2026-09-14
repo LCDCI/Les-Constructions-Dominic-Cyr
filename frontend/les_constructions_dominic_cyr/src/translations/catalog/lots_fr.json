@@ -1,0 +1,56 @@
+{
+  "header": {
+    "projectLots": "Terrains de {{name}}",
+    "defaultTitle": "Terrains du projet"
+  },
+  "foresta": {
+    "exclusiveCount": "26 TERRAINS EXCLUSIFS",
+    "peaceTagline": "Un véritable havre de paix"
+  },
+  "panorama": {
+    "headerTitle": "Unités de PANØRAMA",
+    "preTitle": "UN PROJET D'HABITATION\nINTÉGRÉ",
+    "tagline": "Luxe et nature réunis"
+  },
+  "common": {
+    "lot": "Terrain",
+    "loading": "Chargement...",
+    "noResults": "Aucun terrain trouvé."
+  },
+  "table": {
+    "identifier": "Identifiant",
+    "lotNumber": "Lot #",
+    "address": "Adresse civique",
+    "areaSqft": "Superficie (pi²)",
+    "areaSqm": "Superficie (m²)",
+    "price": "Prix",
+    "status": "Statut"
+  },
+  "status": {
+    "available": "Disponible",
+    "reserved": "Réservé",
+    "sold": "Vendu",
+    "unknown": "Inconnu"
+  },
+  "modal": {
+    "address": "Adresse",
+    "area": "Superficie",
+    "status": "Statut",
+    "price": "Prix"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Rechercher..."
+  },
+  "filters": {
+    "allStatuses": "Tous les statuts",
+    "sortBy": "Trier par",
+    "priceLow": "Prix : Du plus bas au plus haut",
+    "sizeSmall": "Taille : Plus petit",
+    "sizeLarge": "Taille : Plus grand"
+  },
+  "errors": {
+    "fetchFailed": "Échec de la récupération des terrains."
+  },
+  "backToProject": "Retour au projet résidentiel",
+  "comingSoon": "Le nouveau quartier du projet PanØrama à Sutton comptera 6 immeubles de 12 unités chacun. Toutes les unités ont une vue sur la montagne et/ou sur la rivière qui borde le projet du côté ouest."
+}

@@ -1,0 +1,28 @@
+{
+  "title": "Mon profil",
+  "editProfile": "Modifier le profil",
+  "loading": "Chargement du profil...",
+  "errors": {
+    "notLoggedIn": "Vous devez être connecté pour voir votre profil.",
+    "invalidAuth": "Données d'authentification invalides. Veuillez vous reconnecter.",
+    "notFound": "Votre profil utilisateur n'a pas été trouvé. Veuillez contacter le support.",
+    "loadFailed": "Échec du chargement des informations du profil. Veuillez réessayer plus tard.",
+    "updateFailed": "Échec de la mise à jour du profil. Veuillez réessayer."
+  },
+  "noUserInfo": "Aucune information utilisateur disponible.",
+  "personalInfo": "Informations personnelles",
+  "fields": {
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Courriel",
+    "secondaryEmail": "Courriel secondaire",
+    "phone": "Téléphone",
+    "role": "Rôle"
+  },
+  "notProvided": "Non fourni",
+  "emailCannotChange": "Le courriel ne peut pas être modifié",
+  "roleCannotChange": "Le rôle ne peut pas être modifié",
+  "saving": "Enregistrement...",
+  "saveChanges": "Enregistrer les modifications",
+  "cancel": "Annuler"
+}
