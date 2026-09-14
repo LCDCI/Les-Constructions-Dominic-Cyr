@@ -2,6 +2,42 @@
 import { defineConfig } from 'vite';
 import federation from '@originjs/vite-plugin-federation';
 import { fileURLToPath, URL } from 'url';
+import fs from 'fs';
+
+const localTranslationsPlugin = () => {
+  const virtualModuleId = 'virtual:local-translations';
+  const resolvedVirtualModuleId = `\0${virtualModuleId}`;
+
+  return {
+    name: 'local-translations',
+    resolveId(id) {
+      return id === virtualModuleId ? resolvedVirtualModuleId : undefined;
+    },
+    load(id) {
+      if (id !== resolvedVirtualModuleId) return undefined;
+
+      const translationsDirectory = fileURLToPath(
+        new URL('../../translation-scripts/translation-files', import.meta.url)
+      );
+      const translations = { en: {}, fr: {} };
+
+      for (const fileName of fs.readdirSync(translationsDirectory)) {
+        const match = fileName.match(/^(.+)_(en|fr)\.json$/i);
+        if (!match) continue;
+
+        const [, pageName, language] = match;
+        const filePath = new URL(
+          `../../translation-scripts/translation-files/${fileName}`,
+          import.meta.url
+        );
+        translations[language.toLowerCase()][pageName.toLowerCase()] =
+          JSON.parse(fs.readFileSync(fileURLToPath(filePath), 'utf8'));
+      }
+
+      return `export default ${JSON.stringify(translations)};`;
+    },
+  };
+};
 
 export default defineConfig(async () => {
   const { default: reactPlugin } = await import('@vitejs/plugin-react');
@@ -10,6 +46,7 @@ export default defineConfig(async () => {
   return {
     plugins: [
       reactPlugin(),
+      localTranslationsPlugin(),
       federation({
         name: 'les_constructions_dominic_cyr',
         shared: ['react', 'react-dom'],
@@ -36,6 +73,9 @@ export default defineConfig(async () => {
       },
     ],
     server: {
+      fs: {
+        allow: [fileURLToPath(new URL('../../translation-scripts', import.meta.url))],
+      },
       proxy: {
         '/api/v1': {
           target: `http://localhost:${BACKEND_PORT}`,

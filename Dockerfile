@@ -42,6 +42,8 @@ ENV VITE_FILES_SERVICE_URL=$VITE_FILES_SERVICE_URL
 
 # Copy frontend source
 COPY frontend/les_constructions_dominic_cyr ./
+# Keep the local translation catalog available to the Vite build.
+COPY translation-scripts/translation-files /translation-scripts/translation-files
 
 # Install dependencies and build
 RUN npm install && npm run build

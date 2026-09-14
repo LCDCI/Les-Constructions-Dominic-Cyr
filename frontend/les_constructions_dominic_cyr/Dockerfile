@@ -6,11 +6,13 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Install dependencies inside the container so platform-specific optional packages resolve correctly
-COPY package*.json ./
+COPY frontend/les_constructions_dominic_cyr/package*.json ./
 RUN npm install
 
 # Copy source code
-COPY . .
+COPY frontend/les_constructions_dominic_cyr/ .
+# The Vite plugin bundles every local translation namespace at build time.
+COPY translation-scripts/translation-files /translation-scripts/translation-files
 
 # Build-time env vars (Vite reads at build time)
 ARG VITE_AUTH0_DOMAIN
@@ -41,7 +43,7 @@ RUN apk add --no-cache gettext
 # For local docker-compose, override with NGINX_CONFIG_FILE build arg
 ARG NGINX_CONFIG_FILE=default-frontend-only.conf
 COPY --from=build /app/nginx/${NGINX_CONFIG_FILE} /etc/nginx/conf.d/default.conf.template
-COPY entrypoint.sh /entrypoint.sh
+COPY frontend/les_constructions_dominic_cyr/entrypoint.sh /entrypoint.sh
 # Ensure script is executable and has Unix line endings (fixes Windows CRLF)
 RUN chmod +x /entrypoint.sh \
     && sed -i 's/\r$//' /entrypoint.sh

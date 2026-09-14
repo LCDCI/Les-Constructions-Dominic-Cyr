@@ -1,48 +1,23 @@
-import api from '../client';
+import localTranslations from 'virtual:local-translations';
+
+const getLocalTranslations = (language, pageName) => {
+  const languageTranslations = localTranslations[language.toLowerCase()] || {};
+  return pageName
+    ? languageTranslations[pageName.toLowerCase()] || {}
+    : languageTranslations;
+};
 
 export const fetchTranslations = async (language = 'en') => {
-  try {
-    const response = await api.get(`/translations/${language}`);
-    return response.data?.translations || {};
-  } catch (error) {
-    return {};
-  }
+  return getLocalTranslations(language);
 };
 
 export const fetchPageTranslations = async (pageName, language = 'en') => {
-  try {
-    const response = await api.get(
-      `/translations/${language}/page/${pageName}`
-    );
-    const translations = response.data?.translations || {};
-
-    if (translations[pageName]) {
-      return translations[pageName];
-    }
-
-    return translations;
-  } catch (error) {
-    return {};
-  }
+  return getLocalTranslations(language, pageName);
 };
 
 export const fetchNamespaceTranslations = async (
   namespace,
   language = 'en'
 ) => {
-  try {
-    const response = await api.get(
-      `/translations/${language}/namespace/${namespace}`
-    );
-    const translations = response.data?.translations || {};
-
-    // Unwrap the namespace if nested
-    if (translations[namespace]) {
-      return translations[namespace];
-    }
-
-    return translations;
-  } catch (error) {
-    return {};
-  }
+  return getLocalTranslations(language, namespace);
 };
