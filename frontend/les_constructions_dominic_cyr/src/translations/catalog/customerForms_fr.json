@@ -186,7 +186,17 @@
     "noDocumentsFound": "Aucun document trouvé.",
     "uploadToGetStarted": "Téléversez des fichiers pour commencer.",
     "downloadTitle": "Télécharger",
-    "deleteTitle": "Supprimer"
+    "deleteTitle": "Supprimer",
+    "accessTitle": "Gérer les accès",
+    "accessSaveFailed": "Échec de la mise à jour des accès au document."
+  },
+  "accessModal": {
+    "title": "Gérer les accès au document",
+    "description": "Sélectionnez les utilisateurs assignés à ce lot qui peuvent consulter et télécharger ce document.",
+    "noAssignedUsers": "Aucun autre utilisateur n'est assigné à ce lot.",
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "save": "Enregistrer les accès"
   },
   "lotForms": {
     "loadingForms": "Chargement des formulaires...",
@@ -206,7 +216,9 @@
     "downloadPdf": "Télécharger le PDF"
   },
   "deleteModal": {
-    "title": "Confirmer la suppression",    "message": "\u00cates-vous s\u00fbr de vouloir supprimer \"{{fileName}}\" ?",    "warning": "Cette action est irréversible.",
+    "title": "Confirmer la suppression",
+    "message": "\u00cates-vous s\u00fbr de vouloir supprimer \"{{fileName}}\" ?",
+    "warning": "Cette action est irréversible.",
     "cancel": "Annuler",
     "delete": "Supprimer"
   }

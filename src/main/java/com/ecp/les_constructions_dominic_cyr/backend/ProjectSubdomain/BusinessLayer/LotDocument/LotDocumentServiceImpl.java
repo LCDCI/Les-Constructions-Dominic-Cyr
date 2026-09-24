@@ -27,7 +27,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.core.io.ByteArrayResource;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -51,10 +53,10 @@ public class LotDocumentServiceImpl implements LotDocumentService {
             "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "image/svg+xml"
     );
 
-    private static final List<String> ALLOWED_ROLES_UPLOAD = List.of("OWNER", "CONTRACTOR", "SALESPERSON");
+    private static final List<String> ALLOWED_ROLES_UPLOAD = List.of("OWNER", "CONTRACTOR", "SALESPERSON", "CUSTOMER");
 
     @Override
-    public List<LotDocumentResponseModel> getLotDocuments(String lotId, String search, String type) {
+    public List<LotDocumentResponseModel> getLotDocuments(String lotId, String search, String type, String requestingUserId) {
         log.debug("Getting documents for lot: {}, search: {}, type: {}", lotId, search, type);
 
         validateLotExists(lotId);
@@ -72,7 +74,9 @@ public class LotDocumentServiceImpl implements LotDocumentService {
             documents = lotDocumentRepository.findByLotId(lotUuid);
         }
 
+        Users requester = findUser(requestingUserId);
         return documents.stream()
+            .filter(document -> canViewDocument(document, requester))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -107,8 +111,8 @@ public class LotDocumentServiceImpl implements LotDocumentService {
             throw new AccessDeniedException("User role '" + userRole + "' is not authorized to upload documents");
         }
 
-        // OWNER and SALESPERSON can upload to any lot; CONTRACTOR must be assigned to this specific lot
-        if ("CONTRACTOR".equals(userRole)) {
+        // OWNER and SALESPERSON can upload to any lot; assigned users must upload to their lot.
+        if ("CONTRACTOR".equals(userRole) || "CUSTOMER".equals(userRole)) {
             boolean isAssignedToLot = lot.getAssignedUsers().stream()
                     .anyMatch(u -> u.getUserIdentifier().getUserId().equals(uploaderUUID));
 
@@ -303,20 +307,43 @@ public class LotDocumentServiceImpl implements LotDocumentService {
         Users requester = usersRepository.findByUserIdentifier_UserId(requesterUUID)
                 .orElseThrow(() -> new NotFoundException("Requesting user not found: " + requestingUserId));
 
-        // OWNER users can download from any lot; others must be assigned to this specific lot
-        boolean isOwner = requester.getUserRole() != null && "OWNER".equals(requester.getUserRole().toString());
-        if (!isOwner) {
-            Lot lot = document.getLot();
-            boolean isAssignedToLot = lot.getAssignedUsers().stream()
-                    .anyMatch(u -> u.getUserIdentifier().getUserId().equals(requesterUUID));
-
-            if (!isAssignedToLot) {
-                throw new AccessDeniedException("User is not assigned to this lot");
-            }
+        if (!canViewDocument(document, requester)) {
+            throw new AccessDeniedException("User is not authorized to view this document");
         }
 
         // Download from files-service
         return downloadFromFilesService(document.getStorageKey());
+    }
+
+    @Override
+    @Transactional
+    public void updateDocumentViewers(String lotId, UUID documentId, String ownerUserId, List<UUID> viewerUserIds) {
+        LotDocument document = lotDocumentRepository.findById(documentId)
+                .orElseThrow(() -> new NotFoundException("Document not found: " + documentId));
+        if (!document.getLot().getLotIdentifier().getLotId().toString().equals(lotId)) {
+            throw new NotFoundException("Document not found in this lot");
+        }
+
+        Users owner = findUser(ownerUserId);
+        if (owner.getUserRole() != UserRole.OWNER) {
+            throw new AccessDeniedException("Only owners can manage document access");
+        }
+
+        Set<UUID> requestedIds = new HashSet<>(viewerUserIds == null ? List.of() : viewerUserIds);
+        Set<Users> assignedUsers = new HashSet<>(document.getLot().getAssignedUsers());
+        Set<UUID> assignedIds = assignedUsers.stream()
+                .map(user -> user.getUserIdentifier().getUserId())
+                .collect(Collectors.toSet());
+        if (!assignedIds.containsAll(requestedIds)) {
+            throw new AccessDeniedException("Document viewers must be assigned to this lot");
+        }
+
+        Set<Users> viewers = requestedIds.stream()
+                .map(id -> usersRepository.findByUserIdentifier_UserId(id)
+                        .orElseThrow(() -> new NotFoundException("User not found: " + id)))
+                .collect(Collectors.toSet());
+        document.setViewers(viewers);
+        lotDocumentRepository.save(document);
     }
 
     @Override
@@ -392,6 +419,26 @@ public class LotDocumentServiceImpl implements LotDocumentService {
         return lot;
     }
 
+    private Users findUser(String userId) {
+        try {
+            return usersRepository.findByUserIdentifier_UserId(UUID.fromString(userId))
+                    .orElseThrow(() -> new NotFoundException("User not found: " + userId));
+        } catch (IllegalArgumentException e) {
+            throw new InvalidInputException("Invalid user ID format: " + userId);
+        }
+    }
+
+    private boolean canViewDocument(LotDocument document, Users requester) {
+        if (requester.getUserRole() == UserRole.OWNER) {
+            return true;
+        }
+        if (document.getUploader().getUserRole() == UserRole.OWNER) {
+            return true;
+        }
+        return document.getViewers().stream()
+                .anyMatch(viewer -> viewer.getUserIdentifier().getUserId().equals(requester.getUserIdentifier().getUserId()));
+    }
+
     private LotDocumentResponseModel mapToResponse(LotDocument document) {
         return LotDocumentResponseModel.builder()
                 .id(document.getId())
@@ -405,6 +452,9 @@ public class LotDocumentServiceImpl implements LotDocumentService {
                 .uploadedAt(document.getUploadedAt())
                 .downloadUrl("/api/v1/lots/" + document.getLot().getLotIdentifier().getLotId() 
                         + "/documents/" + document.getId() + "/download")
+                .sharedWithUserIds(document.getViewers().stream()
+                    .map(user -> user.getUserIdentifier().getUserId())
+                    .collect(Collectors.toList()))
                 .build();
     }
 

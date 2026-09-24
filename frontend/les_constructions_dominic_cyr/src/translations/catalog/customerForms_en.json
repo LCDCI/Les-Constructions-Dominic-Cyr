@@ -186,7 +186,17 @@
     "noDocumentsFound": "No documents found.",
     "uploadToGetStarted": "Upload files to get started.",
     "downloadTitle": "Download",
-    "deleteTitle": "Delete"
+    "deleteTitle": "Delete",
+    "accessTitle": "Manage access",
+    "accessSaveFailed": "Failed to update document access."
+  },
+  "accessModal": {
+    "title": "Manage document access",
+    "description": "Select the users assigned to this lot who may view and download this document.",
+    "noAssignedUsers": "No other users are assigned to this lot.",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "save": "Save access"
   },
   "lotForms": {
     "loadingForms": "Loading forms...",

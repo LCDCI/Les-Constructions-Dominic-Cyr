@@ -409,6 +409,36 @@
   color: #666;
 }
 
+.document-viewer-modal {
+  max-width: 620px;
+}
+
+.document-viewer-file-name {
+  font-weight: 600;
+  color: #333 !important;
+  overflow-wrap: anywhere;
+}
+
+.document-viewer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 280px;
+  overflow-y: auto;
+  margin-top: 1.25rem;
+  padding: 0.75rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+}
+
+.document-viewer-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #333;
+  cursor: pointer;
+}
+
 .modal-warning {
   color: #d32f2f;
   font-weight: 600;

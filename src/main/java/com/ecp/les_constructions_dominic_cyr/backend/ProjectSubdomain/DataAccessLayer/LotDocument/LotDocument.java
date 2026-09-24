@@ -9,6 +9,8 @@ import lombok.NonNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -57,6 +59,14 @@ public class LotDocument {
     @Column(name = "is_image", nullable = false)
     private Boolean isImage;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "lot_document_viewers",
+            joinColumns = @JoinColumn(name = "document_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    )
+    private Set<Users> viewers = new HashSet<>();
+
     @CreationTimestamp
     @Column(name = "uploaded_at", nullable = false, updatable = false)
     private LocalDateTime uploadedAt;
@@ -77,5 +87,6 @@ public class LotDocument {
         this.mimeType = mimeType;
         this.sizeBytes = sizeBytes;
         this.isImage = isImage;
+                this.viewers = new HashSet<>();
     }
 }
