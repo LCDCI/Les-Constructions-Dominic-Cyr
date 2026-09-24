@@ -186,8 +186,11 @@
 .document-actions {
   padding: 0.5rem 1rem 1rem;
   display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: flex-end;
+  min-height: 3rem;
 }
 
 /* File Row */
@@ -196,7 +199,8 @@
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
   padding: 1rem 1.5rem;
-  display: flex;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
   align-items: center;
   gap: 1rem;
   transition: box-shadow 0.2s;
@@ -207,12 +211,30 @@
 }
 
 .document-icon {
+  width: 2.75rem;
+  min-width: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 2rem;
   color: #666;
 }
 
 .document-details {
-  flex: 1;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.document-row .document-actions {
+  min-width: max-content;
+  flex-wrap: nowrap;
+  padding: 0;
+}
+
+.document-row .document-name {
+  display: block;
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -339,21 +361,28 @@
   cursor: not-allowed;
 }
 
-.btn-icon {
+.lot-documents-page .document-actions .btn-icon {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
-  font-size: 1.25rem;
+  flex: 0 0 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-size: 1.35rem;
+  line-height: 1;
   color: #666;
   transition: color 0.2s;
 }
 
-.btn-icon:hover {
+.lot-documents-page .document-actions .btn-icon:hover {
   color: #1976d2;
 }
 
-.btn-icon.btn-danger:hover {
+.lot-documents-page .document-actions .btn-icon.btn-danger:hover {
   color: #d32f2f;
 }
 
