@@ -8,6 +8,7 @@ import {
   uploadLotDocuments,
   downloadLotDocument,
   deleteLotDocument,
+  updateLotDocumentViewers,
 } from '../api/lotDocumentsApi';
 import { getFormsByLot, downloadFinalizedForm } from '../../forms/api/formsApi';
 import { fetchLotById, fetchLots } from '../api/lots';
@@ -16,7 +17,6 @@ import {
   getAllForms,
   getFormById,
   updateFormData,
-  submitForm,
 } from '../../forms/api/formsApi';
 import { uploadFile, downloadFile } from '../../files/api/filesApi';
 import { usePageTranslations } from '../../../hooks/usePageTranslations';
@@ -28,6 +28,7 @@ import {
   FaImage,
   FaFile,
   FaArrowLeft,
+  FaEye,
 } from 'react-icons/fa';
 import { GoFileDiff } from 'react-icons/go';
 import './LotDocumentsPage.css';
@@ -374,6 +375,9 @@ const LotDocumentsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'image', 'file'
   const [deleteConfirmModal, setDeleteConfirmModal] = useState(null); // { documentId, fileName }
+  const [viewerModal, setViewerModal] = useState(null);
+  const [selectedViewerIds, setSelectedViewerIds] = useState([]);
+  const [savingViewers, setSavingViewers] = useState(false);
   const [viewMode, setViewMode] = useState('documents'); // 'documents' or 'forms'
   const [lotForms, setLotForms] = useState([]);
   const [lotFormsLoading, setLotFormsLoading] = useState(false);
@@ -390,7 +394,10 @@ const LotDocumentsPage = () => {
   const fileInputRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
-  const canUpload = userRole === 'OWNER' || userRole === 'CONTRACTOR';
+  const canUpload =
+    userRole === 'OWNER' ||
+    userRole === 'CONTRACTOR' ||
+    userRole === 'CUSTOMER';
   const canViewForms =
     userRole === 'OWNER' ||
     userRole === 'CUSTOMER' ||
@@ -695,6 +702,40 @@ const LotDocumentsPage = () => {
 
   const handleDeleteCancel = () => {
     setDeleteConfirmModal(null);
+  };
+
+  const openViewerModal = document => {
+    setViewerModal(document);
+    setSelectedViewerIds(document.sharedWithUserIds || []);
+  };
+
+  const closeViewerModal = () => {
+    if (!savingViewers) {
+      setViewerModal(null);
+      setSelectedViewerIds([]);
+    }
+  };
+
+  const handleViewerSave = async () => {
+    if (!viewerModal) return;
+    try {
+      setSavingViewers(true);
+      const token = await getApiToken();
+      await updateLotDocumentViewers(
+        lotId,
+        viewerModal.id,
+        selectedViewerIds,
+        token
+      );
+      await loadDocuments(token);
+      closeViewerModal();
+    } catch (err) {
+      setUploadError(
+        t('documentsList.accessSaveFailed', 'Failed to update document access.')
+      );
+    } finally {
+      setSavingViewers(false);
+    }
   };
 
   const canDeleteDocument = document => {
@@ -1280,6 +1321,19 @@ const LotDocumentsPage = () => {
                           >
                             <FaDownload />
                           </button>
+                          {userRole === 'OWNER' && (
+                            <button
+                              onClick={() => openViewerModal(doc)}
+                              className="btn-icon"
+                              title={t(
+                                'documentsList.accessTitle',
+                                'Manage access'
+                              )}
+                              data-testid={`lot-document-access-${doc.id}`}
+                            >
+                              <FaEye />
+                            </button>
+                          )}
                           {canDeleteDocument(doc) && (
                             <button
                               onClick={() =>
@@ -1321,6 +1375,19 @@ const LotDocumentsPage = () => {
                           >
                             <FaDownload />
                           </button>
+                          {userRole === 'OWNER' && (
+                            <button
+                              onClick={() => openViewerModal(doc)}
+                              className="btn-icon"
+                              title={t(
+                                'documentsList.accessTitle',
+                                'Manage access'
+                              )}
+                              data-testid={`lot-document-access-${doc.id}`}
+                            >
+                              <FaEye />
+                            </button>
+                          )}
                           {canDeleteDocument(doc) && (
                             <button
                               onClick={() =>
@@ -1618,6 +1685,81 @@ const LotDocumentsPage = () => {
                   data-testid="confirm-delete-yes"
                 >
                   {t('deleteModal.delete', 'Delete')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {viewerModal && userRole === 'OWNER' && (
+          <div className="modal-overlay" data-testid="document-viewer-modal">
+            <div className="modal-content document-viewer-modal">
+              <h3>{t('accessModal.title', 'Manage document access')}</h3>
+              <p className="document-viewer-file-name">
+                {viewerModal.fileName}
+              </p>
+              <p>
+                {t(
+                  'accessModal.description',
+                  'Select the users assigned to this lot who may view and download this document.'
+                )}
+              </p>
+              <div className="document-viewer-list">
+                {(lot?.assignedUsers || [])
+                  .filter(assignedUser => assignedUser.role !== 'OWNER')
+                  .map(assignedUser => (
+                    <label
+                      key={assignedUser.userId}
+                      className="document-viewer-option"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedViewerIds.includes(
+                          assignedUser.userId
+                        )}
+                        onChange={event =>
+                          setSelectedViewerIds(currentIds =>
+                            event.target.checked
+                              ? [...currentIds, assignedUser.userId]
+                              : currentIds.filter(
+                                  id => id !== assignedUser.userId
+                                )
+                          )
+                        }
+                      />
+                      <span>
+                        {assignedUser.fullName || assignedUser.email}
+                        {assignedUser.role && ` (${assignedUser.role})`}
+                      </span>
+                    </label>
+                  ))}
+                {(lot?.assignedUsers || []).filter(
+                  user => user.role !== 'OWNER'
+                ).length === 0 && (
+                  <p>
+                    {t(
+                      'accessModal.noAssignedUsers',
+                      'No other users are assigned to this lot.'
+                    )}
+                  </p>
+                )}
+              </div>
+              <div className="modal-actions">
+                <button
+                  onClick={closeViewerModal}
+                  className="btn btn-secondary"
+                  disabled={savingViewers}
+                >
+                  {t('accessModal.cancel', 'Cancel')}
+                </button>
+                <button
+                  onClick={handleViewerSave}
+                  className="btn btn-primary"
+                  disabled={savingViewers}
+                >
+                  {savingViewers
+                    ? t('accessModal.saving', 'Saving...')
+                    : t('accessModal.save', 'Save access')}
                 </button>
               </div>
             </div>

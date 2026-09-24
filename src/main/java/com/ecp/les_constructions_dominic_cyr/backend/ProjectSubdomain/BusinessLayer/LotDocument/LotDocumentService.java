@@ -16,7 +16,7 @@ public interface LotDocumentService {
      * @param type Optional type filter: "image", "file", or "all"
      * @return List of lot documents
      */
-    List<LotDocumentResponseModel> getLotDocuments(String lotId, String search, String type);
+    List<LotDocumentResponseModel> getLotDocuments(String lotId, String search, String type, String requestingUserId);
 
     /**
      * Upload one or more documents to a lot.
@@ -38,6 +38,11 @@ public interface LotDocumentService {
      * @return byte array of file data and content type
      */
     byte[] downloadDocument(String lotId, UUID documentId, String requestingUserId);
+
+    /**
+     * Replace the users who may view and download a document.
+     */
+    void updateDocumentViewers(String lotId, UUID documentId, String ownerUserId, List<UUID> viewerUserIds);
 
     /**
      * Delete a document. Only uploader or Owner assigned to lot can delete.

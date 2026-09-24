@@ -110,3 +110,21 @@ export async function deleteLotDocument(lotId, documentId, token) {
   );
   return response.data;
 }
+
+export async function updateLotDocumentViewers(
+  lotId,
+  documentId,
+  userIds,
+  token
+) {
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  await axios.put(
+    `${BASE_API_URL}/lots/${lotId}/documents/${documentId}/viewers`,
+    { userIds },
+    { headers }
+  );
+}

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -27,4 +28,5 @@ public class LotDocumentResponseModel {
     
     // Optional: include download URL
     private String downloadUrl;
+    private List<UUID> sharedWithUserIds;
 }

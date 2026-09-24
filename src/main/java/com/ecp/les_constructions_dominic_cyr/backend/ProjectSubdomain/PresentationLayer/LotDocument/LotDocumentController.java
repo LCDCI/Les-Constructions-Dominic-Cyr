@@ -56,10 +56,13 @@ public class LotDocumentController {
     ) {
         log.info("GET /api/v1/lots/{}/documents - search: {}, type: {}", lotId, search, type);
 
+        UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
+
         // Validate user is authenticated and assigned to lot (or is owner)
         validateLotAccess(lotId, jwt, authentication);
 
-        List<LotDocumentResponseModel> documents = lotDocumentService.getLotDocuments(lotId, search, type);
+        List<LotDocumentResponseModel> documents = lotDocumentService.getLotDocuments(
+            lotId, search, type, currentUser.getUserIdentifier());
         return ResponseEntity.ok(documents);
     }
 
@@ -155,6 +158,30 @@ public class LotDocumentController {
 
         return ResponseEntity.ok(Map.of("message", "Document deleted successfully"));
     }
+
+    @PutMapping("/{documentId}/viewers")
+    public ResponseEntity<Void> updateDocumentViewers(
+            @PathVariable String lotId,
+            @PathVariable UUID documentId,
+            @RequestBody ViewerAccessRequest request,
+            @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication
+    ) {
+        if (!isOwner(authentication)) {
+            throw new AccessDeniedException("Only owners can manage document access");
+        }
+        UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
+        validateLotAccess(lotId, jwt, authentication);
+        lotDocumentService.updateDocumentViewers(
+                lotId,
+                documentId,
+                currentUser.getUserIdentifier(),
+                request == null ? List.of() : request.userIds()
+        );
+        return ResponseEntity.noContent().build();
+    }
+
+    public record ViewerAccessRequest(List<UUID> userIds) {}
 
     // ========== PRIVATE HELPER METHODS ==========
 
