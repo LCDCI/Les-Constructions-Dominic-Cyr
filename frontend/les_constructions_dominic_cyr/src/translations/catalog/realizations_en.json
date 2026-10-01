@@ -26,7 +26,8 @@
     "previousAriaLabel": "Previous image",
     "nextAriaLabel": "Next image",
     "imageAlt": "Realization",
-    "noResults": "No realizations found"
+    "noResults": "No realizations found",
+    "contactLink": "Contact us"
   },
   "states": {
     "loading": "Loading realizations..."

@@ -47,10 +47,10 @@
   display: flex;
   align-items: center;
   gap: 32px;
-  justify-content: space-between;
-  width: calc(100% - 150px);
-  max-width: 1200px;
-  flex: 1;
+  justify-content: center;
+  width: auto;
+  max-width: none;
+  flex: 0 1 auto;
 }
 
 .desktop-nav a {

@@ -18,6 +18,15 @@
   justify-items: center;
 }
 
+.home-footer .footer-inner {
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 3vw, 28px);
+}
+
+.home-footer .footer-title {
+  color: #2c3531;
+}
+
 .footer-section {
   display: flex;
   flex-direction: column;
@@ -163,7 +172,8 @@
 }
 
 @media (max-width: 768px) {
-  .footer-inner {
+  .footer-inner,
+  .home-footer .footer-inner {
     grid-template-columns: 1fr;
     gap: clamp(20px, 5vw, 30px);
   }

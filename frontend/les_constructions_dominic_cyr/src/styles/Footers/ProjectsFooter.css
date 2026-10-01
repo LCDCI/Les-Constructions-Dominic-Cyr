@@ -28,7 +28,19 @@
 }
 
 .app-footer[data-project] .footer-inner {
-  padding: 0 10% 0 30%;
+  padding: 0 5%;
+  gap: clamp(24px, 5vw, 72px);
+  justify-content: space-between;
+}
+
+.app-footer[data-project] .footer-section-middle {
+  flex: 0 1 auto;
+  min-width: 180px;
+}
+
+.app-footer[data-project] .footer-contact-link {
+  justify-content: center;
+}
 }
 
 .footer-section {
@@ -60,6 +72,10 @@
   margin: 0 0 1% 0;
   line-height: 1.4;
   text-align: center;
+}
+
+.app-footer[data-project] .footer-title {
+  color: var(--charcoal-gray, #2c3531);
 }
 
 .footer-content {
@@ -166,6 +182,17 @@
   }
 
   .footer-section {
+    width: 100%;
+  }
+
+  .app-footer[data-project] .footer-inner {
+    padding: 0 5%;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .app-footer[data-project] .footer-section-middle {
+    min-width: 0;
     width: 100%;
   }
 

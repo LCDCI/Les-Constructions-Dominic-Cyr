@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { FaClock, FaPhoneAlt, FaEnvelope, FaArrowRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Footers/HomeFooter.css';
+import '../../styles/Footers/ProjectsFooter.css';
 
 const PROJECT_INFO = {
   'proj-001-foresta': {
@@ -43,8 +44,9 @@ const PROJECT_INFO = {
 };
 
 export default function ProjectsFooter({ projectId }) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const currentYear = new Date().getFullYear();
+  const isFrench = i18n.language?.startsWith('fr');
 
   const projectData =
     PROJECT_INFO[projectId] || PROJECT_INFO['proj-001-foresta'];
@@ -60,8 +62,22 @@ export default function ProjectsFooter({ projectId }) {
             </h3>
           </div>
           <div className="footer-content">
-            <p className="footer-item">{projectData.hours.weekdays}</p>
-            <p className="footer-item">{projectData.hours.weekend}</p>
+            <p className="footer-item">
+              {t(
+                'footer.projectHoursWeekdays',
+                isFrench
+                  ? 'Lundi au Vendredi: À venir'
+                  : 'Monday to Friday: Coming Shortly'
+              )}
+            </p>
+            <p className="footer-item">
+              {t(
+                'footer.projectHoursWeekend',
+                isFrench
+                  ? 'Samedi et Dimanche: À venir'
+                  : 'Saturday and Sunday: Coming Shortly'
+              )}
+            </p>
           </div>
         </div>
 

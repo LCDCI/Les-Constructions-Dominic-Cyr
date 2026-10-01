@@ -71,14 +71,11 @@ export default function ContactPage() {
 
   return (
     <div className="contact-page">
-      <section
-        className="projects-hero"
-        aria-label={t('hero.eyebrow', f.hero.eyebrow)}
-      >
+      <section className="projects-hero" aria-labelledby="contact-hero-title">
         <div className="projects-hero-content">
-          <p className="section-kicker eyebrow">
+          <h1 className="projects-title" id="contact-hero-title">
             {t('hero.eyebrow', f.hero.eyebrow)}
-          </p>
+          </h1>
         </div>
       </section>
 

@@ -26,7 +26,8 @@
     "previousAriaLabel": "Image précédente",
     "nextAriaLabel": "Image suivante",
     "imageAlt": "Réalisation",
-    "noResults": "Aucune réalisation trouvée"
+    "noResults": "Aucune réalisation trouvée",
+    "contactLink": "Contactez-nous"
   },
   "states": {
     "loading": "Chargement des réalisations..."

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/realizations.css';
@@ -129,6 +130,9 @@ const RealizationsPage = () => {
             {pad(currentIndex + 1)} / {pad(REALIZATION_IMAGE_IDS.length)}
           </p>
         )}
+        <Link to="/contact" className="link-arrow realizations-contact-link">
+          {t('gallery.contactLink', 'Contact us')}
+        </Link>
       </section>
     </div>
   );

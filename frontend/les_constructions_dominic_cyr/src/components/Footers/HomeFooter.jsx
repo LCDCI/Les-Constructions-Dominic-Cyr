@@ -1,11 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import {
   FaMapMarkerAlt,
   FaShieldAlt,
   FaPhoneAlt,
   FaEnvelope,
-  FaArrowRight,
 } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Footers/HomeFooter.css';
@@ -15,13 +13,13 @@ export default function HomeFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="app-footer">
+    <footer className="app-footer home-footer">
       <div className="footer-inner">
         <div className="footer-section">
           <div className="footer-title-group">
             <FaMapMarkerAlt className="footer-section-icon" />
             <h3 className="footer-title">
-              {t('footer.information', 'Information')}
+              {t('footer.information', 'Informations')}
             </h3>
           </div>
           <div className="footer-content">
@@ -38,21 +36,7 @@ export default function HomeFooter() {
                 {t('footer.email', 'constructions.dcyr@gmail.com')}
               </a>
             </div>
-            <p className="footer-item" style={{ marginTop: '8px' }}>
-              {t('footer.address1', '155 rue Bourgeois')}
-            </p>
-            <p className="footer-item">
-              {t('footer.address2', 'St-Mathieu-de-Beloeil (Québec) J3G 0M9')}
-            </p>
           </div>
-        </div>
-
-        <div className="footer-section footer-section-middle">
-          <div className="footer-vertical-divider"></div>
-          <Link to="/contact" className="footer-contact-link">
-            {t('footer.contactUs', 'Contact Us')}
-            <FaArrowRight className="footer-arrow-icon" />
-          </Link>
         </div>
 
         <div className="footer-section">
