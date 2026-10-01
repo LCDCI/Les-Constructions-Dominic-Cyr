@@ -39,11 +39,17 @@
     "title": "Un accompagnement sur mesure",
     "intro": "Les Constructions Dominic Cyr Inc. est une entreprise familiale et dynamique qui compte plus de 20 ans d'expérience dans le domaine de la construction résidentielle. Nous sommes là pour vous accompagnez dans la réalisation de vos idées et de vos projets, en assurant un service personnalisé et professionnel misant sur la transparence.",
     "feature1": "Passionné et professionnel",
+    "feature1Description": "Une expertise engagée dans chaque détail de votre projet.",
     "feature2": "Approche créative",
+    "feature2Description": "Des idées réfléchies pour créer un espace qui vous ressemble.",
     "feature3": "Souci du détail",
+    "feature3Description": "Une planification attentive et une exécution précise du début à la fin.",
     "feature4": "Pratiques écologiques",
+    "feature4Description": "Des choix responsables pour des maisons confortables et durables.",
     "feature5": "Normes d'excellence",
-    "feature6": "Service après-vente"
+    "feature5Description": "Des standards élevés pour chaque matériau, finition et décision.",
+    "feature6": "Service après-vente",
+    "feature6Description": "Un soutien fiable se poursuit après la fin de votre projet."
   },
   "contact": {
     "kicker": "Contactez-nous",

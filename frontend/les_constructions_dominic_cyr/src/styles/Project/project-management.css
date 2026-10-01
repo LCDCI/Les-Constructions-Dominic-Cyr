@@ -33,12 +33,8 @@
 .pm-hero-banner {
   position: relative;
   width: 100%;
-  padding: clamp(4rem, 9vw, 7rem) 1.5rem;
-  background: linear-gradient(
-    135deg,
-    var(--pm-sage-hero),
-    var(--pm-sage-hero-to)
-  );
+  padding: 3rem 1.5rem;
+  background: #aab2a6;
   color: #fff;
   text-align: center;
   overflow: hidden;
@@ -46,12 +42,7 @@
 }
 
 .pm-hero-banner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.15;
-  background-image: radial-gradient(#fff 1px, transparent 1px);
-  background-size: 20px 20px;
+  display: none;
 }
 
 .pm-hero-content {

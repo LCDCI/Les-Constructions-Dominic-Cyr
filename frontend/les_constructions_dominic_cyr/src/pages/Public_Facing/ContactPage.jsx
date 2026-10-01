@@ -73,18 +73,11 @@ export default function ContactPage() {
     <div className="contact-page">
       <section
         className="projects-hero"
-        aria-labelledby="contact-hero-title"
-        aria-describedby="contact-hero-subtitle"
+        aria-label={t('hero.eyebrow', f.hero.eyebrow)}
       >
         <div className="projects-hero-content">
           <p className="section-kicker eyebrow">
             {t('hero.eyebrow', f.hero.eyebrow)}
-          </p>
-          <h1 className="projects-title" id="contact-hero-title">
-            {t('hero.title', f.hero.title)}
-          </h1>
-          <p className="projects-subtitle subhead" id="contact-hero-subtitle">
-            {t('hero.subtitle', f.hero.subtitle)}
           </p>
         </div>
       </section>

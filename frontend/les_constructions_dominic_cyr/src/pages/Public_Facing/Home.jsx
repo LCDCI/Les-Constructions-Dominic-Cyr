@@ -170,36 +170,72 @@ export default function Home() {
                 <PiSuitcaseSimple />
                 {t('features.feature1', 'Passionate & Professional')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature1Description',
+                  'Dedicated expertise for every detail of your project.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <PiPaintBrushBroad />
                 {t('features.feature2', 'Creative Approach')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature2Description',
+                  'Thoughtful ideas that make your space distinctly yours.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <TbHomeSearch />
                 {t('features.feature3', 'Attention to Detail')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature3Description',
+                  'Careful planning and precise execution from start to finish.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <RiLeafLine />
                 {t('features.feature4', 'Eco-Friendly Practices')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature4Description',
+                  'Responsible choices for comfortable, lasting homes.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <PiMedalThin />
                 {t('features.feature5', 'Excellence Standards')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature5Description',
+                  'High standards guide every material, finish, and decision.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <FiPhoneCall />
                 {t('features.feature6', 'After-Sales Service')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature6Description',
+                  'Reliable support continues after your project is complete.'
+                )}
+              </p>
             </div>
           </div>
         </div>

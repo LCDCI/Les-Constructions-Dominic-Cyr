@@ -64,6 +64,8 @@
   --button-danger-bg: var(--gray-600);
   --button-danger-hover: var(--gray-700);
   --button-danger-text: var(--white);
+  --public-banner-bg: #aab2a6;
+  --public-banner-height: 220px;
 }
 
 body {
@@ -72,6 +74,37 @@ body {
   background-color: var(--background-color);
   line-height: 1.6;
   overflow-x: hidden;
+}
+
+/* Shared public-page banner treatment. */
+.projects-hero,
+.pm-hero-banner,
+.project-hero,
+.le-header-section,
+.lots-header-section {
+  min-height: var(--public-banner-height) !important;
+  height: var(--public-banner-height) !important;
+  padding: 3rem 1.5rem !important;
+  background: var(--public-banner-bg) !important;
+  background-image: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.pm-hero-banner::before {
+  display: none !important;
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+}
+
+textarea {
+  max-width: 100%;
 }
 
 .container {
@@ -202,6 +235,36 @@ select:focus {
 @media (max-width: 768px) {
   .container {
     width: 95%;
+  }
+
+  :root {
+    --public-banner-height: 180px;
+  }
+
+  .projects-hero,
+  .pm-hero-banner,
+  .project-hero,
+  .le-header-section,
+  .lots-header-section {
+    padding: 2rem 1rem !important;
+  }
+
+  .modal,
+  .modal-content,
+  .forms-modal,
+  .approval-modal,
+  .quote-detail-modal,
+  .customer-approval-modal,
+  .schedule-modal {
+    width: calc(100vw - 1rem);
+    max-width: calc(100vw - 1rem);
+  }
+
+  .modal-overlay,
+  .modal-backdrop,
+  .forms-modal-overlay,
+  .approval-modal-overlay {
+    padding: 0.5rem;
   }
 }
 

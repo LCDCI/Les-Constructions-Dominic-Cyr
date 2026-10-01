@@ -48,6 +48,8 @@ const RealizationsPage = () => {
     );
   };
 
+  const pad = n => String(n).padStart(2, '0');
+
   return (
     <div className="realizations-page">
       {/* Hero Banner Section */}
@@ -94,7 +96,7 @@ const RealizationsPage = () => {
             onClick={handlePrevious}
             aria-label={t('gallery.previousAriaLabel', 'Previous image')}
           >
-            <MdArrowBackIos size={32} />
+            <MdArrowBackIos size={16} />
           </button>
 
           <div className="realizations-gallery" role="group" aria-live="polite">
@@ -118,12 +120,14 @@ const RealizationsPage = () => {
             onClick={handleNext}
             aria-label={t('gallery.nextAriaLabel', 'Next image')}
           >
-            <MdArrowForwardIos size={32} />
+            <MdArrowForwardIos size={16} />
           </button>
         </div>
 
         {REALIZATION_IMAGE_IDS.length > 0 && (
-          <div className="gallery-counter-hidden" aria-hidden="true" />
+          <p className="gallery-counter" aria-hidden="true">
+            {pad(currentIndex + 1)} / {pad(REALIZATION_IMAGE_IDS.length)}
+          </p>
         )}
       </section>
     </div>
