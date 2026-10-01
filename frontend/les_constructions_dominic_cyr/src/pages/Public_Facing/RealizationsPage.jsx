@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/realizations.css';
 import '../../styles/Public_Facing/residential-projects.css';
-import Footer from '../../components/Footers/ProjectsFooter';
 
 const RealizationsPage = () => {
   const { t } = usePageTranslations('realizations');
-  const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Image IDs from file storage (can be file ID or full CDN URL)
@@ -50,16 +49,7 @@ const RealizationsPage = () => {
     );
   };
 
-  if (loading) {
-    return (
-      <div className="realizations-page">
-        <p style={{ textAlign: 'center', padding: '5%', fontSize: '1.2rem' }}>
-          Loading realizations...
-        </p>
-        <Footer />
-      </div>
-    );
-  }
+  const pad = n => String(n).padStart(2, '0');
 
   return (
     <div className="realizations-page">
@@ -107,7 +97,7 @@ const RealizationsPage = () => {
             onClick={handlePrevious}
             aria-label={t('gallery.previousAriaLabel', 'Previous image')}
           >
-            <MdArrowBackIos size={32} />
+            <MdArrowBackIos size={16} />
           </button>
 
           <div className="realizations-gallery" role="group" aria-live="polite">
@@ -131,13 +121,18 @@ const RealizationsPage = () => {
             onClick={handleNext}
             aria-label={t('gallery.nextAriaLabel', 'Next image')}
           >
-            <MdArrowForwardIos size={32} />
+            <MdArrowForwardIos size={16} />
           </button>
         </div>
 
         {REALIZATION_IMAGE_IDS.length > 0 && (
-          <div className="gallery-counter-hidden" aria-hidden="true" />
+          <p className="gallery-counter" aria-hidden="true">
+            {pad(currentIndex + 1)} / {pad(REALIZATION_IMAGE_IDS.length)}
+          </p>
         )}
+        <Link to="/contact" className="link-arrow realizations-contact-link">
+          {t('gallery.contactLink', 'Contact us')}
+        </Link>
       </section>
     </div>
   );

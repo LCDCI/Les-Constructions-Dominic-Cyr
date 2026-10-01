@@ -1,6 +1,23 @@
 .project-overview-page {
   min-height: 100vh;
   background-color: var(--color-white, #ffffff);
+  color: var(--charcoal-gray, #2c3531);
+}
+
+.project-overview-page .section-title,
+.project-overview-page .section-content,
+.project-overview-page .section-description,
+.project-overview-page .feature-label,
+.project-overview-page .location-address,
+.project-overview-page .location-address strong,
+.project-overview-page .location-address p {
+  color: var(--charcoal-gray, #2c3531) !important;
+}
+
+.project-overview-page .section-title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  text-decoration: none;
 }
 
 .project-overview-loading,
@@ -190,7 +207,7 @@
   transform: translateX(-50%);
   width: 60px;
   height: 4px;
-  background: var(--tertiary-color, #628db5);
+  background: var(--color-secondary, #aab2a6);
   border-radius: 2px;
 }
 

@@ -176,7 +176,7 @@ const LivingEnvironmentPage = () => {
       <div className="living-environment-page">
         <div className="container">
           <div className="loading-spinner">
-            <p>Loading...</p>
+            <p>{t('states.loading', 'Loading...')}</p>
           </div>
         </div>
       </div>
@@ -188,24 +188,36 @@ const LivingEnvironmentPage = () => {
       <div className="living-environment-page">
         <div className="container">
           <div className="error-message">
-            <h2>Unable to Load Content</h2>
-            <p>{error || 'No content available for this project.'}</p>
+            <h2>{t('states.errorTitle', 'Unable to Load Content')}</h2>
+            <p>
+              {error ||
+                t('states.noContent', 'No content available for this project.')}
+            </p>
             <div className="error-details">
               <p>
-                <strong>Troubleshooting:</strong>
+                <strong>
+                  {t('states.troubleshooting', 'Troubleshooting:')}
+                </strong>
               </p>
               <ul>
-                <li>Check if the backend server is running</li>
                 <li>
-                  Verify Docker containers are up:{' '}
+                  {t(
+                    'states.checkBackend',
+                    'Check if the backend server is running'
+                  )}
+                </li>
+                <li>
+                  {t('states.checkDocker', 'Verify Docker containers are up:')}{' '}
                   <code>docker-compose -f docker-compose.local.yml up -d</code>
                 </li>
                 <li>
-                  Make sure the database has been seeded with living environment
-                  data
+                  {t(
+                    'states.checkSeed',
+                    'Make sure the database has been seeded with living environment data'
+                  )}
                 </li>
                 <li>
-                  API Endpoint:{' '}
+                  {t('states.apiEndpoint', 'API Endpoint:')}{' '}
                   <code>
                     {API_BASE_URL}/projects/{projectIdentifier}
                     /living-environment

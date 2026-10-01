@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { FiRefreshCw } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
@@ -8,26 +7,9 @@ import '../../styles/Public_Facing/home.css';
 import '../../styles/Public_Facing/RenovationsPage.css';
 import '../../styles/Public_Facing/residential-projects.css';
 
-const RenovationsPage = ({ resolveAssetUrl }) => {
+const RenovationsPage = () => {
   // Load translations from the root namespace since your JSON is flat
   const { t } = usePageTranslations('renovations');
-
-  const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL ||
-    (typeof window !== 'undefined' &&
-    window.location.hostname.includes('constructions-dominiccyr')
-      ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : `${window.location.origin}/files`);
-
-  const getImageUrl = identifier => {
-    if (!identifier) return '';
-    // If a custom resolveAssetUrl is provided, use it
-    if (resolveAssetUrl) {
-      return resolveAssetUrl(identifier);
-    }
-    // Otherwise, use the default file service URL
-    return `${filesServiceUrl}/files/${identifier}`;
-  };
 
   const [renovations, setRenovations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -201,14 +183,6 @@ const RenovationsPage = ({ resolveAssetUrl }) => {
       )}
     </div>
   );
-};
-
-RenovationsPage.propTypes = {
-  resolveAssetUrl: PropTypes.func,
-};
-
-RenovationsPage.defaultProps = {
-  resolveAssetUrl: null,
 };
 
 export default RenovationsPage;

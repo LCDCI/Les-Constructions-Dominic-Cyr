@@ -49,5 +49,15 @@
     "foresta": "FÖRESTA is a project by Les Constructions Dominic Cyr inc.",
     "panorama": "PANORAMA is a project by Les Constructions Dominic Cyr inc."
   },
-  "backToProject": "Back to Residential Project"
+  "backToProject": "Back to Residential Project",
+  "states": {
+    "loading": "Loading...",
+    "errorTitle": "Unable to Load Content",
+    "noContent": "No content available for this project.",
+    "troubleshooting": "Troubleshooting:",
+    "checkBackend": "Check if the backend server is running",
+    "checkDocker": "Verify Docker containers are up:",
+    "checkSeed": "Make sure the database has been seeded with living environment data",
+    "apiEndpoint": "API Endpoint:"
+  }
 }

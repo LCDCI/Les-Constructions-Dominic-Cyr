@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import useBackendUser from '../../hooks/useBackendUser';
+import { projectApi } from '../../features/projects/api/projectApi';
 
 import '../../styles/NavBars/AppNavBar.css';
 import OwnerNavBar from '../../components/NavBars/OwnerNavBar';
 import SalespersonNavBar from '../../components/NavBars/SalespersonNavBar';
 import ContractorNavBar from '../../components/NavBars/ContractorNavBar';
 import CustomerNavBar from '../../components/NavBars/CustomerNavBar';
-import logoImage from '../../../LOGO_DM.png';
+
+const DESKTOP_LOGO_URL =
+  'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Logos/Full_Logo_Mono.png';
+const MOBILE_LOGO_URL =
+  'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Logos/Half_logo_mono.png';
 
 function clearAppSession() {
   const APP_KEYS = [
@@ -43,19 +48,119 @@ function clearAppSession() {
 
 export default function AppNavBar() {
   const { i18n, t } = useTranslation();
+  const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, logout } = useAuth0();
   const { role, loading: roleLoading } = useBackendUser();
 
   const [isPublicMobileMenuOpen, setIsPublicMobileMenuOpen] = useState(false);
   const [isDashboardMenuOpen, setIsDashboardMenuOpen] = useState(false);
+  const [isProjectsMenuOpen, setIsProjectsMenuOpen] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState(false);
+  const [isNavHidden, setIsNavHidden] = useState(false);
 
   const currentLanguage = i18n.language || 'en';
   const isFrench = currentLanguage === 'fr';
 
+  const isResidentialProjectsActive =
+    location.pathname.startsWith('/residential-projects') ||
+    /^\/projects\/[^/]+\/(overview|living-environment|lots)(?:\/|$)/.test(
+      location.pathname
+    );
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadProjects = async () => {
+      try {
+        setProjectsLoading(true);
+        setProjectsError(false);
+        const projectList = await projectApi.getAllProjects();
+        if (isMounted)
+          setProjects(Array.isArray(projectList) ? projectList : []);
+      } catch (error) {
+        if (isMounted) setProjectsError(true);
+      } finally {
+        if (isMounted) setProjectsLoading(false);
+      }
+    };
+
+    loadProjects();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let previousScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollingDown = currentScrollY > previousScrollY;
+
+      if (currentScrollY <= 24 || !scrollingDown) {
+        setIsNavHidden(false);
+      } else if (currentScrollY > 80) {
+        setIsNavHidden(true);
+      }
+
+      previousScrollY = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const projectLinks = (
+    <>
+      {projectsLoading && (
+        <li className="project-dropdown-status" role="status">
+          {t('nav.projectsLoading', 'Loading projects...')}
+        </li>
+      )}
+      {projectsError && (
+        <li className="project-dropdown-status" role="status">
+          {t('nav.projectsLoadError', 'Unable to load projects')}
+        </li>
+      )}
+      {!projectsLoading && !projectsError && projects.length === 0 && (
+        <li className="project-dropdown-status" role="status">
+          {t('nav.noProjects', 'No projects available')}
+        </li>
+      )}
+      {!projectsLoading &&
+        !projectsError &&
+        projects.map(project => (
+          <li key={project.projectIdentifier}>
+            <NavLink
+              to={`/projects/${project.projectIdentifier}/overview`}
+              onClick={() => setIsPublicMobileMenuOpen(false)}
+            >
+              {project.projectName}
+            </NavLink>
+          </li>
+        ))}
+      <li className="project-dropdown-all">
+        <NavLink
+          to="/residential-projects"
+          onClick={() => setIsPublicMobileMenuOpen(false)}
+        >
+          {t('nav.viewAllProjects', 'View all projects')}
+        </NavLink>
+      </li>
+    </>
+  );
+
   const toggleLanguage = () => {
     const newLang = isFrench ? 'en' : 'fr';
     i18n.changeLanguage(newLang);
+  };
+
+  const toggleProjectsMenu = () => {
+    setIsProjectsMenuOpen(prev => !prev);
   };
 
   const handleMobileLogoClick = () => {
@@ -97,7 +202,7 @@ export default function AppNavBar() {
   };
 
   return (
-    <header className="site-nav">
+    <header className={`site-nav ${isNavHidden ? 'nav-hidden' : ''}`}>
       <div className="site-nav-inner">
         {isAuthenticated && !roleLoading && (
           <div className="dashboard-toggle">
@@ -116,12 +221,22 @@ export default function AppNavBar() {
 
         {/* Desktop navigation */}
         <nav className="desktop-nav">
-          <NavLink
-            to="/residential-projects"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            {t('nav.projects', 'Residential Projects')}
-          </NavLink>
+          <div className="projects-nav-item">
+            <button
+              type="button"
+              className={`projects-nav-trigger ${isResidentialProjectsActive ? 'active' : ''}`}
+              onClick={toggleProjectsMenu}
+              aria-expanded={isProjectsMenuOpen}
+              aria-haspopup="true"
+            >
+              {t('nav.projects', 'Residential Projects')}
+            </button>
+            <ul
+              className={`projects-dropdown ${isProjectsMenuOpen ? 'open' : ''}`}
+            >
+              {projectLinks}
+            </ul>
+          </div>
 
           <NavLink
             to="/renovations"
@@ -132,7 +247,7 @@ export default function AppNavBar() {
 
           <NavLink to="/" className="brand">
             <img
-              src={logoImage}
+              src={DESKTOP_LOGO_URL}
               alt="Les Constructions Dominic Cyr"
               className="logo-image"
             />
@@ -185,7 +300,7 @@ export default function AppNavBar() {
           aria-label="Toggle public menu"
         >
           <img
-            src={logoImage}
+            src={MOBILE_LOGO_URL}
             alt="Les Constructions Dominic Cyr"
             className="mobile-logo-menu"
           />
@@ -239,13 +354,20 @@ export default function AppNavBar() {
           {t('nav.home', 'Home')}
         </NavLink>
 
-        <NavLink
-          to="/residential-projects"
-          className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsPublicMobileMenuOpen(false)}
-        >
-          {t('nav.projects', 'Residential Projects')}
-        </NavLink>
+        <div className="mobile-projects-nav-item">
+          <button
+            type="button"
+            className={`projects-nav-trigger ${isResidentialProjectsActive ? 'active' : ''}`}
+            onClick={toggleProjectsMenu}
+            aria-expanded={isProjectsMenuOpen}
+            aria-haspopup="true"
+          >
+            {t('nav.projects', 'Residential Projects')}
+          </button>
+          {isProjectsMenuOpen && (
+            <ul className="mobile-projects-dropdown">{projectLinks}</ul>
+          )}
+        </div>
 
         <NavLink
           to="/renovations"

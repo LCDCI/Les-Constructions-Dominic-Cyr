@@ -84,63 +84,66 @@ export default function Home() {
           <div className="loader-spinner"></div>
         </div>
       )}
-      {/* HERO SECTION */}
+
+      {/* HERO SECTION — framed box: text left, media right */}
       <section className="hero">
-        <div className="hero-background">
-          {isLocalHost ? (
-            <img
-              src="/fallback.jpg"
-              alt="Hero placeholder"
-              className="hero-image"
-              onLoad={() => setVideoLoaded(true)}
-              onError={() => setVideoLoaded(true)}
-            />
-          ) : (
-            <video
-              src={`${filesServiceUrl}/files/${photos.hero}`}
-              className="hero-image"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              onCanPlay={() => setVideoLoaded(true)}
-              onLoadedData={() => setVideoLoaded(true)}
-              onPlaying={() => setVideoLoaded(true)}
-              onLoadStart={() => {
-                if (typeof window !== 'undefined' && window.innerWidth > 768) {
-                  setVideoLoaded(false);
-                }
-              }}
-            />
-          )}
-          <div className="hero-overlay" />
-        </div>
-        <div className="hero-container">
-          <div className="hero-content" data-animate>
-            <p className="hero-label">{t('hero.label', 'DESIGN & BUILD')}</p>
-            <h1 className="hero-heading">
-              {t('hero.title', 'Crafting Your Dream Space')}
-            </h1>
-            <p className="hero-description">
-              {t(
-                'hero.subtitle',
-                'Quality construction, timeless design, since 2006.'
-              )}
-            </p>
-            <div className="hero-buttons">
-              <Link to="/realizations" className="btn btn-primary">
-                {t('hero.button1', 'Discover')}
-              </Link>
-              <Link to="/contact" className="btn btn-secondary">
-                {t('hero.button2', 'Get In Touch')}
-              </Link>
+        <div className="hero-frame">
+          <div className="hero-container">
+            <div className="hero-content" data-animate>
+              <p className="hero-label">{t('hero.label', 'DESIGN & BUILD')}</p>
+              <h1 className="hero-heading">
+                {t('hero.title', 'Crafting Your Dream Space')}
+              </h1>
+              <p className="hero-description">
+                {t(
+                  'hero.subtitle',
+                  'Quality construction, timeless design, since 2006.'
+                )}
+              </p>
+              <div className="hero-buttons">
+                <Link to="/realizations" className="btn btn-primary">
+                  {t('hero.button1', 'Discover')}
+                </Link>
+                <Link to="/contact" className="btn btn-secondary">
+                  {t('hero.button2', 'Get In Touch')}
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="scroll-down" data-animate>
-          <div className="scroll-icon"></div>
-          <p>{t('hero.scroll', 'Scroll')}</p>
+
+          <div className="hero-background">
+            {isLocalHost ? (
+              <img
+                src="/fallback.jpg"
+                alt="Hero placeholder"
+                className="hero-image"
+                onLoad={() => setVideoLoaded(true)}
+                onError={() => setVideoLoaded(true)}
+              />
+            ) : (
+              <video
+                src={`${filesServiceUrl}/files/${photos.hero}`}
+                className="hero-image"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                onCanPlay={() => setVideoLoaded(true)}
+                onLoadedData={() => setVideoLoaded(true)}
+                onPlaying={() => setVideoLoaded(true)}
+                onLoadStart={() => {
+                  if (
+                    typeof window !== 'undefined' &&
+                    window.innerWidth > 768
+                  ) {
+                    setVideoLoaded(false);
+                  }
+                }}
+              />
+            )}
+            <div className="hero-overlay" />
+          </div>
         </div>
       </section>
 
@@ -167,130 +170,169 @@ export default function Home() {
                 <PiSuitcaseSimple />
                 {t('features.feature1', 'Passionate & Professional')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature1Description',
+                  'Dedicated expertise for every detail of your project.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <PiPaintBrushBroad />
                 {t('features.feature2', 'Creative Approach')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature2Description',
+                  'Thoughtful ideas that make your space distinctly yours.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <TbHomeSearch />
                 {t('features.feature3', 'Attention to Detail')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature3Description',
+                  'Careful planning and precise execution from start to finish.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <RiLeafLine />
                 {t('features.feature4', 'Eco-Friendly Practices')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature4Description',
+                  'Responsible choices for comfortable, lasting homes.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <PiMedalThin />
                 {t('features.feature5', 'Excellence Standards')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature5Description',
+                  'High standards guide every material, finish, and decision.'
+                )}
+              </p>
             </div>
             <div className="feature-card" data-animate>
               <h3 className="feature-title">
                 <FiPhoneCall />
                 {t('features.feature6', 'After-Sales Service')}
               </h3>
+              <p className="feature-description">
+                {t(
+                  'features.feature6Description',
+                  'Reliable support continues after your project is complete.'
+                )}
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* LIVE SECTION */}
-      <section className="content-section featured-section offset-left">
-        <div className="section-image-container" data-animate>
-          <img
-            src={`${filesServiceUrl}/files/${photos.live}`}
-            alt="Lifestyle"
-            className="section-image"
-            loading="lazy"
-          />
-        </div>
-        <div className="section-text-wrapper" data-animate>
-          <div className="section-header">
-            <h2 className="section-title">
-              {t('live.title', 'in a space that reflects your values')}
-            </h2>
-            <p className="section-subtitle">
-              {t(
-                'live.subtitle',
-                'Your home is one of the most important investments of your life. Choose reliability and lasting quality.'
-              )}
-            </p>
-            <Link to="/residential-projects" className="link-arrow">
-              {t('live.link', 'Explore Projects')}
-            </Link>
+      {/* FLOATING CONTENT CARDS (Live / Build / Think) */}
+      <div className="featured-stack">
+        {/* LIVE SECTION */}
+        <section className="content-section featured-section">
+          <div className="section-image-container" data-animate>
+            <img
+              src={`${filesServiceUrl}/files/${photos.live}`}
+              alt="Lifestyle"
+              className="section-image"
+              loading="lazy"
+            />
           </div>
-        </div>
-      </section>
+          <div className="section-text-wrapper" data-animate>
+            <div className="section-header">
+              <h2 className="section-title">
+                {t('live.title', 'in a space that reflects your values')}
+              </h2>
+              <p className="section-subtitle">
+                {t(
+                  'live.subtitle',
+                  'Your home is one of the most important investments of your life. Choose reliability and lasting quality.'
+                )}
+              </p>
+              <Link to="/residential-projects" className="link-arrow">
+                {t('live.link', 'Explore Projects')}
+              </Link>
+            </div>
+          </div>
+        </section>
 
-      {/* BUILD SECTION */}
-      <section className="content-section featured-section alt reverse offset-right">
-        <div className="section-image-container" data-animate>
-          <img
-            src={`${filesServiceUrl}/files/${photos.build}`}
-            alt="Construction"
-            className="section-image"
-            loading="lazy"
-          />
-        </div>
-        <div className="section-text-wrapper" data-animate>
-          <div className="section-header lowered-title">
-            <h2 className="section-title">
-              {t(
-                'build.title',
-                'a strong relationship and quality partnership'
-              )}
-            </h2>
-            <p className="section-subtitle">
-              {t(
-                'build.subtitle',
-                'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
-              )}
-            </p>
-            <Link to="/contact" className="link-arrow">
-              {t('build.link', 'Contact Us')}
-            </Link>
+        {/* BUILD SECTION */}
+        <section className="content-section featured-section alt reverse">
+          <div className="section-image-container" data-animate>
+            <img
+              src={`${filesServiceUrl}/files/${photos.build}`}
+              alt="Construction"
+              className="section-image"
+              loading="lazy"
+            />
           </div>
-        </div>
-      </section>
+          <div className="section-text-wrapper" data-animate>
+            <div className="section-header">
+              <h2 className="section-title">
+                {t(
+                  'build.title',
+                  'a strong relationship and quality partnership'
+                )}
+              </h2>
+              <p className="section-subtitle">
+                {t(
+                  'build.subtitle',
+                  'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
+                )}
+              </p>
+              <Link to="/contact" className="link-arrow">
+                {t('build.link', 'Contact Us')}
+              </Link>
+            </div>
+          </div>
+        </section>
 
-      {/* THINK SECTION */}
-      <section className="content-section featured-section offset-left">
-        <div className="section-image-container" data-animate>
-          <img
-            src={`${filesServiceUrl}/files/${photos.think}`}
-            alt="Design concept"
-            className="section-image"
-            loading="lazy"
-          />
-        </div>
-        <div className="section-text-wrapper" data-animate>
-          <div className="section-header lowered-title">
-            <h2 className="section-title">
-              {t(
-                'think.title',
-                'intelligent, practical and comfortable spaces'
-              )}
-            </h2>
-            <p className="section-subtitle">
-              {t(
-                'think.subtitle',
-                'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.'
-              )}
-            </p>
-            <Link to="/realizations" className="link-arrow">
-              {t('think.link', 'Discover')}
-            </Link>
+        {/* THINK SECTION */}
+        <section className="content-section featured-section">
+          <div className="section-image-container" data-animate>
+            <img
+              src={`${filesServiceUrl}/files/${photos.think}`}
+              alt="Design concept"
+              className="section-image"
+              loading="lazy"
+            />
           </div>
-        </div>
-      </section>
+          <div className="section-text-wrapper" data-animate>
+            <div className="section-header">
+              <h2 className="section-title">
+                {t(
+                  'think.title',
+                  'intelligent, practical and comfortable spaces'
+                )}
+              </h2>
+              <p className="section-subtitle">
+                {t(
+                  'think.subtitle',
+                  'Passionate about architecture and design, our mission is to provide you with a unique and memorable experience.'
+                )}
+              </p>
+              <Link to="/realizations" className="link-arrow">
+                {t('think.link', 'Discover')}
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
 
       {/* PORTFOLIO GRID */}
       <section className="portfolio-section">
@@ -313,7 +355,6 @@ export default function Home() {
                 className="card-image-bg"
               />
               <div className="card-overlay" />
-              {/* text removed to display image only */}
             </Link>
 
             <Link
@@ -374,7 +415,6 @@ export default function Home() {
                 className="card-image-bg"
               />
               <div className="card-overlay" />
-              {/* text removed to display image only */}
             </Link>
           </div>
         </div>
