@@ -19,8 +19,8 @@
   --content-width: 80%;
   --content-max-width: 1400px;
 
-  --font-heading: 'Georgia', 'Times New Roman', serif;
-  --font-body: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
 
   --duration: 800ms;
   --easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);

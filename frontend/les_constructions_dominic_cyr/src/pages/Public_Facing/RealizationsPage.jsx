@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/realizations.css';
 import '../../styles/Public_Facing/residential-projects.css';
-import Footer from '../../components/Footers/ProjectsFooter';
 
 const RealizationsPage = () => {
   const { t } = usePageTranslations('realizations');
-  const [loading, setLoading] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Image IDs from file storage (can be file ID or full CDN URL)
@@ -49,17 +47,6 @@ const RealizationsPage = () => {
       prevIndex === REALIZATION_IMAGE_IDS.length - 1 ? 0 : prevIndex + 1
     );
   };
-
-  if (loading) {
-    return (
-      <div className="realizations-page">
-        <p style={{ textAlign: 'center', padding: '5%', fontSize: '1.2rem' }}>
-          Loading realizations...
-        </p>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="realizations-page">

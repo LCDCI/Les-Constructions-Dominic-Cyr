@@ -88,12 +88,13 @@ export default function ProjectManagementPage() {
   return (
     <div className="project-management-page">
       {/* Hero Banner Section */}
-      <section className="projects-hero" aria-labelledby="pm-hero-title">
-        <div className="projects-hero-content">
-          <h1 className="projects-title" id="pm-hero-title">
+      <section className="pm-hero-banner" aria-labelledby="pm-hero-title">
+        <div className="pm-hero-content">
+          <h1 className="pm-hero-title" id="pm-hero-title">
             {t('hero.title', 'Project Management')}
           </h1>
-          <p className="projects-subtitle">
+          <div className="pm-hero-rule" aria-hidden="true"></div>
+          <p className="pm-hero-subtitle">
             {t('hero.subtitle', 'For Peace of Mind')}
           </p>
         </div>
@@ -128,6 +129,9 @@ export default function ProjectManagementPage() {
                     alt={PM_IMAGES.bromont.alt}
                     className="pm-image"
                   />
+                  <span className="pm-image-badge">
+                    {PM_IMAGES.bromont.city}
+                  </span>
                 </div>
                 <p className="pm-image-city">{PM_IMAGES.bromont.city}</p>
               </div>
@@ -142,6 +146,9 @@ export default function ProjectManagementPage() {
                     alt={PM_IMAGES.shefford.alt}
                     className="pm-image"
                   />
+                  <span className="pm-image-badge">
+                    {PM_IMAGES.shefford.city}
+                  </span>
                 </div>
                 <p className="pm-image-city">{PM_IMAGES.shefford.city}</p>
               </div>
@@ -156,6 +163,9 @@ export default function ProjectManagementPage() {
                     alt={PM_IMAGES.stHilaire.alt}
                     className="pm-image"
                   />
+                  <span className="pm-image-badge">
+                    {PM_IMAGES.stHilaire.city}
+                  </span>
                 </div>
                 <p className="pm-image-city">{PM_IMAGES.stHilaire.city}</p>
               </div>
@@ -183,6 +193,7 @@ export default function ProjectManagementPage() {
           <h2 className="pm-advantages-heading" id="pm-advantages-title">
             {t('advantages.heading', 'Our project management strengths')}
           </h2>
+          <div className="pm-heading-rule" aria-hidden="true"></div>
 
           <ul className="pm-advantages-list">
             <li>
@@ -242,13 +253,12 @@ export default function ProjectManagementPage() {
               </span>
             </li>
           </ul>
+        </div>
+      </section>
 
-          {/* Separator Lines */}
-          <div className="pm-separator">
-            <div className="pm-separator-line"></div>
-            <div className="pm-separator-line"></div>
-          </div>
-
+      {/* Pricing / Contact Section */}
+      <section className="pm-cta-section">
+        <div className="pm-cta-card">
           {/* Pricing/Contact Paragraph */}
           <p className="pm-pricing-text">
             {t(

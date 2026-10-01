@@ -54,6 +54,10 @@
   "nav": {
     "home": "Accueil",
     "projects": "Projets résidentiels",
+    "projectsLoading": "Chargement des projets...",
+    "projectsLoadError": "Impossible de charger les projets",
+    "noProjects": "Aucun projet disponible",
+    "viewAllProjects": "Voir tous les projets",
     "renovation": "Rénovations",
     "renovations": "Rénovations",
     "projectManagement": "Gestion de projet",
@@ -61,6 +65,16 @@
     "contact": "Contact",
     "accessPortal": "Portail d'accès",
     "logout": "Déconnexion"
+  },
+  "modals": {
+    "idle": {
+      "title": "Êtes-vous toujours là ?",
+      "message": "Pour votre sécurité, vous serez bientôt déconnecté en raison de votre inactivité. Cliquez sur « Rester connecté » pour garder votre session active.",
+      "countdown": "Déconnexion automatique dans :",
+      "staySignedIn": "Rester connecté",
+      "logoutNow": "Se déconnecter maintenant"
+    },
+    "close": "Fermer"
   },
   "footer": {
     "company": "Construction Dominic Cyr Inc.",

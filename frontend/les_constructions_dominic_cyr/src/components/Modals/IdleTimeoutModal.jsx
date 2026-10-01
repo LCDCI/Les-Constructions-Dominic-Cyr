@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import '../../styles/users.css';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 export default function IdleTimeoutModal({
   remainingSeconds,
   onStay,
   onLogout,
 }) {
+  const { t } = usePageTranslations('home');
   const minutes = Math.floor(remainingSeconds / 60);
   const seconds = remainingSeconds % 60;
 
@@ -20,17 +22,22 @@ export default function IdleTimeoutModal({
             alignItems: 'center',
           }}
         >
-          <h2 style={{ color: '#111827' }}>Still there?</h2>
+          <h2 style={{ color: '#111827' }}>
+            {t('modals.idle.title', 'Still there?')}
+          </h2>
         </div>
 
         <p>
-          For your security, we'll log you out soon due to inactivity. Click
-          "Stay signed in" to keep your session active.
+          {t(
+            'modals.idle.message',
+            'For your security, we will log you out soon due to inactivity. Click "Stay signed in" to keep your session active.'
+          )}
         </p>
 
         <p>
           <strong>
-            Auto logout in: {minutes}:{seconds.toString().padStart(2, '0')}
+            {t('modals.idle.countdown', 'Auto logout in:')} {minutes}:
+            {seconds.toString().padStart(2, '0')}
           </strong>
         </p>
 
@@ -40,10 +47,10 @@ export default function IdleTimeoutModal({
             className="modal-secondary btn-cancel"
             onClick={onStay}
           >
-            Stay signed in
+            {t('modals.idle.staySignedIn', 'Stay signed in')}
           </button>
           <button type="button" className="modal-primary" onClick={onLogout}>
-            Logout now
+            {t('modals.idle.logoutNow', 'Logout now')}
           </button>
         </div>
       </div>

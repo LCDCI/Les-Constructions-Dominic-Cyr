@@ -27,5 +27,8 @@
     "nextAriaLabel": "Image suivante",
     "imageAlt": "Réalisation",
     "noResults": "Aucune réalisation trouvée"
+  },
+  "states": {
+    "loading": "Chargement des réalisations..."
   }
 }

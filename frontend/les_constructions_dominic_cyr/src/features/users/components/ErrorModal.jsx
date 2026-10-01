@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { usePageTranslations } from '../../../hooks/usePageTranslations';
 
 export default function ErrorModal({
   isOpen,
@@ -6,6 +8,7 @@ export default function ErrorModal({
   message,
   onClose,
 }) {
+  const { t } = usePageTranslations('home');
   if (!isOpen) return null;
 
   return (
@@ -16,10 +19,17 @@ export default function ErrorModal({
 
         <div className="modal-actions">
           <button type="button" onClick={onClose}>
-            Close
+            {t('modals.close', 'Close')}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+ErrorModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  title: PropTypes.string,
+  message: PropTypes.node.isRequired,
+  onClose: PropTypes.func.isRequired,
+};

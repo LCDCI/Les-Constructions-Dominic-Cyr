@@ -54,6 +54,10 @@
   "nav": {
     "home": "Home",
     "projects": "Residential Projects",
+    "projectsLoading": "Loading projects...",
+    "projectsLoadError": "Unable to load projects",
+    "noProjects": "No projects available",
+    "viewAllProjects": "View all projects",
     "renovation": "Renovations",
     "renovations": "Renovations",
     "projectManagement": "Project Management",
@@ -61,6 +65,16 @@
     "contact": "Contact",
     "accessPortal": "Access Portal",
     "logout": "Logout"
+  },
+  "modals": {
+    "idle": {
+      "title": "Still there?",
+      "message": "For your security, we will log you out soon due to inactivity. Click \"Stay signed in\" to keep your session active.",
+      "countdown": "Auto logout in:",
+      "staySignedIn": "Stay signed in",
+      "logoutNow": "Logout now"
+    },
+    "close": "Close"
   },
   "footer": {
     "company": "Dominic Cyr Construction Inc.",
