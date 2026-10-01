@@ -1,13 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500;600&display=swap');
-
-/* Realizations Page — style minimaliste (sage + Cormorant Garamond / Montserrat) */
+/* Realizations Page */
 
 .realizations-page {
-  /* Les variables de police sont redéfinies localement : le hero partagé
-     (.projects-hero, défini dans residential-projects.css) en hérite. */
-  --font-heading: 'Cormorant Garamond', Georgia, serif;
-  --font-body: 'Montserrat', 'Segoe UI', sans-serif;
-
   --r-sage-50: #f3f6f3;
   --r-sage-100: #e4ebe4;
   --r-sage-300: #a1b2a2;
@@ -37,7 +30,7 @@
 
 /* ===== Hero (variante : cercles concentriques discrets) ===== */
 .realizations-page .projects-hero {
-  background: var(--r-sage-400);
+  background: #aab2a6;
   padding: 3rem 1rem;
 }
 
@@ -59,19 +52,19 @@
 .realizations-page .projects-title {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 400;
-  letter-spacing: 0.025em;
+  letter-spacing: 0;
   line-height: 1.1;
   margin-bottom: 1rem;
 }
 
 .realizations-hero-subtitle {
   margin: 0;
-  font-family: var(--font-heading);
+  font-family: var(--font-body);
   font-style: italic;
-  font-weight: 300;
-  font-size: clamp(1.15rem, 2vw, 1.4rem);
-  letter-spacing: 0.025em;
-  color: var(--r-sage-50);
+  font-weight: 400;
+  font-size: 1.1rem;
+  letter-spacing: 0;
+  color: var(--color-white);
 }
 
 /* ===== Intro ===== */

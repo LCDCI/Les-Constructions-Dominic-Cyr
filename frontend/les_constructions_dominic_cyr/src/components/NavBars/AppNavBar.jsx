@@ -11,7 +11,11 @@ import OwnerNavBar from '../../components/NavBars/OwnerNavBar';
 import SalespersonNavBar from '../../components/NavBars/SalespersonNavBar';
 import ContractorNavBar from '../../components/NavBars/ContractorNavBar';
 import CustomerNavBar from '../../components/NavBars/CustomerNavBar';
-import logoImage from '../../../LOGO_DM.png';
+
+const DESKTOP_LOGO_URL =
+  'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Logos/Full_Logo_Mono.png';
+const MOBILE_LOGO_URL =
+  'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Logos/Half_logo_mono.png';
 
 function clearAppSession() {
   const APP_KEYS = [
@@ -55,6 +59,7 @@ export default function AppNavBar() {
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [projectsError, setProjectsError] = useState(false);
+  const [isNavHidden, setIsNavHidden] = useState(false);
 
   const currentLanguage = i18n.language || 'en';
   const isFrench = currentLanguage === 'fr';
@@ -87,6 +92,26 @@ export default function AppNavBar() {
     return () => {
       isMounted = false;
     };
+  }, []);
+
+  useEffect(() => {
+    let previousScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollingDown = currentScrollY > previousScrollY;
+
+      if (currentScrollY <= 24 || !scrollingDown) {
+        setIsNavHidden(false);
+      } else if (currentScrollY > 80) {
+        setIsNavHidden(true);
+      }
+
+      previousScrollY = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const projectLinks = (
@@ -177,7 +202,7 @@ export default function AppNavBar() {
   };
 
   return (
-    <header className="site-nav">
+    <header className={`site-nav ${isNavHidden ? 'nav-hidden' : ''}`}>
       <div className="site-nav-inner">
         {isAuthenticated && !roleLoading && (
           <div className="dashboard-toggle">
@@ -222,7 +247,7 @@ export default function AppNavBar() {
 
           <NavLink to="/" className="brand">
             <img
-              src={logoImage}
+              src={DESKTOP_LOGO_URL}
               alt="Les Constructions Dominic Cyr"
               className="logo-image"
             />
@@ -275,7 +300,7 @@ export default function AppNavBar() {
           aria-label="Toggle public menu"
         >
           <img
-            src={logoImage}
+            src={MOBILE_LOGO_URL}
             alt="Les Constructions Dominic Cyr"
             className="mobile-logo-menu"
           />

@@ -5,16 +5,22 @@
   top: 0;
   z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transform: translateY(0);
+  transition: transform 0.25s ease;
+}
+
+.site-nav.nav-hidden {
+  transform: translateY(-100%);
 }
 
 .site-nav-inner {
-  width: 80%;
+  width: 94%;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 0;
-  gap: 24px;
+  padding: 5px 0;
+  gap: 28px;
   min-height: 70px;
   position: relative;
 }
@@ -31,7 +37,7 @@
 }
 
 .logo-image {
-  height: 91px;
+  height: 128px;
   width: auto;
   object-fit: contain;
   cursor: pointer;
@@ -40,8 +46,10 @@
 .desktop-nav {
   display: flex;
   align-items: center;
-  gap: 16px;
-  justify-content: center;
+  gap: 32px;
+  justify-content: space-between;
+  width: calc(100% - 150px);
+  max-width: 1200px;
   flex: 1;
 }
 
@@ -162,6 +170,8 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  position: absolute;
+  left: 0;
 }
 
 .dashboard-toggle .navbar-toggle {
@@ -418,7 +428,7 @@
 }
 
 .mobile-logo-menu {
-  height: 40px;
+  height: 66px;
   width: auto;
   object-fit: contain;
 }
@@ -438,6 +448,10 @@
   .desktop-nav a {
     padding: 8px 10px;
     font-size: 14px;
+  }
+
+  .desktop-nav {
+    gap: 20px;
   }
 
   .btn-portal,
@@ -492,7 +506,7 @@
   }
 
   .logo-image {
-    height: 72px;
+    height: 82px;
   }
 }
 
@@ -514,6 +528,6 @@
   }
 
   .logo-image {
-    height: 65px;
+    height: 74px;
   }
 }

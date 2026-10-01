@@ -16,6 +16,7 @@
   --text-primary: var(--primary-color);
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --charcoal-gray: #2c3531;
   --border-radius: 8px;
   --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s ease;
@@ -85,12 +86,16 @@ body {
   min-height: var(--public-banner-height) !important;
   height: var(--public-banner-height) !important;
   padding: 3rem 1.5rem !important;
-  background: var(--public-banner-bg) !important;
-  background-image: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+}
+
+.projects-hero,
+.pm-hero-banner {
+  background: var(--public-banner-bg) !important;
+  background-image: none !important;
 }
 
 .pm-hero-banner::before {
@@ -123,6 +128,17 @@ h6 {
   font-family: 'Playfair Display', Georgia, serif;
   font-weight: 600;
   margin-bottom: 1%;
+}
+
+/* Shared public-facing title treatment. */
+.projects-title,
+.pm-hero-title,
+.hero-title,
+.le-main-title {
+  font-family: var(--font-heading) !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  text-decoration: none !important;
 }
 
 button {
