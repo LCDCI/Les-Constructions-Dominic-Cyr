@@ -1,0 +1,15 @@
+{
+  "kicker": "Gestion du site",
+  "title": "Mon site",
+  "subtitle": "Gérez les textes et les références d'images des pages publiques par langue.",
+  "language": "Langue",
+  "loading": "Chargement du contenu du site...",
+  "empty": "Aucun contenu modifiable n'a encore été initialisé.",
+  "textLabel": "Texte",
+  "imageLabel": "Identifiant ou URL de l'image",
+  "save": "Enregistrer les modifications",
+  "saving": "Enregistrement...",
+  "saved": "Enregistré",
+  "loadError": "Impossible de charger le contenu du site.",
+  "saveError": "Impossible d'enregistrer cet élément de contenu."
+}

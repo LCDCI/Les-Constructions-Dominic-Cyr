@@ -1,0 +1,15 @@
+{
+  "kicker": "Maisons",
+  "title": "Maisons",
+  "subtitle": "Découvrez les modèles de maisons disponibles pour ce projet.",
+  "loading": "Chargement des maisons...",
+  "searchLabel": "Rechercher une maison",
+  "searchPlaceholder": "Rechercher par nom ou emplacement",
+  "empty": "Aucune maison trouvée.",
+  "imageAlt": "Maison",
+  "fetchFailed": "Échec du chargement des maisons. Veuillez réessayer plus tard.",
+  "bedrooms": "Chambres",
+  "bathrooms": "Salles de bain",
+  "rooms": "Pièces",
+  "viewHouse": "Voir cette maison"
+}

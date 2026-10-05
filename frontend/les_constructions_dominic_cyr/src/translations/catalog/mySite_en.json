@@ -1,0 +1,15 @@
+{
+  "kicker": "Website management",
+  "title": "My site",
+  "subtitle": "Manage public page text and image references by language.",
+  "language": "Language",
+  "loading": "Loading site content...",
+  "empty": "No editable content has been seeded yet.",
+  "textLabel": "Text",
+  "imageLabel": "Image identifier or URL",
+  "save": "Save changes",
+  "saving": "Saving...",
+  "saved": "Saved",
+  "loadError": "Unable to load site content.",
+  "saveError": "Unable to save this content item."
+}

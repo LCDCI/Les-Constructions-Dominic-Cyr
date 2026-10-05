@@ -1,0 +1,155 @@
+.my-site-page {
+  min-height: 100vh;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  background: #f7f8f7;
+}
+
+.my-site-header,
+.my-site-group {
+  max-width: 1100px;
+  margin: 0 auto 1.5rem;
+}
+
+.my-site-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: end;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #dfe4df;
+}
+
+.my-site-kicker {
+  margin: 0;
+  color: #6a7a67;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.my-site-header h1,
+.my-site-group h2,
+.my-site-item h3 {
+  margin: 0;
+  color: #2c3531;
+}
+
+.my-site-header h1 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+}
+
+.my-site-header p:not(.my-site-kicker) {
+  margin: 0.5rem 0 0;
+  color: #66706a;
+}
+
+.my-site-language,
+.my-site-item label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  color: #37413b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.my-site-language select,
+.my-site-item input,
+.my-site-item textarea {
+  width: 100%;
+  border: 1px solid #cbd4cc;
+  border-radius: 5px;
+  padding: 0.7rem;
+  background: #fff;
+  color: #2c3531;
+  font: inherit;
+}
+
+.my-site-language select {
+  min-width: 150px;
+}
+
+.my-site-group {
+  padding: 1.25rem;
+  border: 1px solid #e0e5e0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.my-site-group h2 {
+  margin-bottom: 1rem;
+  font-size: 1.35rem;
+  text-transform: capitalize;
+}
+
+.my-site-item {
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem 0;
+  border-top: 1px solid #edf0ed;
+}
+
+.my-site-item-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.my-site-item-heading h3 {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.my-site-item-heading span {
+  color: #6a7a67;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.my-site-item button {
+  justify-self: start;
+  border: 0;
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+  background: #aab2a6;
+  color: #fff;
+  font-weight: 700;
+}
+
+.my-site-image-preview {
+  display: block;
+  width: min(100%, 360px);
+  max-height: 180px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.my-site-item button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.my-site-error {
+  max-width: 1100px;
+  margin: 0 auto 1rem;
+  color: #a4261c;
+}
+
+.my-site-empty {
+  max-width: 1100px;
+  margin: 2rem auto;
+  color: #66706a;
+}
+
+@media (max-width: 650px) {
+  .my-site-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .my-site-language select {
+    min-width: 0;
+  }
+}

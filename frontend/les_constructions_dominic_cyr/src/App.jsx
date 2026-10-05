@@ -22,6 +22,7 @@ import ServerError from './pages/Errors/ServerError';
 import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import UsersPage from './pages/UsersPage';
 import OwnerDashboard from './pages/Dashboards/OwnerDashboard';
+import MySitePage from './pages/MySitePage';
 import ProjectMetadata from './pages/Project/ProjectMetadata';
 import ProjectEntryRouter from './pages/Project/ProjectEntryRouter';
 import LotSelectPage from './pages/Project/LotSelectPage';
@@ -29,6 +30,7 @@ import LotMetadata from './pages/Project/LotMetadata';
 import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
 import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPage';
+import HousesPage from './pages/Public_Facing/HousesPage';
 import ContractorDashboard from './pages/Dashboards/ContractorDashboard';
 import LotDocumentsPage from './features/lots/components/LotDocumentsPage';
 import LotsListDashboard from './features/lots/components/LotsListDashboard';
@@ -140,11 +142,13 @@ const PRIVATE_FOOTER_ROUTE_PATTERNS = [
   '/projects/:projectIdentifier/manage-lots',
   '/projects/:projectIdentifier/overview',
   '/projects/:projectIdentifier/living-environment',
+  '/projects/:projectIdentifier/houses',
   '/projects/:projectIdentifier/lots',
   '/reports',
   '/inquiries',
   '/users',
   '/owner/dashboard',
+  '/owner/my-site',
   '/owner/forms',
   '/owner/documents',
   '/owner/inbox',
@@ -420,6 +424,15 @@ export default function App() {
               }
             />
             <Route
+              path="/owner/my-site"
+              element={
+                <ProtectedRoute
+                  allowedRoles={['OWNER']}
+                  element={<MySitePage />}
+                />
+              }
+            />
+            <Route
               path="/owner/forms"
               element={
                 <ProtectedRoute
@@ -516,6 +529,8 @@ export default function App() {
               path="/residential-projects"
               element={<ResidentialProjectsPage />}
             />
+            <Route path="/houses" element={<HousesPage />} />
+            <Route path="/houses/:houseId" element={<HousesPage />} />
 
             <Route
               path="/contractor/dashboard"
@@ -821,6 +836,14 @@ export default function App() {
             <Route
               path="/projects/:projectIdentifier/living-environment"
               element={<LivingEnvironmentPage />}
+            />
+            <Route
+              path="/projects/:projectIdentifier/houses"
+              element={<HousesPage />}
+            />
+            <Route
+              path="/projects/:projectIdentifier/houses/:houseId"
+              element={<HousesPage />}
             />
             <Route
               path="/projects/:projectIdentifier/lots"
