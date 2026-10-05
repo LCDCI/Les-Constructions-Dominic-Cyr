@@ -118,6 +118,27 @@
   font-weight: 700;
 }
 
+.my-site-item .my-site-delete-button {
+  background: #b42318;
+}
+
+.my-site-new-item {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #cbd4cc;
+}
+
+.my-site-new-item input,
+.my-site-new-item textarea {
+  width: 100%;
+  border: 1px solid #cbd4cc;
+  border-radius: 5px;
+  padding: 0.7rem;
+  font: inherit;
+}
+
 .my-site-image-preview {
   display: block;
   width: min(100%, 360px);

@@ -55,16 +55,17 @@ export async function fetchProjectDocuments(
   return response.data;
 }
 
-export async function uploadFile(formData) {
+export async function uploadFile(formData, token = null) {
   const response = await axios.post(`${BASE_API_URL}/files`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
   return response.data;
 }
 
-export async function deleteFile(fileId, { deletedBy }) {
+export async function deleteFile(fileId, { deletedBy, token = null }) {
   // Simple validation - deletedBy should be a string
   const deletedByValue = String(deletedBy);
   const url = `${BASE_API_URL}/files/${fileId}`;
@@ -76,7 +77,10 @@ export async function deleteFile(fileId, { deletedBy }) {
       method: 'DELETE',
       url,
       data: payload,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
     return response.data;
   } catch (err) {

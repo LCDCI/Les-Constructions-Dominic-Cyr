@@ -55,9 +55,40 @@ public class SiteContentController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PostMapping
+    public ResponseEntity<SiteContent> createContent(
+            @RequestBody CreateSiteContentRequest request
+    ) {
+        SiteContent content = SiteContent.builder()
+                .pageGroup(request.pageGroup())
+                .pageKey(request.pageKey())
+                .language(normalizeLanguage(request.language()))
+                .contentText(request.contentText())
+                .imageIdentifier(request.imageIdentifier())
+                .sortOrder(request.sortOrder() == null ? 0 : request.sortOrder())
+                .build();
+        return ResponseEntity.ok(repository.save(content));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContent(@PathVariable Long id) {
+        if (!repository.existsById(id)) return ResponseEntity.notFound().build();
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
     private String normalizeLanguage(String language) {
         return language != null && language.toLowerCase().startsWith("fr") ? "fr" : "en";
     }
 
     public record UpdateSiteContentRequest(String contentText, String imageIdentifier) {}
+
+    public record CreateSiteContentRequest(
+            String pageGroup,
+            String pageKey,
+            String language,
+            String contentText,
+            String imageIdentifier,
+            Integer sortOrder
+    ) {}
 }

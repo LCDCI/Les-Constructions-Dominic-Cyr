@@ -6,8 +6,11 @@ import { usePageTranslations } from '../hooks/usePageTranslations';
 import {
   fetchSiteContentGroups,
   fetchSiteContent,
+  createSiteContent,
+  deleteSiteContent,
   updateSiteContent,
 } from '../features/siteContent/api/siteContentApi';
+import { deleteFile, uploadFile } from '../features/files/api/filesApi';
 import '../styles/MySitePage.css';
 
 const SiteImagePreview = ({ imageIdentifier }) => {
@@ -44,7 +47,7 @@ SiteImagePreview.propTypes = {
 const MySitePage = () => {
   const { t } = usePageTranslations('mySite');
   const { i18n } = useTranslation();
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   const [language, setLanguage] = useState(
     i18n.language?.startsWith('fr') ? 'fr' : 'en'
   );
@@ -56,6 +59,9 @@ const MySitePage = () => {
   const [savingId, setSavingId] = useState(null);
   const [error, setError] = useState(null);
   const [savedId, setSavedId] = useState(null);
+  const [editorMode, setEditorMode] = useState('text');
+  const [newPageKey, setNewPageKey] = useState('');
+  const [newContentText, setNewContentText] = useState('');
 
   useEffect(() => {
     let cancelled = false;
@@ -157,6 +163,131 @@ const MySitePage = () => {
     }));
   };
 
+  const getToken = async () => {
+    const { getAuthAudience } = await import('../utils/authConfig');
+    return getAccessTokenSilently({
+      authorizationParams: { audience: getAuthAudience() },
+    });
+  };
+
+  const handleImageUpload = async (item, file) => {
+    if (!file) return;
+    const oldImageIdentifier = item.imageIdentifier;
+    try {
+      setSavingId(item.id);
+      setSavedId(null);
+      const token = await getToken();
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('category', 'PHOTO');
+      formData.append('projectId', 'site-content');
+      formData.append('uploadedBy', user?.sub || '');
+      formData.append('uploaderRole', 'OWNER');
+
+      const uploaded = await uploadFile(formData, token);
+      const imageIdentifier = uploaded.fileId || uploaded.id;
+      if (!imageIdentifier)
+        throw new Error('Upload returned no file identifier');
+
+      const updated = await updateSiteContent(
+        item.id,
+        item.contentText || '',
+        imageIdentifier,
+        token
+      );
+      setItems(current =>
+        current.map(entry => (entry.id === item.id ? updated : entry))
+      );
+      updateDraft(item.id, 'imageIdentifier', imageIdentifier);
+
+      if (oldImageIdentifier && !oldImageIdentifier.startsWith('http')) {
+        await deleteFile(oldImageIdentifier, {
+          deletedBy: user?.sub || 'site-content',
+          token,
+        });
+      }
+      setSavedId(item.id);
+    } catch (uploadError) {
+      setError('imageSaveError');
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const handleImageDelete = async item => {
+    if (!item.imageIdentifier) return;
+    try {
+      setSavingId(item.id);
+      const token = await getToken();
+      const updated = await updateSiteContent(
+        item.id,
+        item.contentText || '',
+        null,
+        token
+      );
+      setItems(current =>
+        current.map(entry => (entry.id === item.id ? updated : entry))
+      );
+      updateDraft(item.id, 'imageIdentifier', '');
+      if (!item.imageIdentifier.startsWith('http')) {
+        await deleteFile(item.imageIdentifier, {
+          deletedBy: user?.sub || 'site-content',
+          token,
+        });
+      }
+      setSavedId(item.id);
+    } catch (deleteError) {
+      setError('imageDeleteError');
+    } finally {
+      setSavingId(null);
+    }
+  };
+
+  const handleCreateText = async () => {
+    if (!selectedGroup || !newPageKey.trim()) return;
+    try {
+      const token = await getToken();
+      const created = await createSiteContent(
+        {
+          pageGroup: selectedGroup,
+          pageKey: newPageKey.trim(),
+          language,
+          contentText: newContentText,
+          imageIdentifier: null,
+          sortOrder: items.length,
+        },
+        token
+      );
+      setItems(current => [...current, created]);
+      setDrafts(current => ({
+        ...current,
+        [created.id]: {
+          contentText: created.contentText || '',
+          imageIdentifier: '',
+        },
+      }));
+      setNewPageKey('');
+      setNewContentText('');
+    } catch (createError) {
+      setError('createError');
+    }
+  };
+
+  const handleDeleteText = async item => {
+    try {
+      const token = await getToken();
+      await deleteSiteContent(item.id, token);
+      setItems(current => current.filter(entry => entry.id !== item.id));
+      setDrafts(current => {
+        const next = { ...current };
+        delete next[item.id];
+        return next;
+      });
+    } catch (deleteError) {
+      setError('deleteError');
+    }
+  };
+
   const saveItem = async item => {
     const draft = drafts[item.id] || {};
     try {
@@ -215,6 +346,16 @@ const MySitePage = () => {
           </select>
         </label>
         <label className="my-site-language">
+          {t('editorMode', 'Edit')}
+          <select
+            value={editorMode}
+            onChange={event => setEditorMode(event.target.value)}
+          >
+            <option value="text">{t('textMode', 'Text')}</option>
+            <option value="images">{t('imagesMode', 'Images')}</option>
+          </select>
+        </label>
+        <label className="my-site-language">
           {t('pageGroup', 'Page')}
           <select
             value={selectedGroup}
@@ -231,7 +372,7 @@ const MySitePage = () => {
 
       {error && (
         <p className="my-site-error">
-          {t(error, 'Unable to load site content.')}
+          {t(error, 'Unable to process site content.')}
         </p>
       )}
 
@@ -252,51 +393,91 @@ const MySitePage = () => {
                       <h3>{item.pageKey}</h3>
                       <span>{language.toUpperCase()}</span>
                     </div>
-                    <label>
-                      {t('textLabel', 'Text')}
-                      <textarea
-                        value={draft.contentText || ''}
-                        onChange={event =>
-                          updateDraft(
-                            item.id,
-                            'contentText',
-                            event.target.value
-                          )
-                        }
-                        rows={4}
-                      />
-                    </label>
-                    <label>
-                      {t('imageLabel', 'Image identifier or URL')}
-                      <input
-                        value={draft.imageIdentifier || ''}
-                        onChange={event =>
-                          updateDraft(
-                            item.id,
-                            'imageIdentifier',
-                            event.target.value
-                          )
-                        }
-                      />
-                    </label>
-                    <SiteImagePreview
-                      key={draft.imageIdentifier || item.id}
-                      imageIdentifier={draft.imageIdentifier}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => saveItem(item)}
-                      disabled={savingId === item.id}
-                    >
-                      {savingId === item.id
-                        ? t('saving', 'Saving...')
-                        : savedId === item.id
-                          ? t('saved', 'Saved')
-                          : t('save', 'Save changes')}
-                    </button>
+                    {editorMode === 'text' ? (
+                      <>
+                        <label>
+                          {t('textLabel', 'Text')}
+                          <textarea
+                            value={draft.contentText || ''}
+                            onChange={event =>
+                              updateDraft(
+                                item.id,
+                                'contentText',
+                                event.target.value
+                              )
+                            }
+                            rows={4}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => saveItem(item)}
+                          disabled={savingId === item.id}
+                        >
+                          {savingId === item.id
+                            ? t('saving', 'Saving...')
+                            : savedId === item.id
+                              ? t('saved', 'Saved')
+                              : t('save', 'Save changes')}
+                        </button>
+                        <button
+                          type="button"
+                          className="my-site-delete-button"
+                          onClick={() => handleDeleteText(item)}
+                          disabled={savingId === item.id}
+                        >
+                          {t('deleteText', 'Delete text')}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <label>
+                          {t('imageLabel', 'Image')}
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp"
+                            onChange={event =>
+                              handleImageUpload(item, event.target.files?.[0])
+                            }
+                            disabled={savingId === item.id}
+                          />
+                        </label>
+                        <SiteImagePreview
+                          key={draft.imageIdentifier || item.id}
+                          imageIdentifier={draft.imageIdentifier}
+                        />
+                        {draft.imageIdentifier && (
+                          <button
+                            type="button"
+                            onClick={() => handleImageDelete(item)}
+                            disabled={savingId === item.id}
+                          >
+                            {t('deleteImage', 'Delete image')}
+                          </button>
+                        )}
+                      </>
+                    )}
                   </article>
                 );
               })}
+              {editorMode === 'text' && (
+                <div className="my-site-new-item">
+                  <input
+                    placeholder={t('newKey', 'New content key')}
+                    value={newPageKey}
+                    onChange={event => setNewPageKey(event.target.value)}
+                  />
+                  <textarea
+                    placeholder={t('newText', 'New content text')}
+                    value={newContentText}
+                    onChange={event => setNewContentText(event.target.value)}
+                    rows={3}
+                  />
+                  <button type="button" onClick={handleCreateText}>
+                    {t('createText', 'Create text')}
+                  </button>
+                </div>
+              )}
             </section>
           ))}
         </div>

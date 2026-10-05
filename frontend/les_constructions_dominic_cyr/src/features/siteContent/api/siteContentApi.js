@@ -58,3 +58,22 @@ export async function updateSiteContent(
   );
   return response.json();
 }
+
+export async function createSiteContent(data, token) {
+  const response = await requestWithRetry(`${API_BASE_URL}/site-content`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
+
+export async function deleteSiteContent(id, token) {
+  await requestWithRetry(`${API_BASE_URL}/site-content/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}

@@ -171,7 +171,7 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .app-footer {
     padding: 2% 2.5%;
   }
