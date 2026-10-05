@@ -373,6 +373,30 @@ func TestDownload_Success(t *testing.T) {
 	}
 }
 
+func TestDownload_VideoRange(t *testing.T) {
+	mock := &mockFileService{
+		GetFn: func(ctx context.Context, id string) ([]byte, string, error) {
+			return []byte("0123456789"), "video/mp4", nil
+		},
+	}
+
+	router := setupRouter(mock)
+	req := httptest.NewRequest("GET", "/files/video-123", nil)
+	req.Header.Set("Range", "bytes=0-3")
+	w := httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	if w.Code != http.StatusPartialContent {
+		t.Fatalf("expected 206, got %d", w.Code)
+	}
+	if got := w.Header().Get("Content-Range"); got != "bytes 0-3/10" {
+		t.Fatalf("expected Content-Range bytes 0-3/10, got %q", got)
+	}
+	if got := w.Body.String(); got != "0123" {
+		t.Fatalf("expected partial body 0123, got %q", got)
+	}
+}
+
 func TestDownload_NotFound(t *testing.T) {
 	mock := &mockFileService{
 		GetFn: func(ctx context.Context, id string) ([]byte, string, error) {

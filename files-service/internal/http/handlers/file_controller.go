@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"bytes"
 	"fmt"
 	"files-service/internal/domain"
 	"files-service/internal/model"
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -175,12 +177,10 @@ func (fc *FileController) download(c *gin.Context) {
 	c.Header("Content-Type", contentType)
 	c.Header("Cache-Control", "public, max-age=31536000")
 
-	// Handle Range request for video streaming
-	rangeHeader := c.GetHeader("Range")
-	if rangeHeader != "" && strings.HasPrefix(contentType, "video/") {
-		// For now, serve full content with proper headers
-		// Full Range implementation would require parsing and serving partial content
-		c.Data(http.StatusOK, contentType, data)
+	// Serve video ranges with 206 Partial Content. Safari uses byte-range
+	// requests when loading media and will not reliably play a full 200 response.
+	if strings.HasPrefix(contentType, "video/") {
+		http.ServeContent(c.Writer, c.Request, id, time.Time{}, bytes.NewReader(data))
 		return
 	}
 

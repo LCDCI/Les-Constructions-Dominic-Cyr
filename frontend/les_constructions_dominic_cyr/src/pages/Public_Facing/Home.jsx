@@ -77,6 +77,11 @@ export default function Home() {
     }
   }, []);
 
+  useEffect(() => {
+    const loaderTimeout = window.setTimeout(() => setVideoLoaded(true), 10000);
+    return () => window.clearTimeout(loaderTimeout);
+  }, []);
+
   return (
     <div className="home">
       {!videoLoaded && (
@@ -129,6 +134,9 @@ export default function Home() {
                 loop
                 playsInline
                 preload="auto"
+                poster="/fallback.jpg"
+                onError={() => setVideoLoaded(true)}
+                onLoadedMetadata={() => setVideoLoaded(true)}
                 onCanPlay={() => setVideoLoaded(true)}
                 onLoadedData={() => setVideoLoaded(true)}
                 onPlaying={() => setVideoLoaded(true)}

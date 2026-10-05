@@ -10,6 +10,8 @@ import {
   useMap,
   useMapEvents,
 } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { IoLeafOutline } from 'react-icons/io5';
 import { LuMapPinned } from 'react-icons/lu';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
@@ -20,7 +22,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = L.icon({
+const DefaultIcon = L.icon({
   iconUrl: icon,
   iconRetinaUrl: iconRetina,
   shadowUrl: iconShadow,
