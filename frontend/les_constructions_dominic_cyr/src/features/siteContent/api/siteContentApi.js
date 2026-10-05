@@ -1,5 +1,14 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
 
+export async function fetchPublicSiteContent(language, pageGroup) {
+  const params = new URLSearchParams({ language, pageGroup });
+  const response = await fetch(
+    `${API_BASE_URL}/site-content?${params.toString()}`
+  );
+  if (!response.ok) return [];
+  return response.json();
+}
+
 async function requestWithRetry(url, options = {}, maxAttempts = 3) {
   let lastError;
 

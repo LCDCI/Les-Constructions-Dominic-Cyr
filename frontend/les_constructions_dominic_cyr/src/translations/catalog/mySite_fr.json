@@ -13,6 +13,8 @@
   "imageLabel": "Image",
   "deleteImage": "Supprimer l'image",
   "deleteText": "Supprimer le texte",
+  "text": "Gérer le texte",
+  "images": "Gérer les images",
   "newKey": "Nouvelle clé de contenu",
   "newText": "Nouveau texte",
   "createText": "Créer le texte",
@@ -24,5 +26,20 @@
   "imageSaveError": "Impossible de téléverser ou d'enregistrer cette image.",
   "imageDeleteError": "Impossible de supprimer cette image.",
   "createError": "Impossible de créer cet élément de contenu.",
-  "deleteError": "Impossible de supprimer cet élément de contenu."
+  "deleteError": "Impossible de supprimer cet élément de contenu.",
+  "invalidKey": "Entrez une clé valide avec des lettres, chiffres, points, tirets ou tirets bas.",
+  "fields": {
+    "heroLabel": "Étiquette du bandeau principal",
+    "heroTitle": "Titre du bandeau principal",
+    "heroSubtitle": "Sous-titre du bandeau principal",
+    "featuresTitle": "Titre des avantages",
+    "featuresIntro": "Introduction des avantages",
+    "liveTitle": "Titre de la section Habiter",
+    "liveSubtitle": "Sous-titre de la section Habiter",
+    "buildTitle": "Titre de la section Construire",
+    "buildSubtitle": "Sous-titre de la section Construire",
+    "thinkTitle": "Titre de la section Réfléchir",
+    "thinkSubtitle": "Sous-titre de la section Réfléchir",
+    "portfolioTitle": "Titre du portfolio"
+  }
 }

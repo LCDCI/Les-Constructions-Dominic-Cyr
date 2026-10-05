@@ -11,7 +11,6 @@ import {
   GoInbox,
   GoPackage,
   GoFileDiff,
-  GoArrowUp,
   GoFile,
   GoPeople,
   GoGraph,
@@ -19,11 +18,13 @@ import {
   GoHome,
   GoCommentDiscussion,
   GoCheckCircle,
+  GoGlobe,
 } from 'react-icons/go';
 import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { CgProfile } from 'react-icons/cg';
+import PropTypes from 'prop-types';
 
 const Navbar = ({
   isOpen: controlledOpen,
@@ -230,6 +231,20 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
+                  to="/owner/my-site"
+                  className={`navbar-link ${isActive('/owner/my-site')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoGlobe />
+                  </span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.mySite', 'My site')}
+                  </span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link
                   to="/owner/documents"
                   className={`navbar-link ${isActive('/owner/documents')}`}
                   onClick={closeMenu}
@@ -392,6 +407,13 @@ const Navbar = ({
       />
     </>
   );
+};
+
+Navbar.propTypes = {
+  isOpen: PropTypes.bool,
+  onToggle: PropTypes.func,
+  onClose: PropTypes.func,
+  showToggle: PropTypes.bool,
 };
 
 export default Navbar;
