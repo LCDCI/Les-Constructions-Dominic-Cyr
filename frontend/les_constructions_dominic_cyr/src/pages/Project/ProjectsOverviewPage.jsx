@@ -14,6 +14,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { IoLeafOutline } from 'react-icons/io5';
 import { LuMapPinned } from 'react-icons/lu';
+import { HiOutlineHomeModern } from 'react-icons/hi2';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import '../../styles/Project/projectOverview.css';
 import '../../styles/Public_Facing/residential-projects.css';
@@ -295,12 +296,16 @@ const ProjectOverviewPage = () => {
       'Living Environment'
     ).toLowerCase();
     const lotsKey = t('features.lotsTitle', 'Lots').toLowerCase();
+    const housesKey = t('features.housesTitle', 'Houses').toLowerCase();
 
     switch (title) {
       case livingEnvKey:
         return IoLeafOutline;
       case lotsKey:
         return LuMapPinned;
+      case housesKey:
+      case 'new houses':
+        return HiOutlineHomeModern;
       default:
     }
     return IoLeafOutline;
@@ -313,12 +318,16 @@ const ProjectOverviewPage = () => {
       'Living Environment'
     ).toLowerCase();
     const lotsKey = t('features.lotsTitle', 'Lots').toLowerCase();
+    const housesKey = t('features.housesTitle', 'Houses').toLowerCase();
 
     switch (title) {
       case livingEnvKey:
         return 'living-environment';
       case lotsKey:
         return 'lots';
+      case housesKey:
+      case 'new houses':
+        return 'houses';
       default:
         return null;
     }
@@ -407,6 +416,7 @@ const ProjectOverviewPage = () => {
           <div className="project-features-grid">
             {[
               t('features.livingEnvironmentTitle', 'Living Environment'),
+              t('features.housesTitle', 'Houses'),
               t('features.lotsTitle', 'Lots'),
             ].map(featureTitle => {
               const IconComponent = getFeatureIcon(featureTitle);

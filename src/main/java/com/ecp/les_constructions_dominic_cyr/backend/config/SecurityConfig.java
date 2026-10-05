@@ -125,6 +125,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/project-management/**").permitAll()
                         .requestMatchers("/api/v1/realizations/**").permitAll()
                         .requestMatchers("/api/v1/contact/**").permitAll()
+
+                        // Owner-only public-site content editor
+                        .requestMatchers("/api/v1/site-content/**").hasAuthority("ROLE_OWNER")
                         
                         // Public inquiry submission (POST only, handled by inquiriesSubmitFilterChain but fallback here)
                         .requestMatchers(HttpMethod.POST, "/api/v1/inquiries").permitAll()
@@ -138,6 +141,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/project-management/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/realizations/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/houses/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/overview").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/lots").permitAll()
                         

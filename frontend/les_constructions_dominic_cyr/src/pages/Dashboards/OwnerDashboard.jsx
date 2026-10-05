@@ -6,12 +6,11 @@ import DashboardCard from '../../components/DashboardCard';
 import ProjectSelectionModal from '../../features/lots/components/ProjectSelectionModal';
 import '../../styles/Dashboards/OwnerDashboard.css';
 import { GoInbox } from 'react-icons/go';
-import { GoArrowUp } from 'react-icons/go';
 import { GoPeople } from 'react-icons/go';
 import { GoGraph } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
-import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
+import { GoGlobe } from 'react-icons/go';
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { MdOutlineRequestQuote } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
@@ -70,6 +69,12 @@ const OwnerDashboard = () => {
         title: t('cards.quotes.title', 'Quotes'),
         buttonText: t('cards.quotes.button', 'View Quotes'),
         action: () => navigate('/quotes/approval'),
+      },
+      {
+        icon: <GoGlobe />,
+        title: t('cards.mySite.title', 'My site'),
+        buttonText: t('cards.mySite.button', 'Manage my site'),
+        action: () => navigate('/owner/my-site'),
       },
     ],
     [t, navigate]

@@ -32,7 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         audience: getAuthAudience(),
       }}
       useRefreshTokens
-      cacheLocation="localstorage"
+      cacheLocation="memory"
       onRedirectCallback={onRedirectCallback}
     >
       <App />

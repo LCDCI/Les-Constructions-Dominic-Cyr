@@ -302,7 +302,8 @@
 }
 
 .mobile-nav.open {
-  max-height: 700px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .mobile-nav a {
@@ -454,6 +455,10 @@
     gap: 20px;
   }
 
+  .logo-image {
+    height: 96px;
+  }
+
   .btn-portal,
   .btn-get-started {
     padding: 8px 14px;
@@ -461,13 +466,14 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .site-nav-inner {
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     padding: 12px 0;
+    min-height: 74px;
   }
 
   /* Hide desktop elements */

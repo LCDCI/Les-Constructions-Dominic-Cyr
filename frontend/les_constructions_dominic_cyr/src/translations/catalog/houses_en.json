@@ -1,0 +1,15 @@
+{
+  "kicker": "Homes",
+  "title": "Houses",
+  "subtitle": "Explore available home designs for this project.",
+  "loading": "Loading houses...",
+  "searchLabel": "Search houses",
+  "searchPlaceholder": "Search by name or location",
+  "empty": "No houses found.",
+  "imageAlt": "House",
+  "fetchFailed": "Failed to load houses. Please try again later.",
+  "bedrooms": "Bedrooms",
+  "bathrooms": "Bathrooms",
+  "rooms": "Rooms",
+  "viewHouse": "View this house"
+}

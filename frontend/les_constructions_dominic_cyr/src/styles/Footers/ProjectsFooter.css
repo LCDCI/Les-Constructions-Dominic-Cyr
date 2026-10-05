@@ -42,7 +42,6 @@
   justify-content: center;
 }
 
-
 .footer-section {
   display: flex;
   flex-direction: column;
@@ -171,13 +170,16 @@
 }
 
 /* Mobile Responsive */
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .app-footer {
     padding: 2% 2.5%;
   }
 
   .footer-inner {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
     gap: 2.5%;
   }
 
@@ -194,6 +196,10 @@
   .app-footer[data-project] .footer-section-middle {
     min-width: 0;
     width: 100%;
+  }
+
+  .project-overview-page .footer-inner {
+    padding: 0 5%;
   }
 
   .footer-icon {
@@ -233,6 +239,7 @@
   }
 
   .footer-inner {
+    flex-direction: column;
     gap: 2.25%;
   }
 

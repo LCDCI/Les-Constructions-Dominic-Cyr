@@ -6,6 +6,8 @@
   "features": {
     "livingEnvironment": "milieu de vie",
     "livingEnvironmentTitle": "milieu de vie",
+    "houses": "Maisons",
+    "housesTitle": "Maisons",
     "lots": "Terrains",
     "lotsTitle": "Terrains"
   },

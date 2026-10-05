@@ -34,6 +34,10 @@
     "lots": {
       "title": "Lots",
       "button": "Voir les lots"
+    },
+    "mySite": {
+      "title": "Mon site",
+      "button": "Gérer mon site"
     }
   }
 }
