@@ -13,6 +13,8 @@
   "imageLabel": "Image",
   "deleteImage": "Delete image",
   "deleteText": "Delete text",
+  "text": "Manage text",
+  "images": "Manage images",
   "newKey": "New content key",
   "newText": "New content text",
   "createText": "Create text",
@@ -24,5 +26,20 @@
   "imageSaveError": "Unable to upload or save this image.",
   "imageDeleteError": "Unable to delete this image.",
   "createError": "Unable to create this content item.",
-  "deleteError": "Unable to delete this content item."
+  "deleteError": "Unable to delete this content item.",
+  "invalidKey": "Enter a valid content key using letters, numbers, dots, dashes, or underscores.",
+  "fields": {
+    "heroLabel": "Hero label",
+    "heroTitle": "Hero title",
+    "heroSubtitle": "Hero subtitle",
+    "featuresTitle": "Features title",
+    "featuresIntro": "Features introduction",
+    "liveTitle": "Live section title",
+    "liveSubtitle": "Live section subtitle",
+    "buildTitle": "Build section title",
+    "buildSubtitle": "Build section subtitle",
+    "thinkTitle": "Think section title",
+    "thinkSubtitle": "Think section subtitle",
+    "portfolioTitle": "Portfolio title"
+  }
 }

@@ -3,6 +3,10 @@ package com.ecp.les_constructions_dominic_cyr.backend.SiteContentSubdomain.Prese
 import com.ecp.les_constructions_dominic_cyr.backend.SiteContentSubdomain.DataAccessLayer.SiteContent;
 import com.ecp.les_constructions_dominic_cyr.backend.SiteContentSubdomain.DataAccessLayer.SiteContentRepository;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +48,7 @@ public class SiteContentController {
     @PutMapping("/{id}")
     public ResponseEntity<SiteContent> updateContent(
             @PathVariable Long id,
-            @RequestBody UpdateSiteContentRequest request
+            @Valid @RequestBody UpdateSiteContentRequest request
     ) {
         return repository.findById(id)
                 .map(content -> {
@@ -57,7 +61,7 @@ public class SiteContentController {
 
     @PostMapping
     public ResponseEntity<SiteContent> createContent(
-            @RequestBody CreateSiteContentRequest request
+            @Valid @RequestBody CreateSiteContentRequest request
     ) {
         SiteContent content = SiteContent.builder()
                 .pageGroup(request.pageGroup())
@@ -81,13 +85,21 @@ public class SiteContentController {
         return language != null && language.toLowerCase().startsWith("fr") ? "fr" : "en";
     }
 
-    public record UpdateSiteContentRequest(String contentText, String imageIdentifier) {}
+        public record UpdateSiteContentRequest(
+            @Size(max = 100_000) String contentText,
+            @Size(max = 500) String imageIdentifier
+        ) {}
 
     public record CreateSiteContentRequest(
+            @NotBlank @Size(max = 100) @Pattern(regexp = "[A-Za-z0-9._:-]+")
             String pageGroup,
+            @NotBlank @Size(max = 150) @Pattern(regexp = "[A-Za-z0-9._:-]+")
             String pageKey,
+            @NotBlank @Size(max = 10) @Pattern(regexp = "(?i)en|fr")
             String language,
+            @Size(max = 100_000)
             String contentText,
+            @Size(max = 500)
             String imageIdentifier,
             Integer sortOrder
     ) {}

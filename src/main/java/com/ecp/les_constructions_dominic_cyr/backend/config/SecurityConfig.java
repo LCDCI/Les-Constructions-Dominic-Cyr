@@ -127,6 +127,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/contact/**").permitAll()
 
                         // Owner-only public-site content editor
+                        .requestMatchers(HttpMethod.GET, "/api/v1/site-content/**").permitAll()
                         .requestMatchers("/api/v1/site-content/**").hasAuthority("ROLE_OWNER")
                         
                         // Public inquiry submission (POST only, handled by inquiriesSubmitFilterChain but fallback here)

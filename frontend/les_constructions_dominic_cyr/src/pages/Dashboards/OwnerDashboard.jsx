@@ -74,7 +74,17 @@ const OwnerDashboard = () => {
         icon: <GoGlobe />,
         title: t('cards.mySite.title', 'My site'),
         buttonText: t('cards.mySite.button', 'Manage my site'),
-        action: () => navigate('/owner/my-site'),
+        buttonOptions: [
+          {
+            value: 'text',
+            label: t('cards.mySite.text', 'Manage text'),
+          },
+          {
+            value: 'images',
+            label: t('cards.mySite.images', 'Manage images'),
+          },
+        ],
+        onOptionChange: mode => navigate('/owner/my-site', { state: { mode } }),
       },
     ],
     [t, navigate]
@@ -90,6 +100,8 @@ const OwnerDashboard = () => {
             title={card.title}
             buttonText={card.buttonText}
             onClick={card.action}
+            buttonOptions={card.buttonOptions}
+            onOptionChange={card.onOptionChange}
           />
         ))}
       </div>

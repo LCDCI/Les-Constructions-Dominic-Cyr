@@ -1,6 +1,67 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fetchPageTranslations } from '../utils/translationApi';
+import { fetchPublicSiteContent } from '../features/siteContent/api/siteContentApi';
+
+const PUBLIC_PAGE_GROUPS = {
+  home: 'home',
+  contact: 'contact',
+  renovations: 'renovations',
+  projectManagement: 'project-management',
+  realizations: 'realizations',
+  residentialProjects: 'residential-projects',
+  houses: 'houses',
+};
+
+const mergeObjects = (target, source) => {
+  Object.entries(source || {}).forEach(([key, value]) => {
+    if (
+      value &&
+      typeof value === 'object' &&
+      !Array.isArray(value) &&
+      typeof target[key] === 'object'
+    ) {
+      mergeObjects(target[key], value);
+    } else {
+      target[key] = value;
+    }
+  });
+  return target;
+};
+
+const setNestedValue = (target, path, value) => {
+  const parts = path.split('.');
+  let current = target;
+  parts.forEach((part, index) => {
+    if (index === parts.length - 1) {
+      current[part] = value;
+    } else {
+      current[part] = current[part] || {};
+      current = current[part];
+    }
+  });
+};
+
+const loadTranslationsForPage = async (pageName, language) => {
+  const localTranslations = await fetchPageTranslations(pageName, language);
+  const pageGroup = PUBLIC_PAGE_GROUPS[pageName];
+  if (!pageGroup) return localTranslations;
+
+  const siteItems = await fetchPublicSiteContent(language, pageGroup);
+  const overrides = {};
+  (siteItems || []).forEach(item => {
+    try {
+      if (item.contentText?.trim().startsWith('{')) {
+        mergeObjects(overrides, JSON.parse(item.contentText));
+      } else if (item.pageKey && item.contentText != null) {
+        setNestedValue(overrides, item.pageKey, item.contentText);
+      }
+    } catch {
+      // Preserve the local fallback when an editorial JSON value is malformed.
+    }
+  });
+  return mergeObjects({ ...(localTranslations || {}) }, overrides);
+};
 
 /**
  * Custom hook for page-specific translations.
@@ -21,22 +82,16 @@ export const usePageTranslations = pageName => {
 
   useEffect(() => {
     if (!pageName) {
-      console.warn('[usePageTranslations] Page name is required');
       return;
     }
 
     const loadPageTranslations = async () => {
-      // Check if translations are already loaded for this namespace
       const namespace = pageName;
-      const hasResources = i18nInstance.hasResourceBundle(
-        currentLanguage,
-        namespace
-      );
 
       setIsLoading(true);
       try {
         // Always fetch fresh translations to ensure nav/footer are up-to-date
-        const translations = await fetchPageTranslations(
+        const translations = await loadTranslationsForPage(
           pageName,
           currentLanguage
         );
@@ -73,18 +128,11 @@ export const usePageTranslations = pageName => {
             // This ensures the navbar updates with the latest translations
             i18nInstance.emit('languageChanged', currentLanguage);
           }
-        } else {
-          console.warn(
-            `[usePageTranslations] No translations found for ${pageName} (${currentLanguage})`
-          );
         }
 
         setIsInitialized(true);
       } catch (error) {
-        console.error(
-          `[usePageTranslations] Error loading translations for ${pageName}:`,
-          error
-        );
+        // Keep local fallback translations available when the content service is unavailable.
       } finally {
         setIsLoading(false);
       }
@@ -99,7 +147,7 @@ export const usePageTranslations = pageName => {
       const loadForNewLanguage = async () => {
         setIsLoading(true);
         try {
-          const translations = await fetchPageTranslations(
+          const translations = await loadTranslationsForPage(
             pageName,
             currentLanguage
           );
@@ -133,10 +181,7 @@ export const usePageTranslations = pageName => {
             }
           }
         } catch (error) {
-          console.error(
-            `[usePageTranslations] Error reloading translations:`,
-            error
-          );
+          // Keep the last loaded translations when the refresh fails.
         } finally {
           setIsLoading(false);
         }

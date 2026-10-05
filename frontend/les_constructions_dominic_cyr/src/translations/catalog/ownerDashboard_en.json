@@ -37,7 +37,9 @@
     },
     "mySite": {
       "title": "My site",
-      "button": "Manage my site"
+      "button": "Manage my site",
+      "text": "Manage text",
+      "images": "Manage images"
     }
   }
 }

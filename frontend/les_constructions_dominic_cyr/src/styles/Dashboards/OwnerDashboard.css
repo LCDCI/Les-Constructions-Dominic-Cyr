@@ -81,6 +81,41 @@
   transform: scale(0.98);
 }
 
+.dashboard-card .card-select {
+  appearance: none;
+  min-width: 210px;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1px solid var(--brand-primary-dark);
+  border-radius: var(--border-radius);
+  background:
+    linear-gradient(45deg, transparent 50%, var(--brand-primary-dark) 50%)
+      calc(100% - 18px) 50% / 6px 6px no-repeat,
+    linear-gradient(135deg, var(--brand-primary-dark) 50%, transparent 50%)
+      calc(100% - 13px) 50% / 6px 6px no-repeat,
+    var(--brand-primary-light);
+  color: var(--charcoal-gray);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(44, 53, 49, 0.12);
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dashboard-card .card-select:hover,
+.dashboard-card .card-select:focus {
+  border-color: var(--brand-primary-darker);
+  background-color: var(--brand-primary-lighter);
+  box-shadow: 0 0 0 3px var(--brand-primary-light);
+  outline: none;
+}
+
+.dashboard-card .card-select option {
+  background: var(--card-background);
+  color: var(--charcoal-gray);
+}
+
 .schedule-section {
   background: #e8ebe7;
   border-radius: 0.75rem;

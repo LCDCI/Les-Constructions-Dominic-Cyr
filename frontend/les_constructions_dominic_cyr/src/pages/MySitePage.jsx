@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 import {
@@ -13,13 +14,47 @@ import {
 import { deleteFile, uploadFile } from '../features/files/api/filesApi';
 import '../styles/MySitePage.css';
 
+const FIELD_LABEL_KEYS = {
+  'hero.label': 'fields.heroLabel',
+  'hero.title': 'fields.heroTitle',
+  'hero.subtitle': 'fields.heroSubtitle',
+  'features.title': 'fields.featuresTitle',
+  'features.intro': 'fields.featuresIntro',
+  'live.title': 'fields.liveTitle',
+  'live.subtitle': 'fields.liveSubtitle',
+  'build.title': 'fields.buildTitle',
+  'build.subtitle': 'fields.buildSubtitle',
+  'think.title': 'fields.thinkTitle',
+  'think.subtitle': 'fields.thinkSubtitle',
+  'portfolio.title': 'fields.portfolioTitle',
+};
+
+const sanitizeEditorText = value =>
+  String(value ?? '')
+    .replace(/\0/g, '')
+    .trim()
+    .slice(0, 100000);
+
+const getContentLabel = (pageKey, translate) => {
+  const fallback = pageKey
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+  return translate(FIELD_LABEL_KEYS[pageKey] || pageKey, fallback);
+};
+
 const SiteImagePreview = ({ imageIdentifier }) => {
   const [attempts, setAttempts] = useState(0);
   const [source, setSource] = useState(() => {
     if (!imageIdentifier) return '';
     if (String(imageIdentifier).startsWith('http')) return imageIdentifier;
     const base = import.meta.env.VITE_FILES_SERVICE_URL || '/files';
-    return `${base.replace(/\/$/, '')}/files/${imageIdentifier}`;
+    const normalizedBase = base.replace(/\/$/, '');
+    const filesEndpoint = normalizedBase.endsWith('/files')
+      ? normalizedBase
+      : `${normalizedBase}/files`;
+    return `${filesEndpoint}/${imageIdentifier}`;
   });
 
   if (!source || attempts >= 3) return null;
@@ -47,6 +82,7 @@ SiteImagePreview.propTypes = {
 const MySitePage = () => {
   const { t } = usePageTranslations('mySite');
   const { i18n } = useTranslation();
+  const location = useLocation();
   const { getAccessTokenSilently, user } = useAuth0();
   const [language, setLanguage] = useState(
     i18n.language?.startsWith('fr') ? 'fr' : 'en'
@@ -62,6 +98,12 @@ const MySitePage = () => {
   const [editorMode, setEditorMode] = useState('text');
   const [newPageKey, setNewPageKey] = useState('');
   const [newContentText, setNewContentText] = useState('');
+
+  useEffect(() => {
+    if (location.state?.mode === 'images' || location.state?.mode === 'text') {
+      setEditorMode(location.state.mode);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     let cancelled = false;
@@ -201,10 +243,14 @@ const MySitePage = () => {
       updateDraft(item.id, 'imageIdentifier', imageIdentifier);
 
       if (oldImageIdentifier && !oldImageIdentifier.startsWith('http')) {
-        await deleteFile(oldImageIdentifier, {
-          deletedBy: user?.sub || 'site-content',
-          token,
-        });
+        try {
+          await deleteFile(oldImageIdentifier, {
+            deletedBy: user?.sub || 'site-content',
+            token,
+          });
+        } catch {
+          // Preserve the successful replacement if an old/shared object is not deletable.
+        }
       }
       setSavedId(item.id);
     } catch (uploadError) {
@@ -230,10 +276,14 @@ const MySitePage = () => {
       );
       updateDraft(item.id, 'imageIdentifier', '');
       if (!item.imageIdentifier.startsWith('http')) {
-        await deleteFile(item.imageIdentifier, {
-          deletedBy: user?.sub || 'site-content',
-          token,
-        });
+        try {
+          await deleteFile(item.imageIdentifier, {
+            deletedBy: user?.sub || 'site-content',
+            token,
+          });
+        } catch {
+          // The database reference is removed even when the object is already missing.
+        }
       }
       setSavedId(item.id);
     } catch (deleteError) {
@@ -245,14 +295,22 @@ const MySitePage = () => {
 
   const handleCreateText = async () => {
     if (!selectedGroup || !newPageKey.trim()) return;
+    const sanitizedPageKey = sanitizeEditorText(newPageKey).replace(
+      /[^a-zA-Z0-9_.-]/g,
+      ''
+    );
+    if (!sanitizedPageKey) {
+      setError('invalidKey');
+      return;
+    }
     try {
       const token = await getToken();
       const created = await createSiteContent(
         {
           pageGroup: selectedGroup,
-          pageKey: newPageKey.trim(),
+          pageKey: sanitizedPageKey,
           language,
-          contentText: newContentText,
+          contentText: sanitizeEditorText(newContentText),
           imageIdentifier: null,
           sortOrder: items.length,
         },
@@ -299,7 +357,7 @@ const MySitePage = () => {
       });
       const updated = await updateSiteContent(
         item.id,
-        draft.contentText || '',
+        sanitizeEditorText(draft.contentText),
         draft.imageIdentifier || null,
         token
       );
@@ -390,7 +448,7 @@ const MySitePage = () => {
                 return (
                   <article className="my-site-item" key={item.id}>
                     <div className="my-site-item-heading">
-                      <h3>{item.pageKey}</h3>
+                      <h3>{getContentLabel(item.pageKey, t)}</h3>
                       <span>{language.toUpperCase()}</span>
                     </div>
                     {editorMode === 'text' ? (

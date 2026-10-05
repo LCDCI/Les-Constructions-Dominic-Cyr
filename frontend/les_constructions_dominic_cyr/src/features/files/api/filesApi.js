@@ -9,12 +9,15 @@ const BASE_API_URL =
   window.location.hostname.includes('constructions-dominiccyr')
     ? 'https://files-service-app-xubs2.ondigitalocean.app'
     : `${window.location.origin}/files`);
+const FILES_ENDPOINT = BASE_API_URL.endsWith('/files')
+  ? BASE_API_URL
+  : `${BASE_API_URL}/files`;
 
 // Archive a file (photo)
 export async function archiveFile(fileId, { archivedBy }) {
   const archivedByValue = String(archivedBy);
   const response = await axios.post(
-    `${BASE_API_URL}/files/${fileId}/archive`,
+    `${FILES_ENDPOINT}/${fileId}/archive`,
     { archivedBy: archivedByValue },
     {
       headers: { 'Content-Type': 'application/json' },
@@ -26,7 +29,7 @@ export async function archiveFile(fileId, { archivedBy }) {
 // Unarchive a file (photo)
 export async function unarchiveFile(fileId) {
   const response = await axios.post(
-    `${BASE_API_URL}/files/${fileId}/unarchive`,
+    `${FILES_ENDPOINT}/${fileId}/unarchive`,
     null,
     {
       headers: { 'Content-Type': 'application/json' },
@@ -56,7 +59,7 @@ export async function fetchProjectDocuments(
 }
 
 export async function uploadFile(formData, token = null) {
-  const response = await axios.post(`${BASE_API_URL}/files`, formData, {
+  const response = await axios.post(`${FILES_ENDPOINT}/`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -68,7 +71,7 @@ export async function uploadFile(formData, token = null) {
 export async function deleteFile(fileId, { deletedBy, token = null }) {
   // Simple validation - deletedBy should be a string
   const deletedByValue = String(deletedBy);
-  const url = `${BASE_API_URL}/files/${fileId}`;
+  const url = `${FILES_ENDPOINT}/${fileId}`;
   const payload = { deletedBy: deletedByValue };
   try {
     console.debug('[filesApi] DELETE', url, payload);
@@ -103,12 +106,12 @@ export async function reconcileProject(projectId) {
 
 export async function downloadFile(fileId, fileName, role, userId) {
   // Always use role-checked endpoint if role and userId are provided
-  let url = `${BASE_API_URL}/files/${fileId}/download`;
+  let url = `${FILES_ENDPOINT}/${fileId}/download`;
   if (role && userId) {
     url += `?role=${encodeURIComponent(role)}&userId=${encodeURIComponent(userId)}`;
   } else {
     // Fallback to regular download if no role/userId (backward compatibility)
-    url = `${BASE_API_URL}/files/${fileId}`;
+    url = `${FILES_ENDPOINT}/${fileId}`;
   }
 
   console.log('[downloadFile] Attempting download:', {
