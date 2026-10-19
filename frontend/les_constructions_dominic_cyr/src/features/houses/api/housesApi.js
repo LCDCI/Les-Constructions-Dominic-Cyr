@@ -39,6 +39,23 @@ export function updateHouse(houseIdentifier, house, token) {
   });
 }
 
+export async function uploadHouseImage(houseIdentifier, file, token) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await fetch(
+    `${API_BASE_URL}/houses/${houseIdentifier}/image`,
+    {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    }
+  );
+  if (!response.ok) {
+    throw new Error(`House image upload failed (${response.status})`);
+  }
+  return response.json();
+}
+
 export function deleteHouse(houseIdentifier, token) {
   return request(`${API_BASE_URL}/houses/${houseIdentifier}`, {
     method: 'DELETE',
