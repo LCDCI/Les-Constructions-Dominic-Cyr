@@ -15,7 +15,7 @@ const FILES_ENDPOINT = BASE_API_URL.endsWith('/files')
   ? BASE_API_URL
   : `${BASE_API_URL}/files`;
 
-const isTrustedConstructionsHost = (hostname) => {
+const isTrustedConstructionsHost = hostname => {
   const normalizedHost = String(hostname || '').toLowerCase();
   return (
     normalizedHost === 'constructions-dominiccyr.com' ||
