@@ -14,9 +14,18 @@ const BASE_API_URL =
 const FILES_ENDPOINT = BASE_API_URL.endsWith('/files')
   ? BASE_API_URL
   : `${BASE_API_URL}/files`;
+
+const isTrustedConstructionsHost = (hostname) => {
+  const normalizedHost = String(hostname || '').toLowerCase();
+  return (
+    normalizedHost === 'constructions-dominiccyr.com' ||
+    normalizedHost.endsWith('.constructions-dominiccyr.com')
+  );
+};
+
 const BROWSER_FILES_ENDPOINT =
   typeof window !== 'undefined' &&
-  window.location.hostname.includes('constructions-dominiccyr.com')
+  isTrustedConstructionsHost(window.location.hostname)
     ? `${window.location.origin}/files`
     : FILES_ENDPOINT || 'http://localhost:8082/files';
 
