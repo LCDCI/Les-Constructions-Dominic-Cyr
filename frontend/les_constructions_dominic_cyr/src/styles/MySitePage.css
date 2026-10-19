@@ -293,6 +293,12 @@
   font-weight: 700;
 }
 
+.my-site-optional {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
 .my-site-modal input,
 .my-site-modal select,
 .my-site-modal textarea {

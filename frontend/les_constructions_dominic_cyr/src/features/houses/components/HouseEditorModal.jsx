@@ -199,7 +199,7 @@ export default function HouseEditorModal({
         </label>
         <div className="my-site-modal-fields">
           <label>
-            Rooms
+            Rooms <span className="my-site-optional">Optional</span>
             <input
               type="number"
               min="0"
@@ -211,7 +211,7 @@ export default function HouseEditorModal({
             />
           </label>
           <label>
-            Bedrooms
+            Bedrooms <span className="my-site-optional">Optional</span>
             <input
               type="number"
               min="0"
@@ -223,7 +223,7 @@ export default function HouseEditorModal({
             />
           </label>
           <label>
-            Bathrooms
+            Bathrooms <span className="my-site-optional">Optional</span>
             <input
               type="number"
               min="0"
@@ -235,7 +235,7 @@ export default function HouseEditorModal({
             />
           </label>
           <label>
-            Year
+            Year <span className="my-site-optional">Optional</span>
             <input
               type="number"
               min="1800"

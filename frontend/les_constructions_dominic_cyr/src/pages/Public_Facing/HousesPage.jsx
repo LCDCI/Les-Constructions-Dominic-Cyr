@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/houses.css';
@@ -15,12 +15,12 @@ const getFilesServiceUrl = () =>
 
 export default function HousesPage() {
   const { t } = usePageTranslations('houses');
-  const { projectIdentifier } = useParams();
-  const navigate = useNavigate();
+  const { projectIdentifier, houseId } = useParams();
   const [houses, setHouses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedHouse, setSelectedHouse] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +48,12 @@ export default function HousesPage() {
     };
   }, [projectIdentifier]);
 
+  useEffect(() => {
+    if (!houseId) return;
+    const house = houses.find(item => item.houseIdentifier === houseId);
+    if (house) setSelectedHouse(house);
+  }, [houseId, houses]);
+
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const filteredHouses = houses.filter(house => {
     if (!normalizedSearch) return true;
@@ -61,6 +67,9 @@ export default function HousesPage() {
     if (String(imageIdentifier).startsWith('http')) return imageIdentifier;
     return `${getFilesServiceUrl()}/files/${imageIdentifier}`;
   };
+
+  const hasHouseValue = value =>
+    value !== null && value !== undefined && String(value).trim() !== '';
 
   if (loading) {
     return (
@@ -125,17 +134,17 @@ export default function HousesPage() {
                     <p className="house-description">{house.description}</p>
                   )}
                   <div className="house-details">
-                    {house.numberOfBedrooms != null && (
+                    {hasHouseValue(house.numberOfBedrooms) && (
                       <span>
                         {t('bedrooms', 'Bedrooms')}: {house.numberOfBedrooms}
                       </span>
                     )}
-                    {house.numberOfBathrooms != null && (
+                    {hasHouseValue(house.numberOfBathrooms) && (
                       <span>
                         {t('bathrooms', 'Bathrooms')}: {house.numberOfBathrooms}
                       </span>
                     )}
-                    {house.numberOfRooms != null && (
+                    {hasHouseValue(house.numberOfRooms) && (
                       <span>
                         {t('rooms', 'Rooms')}: {house.numberOfRooms}
                       </span>
@@ -144,7 +153,7 @@ export default function HousesPage() {
                   <button
                     type="button"
                     className="house-button"
-                    onClick={() => navigate(`/houses/${house.houseIdentifier}`)}
+                    onClick={() => setSelectedHouse(house)}
                   >
                     {t('viewHouse', 'View this house')}
                   </button>
@@ -154,6 +163,40 @@ export default function HousesPage() {
           )}
         </div>
       </main>
+      {selectedHouse && (
+        <div
+          className="house-image-modal-overlay"
+          role="presentation"
+          onClick={() => setSelectedHouse(null)}
+        >
+          <div
+            className="house-image-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="house-image-modal-title"
+            onClick={event => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="house-image-modal-close"
+              onClick={() => setSelectedHouse(null)}
+              aria-label={t('close', 'Close')}
+            >
+              ×
+            </button>
+            <img
+              src={getImageUrl(selectedHouse.imageIdentifier)}
+              alt={selectedHouse.houseName || t('imageAlt', 'House')}
+              className="house-image-modal-photo"
+            />
+            <div className="house-image-modal-caption">
+              <h2 id="house-image-modal-title">{selectedHouse.houseName}</h2>
+              {selectedHouse.location && <p>{selectedHouse.location}</p>}
+              {selectedHouse.description && <p>{selectedHouse.description}</p>}
+            </div>
+          </div>
+        </div>
+      )}
       <ProjectsFooter projectId={projectIdentifier} />
     </div>
   );
