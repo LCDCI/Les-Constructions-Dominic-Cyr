@@ -2,6 +2,8 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentat
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.House;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.House.HouseRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -10,6 +12,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +24,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +42,11 @@ import java.util.UUID;
 @CrossOrigin(origins = "http://localhost:3000")
 public class HouseController {
     private final HouseRepository repository;
+    private final WebClient.Builder webClientBuilder;
+    private final ObjectMapper objectMapper;
+
+    @Value("${files.service.base-url}")
+    private String filesServiceBaseUrl;
 
     @GetMapping
     public ResponseEntity<List<House>> getHouses(
@@ -65,6 +81,53 @@ public class HouseController {
         existing.setNumberOfBathrooms(request.numberOfBathrooms());
         existing.setConstructionYear(request.constructionYear());
         return ResponseEntity.ok(repository.save(existing));
+    }
+
+    @PostMapping(value = "/{houseIdentifier}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<House> uploadHouseImage(
+            @PathVariable UUID houseIdentifier,
+            @RequestPart("file") MultipartFile file,
+            @AuthenticationPrincipal Jwt jwt
+    ) {
+        House house = repository.findByHouseIdentifier(houseIdentifier);
+        if (house == null) return ResponseEntity.notFound().build();
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        MultipartBodyBuilder body = new MultipartBodyBuilder();
+        body.part("file", file.getResource())
+                .filename(file.getOriginalFilename())
+                .contentType(file.getContentType() == null
+                        ? MediaType.IMAGE_JPEG
+                        : MediaType.parseMediaType(file.getContentType()));
+        body.part("category", "PHOTO");
+        body.part("projectId", house.getProjectIdentifier());
+        body.part("uploadedBy", jwt == null ? "owner" : jwt.getSubject());
+        body.part("uploaderRole", "OWNER");
+
+        String response = webClientBuilder
+                .baseUrl(filesServiceBaseUrl)
+                .build()
+                .post()
+                .uri("/files")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData(body.build()))
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        try {
+            JsonNode json = objectMapper.readTree(response);
+            String imageIdentifier = json.path("fileId").asText(null);
+            if (imageIdentifier == null || imageIdentifier.isBlank()) {
+                return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+            }
+            house.setImageIdentifier(imageIdentifier);
+            return ResponseEntity.ok(repository.save(house));
+        } catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+        }
     }
 
     @DeleteMapping("/{houseIdentifier}")

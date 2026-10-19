@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
-import { deleteFile, uploadFile } from '../../files/api/filesApi';
-import { createHouse, updateHouse } from '../api/housesApi';
+import { createHouse, updateHouse, uploadHouseImage } from '../api/housesApi';
 import '../../../styles/MySitePage.css';
 
 const emptyHouse = {
@@ -29,7 +28,7 @@ export default function HouseEditorModal({
   onClose,
   onSaved,
 }) {
-  const { getAccessTokenSilently, user } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
   const [form, setForm] = useState(emptyHouse);
   const [imageFile, setImageFile] = useState(null);
   const [removeExistingImage, setRemoveExistingImage] = useState(false);
@@ -76,16 +75,8 @@ export default function HouseEditorModal({
         ? null
         : form.imageIdentifier || null;
       if (imageFile) {
-        const uploadForm = new FormData();
-        uploadForm.append('file', imageFile);
-        uploadForm.append('category', 'PHOTO');
-        uploadForm.append('projectId', form.projectIdentifier);
-        uploadForm.append('uploadedBy', user?.sub || '');
-        uploadForm.append('uploaderRole', 'OWNER');
-        const uploaded = await uploadFile(uploadForm, token);
-        imageIdentifier = uploaded.fileId || uploaded.id;
-        if (!imageIdentifier)
-          throw new Error('Image upload returned no identifier');
+        // A new house is created first so the backend can scope the file to its house ID.
+        if (house) imageIdentifier = null;
       }
 
       const payload = {
@@ -104,21 +95,15 @@ export default function HouseEditorModal({
         ? await updateHouse(house.houseIdentifier, payload, token)
         : await createHouse(payload, token);
 
-      if (
-        house?.imageIdentifier &&
-        !String(house.imageIdentifier).startsWith('http') &&
-        (imageFile || removeExistingImage)
-      ) {
-        try {
-          await deleteFile(house.imageIdentifier, {
-            deletedBy: user?.sub || 'house-editor',
-            token,
-          });
-        } catch {
-          // The database reference has already been updated successfully.
-        }
+      let finalHouse = saved;
+      if (imageFile) {
+        finalHouse = await uploadHouseImage(
+          saved.houseIdentifier,
+          imageFile,
+          token
+        );
       }
-      onSaved(saved);
+      onSaved(finalHouse);
     } catch (saveError) {
       setError(saveError.message || 'Unable to save this house.');
     } finally {
