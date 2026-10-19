@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useMemo } from 'react';
 import { useNotifications } from '../../features/notifications/hooks/useNotifications';
 import NotificationItem from '../../features/notifications/components/NotificationItem';
@@ -8,8 +9,15 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const InboxPage = () => {
   const { t } = usePageTranslations('inbox');
-  const { notifications, loading, error, markAllAsRead, markAsRead } =
-    useNotifications();
+  const {
+    notifications,
+    loading,
+    error,
+    markAllAsRead,
+    markAsRead,
+    removeNotification,
+    removeAllNotifications,
+  } = useNotifications();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all'); // 'all', 'unread', 'read'
   const [sortBy, setSortBy] = useState('newest'); // 'newest', 'oldest'
@@ -73,6 +81,14 @@ const InboxPage = () => {
     }
   };
 
+  const handleDeleteAll = async () => {
+    try {
+      await removeAllNotifications();
+    } catch (deleteError) {
+      console.error('Failed to delete all notifications:', deleteError);
+    }
+  };
+
   if (loading) {
     return (
       <div className="inbox-page">
@@ -119,6 +135,11 @@ const InboxPage = () => {
                 onClick={handleMarkAllAsRead}
               >
                 {t('markAllAsRead', 'Mark all as read')}
+              </button>
+            )}
+            {notifications.length > 0 && (
+              <button className="btn-delete-all" onClick={handleDeleteAll}>
+                {t('deleteAll', 'Delete all')}
               </button>
             )}
           </div>
@@ -176,6 +197,7 @@ const InboxPage = () => {
                   key={notification.notificationId}
                   notification={notification}
                   onMarkAsRead={markAsRead}
+                  onDelete={removeNotification}
                 />
               ))}
             </div>

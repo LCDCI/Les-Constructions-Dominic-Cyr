@@ -79,5 +79,19 @@ public class NotificationController {
         return ResponseEntity.ok(Map.of("message", "All notifications marked as read"));
     }
 
+    @DeleteMapping("/{notificationId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteNotification(@PathVariable UUID notificationId) {
+        notificationService.deleteNotification(notificationId, getCurrentUserId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> deleteAllNotifications() {
+        notificationService.deleteAllNotifications(getCurrentUserId());
+        return ResponseEntity.noContent().build();
+    }
+
 
 }

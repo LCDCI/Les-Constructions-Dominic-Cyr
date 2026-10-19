@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
@@ -12,13 +13,14 @@ import {
   GoCommentDiscussion,
   GoBell,
   GoHome,
+  GoTrash,
 } from 'react-icons/go';
 import useBackendUser from '../../../hooks/useBackendUser';
 import './NotificationItem.css';
 
-const NotificationItem = ({ notification, onMarkAsRead }) => {
+const NotificationItem = ({ notification, onMarkAsRead, onDelete }) => {
   const navigate = useNavigate();
-  const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const { isAuthenticated } = useAuth0();
   const { role } = useBackendUser();
 
   const resolveNotificationLink = link => {
@@ -137,6 +139,17 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
           <span className="notification-time">
             {formatDate(notification.createdAt)}
           </span>
+          <button
+            type="button"
+            className="notification-delete-button"
+            aria-label="Delete notification"
+            onClick={event => {
+              event.stopPropagation();
+              onDelete?.(notification.notificationId);
+            }}
+          >
+            <GoTrash />
+          </button>
         </div>
       </div>
     </div>
@@ -144,3 +157,17 @@ const NotificationItem = ({ notification, onMarkAsRead }) => {
 };
 
 export default NotificationItem;
+
+NotificationItem.propTypes = {
+  notification: PropTypes.shape({
+    notificationId: PropTypes.string.isRequired,
+    isRead: PropTypes.bool.isRequired,
+    link: PropTypes.string,
+    category: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired,
+    createdAt: PropTypes.string.isRequired,
+  }).isRequired,
+  onMarkAsRead: PropTypes.func,
+  onDelete: PropTypes.func,
+};

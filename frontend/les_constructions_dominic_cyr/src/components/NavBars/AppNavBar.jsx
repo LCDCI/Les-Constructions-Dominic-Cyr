@@ -207,7 +207,7 @@ export default function AppNavBar() {
         {isAuthenticated && !roleLoading && (
           <div className="dashboard-toggle">
             <button
-              className="navbar-toggle"
+              className="navbar-toggle dashboard-menu-button-desktop"
               onClick={toggleDashboardMenu}
               aria-label="Toggle dashboard menu"
               aria-expanded={isDashboardMenuOpen}
@@ -215,6 +215,18 @@ export default function AppNavBar() {
               <span className="hamburger-line"></span>
               <span className="hamburger-line"></span>
               <span className="hamburger-line"></span>
+            </button>
+            <button
+              className="dashboard-menu-button dashboard-menu-button-mobile"
+              onClick={toggleDashboardMenu}
+              aria-label="Toggle dashboard menu"
+              aria-expanded={isDashboardMenuOpen}
+            >
+              <img
+                src={MOBILE_LOGO_URL}
+                alt="Les Constructions Dominic Cyr"
+                className="mobile-dashboard-logo"
+              />
             </button>
           </div>
         )}
@@ -293,17 +305,15 @@ export default function AppNavBar() {
           </button>
         </div>
 
-        {/* Mobile logo button - right side (acts as home + project pages dropdown) */}
+        {/* Mobile public-menu button - right side */}
         <button
           className="mobile-logo-menu-button"
           onClick={handleMobileLogoClick}
           aria-label="Toggle public menu"
         >
-          <img
-            src={MOBILE_LOGO_URL}
-            alt="Les Constructions Dominic Cyr"
-            className="mobile-logo-menu"
-          />
+          <span className="mobile-menu-line"></span>
+          <span className="mobile-menu-line"></span>
+          <span className="mobile-menu-line"></span>
         </button>
       </div>
 

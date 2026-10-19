@@ -11,6 +11,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.utils.Auth0ManagementServic
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.Set;
@@ -25,6 +27,9 @@ public class UserServiceImpl implements UserService {
 
     @Value("${app.invite.result-url}")
     private String inviteResultUrl;
+
+    @Value("${app.local-development:false}")
+    private boolean localDevelopment;
 
     public UserServiceImpl(UsersRepository usersRepository,
                            LotRepository lotRepository,
@@ -94,11 +99,47 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public UserResponseModel getUserByAuth0Id(String auth0UserId) {
-        Users user = usersRepository.findByAuth0UserId(auth0UserId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with Auth0 ID: " + auth0UserId));
+        Users user = usersRepository.findByAuth0UserId(auth0UserId).orElse(null);
+        if (user == null && localDevelopment) {
+            user = provisionLocalUser(auth0UserId);
+        }
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with Auth0 ID: " + auth0UserId);
+        }
         return UserMapper.toResponseModel(user, null);
+    }
+
+    private Users provisionLocalUser(String auth0UserId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserRole role = UserRole.OWNER;
+        if (authentication != null) {
+            role = authentication.getAuthorities().stream()
+                    .map(authority -> authority.getAuthority().replace("ROLE_", ""))
+                    .map(value -> {
+                        try {
+                            return UserRole.valueOf(value);
+                        } catch (IllegalArgumentException ignored) {
+                            return null;
+                        }
+                    })
+                    .filter(java.util.Objects::nonNull)
+                    .findFirst()
+                    .orElse(UserRole.OWNER);
+        }
+        Users localUser = new Users(
+                UserIdentifier.newId(),
+                "Local",
+                "User",
+                auth0UserId + "@local.invalid",
+                null,
+                null,
+                role,
+                auth0UserId,
+                UserStatus.ACTIVE
+        );
+        return usersRepository.save(localUser);
     }
 
     @Override

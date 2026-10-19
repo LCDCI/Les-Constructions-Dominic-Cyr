@@ -59,6 +59,16 @@ public class NotificationService {
     }
 
     @Transactional
+    public void deleteNotification(UUID notificationId, UUID userId) {
+        notificationRepository.deleteByIdAndUserId(notificationId, userId);
+    }
+
+    @Transactional
+    public void deleteAllNotifications(UUID userId) {
+        notificationRepository.deleteAllByUserId(userId);
+    }
+
+    @Transactional
     public NotificationResponseModel createNotification(UUID userId, String title, String message,
                                                         NotificationCategory category, String link) {
         Notification notification = new Notification(userId, title, message, category, link);

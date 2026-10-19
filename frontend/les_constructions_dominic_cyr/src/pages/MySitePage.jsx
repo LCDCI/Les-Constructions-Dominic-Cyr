@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 import {
@@ -12,6 +11,8 @@ import {
   updateSiteContent,
 } from '../features/siteContent/api/siteContentApi';
 import { deleteFile, uploadFile } from '../features/files/api/filesApi';
+import { fetchHouses, deleteHouse } from '../features/houses/api/housesApi';
+import HouseEditorModal from '../features/houses/components/HouseEditorModal';
 import '../styles/MySitePage.css';
 
 const FIELD_LABEL_KEYS = {
@@ -82,7 +83,6 @@ SiteImagePreview.propTypes = {
 const MySitePage = () => {
   const { t } = usePageTranslations('mySite');
   const { i18n } = useTranslation();
-  const location = useLocation();
   const { getAccessTokenSilently, user } = useAuth0();
   const [language, setLanguage] = useState(
     i18n.language?.startsWith('fr') ? 'fr' : 'en'
@@ -94,16 +94,13 @@ const MySitePage = () => {
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
   const [error, setError] = useState(null);
-  const [savedId, setSavedId] = useState(null);
-  const [editorMode, setEditorMode] = useState('text');
   const [newPageKey, setNewPageKey] = useState('');
   const [newContentText, setNewContentText] = useState('');
-
-  useEffect(() => {
-    if (location.state?.mode === 'images' || location.state?.mode === 'text') {
-      setEditorMode(location.state.mode);
-    }
-  }, [location.state]);
+  const [projects, setProjects] = useState([]);
+  const [houses, setHouses] = useState([]);
+  const [selectedPage, setSelectedPage] = useState('');
+  const [houseModal, setHouseModal] = useState(null);
+  const [contentModal, setContentModal] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -115,7 +112,19 @@ const MySitePage = () => {
       const token = await getAccessTokenSilently({
         authorizationParams: { audience: getAuthAudience() },
       });
-      return fetchSiteContentGroups(language, token);
+      const [groupData, projectResponse, houseData] = await Promise.all([
+        fetchSiteContentGroups(language, token),
+        fetch(`${import.meta.env.VITE_API_BASE || '/api/v1'}/projects`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetchHouses(null, token),
+      ]);
+      const projectData = projectResponse.ok
+        ? await projectResponse.json()
+        : [];
+      setProjects(Array.isArray(projectData) ? projectData : []);
+      setHouses(Array.isArray(houseData) ? houseData : []);
+      return groupData;
     };
 
     loadGroups()
@@ -123,6 +132,11 @@ const MySitePage = () => {
         if (cancelled) return;
         const nextGroups = Array.isArray(data) ? data : [];
         setGroups(nextGroups);
+        setSelectedPage(current =>
+          current === 'houses' || nextGroups.includes(current)
+            ? current
+            : nextGroups[0] || 'houses'
+        );
         setSelectedGroup(current =>
           current && nextGroups.includes(current)
             ? current
@@ -142,7 +156,7 @@ const MySitePage = () => {
   }, [language, getAccessTokenSilently]);
 
   useEffect(() => {
-    if (!selectedGroup) {
+    if (!selectedGroup || selectedPage === 'houses') {
       setItems([]);
       return undefined;
     }
@@ -185,7 +199,7 @@ const MySitePage = () => {
     return () => {
       cancelled = true;
     };
-  }, [language, selectedGroup, getAccessTokenSilently]);
+  }, [language, selectedGroup, selectedPage, getAccessTokenSilently]);
 
   const groupedItems = useMemo(
     () =>
@@ -217,7 +231,6 @@ const MySitePage = () => {
     const oldImageIdentifier = item.imageIdentifier;
     try {
       setSavingId(item.id);
-      setSavedId(null);
       const token = await getToken();
       const formData = new FormData();
       formData.append('file', file);
@@ -252,7 +265,6 @@ const MySitePage = () => {
           // Preserve the successful replacement if an old/shared object is not deletable.
         }
       }
-      setSavedId(item.id);
     } catch (uploadError) {
       setError('imageSaveError');
     } finally {
@@ -285,7 +297,6 @@ const MySitePage = () => {
           // The database reference is removed even when the object is already missing.
         }
       }
-      setSavedId(item.id);
     } catch (deleteError) {
       setError('imageDeleteError');
     } finally {
@@ -346,11 +357,35 @@ const MySitePage = () => {
     }
   };
 
+  const handleDeleteHouse = async house => {
+    try {
+      const token = await getToken();
+      if (
+        house.imageIdentifier &&
+        !String(house.imageIdentifier).startsWith('http')
+      ) {
+        try {
+          await deleteFile(house.imageIdentifier, {
+            deletedBy: user?.sub || 'house-editor',
+            token,
+          });
+        } catch {
+          // Continue deleting the house record if the object is already missing.
+        }
+      }
+      await deleteHouse(house.houseIdentifier, token);
+      setHouses(current =>
+        current.filter(item => item.houseIdentifier !== house.houseIdentifier)
+      );
+    } catch (deleteError) {
+      setError('deleteError');
+    }
+  };
+
   const saveItem = async item => {
     const draft = drafts[item.id] || {};
     try {
       setSavingId(item.id);
-      setSavedId(null);
       const { getAuthAudience } = await import('../utils/authConfig');
       const token = await getAccessTokenSilently({
         authorizationParams: { audience: getAuthAudience() },
@@ -364,7 +399,6 @@ const MySitePage = () => {
       setItems(current =>
         current.map(entry => (entry.id === item.id ? updated : entry))
       );
-      setSavedId(item.id);
     } catch (saveError) {
       setError('saveError');
     } finally {
@@ -404,21 +438,16 @@ const MySitePage = () => {
           </select>
         </label>
         <label className="my-site-language">
-          {t('editorMode', 'Edit')}
-          <select
-            value={editorMode}
-            onChange={event => setEditorMode(event.target.value)}
-          >
-            <option value="text">{t('textMode', 'Text')}</option>
-            <option value="images">{t('imagesMode', 'Images')}</option>
-          </select>
-        </label>
-        <label className="my-site-language">
           {t('pageGroup', 'Page')}
           <select
-            value={selectedGroup}
-            onChange={event => setSelectedGroup(event.target.value)}
+            value={selectedPage}
+            onChange={event => {
+              const page = event.target.value;
+              setSelectedPage(page);
+              if (page !== 'houses') setSelectedGroup(page);
+            }}
           >
+            <option value="houses">{t('housesPage', 'Houses')}</option>
             {groups.map(group => (
               <option key={group} value={group}>
                 {group}
@@ -434,7 +463,74 @@ const MySitePage = () => {
         </p>
       )}
 
-      {Object.keys(groupedItems).length === 0 ? (
+      {selectedPage === 'houses' ? (
+        <div className="my-site-group">
+          <div className="my-site-section-heading">
+            <div>
+              <p className="my-site-kicker">
+                {t('housesKicker', 'Project content')}
+              </p>
+              <h2>{t('housesTitle', 'Houses')}</h2>
+            </div>
+            <button
+              type="button"
+              className="my-site-modal-primary"
+              onClick={() => setHouseModal({ house: null })}
+            >
+              {t('addHouse', 'Add house')}
+            </button>
+          </div>
+          {houses.length === 0 ? (
+            <p className="my-site-empty">
+              {t('noHouses', 'No houses have been added yet.')}
+            </p>
+          ) : (
+            <div className="my-site-house-grid">
+              {houses.map(house => (
+                <article
+                  className="my-site-house-card"
+                  key={house.houseIdentifier}
+                >
+                  {house.imageIdentifier ? (
+                    <img
+                      src={`${(import.meta.env.VITE_FILES_SERVICE_URL || '/files').replace(/\/$/, '')}/files/${house.imageIdentifier}`}
+                      alt={house.houseName}
+                    />
+                  ) : (
+                    <div className="my-site-house-placeholder">
+                      {t('noImage', 'No image')}
+                    </div>
+                  )}
+                  <div className="my-site-house-card-content">
+                    <span>
+                      {projects.find(
+                        project =>
+                          project.projectIdentifier === house.projectIdentifier
+                      )?.projectName || house.projectIdentifier}
+                    </span>
+                    <h3>{house.houseName}</h3>
+                    <div className="my-site-house-actions">
+                      <button
+                        type="button"
+                        onClick={() => setHouseModal({ house })}
+                      >
+                        {t('editHouse', 'Edit')}
+                      </button>
+                      <button
+                        type="button"
+                        className="danger"
+                        onClick={() => handleDeleteHouse(house)}
+                      >
+                        {t('deleteHouse', 'Delete')}
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : Object.keys(groupedItems).length === 0 ? (
         <p className="my-site-empty">
           {t('empty', 'No editable content has been seeded yet.')}
         </p>
@@ -451,93 +547,159 @@ const MySitePage = () => {
                       <h3>{getContentLabel(item.pageKey, t)}</h3>
                       <span>{language.toUpperCase()}</span>
                     </div>
-                    {editorMode === 'text' ? (
-                      <>
-                        <label>
-                          {t('textLabel', 'Text')}
-                          <textarea
-                            value={draft.contentText || ''}
-                            onChange={event =>
-                              updateDraft(
-                                item.id,
-                                'contentText',
-                                event.target.value
-                              )
-                            }
-                            rows={4}
-                          />
-                        </label>
-                        <button
-                          type="button"
-                          onClick={() => saveItem(item)}
-                          disabled={savingId === item.id}
-                        >
-                          {savingId === item.id
-                            ? t('saving', 'Saving...')
-                            : savedId === item.id
-                              ? t('saved', 'Saved')
-                              : t('save', 'Save changes')}
-                        </button>
-                        <button
-                          type="button"
-                          className="my-site-delete-button"
-                          onClick={() => handleDeleteText(item)}
-                          disabled={savingId === item.id}
-                        >
-                          {t('deleteText', 'Delete text')}
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <label>
-                          {t('imageLabel', 'Image')}
-                          <input
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp"
-                            onChange={event =>
-                              handleImageUpload(item, event.target.files?.[0])
-                            }
-                            disabled={savingId === item.id}
-                          />
-                        </label>
-                        <SiteImagePreview
-                          key={draft.imageIdentifier || item.id}
-                          imageIdentifier={draft.imageIdentifier}
-                        />
-                        {draft.imageIdentifier && (
-                          <button
-                            type="button"
-                            onClick={() => handleImageDelete(item)}
-                            disabled={savingId === item.id}
-                          >
-                            {t('deleteImage', 'Delete image')}
-                          </button>
-                        )}
-                      </>
+                    <p className="my-site-item-preview">
+                      {draft.contentText || t('noText', 'No text yet')}
+                    </p>
+                    {draft.imageIdentifier && (
+                      <SiteImagePreview
+                        key={draft.imageIdentifier || item.id}
+                        imageIdentifier={draft.imageIdentifier}
+                      />
                     )}
+                    <button type="button" onClick={() => setContentModal(item)}>
+                      {t('editContent', 'Edit content')}
+                    </button>
                   </article>
                 );
               })}
-              {editorMode === 'text' && (
-                <div className="my-site-new-item">
-                  <input
-                    placeholder={t('newKey', 'New content key')}
-                    value={newPageKey}
-                    onChange={event => setNewPageKey(event.target.value)}
-                  />
-                  <textarea
-                    placeholder={t('newText', 'New content text')}
-                    value={newContentText}
-                    onChange={event => setNewContentText(event.target.value)}
-                    rows={3}
-                  />
-                  <button type="button" onClick={handleCreateText}>
-                    {t('createText', 'Create text')}
-                  </button>
-                </div>
-              )}
+              <div className="my-site-new-item">
+                <input
+                  placeholder={t('newKey', 'New content key')}
+                  value={newPageKey}
+                  onChange={event => setNewPageKey(event.target.value)}
+                />
+                <textarea
+                  placeholder={t('newText', 'New content text')}
+                  value={newContentText}
+                  onChange={event => setNewContentText(event.target.value)}
+                  rows={3}
+                />
+                <button type="button" onClick={handleCreateText}>
+                  {t('createText', 'Create text')}
+                </button>
+              </div>
             </section>
           ))}
+        </div>
+      )}
+      {houseModal && (
+        <HouseEditorModal
+          house={houseModal.house}
+          projects={projects}
+          onClose={() => setHouseModal(null)}
+          onSaved={saved => {
+            setHouses(current => {
+              const exists = current.some(
+                item => item.houseIdentifier === saved.houseIdentifier
+              );
+              return exists
+                ? current.map(item =>
+                    item.houseIdentifier === saved.houseIdentifier
+                      ? saved
+                      : item
+                  )
+                : [...current, saved];
+            });
+            setHouseModal(null);
+          }}
+        />
+      )}
+      {contentModal && (
+        <div
+          className="my-site-modal-backdrop"
+          role="presentation"
+          onMouseDown={event =>
+            event.target === event.currentTarget && setContentModal(null)
+          }
+        >
+          <div className="my-site-modal">
+            <div className="my-site-modal-header">
+              <div>
+                <p className="my-site-kicker">
+                  {groupedItems[contentModal.pageGroup]?.length
+                    ? contentModal.pageGroup
+                    : 'Page content'}
+                </p>
+                <h2>{getContentLabel(contentModal.pageKey, t)}</h2>
+              </div>
+              <button
+                type="button"
+                className="my-site-modal-close"
+                onClick={() => setContentModal(null)}
+                aria-label={t('close', 'Close')}
+              >
+                ×
+              </button>
+            </div>
+            <label>
+              {t('textLabel', 'Text')}
+              <textarea
+                value={drafts[contentModal.id]?.contentText || ''}
+                onChange={event =>
+                  updateDraft(
+                    contentModal.id,
+                    'contentText',
+                    event.target.value
+                  )
+                }
+                rows={7}
+              />
+            </label>
+            <label>
+              {t('imageLabel', 'Image')}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                onChange={event =>
+                  handleImageUpload(contentModal, event.target.files?.[0])
+                }
+                disabled={savingId === contentModal.id}
+              />
+            </label>
+            <SiteImagePreview
+              imageIdentifier={drafts[contentModal.id]?.imageIdentifier || ''}
+            />
+            {drafts[contentModal.id]?.imageIdentifier && (
+              <button
+                type="button"
+                className="my-site-modal-link danger"
+                onClick={() => handleImageDelete(contentModal)}
+                disabled={savingId === contentModal.id}
+              >
+                {t('deleteImage', 'Delete image')}
+              </button>
+            )}
+            <div className="my-site-modal-actions">
+              <button
+                type="button"
+                className="my-site-modal-secondary"
+                onClick={() => setContentModal(null)}
+              >
+                {t('cancel', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                className="my-site-modal-primary"
+                onClick={async () => {
+                  await saveItem(contentModal);
+                  setContentModal(null);
+                }}
+                disabled={savingId === contentModal.id}
+              >
+                {t('save', 'Save changes')}
+              </button>
+              <button
+                type="button"
+                className="my-site-modal-link danger"
+                onClick={async () => {
+                  await handleDeleteText(contentModal);
+                  setContentModal(null);
+                }}
+              >
+                {t('deleteText', 'Delete text')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -131,6 +131,62 @@
   color: #b42318;
 }
 
+.house-image-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(26, 26, 26, 0.72);
+}
+
+.house-image-modal {
+  position: relative;
+  width: min(100%, 900px);
+  max-height: 92vh;
+  overflow: auto;
+  border-radius: 8px;
+  background: var(--card-background);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+}
+
+.house-image-modal-photo {
+  display: block;
+  width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  background: var(--gray-900);
+}
+
+.house-image-modal-caption {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.house-image-modal-caption h2 {
+  margin: 0 0 0.5rem;
+  color: var(--text-primary);
+}
+
+.house-image-modal-caption p {
+  margin: 0.35rem 0 0;
+  color: var(--text-secondary);
+}
+
+.house-image-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
 @media (max-width: 900px) {
   .houses-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

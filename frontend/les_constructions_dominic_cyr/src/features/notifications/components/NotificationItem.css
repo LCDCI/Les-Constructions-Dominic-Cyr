@@ -135,6 +135,22 @@
   white-space: nowrap;
 }
 
+.notification-delete-button {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--text-tertiary, #9ca3af);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.notification-delete-button:hover,
+.notification-delete-button:focus-visible {
+  color: var(--button-danger-bg, #4b5563);
+}
+
 @media (max-width: 768px) {
   .notification-item {
     padding: 0.75rem;

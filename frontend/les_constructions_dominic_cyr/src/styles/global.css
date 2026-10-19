@@ -119,6 +119,51 @@ textarea {
   margin: 0 auto;
 }
 
+/* Tablets use the mobile navigation and flexible banners to prevent crushed copy. */
+@media (max-width: 1300px) {
+  .projects-hero,
+  .pm-hero-banner,
+  .project-hero,
+  .le-header-section,
+  .lots-header-section {
+    min-height: 180px !important;
+    height: auto !important;
+    padding: clamp(2rem, 5vw, 3.5rem) 1rem !important;
+  }
+
+  .projects-hero-content,
+  .pm-hero-content {
+    width: min(100%, 900px);
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .projects-hero .projects-title,
+  .pm-hero-title {
+    font-size: 2.5rem !important;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  .projects-hero .projects-subtitle,
+  .pm-hero-subtitle {
+    max-width: 42rem;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 700px) {
+  .projects-hero .projects-title,
+  .pm-hero-title {
+    font-size: 2rem !important;
+  }
+
+  .projects-hero .projects-subtitle,
+  .pm-hero-subtitle {
+    font-size: 1rem;
+  }
+}
+
 h1,
 h2,
 h3,
