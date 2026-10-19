@@ -28,7 +28,10 @@ export default function HousesPage() {
     const fetchHouses = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/houses`);
+        const query = projectIdentifier
+          ? `?projectIdentifier=${encodeURIComponent(projectIdentifier)}`
+          : '';
+        const response = await fetch(`${API_BASE_URL}/houses${query}`);
         if (!response.ok) throw new Error('fetchFailed');
         const data = await response.json();
         if (!cancelled) setHouses(Array.isArray(data) ? data : []);
@@ -43,7 +46,7 @@ export default function HousesPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [projectIdentifier]);
 
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const filteredHouses = houses.filter(house => {
@@ -102,7 +105,7 @@ export default function HousesPage() {
           ) : (
             <div className="houses-grid">
               {filteredHouses.map(house => (
-                <article key={house.houseId} className="house-card">
+                <article key={house.houseIdentifier} className="house-card">
                   <div className="house-image-container">
                     <img
                       src={getImageUrl(house.imageIdentifier)}
@@ -141,7 +144,7 @@ export default function HousesPage() {
                   <button
                     type="button"
                     className="house-button"
-                    onClick={() => navigate(`/houses/${house.houseId}`)}
+                    onClick={() => navigate(`/houses/${house.houseIdentifier}`)}
                   >
                     {t('viewHouse', 'View this house')}
                   </button>

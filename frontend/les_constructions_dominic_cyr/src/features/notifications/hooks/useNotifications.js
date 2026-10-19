@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import {
@@ -5,6 +6,8 @@ import {
   fetchUnreadCount,
   markNotificationAsRead,
   markAllNotificationsAsRead,
+  deleteNotification,
+  deleteAllNotifications,
 } from '../api/notificationsApi';
 
 export const useNotifications = () => {
@@ -104,6 +107,37 @@ export const useNotifications = () => {
     }
   }, [isAuthenticated, getAccessTokenSilently]);
 
+  const removeNotification = useCallback(
+    async notificationId => {
+      const { getAuthAudience } = await import('../../../utils/authConfig');
+      const token = await getAccessTokenSilently({
+        authorizationParams: { audience: getAuthAudience() },
+      });
+      await deleteNotification(notificationId, token);
+      setNotifications(prev =>
+        prev.filter(item => item.notificationId !== notificationId)
+      );
+      setUnreadCount(prev =>
+        notifications.find(
+          item => item.notificationId === notificationId && !item.isRead
+        )
+          ? Math.max(0, prev - 1)
+          : prev
+      );
+    },
+    [getAccessTokenSilently, notifications]
+  );
+
+  const removeAllNotifications = useCallback(async () => {
+    const { getAuthAudience } = await import('../../../utils/authConfig');
+    const token = await getAccessTokenSilently({
+      authorizationParams: { audience: getAuthAudience() },
+    });
+    await deleteAllNotifications(token);
+    setNotifications([]);
+    setUnreadCount(0);
+  }, [getAccessTokenSilently]);
+
   useEffect(() => {
     if (isAuthenticated) {
       loadNotifications();
@@ -120,5 +154,7 @@ export const useNotifications = () => {
     refreshUnreadCount: loadUnreadCount,
     markAsRead,
     markAllAsRead,
+    removeNotification,
+    removeAllNotifications,
   };
 };

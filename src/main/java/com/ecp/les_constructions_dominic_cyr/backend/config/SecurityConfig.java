@@ -143,6 +143,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/realizations/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/houses/**").permitAll()
+                        .requestMatchers("/api/v1/houses/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/overview").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/projects/*/lots").permitAll()
                         

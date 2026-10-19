@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import api from '../../../client';
 
 /**
@@ -101,4 +102,14 @@ export const markAllNotificationsAsRead = async (token = null) => {
     );
     throw error;
   }
+};
+
+export const deleteNotification = async (notificationId, token = null) => {
+  const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  await api.delete(`/notifications/${notificationId}`, config);
+};
+
+export const deleteAllNotifications = async (token = null) => {
+  const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  await api.delete('/notifications', config);
 };
