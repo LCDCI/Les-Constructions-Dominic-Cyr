@@ -9,9 +9,9 @@ import '../../styles/Footers/ProjectsFooter.css';
 const PROJECT_INFO = {
   'proj-001-foresta': {
     contact: {
-      name: 'Isabelle Misiazeck',
+      name: 'Isabelle Misiaszek',
       phone: '514-705-7848',
-      email: 'Isabelle.misiazeck@foresta.ca',
+      email: 'isabellemisi1@hotmail.com',
     },
     hours: {
       weekdays: 'Lundi au mercredi de 13h à 19h',
@@ -26,9 +26,9 @@ const PROJECT_INFO = {
   },
   'proj-002-panorama': {
     contact: {
-      name: 'Elyse St-Jean',
+      name: 'Dominic Cyr',
       phone: '514-705-7848',
-      email: 'elyse.stjean@panorama.ca',
+      email: 'constructions.dcyr@gmail.com',
     },
     hours: {
       weekdays: 'Lundi au mercredi de 13h à 19h',

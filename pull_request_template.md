@@ -1,4 +1,4 @@
-## Jira Ticket
+## Jira Ticket if exists
 - **ID:** CDC-XX  
 - **Link:** https://your-jira-url/browse/CDC-XX
 
@@ -26,25 +26,3 @@ If this adds a **new UI feature**, provide visuals to help reviewers understand 
 ## Dev Notes (Optional)
 Add any relevant technical notes, edge cases, or things reviewers should pay attention to.
 
-## Validation Checklist
-
-### Naming Conventions
-- [ ] PR title follows: `feat(CDC-JiraID): short description`
-- [ ] Branch name follows: `type/CDC-JiraID-short_description`
-- [ ] Commit messages follow the same pattern
-
-### Code Quality
-- [ ] Code builds and runs locally
-- [ ] No console errors (frontend) or backend errors
-- [ ] No leftover debug code, unused imports, or commented-out blocks
-- [ ] Only changes relevant to this Jira ticket are included
-
-### Testing
-- [ ] Acceptance criteria met
-- [ ] Manual/Unit testing performed
-- [ ] No regressions introduced
-
-### Merge Requirements
-- [ ] Reviewer(s) assigned
-- [ ] Merge conflicts resolved
-- [ ] No breaking changes (or approved by team)
