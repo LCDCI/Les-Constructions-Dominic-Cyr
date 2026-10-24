@@ -50,7 +50,9 @@ const LivingEnvironmentPage = () => {
           return;
         }
 
-        const lang = i18n.language || 'en';
+        const lang = i18n.language?.toLowerCase().startsWith('fr')
+          ? 'fr'
+          : 'en';
         const url = `${API_BASE_URL}/projects/${projectIdentifier}/living-environment?lang=${lang}`;
 
         const response = await fetch(url, {

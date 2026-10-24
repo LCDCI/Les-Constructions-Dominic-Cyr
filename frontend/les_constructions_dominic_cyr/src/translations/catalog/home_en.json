@@ -58,6 +58,10 @@
     "button": "Contact Us"
   },
   "nav": {
+    "projectOverview": "Overview",
+    "livingEnvironment": "Living environment",
+    "houses": "Houses",
+    "lots": "Lots",
     "home": "Home",
     "projects": "Residential Projects",
     "projectsLoading": "Loading projects...",

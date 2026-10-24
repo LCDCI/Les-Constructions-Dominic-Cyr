@@ -58,6 +58,10 @@
     "button": "Contactez-nous"
   },
   "nav": {
+    "projectOverview": "Aperçu",
+    "livingEnvironment": "Milieu de vie",
+    "houses": "Maisons",
+    "lots": "Terrains",
     "home": "Accueil",
     "projects": "Projets résidentiels",
     "projectsLoading": "Chargement des projets...",

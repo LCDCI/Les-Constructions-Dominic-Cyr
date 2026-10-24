@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://constructions-dominiccyr.com/sitemap.xml
