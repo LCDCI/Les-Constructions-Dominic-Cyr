@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -43,17 +44,23 @@ public class House {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "description_en", columnDefinition = "TEXT")
+    private String descriptionEn;
+
+    @Column(name = "description_fr", columnDefinition = "TEXT")
+    private String descriptionFr;
+
     @Column(name = "image_identifier", length = 500)
     private String imageIdentifier;
 
-    @Column(name = "number_of_rooms")
-    private Integer numberOfRooms;
+    @Column(name = "number_of_rooms", precision = 5, scale = 2)
+    private BigDecimal numberOfRooms;
 
-    @Column(name = "number_of_bedrooms")
-    private Integer numberOfBedrooms;
+    @Column(name = "number_of_bedrooms", precision = 5, scale = 2)
+    private BigDecimal numberOfBedrooms;
 
-    @Column(name = "number_of_bathrooms")
-    private Integer numberOfBathrooms;
+    @Column(name = "number_of_bathrooms", precision = 5, scale = 2)
+    private BigDecimal numberOfBathrooms;
 
     @Column(name = "construction_year")
     private Integer constructionYear;

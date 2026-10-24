@@ -3,7 +3,6 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessL
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
 import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.MailerServiceClient;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
-import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
@@ -44,7 +43,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleMapper scheduleMapper;
     private final NotificationService notificationService;
     private final MailerServiceClient mailerServiceClient;
-    private final UsersRepository usersRepository;
 
     private static final int MAX_TASK_IDS = 50;
     private static final int MAX_TOP_PRIORITY_TASKS = 5;
@@ -287,8 +285,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         validateScheduleRequest(scheduleRequestDTO);
 
         // Verify project exists
-        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
-                .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+        //Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                //.orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
 
         Lot lot = resolveLot(scheduleRequestDTO.getLotId());
         Schedule existingSchedule = scheduleRepository.findByScheduleIdentifier(scheduleIdentifier)

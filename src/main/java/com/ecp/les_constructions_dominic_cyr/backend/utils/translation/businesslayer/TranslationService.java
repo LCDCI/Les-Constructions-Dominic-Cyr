@@ -154,8 +154,8 @@ public class TranslationService {
                     Object current = translations;
                     
                     for (String part : keyParts) {
-                        if (current instanceof Map) {
-                            current = ((Map<String, Object>) current).get(part);
+                        if (current instanceof Map<?, ?> currentMap) {
+                            current = currentMap.get(part);
                         } else {
                             return key; // Key not found, return key as fallback
                         }
@@ -182,8 +182,8 @@ public class TranslationService {
                         Object current = translations;
                         
                         for (String part : keyParts) {
-                            if (current instanceof Map) {
-                                current = ((Map<String, Object>) current).get(part);
+                            if (current instanceof Map<?, ?> currentMap) {
+                                current = currentMap.get(part);
                             } else {
                                 result.put(key, key);
                                 break;
@@ -224,7 +224,7 @@ public class TranslationService {
                 })
                 .onErrorResume(error -> {
                     System.err.println("Error fetching translation file " + fileId + ": " + error.getMessage());
-                    return Mono.just((Map<String, Object>) new HashMap<String, Object>());
+                    return Mono.just(new HashMap<String, Object>());
                 });
     }
 
@@ -270,4 +270,3 @@ public class TranslationService {
     }
 
 }
-

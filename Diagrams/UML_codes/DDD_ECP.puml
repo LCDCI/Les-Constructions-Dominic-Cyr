@@ -456,30 +456,6 @@ rectangle "Communication Subdomain" as CommunicationContext #YellowGreen {
     Notification "1" --> "1" UserIdentifier
 }
 
-rectangle "Report Subdomain" as ReportContext #Khaki {
-    
-    package "Analytics Context" #F5F5F5 {
-        ENTITY(AnalyticsReport) #lightpink {
-            id: UUID
-            ownerId: String
-            reportType: String
-            fileFormat: String
-            fileKey: String
-            fileSize: Long
-            generationTimestamp: LocalDateTime
-            startDate: LocalDateTime
-            endDate: LocalDateTime
-            status: String
-            metadata: Map<String Object>
-            createdAt: LocalDateTime
-            updatedAt: LocalDateTime
-        }
-
-        'Report Relationships'
-        AnalyticsReport "1" --> "1" UserIdentifier
-    }
-}
-
 rectangle "Form Subdomain" as FormContext #Lavender {
     
     package "Form Management Context" #F5F5F5 {

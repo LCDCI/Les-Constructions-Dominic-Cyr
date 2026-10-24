@@ -2,8 +2,6 @@ package com.ecp.les_constructions_dominic_cyr.backend.config;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Bucket4j;
-import io.github.bucket4j.Refill;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,8 +28,8 @@ public class InquiriesRateLimitFilter extends OncePerRequestFilter {
     }
 
     private Bucket resolveBucket(String key) {
-        return buckets.get(key, k -> Bucket4j.builder()
-                .addLimit(Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1))))
+        return buckets.get(key, k -> Bucket.builder()
+                .addLimit(Bandwidth.simple(5, Duration.ofMinutes(1)))
                 .build());
     }
 

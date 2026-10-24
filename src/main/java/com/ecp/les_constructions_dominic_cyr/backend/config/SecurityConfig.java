@@ -182,7 +182,6 @@ public class SecurityConfig {
                         // =================================================================
                         // Owner Only (Admin actions)
                         .requestMatchers("/api/v1/owners/**").hasAuthority("ROLE_OWNER")
-                        .requestMatchers("/api/v1/reports/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/deactivate").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/inactive").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/users/*/reactivate").hasAuthority("ROLE_OWNER")

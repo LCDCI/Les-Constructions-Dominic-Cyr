@@ -30,7 +30,6 @@ const pages = [
   'quotes',
   'realizations',
   'renovations',
-  'reportsPage',
   'residentialProjects',
   'salespersonDashboard',
   'salespersonForms',

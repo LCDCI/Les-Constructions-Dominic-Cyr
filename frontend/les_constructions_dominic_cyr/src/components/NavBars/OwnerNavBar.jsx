@@ -13,7 +13,6 @@ import {
   GoFileDiff,
   GoFile,
   GoPeople,
-  GoGraph,
   GoGear,
   GoHome,
   GoCommentDiscussion,
@@ -300,23 +299,6 @@ const Navbar = ({
                   </span>
                   <span className="navbar-text">
                     {t('navbar.menuItems.users', 'Users')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/reports"
-                  className={`navbar-link ${isActive('/reports')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoGraph />
-                  </span>
-                  <span className="navbar-text">
-                    {t(
-                      'navbar.menuItems.analyticsReports',
-                      'Analytics & Reports'
-                    )}
                   </span>
                 </Link>
               </li>

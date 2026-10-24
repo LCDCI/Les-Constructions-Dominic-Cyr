@@ -36,6 +36,17 @@ const sanitizeEditorText = value =>
     .trim()
     .slice(0, 100000);
 
+const getHouseImageUrl = imageIdentifier => {
+  if (!imageIdentifier) return '';
+  if (String(imageIdentifier).startsWith('http')) return imageIdentifier;
+  const base = (import.meta.env.VITE_FILES_SERVICE_URL || '/files').replace(
+    /\/$/,
+    ''
+  );
+  const filesEndpoint = base.endsWith('/files') ? base : `${base}/files`;
+  return `${filesEndpoint}/${imageIdentifier}`;
+};
+
 const getContentLabel = (pageKey, translate) => {
   const fallback = pageKey
     .split(/[._-]+/)
@@ -493,8 +504,12 @@ const MySitePage = () => {
                 >
                   {house.imageIdentifier ? (
                     <img
-                      src={`${(import.meta.env.VITE_FILES_SERVICE_URL || '/files').replace(/\/$/, '')}/files/${house.imageIdentifier}`}
+                      src={getHouseImageUrl(house.imageIdentifier)}
                       alt={house.houseName}
+                      onError={event => {
+                        event.currentTarget.onerror = null;
+                        event.currentTarget.src = '/fallback.jpg';
+                      }}
                     />
                   ) : (
                     <div className="my-site-house-placeholder">
