@@ -4,6 +4,7 @@ import org. springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -47,7 +48,12 @@ public class Auth0ManagementService {
                 "grant_type", "client_credentials"
         );
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(url, body, Map.class);
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                new HttpEntity<>(body),
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+        );
 
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
             throw new RuntimeException("Failed to obtain Auth0 Management API token");
@@ -96,7 +102,12 @@ public class Auth0ManagementService {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+        );
 
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
             throw new RuntimeException("Failed to create user in Auth0");
@@ -154,7 +165,12 @@ public class Auth0ManagementService {
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                entity,
+                new ParameterizedTypeReference<Map<String, Object>>() {}
+        );
 
         if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
             throw new RuntimeException("Failed to create Auth0 password-change ticket");
@@ -177,7 +193,12 @@ public class Auth0ManagementService {
         HttpEntity<Void> getRequest = new HttpEntity<>(headersGet);
 
         try {
-            ResponseEntity<Map> currentUser = restTemplate.exchange(urlGet, HttpMethod.GET, getRequest, Map.class);
+            ResponseEntity<Map<String, Object>> currentUser = restTemplate.exchange(
+                    urlGet,
+                    HttpMethod.GET,
+                    getRequest,
+                    new ParameterizedTypeReference<Map<String, Object>>() {}
+            );
 
             if (currentUser.getBody() == null) {
                 throw new RuntimeException("Failed to fetch current user data from Auth0");
@@ -219,11 +240,11 @@ public class Auth0ManagementService {
                             .defaultHeader("Content-Type", "application/json")
                             .build();
 
-            String response = webClient
+            webClient
                     .patch()
                     .bodyValue(updateData)
                     .retrieve()
-                    .bodyToMono(String.class)
+                    .toBodilessEntity()
                     .block();
         } catch (Exception e) {
             System.err.println("=== FAILED TO BLOCK USER ===");

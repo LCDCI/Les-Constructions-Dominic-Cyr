@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -47,14 +46,14 @@ public class ScheduleController {
     }
 
     @GetMapping("/owners/schedules/{scheduleIdentifier}")
-    public ResponseEntity<ScheduleResponseDTO> getOwnerScheduleByIdentifier(@PathVariable String scheduleIdentifier) {
+    public ResponseEntity<?> getOwnerScheduleByIdentifier(@PathVariable String scheduleIdentifier) {
         try {
             ScheduleResponseDTO schedule = scheduleService.getScheduleByIdentifier(scheduleIdentifier);
             return ResponseEntity.ok(schedule);
         } catch (NotFoundException ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (BadRequestException | InvalidRequestException ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 
@@ -143,7 +142,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/salesperson/schedules/{scheduleIdentifier}")
-    public ResponseEntity<ScheduleResponseDTO> getSalespersonScheduleByIdentifier(
+    public ResponseEntity<?> getSalespersonScheduleByIdentifier(
             @PathVariable String scheduleIdentifier,
             @AuthenticationPrincipal Jwt jwt) {
         try {
@@ -157,9 +156,9 @@ public class ScheduleController {
             }
             return ResponseEntity.ok(schedule);
         } catch (NotFoundException ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (BadRequestException | InvalidRequestException ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 
@@ -183,7 +182,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/contractors/schedules/{scheduleIdentifier}")
-    public ResponseEntity<ScheduleResponseDTO> getContractorScheduleByIdentifier(
+    public ResponseEntity<?> getContractorScheduleByIdentifier(
             @PathVariable String scheduleIdentifier,
             @AuthenticationPrincipal Jwt jwt) {
         try {
@@ -197,9 +196,9 @@ public class ScheduleController {
             }
             return ResponseEntity.ok(schedule);
         } catch (NotFoundException ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (BadRequestException | InvalidRequestException ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 
@@ -256,7 +255,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/customers/schedules/{scheduleIdentifier}")
-    public ResponseEntity<ScheduleResponseDTO> getCustomerScheduleByIdentifier(
+    public ResponseEntity<?> getCustomerScheduleByIdentifier(
             @PathVariable String scheduleIdentifier,
             @AuthenticationPrincipal Jwt jwt) {
         try {
@@ -270,9 +269,9 @@ public class ScheduleController {
             }
             return ResponseEntity.ok(schedule);
         } catch (NotFoundException ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (BadRequestException | InvalidRequestException ex) {
-            return new ResponseEntity(ex.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         }
     }
 

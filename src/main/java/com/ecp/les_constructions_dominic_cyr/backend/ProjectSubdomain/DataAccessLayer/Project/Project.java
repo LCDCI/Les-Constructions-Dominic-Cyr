@@ -59,7 +59,6 @@ public class Project {
     // This field is not used by the application but prevents constraint errors
     // Hibernate will attempt to make this nullable when ddl-auto: update runs
     @Column(name = "lot_identifier", nullable = true, insertable = true, updatable = false)
-    @Deprecated
     private String lotIdentifier;
 
     @ElementCollection

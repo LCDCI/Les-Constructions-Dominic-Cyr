@@ -9,8 +9,6 @@ import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.MapperLayer.F
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.*;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.Project;
-import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
@@ -42,7 +40,6 @@ public class FormServiceImpl implements FormService {
     private final FormSubmissionHistoryMapper historyMapper;
     private final UsersRepository usersRepository;
     private final LotRepository lotRepository;
-    private final ProjectRepository projectRepository;
     private final NotificationService notificationService;
     private final MailerServiceClient mailerServiceClient;
 
@@ -62,8 +59,8 @@ public class FormServiceImpl implements FormService {
                 .orElseThrow(() -> new NotFoundException("User not found with Auth0 ID: " + assignedByUserId));
 
         // Validate that project exists
-        Project project = projectRepository.findByProjectIdentifier(requestModel.getProjectIdentifier())
-                .orElseThrow(() -> new NotFoundException("Project not found with ID: " + requestModel.getProjectIdentifier()));
+        //Project project = projectRepository.findByProjectIdentifier(requestModel.getProjectIdentifier())
+                //.orElseThrow(() -> new NotFoundException("Project not found with ID: " + requestModel.getProjectIdentifier()));
 
         // Validate that lot exists and belongs to the project (with assigned users eagerly loaded)
         Lot lot = lotRepository.findByLotIdentifier_LotIdWithUsers(

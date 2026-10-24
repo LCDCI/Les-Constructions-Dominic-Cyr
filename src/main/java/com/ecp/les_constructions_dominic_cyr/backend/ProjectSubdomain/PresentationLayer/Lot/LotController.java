@@ -29,9 +29,9 @@ public class LotController {
     private final LotRepository lotRepository;
     private static final int UUID_LENGTH = 36;
     private static final SimpleGrantedAuthority ROLE_OWNER = new SimpleGrantedAuthority("ROLE_OWNER");
-    private static final SimpleGrantedAuthority ROLE_CUSTOMER = new SimpleGrantedAuthority("ROLE_CUSTOMER");
-    private static final SimpleGrantedAuthority ROLE_CONTRACTOR = new SimpleGrantedAuthority("ROLE_CONTRACTOR");
-    private static final SimpleGrantedAuthority ROLE_SALESPERSON = new SimpleGrantedAuthority("ROLE_SALESPERSON");
+    //private static final SimpleGrantedAuthority ROLE_CUSTOMER = new SimpleGrantedAuthority("ROLE_CUSTOMER");
+    //private static final SimpleGrantedAuthority ROLE_CONTRACTOR = new SimpleGrantedAuthority("ROLE_CONTRACTOR");
+    //private static final SimpleGrantedAuthority ROLE_SALESPERSON = new SimpleGrantedAuthority("ROLE_SALESPERSON");
 
     public LotController(LotService lotService, UserService userService, LotRepository lotRepository) {
         this.lotService = lotService;
@@ -55,7 +55,7 @@ public class LotController {
 
         if (!isOwner && jwt != null && authentication != null) {
             String auth0UserId = jwt.getSubject();
-            java.util.Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+           // java.util.Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
             // Get the user's identifier for filtering
             UserResponseModel currentUser = null;
