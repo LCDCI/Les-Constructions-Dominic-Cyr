@@ -133,6 +133,7 @@ const PRIVATE_FOOTER_ROUTE_PATTERNS = [
   '/users',
   '/owner/dashboard',
   '/owner/my-site',
+  '/owner/my-site/*',
   '/owner/forms',
   '/owner/documents',
   '/owner/inbox',
@@ -398,7 +399,7 @@ export default function App() {
               }
             />
             <Route
-              path="/owner/my-site"
+              path="/owner/my-site/*"
               element={
                 <ProtectedRoute
                   allowedRoles={['OWNER']}

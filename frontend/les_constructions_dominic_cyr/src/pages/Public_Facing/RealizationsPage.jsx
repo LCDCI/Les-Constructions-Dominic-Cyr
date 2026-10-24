@@ -30,11 +30,11 @@ const RealizationsPage = () => {
     (typeof window !== 'undefined' &&
     window.location.hostname.includes('constructions-dominiccyr')
       ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : `${window.location.origin}/files`);
+      : window.location.origin);
 
   const getImageUrl = imageIdentifier => {
     if (imageIdentifier.startsWith('http')) return imageIdentifier;
-    return `${filesServiceUrl}/files/${imageIdentifier}`;
+    return `${filesServiceUrl.replace(/\/files$/, '')}/files/${imageIdentifier}`;
   };
 
   const handlePrevious = () => {

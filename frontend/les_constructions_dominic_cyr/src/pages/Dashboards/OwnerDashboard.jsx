@@ -5,11 +5,8 @@ import ScheduleList from '../../features/schedules/components/ScheduleList';
 import DashboardCard from '../../components/DashboardCard';
 import ProjectSelectionModal from '../../features/lots/components/ProjectSelectionModal';
 import '../../styles/Dashboards/OwnerDashboard.css';
-import { GoInbox } from 'react-icons/go';
-import { GoPeople } from 'react-icons/go';
-import { GoPackage } from 'react-icons/go';
-import { GoFile } from 'react-icons/go';
-import { GoGlobe } from 'react-icons/go';
+import { GoInbox, GoPeople, GoPackage, GoFile, GoGlobe } from 'react-icons/go';
+
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { MdOutlineRequestQuote } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
@@ -66,18 +63,8 @@ const OwnerDashboard = () => {
       {
         icon: <GoGlobe />,
         title: t('cards.mySite.title', 'My site'),
-        buttonText: t('cards.mySite.button', 'Manage my site'),
-        buttonOptions: [
-          {
-            value: 'text',
-            label: t('cards.mySite.text', 'Manage text'),
-          },
-          {
-            value: 'images',
-            label: t('cards.mySite.images', 'Manage images'),
-          },
-        ],
-        onOptionChange: mode => navigate('/owner/my-site', { state: { mode } }),
+        buttonText: t('cards.mySite.button', 'Manage my website'),
+        action: () => navigate('/owner/my-site'),
       },
     ],
     [t, navigate]
@@ -93,8 +80,6 @@ const OwnerDashboard = () => {
             title={card.title}
             buttonText={card.buttonText}
             onClick={card.action}
-            buttonOptions={card.buttonOptions}
-            onOptionChange={card.onOptionChange}
           />
         ))}
       </div>

@@ -217,7 +217,7 @@ const ProjectOverviewPage = () => {
     (typeof window !== 'undefined' &&
     window.location.hostname.includes('constructions-dominiccyr')
       ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : `${window.location.origin}/files`);
+      : window.location.origin);
 
   useEffect(() => {
     const fetchOverview = async () => {
@@ -286,7 +286,7 @@ const ProjectOverviewPage = () => {
 
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) return '/placeholder-project.png';
-    return `${filesServiceUrl}/files/${imageIdentifier}`;
+    return `${filesServiceUrl.replace(/\/files$/, '')}/files/${imageIdentifier}`;
   };
 
   const getFeatureIcon = featureTitle => {

@@ -4,4 +4,9 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.Presentati
 
 public interface ProjectOverviewService {
     ProjectOverviewResponseModel getProjectOverview(String projectIdentifier);
+
+    ProjectOverviewResponseModel updateProjectOverview(
+            String projectIdentifier,
+            ProjectOverviewUpdateRequest request
+    );
 }

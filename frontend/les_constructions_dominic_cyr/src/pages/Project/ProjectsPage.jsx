@@ -79,7 +79,7 @@ const ProjectsPage = () => {
     (typeof window !== 'undefined' &&
     window.location.hostname.includes('constructions-dominiccyr')
       ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : `${window.location.origin}/files`);
+      : window.location.origin);
   // Use relative path to leverage Vite proxy
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
@@ -244,7 +244,7 @@ const ProjectsPage = () => {
   };
 
   const getImageUrl = imageIdentifier => {
-    return `${filesServiceUrl}/files/${imageIdentifier}`;
+    return `${filesServiceUrl.replace(/\/files$/, '')}/files/${imageIdentifier}`;
   };
 
   const handleViewProject = async project => {

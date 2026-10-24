@@ -20,7 +20,7 @@ const ResidentialProjectsPage = () => {
     (typeof window !== 'undefined' &&
     window.location.hostname.includes('constructions-dominiccyr')
       ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : `${window.location.origin}/files`);
+      : window.location.origin);
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
   const FALLBACK_IMAGE = '/fallback.jpg';
@@ -76,7 +76,7 @@ const ResidentialProjectsPage = () => {
 
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) return FALLBACK_IMAGE;
-    return `${filesServiceUrl}/files/${imageIdentifier}`;
+    return `${filesServiceUrl.replace(/\/files$/, '')}/files/${imageIdentifier}`;
   };
 
   const handleImageError = e => {

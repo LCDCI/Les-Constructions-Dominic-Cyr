@@ -10,6 +10,98 @@
   margin: 0 auto 1.5rem;
 }
 
+.my-site-page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.my-site-subpage-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.my-site-subpage-actions {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color-light);
+}
+
+.my-site-page-card {
+  display: grid;
+  gap: 1rem;
+  min-height: 150px;
+  padding: 1.25rem;
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--border-radius);
+  background: var(--card-background);
+  box-shadow: 0 4px 14px rgba(26, 26, 26, 0.08);
+}
+
+.my-site-page-card h2 {
+  margin: 0.25rem 0 0;
+  color: var(--charcoal-gray);
+}
+
+.my-site-page-card button {
+  justify-self: start;
+}
+
+.my-site-page-preview {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.my-site-page-preview p {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.my-site-nested-pages {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color-light);
+}
+
+.my-site-nested-pages > span {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.my-site-nested-page {
+  justify-self: start;
+  border: 0;
+  padding: 0.2rem 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.my-site-nested-page:hover {
+  color: var(--charcoal-gray);
+  text-decoration: underline;
+}
+
+.my-site-modal-item {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
 .my-site-header {
   display: flex;
   justify-content: space-between;

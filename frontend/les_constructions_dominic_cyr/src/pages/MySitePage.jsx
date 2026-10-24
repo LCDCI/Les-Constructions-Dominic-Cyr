@@ -1,18 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import PropTypes from 'prop-types';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 import {
-  fetchSiteContentGroups,
   fetchSiteContent,
-  createSiteContent,
-  deleteSiteContent,
   updateSiteContent,
 } from '../features/siteContent/api/siteContentApi';
 import { deleteFile, uploadFile } from '../features/files/api/filesApi';
 import { fetchHouses, deleteHouse } from '../features/houses/api/housesApi';
 import HouseEditorModal from '../features/houses/components/HouseEditorModal';
+import { getFileUrl } from '../utils/filesService';
 import '../styles/MySitePage.css';
 
 const FIELD_LABEL_KEYS = {
@@ -28,7 +27,34 @@ const FIELD_LABEL_KEYS = {
   'think.title': 'fields.thinkTitle',
   'think.subtitle': 'fields.thinkSubtitle',
   'portfolio.title': 'fields.portfolioTitle',
+  heroTitle: 'fields.heroTitle',
+  heroSubtitle: 'fields.heroSubtitle',
+  heroDescription: 'fields.heroDescription',
+  overviewSectionTitle: 'fields.overviewTitle',
+  overviewSectionContent: 'fields.overviewContent',
+  locationSectionTitle: 'fields.locationTitle',
+  locationDescription: 'fields.locationDescription',
+  locationAddress: 'fields.locationAddress',
+  heroImage: 'fields.heroImage',
 };
+
+const EDITORIAL_PAGES = [
+  { key: 'home', label: 'homePage' },
+  { key: 'residential-projects', label: 'residentialProjectsPage' },
+  { key: 'renovations', label: 'renovationsPage' },
+  { key: 'project-management', label: 'projectManagementPage' },
+  { key: 'realizations', label: 'realizationsPage' },
+  { key: 'contact', label: 'contactPage' },
+  { key: 'footer', label: 'footerPage' },
+];
+
+const PROJECT_PAGE_GROUPS = [
+  { key: 'project-overview', label: 'projectOverviewPage' },
+  { key: 'living-environment', label: 'livingEnvironmentPage' },
+  { key: 'houses', label: 'housesPage' },
+  { key: 'lots', label: 'lotsPage' },
+  { key: 'project-footer', label: 'projectFooterPage' },
+];
 
 const sanitizeEditorText = value =>
   String(value ?? '')
@@ -38,18 +64,12 @@ const sanitizeEditorText = value =>
 
 const getHouseImageUrl = imageIdentifier => {
   if (!imageIdentifier) return '';
-  if (String(imageIdentifier).startsWith('http')) return imageIdentifier;
-  const base = (import.meta.env.VITE_FILES_SERVICE_URL || '/files').replace(
-    /\/$/,
-    ''
-  );
-  const filesEndpoint = base.endsWith('/files') ? base : `${base}/files`;
-  return `${filesEndpoint}/${imageIdentifier}`;
+  return getFileUrl(imageIdentifier);
 };
 
 const getContentLabel = (pageKey, translate) => {
   const fallback = pageKey
-    .split(/[._-]+/)
+    .split(/[._-]+|(?=[A-Z])/)
     .filter(Boolean)
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
@@ -58,29 +78,39 @@ const getContentLabel = (pageKey, translate) => {
 
 const SiteImagePreview = ({ imageIdentifier }) => {
   const [attempts, setAttempts] = useState(0);
+  const [failed, setFailed] = useState(false);
   const [source, setSource] = useState(() => {
-    if (!imageIdentifier) return '';
-    if (String(imageIdentifier).startsWith('http')) return imageIdentifier;
-    const base = import.meta.env.VITE_FILES_SERVICE_URL || '/files';
-    const normalizedBase = base.replace(/\/$/, '');
-    const filesEndpoint = normalizedBase.endsWith('/files')
-      ? normalizedBase
-      : `${normalizedBase}/files`;
-    return `${filesEndpoint}/${imageIdentifier}`;
+    if (!imageIdentifier) return '/fallback.jpg';
+    return getFileUrl(imageIdentifier);
   });
 
-  if (!source || attempts >= 3) return null;
+  useEffect(() => {
+    setAttempts(0);
+    setFailed(false);
+    if (!imageIdentifier) {
+      setSource('/fallback.jpg');
+      return;
+    }
+    if (String(imageIdentifier).startsWith('http')) {
+      setSource(imageIdentifier);
+      return;
+    }
+    setSource(getFileUrl(imageIdentifier));
+  }, [imageIdentifier]);
 
   return (
     <img
       className="my-site-image-preview"
-      src={source}
+      src={failed || attempts >= 3 ? '/fallback.jpg' : source}
       alt=""
       onError={() => {
+        if (failed || attempts >= 3) return;
         const nextAttempt = attempts + 1;
         setAttempts(nextAttempt);
         if (nextAttempt < 3) {
           setSource(`${source.split('?')[0]}?retry=${nextAttempt}`);
+        } else {
+          setFailed(true);
         }
       }}
     />
@@ -95,23 +125,27 @@ const MySitePage = () => {
   const { t } = usePageTranslations('mySite');
   const { i18n } = useTranslation();
   const { getAccessTokenSilently, user } = useAuth0();
+  const navigate = useNavigate();
+  const params = useParams();
+  const sitePath = params['*'] || '';
+  const [selectedPath, projectIdentifier, selectedSubpage] = sitePath
+    .split('/')
+    .filter(Boolean);
   const [language, setLanguage] = useState(
     i18n.language?.startsWith('fr') ? 'fr' : 'en'
   );
   const [groups, setGroups] = useState([]);
-  const [selectedGroup, setSelectedGroup] = useState('');
   const [items, setItems] = useState([]);
   const [drafts, setDrafts] = useState({});
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState(null);
   const [error, setError] = useState(null);
-  const [newPageKey, setNewPageKey] = useState('');
-  const [newContentText, setNewContentText] = useState('');
   const [projects, setProjects] = useState([]);
   const [houses, setHouses] = useState([]);
-  const [selectedPage, setSelectedPage] = useState('');
   const [houseModal, setHouseModal] = useState(null);
+  const [houseManagerOpen, setHouseManagerOpen] = useState(false);
   const [contentModal, setContentModal] = useState(null);
+  const [editorLanguage, setEditorLanguage] = useState(language);
 
   useEffect(() => {
     let cancelled = false;
@@ -123,8 +157,7 @@ const MySitePage = () => {
       const token = await getAccessTokenSilently({
         authorizationParams: { audience: getAuthAudience() },
       });
-      const [groupData, projectResponse, houseData] = await Promise.all([
-        fetchSiteContentGroups(language, token),
+      const [projectResponse, houseData] = await Promise.all([
         fetch(`${import.meta.env.VITE_API_BASE || '/api/v1'}/projects`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
@@ -135,24 +168,14 @@ const MySitePage = () => {
         : [];
       setProjects(Array.isArray(projectData) ? projectData : []);
       setHouses(Array.isArray(houseData) ? houseData : []);
-      return groupData;
+      const nextGroups = EDITORIAL_PAGES.map(page => page.key);
+      return nextGroups;
     };
 
     loadGroups()
       .then(data => {
         if (cancelled) return;
-        const nextGroups = Array.isArray(data) ? data : [];
-        setGroups(nextGroups);
-        setSelectedPage(current =>
-          current === 'houses' || nextGroups.includes(current)
-            ? current
-            : nextGroups[0] || 'houses'
-        );
-        setSelectedGroup(current =>
-          current && nextGroups.includes(current)
-            ? current
-            : nextGroups[0] || ''
-        );
+        setGroups(Array.isArray(data) ? data : []);
       })
       .catch(() => {
         if (!cancelled) setError('loadError');
@@ -166,62 +189,81 @@ const MySitePage = () => {
     };
   }, [language, getAccessTokenSilently]);
 
-  useEffect(() => {
-    if (!selectedGroup || selectedPage === 'houses') {
-      setItems([]);
-      return undefined;
-    }
+  const getPageLabel = pageKey => {
+    const configured = [...EDITORIAL_PAGES, ...PROJECT_PAGE_GROUPS].find(
+      page => page.key === pageKey
+    );
+    const fallback = pageKey
+      .split('-')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+    return t(configured?.label || pageKey, fallback);
+  };
 
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-
-    const loadGroup = async () => {
-      const { getAuthAudience } = await import('../utils/authConfig');
-      const token = await getAccessTokenSilently({
-        authorizationParams: { audience: getAuthAudience() },
-      });
-      return fetchSiteContent(language, token, selectedGroup);
-    };
-
-    loadGroup()
-      .then(data => {
-        if (cancelled) return;
-        setItems(Array.isArray(data) ? data : []);
-        setDrafts(
-          Object.fromEntries(
-            (data || []).map(item => [
-              item.id,
-              {
-                contentText: item.contentText || '',
-                imageIdentifier: item.imageIdentifier || '',
-              },
-            ])
-          )
+  const openContentPage = async (pageGroup, selectedLanguage = language) => {
+    try {
+      setError(null);
+      setSavingId('page');
+      const token = await getToken();
+      let data = await fetchSiteContent(selectedLanguage, token, pageGroup);
+      if (selectedSubpage === 'project-overview' && projectIdentifier) {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE || '/api/v1'}/projects/${projectIdentifier}/overview`
         );
-      })
-      .catch(() => {
-        if (!cancelled) setError('loadError');
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [language, selectedGroup, selectedPage, getAccessTokenSilently]);
-
-  const groupedItems = useMemo(
-    () =>
-      items.reduce((groups, item) => {
-        const group = item.pageGroup || 'other';
-        groups[group] = groups[group] || [];
-        groups[group].push(item);
-        return groups;
-      }, {}),
-    [items]
-  );
+        if (response.ok) {
+          const overview = await response.json();
+          data = [
+            ['heroTitle', overview.heroTitle || overview.projectName],
+            ['heroSubtitle', overview.heroSubtitle],
+            ['heroDescription', overview.heroDescription],
+            ['overviewSectionTitle', overview.overviewSectionTitle],
+            ['overviewSectionContent', overview.overviewSectionContent],
+            ['locationSectionTitle', overview.locationSectionTitle],
+            ['locationDescription', overview.locationDescription],
+            ['locationAddress', overview.locationAddress],
+            ['heroImage', overview.imageIdentifier],
+            ...(overview.galleryImages || []).map((image, index) => [
+              `galleryImage.${index + 1}`,
+              image.imageIdentifier,
+            ]),
+          ]
+            .filter(([, value]) => value)
+            .map(([pageKey, value], index) => ({
+              id: `project-overview-${pageKey}`,
+              pageGroup: pageGroup,
+              pageKey,
+              contentText: pageKey.toLowerCase().includes('image')
+                ? ''
+                : String(value),
+              imageIdentifier: pageKey.toLowerCase().includes('image')
+                ? String(value)
+                : '',
+              sortOrder: index,
+              projectOverviewContent: true,
+              projectIdentifier,
+            }));
+        }
+      }
+      setItems(Array.isArray(data) ? data : []);
+      setDrafts(
+        Object.fromEntries(
+          (data || []).map(item => [
+            item.id,
+            {
+              contentText: item.contentText || '',
+              imageIdentifier: item.imageIdentifier || '',
+            },
+          ])
+        )
+      );
+      setEditorLanguage(selectedLanguage);
+      setContentModal(pageGroup);
+    } catch {
+      setError('loadError');
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   const updateDraft = (id, field, value) => {
     setDrafts(current => ({
@@ -255,9 +297,21 @@ const MySitePage = () => {
       if (!imageIdentifier)
         throw new Error('Upload returned no file identifier');
 
+      if (item.projectOverviewContent) {
+        await updateProjectOverview(
+          item.projectIdentifier,
+          {
+            imageIdentifier,
+          },
+          token
+        );
+        updateDraft(item.id, 'imageIdentifier', imageIdentifier);
+        setSavingId(null);
+        return;
+      }
       const updated = await updateSiteContent(
         item.id,
-        item.contentText || '',
+        drafts[item.id]?.contentText ?? item.contentText ?? '',
         imageIdentifier,
         token
       );
@@ -288,9 +342,18 @@ const MySitePage = () => {
     try {
       setSavingId(item.id);
       const token = await getToken();
+      if (item.projectOverviewContent) {
+        await updateProjectOverview(
+          item.projectIdentifier,
+          { imageIdentifier: '' },
+          token
+        );
+        updateDraft(item.id, 'imageIdentifier', '');
+        return;
+      }
       const updated = await updateSiteContent(
         item.id,
-        item.contentText || '',
+        drafts[item.id]?.contentText ?? item.contentText ?? '',
         null,
         token
       );
@@ -312,59 +375,6 @@ const MySitePage = () => {
       setError('imageDeleteError');
     } finally {
       setSavingId(null);
-    }
-  };
-
-  const handleCreateText = async () => {
-    if (!selectedGroup || !newPageKey.trim()) return;
-    const sanitizedPageKey = sanitizeEditorText(newPageKey).replace(
-      /[^a-zA-Z0-9_.-]/g,
-      ''
-    );
-    if (!sanitizedPageKey) {
-      setError('invalidKey');
-      return;
-    }
-    try {
-      const token = await getToken();
-      const created = await createSiteContent(
-        {
-          pageGroup: selectedGroup,
-          pageKey: sanitizedPageKey,
-          language,
-          contentText: sanitizeEditorText(newContentText),
-          imageIdentifier: null,
-          sortOrder: items.length,
-        },
-        token
-      );
-      setItems(current => [...current, created]);
-      setDrafts(current => ({
-        ...current,
-        [created.id]: {
-          contentText: created.contentText || '',
-          imageIdentifier: '',
-        },
-      }));
-      setNewPageKey('');
-      setNewContentText('');
-    } catch (createError) {
-      setError('createError');
-    }
-  };
-
-  const handleDeleteText = async item => {
-    try {
-      const token = await getToken();
-      await deleteSiteContent(item.id, token);
-      setItems(current => current.filter(entry => entry.id !== item.id));
-      setDrafts(current => {
-        const next = { ...current };
-        delete next[item.id];
-        return next;
-      });
-    } catch (deleteError) {
-      setError('deleteError');
     }
   };
 
@@ -412,9 +422,50 @@ const MySitePage = () => {
       );
     } catch (saveError) {
       setError('saveError');
+      throw saveError;
     } finally {
       setSavingId(null);
     }
+  };
+
+  const updateProjectOverview = async (projectIdentifier, values, token) => {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE || '/api/v1'}/projects/${projectIdentifier}/overview`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      }
+    );
+    if (!response.ok) throw new Error('Project overview update failed');
+    return response.json();
+  };
+
+  const saveProjectOverview = async () => {
+    const values = {};
+    items.forEach(item => {
+      const value = drafts[item.id]?.contentText;
+      if (!value) return;
+      if (item.pageKey === 'heroTitle') values.heroTitle = value;
+      if (item.pageKey === 'heroSubtitle') values.heroSubtitle = value;
+      if (item.pageKey === 'heroDescription') values.heroDescription = value;
+      if (item.pageKey === 'overviewSectionTitle')
+        values.overviewSectionTitle = value;
+      if (item.pageKey === 'overviewSectionContent')
+        values.overviewSectionContent = value;
+      if (item.pageKey === 'locationSectionTitle')
+        values.locationSectionTitle = value;
+      if (item.pageKey === 'locationDescription')
+        values.locationDescription = value;
+      if (item.pageKey === 'locationAddress') values.locationAddress = value;
+    });
+    const image = items.find(item => item.pageKey === 'heroImage');
+    if (image?.imageIdentifier) values.imageIdentifier = image.imageIdentifier;
+    const token = await getToken();
+    await updateProjectOverview(projectIdentifier, values, token);
   };
 
   if (loading) {
@@ -448,24 +499,6 @@ const MySitePage = () => {
             <option value="fr">Français</option>
           </select>
         </label>
-        <label className="my-site-language">
-          {t('pageGroup', 'Page')}
-          <select
-            value={selectedPage}
-            onChange={event => {
-              const page = event.target.value;
-              setSelectedPage(page);
-              if (page !== 'houses') setSelectedGroup(page);
-            }}
-          >
-            <option value="houses">{t('housesPage', 'Houses')}</option>
-            {groups.map(group => (
-              <option key={group} value={group}>
-                {group}
-              </option>
-            ))}
-          </select>
-        </label>
       </header>
 
       {error && (
@@ -474,127 +507,200 @@ const MySitePage = () => {
         </p>
       )}
 
-      {selectedPage === 'houses' ? (
-        <div className="my-site-group">
-          <div className="my-site-section-heading">
-            <div>
-              <p className="my-site-kicker">
-                {t('housesKicker', 'Project content')}
-              </p>
-              <h2>{t('housesTitle', 'Houses')}</h2>
-            </div>
+      {!selectedPath && (
+        <div className="my-site-page-grid">
+          {groups.map(group => (
+            <article className="my-site-page-card" key={group}>
+              <h2>{getPageLabel(group)}</h2>
+              <button
+                type="button"
+                className="my-site-modal-primary"
+                onClick={() => navigate(`/owner/my-site/${group}`)}
+              >
+                {t('modify', 'Modify')}
+              </button>
+            </article>
+          ))}
+        </div>
+      )}
+      {selectedPath === 'residential-projects' && !selectedSubpage && (
+        <section className="my-site-subpage-panel">
+          <button
+            type="button"
+            className="my-site-modal-secondary"
+            onClick={() => navigate('/owner/my-site')}
+          >
+            {t('backToPages', 'Back to pages')}
+          </button>
+          <h2>{getPageLabel('residential-projects')}</h2>
+          <div className="my-site-page-grid">
+            {projects.map(project => (
+              <article
+                className="my-site-page-card"
+                key={project.projectIdentifier}
+              >
+                <h3>{project.projectName}</h3>
+                <div className="my-site-subpage-actions">
+                  {[
+                    'project-overview',
+                    'living-environment',
+                    'houses',
+                    'lots',
+                  ].map(subpage => (
+                    <button
+                      type="button"
+                      className="my-site-nested-page"
+                      key={subpage}
+                      onClick={() =>
+                        navigate(
+                          `/owner/my-site/residential-projects/${project.projectIdentifier}/${subpage}`
+                        )
+                      }
+                    >
+                      {getPageLabel(subpage)}
+                    </button>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+      {selectedSubpage && (
+        <section className="my-site-subpage-panel">
+          <button
+            type="button"
+            className="my-site-modal-secondary"
+            onClick={() => navigate(`/owner/my-site/${selectedPath}`)}
+          >
+            {t('backToSubpages', 'Back to project pages')}
+          </button>
+          <article className="my-site-page-card">
+            <p className="my-site-kicker">{projectIdentifier}</p>
+            <h2>{getPageLabel(selectedSubpage)}</h2>
             <button
               type="button"
               className="my-site-modal-primary"
-              onClick={() => setHouseModal({ house: null })}
+              onClick={() => openContentPage(selectedSubpage)}
             >
-              {t('addHouse', 'Add house')}
+              {t('modify', 'Modify')}
             </button>
-          </div>
-          {houses.length === 0 ? (
-            <p className="my-site-empty">
-              {t('noHouses', 'No houses have been added yet.')}
-            </p>
-          ) : (
-            <div className="my-site-house-grid">
-              {houses.map(house => (
-                <article
-                  className="my-site-house-card"
-                  key={house.houseIdentifier}
-                >
-                  {house.imageIdentifier ? (
-                    <img
-                      src={getHouseImageUrl(house.imageIdentifier)}
-                      alt={house.houseName}
-                      onError={event => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = '/fallback.jpg';
-                      }}
-                    />
-                  ) : (
-                    <div className="my-site-house-placeholder">
-                      {t('noImage', 'No image')}
-                    </div>
-                  )}
-                  <div className="my-site-house-card-content">
-                    <span>
-                      {projects.find(
-                        project =>
-                          project.projectIdentifier === house.projectIdentifier
-                      )?.projectName || house.projectIdentifier}
-                    </span>
-                    <h3>{house.houseName}</h3>
-                    <div className="my-site-house-actions">
-                      <button
-                        type="button"
-                        onClick={() => setHouseModal({ house })}
-                      >
-                        {t('editHouse', 'Edit')}
-                      </button>
-                      <button
-                        type="button"
-                        className="danger"
-                        onClick={() => handleDeleteHouse(house)}
-                      >
-                        {t('deleteHouse', 'Delete')}
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : Object.keys(groupedItems).length === 0 ? (
-        <p className="my-site-empty">
-          {t('empty', 'No editable content has been seeded yet.')}
-        </p>
-      ) : (
-        <div className="my-site-groups">
-          {Object.entries(groupedItems).map(([group, groupItems]) => (
-            <section className="my-site-group" key={group}>
-              <h2>{group}</h2>
-              {groupItems.map(item => {
-                const draft = drafts[item.id] || {};
-                return (
-                  <article className="my-site-item" key={item.id}>
-                    <div className="my-site-item-heading">
-                      <h3>{getContentLabel(item.pageKey, t)}</h3>
-                      <span>{language.toUpperCase()}</span>
-                    </div>
-                    <p className="my-site-item-preview">
-                      {draft.contentText || t('noText', 'No text yet')}
-                    </p>
-                    {draft.imageIdentifier && (
-                      <SiteImagePreview
-                        key={draft.imageIdentifier || item.id}
-                        imageIdentifier={draft.imageIdentifier}
-                      />
-                    )}
-                    <button type="button" onClick={() => setContentModal(item)}>
-                      {t('editContent', 'Edit content')}
-                    </button>
-                  </article>
-                );
-              })}
-              <div className="my-site-new-item">
-                <input
-                  placeholder={t('newKey', 'New content key')}
-                  value={newPageKey}
-                  onChange={event => setNewPageKey(event.target.value)}
-                />
-                <textarea
-                  placeholder={t('newText', 'New content text')}
-                  value={newContentText}
-                  onChange={event => setNewContentText(event.target.value)}
-                  rows={3}
-                />
-                <button type="button" onClick={handleCreateText}>
-                  {t('createText', 'Create text')}
-                </button>
+          </article>
+        </section>
+      )}
+      {selectedPath &&
+        selectedPath !== 'residential-projects' &&
+        !selectedSubpage && (
+          <section className="my-site-subpage-panel">
+            <button
+              type="button"
+              className="my-site-modal-secondary"
+              onClick={() => navigate('/owner/my-site')}
+            >
+              {t('backToPages', 'Back to pages')}
+            </button>
+            <article className="my-site-page-card">
+              <h2>{getPageLabel(selectedPath)}</h2>
+              <button
+                type="button"
+                className="my-site-modal-primary"
+                onClick={() => openContentPage(selectedPath)}
+              >
+                {t('modify', 'Modify')}
+              </button>
+            </article>
+          </section>
+        )}
+      {houseManagerOpen && (
+        <div
+          className="my-site-modal-backdrop"
+          role="presentation"
+          onMouseDown={event =>
+            event.target === event.currentTarget && setHouseManagerOpen(false)
+          }
+        >
+          <div className="my-site-modal">
+            <div className="my-site-modal-header">
+              <div>
+                <p className="my-site-kicker">
+                  {t('projectContent', 'Project content')}
+                </p>
+                <h2>{t('housesTitle', 'House models')}</h2>
               </div>
-            </section>
-          ))}
+              <button
+                type="button"
+                className="my-site-modal-close"
+                onClick={() => setHouseManagerOpen(false)}
+                aria-label={t('close', 'Close')}
+              >
+                ×
+              </button>
+            </div>
+            <div className="my-site-group">
+              <div className="my-site-section-heading">
+                <div>
+                  <p className="my-site-kicker">
+                    {t('housesKicker', 'Project content')}
+                  </p>
+                  <h2>{t('housesTitle', 'Houses')}</h2>
+                </div>
+                {houses.length === 0 ? (
+                  <p className="my-site-empty">
+                    {t('noHouses', 'No houses have been added yet.')}
+                  </p>
+                ) : (
+                  <div className="my-site-house-grid">
+                    {houses.map(house => (
+                      <article
+                        className="my-site-house-card"
+                        key={house.houseIdentifier}
+                      >
+                        {house.imageIdentifier ? (
+                          <img
+                            src={getHouseImageUrl(house.imageIdentifier)}
+                            alt={house.houseName}
+                            onError={event => {
+                              event.currentTarget.onerror = null;
+                              event.currentTarget.src = '/fallback.jpg';
+                            }}
+                          />
+                        ) : (
+                          <div className="my-site-house-placeholder">
+                            {t('noImage', 'No image')}
+                          </div>
+                        )}
+                        <div className="my-site-house-card-content">
+                          <span>
+                            {projects.find(
+                              project =>
+                                project.projectIdentifier ===
+                                house.projectIdentifier
+                            )?.projectName || house.projectIdentifier}
+                          </span>
+                          <h3>{house.houseName}</h3>
+                          <div className="my-site-house-actions">
+                            <button
+                              type="button"
+                              onClick={() => setHouseModal({ house })}
+                            >
+                              {t('editHouse', 'Edit')}
+                            </button>
+                            <button
+                              type="button"
+                              className="danger"
+                              onClick={() => handleDeleteHouse(house)}
+                            >
+                              {t('deleteHouse', 'Delete')}
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
       {houseModal && (
@@ -631,11 +737,9 @@ const MySitePage = () => {
             <div className="my-site-modal-header">
               <div>
                 <p className="my-site-kicker">
-                  {groupedItems[contentModal.pageGroup]?.length
-                    ? contentModal.pageGroup
-                    : 'Page content'}
+                  {t('pageContent', 'Page content')}
                 </p>
-                <h2>{getContentLabel(contentModal.pageKey, t)}</h2>
+                <h2>{getPageLabel(contentModal)}</h2>
               </div>
               <button
                 type="button"
@@ -646,43 +750,76 @@ const MySitePage = () => {
                 ×
               </button>
             </div>
-            <label>
-              {t('textLabel', 'Text')}
-              <textarea
-                value={drafts[contentModal.id]?.contentText || ''}
+            <label className="my-site-language">
+              {t('language', 'Language')}
+              <select
+                value={editorLanguage}
                 onChange={event =>
-                  updateDraft(
-                    contentModal.id,
-                    'contentText',
-                    event.target.value
-                  )
+                  openContentPage(contentModal, event.target.value)
                 }
-                rows={7}
-              />
-            </label>
-            <label>
-              {t('imageLabel', 'Image')}
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                onChange={event =>
-                  handleImageUpload(contentModal, event.target.files?.[0])
-                }
-                disabled={savingId === contentModal.id}
-              />
-            </label>
-            <SiteImagePreview
-              imageIdentifier={drafts[contentModal.id]?.imageIdentifier || ''}
-            />
-            {drafts[contentModal.id]?.imageIdentifier && (
-              <button
-                type="button"
-                className="my-site-modal-link danger"
-                onClick={() => handleImageDelete(contentModal)}
-                disabled={savingId === contentModal.id}
               >
-                {t('deleteImage', 'Delete image')}
-              </button>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+              </select>
+            </label>
+            {items.length === 0 ? (
+              <p className="my-site-empty">
+                {t(
+                  'emptyPage',
+                  'No content has been seeded for this page yet.'
+                )}
+              </p>
+            ) : (
+              items.map(item => {
+                const draft = drafts[item.id] || {};
+                return (
+                  <div className="my-site-modal-item" key={item.id}>
+                    <label>
+                      {getContentLabel(item.pageKey, t)}
+                      <textarea
+                        value={draft.contentText || ''}
+                        onChange={event =>
+                          updateDraft(
+                            item.id,
+                            'contentText',
+                            event.target.value
+                          )
+                        }
+                        rows={4}
+                      />
+                    </label>
+                    <label>
+                      {t('imageLabel', 'Image')}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        onChange={event =>
+                          handleImageUpload(item, event.target.files?.[0])
+                        }
+                        disabled={savingId === item.id}
+                      />
+                    </label>
+                    <SiteImagePreview
+                      imageIdentifier={draft.imageIdentifier || ''}
+                    />
+                    {draft.imageIdentifier && !item.projectOverviewContent && (
+                      <button
+                        type="button"
+                        className="my-site-modal-link danger"
+                        onClick={() =>
+                          handleImageDelete({
+                            ...item,
+                            imageIdentifier: draft.imageIdentifier,
+                          })
+                        }
+                        disabled={savingId === item.id}
+                      >
+                        {t('deleteImage', 'Delete image')}
+                      </button>
+                    )}
+                  </div>
+                );
+              })
             )}
             <div className="my-site-modal-actions">
               <button
@@ -696,22 +833,20 @@ const MySitePage = () => {
                 type="button"
                 className="my-site-modal-primary"
                 onClick={async () => {
-                  await saveItem(contentModal);
-                  setContentModal(null);
+                  try {
+                    if (items.some(item => item.projectOverviewContent)) {
+                      await saveProjectOverview();
+                    } else {
+                      for (const item of items) await saveItem(item);
+                    }
+                    setContentModal(null);
+                  } catch {
+                    setError('saveError');
+                  }
                 }}
-                disabled={savingId === contentModal.id}
+                disabled={savingId !== null || items.length === 0}
               >
                 {t('save', 'Save changes')}
-              </button>
-              <button
-                type="button"
-                className="my-site-modal-link danger"
-                onClick={async () => {
-                  await handleDeleteText(contentModal);
-                  setContentModal(null);
-                }}
-              >
-                {t('deleteText', 'Delete text')}
               </button>
             </div>
           </div>
