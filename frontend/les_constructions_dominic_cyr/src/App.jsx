@@ -52,7 +52,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import HomeFooter from './components/Footers/HomeFooter';
 import NavigationSetter from './components/NavigationSetter';
 import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
-import ReportsPage from './pages/ReportsPage';
 import InboxPage from './pages/Inbox/InboxPage';
 import RoleBasedRedirect from './components/RoleBasedRedirect';
 import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
@@ -60,24 +59,10 @@ import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
 import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
 import OwnerReviewFormsPage from './pages/Forms/OwnerReviewFormsPage';
 import ComingSoonPage from './pages/ComingSoonPage';
-// import ReactGA from 'react-ga4'; // TODO: Fix build issue with react-ga4 module resolution
 // loadTheme from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
 import useBackendUser from './hooks/useBackendUser';
-
-function PageViewTracker() {
-  // ReactGA tracking temporarily disabled due to build issue
-  // TODO: Re-enable once module resolution is fixed
-  return null;
-  /*
-  const location = useLocation();
-  useEffect(() => {
-    ReactGA.send({ hitType: 'pageview', page: location.pathname });
-  }, [location]);
-  return null;
-  */
-}
 
 function ContractorLotsDocuments() {
   const { profile, loading } = useBackendUser();
@@ -144,7 +129,6 @@ const PRIVATE_FOOTER_ROUTE_PATTERNS = [
   '/projects/:projectIdentifier/living-environment',
   '/projects/:projectIdentifier/houses',
   '/projects/:projectIdentifier/lots',
-  '/reports',
   '/inquiries',
   '/users',
   '/owner/dashboard',
@@ -345,7 +329,6 @@ export default function App() {
   return (
     <BrowserRouter>
       <NavigationSetter />
-      <PageViewTracker />
       <div className="app-container">
         <AppNavBar />
 
@@ -375,15 +358,6 @@ export default function App() {
                 <ProtectedRoute
                   allowedRoles={['OWNER']}
                   element={<CreateProjectPage />}
-                />
-              }
-            />
-            <Route
-              path="/reports"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['OWNER']}
-                  element={<ReportsPage />}
                 />
               }
             />

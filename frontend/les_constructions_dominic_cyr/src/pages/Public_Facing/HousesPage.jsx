@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Public_Facing/houses.css';
@@ -15,6 +16,7 @@ const getFilesServiceUrl = () =>
 
 export default function HousesPage() {
   const { t } = usePageTranslations('houses');
+  const { i18n } = useTranslation();
   const { projectIdentifier, houseId } = useParams();
   const [houses, setHouses] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -57,7 +59,7 @@ export default function HousesPage() {
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const filteredHouses = houses.filter(house => {
     if (!normalizedSearch) return true;
-    return [house.houseName, house.location, house.description]
+    return [house.houseName, house.location, getHouseDescription(house)]
       .filter(Boolean)
       .some(value => String(value).toLowerCase().includes(normalizedSearch));
   });
@@ -66,6 +68,16 @@ export default function HousesPage() {
     if (!imageIdentifier) return '/fallback.jpg';
     if (String(imageIdentifier).startsWith('http')) return imageIdentifier;
     return `${getFilesServiceUrl()}/files/${imageIdentifier}`;
+  };
+
+  const getHouseDescription = house => {
+    const isFrench = i18n.language?.startsWith('fr');
+    return (
+      (isFrench ? house.descriptionFr : house.descriptionEn) ||
+      house.description ||
+      (isFrench ? house.descriptionEn : house.descriptionFr) ||
+      ''
+    );
   };
 
   const hasHouseValue = value =>
@@ -130,8 +142,10 @@ export default function HousesPage() {
                   {house.location && (
                     <p className="house-location">{house.location}</p>
                   )}
-                  {house.description && (
-                    <p className="house-description">{house.description}</p>
+                  {getHouseDescription(house) && (
+                    <p className="house-description">
+                      {getHouseDescription(house)}
+                    </p>
                   )}
                   <div className="house-details">
                     {hasHouseValue(house.numberOfBedrooms) && (
@@ -192,7 +206,9 @@ export default function HousesPage() {
             <div className="house-image-modal-caption">
               <h2 id="house-image-modal-title">{selectedHouse.houseName}</h2>
               {selectedHouse.location && <p>{selectedHouse.location}</p>}
-              {selectedHouse.description && <p>{selectedHouse.description}</p>}
+              {getHouseDescription(selectedHouse) && (
+                <p>{getHouseDescription(selectedHouse)}</p>
+              )}
             </div>
           </div>
         </div>

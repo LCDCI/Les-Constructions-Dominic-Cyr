@@ -38,13 +38,6 @@ Container_Boundary(backend_boundary, "Spring Boot Backend - All Subdomains") {
     Component(form_repo, "FormRepository", "JPA Repository", "Persists forms")
     Component(form_history_repo, "FormSubmissionHistoryRepository", "JPA Repository", "Tracks form submission history")
     
-    ' === REPORT SUBDOMAIN ===
-    Component(report_controller, "ReportController", "REST Controller", "Generates PDF/XLSX reports")
-    Component(report_service, "ReportServiceImpl", "Service", "Orchestrates report generation")
-    Component(pdf_generator, "PDFReportGenerator", "Service", "Generates PDF reports")
-    Component(xlsx_generator, "XLSXReportGenerator", "Service", "Generates XLSX reports")
-    Component(report_repo, "AnalyticsReportRepository", "JPA Repository", "Stores report metadata")
-    
     ' === USERS SUBDOMAIN ===
     Component(user_service, "UserServiceImpl", "Service", "Manages user operations")
     Component(user_repo, "UsersRepository", "JPA Repository", "Persists users")

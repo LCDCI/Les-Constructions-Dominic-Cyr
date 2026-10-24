@@ -54,7 +54,6 @@ note right of api_gateway
     Quote, Portfolio, Content, Living Environment, Activity)
   - Communication Subdomain (Notification, Inquiry)
   - Form Subdomain (Form, FormSubmissionHistory)
-  - Report Subdomain (AnalyticsReport, PDF/XLSX generation)
 end note
 
 note right of files_service

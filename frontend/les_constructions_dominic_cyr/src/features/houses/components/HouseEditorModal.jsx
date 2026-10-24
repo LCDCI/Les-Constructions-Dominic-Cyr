@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
+import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import { createHouse, updateHouse, uploadHouseImage } from '../api/housesApi';
 import '../../../styles/MySitePage.css';
 
@@ -9,6 +10,8 @@ const emptyHouse = {
   houseName: '',
   location: '',
   description: '',
+  descriptionEn: '',
+  descriptionFr: '',
   imageIdentifier: '',
   numberOfRooms: '',
   numberOfBedrooms: '',
@@ -28,6 +31,7 @@ export default function HouseEditorModal({
   onClose,
   onSaved,
 }) {
+  const { t } = usePageTranslations('mySite');
   const { getAccessTokenSilently } = useAuth0();
   const [form, setForm] = useState(emptyHouse);
   const [imageFile, setImageFile] = useState(null);
@@ -82,6 +86,8 @@ export default function HouseEditorModal({
       const payload = {
         ...form,
         imageIdentifier,
+        description:
+          form.descriptionEn || form.descriptionFr || form.description || null,
         numberOfRooms:
           form.numberOfRooms === '' ? null : Number(form.numberOfRooms),
         numberOfBedrooms:
@@ -120,14 +126,18 @@ export default function HouseEditorModal({
       <form className="my-site-modal" onSubmit={handleSubmit}>
         <div className="my-site-modal-header">
           <div>
-            <p className="my-site-kicker">House model</p>
-            <h2>{house ? 'Edit house' : 'Add house'}</h2>
+            <p className="my-site-kicker">{t('houseModel', 'House model')}</p>
+            <h2>
+              {house
+                ? t('editHouseTitle', 'Edit house')
+                : t('addHouseTitle', 'Add house')}
+            </h2>
           </div>
           <button
             type="button"
             className="my-site-modal-close"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('close', 'Close')}
           >
             ×
           </button>
@@ -135,7 +145,7 @@ export default function HouseEditorModal({
 
         {error && <p className="my-site-error">{error}</p>}
         <label>
-          Project
+          {t('houseProject', 'Project')}
           <select
             value={form.projectIdentifier}
             onChange={event =>
@@ -144,7 +154,7 @@ export default function HouseEditorModal({
             required
           >
             <option value="" disabled>
-              Select a project
+              {t('selectProject', 'Select a project')}
             </option>
             {projects.map(project => (
               <option
@@ -157,7 +167,7 @@ export default function HouseEditorModal({
           </select>
         </label>
         <label>
-          House name
+          {t('houseName', 'House name')}
           <input
             value={form.houseName}
             onChange={event => updateField('houseName', event.target.value)}
@@ -166,7 +176,7 @@ export default function HouseEditorModal({
           />
         </label>
         <label>
-          Location
+          {t('houseLocation', 'Location')}
           <input
             value={form.location || ''}
             onChange={event => updateField('location', event.target.value)}
@@ -174,7 +184,7 @@ export default function HouseEditorModal({
           />
         </label>
         <label>
-          Description
+          {t('houseDescriptionLegacy', 'Description (fallback)')}
           <textarea
             value={form.description || ''}
             onChange={event => updateField('description', event.target.value)}
@@ -182,13 +192,35 @@ export default function HouseEditorModal({
             maxLength={100000}
           />
         </label>
+        <label>
+          {t('houseDescriptionEnglish', 'Description (English)')}
+          <textarea
+            value={form.descriptionEn || ''}
+            onChange={event => updateField('descriptionEn', event.target.value)}
+            rows={4}
+            maxLength={100000}
+          />
+        </label>
+        <label>
+          {t('houseDescriptionFrench', 'Description (French)')}
+          <textarea
+            value={form.descriptionFr || ''}
+            onChange={event => updateField('descriptionFr', event.target.value)}
+            rows={4}
+            maxLength={100000}
+          />
+        </label>
         <div className="my-site-modal-fields">
           <label>
-            Rooms <span className="my-site-optional">Optional</span>
+            {t('houseRooms', 'Rooms')}{' '}
+            <span className="my-site-optional">
+              {t('optional', 'Optional')}
+            </span>
             <input
               type="number"
               min="0"
               max="100"
+              step="0.1"
               value={form.numberOfRooms ?? ''}
               onChange={event =>
                 updateField('numberOfRooms', event.target.value)
@@ -196,11 +228,15 @@ export default function HouseEditorModal({
             />
           </label>
           <label>
-            Bedrooms <span className="my-site-optional">Optional</span>
+            {t('houseBedrooms', 'Bedrooms')}{' '}
+            <span className="my-site-optional">
+              {t('optional', 'Optional')}
+            </span>
             <input
               type="number"
               min="0"
               max="100"
+              step="0.1"
               value={form.numberOfBedrooms ?? ''}
               onChange={event =>
                 updateField('numberOfBedrooms', event.target.value)
@@ -208,11 +244,15 @@ export default function HouseEditorModal({
             />
           </label>
           <label>
-            Bathrooms <span className="my-site-optional">Optional</span>
+            {t('houseBathrooms', 'Bathrooms')}{' '}
+            <span className="my-site-optional">
+              {t('optional', 'Optional')}
+            </span>
             <input
               type="number"
               min="0"
               max="100"
+              step="0.1"
               value={form.numberOfBathrooms ?? ''}
               onChange={event =>
                 updateField('numberOfBathrooms', event.target.value)
@@ -220,7 +260,10 @@ export default function HouseEditorModal({
             />
           </label>
           <label>
-            Year <span className="my-site-optional">Optional</span>
+            {t('houseYear', 'Year')}{' '}
+            <span className="my-site-optional">
+              {t('optional', 'Optional')}
+            </span>
             <input
               type="number"
               min="1800"
@@ -241,7 +284,7 @@ export default function HouseEditorModal({
           />
         )}
         <label>
-          House image
+          {t('houseImage', 'House image')}
           <input
             type="file"
             accept="image/png,image/jpeg,image/webp"
@@ -257,7 +300,7 @@ export default function HouseEditorModal({
             className="my-site-modal-link danger"
             onClick={() => setRemoveExistingImage(true)}
           >
-            Remove current image
+            {t('removeHouseImage', 'Remove current image')}
           </button>
         )}
 
@@ -267,14 +310,14 @@ export default function HouseEditorModal({
             className="my-site-modal-secondary"
             onClick={onClose}
           >
-            Cancel
+            {t('cancel', 'Cancel')}
           </button>
           <button
             type="submit"
             className="my-site-modal-primary"
             disabled={saving}
           >
-            {saving ? 'Saving...' : 'Save house'}
+            {saving ? t('saving', 'Saving...') : t('saveHouse', 'Save house')}
           </button>
         </div>
       </form>

@@ -7,7 +7,6 @@ import ProjectSelectionModal from '../../features/lots/components/ProjectSelecti
 import '../../styles/Dashboards/OwnerDashboard.css';
 import { GoInbox } from 'react-icons/go';
 import { GoPeople } from 'react-icons/go';
-import { GoGraph } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { GoGlobe } from 'react-icons/go';
@@ -28,12 +27,6 @@ const OwnerDashboard = () => {
 
   const dashboardCards = useMemo(
     () => [
-      {
-        icon: <GoGraph />,
-        title: t('cards.analytics.title', 'Analytics & Reports'),
-        buttonText: t('cards.analytics.button', 'View Reports'),
-        action: () => navigate('/reports'),
-      },
       {
         icon: <GoPackage />,
         title: t('cards.projects.title', 'Projects'),

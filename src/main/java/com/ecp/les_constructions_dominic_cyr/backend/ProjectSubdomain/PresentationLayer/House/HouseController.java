@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -33,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,6 +78,8 @@ public class HouseController {
         existing.setHouseName(request.houseName().trim());
         existing.setLocation(trimToNull(request.location()));
         existing.setDescription(trimToNull(request.description()));
+        existing.setDescriptionEn(trimToNull(request.descriptionEn()));
+        existing.setDescriptionFr(trimToNull(request.descriptionFr()));
         existing.setImageIdentifier(trimToNull(request.imageIdentifier()));
         existing.setNumberOfRooms(request.numberOfRooms());
         existing.setNumberOfBedrooms(request.numberOfBedrooms());
@@ -145,6 +150,8 @@ public class HouseController {
                 .houseName(request.houseName().trim())
                 .location(trimToNull(request.location()))
                 .description(trimToNull(request.description()))
+                .descriptionEn(trimToNull(request.descriptionEn()))
+                .descriptionFr(trimToNull(request.descriptionFr()))
                 .imageIdentifier(trimToNull(request.imageIdentifier()))
                 .numberOfRooms(request.numberOfRooms())
                 .numberOfBedrooms(request.numberOfBedrooms())
@@ -163,10 +170,12 @@ public class HouseController {
             @NotBlank @Size(max = 255) String houseName,
             @Size(max = 255) String location,
             @Size(max = 100_000) String description,
+            @Size(max = 100_000) String descriptionEn,
+            @Size(max = 100_000) String descriptionFr,
             @Size(max = 500) String imageIdentifier,
-            @Min(0) @Max(100) Integer numberOfRooms,
-            @Min(0) @Max(100) Integer numberOfBedrooms,
-            @Min(0) @Max(100) Integer numberOfBathrooms,
+            @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal numberOfRooms,
+            @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal numberOfBedrooms,
+            @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal numberOfBathrooms,
             @Min(1800) @Max(2500) Integer constructionYear
     ) {}
 }
