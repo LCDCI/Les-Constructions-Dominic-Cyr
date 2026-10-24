@@ -5,9 +5,11 @@ import { useAuth0 } from '@auth0/auth0-react';
 import PropTypes from 'prop-types';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 import {
+  createSiteContent,
   fetchSiteContent,
   updateSiteContent,
 } from '../features/siteContent/api/siteContentApi';
+import { fetchPageTranslations } from '../utils/translationApi';
 import { deleteFile, uploadFile } from '../features/files/api/filesApi';
 import { fetchHouses, deleteHouse } from '../features/houses/api/housesApi';
 import HouseEditorModal from '../features/houses/components/HouseEditorModal';
@@ -55,6 +57,191 @@ const PROJECT_PAGE_GROUPS = [
   { key: 'lots', label: 'lotsPage' },
   { key: 'project-footer', label: 'projectFooterPage' },
 ];
+
+const EDITABLE_TEXT_KEYS = {
+  contact: {
+    namespace: 'contact',
+    keys: [
+      'hero.eyebrow',
+      'hero.title',
+      'hero.subtitle',
+      'contactInfo.title',
+      'contactInfo.companyName',
+      'contactInfo.addressLine1',
+      'contactInfo.addressLine2',
+      'contactInfo.addressLine3',
+      'contactInfo.directions',
+      'contactInfo.phoneLabel',
+      'contactInfo.phone',
+      'contactInfo.emailLabel',
+      'contactInfo.email',
+      'contactInfo.rbqLabel',
+      'contactInfo.rbqLicense',
+      'contactInfo.rbqWebsite',
+      'contactInfo.gcqLabel',
+      'contactInfo.gcqAccreditation',
+      'contactInfo.gcqWebsite',
+    ],
+  },
+  renovations: {
+    namespace: 'renovations',
+    keys: [
+      'hero.label',
+      'hero.heading',
+      'hero.lede',
+      'intro.emphasis',
+      'intro.rest',
+      'intro.description',
+      'intro.cta',
+      'grid.kicker',
+      'grid.title',
+      'cta.kicker',
+      'cta.title',
+      'cta.subtitle',
+    ],
+  },
+  'project-management': {
+    namespace: 'projectManagement',
+    keys: [
+      'hero.title',
+      'hero.subtitle',
+      'intro.heading.title',
+      'intro.tagline',
+      'intro.paragraph',
+      'advantages.heading',
+      'advantages.item1',
+      'advantages.item2',
+      'advantages.item3',
+      'advantages.item4',
+      'advantages.item5',
+      'advantages.item6',
+      'advantages.item7',
+      'advantages.pricing',
+      'advantages.contactLink',
+    ],
+  },
+  realizations: {
+    namespace: 'realizations',
+    keys: [
+      'hero.title',
+      'hero.subtitle',
+      'intro.description',
+      'intro.portfolioText',
+      'gallery.previousAriaLabel',
+      'gallery.nextAriaLabel',
+      'gallery.imageAlt',
+      'gallery.contactLink',
+    ],
+  },
+  'residential-projects': {
+    namespace: 'residentialProjects',
+    keys: [
+      'hero.kicker',
+      'hero.title',
+      'hero.subtitle',
+      'search.placeholder',
+      'gallery.title',
+      'pagination.prev',
+      'pagination.next',
+    ],
+  },
+};
+
+const PUBLIC_IMAGE_SLOTS = {
+  'project-management': [
+    [
+      'galleryImage.1',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/BromontFrl.JPEG',
+    ],
+    [
+      'galleryImage.2',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/shefford1.JPG',
+    ],
+    [
+      'galleryImage.3',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/shefford2.JPG',
+    ],
+    [
+      'galleryImage.4',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/shefford3.JPG',
+    ],
+    [
+      'galleryImage.5',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/st-hilaire.png',
+    ],
+  ],
+  realizations: [
+    [
+      'galleryImage.1',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/3262-1.jpeg',
+    ],
+    [
+      'galleryImage.2',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_1.jpeg',
+    ],
+    [
+      'galleryImage.3',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_2.jpeg',
+    ],
+    [
+      'galleryImage.4',
+      'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_3.jpeg',
+    ],
+    ['galleryImage.5', '1242c6c5-6a3d-4ca0-bac0-06d25bebb0bd'],
+    ['galleryImage.6', '1634e9ee-2680-41d1-b28a-47353f842d9c'],
+    ['galleryImage.7', '1659ff85-b160-4111-b419-84834eb4375a'],
+    ['galleryImage.8', '1681b3d5-8f0a-4daf-9590-53a1ce37cf20'],
+    ['galleryImage.9', '48f50cea-f368-41d6-91c3-ae55157bd868'],
+    ['galleryImage.10', '55378cf7-c0a0-48be-b5f9-9d2507eff177'],
+    ['galleryImage.11', '610354b2-8a9c-4e87-95a1-3cc63f494c6e'],
+    ['galleryImage.12', 'bb6dd250-ed32-4041-8b4e-020e2ef45e2f'],
+  ],
+};
+
+const HOME_CONTENT_KEYS = new Set([
+  'hero.label',
+  'hero.title',
+  'hero.subtitle',
+  'think.title',
+  'think.subtitle',
+  'think.link',
+  'build.title',
+  'build.subtitle',
+  'build.link',
+  'live.title',
+  'live.subtitle',
+  'live.link',
+  'features.kicker',
+  'features.title',
+  'features.intro',
+  'features.feature1',
+  'features.feature1Description',
+  'features.feature2',
+  'features.feature2Description',
+  'features.feature3',
+  'features.feature3Description',
+  'features.feature4',
+  'features.feature4Description',
+  'features.feature5',
+  'features.feature5Description',
+  'features.feature6',
+  'features.feature6Description',
+  'portfolio.title',
+  'portfolio.foresta',
+  'portfolio.forestaSubtitle',
+  'portfolio.panorama',
+  'portfolio.panoramaSubtitle',
+  'portfolio.management',
+  'portfolio.managementSubtitle',
+]);
+
+const flattenContent = (value, prefix = '') => {
+  if (typeof value === 'string' && value.trim()) return [[prefix, value]];
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return [];
+  return Object.entries(value).flatMap(([key, child]) =>
+    flattenContent(child, prefix ? `${prefix}.${key}` : key)
+  );
+};
 
 const sanitizeEditorText = value =>
   String(value ?? '')
@@ -200,12 +387,170 @@ const MySitePage = () => {
     return t(configured?.label || pageKey, fallback);
   };
 
+  const createFallbackTextItems = async (pageGroup, selectedLanguage) => {
+    const configuration = EDITABLE_TEXT_KEYS[pageGroup];
+    const namespace = configuration?.namespace || pageGroup;
+    const resource = await fetchPageTranslations(namespace, selectedLanguage);
+    const configuredKeys = configuration?.keys || [];
+    const textEntries = flattenContent(resource).filter(([pageKey]) =>
+      pageGroup === 'home'
+        ? HOME_CONTENT_KEYS.has(pageKey)
+        : configuredKeys.includes(pageKey)
+    );
+    const textItems = textEntries.map(([pageKey, contentText], index) => ({
+      id: `fallback-${pageGroup}-${pageKey}`,
+      pageGroup,
+      pageKey,
+      contentText,
+      imageIdentifier: '',
+      sortOrder: index,
+      fallbackContent: true,
+    }));
+    const imageItems = (PUBLIC_IMAGE_SLOTS[pageGroup] || []).map(
+      ([pageKey, imageIdentifier], index) => ({
+        id: `fallback-${pageGroup}-${pageKey}`,
+        pageGroup,
+        pageKey,
+        contentText: '',
+        imageIdentifier,
+        sortOrder: textItems.length + index,
+        fallbackContent: true,
+      })
+    );
+    return [...textItems, ...imageItems];
+  };
+
   const openContentPage = async (pageGroup, selectedLanguage = language) => {
     try {
       setError(null);
       setSavingId('page');
       const token = await getToken();
-      let data = await fetchSiteContent(selectedLanguage, token, pageGroup);
+      const effectivePageGroup =
+        selectedSubpage === 'lots' && projectIdentifier
+          ? `lots-${projectIdentifier}`
+          : pageGroup;
+      let data = await fetchSiteContent(
+        selectedLanguage,
+        token,
+        effectivePageGroup
+      );
+      if (pageGroup === 'home') {
+        data = (Array.isArray(data) ? data : []).filter(
+          item =>
+            HOME_CONTENT_KEYS.has(item.pageKey) ||
+            [
+              'media.hero',
+              'media.live',
+              'media.build',
+              'media.think',
+              'media.foresta',
+              'media.panorama',
+            ].includes(item.pageKey)
+        );
+      }
+      if (selectedSubpage === 'lots') {
+        data = (Array.isArray(data) ? data : []).filter(item =>
+          ['title', 'subtitle', 'preTitle'].includes(item.pageKey)
+        );
+      }
+      if (selectedSubpage === 'living-environment' && projectIdentifier) {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE || '/api/v1'}/projects/${projectIdentifier}/living-environment?lang=${selectedLanguage}`
+        );
+        if (response.ok) {
+          const living = await response.json();
+          data = [
+            ['headerTitle', living.headerTitle],
+            ['headerSubtitle', living.headerSubtitle],
+            ['headerSubtitleLast', living.headerSubtitleLast],
+            ['headerTagline', living.headerTagline],
+            ['descriptionText', living.descriptionText],
+            ['proximityTitle', living.proximityTitle],
+            ['footerText', living.footerText],
+            ...(living.amenities || []).map((amenity, index) => [
+              `amenity.${amenity.key || index + 1}`,
+              amenity.label,
+            ]),
+          ]
+            .filter(([, value]) => value)
+            .map(([pageKey, value], index) => ({
+              id: `living-environment-${projectIdentifier}-${pageKey}`,
+              pageGroup,
+              pageKey,
+              contentText: String(value),
+              imageIdentifier: '',
+              sortOrder: index,
+              projectLivingEnvironmentContent: true,
+              projectIdentifier,
+            }));
+        }
+      }
+      if (
+        selectedSubpage === 'lots' &&
+        projectIdentifier &&
+        (!Array.isArray(data) || data.length === 0)
+      ) {
+        const project = projects.find(
+          item => item.projectIdentifier === projectIdentifier
+        );
+        const lotsResource = i18n.getResource(selectedLanguage, 'lots') || {};
+        const isPanorama = projectIdentifier === 'proj-002-panorama';
+        const fallbackValues = isPanorama
+          ? {
+              title: lotsResource.panorama?.headerTitle,
+              subtitle: lotsResource.panorama?.tagline,
+              preTitle: lotsResource.panorama?.preTitle,
+            }
+          : {
+              title:
+                `${lotsResource.header?.projectLots || '{{name}}'}`.replace(
+                  '{{name}}',
+                  project?.projectName || projectIdentifier
+                ),
+              subtitle: lotsResource.foresta?.peaceTagline,
+              preTitle: lotsResource.foresta?.exclusiveCount,
+            };
+        data = Object.entries(fallbackValues)
+          .filter(([, value]) => value)
+          .map(([pageKey, contentText], index) => ({
+            id: `fallback-${effectivePageGroup}-${pageKey}`,
+            pageGroup: effectivePageGroup,
+            pageKey,
+            contentText,
+            imageIdentifier: '',
+            sortOrder: index,
+            fallbackContent: true,
+            projectIdentifier,
+          }));
+      }
+      const fallbackItems = selectedSubpage
+        ? []
+        : await createFallbackTextItems(pageGroup, selectedLanguage);
+      const existingKeys = new Set(
+        (Array.isArray(data) ? data : []).map(item => item.pageKey)
+      );
+      data = [
+        ...(Array.isArray(data) ? data : []),
+        ...fallbackItems.filter(item => !existingKeys.has(item.pageKey)),
+      ];
+      if (
+        (!Array.isArray(data) || data.length === 0) &&
+        selectedSubpage &&
+        selectedSubpage !== 'houses'
+      ) {
+        data = [
+          {
+            id: `fallback-${pageGroup}-content`,
+            pageGroup,
+            pageKey: 'content',
+            contentText: '',
+            imageIdentifier: '',
+            sortOrder: 0,
+            fallbackContent: true,
+            projectIdentifier,
+          },
+        ];
+      }
       if (selectedSubpage === 'project-overview' && projectIdentifier) {
         const response = await fetch(
           `${import.meta.env.VITE_API_BASE || '/api/v1'}/projects/${projectIdentifier}/overview`
@@ -309,14 +654,29 @@ const MySitePage = () => {
         setSavingId(null);
         return;
       }
-      const updated = await updateSiteContent(
-        item.id,
-        drafts[item.id]?.contentText ?? item.contentText ?? '',
-        imageIdentifier,
-        token
-      );
+      const updated = item.fallbackContent
+        ? await createSiteContent(
+            {
+              pageGroup: item.pageGroup,
+              pageKey: item.pageKey,
+              language: editorLanguage,
+              contentText:
+                drafts[item.id]?.contentText ?? item.contentText ?? '',
+              imageIdentifier,
+              sortOrder: item.sortOrder || 0,
+            },
+            token
+          )
+        : await updateSiteContent(
+            item.id,
+            drafts[item.id]?.contentText ?? item.contentText ?? '',
+            imageIdentifier,
+            token
+          );
       setItems(current =>
-        current.map(entry => (entry.id === item.id ? updated : entry))
+        current.map(entry =>
+          entry.id === item.id ? { ...updated, fallbackContent: false } : entry
+        )
       );
       updateDraft(item.id, 'imageIdentifier', imageIdentifier);
 
@@ -411,14 +771,28 @@ const MySitePage = () => {
       const token = await getAccessTokenSilently({
         authorizationParams: { audience: getAuthAudience() },
       });
-      const updated = await updateSiteContent(
-        item.id,
-        sanitizeEditorText(draft.contentText),
-        draft.imageIdentifier || null,
-        token
-      );
+      const updated = item.fallbackContent
+        ? await createSiteContent(
+            {
+              pageGroup: item.pageGroup,
+              pageKey: item.pageKey,
+              language: editorLanguage,
+              contentText: sanitizeEditorText(draft.contentText),
+              imageIdentifier: draft.imageIdentifier || null,
+              sortOrder: item.sortOrder || 0,
+            },
+            token
+          )
+        : await updateSiteContent(
+            item.id,
+            sanitizeEditorText(draft.contentText),
+            draft.imageIdentifier || null,
+            token
+          );
       setItems(current =>
-        current.map(entry => (entry.id === item.id ? updated : entry))
+        current.map(entry =>
+          entry.id === item.id ? { ...updated, fallbackContent: false } : entry
+        )
       );
     } catch (saveError) {
       setError('saveError');
@@ -467,6 +841,47 @@ const MySitePage = () => {
     const token = await getToken();
     await updateProjectOverview(projectIdentifier, values, token);
   };
+
+  const saveLivingEnvironment = async () => {
+    const values = {};
+    const amenities = [];
+    items.forEach(item => {
+      const value = sanitizeEditorText(drafts[item.id]?.contentText);
+      if (item.pageKey === 'headerTitle') values.headerTitle = value;
+      if (item.pageKey === 'headerSubtitle') values.headerSubtitle = value;
+      if (item.pageKey === 'headerSubtitleLast')
+        values.headerSubtitleLast = value;
+      if (item.pageKey === 'headerTagline') values.headerTagline = value;
+      if (item.pageKey === 'descriptionText') values.descriptionText = value;
+      if (item.pageKey === 'proximityTitle') values.proximityTitle = value;
+      if (item.pageKey === 'footerText') values.footerText = value;
+      if (item.pageKey.startsWith('amenity.')) {
+        amenities.push({
+          key: item.pageKey.slice('amenity.'.length),
+          label: value,
+          displayOrder: item.sortOrder,
+        });
+      }
+    });
+    const token = await getToken();
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE || '/api/v1'}/projects/${projectIdentifier}/living-environment?lang=${editorLanguage}`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...values, amenities }),
+      }
+    );
+    if (!response.ok) throw new Error('Living environment update failed');
+  };
+
+  const availableImageCount = items.filter(item => {
+    const draft = drafts[item.id];
+    return Boolean(item.imageIdentifier || draft?.imageIdentifier);
+  }).length;
 
   if (loading) {
     return (
@@ -578,13 +993,23 @@ const MySitePage = () => {
           <article className="my-site-page-card">
             <p className="my-site-kicker">{projectIdentifier}</p>
             <h2>{getPageLabel(selectedSubpage)}</h2>
-            <button
-              type="button"
-              className="my-site-modal-primary"
-              onClick={() => openContentPage(selectedSubpage)}
-            >
-              {t('modify', 'Modify')}
-            </button>
+            {selectedSubpage === 'houses' ? (
+              <button
+                type="button"
+                className="my-site-modal-primary"
+                onClick={() => setHouseManagerOpen(true)}
+              >
+                {t('modify', 'Modify')}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="my-site-modal-primary"
+                onClick={() => openContentPage(selectedSubpage)}
+              >
+                {t('modify', 'Modify')}
+              </button>
+            )}
           </article>
         </section>
       )}
@@ -621,12 +1046,6 @@ const MySitePage = () => {
         >
           <div className="my-site-modal">
             <div className="my-site-modal-header">
-              <div>
-                <p className="my-site-kicker">
-                  {t('projectContent', 'Project content')}
-                </p>
-                <h2>{t('housesTitle', 'House models')}</h2>
-              </div>
               <button
                 type="button"
                 className="my-site-modal-close"
@@ -638,64 +1057,64 @@ const MySitePage = () => {
             </div>
             <div className="my-site-group">
               <div className="my-site-section-heading">
-                <div>
-                  <p className="my-site-kicker">
-                    {t('housesKicker', 'Project content')}
-                  </p>
-                  <h2>{t('housesTitle', 'Houses')}</h2>
-                </div>
-                {houses.length === 0 ? (
+                {houses.filter(
+                  house => house.projectIdentifier === projectIdentifier
+                ).length === 0 ? (
                   <p className="my-site-empty">
                     {t('noHouses', 'No houses have been added yet.')}
                   </p>
                 ) : (
                   <div className="my-site-house-grid">
-                    {houses.map(house => (
-                      <article
-                        className="my-site-house-card"
-                        key={house.houseIdentifier}
-                      >
-                        {house.imageIdentifier ? (
-                          <img
-                            src={getHouseImageUrl(house.imageIdentifier)}
-                            alt={house.houseName}
-                            onError={event => {
-                              event.currentTarget.onerror = null;
-                              event.currentTarget.src = '/fallback.jpg';
-                            }}
-                          />
-                        ) : (
-                          <div className="my-site-house-placeholder">
-                            {t('noImage', 'No image')}
+                    {houses
+                      .filter(
+                        house => house.projectIdentifier === projectIdentifier
+                      )
+                      .map(house => (
+                        <article
+                          className="my-site-house-card"
+                          key={house.houseIdentifier}
+                        >
+                          {house.imageIdentifier ? (
+                            <img
+                              src={getHouseImageUrl(house.imageIdentifier)}
+                              alt={house.houseName}
+                              onError={event => {
+                                event.currentTarget.onerror = null;
+                                event.currentTarget.src = '/fallback.jpg';
+                              }}
+                            />
+                          ) : (
+                            <div className="my-site-house-placeholder">
+                              {t('noImage', 'No image')}
+                            </div>
+                          )}
+                          <div className="my-site-house-card-content">
+                            <span>
+                              {projects.find(
+                                project =>
+                                  project.projectIdentifier ===
+                                  house.projectIdentifier
+                              )?.projectName || house.projectIdentifier}
+                            </span>
+                            <h3>{house.houseName}</h3>
+                            <div className="my-site-house-actions">
+                              <button
+                                type="button"
+                                onClick={() => setHouseModal({ house })}
+                              >
+                                {t('editHouse', 'Edit')}
+                              </button>
+                              <button
+                                type="button"
+                                className="danger"
+                                onClick={() => handleDeleteHouse(house)}
+                              >
+                                {t('deleteHouse', 'Delete')}
+                              </button>
+                            </div>
                           </div>
-                        )}
-                        <div className="my-site-house-card-content">
-                          <span>
-                            {projects.find(
-                              project =>
-                                project.projectIdentifier ===
-                                house.projectIdentifier
-                            )?.projectName || house.projectIdentifier}
-                          </span>
-                          <h3>{house.houseName}</h3>
-                          <div className="my-site-house-actions">
-                            <button
-                              type="button"
-                              onClick={() => setHouseModal({ house })}
-                            >
-                              {t('editHouse', 'Edit')}
-                            </button>
-                            <button
-                              type="button"
-                              className="danger"
-                              onClick={() => handleDeleteHouse(house)}
-                            >
-                              {t('deleteHouse', 'Delete')}
-                            </button>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
+                        </article>
+                      ))}
                   </div>
                 )}
               </div>
@@ -762,6 +1181,13 @@ const MySitePage = () => {
                 <option value="fr">Français</option>
               </select>
             </label>
+            <p className="my-site-image-count" role="status">
+              {t('imagesAvailable', 'Images available')}: {availableImageCount}.{' '}
+              {t(
+                'imageSlotsNote',
+                'Only existing image slots can be replaced; no new image slots can be added here.'
+              )}
+            </p>
             {items.length === 0 ? (
               <p className="my-site-empty">
                 {t(
@@ -772,6 +1198,9 @@ const MySitePage = () => {
             ) : (
               items.map(item => {
                 const draft = drafts[item.id] || {};
+                const hasExistingImage = Boolean(
+                  item.imageIdentifier || draft.imageIdentifier
+                );
                 return (
                   <div className="my-site-modal-item" key={item.id}>
                     <label>
@@ -788,34 +1217,47 @@ const MySitePage = () => {
                         rows={4}
                       />
                     </label>
-                    <label>
-                      {t('imageLabel', 'Image')}
-                      <input
-                        type="file"
-                        accept="image/png,image/jpeg,image/webp"
-                        onChange={event =>
-                          handleImageUpload(item, event.target.files?.[0])
-                        }
-                        disabled={savingId === item.id}
-                      />
-                    </label>
-                    <SiteImagePreview
-                      imageIdentifier={draft.imageIdentifier || ''}
-                    />
-                    {draft.imageIdentifier && !item.projectOverviewContent && (
-                      <button
-                        type="button"
-                        className="my-site-modal-link danger"
-                        onClick={() =>
-                          handleImageDelete({
-                            ...item,
-                            imageIdentifier: draft.imageIdentifier,
-                          })
-                        }
-                        disabled={savingId === item.id}
-                      >
-                        {t('deleteImage', 'Delete image')}
-                      </button>
+                    {hasExistingImage && (
+                      <>
+                        <label className="my-site-image-editor">
+                          <span>
+                            {t('imageLabel', 'Image')}{' '}
+                            <small>
+                              {t(
+                                'imagePositionNote',
+                                'Existing image slot for this content'
+                              )}
+                            </small>
+                          </span>
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp"
+                            onChange={event =>
+                              handleImageUpload(item, event.target.files?.[0])
+                            }
+                            disabled={savingId === item.id}
+                          />
+                        </label>
+                        <SiteImagePreview
+                          imageIdentifier={draft.imageIdentifier || ''}
+                        />
+                        {draft.imageIdentifier &&
+                          !item.projectOverviewContent && (
+                            <button
+                              type="button"
+                              className="my-site-modal-link danger"
+                              onClick={() =>
+                                handleImageDelete({
+                                  ...item,
+                                  imageIdentifier: draft.imageIdentifier,
+                                })
+                              }
+                              disabled={savingId === item.id}
+                            >
+                              {t('deleteImage', 'Delete image')}
+                            </button>
+                          )}
+                      </>
                     )}
                   </div>
                 );
@@ -836,6 +1278,10 @@ const MySitePage = () => {
                   try {
                     if (items.some(item => item.projectOverviewContent)) {
                       await saveProjectOverview();
+                    } else if (
+                      items.some(item => item.projectLivingEnvironmentContent)
+                    ) {
+                      await saveLivingEnvironment();
                     } else {
                       for (const item of items) await saveItem(item);
                     }

@@ -9,6 +9,8 @@
   "pageContent": "Page content",
   "emptyPage": "No content has been seeded for this page yet.",
   "imagesAvailable": "Images available",
+  "imageSlotsNote": "Only existing image slots can be replaced; no new image slots can be added here.",
+  "imagePositionNote": "Existing image slot for this content",
   "modifyPage": "Modify {{page}}",
   "modify": "Modify",
   "projectSubpages": "Project pages",

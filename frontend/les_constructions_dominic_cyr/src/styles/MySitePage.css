@@ -102,6 +102,18 @@
   border-bottom: 1px solid var(--border-color-light);
 }
 
+.my-site-image-count {
+  margin: 0.5rem 0 1rem;
+  color: #66706a;
+  font-size: 0.85rem;
+}
+
+.my-site-image-editor small {
+  color: #66706a;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
 .my-site-header {
   display: flex;
   justify-content: space-between;

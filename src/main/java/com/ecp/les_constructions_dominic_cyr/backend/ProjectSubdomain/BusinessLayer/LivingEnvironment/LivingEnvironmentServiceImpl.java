@@ -6,6 +6,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.LivingEnvironment.LivingEnvironmentAmenityResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.LivingEnvironment.LivingEnvironmentResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.LivingEnvironment.LivingEnvironmentUpdateRequest;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,5 +68,39 @@ public class LivingEnvironmentServiceImpl implements LivingEnvironmentService {
                 .tertiaryColor(project.getTertiaryColor())
                 .buyerColor(project.getBuyerColor())
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public LivingEnvironmentResponseModel updateLivingEnvironment(
+            String projectIdentifier,
+            String language,
+            LivingEnvironmentUpdateRequest request
+    ) {
+        projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+        LivingEnvironmentContent content = livingEnvironmentContentRepository
+                .findByProjectIdentifierAndLanguage(projectIdentifier, language)
+                .orElseThrow(() -> new NotFoundException(
+                        "Living environment content not found for project and language: " + projectIdentifier
+                ));
+        content.setHeaderTitle(request.headerTitle());
+        content.setHeaderSubtitle(request.headerSubtitle());
+        content.setHeaderSubtitleLast(request.headerSubtitleLast());
+        content.setHeaderTagline(request.headerTagline());
+        content.setDescriptionText(request.descriptionText());
+        content.setProximityTitle(request.proximityTitle());
+        content.setFooterText(request.footerText());
+        if (request.amenities() != null) {
+            content.getAmenities().forEach(amenity -> request.amenities().stream()
+                    .filter(update -> update.key() != null && update.key().equals(amenity.getAmenityKey()))
+                    .findFirst()
+                    .ifPresent(update -> {
+                        amenity.setAmenityLabel(update.label());
+                        amenity.setDisplayOrder(update.displayOrder());
+                    }));
+        }
+        livingEnvironmentContentRepository.save(content);
+        return getLivingEnvironment(projectIdentifier, language);
     }
 }

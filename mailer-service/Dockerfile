@@ -1,4 +1,4 @@
-FROM golang:1.25 AS builder
+FROM golang:1.25-alpine AS builder
 WORKDIR /app/GoMailer
 # Build context is root directory, copy from mailer-service subdirectory
 COPY mailer-service/ .
@@ -8,5 +8,5 @@ RUN ["env", "CGO_ENABLED=0", "GOOS=linux", "go", "build", "-a", "-installsuffix"
 FROM scratch
 COPY --from=builder /app/GoMailer/app .
 EXPOSE 8080
-ENV GIN_MODE release
+ENV GIN_MODE=release
 ENTRYPOINT ["./app"]

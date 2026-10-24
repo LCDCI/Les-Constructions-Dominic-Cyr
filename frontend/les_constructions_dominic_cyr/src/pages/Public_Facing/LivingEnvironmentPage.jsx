@@ -31,7 +31,6 @@ const LivingEnvironmentPage = () => {
   const t = (key, defaultValue) => tLivingEnv(key, defaultValue);
   const navigate = useNavigate();
   const { projectIdentifier } = useParams();
-  const isFrench = i18n.language?.startsWith('fr');
   const isForesta = projectIdentifier === 'proj-001-foresta';
   const isPanorama = projectIdentifier === 'proj-002-panorama';
   const [data, setData] = useState(null);
@@ -162,14 +161,14 @@ const LivingEnvironmentPage = () => {
     return lower.charAt(0).toUpperCase() + lower.slice(1);
   };
 
-  const introSectionTitle = isForesta
-    ? isFrench
-      ? 'Un milieu de vie exceptionnel'
-      : 'An exceptional living environment'
-    : [data?.headerTitle, data?.headerSubtitle, data?.headerSubtitleLast]
-        .filter(Boolean)
-        .map(toSentenceCase)
-        .join(' ');
+  const introSectionTitle = [
+    data?.headerTitle,
+    data?.headerSubtitle,
+    data?.headerSubtitleLast,
+  ]
+    .filter(Boolean)
+    .map(toSentenceCase)
+    .join(' ');
 
   if (loading) {
     return (
@@ -247,7 +246,7 @@ const LivingEnvironmentPage = () => {
           style={{ backgroundColor: 'var(--primary-color, #4c4d4f)' }}
         >
           <h1 style={{ color: '#ffffff' }}>
-            Föresta
+            {data.headerTitle || 'Föresta'}
             <span
               className="header-underline"
               style={{ backgroundColor: 'var(--tertiary-color, #aab2a6)' }}
@@ -255,7 +254,7 @@ const LivingEnvironmentPage = () => {
           </h1>
 
           <p className="peace-tag" style={{ color: '#ffffff' }}>
-            {isFrench ? 'Au rythme de la nature' : 'In Rhythm with Nature'}
+            {toSentenceCase(data.headerTagline)}
           </p>
         </section>
       ) : isPanorama ? (

@@ -1,29 +1,58 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Public_Facing/realizations.css';
 import '../../styles/Public_Facing/residential-projects.css';
+
+// Image IDs from file storage (can be file ID or full CDN URL)
+const REALIZATION_IMAGE_IDS = [
+  'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/3262-1.jpeg',
+  'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_1.jpeg',
+  'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_2.jpeg',
+  'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_3.jpeg',
+  '1242c6c5-6a3d-4ca0-bac0-06d25bebb0bd',
+  '1634e9ee-2680-41d1-b28a-47353f842d9c',
+  '1659ff85-b160-4111-b419-84834eb4375a',
+  '1681b3d5-8f0a-4daf-9590-53a1ce37cf20',
+  '48f50cea-f368-41d6-91c3-ae55157bd868',
+  '55378cf7-c0a0-48be-b5f9-9d2507eff177',
+  '610354b2-8a9c-4e87-95a1-3cc63f494c6e',
+  'bb6dd250-ed32-4041-8b4e-020e2ef45e2f',
+];
 
 const RealizationsPage = () => {
   const { t } = usePageTranslations('realizations');
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imageIds, setImageIds] = useState(REALIZATION_IMAGE_IDS);
 
-  // Image IDs from file storage (can be file ID or full CDN URL)
-  const REALIZATION_IMAGE_IDS = [
-    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-19/3262-1.jpeg',
-    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_1.jpeg',
-    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_2.jpeg',
-    'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/Carousel/380_St_Bas_3.jpeg',
-    '1242c6c5-6a3d-4ca0-bac0-06d25bebb0bd',
-    '1634e9ee-2680-41d1-b28a-47353f842d9c',
-    '1659ff85-b160-4111-b419-84834eb4375a',
-    '1681b3d5-8f0a-4daf-9590-53a1ce37cf20',
-    '48f50cea-f368-41d6-91c3-ae55157bd868',
-    '55378cf7-c0a0-48be-b5f9-9d2507eff177',
-    '610354b2-8a9c-4e87-95a1-3cc63f494c6e',
-    'bb6dd250-ed32-4041-8b4e-020e2ef45e2f',
-  ];
+  useEffect(() => {
+    let active = true;
+    fetchPublicSiteContent('en', 'realizations')
+      .then(items => {
+        if (!active) return;
+        const overrides = (items || []).reduce((result, item) => {
+          if (
+            item.pageKey?.startsWith('galleryImage.') &&
+            item.imageIdentifier
+          ) {
+            result[Number(item.pageKey.split('.')[1]) - 1] =
+              item.imageIdentifier;
+          }
+          return result;
+        }, {});
+        setImageIds(
+          REALIZATION_IMAGE_IDS.map((image, index) => overrides[index] || image)
+        );
+      })
+      .catch(() => {
+        if (active) setImageIds(REALIZATION_IMAGE_IDS);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
@@ -39,13 +68,13 @@ const RealizationsPage = () => {
 
   const handlePrevious = () => {
     setCurrentIndex(prevIndex =>
-      prevIndex === 0 ? REALIZATION_IMAGE_IDS.length - 1 : prevIndex - 1
+      prevIndex === 0 ? imageIds.length - 1 : prevIndex - 1
     );
   };
 
   const handleNext = () => {
     setCurrentIndex(prevIndex =>
-      prevIndex === REALIZATION_IMAGE_IDS.length - 1 ? 0 : prevIndex + 1
+      prevIndex === imageIds.length - 1 ? 0 : prevIndex + 1
     );
   };
 
@@ -101,10 +130,10 @@ const RealizationsPage = () => {
           </button>
 
           <div className="realizations-gallery" role="group" aria-live="polite">
-            {REALIZATION_IMAGE_IDS.length > 0 ? (
+            {imageIds.length > 0 ? (
               <div className="gallery-image-item">
                 <img
-                  src={getImageUrl(REALIZATION_IMAGE_IDS[currentIndex])}
+                  src={getImageUrl(imageIds[currentIndex])}
                   alt={t('gallery.imageAlt', `Realization ${currentIndex + 1}`)}
                   className="gallery-image"
                 />
@@ -125,9 +154,9 @@ const RealizationsPage = () => {
           </button>
         </div>
 
-        {REALIZATION_IMAGE_IDS.length > 0 && (
+        {imageIds.length > 0 && (
           <p className="gallery-counter" aria-hidden="true">
-            {pad(currentIndex + 1)} / {pad(REALIZATION_IMAGE_IDS.length)}
+            {pad(currentIndex + 1)} / {pad(imageIds.length)}
           </p>
         )}
         <Link to="/contact" className="link-arrow realizations-contact-link">

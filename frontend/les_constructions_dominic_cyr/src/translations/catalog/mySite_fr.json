@@ -9,6 +9,8 @@
   "pageContent": "Contenu de la page",
   "emptyPage": "Aucun contenu n'a encore été initialisé pour cette page.",
   "imagesAvailable": "Images disponibles",
+  "imageSlotsNote": "Seuls les emplacements d'image existants peuvent être remplacés; aucun nouvel emplacement ne peut être ajouté ici.",
+  "imagePositionNote": "Emplacement d'image existant pour ce contenu",
   "modifyPage": "Modifier {{page}}",
   "modify": "Modifier",
   "projectSubpages": "Pages de projet",
