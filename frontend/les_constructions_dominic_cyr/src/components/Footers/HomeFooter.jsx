@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FaMapMarkerAlt,
   FaShieldAlt,
@@ -6,11 +6,40 @@ import {
   FaEnvelope,
 } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Footers/HomeFooter.css';
 
 export default function HomeFooter() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [content, setContent] = useState({});
   const currentYear = new Date().getFullYear();
+  const language = i18n.language?.startsWith('fr') ? 'fr' : 'en';
+
+  useEffect(() => {
+    let active = true;
+    fetchPublicSiteContent(language, 'footer').then(items => {
+      if (!active) return;
+      setContent(
+        Object.fromEntries(
+          (Array.isArray(items) ? items : []).map(item => [
+            item.pageKey,
+            item.contentText || '',
+          ])
+        )
+      );
+    });
+    return () => {
+      active = false;
+    };
+  }, [language]);
+
+  const value = (key, fallback, options) =>
+    content[key]
+      ? content[key].replace(
+          /\{\{year\}\}/g,
+          String(options?.year ?? currentYear)
+        )
+      : t(`footer.${key}`, fallback, options);
 
   return (
     <footer className="app-footer home-footer">
@@ -19,21 +48,21 @@ export default function HomeFooter() {
           <div className="footer-title-group">
             <FaMapMarkerAlt className="footer-section-icon" />
             <h3 className="footer-title">
-              {t('footer.information', 'Informations')}
+              {value('information', 'Informations')}
             </h3>
           </div>
           <div className="footer-content">
             <div className="footer-item-with-icon">
               <FaPhoneAlt className="footer-mini-icon" />
-              <p className="footer-item">{t('footer.phone', '514-705-7848')}</p>
+              <p className="footer-item">{value('phone', '514-705-7848')}</p>
             </div>
             <div className="footer-item-with-icon">
               <FaEnvelope className="footer-mini-icon" />
               <a
-                href={`mailto:${t('footer.email', 'constructions.dcyr@gmail.com')}`}
+                href={`mailto:${value('email', 'constructions.dcyr@gmail.com')}`}
                 className="footer-link"
               >
-                {t('footer.email', 'constructions.dcyr@gmail.com')}
+                {value('email', 'constructions.dcyr@gmail.com')}
               </a>
             </div>
           </div>
@@ -43,33 +72,39 @@ export default function HomeFooter() {
           <div className="footer-title-group">
             <FaShieldAlt className="footer-section-icon" />
             <h3 className="footer-title">
-              {t('footer.accreditations', 'Accréditations')}
+              {value('accreditations', 'Accréditations')}
             </h3>
           </div>
           <div className="footer-content">
             <a
-              href="https://www.pes.rbq.gouv.qc.ca/RegistreLicences/FicheDetenteur/8356016903?mode=Entreprise"
+              href={value(
+                'rbqUrl',
+                'https://www.pes.rbq.gouv.qc.ca/RegistreLicences/FicheDetenteur/8356016903?mode=Entreprise'
+              )}
               target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
             >
               <strong>
-                {t('footer.rbqLabel', 'Régie du Bâtiment du Québec')}:
+                {value('rbqLabel', 'Régie du Bâtiment du Québec')}:
               </strong>{' '}
-              {t('footer.rbq', '8356-0169-03')}
+              {value('rbq', '8356-0169-03')}
             </a>
 
             <a
-              href="https://repertoire.garantiegcr.com/entrepreneurs/8356-0169-03.html"
+              href={value(
+                'gcrUrl',
+                'https://repertoire.garantiegcr.com/entrepreneurs/8356-0169-03.html'
+              )}
               target="_blank"
               rel="noopener noreferrer"
               className="footer-link"
               style={{ marginTop: '8px' }}
             >
               <strong>
-                {t('footer.gcrLabel', 'Garantie Construction Résidentielle')}:
+                {value('gcrLabel', 'Garantie Construction Résidentielle')}:
               </strong>{' '}
-              {t('footer.gcr', '11084')}
+              {value('gcr', '11084')}
             </a>
           </div>
         </div>
@@ -77,8 +112,8 @@ export default function HomeFooter() {
 
       <div className="footer-bottom">
         <p className="footer-copyright">
-          {t(
-            'footer.copyright',
+          {value(
+            'copyright',
             '© {{year}} Les Constructions Dominic Cyr Inc. Tous droits réservés.',
             { year: currentYear }
           )}

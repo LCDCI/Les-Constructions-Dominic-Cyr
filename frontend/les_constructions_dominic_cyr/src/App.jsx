@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import AppNavBar from './components/NavBars/AppNavBar';
+import SeoManager from './components/SeoManager';
 import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/Public_Facing/LotsPage';
 import LivingEnvironmentPage from './pages/Public_Facing/LivingEnvironmentPage';
@@ -133,6 +134,7 @@ const PRIVATE_FOOTER_ROUTE_PATTERNS = [
   '/users',
   '/owner/dashboard',
   '/owner/my-site',
+  '/owner/my-site/*',
   '/owner/forms',
   '/owner/documents',
   '/owner/inbox',
@@ -329,6 +331,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <NavigationSetter />
+      <SeoManager />
       <div className="app-container">
         <AppNavBar />
 
@@ -398,7 +401,7 @@ export default function App() {
               }
             />
             <Route
-              path="/owner/my-site"
+              path="/owner/my-site/*"
               element={
                 <ProtectedRoute
                   allowedRoles={['OWNER']}

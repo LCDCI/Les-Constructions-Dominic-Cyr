@@ -56,6 +56,8 @@ export default function AppNavBar() {
   const [isPublicMobileMenuOpen, setIsPublicMobileMenuOpen] = useState(false);
   const [isDashboardMenuOpen, setIsDashboardMenuOpen] = useState(false);
   const [isProjectsMenuOpen, setIsProjectsMenuOpen] = useState(false);
+  const [expandedProjectIdentifier, setExpandedProjectIdentifier] =
+    useState(null);
   const [projects, setProjects] = useState([]);
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [projectsError, setProjectsError] = useState(false);
@@ -135,12 +137,44 @@ export default function AppNavBar() {
         !projectsError &&
         projects.map(project => (
           <li key={project.projectIdentifier}>
-            <NavLink
-              to={`/projects/${project.projectIdentifier}/overview`}
-              onClick={() => setIsPublicMobileMenuOpen(false)}
+            <button
+              type="button"
+              className="project-dropdown-name"
+              aria-expanded={
+                expandedProjectIdentifier === project.projectIdentifier
+              }
+              onClick={() =>
+                setExpandedProjectIdentifier(current =>
+                  current === project.projectIdentifier
+                    ? null
+                    : project.projectIdentifier
+                )
+              }
             >
               {project.projectName}
-            </NavLink>
+            </button>
+            {expandedProjectIdentifier === project.projectIdentifier && (
+              <ul className="project-page-dropdown">
+                {[
+                  ['overview', t('nav.projectOverview', 'Overview')],
+                  [
+                    'living-environment',
+                    t('nav.livingEnvironment', 'Living environment'),
+                  ],
+                  ['houses', t('nav.houses', 'Houses')],
+                  ['lots', t('nav.lots', 'Lots')],
+                ].map(([page, label]) => (
+                  <li key={page}>
+                    <NavLink
+                      to={`/projects/${project.projectIdentifier}/${page}`}
+                      onClick={() => setIsPublicMobileMenuOpen(false)}
+                    >
+                      {label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         ))}
       <li className="project-dropdown-all">

@@ -23,10 +23,14 @@ export function getFileUrl(fileId) {
   const base = getFilesServiceBase();
   // If fileId already looks like a URL, return as-is
   try {
-    const u = new URL(fileId);
+    new URL(fileId);
     return fileId;
   } catch (e) {
     // not an absolute URL
   }
-  return `${base.replace(/\/$/, '')}/files/${fileId}`;
+  const normalizedBase = base.replace(/\/$/, '');
+  const filesBase = normalizedBase.endsWith('/files')
+    ? normalizedBase
+    : `${normalizedBase}/files`;
+  return `${filesBase}/${fileId}`;
 }

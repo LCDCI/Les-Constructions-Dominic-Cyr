@@ -69,4 +69,33 @@ public class ProjectOverviewServiceImpl implements ProjectOverviewService {
 
         return builder.build();
     }
+
+    @Override
+    @Transactional
+    public ProjectOverviewResponseModel updateProjectOverview(
+            String projectIdentifier,
+            ProjectOverviewUpdateRequest request
+    ) {
+        Project project = projectRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseThrow(() -> new NotFoundException("Project not found with identifier: " + projectIdentifier));
+        ProjectOverviewContent content = overviewContentRepository.findByProjectIdentifier(projectIdentifier)
+                .orElseGet(() -> ProjectOverviewContent.builder()
+                        .projectIdentifier(projectIdentifier)
+                        .heroTitle(project.getProjectName())
+                        .build());
+
+        if (request.heroTitle() != null) content.setHeroTitle(request.heroTitle());
+        if (request.heroSubtitle() != null) content.setHeroSubtitle(request.heroSubtitle());
+        if (request.heroDescription() != null) content.setHeroDescription(request.heroDescription());
+        if (request.overviewSectionTitle() != null) content.setOverviewSectionTitle(request.overviewSectionTitle());
+        if (request.overviewSectionContent() != null) content.setOverviewSectionContent(request.overviewSectionContent());
+        if (request.locationSectionTitle() != null) content.setLocationSectionTitle(request.locationSectionTitle());
+        if (request.locationDescription() != null) content.setLocationDescription(request.locationDescription());
+        if (request.locationAddress() != null) content.setLocationAddress(request.locationAddress());
+        if (request.imageIdentifier() != null) project.setImageIdentifier(request.imageIdentifier());
+
+        overviewContentRepository.save(content);
+        projectRepository.save(project);
+        return getProjectOverview(projectIdentifier);
+    }
 }

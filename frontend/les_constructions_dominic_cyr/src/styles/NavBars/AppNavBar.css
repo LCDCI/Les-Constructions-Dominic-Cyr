@@ -145,6 +145,29 @@
   background: #f5f5f5;
 }
 
+.project-dropdown-name {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  padding: 9px 14px 4px;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+}
+
+.project-page-dropdown {
+  padding: 0 0 6px;
+  list-style: none;
+}
+
+.project-page-dropdown a {
+  padding: 6px 14px 6px 26px;
+  font-size: 0.9rem;
+}
+
 .projects-dropdown .project-dropdown-all {
   margin-top: 4px;
   border-top: 1px solid #e6e6e6;

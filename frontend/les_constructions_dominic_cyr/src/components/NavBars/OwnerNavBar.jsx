@@ -48,7 +48,7 @@ const Navbar = ({
       : typeof window !== 'undefined' &&
           window.location.hostname === 'localhost'
         ? 'http://localhost:8082'
-        : `${window.location.origin}/files`);
+        : window.location.origin);
   const logoId = import.meta.env.VITE_LOGO_ID;
 
   const toggleMenu = () => {
@@ -86,7 +86,7 @@ const Navbar = ({
   // eslint-disable-next-line no-unused-vars
   const getLogoUrl = () => {
     if (logoId) {
-      return `${filesServiceUrl}/files/${logoId}`;
+      return `${filesServiceUrl.replace(/\/$/, '')}/files/${logoId}`;
     }
     return null;
   };

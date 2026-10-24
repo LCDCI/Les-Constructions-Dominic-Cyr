@@ -8,6 +8,7 @@ const PUBLIC_PAGE_GROUPS = {
   contact: 'contact',
   renovations: 'renovations',
   projectManagement: 'project-management',
+  projectOverview: 'project-overview',
   realizations: 'realizations',
   residentialProjects: 'residential-projects',
   houses: 'houses',
@@ -78,7 +79,9 @@ export const usePageTranslations = pageName => {
   const { i18n: i18nInstance } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const currentLanguage = i18nInstance.language || 'en';
+  const currentLanguage = i18nInstance.language?.toLowerCase().startsWith('fr')
+    ? 'fr'
+    : 'en';
 
   useEffect(() => {
     if (!pageName) {

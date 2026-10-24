@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/projects/{projectIdentifier}/living-environment")
@@ -25,5 +26,16 @@ public class LivingEnvironmentController {
         LivingEnvironmentResponseModel response = livingEnvironmentService.getLivingEnvironment(projectIdentifier, lang);
         
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping
+    public ResponseEntity<LivingEnvironmentResponseModel> updateLivingEnvironment(
+            @PathVariable String projectIdentifier,
+            @RequestParam(defaultValue = "en") String lang,
+            @Valid @RequestBody LivingEnvironmentUpdateRequest request
+    ) {
+        return ResponseEntity.ok(
+                livingEnvironmentService.updateLivingEnvironment(projectIdentifier, lang, request)
+        );
     }
 }

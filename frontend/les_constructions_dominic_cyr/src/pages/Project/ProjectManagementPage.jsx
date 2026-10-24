@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Project/project-management.css';
 import '../../styles/Public_Facing/residential-projects.css';
 import {
@@ -22,6 +23,32 @@ export default function ProjectManagementPage() {
   const [currentImage, setCurrentImage] = useState(null);
   const [currentImageSet, setCurrentImageSet] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imageOverrides, setImageOverrides] = useState({});
+
+  useEffect(() => {
+    let active = true;
+    fetchPublicSiteContent('en', 'project-management')
+      .then(items => {
+        if (!active) return;
+        setImageOverrides(
+          Object.fromEntries(
+            (items || [])
+              .filter(
+                item =>
+                  item.pageKey?.startsWith('galleryImage.') &&
+                  item.imageIdentifier
+              )
+              .map(item => [item.pageKey, item.imageIdentifier])
+          )
+        );
+      })
+      .catch(() => {
+        if (active) setImageOverrides({});
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const CDN_BASE_URL =
     'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16';
@@ -47,6 +74,8 @@ export default function ProjectManagementPage() {
       alt: 'St-Bruno construction project',
     },
   };
+
+  const imageFor = (slot, fallback) => imageOverrides[slot] || fallback;
 
   const openModal = (imageOrImages, index = 0) => {
     if (Array.isArray(imageOrImages)) {
@@ -120,12 +149,14 @@ export default function ProjectManagementPage() {
             <div className="pm-images-grid">
               <div
                 className="pm-image-card"
-                onClick={() => openModal(PM_IMAGES.bromont.url)}
+                onClick={() =>
+                  openModal(imageFor('galleryImage.1', PM_IMAGES.bromont.url))
+                }
                 style={{ cursor: 'pointer' }}
               >
                 <div className="pm-image-container">
                   <img
-                    src={PM_IMAGES.bromont.url}
+                    src={imageFor('galleryImage.1', PM_IMAGES.bromont.url)}
                     alt={PM_IMAGES.bromont.alt}
                     className="pm-image"
                   />
@@ -137,12 +168,19 @@ export default function ProjectManagementPage() {
               </div>
               <div
                 className="pm-image-card"
-                onClick={() => openModal(PM_IMAGES.shefford.urls, 0)}
+                onClick={() =>
+                  openModal(
+                    PM_IMAGES.shefford.urls.map((image, index) =>
+                      imageFor(`galleryImage.${index + 2}`, image)
+                    ),
+                    0
+                  )
+                }
                 style={{ cursor: 'pointer' }}
               >
                 <div className="pm-image-container">
                   <img
-                    src={PM_IMAGES.shefford.urls[0]}
+                    src={imageFor('galleryImage.2', PM_IMAGES.shefford.urls[0])}
                     alt={PM_IMAGES.shefford.alt}
                     className="pm-image"
                   />
@@ -154,12 +192,14 @@ export default function ProjectManagementPage() {
               </div>
               <div
                 className="pm-image-card"
-                onClick={() => openModal(PM_IMAGES.stHilaire.url)}
+                onClick={() =>
+                  openModal(imageFor('galleryImage.5', PM_IMAGES.stHilaire.url))
+                }
                 style={{ cursor: 'pointer' }}
               >
                 <div className="pm-image-container">
                   <img
-                    src={PM_IMAGES.stHilaire.url}
+                    src={imageFor('galleryImage.5', PM_IMAGES.stHilaire.url)}
                     alt={PM_IMAGES.stHilaire.alt}
                     className="pm-image"
                   />

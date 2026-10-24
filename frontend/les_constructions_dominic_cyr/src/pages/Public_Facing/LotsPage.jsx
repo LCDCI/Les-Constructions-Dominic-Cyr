@@ -9,11 +9,12 @@ import {
 import { projectApi } from '../../features/projects/api/projectApi';
 import LotList from '../../features/lots/components/LotList';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
+import { fetchSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/lots.css';
 import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
 
 const LotsPage = () => {
-  const { t } = useTranslation(['lots', 'translation']);
+  const { t, i18n } = useTranslation(['lots', 'translation']);
   const { projectIdentifier: urlProjectIdentifier } = useParams();
   const navigate = useNavigate();
   const {
@@ -42,6 +43,7 @@ const LotsPage = () => {
     direction: 'asc',
   });
   const [selectedLot, setSelectedLot] = useState(null);
+  const [pageContent, setPageContent] = useState({});
 
   const mapButtons = {
     1: { top: '28.5%', left: '24%' },
@@ -101,6 +103,20 @@ const LotsPage = () => {
             accent: projectData.accentColor || '#545454',
           });
         }
+        const content = await fetchSiteContent(
+          i18n.language,
+          token,
+          `lots-${resolvedProjectId}`
+        );
+        if (!cancelled) {
+          setPageContent(
+            Object.fromEntries(
+              (Array.isArray(content) ? content : [])
+                .filter(item => item.contentText)
+                .map(item => [item.pageKey, item.contentText])
+            )
+          );
+        }
         const data = await fetchLots({
           projectIdentifier: resolvedProjectId,
           token,
@@ -118,6 +134,7 @@ const LotsPage = () => {
     };
   }, [
     resolvedProjectId,
+    i18n.language,
     isAuthenticated,
     authLoading,
     getAccessTokenSilently,
@@ -201,18 +218,22 @@ const LotsPage = () => {
           style={{ backgroundColor: projectColors.primary }}
         >
           {resolvedProjectId === 'proj-001-foresta' && (
-            <p className="exclusive-tag">{t('foresta.exclusiveCount')}</p>
+            <p className="exclusive-tag">
+              {pageContent.preTitle || t('foresta.exclusiveCount')}
+            </p>
           )}
           {resolvedProjectId === 'proj-002-panorama' && (
             <p className="exclusive-tag" style={{ whiteSpace: 'pre-line' }}>
-              {t('panorama.preTitle')}
+              {pageContent.preTitle || t('panorama.preTitle')}
             </p>
           )}
           <h1 style={{ color: projectColors.secondary }}>
             {resolvedProjectId === 'proj-002-panorama'
-              ? t('panorama.headerTitle', 'Unités de PANØRAMA')
+              ? pageContent.title ||
+                t('panorama.headerTitle', 'Unités de PANØRAMA')
               : projectName
-                ? t('header.projectLots', { name: projectName })
+                ? pageContent.title ||
+                  t('header.projectLots', { name: projectName })
                 : t('header.defaultTitle')}
             <span
               className="header-underline"
@@ -220,10 +241,14 @@ const LotsPage = () => {
             ></span>
           </h1>
           {resolvedProjectId === 'proj-001-foresta' && (
-            <p className="peace-tag">{t('foresta.peaceTagline')}</p>
+            <p className="peace-tag">
+              {pageContent.subtitle || t('foresta.peaceTagline')}
+            </p>
           )}
           {resolvedProjectId === 'proj-002-panorama' && (
-            <p className="peace-tag">{t('panorama.tagline')}</p>
+            <p className="peace-tag">
+              {pageContent.subtitle || t('panorama.tagline')}
+            </p>
           )}
           {/* Button moved below all content */}
         </div>

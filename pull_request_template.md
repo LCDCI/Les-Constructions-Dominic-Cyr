@@ -1,27 +1,5 @@
-## Jira Ticket if exists
-- **ID:** CDC-XX  
-- **Link:** https://your-jira-url/browse/CDC-XX
-
-
-## Context
+## Context & Changes
 Explain the purpose of this ticket and why this change is required.
-
-
-## Changes
-List the main changes made in this PR. You can use bullets or short sentences.
-
-- ...
-- ...
-- ...
-
-Indicate if this affects other modules, components, or services.
-
-
-## Before and After UI (if applicable)
-If the PR impacts the UI:
-- Add **before** screenshots  
-- Add **after** screenshots  
-If this adds a **new UI feature**, provide visuals to help reviewers understand the change.
 
 ## Dev Notes (Optional)
 Add any relevant technical notes, edge cases, or things reviewers should pay attention to.

@@ -252,7 +252,7 @@ const LotMetadata = () => {
                 (typeof window !== 'undefined' &&
                 window.location.hostname.includes('constructions-dominiccyr')
                   ? 'https://files-service-app-xubs2.ondigitalocean.app'
-                  : `${window.location.origin}/files`)
+                  : window.location.origin)
               }/files/${project.imageIdentifier}`}
               alt={project.projectName}
             />

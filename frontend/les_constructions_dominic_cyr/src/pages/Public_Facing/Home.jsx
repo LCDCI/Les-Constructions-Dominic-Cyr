@@ -2,28 +2,24 @@ import React, { useEffect, useMemo, useState } from 'react';
 import '../../styles/Public_Facing/home.css';
 import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
+import { getFileUrl } from '../../utils/filesService';
 import { TbHomeSearch } from 'react-icons/tb';
-import { PiPaintBrushBroad } from 'react-icons/pi';
+import {
+  PiPaintBrushBroad,
+  PiSuitcaseSimple,
+  PiMedalThin,
+} from 'react-icons/pi';
 import { RiLeafLine } from 'react-icons/ri';
-import { PiSuitcaseSimple } from 'react-icons/pi';
 import { FiPhoneCall } from 'react-icons/fi';
-import { PiMedalThin } from 'react-icons/pi';
 import { GrCatalog } from 'react-icons/gr';
 
 export default function Home() {
   const { t } = usePageTranslations('home');
   const isLocalHost =
     typeof window !== 'undefined' && window.location.hostname === 'localhost';
-  const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL ||
-    (typeof window !== 'undefined' &&
-    window.location.hostname.includes('constructions-dominiccyr')
-      ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : typeof window !== 'undefined' &&
-          window.location.hostname === 'localhost'
-        ? 'http://localhost:8082'
-        : `${window.location.origin}/files`);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [media, setMedia] = useState({});
 
   const photos = useMemo(
     () => ({
@@ -39,6 +35,29 @@ export default function Home() {
     }),
     []
   );
+
+  useEffect(() => {
+    let active = true;
+    fetchPublicSiteContent('en', 'home')
+      .then(items => {
+        if (!active) return;
+        setMedia(
+          Object.fromEntries(
+            (Array.isArray(items) ? items : [])
+              .filter(item => item.imageIdentifier)
+              .map(item => [item.pageKey, item.imageIdentifier])
+          )
+        );
+      })
+      .catch(() => {
+        if (active) setMedia({});
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const getMediaUrl = key => getFileUrl(media[key] || photos[key]);
 
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll('[data-animate]'));
@@ -127,7 +146,7 @@ export default function Home() {
               />
             ) : (
               <video
-                src={`${filesServiceUrl}/files/${photos.hero}`}
+                src={getMediaUrl('media.hero')}
                 className="hero-image"
                 autoPlay
                 muted
@@ -255,7 +274,7 @@ export default function Home() {
         <section className="content-section featured-section">
           <div className="section-image-container" data-animate>
             <img
-              src={`${filesServiceUrl}/files/${photos.live}`}
+              src={getMediaUrl('media.live')}
               alt="Lifestyle"
               className="section-image"
               loading="lazy"
@@ -283,7 +302,7 @@ export default function Home() {
         <section className="content-section featured-section alt reverse">
           <div className="section-image-container" data-animate>
             <img
-              src={`${filesServiceUrl}/files/${photos.build}`}
+              src={getMediaUrl('media.build')}
               alt="Construction"
               className="section-image"
               loading="lazy"
@@ -314,7 +333,7 @@ export default function Home() {
         <section className="content-section featured-section">
           <div className="section-image-container" data-animate>
             <img
-              src={`${filesServiceUrl}/files/${photos.think}`}
+              src={getMediaUrl('media.think')}
               alt="Design concept"
               className="section-image"
               loading="lazy"
@@ -357,7 +376,7 @@ export default function Home() {
               data-animate
             >
               <img
-                src={`${filesServiceUrl}/files/a93f9fbc-44d6-4c0d-b763-0523ee42656d`}
+                src={getMediaUrl('media.foresta')}
                 alt="Foresta Project"
                 loading="lazy"
                 className="card-image-bg"
@@ -371,7 +390,7 @@ export default function Home() {
               data-animate
             >
               <img
-                src={`${filesServiceUrl}/files/${photos.project2}`}
+                src={getMediaUrl('media.project2')}
                 alt="Our Achievements"
                 loading="lazy"
                 className="card-image-bg"
@@ -394,7 +413,7 @@ export default function Home() {
               data-animate
             >
               <img
-                src={`${filesServiceUrl}/files/${photos.collage3}`}
+                src={getMediaUrl('media.collage3')}
                 alt="Project Management"
                 loading="lazy"
                 className="card-image-bg"
@@ -417,7 +436,7 @@ export default function Home() {
               data-animate
             >
               <img
-                src={`${filesServiceUrl}/files/47d2b619-70cf-460c-b929-605d52ee9eb6`}
+                src={getMediaUrl('media.panorama')}
                 alt="Panorama Project"
                 loading="lazy"
                 className="card-image-bg"
