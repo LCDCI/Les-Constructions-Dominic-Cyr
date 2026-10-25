@@ -20,6 +20,7 @@ public class ProjectOverviewResponseModel {
     private String tertiaryColor;
     private String buyerColor;
     private String imageIdentifier;
+    private String bannerImageIdentifier;
 
     private String heroTitle;
     private String heroSubtitle;

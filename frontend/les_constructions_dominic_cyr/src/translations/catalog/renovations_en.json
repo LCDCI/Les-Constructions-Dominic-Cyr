@@ -5,10 +5,25 @@
     "lede": "Your home deserves the very best"
   },
   "intro": {
-    "emphasis": "Transform",
-    "rest": "your home into the living space of your dreams!",
-    "description": "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\n\nEntrust your renovation to passionate professionals!",
-    "cta": "Talk to an expert"
+    "kicker": "Transform",
+    "title": "your home into the living space of your dreams!",
+    "description": "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency. We offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort. Entrust your renovation to passionate professionals!"
+  },
+  "features": {
+    "kicker": "What sets us apart",
+    "title": "A renovation experience shaped around you",
+    "feature1": "Passionate expertise",
+    "feature1Description": "A dedicated team bringing care, experience, and energy to every renovation detail.",
+    "feature2": "Creative transformation",
+    "feature2Description": "Thoughtful ideas that reveal the full potential of your existing space.",
+    "feature3": "Precision at every step",
+    "feature3Description": "Careful planning and exact execution from the first sketch to the final finish.",
+    "feature4": "Comfortable, responsible choices",
+    "feature4Description": "Materials and solutions selected to create lasting comfort while respecting your home.",
+    "feature5": "High-end finishing",
+    "feature5Description": "Refined materials and craftsmanship that give your renovation a distinctive feel.",
+    "feature6": "A trusted partner",
+    "feature6Description": "Clear support and communication throughout your turnkey renovation."
   },
   "grid": {
     "kicker": "Our Work",
@@ -25,10 +40,10 @@
     }
   },
   "cta": {
-    "kicker": "Where to start?",
-    "title": "Let's talk about your project",
-    "subtitle": "Get tailored support to transform your space into a place that reflects you.",
-    "button": "Contact Us",
+    "kicker": "Talk to an expert",
+    "title": "Entrust your renovation to passionate professionals!",
+    "subtitle": "We offer a turnkey service tailored to your home, your lifestyle, and your ambitions.",
+    "button": "Talk to an expert",
     "discover": "Discover",
     "contact": "Contact"
   },

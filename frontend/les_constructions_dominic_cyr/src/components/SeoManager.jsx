@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 const SITE_URL = 'https://constructions-dominiccyr.com';
 const COMPANY_NAME = 'Les Constructions Dominic Cyr Inc.';
+const FORESTA_URL = `${SITE_URL}/projects/proj-001-foresta/overview`;
 
 const getLanguage = language =>
   language?.toLowerCase().startsWith('fr') ? 'fr' : 'en';
@@ -12,21 +13,20 @@ const getMetadata = (pathname, language) => {
   const isFrench = language === 'fr';
   const forestaOverview = pathname === '/projects/proj-001-foresta/overview';
   const contact = pathname === '/contact';
-  const residentialProjects = pathname === '/residential-projects';
 
   if (forestaOverview) {
     return isFrench
       ? {
           title:
-            'Projet Föresta à Saint-Alphonse-de-Granby | Les Constructions Dominic Cyr',
+            'Föresta à Saint-Alphonse-de-Granby | Les Constructions Dominic Cyr',
           description:
-            'Découvrez le projet résidentiel Föresta à Saint-Alphonse-de-Granby : maisons unifamiliales, grands terrains et milieu de vie en harmonie avec la nature.',
+            'Découvrez Föresta, le projet résidentiel de Les Constructions Dominic Cyr à Saint-Alphonse-de-Granby, près de Granby : maisons, terrains et milieu de vie en harmonie avec la nature.',
         }
       : {
           title:
-            'Föresta Residential Project in Saint-Alphonse-de-Granby | Les Constructions Dominic Cyr',
+            'Föresta in Saint-Alphonse-de-Granby | Les Constructions Dominic Cyr',
           description:
-            'Discover the Föresta residential project in Saint-Alphonse-de-Granby: single-family homes, large lots and a natural living environment.',
+            'Discover Föresta, Les Constructions Dominic Cyr’s residential project in Saint-Alphonse-de-Granby near Granby, Quebec, with homes, lots and a natural living environment.',
         };
   }
 
@@ -44,31 +44,17 @@ const getMetadata = (pathname, language) => {
         };
   }
 
-  if (residentialProjects) {
-    return isFrench
-      ? {
-          title: 'Projets résidentiels | Les Constructions Dominic Cyr Inc.',
-          description:
-            'Explorez les projets résidentiels de Les Constructions Dominic Cyr, dont le projet Föresta à Saint-Alphonse-de-Granby.',
-        }
-      : {
-          title: 'Residential Projects | Les Constructions Dominic Cyr Inc.',
-          description:
-            'Explore Les Constructions Dominic Cyr residential projects, including the Föresta project in Saint-Alphonse-de-Granby.',
-        };
-  }
-
   return isFrench
     ? {
         title:
           'Les Constructions Dominic Cyr Inc. | Construction résidentielle',
         description:
-          'Entreprise familiale de construction résidentielle, rénovation et gestion de projets à Granby, Saint-Alphonse-de-Granby et partout en Montérégie.',
+          'Les Constructions Dominic Cyr Inc. — construction résidentielle, rénovation et gestion de projets à Granby, Saint-Alphonse-de-Granby et partout en Montérégie. Découvrez aussi le projet Föresta.',
       }
     : {
         title: 'Les Constructions Dominic Cyr Inc. | Residential Construction',
         description:
-          'Family-owned residential construction, renovation and project management company serving Granby, Saint-Alphonse-de-Granby and the surrounding area.',
+          'Les Constructions Dominic Cyr Inc. — residential construction, renovation and project management in Granby, Saint-Alphonse-de-Granby and the surrounding area. Discover the Föresta project.',
       };
 };
 
@@ -102,6 +88,9 @@ export default function SeoManager() {
     const metadata = getMetadata(pathname, language);
     const canonicalUrl = `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
     const isFrench = language === 'fr';
+    const keywords = isFrench
+      ? 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Foresta Granby, Saint-Alphonse-de-Granby, Granby, construction résidentielle'
+      : 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Foresta Granby, Saint-Alphonse-de-Granby, Granby, residential construction';
     const structuredData = {
       '@context': 'https://schema.org',
       '@graph': [
@@ -122,6 +111,20 @@ export default function SeoManager() {
           },
         },
         {
+          '@type': 'LocalBusiness',
+          '@id': `${SITE_URL}/#local-business`,
+          name: COMPANY_NAME,
+          alternateName: ['Foresta', 'Föresta', 'Les Contructions Dominic Cyr'],
+          url: SITE_URL,
+          areaServed: [
+            'Granby',
+            'Saint-Alphonse-de-Granby',
+            'Montérégie',
+            'Quebec',
+          ],
+          parentOrganization: { '@id': `${SITE_URL}/#organization` },
+        },
+        {
           '@type': 'WebSite',
           '@id': `${SITE_URL}/#website`,
           name: COMPANY_NAME,
@@ -129,7 +132,7 @@ export default function SeoManager() {
           inLanguage: language,
           publisher: { '@id': `${SITE_URL}/#organization` },
         },
-        ...(pathname === '/' || pathname === '/residential-projects'
+        ...(pathname === '/'
           ? [
               {
                 '@type': 'ItemList',
@@ -141,7 +144,7 @@ export default function SeoManager() {
                     name: isFrench
                       ? 'Projet Föresta'
                       : 'Föresta residential project',
-                    url: `${SITE_URL}/projects/proj-001-foresta/overview`,
+                    url: FORESTA_URL,
                   },
                   {
                     '@type': 'ListItem',
@@ -159,6 +162,7 @@ export default function SeoManager() {
     document.documentElement.lang = language;
     document.title = metadata.title;
     setMeta('name', 'description', metadata.description);
+    setMeta('name', 'keywords', keywords);
     setMeta('property', 'og:title', metadata.title);
     setMeta('property', 'og:description', metadata.description);
     setMeta('property', 'og:url', canonicalUrl);

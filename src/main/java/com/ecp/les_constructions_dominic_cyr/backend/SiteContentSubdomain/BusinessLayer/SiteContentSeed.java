@@ -57,6 +57,100 @@ public class SiteContentSeed implements ApplicationRunner {
             Map.entry("portfolio.title", "Projets et réalisations")
     );
 
+    private static final Map<String, String> RENOVATIONS_ENGLISH = Map.ofEntries(
+            Map.entry("hero.label", "Renovate, Modernize & Transform"),
+            Map.entry("hero.heading", "Renovations"),
+            Map.entry("hero.lede", "Your home deserves the very best"),
+            Map.entry("intro.kicker", "Transform"),
+            Map.entry("intro.title", "your home into the living space of your dreams!"),
+            Map.entry("intro.description", "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency. We offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort. Entrust your renovation to passionate professionals!"),
+            Map.entry("features.kicker", "What sets us apart"),
+            Map.entry("features.title", "A renovation experience shaped around you"),
+            Map.entry("features.feature1", "Passionate expertise"),
+            Map.entry("features.feature1Description", "A dedicated team bringing care, experience, and energy to every renovation detail."),
+            Map.entry("features.feature2", "Creative transformation"),
+            Map.entry("features.feature2Description", "Thoughtful ideas that reveal the full potential of your existing space."),
+            Map.entry("features.feature3", "Precision at every step"),
+            Map.entry("features.feature3Description", "Careful planning and exact execution from the first sketch to the final finish."),
+            Map.entry("features.feature4", "Comfortable, responsible choices"),
+            Map.entry("features.feature4Description", "Materials and solutions selected to create lasting comfort while respecting your home."),
+            Map.entry("features.feature5", "High-end finishing"),
+            Map.entry("features.feature5Description", "Refined materials and craftsmanship that give your renovation a distinctive feel."),
+            Map.entry("features.feature6", "A trusted partner"),
+            Map.entry("features.feature6Description", "Clear support and communication throughout your turnkey renovation."),
+            Map.entry("cta.kicker", "Talk to an expert"),
+            Map.entry("cta.title", "Entrust your renovation to passionate professionals!"),
+            Map.entry("cta.subtitle", "We offer a turnkey service tailored to your home, your lifestyle, and your ambitions."),
+            Map.entry("cta.button", "Talk to an expert")
+    );
+
+    private static final Map<String, String> RENOVATIONS_FRENCH = Map.ofEntries(
+            Map.entry("hero.label", "Rénover, Moderniser & transformer"),
+            Map.entry("hero.heading", "Rénovations"),
+            Map.entry("hero.lede", "Votre maison mérite ce qu'il y a de mieux"),
+            Map.entry("intro.kicker", "Transformez"),
+            Map.entry("intro.title", "votre maison en un espace de vie dont vous rêvez !"),
+            Map.entry("intro.description", "Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité. Nous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien. Confiez votre rénovation à des professionnels passionnés !"),
+            Map.entry("features.kicker", "Ce qui nous distingue"),
+            Map.entry("features.title", "Une expérience de rénovation à votre image"),
+            Map.entry("features.feature1", "Une expertise passionnée"),
+            Map.entry("features.feature1Description", "Une équipe engagée qui met son expérience et son savoir-faire au service de chaque détail."),
+            Map.entry("features.feature2", "Une transformation créative"),
+            Map.entry("features.feature2Description", "Des idées réfléchies qui révèlent tout le potentiel de votre espace existant."),
+            Map.entry("features.feature3", "La précision à chaque étape"),
+            Map.entry("features.feature3Description", "Une planification attentive et une exécution précise, de la première esquisse à la finition."),
+            Map.entry("features.feature4", "Des choix responsables et confortables"),
+            Map.entry("features.feature4Description", "Des matériaux et des solutions choisis pour un confort durable, dans le respect de votre maison."),
+            Map.entry("features.feature5", "Une finition haut de gamme"),
+            Map.entry("features.feature5Description", "Des matériaux raffinés et un travail soigné qui donnent une identité unique à votre rénovation."),
+            Map.entry("features.feature6", "Un partenaire de confiance"),
+            Map.entry("features.feature6Description", "Un accompagnement clair et une communication attentive pendant toute votre rénovation clé en main."),
+            Map.entry("cta.kicker", "Parlez à un expert"),
+            Map.entry("cta.title", "Confiez votre rénovation à des professionnels passionnés !"),
+            Map.entry("cta.subtitle", "Nous offrons un service clé en main adapté à votre maison, à votre quotidien et à vos ambitions."),
+            Map.entry("cta.button", "Parlez à un expert")
+    );
+
+    private static final Map<String, String> RENOVATIONS_LEGACY_ENGLISH = Map.ofEntries(
+            Map.entry("intro.kicker", "A fresh start for your home"),
+            Map.entry("intro.title", "Renovations designed around your life"),
+            Map.entry("intro.description", "From the first idea to the final finish, we transform existing spaces into homes that feel more functional, comfortable, and truly yours. Our team coordinates each renovation with care, clear communication, and respect for your daily life."),
+            Map.entry("features.kicker", "What guides our work"),
+            Map.entry("features.title", "The difference is in the details"),
+            Map.entry("features.feature1", "A team you can trust"),
+            Map.entry("features.feature1Description", "Experienced professionals who keep your renovation moving and your expectations clear."),
+            Map.entry("features.feature2", "Spaces that work better"),
+            Map.entry("features.feature2Description", "Thoughtful layouts that bring more light, comfort, and function to your home."),
+            Map.entry("features.feature3", "Careful site coordination"),
+            Map.entry("features.feature3Description", "A structured approach that keeps trades, timelines, and decisions aligned."),
+            Map.entry("features.feature4", "Respect for your home"),
+            Map.entry("features.feature4Description", "Clean, considerate work that protects your space throughout the renovation."),
+            Map.entry("features.feature5", "Finishes made to last"),
+            Map.entry("features.feature5Description", "Quality materials and precise craftsmanship for results you can enjoy for years."),
+            Map.entry("features.feature6", "Support from start to finish"),
+            Map.entry("features.feature6Description", "A responsive partner before, during, and after your renovation.")
+    );
+
+    private static final Map<String, String> RENOVATIONS_LEGACY_FRENCH = Map.ofEntries(
+            Map.entry("intro.kicker", "Un nouveau départ pour votre maison"),
+            Map.entry("intro.title", "Des rénovations pensées pour votre quotidien"),
+            Map.entry("intro.description", "De la première idée à la dernière finition, nous transformons les espaces existants en lieux plus fonctionnels, confortables et à votre image. Notre équipe coordonne chaque rénovation avec soin, transparence et respect de votre quotidien."),
+            Map.entry("features.kicker", "Ce qui guide notre travail"),
+            Map.entry("features.title", "La différence se trouve dans les détails"),
+            Map.entry("features.feature1", "Une équipe de confiance"),
+            Map.entry("features.feature1Description", "Des professionnels expérimentés qui font avancer votre rénovation et clarifient chaque étape."),
+            Map.entry("features.feature2", "Des espaces plus fonctionnels"),
+            Map.entry("features.feature2Description", "Des aménagements réfléchis pour apporter plus de lumière, de confort et de fonctionnalité."),
+            Map.entry("features.feature3", "Une coordination attentive"),
+            Map.entry("features.feature3Description", "Une approche structurée qui harmonise les métiers, les échéanciers et les décisions."),
+            Map.entry("features.feature4", "Le respect de votre maison"),
+            Map.entry("features.feature4Description", "Des travaux propres et soignés qui protègent votre espace pendant la rénovation."),
+            Map.entry("features.feature5", "Des finitions durables"),
+            Map.entry("features.feature5Description", "Des matériaux de qualité et un savoir-faire précis pour des résultats durables."),
+            Map.entry("features.feature6", "Un accompagnement complet"),
+            Map.entry("features.feature6Description", "Un partenaire disponible avant, pendant et après votre rénovation.")
+    );
+
     private static final Map<String, String> ENGLISH_FOOTER = Map.ofEntries(
             Map.entry("information", "Information"),
             Map.entry("phone", "514-705-7848"),
@@ -93,6 +187,8 @@ public class SiteContentSeed implements ApplicationRunner {
         seedLanguage("fr", FRENCH_FOOTER);
         seedHome("en", HOME_ENGLISH);
         seedHome("fr", HOME_FRENCH);
+        seedRenovations("en", RENOVATIONS_ENGLISH, RENOVATIONS_LEGACY_ENGLISH);
+        seedRenovations("fr", RENOVATIONS_FRENCH, RENOVATIONS_LEGACY_FRENCH);
         seedHomeMedia();
     }
 
@@ -118,6 +214,30 @@ public class SiteContentSeed implements ApplicationRunner {
     private void seedHomeMedia() {
         seedEntries("home", "en", HOME_MEDIA, true);
         seedEntries("home", "fr", HOME_MEDIA, true);
+    }
+
+    private void seedRenovations(
+            String language,
+            Map<String, String> values,
+            Map<String, String> legacyValues
+    ) {
+        IntStream.range(0, values.size()).forEach(index -> {
+            String key = values.keySet().stream().skip(index).findFirst().orElseThrow();
+            repository.findByPageGroupAndPageKeyAndLanguage("renovations", key, language)
+                    .ifPresentOrElse(content -> {
+                        if (legacyValues.containsKey(key)
+                                && legacyValues.get(key).equals(content.getContentText())) {
+                            content.setContentText(values.get(key));
+                            repository.save(content);
+                        }
+                    }, () -> repository.save(SiteContent.builder()
+                            .pageGroup("renovations")
+                            .pageKey(key)
+                            .language(language)
+                            .contentText(values.get(key))
+                            .sortOrder(index)
+                            .build()));
+        });
     }
 
     private void seedEntries(

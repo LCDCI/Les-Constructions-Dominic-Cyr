@@ -34,6 +34,10 @@
   padding: 3rem 1rem;
 }
 
+.realizations-page .public-page__hero {
+  background: #aab2a6 !important;
+}
+
 .realizations-page .projects-hero::before,
 .realizations-page .projects-hero::after {
   display: none;
@@ -60,7 +64,7 @@
 .realizations-hero-subtitle {
   margin: 0;
   font-family: var(--font-body);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
   font-size: 1.1rem;
   letter-spacing: 0;
@@ -122,6 +126,17 @@
   justify-content: center;
   gap: 1.25rem;
   padding: 0 1rem;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+.realizations-gallery-container:hover {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  transform: none;
 }
 
 .realizations-gallery {
@@ -135,7 +150,7 @@
 .gallery-image-item {
   position: relative;
   width: 100%;
-  height: min(70vh, 560px);
+  height: min(62vh, 500px);
   overflow: hidden;
   background: #fff;
   border: 1px solid #f3f4f6;
@@ -207,8 +222,65 @@
   color: #9ca3af;
 }
 
-.realizations-contact-link {
-  margin-top: 0.25rem;
+.realizations-page .realizations-contact-link {
+  display: flex;
+  width: fit-content;
+  align-self: center;
+  margin: 1.5rem auto 0;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.82rem;
+  color: #fff;
+}
+
+.realizations-gallery-grid-section {
+  gap: 2rem;
+}
+
+.realizations-gallery-grid {
+  width: min(100% - 2rem, 1100px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.realizations-gallery-card {
+  min-height: 220px;
+  overflow: hidden;
+  border: 1px solid var(--r-sage-100);
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 12px 28px -18px rgba(26, 37, 48, 0.2);
+}
+
+.realizations-gallery-card-image,
+.realizations-gallery-card-placeholder {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.realizations-gallery-card-placeholder {
+  background: var(--r-sage-50);
+}
+
+.realizations-gallery-card-content {
+  padding: 0.85rem 1rem 1rem;
+}
+
+.realizations-gallery-card-content p {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.9rem;
+}
+
+.realizations-gallery-card-content .realizations-gallery-card-location {
+  margin-bottom: 0.25rem;
+  color: var(--r-sage-500);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* ===== Responsive ===== */
@@ -218,7 +290,7 @@
   }
 
   .gallery-image-item {
-    height: min(55vh, 420px);
+    height: min(50vh, 380px);
   }
 }
 
@@ -236,8 +308,12 @@
   }
 
   .gallery-image-item {
-    height: min(50vh, 340px);
+    height: min(45vh, 310px);
     border-radius: 0.5rem;
+  }
+
+  .realizations-gallery-grid {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -19,7 +19,6 @@ export default function HousesPage() {
   const { i18n } = useTranslation();
   const { projectIdentifier, houseId } = useParams();
   const [houses, setHouses] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
@@ -55,14 +54,6 @@ export default function HousesPage() {
     const house = houses.find(item => item.houseIdentifier === houseId);
     if (house) setSelectedHouse(house);
   }, [houseId, houses]);
-
-  const normalizedSearch = searchTerm.trim().toLowerCase();
-  const filteredHouses = houses.filter(house => {
-    if (!normalizedSearch) return true;
-    return [house.houseName, house.location, getHouseDescription(house)]
-      .filter(Boolean)
-      .some(value => String(value).toLowerCase().includes(normalizedSearch));
-  });
 
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) return '/fallback.jpg';
@@ -105,27 +96,15 @@ export default function HousesPage() {
 
       <main className="houses-content">
         <div className="houses-container">
-          <label className="houses-search-label" htmlFor="houses-search">
-            {t('searchLabel', 'Search houses')}
-          </label>
-          <input
-            id="houses-search"
-            className="houses-search-input"
-            type="search"
-            placeholder={t('searchPlaceholder', 'Search by name or location')}
-            value={searchTerm}
-            onChange={event => setSearchTerm(event.target.value)}
-          />
-
           {error ? (
             <p className="houses-state houses-error">
               {t(error, t('fetchFailed', 'Failed to load houses.'))}
             </p>
-          ) : filteredHouses.length === 0 ? (
+          ) : houses.length === 0 ? (
             <p className="houses-state">{t('empty', 'No houses found.')}</p>
           ) : (
             <div className="houses-grid">
-              {filteredHouses.map(house => (
+              {houses.map(house => (
                 <article key={house.houseIdentifier} className="house-card">
                   <div className="house-image-container">
                     <img
