@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import ProjectBanner from '../../components/ProjectBanner';
 import '../../styles/Public_Facing/houses.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
@@ -84,15 +85,7 @@ export default function HousesPage() {
 
   return (
     <div className="houses-page">
-      <section className="projects-hero houses-hero">
-        <div className="projects-hero-content">
-          <span className="section-kicker">{t('kicker', 'Homes')}</span>
-          <h1 className="projects-title">{t('title', 'Houses')}</h1>
-          <p className="projects-subtitle">
-            {t('subtitle', 'Explore available home designs for this project.')}
-          </p>
-        </div>
-      </section>
+      <ProjectBanner projectIdentifier={projectIdentifier} />
 
       <main className="houses-content">
         <div className="houses-container">
