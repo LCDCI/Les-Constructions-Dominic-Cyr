@@ -1,4 +1,7 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE ||
+  import.meta.env.VITE_API_BASE_URL ||
+  '/api/v1';
 
 export async function fetchPublicSiteContent(language, pageGroup) {
   const params = new URLSearchParams({ language, pageGroup });

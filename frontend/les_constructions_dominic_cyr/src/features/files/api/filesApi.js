@@ -1,16 +1,8 @@
 /* eslint-disable no-console */
 import axios from 'axios';
+import { getFilesServiceBase } from '../../../utils/filesService';
 
-// For production on DigitalOcean, use the files-service directly
-// For local/development, use the relative path
-const BASE_API_URL =
-  import.meta.env.VITE_FILES_SERVICE_URL ||
-  (typeof window !== 'undefined' &&
-  window.location.hostname.includes('constructions-dominiccyr')
-    ? 'https://files-service-app-xubs2.ondigitalocean.app'
-    : typeof window !== 'undefined' && window.location.hostname === 'localhost'
-      ? 'http://localhost:8082'
-      : `${window.location.origin}/files`);
+const BASE_API_URL = getFilesServiceBase();
 const FILES_ENDPOINT = BASE_API_URL.endsWith('/files')
   ? BASE_API_URL
   : `${BASE_API_URL}/files`;
@@ -75,11 +67,11 @@ export async function fetchProjectDocuments(
 }
 
 export async function uploadFile(formData, token = null) {
-  const response = await axios.post(`${BROWSER_FILES_ENDPOINT}/`, formData, {
+  const response = await axios.post(BROWSER_FILES_ENDPOINT, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
+    timeout: 30000,
   });
   return response.data;
 }

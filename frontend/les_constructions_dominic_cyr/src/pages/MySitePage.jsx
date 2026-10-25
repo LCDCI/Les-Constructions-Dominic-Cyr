@@ -664,7 +664,7 @@ const MySitePage = () => {
       }
       if (selectedSubpage === 'project-overview' && projectIdentifier) {
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE || '/api/v1'}/projects/${projectIdentifier}/overview`
+          `${import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_BASE_URL || '/api/v1'}/projects/${projectIdentifier}/overview`
         );
         if (response.ok) {
           const overview = await response.json();
@@ -933,7 +933,7 @@ const MySitePage = () => {
 
   const updateProjectOverview = async (projectIdentifier, values, token) => {
     const response = await fetch(
-      `${import.meta.env.VITE_API_BASE || '/api/v1'}/projects/${projectIdentifier}/overview`,
+      `${import.meta.env.VITE_API_BASE || import.meta.env.VITE_API_BASE_URL || '/api/v1'}/projects/${projectIdentifier}/overview`,
       {
         method: 'PUT',
         headers: {
