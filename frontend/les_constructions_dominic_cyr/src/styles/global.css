@@ -465,6 +465,60 @@ select:focus {
   line-height: 1.9;
 }
 
+.realizations-page .public-page__heading:not(.sr-only)::after,
+.renovations-page .public-page__heading::after,
+.renovations-page .public-page__feature-title::after,
+.project-management-page .pm-main-heading::after,
+.project-management-page .pm-advantages-heading::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 2px;
+  margin: 0.9rem auto 1.1rem;
+  background: var(--brand-primary);
+}
+
+.project-management-page .pm-advantages-heading::after {
+  margin-bottom: 4rem;
+}
+
+.realizations-page > .public-page__section:first-child,
+.renovations-page > .renovations-intro-section {
+  width: 100%;
+  padding-right: clamp(1rem, 3vw, 3rem);
+  padding-left: clamp(1rem, 3vw, 3rem);
+}
+
+.realizations-page > .public-page__section:first-child,
+.renovations-page > .renovations-intro-section,
+.project-management-page > .pm-intro-section {
+  background: var(--h-sand-light, #f4f5f2) !important;
+}
+
+.realizations-page > .public-page__section:first-child .public-page__intro,
+.renovations-page > .renovations-intro-section .public-page__intro,
+.project-management-page > .pm-intro-section .pm-heading-section {
+  width: min(100%, 1040px);
+  max-width: 1040px;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 4rem);
+  border: 1px solid rgba(170, 178, 166, 0.2);
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 20px 40px -24px rgba(43, 58, 74, 0.22);
+}
+
+.realizations-page > .public-page__section:first-child .public-page__heading,
+.realizations-page > .public-page__section:first-child .public-page__copy,
+.renovations-page > .renovations-intro-section .public-page__heading,
+.renovations-page > .renovations-intro-section .public-page__copy,
+.project-management-page > .pm-intro-section .pm-main-heading,
+.project-management-page > .pm-intro-section .pm-tagline {
+  width: 100%;
+  max-width: 860px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
 .public-page__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -748,5 +802,27 @@ select:focus {
 @media (max-width: 480px) {
   body {
     font-size: 90%;
+  }
+}
+
+/* Project detail banners use their image as the hero treatment. */
+.project-hero {
+  min-height: 360px !important;
+  height: 360px !important;
+  padding: 3rem 1.5rem !important;
+}
+
+@media (max-width: 1300px) {
+  .project-hero {
+    min-height: 300px !important;
+    height: 300px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .project-hero {
+    min-height: 240px !important;
+    height: 240px !important;
+    padding: 2rem 1rem !important;
   }
 }

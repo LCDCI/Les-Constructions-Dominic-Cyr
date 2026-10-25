@@ -81,6 +81,13 @@ export default function Home() {
     const imageIdentifier = getProject(projectIdentifier)?.imageIdentifier;
     return imageIdentifier ? getFileUrl(imageIdentifier) : '/fallback.jpg';
   };
+  const getProjectBannerUrl = (projectIdentifier, fallbackKey) => {
+    const bannerIdentifier =
+      getProject(projectIdentifier)?.bannerImageIdentifier;
+    return bannerIdentifier
+      ? getFileUrl(bannerIdentifier)
+      : getMediaUrl(fallbackKey);
+  };
   const foresta = getProject('proj-001-foresta');
   const panorama = getProject('proj-002-panorama');
 
@@ -398,7 +405,7 @@ export default function Home() {
               data-animate
             >
               <img
-                src={getMediaUrl('media.panorama')}
+                src={getProjectBannerUrl('proj-002-panorama', 'media.panorama')}
                 alt={panorama?.projectName || 'Panorama Project'}
                 loading="lazy"
                 className="card-image-bg"
@@ -423,7 +430,7 @@ export default function Home() {
               data-animate
             >
               <img
-                src={getMediaUrl('media.foresta')}
+                src={getProjectBannerUrl('proj-001-foresta', 'media.foresta')}
                 alt={foresta?.projectName || 'Foresta Project'}
                 loading="lazy"
                 className="card-image-bg"
