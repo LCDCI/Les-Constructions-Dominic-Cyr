@@ -33,6 +33,9 @@ func main() {
 	}
 
 	r := gin.Default()
+	if err := r.SetTrustedProxies(nil); err != nil {
+		log.Fatalf("Failed to configure trusted proxies: %v", err)
+	}
 
 	r.Use(middleware.SecurityHeaders())
 	r.Use(middleware.RateLimiter(cfg))

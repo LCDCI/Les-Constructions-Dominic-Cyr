@@ -753,8 +753,11 @@ const MySitePage = () => {
       const formData = new FormData();
       formData.append('file', file);
       formData.append('category', 'PHOTO');
-      formData.append('projectId', 'site-content');
-      formData.append('uploadedBy', user?.sub || '');
+      formData.append(
+        'projectId',
+        item.projectOverviewContent ? item.projectIdentifier : 'site-content'
+      );
+      formData.append('uploadedBy', user?.sub || 'site-content');
       formData.append('uploaderRole', 'OWNER');
 
       const uploaded = await uploadFile(formData, token);
@@ -1315,6 +1318,11 @@ const MySitePage = () => {
                 ×
               </button>
             </div>
+            {error && (
+              <p className="my-site-error" role="alert">
+                {t(error, 'Unable to process site content.')}
+              </p>
+            )}
             <label className="my-site-language">
               {t('language', 'Language')}
               <select
@@ -1433,6 +1441,7 @@ const MySitePage = () => {
                 type="button"
                 className="my-site-modal-primary"
                 onClick={async () => {
+                  setSavingId('page');
                   try {
                     if (items.some(item => item.projectOverviewContent)) {
                       await saveProjectOverview();
@@ -1446,6 +1455,8 @@ const MySitePage = () => {
                     setContentModal(null);
                   } catch {
                     setError('saveError');
+                  } finally {
+                    setSavingId(null);
                   }
                 }}
                 disabled={savingId !== null || items.length === 0}
