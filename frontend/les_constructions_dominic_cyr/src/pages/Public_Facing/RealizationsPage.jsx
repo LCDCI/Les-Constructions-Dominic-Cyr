@@ -105,27 +105,15 @@ const RealizationsPage = () => {
 
   return (
     <div className="public-page realizations-page">
-      {/* Hero Banner Section */}
-      <section
-        className="public-page__hero"
-        aria-labelledby="realizations-title"
-      >
-        <div className="public-page__hero-content">
-          <span className="public-page__kicker">
-            {t('hero.subtitle', 'When vision becomes reality')}
-          </span>
-          <h1 className="public-page__title" id="realizations-title">
-            {t('hero.title', 'Realizations')}
-          </h1>
-        </div>
-      </section>
-
       {/* Intro Text Section */}
       <section
         className="public-page__section"
         aria-labelledby="realizations-intro-title"
       >
         <div className="public-page__intro">
+          <span className="public-page__eyebrow">
+            {t('intro.kicker', 'Our realizations')}
+          </span>
           <h2 id="realizations-intro-title" className="public-page__heading">
             {t('intro.title', 'Notre savoir-faire en images')}
           </h2>

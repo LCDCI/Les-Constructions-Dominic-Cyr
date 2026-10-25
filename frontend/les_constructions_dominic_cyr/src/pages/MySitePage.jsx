@@ -87,9 +87,6 @@ const EDITABLE_TEXT_KEYS = {
   renovations: {
     namespace: 'renovations',
     keys: [
-      'hero.label',
-      'hero.heading',
-      'hero.lede',
       'intro.kicker',
       'intro.title',
       'intro.description',
@@ -116,10 +113,8 @@ const EDITABLE_TEXT_KEYS = {
   'project-management': {
     namespace: 'projectManagement',
     keys: [
-      'hero.title',
-      'hero.subtitle',
+      'intro.heading.kicker',
       'intro.heading.title',
-      'intro.tagline',
       'intro.paragraph',
       'advantages.heading',
       'advantages.item1',
@@ -136,11 +131,9 @@ const EDITABLE_TEXT_KEYS = {
   realizations: {
     namespace: 'realizations',
     keys: [
-      'hero.title',
-      'hero.subtitle',
+      'intro.kicker',
       'intro.title',
       'intro.description',
-      'intro.portfolioText',
       'gallery.title',
       'gallery.previousAriaLabel',
       'gallery.nextAriaLabel',
@@ -554,6 +547,16 @@ const MySitePage = () => {
               'media.foresta',
               'media.panorama',
             ].includes(item.pageKey)
+        );
+      }
+      if (EDITABLE_TEXT_KEYS[pageGroup]) {
+        const allowedKeys = new Set(EDITABLE_TEXT_KEYS[pageGroup].keys);
+        const allowedImageKeys = new Set(
+          (PUBLIC_IMAGE_SLOTS[pageGroup] || []).map(([pageKey]) => pageKey)
+        );
+        data = (Array.isArray(data) ? data : []).filter(
+          item =>
+            allowedKeys.has(item.pageKey) || allowedImageKeys.has(item.pageKey)
         );
       }
       if (selectedSubpage === 'lots') {

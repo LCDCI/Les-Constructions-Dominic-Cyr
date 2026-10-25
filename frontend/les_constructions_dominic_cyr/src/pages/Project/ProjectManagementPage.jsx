@@ -116,31 +116,15 @@ export default function ProjectManagementPage() {
 
   return (
     <div className="public-page project-management-page">
-      {/* Hero Banner Section */}
-      <section
-        className="public-page__hero pm-hero-banner"
-        aria-labelledby="pm-hero-title"
-      >
-        <div className="public-page__hero-content pm-hero-content">
-          <span className="public-page__kicker">
-            {t('hero.kicker', 'Our Services')}
-          </span>
-          <h1 className="public-page__title pm-hero-title" id="pm-hero-title">
-            {t('hero.title', 'Project Management')}
-          </h1>
-          <div className="pm-hero-rule" aria-hidden="true"></div>
-          <p className="public-page__lead pm-hero-subtitle">
-            {t('hero.subtitle', 'For Peace of Mind')}
-          </p>
-        </div>
-      </section>
-
       {/* Introduction Section with Images */}
       <section className="pm-intro-section" aria-labelledby="pm-intro-title">
         <div className="pm-intro-container">
           <div className="pm-intro-content">
             {/* Heading Section */}
             <div className="pm-heading-section">
+              <span className="public-page__eyebrow">
+                {t('intro.heading.kicker', 'Project management')}
+              </span>
               <h2 className="pm-main-heading" id="pm-intro-title">
                 {t(
                   'intro.heading.title',
@@ -232,7 +216,6 @@ export default function ProjectManagementPage() {
           <h2 className="pm-advantages-heading" id="pm-advantages-title">
             {t('advantages.heading', 'Our project management strengths')}
           </h2>
-          <div className="pm-heading-rule" aria-hidden="true"></div>
 
           <ul className="pm-advantages-list">
             <li>

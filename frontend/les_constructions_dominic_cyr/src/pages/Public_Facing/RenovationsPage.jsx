@@ -99,23 +99,6 @@ const RenovationsPage = () => {
   return (
     <div className="public-page renovations-page">
       <section
-        className="public-page__hero"
-        aria-labelledby="renovations-hero-title"
-      >
-        <div className="public-page__hero-content" data-animate>
-          <span className="public-page__kicker">
-            {t('hero.label', 'Renovate, Modernize & Transform')}
-          </span>
-          <h1 className="public-page__title" id="renovations-hero-title">
-            {t('hero.heading', 'Renovations')}
-          </h1>
-          <p className="public-page__lead">
-            {t('hero.lede', 'Your home deserves the very best')}
-          </p>
-        </div>
-      </section>
-
-      <section
         className="public-page__section renovations-intro-section"
         aria-labelledby="renovations-intro-title"
       >
