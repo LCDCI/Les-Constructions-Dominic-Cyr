@@ -4,7 +4,10 @@ const ERROR_PAGE_PATH = '/error.html';
 
 // Read base from Vite env var or default to API root
 // Always use env var or relative path; never fallback to localhost in production
-const RAW_BASE = import.meta.env.VITE_API_BASE || '/api/v1';
+const RAW_BASE =
+  import.meta.env.VITE_API_BASE ||
+  import.meta.env.VITE_API_BASE_URL ||
+  '/api/v1';
 
 function normalizeBase(raw) {
   if (!raw) return '/api/v1';

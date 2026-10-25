@@ -1,7 +1,22 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE ||
+  import.meta.env.VITE_API_BASE_URL ||
+  '/api/v1';
 
 async function request(url, options = {}) {
-  const response = await fetch(url, options);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+  let response;
+  try {
+    response = await fetch(url, { ...options, signal: controller.signal });
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('House request timed out after 30 seconds.');
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
   if (!response.ok) {
     let message = `House request failed (${response.status})`;
     try {

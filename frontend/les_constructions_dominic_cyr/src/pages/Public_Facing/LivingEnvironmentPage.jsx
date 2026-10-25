@@ -22,6 +22,7 @@ import {
 } from 'react-icons/fa';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
+import ProjectBanner from '../../components/ProjectBanner';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
 
@@ -31,8 +32,6 @@ const LivingEnvironmentPage = () => {
   const t = (key, defaultValue) => tLivingEnv(key, defaultValue);
   const navigate = useNavigate();
   const { projectIdentifier } = useParams();
-  const isForesta = projectIdentifier === 'proj-001-foresta';
-  const isPanorama = projectIdentifier === 'proj-002-panorama';
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -175,6 +174,7 @@ const LivingEnvironmentPage = () => {
   if (loading) {
     return (
       <div className="living-environment-page">
+        <ProjectBanner projectIdentifier={projectIdentifier} />
         <div className="container">
           <div className="loading-spinner">
             <p>{t('states.loading', 'Loading...')}</p>
@@ -241,60 +241,7 @@ const LivingEnvironmentPage = () => {
 
   return (
     <div className="living-environment-page">
-      {/* Header Section */}
-      {isForesta ? (
-        <section
-          className="lots-header-section le-header-section full-width-le"
-          style={{ backgroundColor: 'var(--primary-color, #4c4d4f)' }}
-        >
-          <h1 style={{ color: '#ffffff' }}>
-            {data.headerTitle || 'Föresta'}
-            <span
-              className="header-underline"
-              style={{ backgroundColor: 'var(--tertiary-color, #aab2a6)' }}
-            ></span>
-          </h1>
-
-          <p className="peace-tag" style={{ color: '#ffffff' }}>
-            {toSentenceCase(data.headerTagline)}
-          </p>
-        </section>
-      ) : isPanorama ? (
-        <section
-          className="lots-header-section le-header-section full-width-le"
-          style={{ backgroundColor: 'var(--primary-color, #4c4d4f)' }}
-        >
-          <h1 style={{ color: '#ffffff' }}>
-            {data.projectName || 'Panorama'}
-            <span
-              className="header-underline"
-              style={{ backgroundColor: 'var(--tertiary-color, #aab2a6)' }}
-            ></span>
-          </h1>
-
-          <p className="peace-tag" style={{ color: '#ffffff' }}>
-            {toSentenceCase(data.headerTagline)}
-          </p>
-        </section>
-      ) : (
-        <section className="le-header-section full-width-le">
-          <h1 className="le-main-title" style={{ color: '#fff' }}>
-            {toSentenceCase(data.headerTitle)}
-          </h1>
-          <h2 className="le-subtitle" style={{ color: '#fff' }}>
-            {toSentenceCase(data.headerSubtitle)}
-          </h2>
-          <h3 className="le-subtitle-last" style={{ color: '#fff' }}>
-            {toSentenceCase(data.headerSubtitleLast)}
-          </h3>
-          <p
-            className="le-tagline"
-            style={{ color: 'var(--tertiary-color, #aab2a6)' }}
-          >
-            {toSentenceCase(data.headerTagline)}
-          </p>
-        </section>
-      )}
+      <ProjectBanner projectIdentifier={projectIdentifier} />
 
       <div className="container">
         {/* Description Section */}

@@ -17,6 +17,7 @@ import { LuMapPinned } from 'react-icons/lu';
 import { HiOutlineHomeModern } from 'react-icons/hi2';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import '../../styles/Project/projectOverview.css';
+import ProjectBanner from '../../components/ProjectBanner';
 import '../../styles/Public_Facing/residential-projects.css';
 import '../../styles/Public_Facing/overviewMap.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -370,46 +371,7 @@ const ProjectOverviewPage = () => {
 
   return (
     <div className={`project-overview-page`}>
-      {overview.imageIdentifier && (
-        <div className="project-logo-above-banner">
-          <img
-            src={getImageUrl(overview.imageIdentifier)}
-            alt={overview.projectName}
-            className="project-logo"
-            onError={event => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = '/fallback.jpg';
-            }}
-          />
-        </div>
-      )}
-      <section
-        className={`project-hero${
-          overview.bannerImageIdentifier || overview.imageIdentifier
-            ? ' project-hero--image'
-            : ''
-        }`}
-        style={
-          overview.bannerImageIdentifier || overview.imageIdentifier
-            ? {
-                backgroundImage: `url("${getImageUrl(
-                  overview.bannerImageIdentifier || overview.imageIdentifier
-                )}")`,
-              }
-            : undefined
-        }
-      >
-        <div className="hero-content projects-hero-content">
-          <h1 className="hero-title projects-title">
-            {overview.heroTitle || overview.projectName}
-          </h1>
-          {overview.heroSubtitle && (
-            <p className="hero-subtitle projects-subtitle">
-              {overview.heroSubtitle}
-            </p>
-          )}
-        </div>
-      </section>
+      <ProjectBanner projectIdentifier={projectIdentifier} project={overview} />
       {overview.overviewSectionContent && (
         <section className="project-section overview-section">
           <div className="section-container">

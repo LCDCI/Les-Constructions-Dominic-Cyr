@@ -9,12 +9,12 @@ import {
 import { projectApi } from '../../features/projects/api/projectApi';
 import LotList from '../../features/lots/components/LotList';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
-import { fetchSiteContent } from '../../features/siteContent/api/siteContentApi';
+import ProjectBanner from '../../components/ProjectBanner';
 import '../../styles/lots.css';
 import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
 
 const LotsPage = () => {
-  const { t, i18n } = useTranslation(['lots', 'translation']);
+  const { t } = useTranslation(['lots', 'translation']);
   const { projectIdentifier: urlProjectIdentifier } = useParams();
   const navigate = useNavigate();
   const {
@@ -27,7 +27,6 @@ const LotsPage = () => {
 
   const [lots, setLots] = useState([]);
   const [filteredLots, setFilteredLots] = useState([]);
-  const [projectName, setProjectName] = useState('');
   const [projectColors, setProjectColors] = useState({
     primary: '#737373',
     secondary: '#F6F4F1',
@@ -43,7 +42,6 @@ const LotsPage = () => {
     direction: 'asc',
   });
   const [selectedLot, setSelectedLot] = useState(null);
-  const [pageContent, setPageContent] = useState({});
 
   const mapButtons = {
     1: { top: '28.5%', left: '24%' },
@@ -96,26 +94,11 @@ const LotsPage = () => {
           token
         );
         if (!cancelled && projectData) {
-          setProjectName(projectData.projectName);
           setProjectColors({
             primary: projectData.primaryColor || '#737373',
             secondary: projectData.secondaryColor || '#F6F4F1',
             accent: projectData.accentColor || '#545454',
           });
-        }
-        const content = await fetchSiteContent(
-          i18n.language,
-          token,
-          `lots-${resolvedProjectId}`
-        );
-        if (!cancelled) {
-          setPageContent(
-            Object.fromEntries(
-              (Array.isArray(content) ? content : [])
-                .filter(item => item.contentText)
-                .map(item => [item.pageKey, item.contentText])
-            )
-          );
         }
         const data = await fetchLots({
           projectIdentifier: resolvedProjectId,
@@ -134,7 +117,6 @@ const LotsPage = () => {
     };
   }, [
     resolvedProjectId,
-    i18n.language,
     isAuthenticated,
     authLoading,
     getAccessTokenSilently,
@@ -212,47 +194,8 @@ const LotsPage = () => {
 
   return (
     <div className="lots-page">
+      <ProjectBanner projectIdentifier={resolvedProjectId} />
       <div className="lots-content">
-        <div
-          className="lots-header-section"
-          style={{ backgroundColor: projectColors.primary }}
-        >
-          {resolvedProjectId === 'proj-001-foresta' && (
-            <p className="exclusive-tag">
-              {pageContent.preTitle || t('foresta.exclusiveCount')}
-            </p>
-          )}
-          {resolvedProjectId === 'proj-002-panorama' && (
-            <p className="exclusive-tag" style={{ whiteSpace: 'pre-line' }}>
-              {pageContent.preTitle || t('panorama.preTitle')}
-            </p>
-          )}
-          <h1 style={{ color: projectColors.secondary }}>
-            {resolvedProjectId === 'proj-002-panorama'
-              ? pageContent.title ||
-                t('panorama.headerTitle', 'Unités de PANØRAMA')
-              : projectName
-                ? pageContent.title ||
-                  t('header.projectLots', { name: projectName })
-                : t('header.defaultTitle')}
-            <span
-              className="header-underline"
-              style={{ backgroundColor: projectColors.accent }}
-            ></span>
-          </h1>
-          {resolvedProjectId === 'proj-001-foresta' && (
-            <p className="peace-tag">
-              {pageContent.subtitle || t('foresta.peaceTagline')}
-            </p>
-          )}
-          {resolvedProjectId === 'proj-002-panorama' && (
-            <p className="peace-tag">
-              {pageContent.subtitle || t('panorama.tagline')}
-            </p>
-          )}
-          {/* Button moved below all content */}
-        </div>
-
         {resolvedProjectId === 'proj-002-panorama' && (
           <div className="lots-image-section">
             <div className="map-wrapper">

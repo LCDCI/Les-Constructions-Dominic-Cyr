@@ -63,6 +63,7 @@ export default function AppNavBar() {
   const [projectsError, setProjectsError] = useState(false);
   const [isNavHidden, setIsNavHidden] = useState(false);
   const projectsNavRef = useRef(null);
+  const mobileProjectsNavRef = useRef(null);
 
   const currentLanguage = i18n.language || 'en';
   const isFrench = currentLanguage === 'fr';
@@ -199,7 +200,9 @@ export default function AppNavBar() {
       if (
         isProjectsMenuOpen &&
         projectsNavRef.current &&
-        !projectsNavRef.current.contains(event.target)
+        !projectsNavRef.current.contains(event.target) &&
+        mobileProjectsNavRef.current &&
+        !mobileProjectsNavRef.current.contains(event.target)
       ) {
         setIsProjectsMenuOpen(false);
         setExpandedProjectIdentifier(null);
@@ -410,7 +413,7 @@ export default function AppNavBar() {
           {t('nav.home', 'Home')}
         </NavLink>
 
-        <div className="mobile-projects-nav-item">
+        <div className="mobile-projects-nav-item" ref={mobileProjectsNavRef}>
           <button
             type="button"
             className={`projects-nav-trigger ${isResidentialProjectsActive ? 'active' : ''}`}

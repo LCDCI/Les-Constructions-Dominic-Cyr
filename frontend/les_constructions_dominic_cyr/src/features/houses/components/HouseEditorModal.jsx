@@ -4,6 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import { createHouse, updateHouse } from '../api/housesApi';
 import { uploadFile, deleteFile } from '../../files/api/filesApi';
+import { getFileUrl } from '../../../utils/filesService';
 import '../../../styles/MySitePage.css';
 
 const emptyHouse = {
@@ -25,12 +26,6 @@ const nullableNumber = value => {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 };
-
-const filesBase = () =>
-  import.meta.env.VITE_FILES_SERVICE_URL ||
-  (typeof window !== 'undefined'
-    ? `${window.location.origin}/files`
-    : '/files');
 
 export default function HouseEditorModal({
   house,
@@ -75,21 +70,33 @@ export default function HouseEditorModal({
   const imageUrl = form.imageIdentifier
     ? String(form.imageIdentifier).startsWith('http')
       ? form.imageIdentifier
-      : `${filesBase().replace(/\/$/, '')}/files/${form.imageIdentifier}`
+      : getFileUrl(form.imageIdentifier)
     : '';
 
   const handleSubmit = async event => {
     event.preventDefault();
     setSaving(true);
     setError('');
+    let uploadedImageIdentifier = null;
     try {
       const token = await getToken();
       let imageIdentifier = removeExistingImage
         ? null
         : form.imageIdentifier || null;
       if (imageFile) {
-        // A new house is created first so the backend can scope the file to its house ID.
-        if (house) imageIdentifier = null;
+        const formData = new FormData();
+        formData.append('file', imageFile);
+        formData.append('category', 'PHOTO');
+        formData.append('projectId', form.projectIdentifier);
+        formData.append('uploadedBy', user?.sub || 'house-editor');
+        formData.append('uploaderRole', 'OWNER');
+
+        const uploaded = await uploadFile(formData, token);
+        uploadedImageIdentifier = uploaded.fileId || uploaded.id;
+        if (!uploadedImageIdentifier) {
+          throw new Error('Image upload returned no file identifier.');
+        }
+        imageIdentifier = uploadedImageIdentifier;
       }
 
       const payload = {
@@ -111,29 +118,9 @@ export default function HouseEditorModal({
         : await createHouse(payload, token);
 
       let finalHouse = saved;
-      if (imageFile) {
-        const formData = new FormData();
-        formData.append('file', imageFile);
-        formData.append('category', 'PHOTO');
-        formData.append('projectId', saved.projectIdentifier);
-        formData.append('uploadedBy', user?.sub || 'house-editor');
-        formData.append('uploaderRole', 'OWNER');
-
-        const uploaded = await uploadFile(formData, token);
-        const imageIdentifier = uploaded.fileId || uploaded.id;
-        if (!imageIdentifier) {
-          throw new Error('Image upload returned no file identifier.');
-        }
-
-        finalHouse = await updateHouse(
-          saved.houseIdentifier,
-          { ...payload, imageIdentifier },
-          token
-        );
-
+      if (uploadedImageIdentifier && house?.imageIdentifier) {
         if (
-          house?.imageIdentifier &&
-          house.imageIdentifier !== imageIdentifier &&
+          house.imageIdentifier !== uploadedImageIdentifier &&
           !String(house.imageIdentifier).startsWith('http')
         ) {
           try {
@@ -148,6 +135,16 @@ export default function HouseEditorModal({
       }
       onSaved(finalHouse);
     } catch (saveError) {
+      if (uploadedImageIdentifier) {
+        try {
+          await deleteFile(uploadedImageIdentifier, {
+            deletedBy: user?.sub || 'house-editor',
+            token: null,
+          });
+        } catch {
+          // Surface the original save error; cleanup is best effort.
+        }
+      }
       setError(saveError.message || 'Unable to save this house.');
     } finally {
       setSaving(false);
