@@ -28,6 +28,7 @@ const filesBase = () =>
 export default function HouseEditorModal({
   house,
   projects,
+  initialProjectIdentifier,
   onClose,
   onSaved,
 }) {
@@ -45,13 +46,14 @@ export default function HouseEditorModal({
         ? { ...emptyHouse, ...house }
         : {
             ...emptyHouse,
-            projectIdentifier: projects[0]?.projectIdentifier || '',
+            projectIdentifier:
+              initialProjectIdentifier || projects[0]?.projectIdentifier || '',
           }
     );
     setImageFile(null);
     setRemoveExistingImage(false);
     setError('');
-  }, [house, projects]);
+  }, [house, initialProjectIdentifier, projects]);
 
   const updateField = (field, value) =>
     setForm(current => ({ ...current, [field]: value }));
@@ -84,7 +86,11 @@ export default function HouseEditorModal({
       }
 
       const payload = {
-        ...form,
+        projectIdentifier: form.projectIdentifier,
+        houseName: form.houseName,
+        location: form.location,
+        descriptionEn: form.descriptionEn || null,
+        descriptionFr: form.descriptionFr || null,
         imageIdentifier,
         description:
           form.descriptionEn || form.descriptionFr || form.description || null,
@@ -328,6 +334,7 @@ export default function HouseEditorModal({
 HouseEditorModal.propTypes = {
   house: PropTypes.object,
   projects: PropTypes.arrayOf(PropTypes.object).isRequired,
+  initialProjectIdentifier: PropTypes.string,
   onClose: PropTypes.func.isRequired,
   onSaved: PropTypes.func.isRequired,
 };
