@@ -370,19 +370,6 @@ const ProjectOverviewPage = () => {
 
   return (
     <div className={`project-overview-page`}>
-      {overview.imageIdentifier && (
-        <div className="project-logo-above-banner">
-          <img
-            src={getImageUrl(overview.imageIdentifier)}
-            alt={overview.projectName}
-            className="project-logo"
-            onError={event => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = '/fallback.jpg';
-            }}
-          />
-        </div>
-      )}
       <section
         className={`project-hero${
           overview.bannerImageIdentifier || overview.imageIdentifier
@@ -399,6 +386,19 @@ const ProjectOverviewPage = () => {
             : undefined
         }
       >
+        {overview.imageIdentifier && (
+          <div className="project-logo-above-banner">
+            <img
+              src={getImageUrl(overview.imageIdentifier)}
+              alt={overview.projectName}
+              className="project-logo"
+              onError={event => {
+                event.currentTarget.onerror = null;
+                event.currentTarget.src = '/fallback.jpg';
+              }}
+            />
+          </div>
+        )}
         <div className="hero-content projects-hero-content">
           <h1 className="hero-title projects-title">
             {overview.heroTitle || overview.projectName}
