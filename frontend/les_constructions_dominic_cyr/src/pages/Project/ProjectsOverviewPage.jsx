@@ -241,12 +241,7 @@ const ProjectOverviewPage = () => {
           setMapCoords(null);
         }
       } catch (err) {
-        setError(
-          t(
-            'errors.loadFailed',
-            'Failed to load project details. Please try again later.'
-          )
-        );
+        setError('errors.loadFailed');
       } finally {
         setLoading(false);
       }
@@ -344,8 +339,10 @@ const ProjectOverviewPage = () => {
   if (error) {
     return (
       <div className="project-overview-error">
-        <p>{error}</p>
-        <button onClick={() => navigate('/residential-projects')}>
+        <p>
+          {t(error, 'Failed to load project details. Please try again later.')}
+        </p>
+        <button onClick={() => navigate('/')}>
           {t('backToProjects', 'Back to Residential Projects')}
         </button>
       </div>
@@ -356,7 +353,7 @@ const ProjectOverviewPage = () => {
     return (
       <div className="project-overview-error">
         <p>{t('projectNotFound', 'Project not found')}</p>
-        <button onClick={() => navigate('/residential-projects')}>
+        <button onClick={() => navigate('/')}>
           {t('backToProjects', 'Back to Residential Projects')}
         </button>
       </div>
@@ -373,20 +370,35 @@ const ProjectOverviewPage = () => {
 
   return (
     <div className={`project-overview-page`}>
-      <section className="project-hero">
-        <div className="hero-logo-container">
-          {overview.imageIdentifier && (
-            <img
-              src={getImageUrl(overview.imageIdentifier)}
-              alt={overview.projectName}
-              className="project-logo"
-              onError={e => {
-                e.target.onerror = null;
-                e.target.src = '/fallback.jpg';
-              }}
-            />
-          )}
+      {overview.imageIdentifier && (
+        <div className="project-logo-above-banner">
+          <img
+            src={getImageUrl(overview.imageIdentifier)}
+            alt={overview.projectName}
+            className="project-logo"
+            onError={event => {
+              event.currentTarget.onerror = null;
+              event.currentTarget.src = '/fallback.jpg';
+            }}
+          />
         </div>
+      )}
+      <section
+        className={`project-hero${
+          overview.bannerImageIdentifier || overview.imageIdentifier
+            ? ' project-hero--image'
+            : ''
+        }`}
+        style={
+          overview.bannerImageIdentifier || overview.imageIdentifier
+            ? {
+                backgroundImage: `url("${getImageUrl(
+                  overview.bannerImageIdentifier || overview.imageIdentifier
+                )}")`,
+              }
+            : undefined
+        }
+      >
         <div className="hero-content projects-hero-content">
           <h1 className="hero-title projects-title">
             {overview.heroTitle || overview.projectName}
@@ -524,10 +536,7 @@ const ProjectOverviewPage = () => {
       )}
 
       <div className="back-button-container">
-        <button
-          className="back-button"
-          onClick={() => navigate('/residential-projects')}
-        >
+        <button className="back-button" onClick={() => navigate('/')}>
           &larr; {t('backToProjects', 'Back to Residential Projects')}
         </button>
       </div>

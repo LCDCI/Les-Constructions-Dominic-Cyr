@@ -101,6 +101,7 @@
     "locationTitle": "Location title",
     "locationDescription": "Location description",
     "locationAddress": "Location address",
-    "heroImage": "Hero image"
+    "heroImage": "Project image",
+    "bannerImage": "Banner image"
   }
 }

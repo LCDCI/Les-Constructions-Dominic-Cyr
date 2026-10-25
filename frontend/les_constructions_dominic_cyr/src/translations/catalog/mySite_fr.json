@@ -101,6 +101,7 @@
     "locationTitle": "Titre de l'emplacement",
     "locationDescription": "Description de l'emplacement",
     "locationAddress": "Adresse de l'emplacement",
-    "heroImage": "Image de la bannière"
+    "heroImage": "Image du projet",
+    "bannerImage": "Image de la bannière"
   }
 }

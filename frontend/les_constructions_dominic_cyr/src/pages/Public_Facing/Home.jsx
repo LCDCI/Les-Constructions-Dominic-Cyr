@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import { getFileUrl } from '../../utils/filesService';
+import { projectApi } from '../../features/projects/api/projectApi';
 import { TbHomeSearch } from 'react-icons/tb';
 import {
   PiPaintBrushBroad,
@@ -20,6 +21,7 @@ export default function Home() {
     typeof window !== 'undefined' && window.location.hostname === 'localhost';
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [media, setMedia] = useState({});
+  const [projects, setProjects] = useState([]);
 
   const photos = useMemo(
     () => ({
@@ -57,7 +59,30 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    let active = true;
+    projectApi
+      .getAllProjects()
+      .then(items => {
+        if (active) setProjects(Array.isArray(items) ? items : []);
+      })
+      .catch(() => {
+        if (active) setProjects([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const getMediaUrl = key => getFileUrl(media[key] || photos[key]);
+  const getProject = projectIdentifier =>
+    projects.find(item => item.projectIdentifier === projectIdentifier);
+  const getProjectImageUrl = projectIdentifier => {
+    const imageIdentifier = getProject(projectIdentifier)?.imageIdentifier;
+    return imageIdentifier ? getFileUrl(imageIdentifier) : '/fallback.jpg';
+  };
+  const foresta = getProject('proj-001-foresta');
+  const panorama = getProject('proj-002-panorama');
 
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll('[data-animate]'));
@@ -291,9 +316,6 @@ export default function Home() {
                   'Your home is one of the most important investments of your life. Choose reliability and lasting quality.'
                 )}
               </p>
-              <Link to="/residential-projects" className="link-arrow">
-                {t('live.link', 'Explore Projects')}
-              </Link>
             </div>
           </div>
         </section>
@@ -371,39 +393,52 @@ export default function Home() {
           </div>
           <div className="portfolio-grid">
             <Link
+              to="/projects/proj-002-panorama/overview"
+              className="portfolio-card"
+              data-animate
+            >
+              <img
+                src={getMediaUrl('media.panorama')}
+                alt={panorama?.projectName || 'Panorama Project'}
+                loading="lazy"
+                className="card-image-bg"
+              />
+              <div className="card-overlay" />
+              <img
+                src={getProjectImageUrl('proj-002-panorama')}
+                alt=""
+                className="project-logo-image"
+                loading="lazy"
+              />
+              <div className="card-content">
+                {panorama?.location && (
+                  <p className="card-location">{panorama.location}</p>
+                )}
+              </div>
+            </Link>
+
+            <Link
               to="/projects/proj-001-foresta/overview"
               className="portfolio-card"
               data-animate
             >
               <img
                 src={getMediaUrl('media.foresta')}
-                alt="Foresta Project"
+                alt={foresta?.projectName || 'Foresta Project'}
                 loading="lazy"
                 className="card-image-bg"
               />
               <div className="card-overlay" />
-            </Link>
-
-            <Link
-              to="/realizations"
-              className="portfolio-card no-image"
-              data-animate
-            >
               <img
-                src={getMediaUrl('media.project2')}
-                alt="Our Achievements"
+                src={getProjectImageUrl('proj-001-foresta')}
+                alt=""
+                className="project-logo-image"
                 loading="lazy"
-                className="card-image-bg"
               />
-              <div className="card-overlay" />
               <div className="card-content">
-                <h3 className="card-title">
-                  <GrCatalog />
-                  {t('portfolio.achievements', 'Achievements')}
-                </h3>
-                <p className="card-subtitle">
-                  {t('portfolio.achievementsSubtitle', 'Portfolio')}
-                </p>
+                {foresta?.location && (
+                  <p className="card-location">{foresta.location}</p>
+                )}
               </div>
             </Link>
 
@@ -431,17 +466,23 @@ export default function Home() {
             </Link>
 
             <Link
-              to="/projects/proj-002-panorama/overview"
-              className="portfolio-card"
+              to="/realizations"
+              className="portfolio-card no-image"
               data-animate
             >
               <img
-                src={getMediaUrl('media.panorama')}
-                alt="Panorama Project"
+                src={getMediaUrl('media.project2')}
+                alt="Realizations"
                 loading="lazy"
                 className="card-image-bg"
               />
               <div className="card-overlay" />
+              <div className="card-content">
+                <h3 className="card-title">
+                  <GrCatalog />
+                  {t('portfolio.achievements', 'Realizations')}
+                </h3>
+              </div>
             </Link>
           </div>
         </div>

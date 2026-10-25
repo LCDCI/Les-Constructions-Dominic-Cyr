@@ -23,36 +23,59 @@ const REALIZATION_IMAGE_IDS = [
 ];
 
 const RealizationsPage = () => {
-  const { t } = usePageTranslations('realizations');
+  const { t, currentLanguage } = usePageTranslations('realizations');
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [imageIds, setImageIds] = useState(REALIZATION_IMAGE_IDS);
+  const [imageIds, setImageIds] = useState(REALIZATION_IMAGE_IDS.slice(0, 8));
+  const [galleryItems, setGalleryItems] = useState([]);
 
   useEffect(() => {
     let active = true;
-    fetchPublicSiteContent('en', 'realizations')
+    fetchPublicSiteContent(currentLanguage, 'realizations')
       .then(items => {
         if (!active) return;
-        const overrides = (items || []).reduce((result, item) => {
-          if (
-            item.pageKey?.startsWith('galleryImage.') &&
-            item.imageIdentifier
-          ) {
-            result[Number(item.pageKey.split('.')[1]) - 1] =
-              item.imageIdentifier;
-          }
-          return result;
-        }, {});
+        const overrides = (items || []).reduce(
+          (result, item) => {
+            if (item.pageKey?.startsWith('galleryImage.')) {
+              const index = Number(item.pageKey.split('.')[1]) - 1;
+              if (item.imageIdentifier)
+                result.images[index] = item.imageIdentifier;
+            }
+            if (item.pageKey?.startsWith('galleryItem.')) {
+              const [, index, field] = item.pageKey.split('.');
+              const itemIndex = Number(index) - 1;
+              result.items[itemIndex] = result.items[itemIndex] || {};
+              if (field === 'image' && item.imageIdentifier) {
+                result.items[itemIndex].image = item.imageIdentifier;
+              } else if (field === 'location' || field === 'description') {
+                result.items[itemIndex][field] = item.contentText || '';
+              }
+            }
+            return result;
+          },
+          { images: {}, items: {} }
+        );
         setImageIds(
-          REALIZATION_IMAGE_IDS.map((image, index) => overrides[index] || image)
+          REALIZATION_IMAGE_IDS.slice(0, 8).map(
+            (image, index) => overrides.images[index] || image
+          )
+        );
+        setGalleryItems(
+          Array.from({ length: 9 }, (_, index) => ({
+            ...(overrides.items[index] || {}),
+            index,
+          }))
         );
       })
       .catch(() => {
-        if (active) setImageIds(REALIZATION_IMAGE_IDS);
+        if (active) {
+          setImageIds(REALIZATION_IMAGE_IDS.slice(0, 8));
+          setGalleryItems(Array.from({ length: 9 }, (_, index) => ({ index })));
+        }
       });
     return () => {
       active = false;
     };
-  }, []);
+  }, [currentLanguage]);
 
   const filesServiceUrl =
     import.meta.env.VITE_FILES_SERVICE_URL ||
@@ -103,8 +126,8 @@ const RealizationsPage = () => {
         aria-labelledby="realizations-intro-title"
       >
         <div className="public-page__intro">
-          <h2 id="realizations-intro-title" className="sr-only">
-            {t('intro.title', 'Realizations overview')}
+          <h2 id="realizations-intro-title" className="public-page__heading">
+            {t('intro.title', 'Notre savoir-faire en images')}
           </h2>
           <p className="public-page__copy">
             {t(
@@ -123,7 +146,7 @@ const RealizationsPage = () => {
         <h2 id="realizations-gallery-title" className="sr-only">
           {t('gallery.title', 'Realizations gallery')}
         </h2>
-        <div className="realizations-gallery-container public-page__card">
+        <div className="realizations-gallery-container">
           <button
             className="gallery-arrow gallery-arrow-left"
             onClick={handlePrevious}
@@ -162,6 +185,47 @@ const RealizationsPage = () => {
             {pad(currentIndex + 1)} / {pad(imageIds.length)}
           </p>
         )}
+      </section>
+
+      <section
+        className="public-page__section realizations-gallery-grid-section"
+        aria-labelledby="realizations-gallery-grid-title"
+      >
+        <div className="public-page__intro">
+          <span className="public-page__kicker">
+            {t('galleryGrid.kicker', 'Our Gallery')}
+          </span>
+          <h2
+            id="realizations-gallery-grid-title"
+            className="public-page__heading"
+          >
+            {t('galleryGrid.title', 'Our Gallery')}
+          </h2>
+        </div>
+        <div className="realizations-gallery-grid">
+          {galleryItems
+            .filter(item => item.image)
+            .map(item => (
+              <article className="realizations-gallery-card" key={item.index}>
+                <img
+                  src={getImageUrl(item.image)}
+                  alt={item.description || t('gallery.imageAlt', 'Realization')}
+                  className="realizations-gallery-card-image"
+                  loading="lazy"
+                />
+                {(item.location || item.description) && (
+                  <div className="realizations-gallery-card-content">
+                    {item.location && (
+                      <p className="realizations-gallery-card-location">
+                        {item.location}
+                      </p>
+                    )}
+                    {item.description && <p>{item.description}</p>}
+                  </div>
+                )}
+              </article>
+            ))}
+        </div>
         <Link
           to="/contact"
           className="public-page__button realizations-contact-link"

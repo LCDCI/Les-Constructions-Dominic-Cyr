@@ -14,8 +14,8 @@ export function getFilesServiceBase() {
     return 'https://files-service-app-xubs2.ondigitalocean.app';
   }
 
-  // For local development, use relative path
-  return `${window.location.origin}/files`;
+  // Keep local image URLs on the same service used by the upload API.
+  return 'http://localhost:8082';
 }
 
 export function getFileUrl(fileId) {

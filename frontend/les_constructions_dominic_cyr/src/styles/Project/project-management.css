@@ -93,17 +93,18 @@
 .pm-intro-content {
   display: flex;
   flex-direction: column;
-  gap: 4rem;
+  gap: 4.5rem;
 }
 
 .pm-heading-section {
   max-width: 48rem;
   margin: 0 auto;
   text-align: center;
+  padding: 0 1rem;
 }
 
 .pm-main-heading {
-  margin: 0 0 0.75rem;
+  margin: 0 0 1.5rem;
   font-size: clamp(1.6rem, 3.5vw, 2.4rem);
   font-weight: 400;
   line-height: 1.25;
@@ -113,11 +114,13 @@
 
 .pm-tagline {
   margin: 0;
-  font-family: var(--pm-serif);
+  padding: 0 0.5rem;
   font-style: normal;
-  font-weight: 500;
-  font-size: clamp(1rem, 2vw, 1.15rem);
-  color: var(--pm-sage);
+  font-family: var(--pm-sans);
+  font-weight: 400;
+  font-size: clamp(0.95rem, 1.4vw, 1.05rem);
+  line-height: 1.8;
+  color: var(--pm-text);
 }
 
 /* ===== Cartes de projets ===== */
@@ -239,6 +242,7 @@
 .pm-advantages-container {
   max-width: 64rem;
   margin: 0 auto;
+  text-align: center;
 }
 
 .pm-advantages-heading {
@@ -279,18 +283,10 @@
   border: 1px solid rgba(203, 215, 204, 0.7);
   border-radius: 1rem;
   box-shadow: 0 10px 30px -10px rgba(123, 141, 124, 0.12);
-  transition:
-    border-color 0.35s var(--pm-ease),
-    box-shadow 0.35s var(--pm-ease);
 }
 
 .pm-advantages-list li::before {
   content: none;
-}
-
-.pm-advantages-list li:hover {
-  border-color: var(--pm-sage);
-  box-shadow: 0 20px 40px -15px rgba(123, 141, 124, 0.25);
 }
 
 .pm-adv-emoji {
@@ -303,14 +299,6 @@
   font-size: 1.2rem;
   color: var(--pm-sage);
   background: var(--pm-sage-soft);
-  transition:
-    background 0.35s var(--pm-ease),
-    color 0.35s var(--pm-ease);
-}
-
-.pm-advantages-list li:hover .pm-adv-emoji {
-  background: var(--pm-sage);
-  color: #fff;
 }
 
 .pm-adv-text {
@@ -341,6 +329,10 @@
   border: 1px solid rgba(203, 215, 204, 0.8);
   border-radius: 1.5rem;
   box-shadow: 0 10px 30px -10px rgba(123, 141, 124, 0.12);
+}
+
+.pm-advantages-container .pm-cta-card {
+  margin-top: 3rem;
 }
 
 .pm-pricing-text {

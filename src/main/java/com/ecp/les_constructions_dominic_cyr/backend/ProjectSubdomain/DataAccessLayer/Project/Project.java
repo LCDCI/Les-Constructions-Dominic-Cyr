@@ -53,6 +53,9 @@ public class Project {
     private String imageIdentifier;
 
     @Column(nullable = true)
+    private String bannerImageIdentifier;
+
+    @Column(nullable = true)
     private String customerId;
 
     // Legacy column - kept temporarily for database migration compatibility

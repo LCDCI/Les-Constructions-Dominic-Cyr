@@ -19,6 +19,7 @@
     "subtitle": "When vision becomes reality"
   },
   "intro": {
+    "title": "Our craftsmanship in images",
     "description": "Our realizations reflect our expertise and commitment to quality. Each project is crafted with care to deliver lasting, well-designed spaces tailored to the needs of our clients.",
     "portfolioText": "Here is a portfolio of projects completed in recent years."
   },
@@ -28,6 +29,10 @@
     "imageAlt": "Realization",
     "noResults": "No realizations found",
     "contactLink": "Contact us"
+  },
+  "galleryGrid": {
+    "kicker": "Our Gallery",
+    "title": "A closer look at our work"
   },
   "states": {
     "loading": "Loading realizations..."

@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
-import useBackendUser from '../../hooks/useBackendUser';
+import { useBackendUser } from '../../hooks/useBackendUser';
 import { projectApi } from '../../features/projects/api/projectApi';
 
 import '../../styles/NavBars/AppNavBar.css';
@@ -62,13 +62,13 @@ export default function AppNavBar() {
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [projectsError, setProjectsError] = useState(false);
   const [isNavHidden, setIsNavHidden] = useState(false);
+  const projectsNavRef = useRef(null);
 
   const currentLanguage = i18n.language || 'en';
   const isFrench = currentLanguage === 'fr';
 
   const isResidentialProjectsActive =
-    location.pathname.startsWith('/residential-projects') ||
-    /^\/projects\/[^/]+\/(overview|living-environment|lots)(?:\/|$)/.test(
+    /^\/projects\/[^/]+\/(overview|living-environment|houses|lots)(?:\/|$)/.test(
       location.pathname
     );
 
@@ -177,14 +177,6 @@ export default function AppNavBar() {
             )}
           </li>
         ))}
-      <li className="project-dropdown-all">
-        <NavLink
-          to="/residential-projects"
-          onClick={() => setIsPublicMobileMenuOpen(false)}
-        >
-          {t('nav.viewAllProjects', 'View all projects')}
-        </NavLink>
-      </li>
     </>
   );
 
@@ -196,6 +188,26 @@ export default function AppNavBar() {
   const toggleProjectsMenu = () => {
     setIsProjectsMenuOpen(prev => !prev);
   };
+
+  useEffect(() => {
+    setIsProjectsMenuOpen(false);
+    setExpandedProjectIdentifier(null);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handlePointerDown = event => {
+      if (
+        isProjectsMenuOpen &&
+        projectsNavRef.current &&
+        !projectsNavRef.current.contains(event.target)
+      ) {
+        setIsProjectsMenuOpen(false);
+        setExpandedProjectIdentifier(null);
+      }
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [isProjectsMenuOpen]);
 
   const handleMobileLogoClick = () => {
     // If menu is already open, just close it
@@ -267,7 +279,7 @@ export default function AppNavBar() {
 
         {/* Desktop navigation */}
         <nav className="desktop-nav">
-          <div className="projects-nav-item">
+          <div className="projects-nav-item" ref={projectsNavRef}>
             <button
               type="button"
               className={`projects-nav-trigger ${isResidentialProjectsActive ? 'active' : ''}`}

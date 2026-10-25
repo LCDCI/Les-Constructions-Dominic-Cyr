@@ -301,6 +301,67 @@ select:focus {
   font-family: var(--font-body);
 }
 
+.public-page__section--tint {
+  background: var(--brand-primary-lighter);
+}
+
+.public-page__cta {
+  background: var(--brand-primary-light);
+  color: var(--charcoal-gray);
+}
+
+/* Keep the redesigned public pages on Home's sage, charcoal, and neutral palette. */
+.realizations-page,
+.renovations-page,
+.project-management-page {
+  --page-sage: var(--brand-primary);
+  --page-sage-dark: var(--brand-primary-dark);
+  --page-sage-light: var(--brand-primary-light);
+  --page-ink: var(--charcoal-gray);
+  --page-muted: var(--text-secondary);
+  color: var(--page-ink) !important;
+  background: var(--background-color) !important;
+}
+
+.realizations-page .projects-hero,
+.renovations-page .public-page__hero,
+.project-management-page .pm-hero-banner {
+  background: var(--brand-primary) !important;
+  color: var(--white) !important;
+}
+
+.realizations-page .realizations-intro,
+.realizations-page .realizations-gallery-section,
+.renovations-page .public-page__section,
+.project-management-page .pm-intro-section {
+  background-color: var(--background-color) !important;
+  color: var(--page-ink) !important;
+}
+
+.realizations-page .realizations-gallery-section,
+.renovations-page .public-page__section--tint,
+.project-management-page .pm-advantages-section {
+  background-color: var(--brand-primary-lighter) !important;
+  border-color: var(--brand-primary-light) !important;
+}
+
+.realizations-page .realizations-intro-text,
+.project-management-page .pm-muted,
+.project-management-page .pm-description {
+  color: var(--page-muted) !important;
+}
+
+.realizations-page .realizations-contact-link,
+.project-management-page a,
+.renovations-page .public-page__button {
+  color: var(--brand-primary-dark);
+}
+
+.project-management-page .pm-contact-link,
+.realizations-page .realizations-contact-link {
+  color: var(--white) !important;
+}
+
 .public-page__hero {
   position: relative;
   min-height: 280px;

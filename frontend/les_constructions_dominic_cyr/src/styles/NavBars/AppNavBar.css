@@ -126,8 +126,6 @@
   z-index: 10;
 }
 
-.projects-nav-item:hover .projects-dropdown,
-.projects-nav-item:focus-within .projects-dropdown,
 .projects-dropdown.open {
   display: block;
 }
@@ -142,7 +140,7 @@
 
 .projects-dropdown a:hover,
 .projects-dropdown a:focus-visible {
-  background: #f5f5f5;
+  background: #e3e7e1;
 }
 
 .project-dropdown-name {
@@ -154,8 +152,14 @@
   display: block;
   padding: 9px 14px 4px;
   font: inherit;
-  font-weight: 700;
+  font-weight: 400;
   text-align: left;
+}
+
+.project-dropdown-name:hover,
+.project-dropdown-name:focus-visible {
+  background: #e3e7e1;
+  outline: none;
 }
 
 .project-page-dropdown {
@@ -168,9 +172,19 @@
   font-size: 0.9rem;
 }
 
-.projects-dropdown .project-dropdown-all {
-  margin-top: 4px;
-  border-top: 1px solid #e6e6e6;
+.project-page-dropdown a.active {
+  color: #333;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: #aab2a6;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.project-page-dropdown a:hover,
+.project-page-dropdown a:focus-visible {
+  background: #e3e7e1;
+  outline: none;
 }
 
 .project-dropdown-status {
@@ -401,11 +415,6 @@
   box-sizing: border-box;
   font-size: 14px;
   border-bottom: 1px solid #f0f0f0;
-}
-
-.mobile-projects-dropdown .project-dropdown-all {
-  margin-top: 4px;
-  border-top: 1px solid #e6e6e6;
 }
 
 .mobile-actions {

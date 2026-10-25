@@ -9,6 +9,7 @@ public record ProjectOverviewUpdateRequest(
         String locationSectionTitle,
         String locationDescription,
         String locationAddress,
-        String imageIdentifier
+        String imageIdentifier,
+        String bannerImageIdentifier
 ) {
 }

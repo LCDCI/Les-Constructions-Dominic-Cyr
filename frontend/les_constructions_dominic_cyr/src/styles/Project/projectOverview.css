@@ -57,15 +57,35 @@
 }
 
 .project-hero {
+  min-height: 280px;
   padding: 6.4rem var(--spacing-lg);
-  /* Use project color CSS variables set by page */
-  background: var(--primary-color, #aab2a6);
+  background: var(--public-banner-bg, #aab2a6);
+  background-position: center;
+  background-size: cover;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   position: relative;
+}
+
+.project-hero--image {
+  background-color: var(--public-banner-bg, #aab2a6);
+}
+
+.project-logo-above-banner {
+  display: grid;
+  place-items: center;
+  min-height: 150px;
+  padding: 1.25rem;
+  background: #fff;
+}
+
+.project-logo-above-banner .project-logo {
+  width: min(180px, 45vw);
+  height: 110px;
+  object-fit: contain;
 }
 
 .hero-image-container {
@@ -124,7 +144,6 @@
   z-index: 1;
 }
 
-/* Hide hero title/subtitle on desktop; show on small screens */
 .hero-title {
   font-family: var(--font-heading);
   font-size: clamp(2.5rem, 5vw, 3.5rem);
@@ -145,21 +164,26 @@
   margin: 0 auto;
 }
 
-/* Desktop: hide text headings to show only centered logo */
-.hero-title,
-.hero-subtitle {
+.project-hero .hero-title,
+.project-hero .hero-subtitle {
   display: none;
 }
 
 @media (max-width: 767px) {
-  /* Mobile: show titles under the logo */
-  .hero-title,
-  .hero-subtitle {
+  .project-hero .hero-title,
+  .project-hero .hero-subtitle {
     display: block;
   }
   .hero-logo-container {
     width: 180px;
     height: 180px;
+  }
+
+  @media (min-width: 768px) {
+    .project-hero .hero-title,
+    .project-hero .hero-subtitle {
+      display: block;
+    }
   }
   .project-hero {
     padding: var(--spacing-section, 4rem) var(--spacing-lg);

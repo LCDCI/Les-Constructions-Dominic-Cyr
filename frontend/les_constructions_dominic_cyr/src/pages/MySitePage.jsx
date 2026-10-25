@@ -38,6 +38,7 @@ const FIELD_LABEL_KEYS = {
   locationDescription: 'fields.locationDescription',
   locationAddress: 'fields.locationAddress',
   heroImage: 'fields.heroImage',
+  bannerImage: 'fields.bannerImage',
 };
 
 const EDITORIAL_PAGES = [
@@ -137,12 +138,21 @@ const EDITABLE_TEXT_KEYS = {
     keys: [
       'hero.title',
       'hero.subtitle',
+      'intro.title',
       'intro.description',
       'intro.portfolioText',
+      'gallery.title',
       'gallery.previousAriaLabel',
       'gallery.nextAriaLabel',
       'gallery.imageAlt',
+      'gallery.noResults',
       'gallery.contactLink',
+      'galleryGrid.kicker',
+      'galleryGrid.title',
+      ...Array.from({ length: 9 }, (_, index) => [
+        `galleryItem.${index + 1}.location`,
+        `galleryItem.${index + 1}.description`,
+      ]).flat(),
     ],
   },
   'residential-projects': {
@@ -157,6 +167,82 @@ const EDITABLE_TEXT_KEYS = {
       'pagination.next',
     ],
   },
+};
+
+const EDITOR_PAGE_ORDER = {
+  home: [
+    'hero.label',
+    'hero.title',
+    'hero.subtitle',
+    'think.title',
+    'think.subtitle',
+    'think.link',
+    'build.title',
+    'build.subtitle',
+    'build.link',
+    'live.title',
+    'live.subtitle',
+    'live.link',
+    'features.kicker',
+    'features.title',
+    'features.intro',
+    'features.feature1',
+    'features.feature1Description',
+    'features.feature2',
+    'features.feature2Description',
+    'features.feature3',
+    'features.feature3Description',
+    'features.feature4',
+    'features.feature4Description',
+    'features.feature5',
+    'features.feature5Description',
+    'features.feature6',
+    'features.feature6Description',
+    'portfolio.title',
+    'portfolio.foresta',
+    'portfolio.forestaSubtitle',
+    'portfolio.panorama',
+    'portfolio.panoramaSubtitle',
+    'portfolio.management',
+    'portfolio.managementSubtitle',
+    'media.hero',
+    'media.live',
+    'media.build',
+    'media.think',
+    'media.foresta',
+    'media.panorama',
+  ],
+  renovations: EDITABLE_TEXT_KEYS.renovations.keys,
+  'project-management': EDITABLE_TEXT_KEYS['project-management'].keys,
+  realizations: EDITABLE_TEXT_KEYS.realizations.keys,
+  contact: EDITABLE_TEXT_KEYS.contact.keys,
+  footer: [
+    'information',
+    'phone',
+    'email',
+    'accreditations',
+    'rbqLabel',
+    'rbq',
+    'rbqUrl',
+    'gcrLabel',
+    'gcr',
+    'gcrUrl',
+    'copyright',
+  ],
+};
+
+const sortEditorItems = (pageGroup, contentItems) => {
+  const order = EDITOR_PAGE_ORDER[pageGroup] || [];
+  const positions = new Map(order.map((key, index) => [key, index]));
+  return [...contentItems].sort((left, right) => {
+    const leftPosition = positions.get(left.pageKey) ?? Number.MAX_SAFE_INTEGER;
+    const rightPosition =
+      positions.get(right.pageKey) ?? Number.MAX_SAFE_INTEGER;
+    return (
+      leftPosition - rightPosition ||
+      (left.sortOrder || 0) - (right.sortOrder || 0)
+    );
+  });
 };
 
 const PUBLIC_IMAGE_SLOTS = {
@@ -203,10 +289,10 @@ const PUBLIC_IMAGE_SLOTS = {
     ['galleryImage.6', '1634e9ee-2680-41d1-b28a-47353f842d9c'],
     ['galleryImage.7', '1659ff85-b160-4111-b419-84834eb4375a'],
     ['galleryImage.8', '1681b3d5-8f0a-4daf-9590-53a1ce37cf20'],
-    ['galleryImage.9', '48f50cea-f368-41d6-91c3-ae55157bd868'],
-    ['galleryImage.10', '55378cf7-c0a0-48be-b5f9-9d2507eff177'],
-    ['galleryImage.11', '610354b2-8a9c-4e87-95a1-3cc63f494c6e'],
-    ['galleryImage.12', 'bb6dd250-ed32-4041-8b4e-020e2ef45e2f'],
+    ...Array.from({ length: 9 }, (_, index) => [
+      `galleryItem.${index + 1}.image`,
+      '',
+    ]),
   ],
 };
 
@@ -409,15 +495,25 @@ const MySitePage = () => {
         ? HOME_CONTENT_KEYS.has(pageKey)
         : configuredKeys.includes(pageKey)
     );
-    const textItems = textEntries.map(([pageKey, contentText], index) => ({
-      id: `fallback-${pageGroup}-${pageKey}`,
-      pageGroup,
-      pageKey,
-      contentText,
-      imageIdentifier: '',
-      sortOrder: index,
-      fallbackContent: true,
-    }));
+    const textEntryMap = new Map(textEntries);
+    const completeTextEntries =
+      pageGroup === 'home'
+        ? textEntries
+        : configuredKeys.map(pageKey => [
+            pageKey,
+            textEntryMap.get(pageKey) || '',
+          ]);
+    const textItems = completeTextEntries.map(
+      ([pageKey, contentText], index) => ({
+        id: `fallback-${pageGroup}-${pageKey}`,
+        pageGroup,
+        pageKey,
+        contentText,
+        imageIdentifier: '',
+        sortOrder: index,
+        fallbackContent: true,
+      })
+    );
     const imageItems = (PUBLIC_IMAGE_SLOTS[pageGroup] || []).map(
       ([pageKey, imageIdentifier], index) => ({
         id: `fallback-${pageGroup}-${pageKey}`,
@@ -484,7 +580,10 @@ const MySitePage = () => {
               amenity.label,
             ]),
           ]
-            .filter(([, value]) => value)
+            .filter(
+              ([pageKey, value]) =>
+                value || pageKey === 'heroImage' || pageKey === 'bannerImage'
+            )
             .map(([pageKey, value], index) => ({
               id: `living-environment-${projectIdentifier}-${pageKey}`,
               pageGroup,
@@ -578,13 +677,17 @@ const MySitePage = () => {
             ['locationSectionTitle', overview.locationSectionTitle],
             ['locationDescription', overview.locationDescription],
             ['locationAddress', overview.locationAddress],
-            ['heroImage', overview.imageIdentifier],
+            ['heroImage', overview.imageIdentifier || ''],
+            ['bannerImage', overview.bannerImageIdentifier || ''],
             ...(overview.galleryImages || []).map((image, index) => [
               `galleryImage.${index + 1}`,
               image.imageIdentifier,
             ]),
           ]
-            .filter(([, value]) => value)
+            .filter(
+              ([pageKey, value]) =>
+                value || pageKey === 'heroImage' || pageKey === 'bannerImage'
+            )
             .map(([pageKey, value], index) => ({
               id: `project-overview-${pageKey}`,
               pageGroup: pageGroup,
@@ -601,10 +704,15 @@ const MySitePage = () => {
             }));
         }
       }
-      setItems(Array.isArray(data) ? data : []);
+      const orderedData = selectedSubpage
+        ? Array.isArray(data)
+          ? data
+          : []
+        : sortEditorItems(pageGroup, Array.isArray(data) ? data : []);
+      setItems(orderedData);
       setDrafts(
         Object.fromEntries(
-          (data || []).map(item => [
+          orderedData.map(item => [
             item.id,
             {
               contentText: item.contentText || '',
@@ -655,11 +763,13 @@ const MySitePage = () => {
         throw new Error('Upload returned no file identifier');
 
       if (item.projectOverviewContent) {
+        const imageField =
+          item.pageKey === 'bannerImage'
+            ? 'bannerImageIdentifier'
+            : 'imageIdentifier';
         await updateProjectOverview(
           item.projectIdentifier,
-          {
-            imageIdentifier,
-          },
+          { [imageField]: imageIdentifier },
           token
         );
         updateDraft(item.id, 'imageIdentifier', imageIdentifier);
@@ -715,9 +825,13 @@ const MySitePage = () => {
       setSavingId(item.id);
       const token = await getToken();
       if (item.projectOverviewContent) {
+        const imageField =
+          item.pageKey === 'bannerImage'
+            ? 'bannerImageIdentifier'
+            : 'imageIdentifier';
         await updateProjectOverview(
           item.projectIdentifier,
-          { imageIdentifier: '' },
+          { [imageField]: '' },
           token
         );
         updateDraft(item.id, 'imageIdentifier', '');
@@ -850,6 +964,10 @@ const MySitePage = () => {
     });
     const image = items.find(item => item.pageKey === 'heroImage');
     if (image?.imageIdentifier) values.imageIdentifier = image.imageIdentifier;
+    const bannerImage = items.find(item => item.pageKey === 'bannerImage');
+    if (bannerImage?.imageIdentifier) {
+      values.bannerImageIdentifier = bannerImage.imageIdentifier;
+    }
     const token = await getToken();
     await updateProjectOverview(projectIdentifier, values, token);
   };
@@ -954,7 +1072,7 @@ const MySitePage = () => {
         <section className="my-site-subpage-panel">
           <button
             type="button"
-            className="my-site-modal-secondary"
+            className="my-site-back-button"
             onClick={() => navigate('/owner/my-site')}
           >
             {t('backToPages', 'Back to pages')}
@@ -997,7 +1115,7 @@ const MySitePage = () => {
         <section className="my-site-subpage-panel">
           <button
             type="button"
-            className="my-site-modal-secondary"
+            className="my-site-back-button"
             onClick={() => navigate(`/owner/my-site/${selectedPath}`)}
           >
             {t('backToSubpages', 'Back to project pages')}
@@ -1031,7 +1149,7 @@ const MySitePage = () => {
           <section className="my-site-subpage-panel">
             <button
               type="button"
-              className="my-site-modal-secondary"
+              className="my-site-back-button"
               onClick={() => navigate('/owner/my-site')}
             >
               {t('backToPages', 'Back to pages')}
@@ -1229,31 +1347,41 @@ const MySitePage = () => {
                 const hasExistingImage = Boolean(
                   item.imageIdentifier || draft.imageIdentifier
                 );
+                const isImageSlot =
+                  item.pageKey.toLowerCase().includes('image') &&
+                  (item.projectOverviewContent ||
+                    PUBLIC_IMAGE_SLOTS[item.pageGroup]);
                 return (
                   <div className="my-site-modal-item" key={item.id}>
-                    <label>
-                      {getContentLabel(item.pageKey, t)}
-                      <textarea
-                        value={draft.contentText || ''}
-                        onChange={event =>
-                          updateDraft(
-                            item.id,
-                            'contentText',
-                            event.target.value
-                          )
-                        }
-                        rows={4}
-                      />
-                    </label>
-                    {hasExistingImage && (
+                    {!isImageSlot && (
+                      <label>
+                        {getContentLabel(item.pageKey, t)}
+                        <textarea
+                          value={draft.contentText || ''}
+                          onChange={event =>
+                            updateDraft(
+                              item.id,
+                              'contentText',
+                              event.target.value
+                            )
+                          }
+                          rows={4}
+                        />
+                      </label>
+                    )}
+                    {(hasExistingImage || isImageSlot) && (
                       <>
                         <label className="my-site-image-editor">
                           <span>
-                            {t('imageLabel', 'Image')}{' '}
+                            {item.projectOverviewContent
+                              ? getContentLabel(item.pageKey, t)
+                              : t('imageLabel', 'Image')}{' '}
                             <small>
                               {t(
                                 'imagePositionNote',
-                                'Existing image slot for this content'
+                                item.projectOverviewContent
+                                  ? 'Choose an image for this slot'
+                                  : 'Existing image slot for this content'
                               )}
                             </small>
                           </span>
@@ -1266,9 +1394,11 @@ const MySitePage = () => {
                             disabled={savingId === item.id}
                           />
                         </label>
-                        <SiteImagePreview
-                          imageIdentifier={draft.imageIdentifier || ''}
-                        />
+                        {hasExistingImage && (
+                          <SiteImagePreview
+                            imageIdentifier={draft.imageIdentifier || ''}
+                          />
+                        )}
                         {draft.imageIdentifier &&
                           !item.projectOverviewContent && (
                             <button

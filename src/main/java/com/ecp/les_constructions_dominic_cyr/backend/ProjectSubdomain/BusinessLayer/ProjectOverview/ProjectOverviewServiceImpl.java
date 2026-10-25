@@ -48,6 +48,7 @@ public class ProjectOverviewServiceImpl implements ProjectOverviewService {
                 .tertiaryColor(project.getTertiaryColor())
                 .buyerColor(project.getBuyerColor())
                 .imageIdentifier(project.getImageIdentifier())
+                .bannerImageIdentifier(project.getBannerImageIdentifier())
                 .features(mapper.featuresToResponseModels(features))
                 .galleryImages(mapper.galleryImagesToResponseModels(galleryImages));
 
@@ -93,6 +94,9 @@ public class ProjectOverviewServiceImpl implements ProjectOverviewService {
         if (request.locationDescription() != null) content.setLocationDescription(request.locationDescription());
         if (request.locationAddress() != null) content.setLocationAddress(request.locationAddress());
         if (request.imageIdentifier() != null) project.setImageIdentifier(request.imageIdentifier());
+        if (request.bannerImageIdentifier() != null) {
+            project.setBannerImageIdentifier(request.bannerImageIdentifier());
+        }
 
         overviewContentRepository.save(content);
         projectRepository.save(project);

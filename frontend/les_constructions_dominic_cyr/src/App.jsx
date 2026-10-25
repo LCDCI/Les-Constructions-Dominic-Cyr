@@ -30,7 +30,6 @@ import LotSelectPage from './pages/Project/LotSelectPage';
 import LotMetadata from './pages/Project/LotMetadata';
 import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
-import ResidentialProjectsPage from './pages/Public_Facing/ResidentialProjectsPage';
 import HousesPage from './pages/Public_Facing/HousesPage';
 import ContractorDashboard from './pages/Dashboards/ContractorDashboard';
 import LotDocumentsPage from './features/lots/components/LotDocumentsPage';
@@ -502,10 +501,6 @@ export default function App() {
               }
             />
 
-            <Route
-              path="/residential-projects"
-              element={<ResidentialProjectsPage />}
-            />
             <Route path="/houses" element={<HousesPage />} />
             <Route path="/houses/:houseId" element={<HousesPage />} />
 

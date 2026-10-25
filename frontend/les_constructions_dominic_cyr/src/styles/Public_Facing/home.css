@@ -674,6 +674,41 @@ body {
   );
 }
 
+.home .project-logo-image {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: 42%;
+  height: 42%;
+  object-fit: contain;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.28));
+}
+
+.home .portfolio-card:hover .project-logo-image {
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
+.home .portfolio-card .card-content {
+  color: #fff;
+}
+
+.home .portfolio-card .card-title {
+  color: inherit;
+}
+
+.home .portfolio-card .card-title svg {
+  color: var(--brand-primary);
+}
+
+.home .card-location {
+  margin: 0.35rem 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
 .home .portfolio-card.no-image {
   background: #fff;
   border: 1px solid #e5e7eb;
