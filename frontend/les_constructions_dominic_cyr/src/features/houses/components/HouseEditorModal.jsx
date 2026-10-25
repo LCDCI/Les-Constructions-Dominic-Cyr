@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
 import { usePageTranslations } from '../../../hooks/usePageTranslations';
-import { createHouse, updateHouse, uploadHouseImage } from '../api/housesApi';
+import { createHouse, updateHouse } from '../api/housesApi';
+import { uploadFile, deleteFile } from '../../files/api/filesApi';
 import '../../../styles/MySitePage.css';
 
 const emptyHouse = {
@@ -39,7 +40,7 @@ export default function HouseEditorModal({
   onSaved,
 }) {
   const { t } = usePageTranslations('mySite');
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   const [form, setForm] = useState(emptyHouse);
   const [imageFile, setImageFile] = useState(null);
   const [removeExistingImage, setRemoveExistingImage] = useState(false);
@@ -111,11 +112,39 @@ export default function HouseEditorModal({
 
       let finalHouse = saved;
       if (imageFile) {
-        finalHouse = await uploadHouseImage(
+        const formData = new FormData();
+        formData.append('file', imageFile);
+        formData.append('category', 'PHOTO');
+        formData.append('projectId', saved.projectIdentifier);
+        formData.append('uploadedBy', user?.sub || 'house-editor');
+        formData.append('uploaderRole', 'OWNER');
+
+        const uploaded = await uploadFile(formData, token);
+        const imageIdentifier = uploaded.fileId || uploaded.id;
+        if (!imageIdentifier) {
+          throw new Error('Image upload returned no file identifier.');
+        }
+
+        finalHouse = await updateHouse(
           saved.houseIdentifier,
-          imageFile,
+          { ...payload, imageIdentifier },
           token
         );
+
+        if (
+          house?.imageIdentifier &&
+          house.imageIdentifier !== imageIdentifier &&
+          !String(house.imageIdentifier).startsWith('http')
+        ) {
+          try {
+            await deleteFile(house.imageIdentifier, {
+              deletedBy: user?.sub || 'house-editor',
+              token,
+            });
+          } catch {
+            // Preserve the successful replacement if the old object is missing.
+          }
+        }
       }
       onSaved(finalHouse);
     } catch (saveError) {
