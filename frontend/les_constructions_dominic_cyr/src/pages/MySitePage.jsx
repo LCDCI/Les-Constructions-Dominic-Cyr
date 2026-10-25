@@ -1046,6 +1046,21 @@ const MySitePage = () => {
         >
           <div className="my-site-modal">
             <div className="my-site-modal-header">
+              <div>
+                <p className="my-site-kicker">
+                  {t('housesKicker', 'Project content')}
+                </p>
+                <h2>{t('housesTitle', 'House models')}</h2>
+              </div>
+              <button
+                type="button"
+                className="my-site-modal-primary"
+                onClick={() =>
+                  setHouseModal({ house: null, projectIdentifier })
+                }
+              >
+                {t('addHouse', 'Add house')}
+              </button>
               <button
                 type="button"
                 className="my-site-modal-close"
@@ -1126,6 +1141,7 @@ const MySitePage = () => {
         <HouseEditorModal
           house={houseModal.house}
           projects={projects}
+          initialProjectIdentifier={houseModal.projectIdentifier}
           onClose={() => setHouseModal(null)}
           onSaved={saved => {
             setHouses(current => {
