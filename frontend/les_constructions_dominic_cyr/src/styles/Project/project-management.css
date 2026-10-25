@@ -71,7 +71,7 @@
   max-width: 32rem;
   margin: 0 auto;
   font-family: var(--pm-serif);
-  font-style: italic;
+  font-style: normal;
   font-weight: 400;
   font-size: clamp(1rem, 2vw, 1.25rem);
   letter-spacing: 0.02em;
@@ -114,7 +114,7 @@
 .pm-tagline {
   margin: 0;
   font-family: var(--pm-serif);
-  font-style: italic;
+  font-style: normal;
   font-weight: 500;
   font-size: clamp(1rem, 2vw, 1.15rem);
   color: var(--pm-sage);

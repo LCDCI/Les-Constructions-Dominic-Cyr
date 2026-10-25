@@ -1,186 +1,201 @@
-import React, { useState, useEffect } from 'react';
-import { FiRefreshCw } from 'react-icons/fi';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  FiAward,
+  FiHeart,
+  FiPhoneCall,
+  FiStar,
+  FiTarget,
+} from 'react-icons/fi';
+import { RiLeafLine } from 'react-icons/ri';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
-import { fetchRenovations } from '../../features/renovations/api/renovations';
 import '../../styles/Public_Facing/home.css';
 import '../../styles/Public_Facing/RenovationsPage.css';
 import '../../styles/Public_Facing/residential-projects.css';
 
 const RenovationsPage = () => {
-  // Load translations from the root namespace since your JSON is flat
   const { t } = usePageTranslations('renovations');
 
-  const [renovations, setRenovations] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-
-  useEffect(() => {
-    loadRenovations();
-  }, []);
-
-  // Animate on scroll (reuse pattern from Home page)
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll('[data-animate]'));
-    if (!elements.length) return;
+    if (!elements.length) return undefined;
 
     const prefersReduced =
       typeof window !== 'undefined' &&
-      window.matchMedia &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
     if (prefersReduced) {
-      elements.forEach(el => el.classList.add('animated'));
-      return;
+      elements.forEach(element => element.classList.add('animated'));
+      return undefined;
     }
 
-    const io = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animated');
-            io.unobserve(entry.target);
+            observer.unobserve(entry.target);
           }
         });
       },
       { threshold: 0.1, rootMargin: '0px 0px -80px 0px' }
     );
 
-    elements.forEach(el => io.observe(el));
-    return () => io.disconnect();
-  }, [renovations]);
+    elements.forEach(element => observer.observe(element));
+    return () => observer.disconnect();
+  }, []);
 
-  const loadRenovations = async () => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
-      const data = await fetchRenovations();
-      setRenovations(data);
-    } catch (error) {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const refetch = () => {
-    loadRenovations();
-  };
-
-  // Images are removed site-wide for this page; use decorative gradients instead
+  const features = [
+    {
+      icon: FiHeart,
+      title: 'features.feature1',
+      description: 'features.feature1Description',
+      fallbackTitle: 'Passionate and professional',
+      fallbackDescription:
+        'Committed expertise in every detail of your project.',
+    },
+    {
+      icon: FiTarget,
+      title: 'features.feature2',
+      description: 'features.feature2Description',
+      fallbackTitle: 'Creative approach',
+      fallbackDescription:
+        'Thoughtful ideas to create a space that feels like you.',
+    },
+    {
+      icon: FiStar,
+      title: 'features.feature3',
+      description: 'features.feature3Description',
+      fallbackTitle: 'Attention to detail',
+      fallbackDescription:
+        'Careful planning and precise execution from start to finish.',
+    },
+    {
+      icon: RiLeafLine,
+      title: 'features.feature4',
+      description: 'features.feature4Description',
+      fallbackTitle: 'Sustainable practices',
+      fallbackDescription:
+        'Responsible choices for comfortable and lasting homes.',
+    },
+    {
+      icon: FiAward,
+      title: 'features.feature5',
+      description: 'features.feature5Description',
+      fallbackTitle: 'Standards of excellence',
+      fallbackDescription:
+        'High standards for every material, finish, and decision.',
+    },
+    {
+      icon: FiPhoneCall,
+      title: 'features.feature6',
+      description: 'features.feature6Description',
+      fallbackTitle: 'After-sales service',
+      fallbackDescription:
+        'Reliable support that continues after your project is complete.',
+    },
+  ];
 
   return (
-    <div className="renovations-page" aria-live="polite">
-      {/* HERO */}
+    <div className="public-page renovations-page">
       <section
-        className="projects-hero"
+        className="public-page__hero"
         aria-labelledby="renovations-hero-title"
-        aria-describedby="renovations-hero-subtitle"
       >
-        <div className="hero-background">
-          <div className="hero-image renovations-hero-bg" />
-          <div className="hero-overlay" />
-        </div>
-        <div className="hero-container projects-hero-content">
-          <div className="hero-content" data-animate>
-            <h1
-              className="hero-heading projects-title"
-              id="renovations-hero-title"
-            >
-              {t('hero.heading', 'Custom renovations, delivered with care')}
-            </h1>
-            <p
-              className="hero-description projects-subtitle"
-              id="renovations-hero-subtitle"
-            >
-              {t(
-                'hero.lede',
-                'Kitchens, basements, open spaces or façades — we modernize every area with precision and creativity.'
-              )}
-            </p>
-          </div>
+        <div className="public-page__hero-content" data-animate>
+          <span className="public-page__kicker">
+            {t('hero.label', 'Renovate, Modernize & Transform')}
+          </span>
+          <h1 className="public-page__title" id="renovations-hero-title">
+            {t('hero.heading', 'Renovations')}
+          </h1>
+          <p className="public-page__lead">
+            {t('hero.lede', 'Your home deserves the very best')}
+          </p>
         </div>
       </section>
 
-      {/* FEATURED INTRO SECTION */}
       <section
-        className="content-section featured-section single-column"
+        className="public-page__section renovations-intro-section"
         aria-labelledby="renovations-intro-title"
       >
-        <div className="section-text-wrapper" data-animate>
-          <div className="section-header center renovations-feature-card">
-            <h2 className="section-title" id="renovations-intro-title">
-              <em>{t('intro.emphasis', 'Transform')}</em>{' '}
-              {t(
-                'intro.rest',
-                'your home into the living space of your dreams!'
-              )}
-            </h2>
-            <p className="section-subtitle" style={{ whiteSpace: 'pre-line' }}>
-              {t(
-                'intro.description',
-                "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency.\n\n\nWe offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort.\n\n\nEntrust your renovation to passionate professionals!"
-              )}
-            </p>
-            <Link to="/contact" className="link-arrow">
-              {t('intro.cta', 'Talk to an expert')}
-            </Link>
-          </div>
+        <div className="public-page__intro" data-animate>
+          <span className="public-page__eyebrow">
+            {t('intro.kicker', 'Transform')}
+          </span>
+          <h2 className="public-page__heading" id="renovations-intro-title">
+            {t(
+              'intro.title',
+              'your home into the living space of your dreams!'
+            )}
+          </h2>
+          <p className="public-page__copy">
+            {t(
+              'intro.description',
+              "Whether it's modernizing your kitchen, completely rethinking your basement, opening up spaces, or increasing your property value, our team delivers your project with precision, style, and efficiency. We offer a turnkey service: planning, design, site management, and high-end finishing. Every detail is crafted to reflect your personality and improve your daily comfort. Entrust your renovation to passionate professionals!"
+            )}
+          </p>
         </div>
       </section>
 
-      {/* ERROR */}
-      {isError && (
-        <div
-          className="renovations-page__status renovations-page__status--error"
-          role="alert"
-        >
-          <p>
-            {t(
-              'states.error.message',
-              'Impossible de charger les rénovations. Veuillez réessayer.'
-            )}
-          </p>
-          <button
-            type="button"
-            onClick={refetch}
-            className="renovations-page__button"
-          >
-            <FiRefreshCw aria-hidden="true" />
-            {t('states.error.retry', 'Réessayer')}
-          </button>
+      <section
+        className="public-page__section public-page__section--tint renovations-features-section"
+        aria-labelledby="renovations-features-title"
+      >
+        <div className="public-page__intro">
+          <span className="public-page__eyebrow">
+            {t('features.kicker', 'What sets us apart')}
+          </span>
+          <h2 className="public-page__heading" id="renovations-features-title">
+            {t('features.title', 'A renovation experience shaped around you')}
+          </h2>
         </div>
-      )}
+        <div className="public-page__feature-grid">
+          {features.map(
+            ({
+              icon: Icon,
+              title,
+              description,
+              fallbackTitle,
+              fallbackDescription,
+            }) => (
+              <article
+                className="public-page__feature"
+                data-animate
+                key={title}
+              >
+                <div className="public-page__feature-icon" aria-hidden="true">
+                  <Icon />
+                </div>
+                <h3 className="public-page__feature-title">
+                  {t(title, fallbackTitle)}
+                </h3>
+                <p className="public-page__copy">
+                  {t(description, fallbackDescription)}
+                </p>
+              </article>
+            )
+          )}
+        </div>
+      </section>
 
-      {/* LOADING */}
-      {isLoading && (
-        <div className="container renovations-page__grid">
-          {[0, 1, 2].map(skeleton => (
-            <div
-              key={skeleton}
-              className="renovations-page__skeleton"
-              aria-hidden="true"
-            />
-          ))}
-        </div>
-      )}
-
-      {/* EMPTY */}
-      {!isLoading && !isError && renovations.length === 0 && (
-        <div
-          className="renovations-page__status renovations-page__status--empty"
-          role="status"
-          aria-live="polite"
-        >
-          <h2>{t('states.empty.title', 'Aucune rénovation pour le moment')}</h2>
-          <p>
-            {t(
-              'states.empty.body',
-              'Revenez bientôt pour voir nos derniers projets de rénovation !'
-            )}
-          </p>
-        </div>
-      )}
+      <section className="public-page__cta">
+        <span className="public-page__eyebrow">
+          {t('cta.kicker', 'Get in touch')}
+        </span>
+        <h2 className="public-page__heading">
+          {t('cta.title', "Let's build your dream home together")}
+        </h2>
+        <p className="public-page__copy">
+          {t(
+            'cta.subtitle',
+            "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc."
+          )}
+        </p>
+        <Link to="/contact" className="public-page__button">
+          {t('cta.button', 'Talk to an expert')}
+        </Link>
+      </section>
     </div>
   );
 };

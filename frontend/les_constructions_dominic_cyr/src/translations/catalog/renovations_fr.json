@@ -5,10 +5,25 @@
     "lede": "Votre maison mérite ce qu'il y a de mieux"
   },
   "intro": {
-    "emphasis": "Transformez",
-    "rest": "votre maison en un espace de vie dont vous rêvez !",
-    "description": "Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité.\n\n\nNous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien.\n\n\nConfiez votre rénovation à des professionnels passionnés !",
-    "cta": "Parlez à un expert"
+    "kicker": "Transformez",
+    "title": "votre maison en un espace de vie dont vous rêvez !",
+    "description": "Que ce soit pour moderniser votre cuisine, repenser entièrement votre sous-sol, ouvrir des espaces ou augmenter la valeur de votre propriété, notre équipe réalise votre projet avec précision, style et efficacité. Nous offrons un service clé en main : planification, design, gestion de chantier et finition haut de gamme. Chaque détail est pensé pour refléter votre personnalité et améliorer votre confort au quotidien. Confiez votre rénovation à des professionnels passionnés !"
+  },
+  "features": {
+    "kicker": "Ce qui nous distingue",
+    "title": "Une expérience de rénovation à votre image",
+    "feature1": "Une expertise passionnée",
+    "feature1Description": "Une équipe engagée qui met son expérience et son savoir-faire au service de chaque détail.",
+    "feature2": "Une transformation créative",
+    "feature2Description": "Des idées réfléchies qui révèlent tout le potentiel de votre espace existant.",
+    "feature3": "La précision à chaque étape",
+    "feature3Description": "Une planification attentive et une exécution précise, de la première esquisse à la finition.",
+    "feature4": "Des choix responsables et confortables",
+    "feature4Description": "Des matériaux et des solutions choisis pour un confort durable, dans le respect de votre maison.",
+    "feature5": "Une finition haut de gamme",
+    "feature5Description": "Des matériaux raffinés et un travail soigné qui donnent une identité unique à votre rénovation.",
+    "feature6": "Un partenaire de confiance",
+    "feature6Description": "Un accompagnement clair et une communication attentive pendant toute votre rénovation clé en main."
   },
   "grid": {
     "kicker": "Notre travail",
@@ -25,10 +40,10 @@
     }
   },
   "cta": {
-    "kicker": "Par où commencer ?",
-    "title": "Parlons de votre projet",
-    "subtitle": "Recevez un soutien adapté pour transformer votre espace en un lieu qui vous ressemble.",
-    "button": "Contactez-nous",
+    "kicker": "Parlez à un expert",
+    "title": "Confiez votre rénovation à des professionnels passionnés !",
+    "subtitle": "Nous offrons un service clé en main adapté à votre maison, à votre quotidien et à vos ambitions.",
+    "button": "Parlez à un expert",
     "discover": "Découvrir",
     "contact": "Contact"
   },

@@ -115,15 +115,21 @@ export default function ProjectManagementPage() {
   };
 
   return (
-    <div className="project-management-page">
+    <div className="public-page project-management-page">
       {/* Hero Banner Section */}
-      <section className="pm-hero-banner" aria-labelledby="pm-hero-title">
-        <div className="pm-hero-content">
-          <h1 className="pm-hero-title" id="pm-hero-title">
+      <section
+        className="public-page__hero pm-hero-banner"
+        aria-labelledby="pm-hero-title"
+      >
+        <div className="public-page__hero-content pm-hero-content">
+          <span className="public-page__kicker">
+            {t('hero.kicker', 'Our Services')}
+          </span>
+          <h1 className="public-page__title pm-hero-title" id="pm-hero-title">
             {t('hero.title', 'Project Management')}
           </h1>
           <div className="pm-hero-rule" aria-hidden="true"></div>
-          <p className="pm-hero-subtitle">
+          <p className="public-page__lead pm-hero-subtitle">
             {t('hero.subtitle', 'For Peace of Mind')}
           </p>
         </div>

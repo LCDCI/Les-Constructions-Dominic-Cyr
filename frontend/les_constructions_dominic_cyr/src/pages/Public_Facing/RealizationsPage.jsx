@@ -81,29 +81,32 @@ const RealizationsPage = () => {
   const pad = n => String(n).padStart(2, '0');
 
   return (
-    <div className="realizations-page">
+    <div className="public-page realizations-page">
       {/* Hero Banner Section */}
-      <section className="projects-hero" aria-labelledby="realizations-title">
-        <div className="projects-hero-content">
-          <h1 className="projects-title" id="realizations-title">
+      <section
+        className="public-page__hero"
+        aria-labelledby="realizations-title"
+      >
+        <div className="public-page__hero-content">
+          <span className="public-page__kicker">
+            {t('hero.subtitle', 'When vision becomes reality')}
+          </span>
+          <h1 className="public-page__title" id="realizations-title">
             {t('hero.title', 'Realizations')}
           </h1>
-          <p className="realizations-hero-subtitle">
-            {t('hero.subtitle', 'When vision becomes reality')}
-          </p>
         </div>
       </section>
 
       {/* Intro Text Section */}
       <section
-        className="realizations-intro"
+        className="public-page__section"
         aria-labelledby="realizations-intro-title"
       >
-        <div className="realizations-intro-content">
+        <div className="public-page__intro">
           <h2 id="realizations-intro-title" className="sr-only">
             {t('intro.title', 'Realizations overview')}
           </h2>
-          <p className="realizations-intro-text">
+          <p className="public-page__copy">
             {t(
               'intro.description',
               'Our realizations reflect our expertise and commitment to quality. Each project is crafted with care to deliver lasting, well-designed spaces tailored to the needs of our clients.'
@@ -114,13 +117,13 @@ const RealizationsPage = () => {
 
       {/* Gallery Section */}
       <section
-        className="realizations-gallery-section"
+        className="public-page__section public-page__section--tint realizations-gallery-section"
         aria-labelledby="realizations-gallery-title"
       >
         <h2 id="realizations-gallery-title" className="sr-only">
           {t('gallery.title', 'Realizations gallery')}
         </h2>
-        <div className="realizations-gallery-container">
+        <div className="realizations-gallery-container public-page__card">
           <button
             className="gallery-arrow gallery-arrow-left"
             onClick={handlePrevious}
@@ -159,7 +162,10 @@ const RealizationsPage = () => {
             {pad(currentIndex + 1)} / {pad(imageIds.length)}
           </p>
         )}
-        <Link to="/contact" className="link-arrow realizations-contact-link">
+        <Link
+          to="/contact"
+          className="public-page__button realizations-contact-link"
+        >
           {t('gallery.contactLink', 'Contact us')}
         </Link>
       </section>

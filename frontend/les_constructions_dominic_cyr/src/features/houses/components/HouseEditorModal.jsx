@@ -19,6 +19,12 @@ const emptyHouse = {
   constructionYear: '',
 };
 
+const nullableNumber = value => {
+  if (value === '' || value == null) return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
 const filesBase = () =>
   import.meta.env.VITE_FILES_SERVICE_URL ||
   (typeof window !== 'undefined'
@@ -94,14 +100,10 @@ export default function HouseEditorModal({
         imageIdentifier,
         description:
           form.descriptionEn || form.descriptionFr || form.description || null,
-        numberOfRooms:
-          form.numberOfRooms === '' ? null : Number(form.numberOfRooms),
-        numberOfBedrooms:
-          form.numberOfBedrooms === '' ? null : Number(form.numberOfBedrooms),
-        numberOfBathrooms:
-          form.numberOfBathrooms === '' ? null : Number(form.numberOfBathrooms),
-        constructionYear:
-          form.constructionYear === '' ? null : Number(form.constructionYear),
+        numberOfRooms: nullableNumber(form.numberOfRooms),
+        numberOfBedrooms: nullableNumber(form.numberOfBedrooms),
+        numberOfBathrooms: nullableNumber(form.numberOfBathrooms),
+        constructionYear: nullableNumber(form.constructionYear),
       };
       const saved = house
         ? await updateHouse(house.houseIdentifier, payload, token)
