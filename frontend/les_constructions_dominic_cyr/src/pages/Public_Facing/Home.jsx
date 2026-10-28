@@ -16,11 +16,12 @@ import { FiPhoneCall } from 'react-icons/fi';
 import { GrCatalog } from 'react-icons/gr';
 
 export default function Home() {
-  const { t } = usePageTranslations('home');
+  const { t, currentLanguage } = usePageTranslations('home');
   const isLocalHost =
     typeof window !== 'undefined' && window.location.hostname === 'localhost';
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [media, setMedia] = useState({});
+  const [homeContent, setHomeContent] = useState({});
   const [projects, setProjects] = useState([]);
 
   const photos = useMemo(
@@ -40,9 +41,16 @@ export default function Home() {
 
   useEffect(() => {
     let active = true;
-    fetchPublicSiteContent('en', 'home')
+    fetchPublicSiteContent(currentLanguage, 'home')
       .then(items => {
         if (!active) return;
+        setHomeContent(
+          Object.fromEntries(
+            (Array.isArray(items) ? items : [])
+              .filter(item => item.contentText)
+              .map(item => [item.pageKey, item.contentText])
+          )
+        );
         setMedia(
           Object.fromEntries(
             (Array.isArray(items) ? items : [])
@@ -57,7 +65,7 @@ export default function Home() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [currentLanguage]);
 
   useEffect(() => {
     let active = true;
@@ -90,6 +98,10 @@ export default function Home() {
   };
   const foresta = getProject('proj-001-foresta');
   const panorama = getProject('proj-002-panorama');
+  const panoramaLocation =
+    homeContent['portfolio.panoramaLocation'] || panorama?.location;
+  const forestaLocation =
+    homeContent['portfolio.forestaLocation'] || foresta?.location;
 
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll('[data-animate]'));
@@ -173,6 +185,8 @@ export default function Home() {
                 src="/fallback.jpg"
                 alt="Hero placeholder"
                 className="hero-image"
+                width="1000"
+                height="511"
                 onLoad={() => setVideoLoaded(true)}
                 onError={() => setVideoLoaded(true)}
               />
@@ -180,6 +194,8 @@ export default function Home() {
               <video
                 src={getMediaUrl('media.hero')}
                 className="hero-image"
+                width="1000"
+                height="511"
                 autoPlay
                 muted
                 loop
@@ -418,8 +434,8 @@ export default function Home() {
                 loading="lazy"
               />
               <div className="card-content">
-                {panorama?.location && (
-                  <p className="card-location">{panorama.location}</p>
+                {panoramaLocation && (
+                  <p className="card-location">{panoramaLocation}</p>
                 )}
               </div>
             </Link>
@@ -443,8 +459,8 @@ export default function Home() {
                 loading="lazy"
               />
               <div className="card-content">
-                {foresta?.location && (
-                  <p className="card-location">{foresta.location}</p>
+                {forestaLocation && (
+                  <p className="card-location">{forestaLocation}</p>
                 )}
               </div>
             </Link>

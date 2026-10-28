@@ -237,7 +237,7 @@
 }
 
 .realizations-gallery-grid {
-  width: min(100% - 2rem, 1100px);
+  width: min(100% - 2rem, 1000px);
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;

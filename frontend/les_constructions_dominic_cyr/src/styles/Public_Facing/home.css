@@ -373,6 +373,8 @@ body {
 .home .hero-background {
   position: relative;
   min-height: 350px;
+  height: 100%;
+  align-self: stretch;
   overflow: hidden;
 }
 

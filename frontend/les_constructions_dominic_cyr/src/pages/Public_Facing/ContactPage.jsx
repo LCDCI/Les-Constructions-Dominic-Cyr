@@ -71,15 +71,8 @@ export default function ContactPage() {
 
   return (
     <div className="contact-page">
-      <section className="projects-hero" aria-labelledby="contact-hero-title">
-        <div className="projects-hero-content">
-          <h1 className="projects-title" id="contact-hero-title">
-            {t('hero.eyebrow', f.hero.eyebrow)}
-          </h1>
-        </div>
-      </section>
-
       <section className="contact-body" aria-labelledby="contact-info-title">
+        <h1 className="sr-only">{t('hero.eyebrow', f.hero.eyebrow)}</h1>
         <div className="contact-grid">
           <InquiryForm className="contact-form-wrapper" />
 

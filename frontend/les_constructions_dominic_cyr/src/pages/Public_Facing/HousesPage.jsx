@@ -89,6 +89,11 @@ export default function HousesPage() {
 
       <main className="houses-content">
         <div className="houses-container">
+          <h1 className="sr-only">
+            {projectIdentifier === 'proj-001-foresta'
+              ? 'Föresta homes in Saint-Alphonse-de-Granby'
+              : 'Residential homes'}
+          </h1>
           {error ? (
             <p className="houses-state houses-error">
               {t(error, t('fetchFailed', 'Failed to load houses.'))}

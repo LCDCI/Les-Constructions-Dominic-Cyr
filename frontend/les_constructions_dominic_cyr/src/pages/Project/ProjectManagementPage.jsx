@@ -138,71 +138,6 @@ export default function ProjectManagementPage() {
                 )}
               </p>
             </div>
-
-            <div className="pm-images-grid">
-              <div
-                className="pm-image-card"
-                onClick={() =>
-                  openModal(imageFor('galleryImage.1', PM_IMAGES.bromont.url))
-                }
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="pm-image-container">
-                  <img
-                    src={imageFor('galleryImage.1', PM_IMAGES.bromont.url)}
-                    alt={PM_IMAGES.bromont.alt}
-                    className="pm-image"
-                  />
-                  <span className="pm-image-badge">
-                    {PM_IMAGES.bromont.city}
-                  </span>
-                </div>
-                <p className="pm-image-city">{PM_IMAGES.bromont.city}</p>
-              </div>
-              <div
-                className="pm-image-card"
-                onClick={() =>
-                  openModal(
-                    PM_IMAGES.shefford.urls.map((image, index) =>
-                      imageFor(`galleryImage.${index + 2}`, image)
-                    ),
-                    0
-                  )
-                }
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="pm-image-container">
-                  <img
-                    src={imageFor('galleryImage.2', PM_IMAGES.shefford.urls[0])}
-                    alt={PM_IMAGES.shefford.alt}
-                    className="pm-image"
-                  />
-                  <span className="pm-image-badge">
-                    {PM_IMAGES.shefford.city}
-                  </span>
-                </div>
-                <p className="pm-image-city">{PM_IMAGES.shefford.city}</p>
-              </div>
-              <div
-                className="pm-image-card"
-                onClick={() =>
-                  openModal(imageFor('galleryImage.5', PM_IMAGES.stHilaire.url))
-                }
-                style={{ cursor: 'pointer' }}
-              >
-                <div className="pm-image-container">
-                  <img
-                    src={imageFor('galleryImage.5', PM_IMAGES.stHilaire.url)}
-                    alt={PM_IMAGES.stHilaire.alt}
-                    className="pm-image"
-                  />
-                  <span className="pm-image-badge">
-                    {PM_IMAGES.stHilaire.city}
-                  </span>
-                </div>
-                <p className="pm-image-city">{PM_IMAGES.stHilaire.city}</p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -275,16 +210,108 @@ export default function ProjectManagementPage() {
               </span>
             </li>
           </ul>
+        </div>
+      </section>
+
+      <section className="pm-projects-section">
+        <div className="pm-projects-container">
+          <div className="pm-images-grid">
+            <div
+              className="pm-image-card"
+              onClick={() =>
+                openModal(imageFor('galleryImage.1', PM_IMAGES.bromont.url))
+              }
+              role="button"
+              tabIndex="0"
+              onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  openModal(imageFor('galleryImage.1', PM_IMAGES.bromont.url));
+                }
+              }}
+            >
+              <div className="pm-image-container">
+                <img
+                  src={imageFor('galleryImage.1', PM_IMAGES.bromont.url)}
+                  alt={PM_IMAGES.bromont.alt}
+                  className="pm-image"
+                />
+                <span className="pm-image-badge">{PM_IMAGES.bromont.city}</span>
+              </div>
+              <p className="pm-image-city">{PM_IMAGES.bromont.city}</p>
+            </div>
+            <div
+              className="pm-image-card"
+              onClick={() =>
+                openModal(
+                  PM_IMAGES.shefford.urls.map((image, index) =>
+                    imageFor(`galleryImage.${index + 2}`, image)
+                  ),
+                  0
+                )
+              }
+              role="button"
+              tabIndex="0"
+              onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  openModal(
+                    PM_IMAGES.shefford.urls.map((image, index) =>
+                      imageFor(`galleryImage.${index + 2}`, image)
+                    ),
+                    0
+                  );
+                }
+              }}
+            >
+              <div className="pm-image-container">
+                <img
+                  src={imageFor('galleryImage.2', PM_IMAGES.shefford.urls[0])}
+                  alt={PM_IMAGES.shefford.alt}
+                  className="pm-image"
+                />
+                <span className="pm-image-badge">
+                  {PM_IMAGES.shefford.city}
+                </span>
+              </div>
+              <p className="pm-image-city">{PM_IMAGES.shefford.city}</p>
+            </div>
+            <div
+              className="pm-image-card"
+              onClick={() =>
+                openModal(imageFor('galleryImage.5', PM_IMAGES.stHilaire.url))
+              }
+              role="button"
+              tabIndex="0"
+              onKeyDown={event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  openModal(
+                    imageFor('galleryImage.5', PM_IMAGES.stHilaire.url)
+                  );
+                }
+              }}
+            >
+              <div className="pm-image-container">
+                <img
+                  src={imageFor('galleryImage.5', PM_IMAGES.stHilaire.url)}
+                  alt={PM_IMAGES.stHilaire.alt}
+                  className="pm-image"
+                />
+                <span className="pm-image-badge">
+                  {PM_IMAGES.stHilaire.city}
+                </span>
+              </div>
+              <p className="pm-image-city">{PM_IMAGES.stHilaire.city}</p>
+            </div>
+          </div>
           <div className="pm-cta-card">
             <p className="pm-pricing-text">
               {t(
                 'advantages.pricing',
-                'Depending on project scope and complexity, pricing may be fixed-fee or cost-plus. Contact us to discuss.'
+                'Selon l’ampleur et la complexité du projet, la tarification pourrait être à coût fixe ou à prix majoré. Contactez-nous pour en discuter.'
               )}
             </p>
             <div className="pm-contact-link-wrapper">
               <Link to="/contact" className="pm-contact-link">
-                {t('advantages.contactLink', 'Contact us')}
+                {t('advantages.contactLink', 'Contactez-nous')}
               </Link>
             </div>
           </div>

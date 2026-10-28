@@ -247,7 +247,7 @@ const LivingEnvironmentPage = () => {
         {/* Description Section */}
         <section className="le-description-section">
           {introSectionTitle && (
-            <h2 className="le-section-title">{introSectionTitle}</h2>
+            <h1 className="le-section-title">{introSectionTitle}</h1>
           )}
           <p className="le-description-text">{data.descriptionText}</p>
         </section>

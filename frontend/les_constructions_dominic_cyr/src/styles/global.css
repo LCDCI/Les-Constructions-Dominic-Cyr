@@ -479,7 +479,7 @@ select:focus {
 }
 
 .project-management-page .pm-advantages-heading::after {
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
 .realizations-page > .public-page__section:first-child,
@@ -500,7 +500,7 @@ select:focus {
 .project-management-page > .pm-intro-section .pm-heading-section {
   width: min(100%, 1040px);
   max-width: 1040px;
-  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.5rem, 5vw, 4rem);
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 5vw, 4rem);
   border: 1px solid rgba(170, 178, 166, 0.2);
   border-radius: 1rem;
   background: #fff;

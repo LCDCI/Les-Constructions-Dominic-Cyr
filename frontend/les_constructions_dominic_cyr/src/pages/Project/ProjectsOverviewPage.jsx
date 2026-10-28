@@ -372,6 +372,12 @@ const ProjectOverviewPage = () => {
   return (
     <div className={`project-overview-page`}>
       <ProjectBanner projectIdentifier={projectIdentifier} project={overview} />
+      <h1 className="sr-only">
+        {overview.projectName ||
+          (projectIdentifier === 'proj-001-foresta'
+            ? 'Föresta residential project in Saint-Alphonse-de-Granby'
+            : 'Residential construction project')}
+      </h1>
       {overview.overviewSectionContent && (
         <section className="project-section overview-section">
           <div className="section-container">

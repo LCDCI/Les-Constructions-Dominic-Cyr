@@ -7,14 +7,14 @@ import {
   resolveProjectIdentifier,
 } from '../../features/lots/api/lots';
 import { projectApi } from '../../features/projects/api/projectApi';
+import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import LotList from '../../features/lots/components/LotList';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
-import ProjectBanner from '../../components/ProjectBanner';
 import '../../styles/lots.css';
 import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
 
 const LotsPage = () => {
-  const { t } = useTranslation(['lots', 'translation']);
+  const { t, i18n } = useTranslation(['lots', 'translation']);
   const { projectIdentifier: urlProjectIdentifier } = useParams();
   const navigate = useNavigate();
   const {
@@ -42,6 +42,7 @@ const LotsPage = () => {
     direction: 'asc',
   });
   const [selectedLot, setSelectedLot] = useState(null);
+  const [pageContent, setPageContent] = useState({});
 
   const mapButtons = {
     1: { top: '28.5%', left: '24%' },
@@ -124,6 +125,30 @@ const LotsPage = () => {
   ]);
 
   useEffect(() => {
+    let active = true;
+    const language = i18n.language?.toLowerCase().startsWith('fr')
+      ? 'fr'
+      : 'en';
+    fetchPublicSiteContent(language, `lots-${resolvedProjectId}`)
+      .then(items => {
+        if (!active) return;
+        setPageContent(
+          Object.fromEntries(
+            (Array.isArray(items) ? items : [])
+              .filter(item => item.contentText)
+              .map(item => [item.pageKey, item.contentText])
+          )
+        );
+      })
+      .catch(() => {
+        if (active) setPageContent({});
+      });
+    return () => {
+      active = false;
+    };
+  }, [i18n.language, resolvedProjectId]);
+
+  useEffect(() => {
     if (!selectedLot) return;
     const handleKeyDown = e => {
       if (e.key === 'Escape' || e.key === 'Esc') {
@@ -194,8 +219,29 @@ const LotsPage = () => {
 
   return (
     <div className="lots-page">
-      <ProjectBanner projectIdentifier={resolvedProjectId} />
       <div className="lots-content">
+        <section
+          className="lots-heading-section"
+          aria-labelledby="lots-page-title"
+        >
+          <div className="lots-heading-content">
+            <span className="public-page__eyebrow">
+              {resolvedProjectId === 'proj-001-foresta'
+                ? pageContent.subtitle || t('foresta.peaceTagline')
+                : pageContent.preTitle || t('panorama.preTitle')}
+            </span>
+            <h1 id="lots-page-title" className="lots-page-title">
+              {resolvedProjectId === 'proj-001-foresta'
+                ? pageContent.preTitle || t('foresta.exclusiveCount')
+                : pageContent.title || t('panorama.headerTitle')}
+            </h1>
+            <span
+              className="lots-heading-divider"
+              style={{ backgroundColor: projectColors.accent }}
+              aria-hidden="true"
+            />
+          </div>
+        </section>
         {resolvedProjectId === 'proj-002-panorama' && (
           <div className="lots-image-section">
             <div className="map-wrapper">

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 const SITE_URL = 'https://constructions-dominiccyr.com';
 const COMPANY_NAME = 'Les Constructions Dominic Cyr Inc.';
 const FORESTA_URL = `${SITE_URL}/projects/proj-001-foresta/overview`;
+const SOCIAL_IMAGE_URL = `${SITE_URL}/fallback.jpg`;
 
 const getLanguage = language =>
   language?.toLowerCase().startsWith('fr') ? 'fr' : 'en';
@@ -13,6 +14,55 @@ const getMetadata = (pathname, language) => {
   const isFrench = language === 'fr';
   const forestaOverview = pathname === '/projects/proj-001-foresta/overview';
   const contact = pathname === '/contact';
+  const projectPageMatch = pathname.match(
+    /^\/projects\/([^/]+)\/(overview|living-environment|houses|lots)$/
+  );
+  const publicPages = {
+    '/realizations': isFrench
+      ? {
+          title: 'Réalisations | Les Constructions Dominic Cyr',
+          description:
+            'Découvrez les réalisations de Les Constructions Dominic Cyr : construction résidentielle, maisons et rénovations à Granby et en Montérégie.',
+        }
+      : {
+          title: 'Our Realizations | Les Constructions Dominic Cyr',
+          description:
+            'Explore Les Constructions Dominic Cyr residential construction, home building and renovation projects in Granby and the Montérégie region.',
+        },
+    '/renovations': isFrench
+      ? {
+          title: 'Rénovation résidentielle | Les Constructions Dominic Cyr',
+          description:
+            'Planifiez votre rénovation résidentielle avec Les Constructions Dominic Cyr, de la conception à la réalisation à Granby, Saint-Alphonse-de-Granby et en Montérégie.',
+        }
+      : {
+          title: 'Home Renovations | Les Constructions Dominic Cyr',
+          description:
+            'Plan your home renovation with Les Constructions Dominic Cyr, from design to completion in Granby, Saint-Alphonse-de-Granby and the Montérégie region.',
+        },
+  };
+
+  if (publicPages[pathname]) return publicPages[pathname];
+
+  if (projectPageMatch && !forestaOverview) {
+    const [, projectIdentifier, page] = projectPageMatch;
+    const projectName =
+      projectIdentifier === 'proj-001-foresta'
+        ? 'Föresta'
+        : 'Residential project';
+    const pageNames = {
+      overview: isFrench ? 'Projet résidentiel' : 'Residential project',
+      'living-environment': isFrench ? 'Milieu de vie' : 'Living environment',
+      houses: isFrench ? 'Maisons' : 'Homes',
+      lots: isFrench ? 'Terrains' : 'Lots',
+    };
+    return {
+      title: `${projectName} — ${pageNames[page]} | Les Constructions Dominic Cyr`,
+      description: isFrench
+        ? `${projectName}, projet de construction résidentielle à Saint-Alphonse-de-Granby près de Granby : ${pageNames[page].toLowerCase()} et qualité de vie en harmonie avec la nature.`
+        : `${projectName}, a residential construction project in Saint-Alphonse-de-Granby near Granby: ${pageNames[page].toLowerCase()} and a natural living environment.`,
+    };
+  }
 
   if (forestaOverview) {
     return isFrench
@@ -89,8 +139,8 @@ export default function SeoManager() {
     const canonicalUrl = `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
     const isFrench = language === 'fr';
     const keywords = isFrench
-      ? 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Foresta Granby, Saint-Alphonse-de-Granby, Granby, construction résidentielle'
-      : 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Foresta Granby, Saint-Alphonse-de-Granby, Granby, residential construction';
+      ? 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Foresta Granby, Saint-Alphonse-de-Granby, Granby, construction résidentielle, rénovation résidentielle, projets résidentiels'
+      : 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Foresta Granby, Saint-Alphonse-de-Granby, Granby, residential construction, home renovations, residential projects';
     const structuredData = {
       '@context': 'https://schema.org',
       '@graph': [
@@ -167,6 +217,15 @@ export default function SeoManager() {
     setMeta('property', 'og:description', metadata.description);
     setMeta('property', 'og:url', canonicalUrl);
     setMeta('property', 'og:locale', isFrench ? 'fr_CA' : 'en_CA');
+    setMeta('property', 'og:type', 'website');
+    setMeta('property', 'og:image', SOCIAL_IMAGE_URL);
+    setMeta('property', 'og:image:width', '1000');
+    setMeta('property', 'og:image:height', '511');
+    setMeta('property', 'og:image:alt', COMPANY_NAME);
+    setMeta('name', 'twitter:card', 'summary_large_image');
+    setMeta('name', 'twitter:title', metadata.title);
+    setMeta('name', 'twitter:description', metadata.description);
+    setMeta('name', 'twitter:image', SOCIAL_IMAGE_URL);
     setLink('canonical', canonicalUrl, 'canonical-link');
 
     let jsonLd = document.head.querySelector('#site-structured-data');

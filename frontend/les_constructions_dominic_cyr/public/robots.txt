@@ -1,4 +1,11 @@
 User-agent: *
 Allow: /
+Disallow: /portal/
+Disallow: /dashboard/
+Disallow: /owner/
+Disallow: /salesperson/
+Disallow: /contractor/
+Disallow: /customer/
+Disallow: /api/
 
 Sitemap: https://constructions-dominiccyr.com/sitemap.xml

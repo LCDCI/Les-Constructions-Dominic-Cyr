@@ -114,9 +114,9 @@ const RealizationsPage = () => {
           <span className="public-page__eyebrow">
             {t('intro.kicker', 'Our realizations')}
           </span>
-          <h2 id="realizations-intro-title" className="public-page__heading">
+          <h1 id="realizations-intro-title" className="public-page__heading">
             {t('intro.title', 'Notre savoir-faire en images')}
-          </h2>
+          </h1>
           <p className="public-page__copy">
             {t(
               'intro.description',

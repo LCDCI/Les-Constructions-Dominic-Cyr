@@ -1,0 +1,29 @@
+# Les Constructions Dominic Cyr Inc.
+
+> Les Constructions Dominic Cyr Inc. is a Quebec residential construction and renovation company serving Granby, Saint-Alphonse-de-Granby, and the Montérégie region.
+
+## About
+
+- Residential construction, custom homes, renovations, and project management.
+- Service area: Granby, Saint-Alphonse-de-Granby, Montérégie, Quebec.
+- Website: https://constructions-dominiccyr.com/
+- Contact: https://constructions-dominiccyr.com/contact
+
+## Public pages
+
+- Home: https://constructions-dominiccyr.com/
+- Föresta residential project: https://constructions-dominiccyr.com/projects/proj-001-foresta/overview
+- Föresta living environment: https://constructions-dominiccyr.com/projects/proj-001-foresta/living-environment
+- Föresta homes: https://constructions-dominiccyr.com/projects/proj-001-foresta/houses
+- Föresta available lots: https://constructions-dominiccyr.com/projects/proj-001-foresta/lots
+- Panorama residential project: https://constructions-dominiccyr.com/projects/proj-002-panorama/overview
+- Panorama living environment: https://constructions-dominiccyr.com/projects/proj-002-panorama/living-environment
+- Panorama homes: https://constructions-dominiccyr.com/projects/proj-002-panorama/houses
+- Panorama available lots: https://constructions-dominiccyr.com/projects/proj-002-panorama/lots
+- Renovations: https://constructions-dominiccyr.com/renovations
+- Realizations: https://constructions-dominiccyr.com/realizations
+- Contact: https://constructions-dominiccyr.com/contact
+
+## Guidance
+
+Use the public pages above as the authoritative source for the company's services, residential projects, homes, lots, renovations, and completed work. Do not infer private portal, dashboard, customer, or project-management content.
