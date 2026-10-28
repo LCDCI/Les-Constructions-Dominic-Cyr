@@ -240,23 +240,48 @@
 /* ========== MAP SECTION ========== */
 
 .lots-image-section {
-  width: var(--content-width);
-  max-width: var(--content-max-width);
-  margin-bottom: var(--spacing-xl);
+  width: 100%;
+  min-width: 0;
+  margin: 0;
   display: flex !important;
   flex-direction: column !important;
   align-items: center;
   background-color: var(--color-white);
-  border: 1px solid var(--color-tertiary);
-  padding: var(--spacing-lg);
+  padding: 0;
   box-sizing: border-box;
+}
+
+.lots-data-layout {
+  width: var(--content-width);
+  max-width: var(--content-max-width);
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.4fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: stretch;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--color-tertiary);
+  border-radius: 0.75rem;
+  background-color: var(--color-white);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  margin-top: clamp(1.5rem, 3vw, 3rem);
+  margin-bottom: var(--spacing-xl);
+}
+
+.lots-table-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  overflow: hidden;
 }
 
 .map-wrapper {
   position: relative;
   display: inline-block;
-  width: 35%;
-  min-width: 320px;
+  width: 100%;
+  max-width: 520px;
+  min-width: 0;
 }
 
 .phase-map-image {
@@ -335,19 +360,53 @@
 }
 
 .list-section {
-  width: var(--content-width);
-  max-width: var(--content-max-width);
+  width: 100%;
+  min-width: 0;
   margin-top: var(--spacing-sm);
+}
+
+.lots-table-panel .toolbar-section {
+  width: 100%;
+  max-width: none;
+  margin-bottom: 0;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.lots-table-panel .filter-group {
+  width: 100%;
+}
+
+.lots-table-panel .filter-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.lots-table-panel .table-container {
+  max-height: 34rem;
+  overflow: auto;
+}
+
+.lots-table-panel .fixed-table {
+  min-width: 720px;
 }
 
 /* Mobile responsive */
 @media (max-width: 767px) {
+  .lots-data-layout {
+    grid-template-columns: 1fr;
+  }
+
   .lots-image-section {
-    display: none !important;
+    display: flex !important;
   }
 }
 
 @media (max-width: 1024px) {
+  .lots-data-layout {
+    grid-template-columns: 1fr;
+  }
+
   .toolbar-section {
     flex-direction: column;
     align-items: stretch;

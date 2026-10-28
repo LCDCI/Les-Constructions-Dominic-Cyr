@@ -242,176 +242,180 @@ const LotsPage = () => {
             />
           </div>
         </section>
-        {resolvedProjectId === 'proj-002-panorama' && (
-          <div className="lots-image-section">
-            <div className="map-wrapper">
-              <img
-                src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/panorama.png"
-                alt="Panorama Map"
-                className="phase-map-image"
-                style={{ cursor: 'default' }}
-              />
-            </div>
-            <p
-              style={{
-                textAlign: 'center',
-                fontSize: '1.1rem',
-                margin: '1.5rem auto',
-                color: '#6b7280',
-                maxWidth: '75%',
-              }}
-            >
-              {t('comingSoon')}
-            </p>
-          </div>
-        )}
-
-        {resolvedProjectId === 'proj-001-foresta' && (
-          <div className="lots-image-section">
-            <div className="map-wrapper">
-              <img
-                src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/phase1.png"
-                alt="Map"
-                className="phase-map-image"
-              />
-              {filteredLots.map(lot => {
-                const coords = mapButtons[lot.lotNumber];
-                if (!coords) return null;
-                return (
-                  <button
-                    key={lot.id}
-                    className={`lot-map-button status-${lot.lotStatus?.toLowerCase()}`}
-                    style={{ top: coords.top, left: coords.left }}
-                    onClick={() => setSelectedLot(lot)}
-                    title={`${t('common.lot')} ${lot.lotNumber}`}
-                    aria-label={
-                      lot.lotStatus
-                        ? `${t('common.lot')} ${lot.lotNumber} (${t(
-                            `status.${lot.lotStatus.toLowerCase()}`,
-                            lot.lotStatus
-                          )})`
-                        : `${t('common.lot')} ${lot.lotNumber}`
-                    }
-                  />
-                );
-              })}
-            </div>
-            <div className="map-legend">
-              <div className="legend-item">
-                <span className="legend-dot status-available"></span>
-                <span>{t('status.available')}</span>
+        <div className="lots-data-layout">
+          {resolvedProjectId === 'proj-002-panorama' && (
+            <div className="lots-image-section">
+              <div className="map-wrapper">
+                <img
+                  src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/panorama.png"
+                  alt="Panorama Map"
+                  className="phase-map-image"
+                  style={{ cursor: 'default' }}
+                />
               </div>
-              <div className="legend-item">
-                <span className="legend-dot status-reserved"></span>
-                <span>{t('status.reserved')}</span>
-              </div>
-              <div className="legend-item">
-                <span className="legend-dot status-sold"></span>
-                <span>{t('status.sold')}</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {selectedLot && (
-          <div
-            className="lot-modal-overlay"
-            onClick={() => setSelectedLot(null)}
-          >
-            <div
-              className="lot-modal-content"
-              onClick={e => e.stopPropagation()}
-              style={{ borderTop: `5px solid ${projectColors.accent}` }}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="lot-details-title"
-            >
-              <button
-                className="close-modal"
-                onClick={() => setSelectedLot(null)}
-                aria-label={t('common.close', 'Close')}
+              <p
+                style={{
+                  textAlign: 'center',
+                  fontSize: '1.1rem',
+                  margin: '1.5rem auto',
+                  color: '#6b7280',
+                  maxWidth: '75%',
+                }}
               >
-                &times;
-              </button>
-              <h2 id="lot-details-title">
-                {t('common.lot')} {selectedLot.lotNumber}
-              </h2>
-              <hr />
-              <p>
-                <strong>{t('modal.address')}:</strong>{' '}
-                {selectedLot.civicAddress}
+                {t('comingSoon')}
               </p>
-              <p>
-                <strong>{t('modal.area')}:</strong>{' '}
-                {selectedLot.dimensionsSquareFeet} sqft (
-                {selectedLot.dimensionsSquareMeters} m²)
-              </p>
-              <p>
-                <strong>{t('modal.status')}:</strong>{' '}
-                {t(`status.${selectedLot.lotStatus?.toLowerCase()}`)}
-              </p>
-              {isOwner && (
-                <p>
-                  <strong>{t('modal.price')}:</strong> $
-                  {selectedLot.price?.toLocaleString()}
-                </p>
-              )}
             </div>
-          </div>
-        )}
-
-        <div className="toolbar-section">
-          <div className="search-box">
-            <input
-              type="text"
-              className="search-input"
-              placeholder={t('toolbar.searchPlaceholder')}
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="filter-group">
-            {isOwner && (
-              <select
-                className="filter-select"
-                value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value)}
-              >
-                <option value="all">{t('filters.allStatuses')}</option>
-                <option value="available">{t('status.available')}</option>
-                <option value="sold">{t('status.sold')}</option>
-                <option value="reserved">{t('status.reserved')}</option>
-              </select>
-            )}
-            <select
-              className="filter-select"
-              onChange={e => {
-                const [key, dir] = e.target.value.split('-');
-                setSortConfig({ key, direction: dir });
-              }}
-            >
-              <option value="none-asc">{t('filters.sortBy')}</option>
-              {isOwner && (
-                <option value="price-asc">{t('filters.priceLow')}</option>
-              )}
-              <option value="dimensionsSquareFeet-asc">
-                {t('filters.sizeSmall')}
-              </option>
-              <option value="dimensionsSquareFeet-desc">
-                {t('filters.sizeLarge')}
-              </option>
-            </select>
-          </div>
-        </div>
-
-        <div className="list-section">
-          {error ? (
-            <div className="no-results">{error}</div>
-          ) : filteredLots.length === 0 ? (
-            <div className="no-results">{t('common.noResults')}</div>
-          ) : (
-            <LotList lots={filteredLots} isOwner={isOwner} />
           )}
+
+          {resolvedProjectId === 'proj-001-foresta' && (
+            <div className="lots-image-section">
+              <div className="map-wrapper">
+                <img
+                  src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/phase1.png"
+                  alt="Map"
+                  className="phase-map-image"
+                />
+                {filteredLots.map(lot => {
+                  const coords = mapButtons[lot.lotNumber];
+                  if (!coords) return null;
+                  return (
+                    <button
+                      key={lot.id}
+                      className={`lot-map-button status-${lot.lotStatus?.toLowerCase()}`}
+                      style={{ top: coords.top, left: coords.left }}
+                      onClick={() => setSelectedLot(lot)}
+                      title={`${t('common.lot')} ${lot.lotNumber}`}
+                      aria-label={
+                        lot.lotStatus
+                          ? `${t('common.lot')} ${lot.lotNumber} (${t(
+                              `status.${lot.lotStatus.toLowerCase()}`,
+                              lot.lotStatus
+                            )})`
+                          : `${t('common.lot')} ${lot.lotNumber}`
+                      }
+                    />
+                  );
+                })}
+              </div>
+              <div className="map-legend">
+                <div className="legend-item">
+                  <span className="legend-dot status-available"></span>
+                  <span>{t('status.available')}</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot status-reserved"></span>
+                  <span>{t('status.reserved')}</span>
+                </div>
+                <div className="legend-item">
+                  <span className="legend-dot status-sold"></span>
+                  <span>{t('status.sold')}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {selectedLot && (
+            <div
+              className="lot-modal-overlay"
+              onClick={() => setSelectedLot(null)}
+            >
+              <div
+                className="lot-modal-content"
+                onClick={e => e.stopPropagation()}
+                style={{ borderTop: `5px solid ${projectColors.accent}` }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="lot-details-title"
+              >
+                <button
+                  className="close-modal"
+                  onClick={() => setSelectedLot(null)}
+                  aria-label={t('common.close', 'Close')}
+                >
+                  &times;
+                </button>
+                <h2 id="lot-details-title">
+                  {t('common.lot')} {selectedLot.lotNumber}
+                </h2>
+                <hr />
+                <p>
+                  <strong>{t('modal.address')}:</strong>{' '}
+                  {selectedLot.civicAddress}
+                </p>
+                <p>
+                  <strong>{t('modal.area')}:</strong>{' '}
+                  {selectedLot.dimensionsSquareFeet} sqft (
+                  {selectedLot.dimensionsSquareMeters} m²)
+                </p>
+                <p>
+                  <strong>{t('modal.status')}:</strong>{' '}
+                  {t(`status.${selectedLot.lotStatus?.toLowerCase()}`)}
+                </p>
+                {isOwner && (
+                  <p>
+                    <strong>{t('modal.price')}:</strong> $
+                    {selectedLot.price?.toLocaleString()}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div className="lots-table-panel">
+            <div className="toolbar-section">
+              <div className="search-box">
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder={t('toolbar.searchPlaceholder')}
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="filter-group">
+                {isOwner && (
+                  <select
+                    className="filter-select"
+                    value={statusFilter}
+                    onChange={e => setStatusFilter(e.target.value)}
+                  >
+                    <option value="all">{t('filters.allStatuses')}</option>
+                    <option value="available">{t('status.available')}</option>
+                    <option value="sold">{t('status.sold')}</option>
+                    <option value="reserved">{t('status.reserved')}</option>
+                  </select>
+                )}
+                <select
+                  className="filter-select"
+                  onChange={e => {
+                    const [key, dir] = e.target.value.split('-');
+                    setSortConfig({ key, direction: dir });
+                  }}
+                >
+                  <option value="none-asc">{t('filters.sortBy')}</option>
+                  {isOwner && (
+                    <option value="price-asc">{t('filters.priceLow')}</option>
+                  )}
+                  <option value="dimensionsSquareFeet-asc">
+                    {t('filters.sizeSmall')}
+                  </option>
+                  <option value="dimensionsSquareFeet-desc">
+                    {t('filters.sizeLarge')}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div className="list-section">
+              {error ? (
+                <div className="no-results">{error}</div>
+              ) : filteredLots.length === 0 ? (
+                <div className="no-results">{t('common.noResults')}</div>
+              ) : (
+                <LotList lots={filteredLots} isOwner={isOwner} />
+              )}
+            </div>
+          </div>
         </div>
         <div
           style={{

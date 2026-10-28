@@ -1,7 +1,7 @@
-/* Mobile responsive: Hide map completely on screens smaller than 768px */
+/* Keep the map available when the data layout stacks on smaller screens. */
 @media (max-width: 767px) {
   .lots-image-section {
-    display: none !important;
+    display: flex !important;
   }
 }
 
@@ -10,13 +10,11 @@
   display: flex !important;
   flex-direction: column !important; /* Forces vertical stacking */
   align-items: center;
-  width: 90vw;
-  max-width: 1600px;
-  margin-bottom: 30px;
+  width: 100%;
+  max-width: none;
+  margin-bottom: 0;
   background-color: #ffffff;
-  border-radius: 12px;
-  padding: 25px; /* Increased padding for better spacing */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -24,8 +22,9 @@
 .map-wrapper {
   position: relative;
   display: inline-block;
-  width: 35%; /* Controls map size */
-  min-width: 320px; /* Prevents map from being too small on tablets */
+  width: 100%;
+  max-width: 520px;
+  min-width: 0;
 }
 
 /* 2. Force the image to fill the wrapper exactly */

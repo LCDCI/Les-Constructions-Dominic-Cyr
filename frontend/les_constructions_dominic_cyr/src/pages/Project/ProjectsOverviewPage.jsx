@@ -503,11 +503,6 @@ const ProjectOverviewPage = () => {
         />
       )}
 
-      <div className="back-button-container">
-        <button className="back-button" onClick={() => navigate('/')}>
-          &larr; {t('backToProjects', 'Back to Residential Projects')}
-        </button>
-      </div>
       <ProjectsFooter projectId={projectIdentifier} />
     </div>
   );

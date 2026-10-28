@@ -127,6 +127,26 @@
   text-align: center;
 }
 
+.houses-back-button-container {
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem clamp(2.5rem, 5vw, 4rem);
+}
+
+.houses-back-button {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  background: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  font: inherit;
+  font-weight: 600;
+}
+
+.houses-back-button:hover {
+  background: var(--button-secondary-hover);
+}
+
 .houses-error {
   color: #b42318;
 }

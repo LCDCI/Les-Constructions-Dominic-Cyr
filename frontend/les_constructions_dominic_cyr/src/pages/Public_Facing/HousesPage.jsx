@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
@@ -19,6 +19,7 @@ export default function HousesPage() {
   const { t } = usePageTranslations('houses');
   const { i18n } = useTranslation();
   const { projectIdentifier, houseId } = useParams();
+  const navigate = useNavigate();
   const [houses, setHouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -190,6 +191,15 @@ export default function HousesPage() {
           </div>
         </div>
       )}
+      <div className="houses-back-button-container">
+        <button
+          type="button"
+          className="houses-back-button"
+          onClick={() => navigate(`/projects/${projectIdentifier}/overview`)}
+        >
+          {t('backToProject', 'Retour au projet résidentiel')}
+        </button>
+      </div>
       <ProjectsFooter projectId={projectIdentifier} />
     </div>
   );
