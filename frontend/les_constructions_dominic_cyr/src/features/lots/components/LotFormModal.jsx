@@ -87,10 +87,6 @@ const LotFormModal = ({
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.lotNumber.trim()) {
-      newErrors.lotNumber = 'Lot number is required';
-    }
-
     if (!formData.civicAddress.trim()) {
       newErrors.civicAddress = 'Civic address is required';
     }
@@ -170,7 +166,7 @@ const LotFormModal = ({
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="lotNumber">
-                Lot Number <span className="required">*</span>
+                Lot Number
               </label>
               <input
                 id="lotNumber"

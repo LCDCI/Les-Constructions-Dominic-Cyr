@@ -44,6 +44,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseModel createUser(UserCreateRequestModel requestModel) {
 
+        if (requestModel.getUserRole() == UserRole.CONTRACTOR
+                && (requestModel.getSupplierType() == null
+                || requestModel.getSupplierType().isBlank())) {
+            throw new IllegalArgumentException("Supplier type is required for suppliers.");
+        }
+
         // Check if a user with the given primary email already exists
         if (usersRepository.findByPrimaryEmail(requestModel.getPrimaryEmail()).isPresent()) {
             throw new IllegalArgumentException("A user with this email already exists.");

@@ -9,17 +9,13 @@ import '../../styles/NavBars/ownerNavbar.css';
 import {
   GoProject,
   GoInbox,
-  GoPackage,
   GoFileDiff,
   GoFile,
   GoPeople,
-  GoGear,
-  GoHome,
   GoCommentDiscussion,
   GoCheckCircle,
   GoGlobe,
 } from 'react-icons/go';
-import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { CgProfile } from 'react-icons/cg';
@@ -132,18 +128,31 @@ const Navbar = ({
                   </span>
                 </Link>
               </li>
+            </ul>
+          </div>
+
+          <div className="navbar-section">
+            <h3 className="navbar-section-title">
+              {t('navbar.sections.administrative', 'Administrative')}
+            </h3>
+            <ul className="navbar-menu">
               <li className="navbar-item">
-                <Link
-                  to="/"
-                  className={`navbar-link ${isActive('/')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoHome />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.home', 'Home')}
-                  </span>
+                <Link to="/inbox" className={`navbar-link ${isActive('/inbox')}`} onClick={closeMenu}>
+                  <span className="navbar-icon"><GoInbox /></span>
+                  <span className="navbar-text">{t('navbar.menuItems.inbox', 'Inbox')}</span>
+                  {unreadCount > 0 && <span className="navbar-badge">{unreadCount}</span>}
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link to="/inquiries" className={`navbar-link ${isActive('/inquiries')}`} onClick={closeMenu}>
+                  <span className="navbar-icon"><GoCommentDiscussion /></span>
+                  <span className="navbar-text">{t('navbar.menuItems.inquiries', 'Inquiries')}</span>
+                </Link>
+              </li>
+              <li className="navbar-item">
+                <Link to="/users" className={`navbar-link ${isActive('/users')}`} onClick={closeMenu}>
+                  <span className="navbar-icon"><GoPeople /></span>
+                  <span className="navbar-text">{t('navbar.menuItems.users', 'Users')}</span>
                 </Link>
               </li>
             </ul>
@@ -157,37 +166,6 @@ const Navbar = ({
             <ul className="navbar-menu">
               <li className="navbar-item">
                 <Link
-                  to="/inbox"
-                  className={`navbar-link ${isActive('/inbox')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoInbox />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.inbox', 'Inbox')}
-                  </span>
-                  {unreadCount > 0 && (
-                    <span className="navbar-badge">{unreadCount}</span>
-                  )}
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/inquiries"
-                  className={`navbar-link ${isActive('/inquiries')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoCommentDiscussion />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.inquiries', 'Inquiries')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
                   to="/quotes/approval"
                   className={`navbar-link ${isActive('/quotes/approval')}`}
                   onClick={closeMenu}
@@ -197,20 +175,6 @@ const Navbar = ({
                   </span>
                   <span className="navbar-text">
                     {t('navbar.menuItems.quoteApproval', 'Quote Approval')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/owner/my-site/residential-projects"
-                  className={`navbar-link ${isActive('/owner/my-site/residential-projects')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoPackage />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.projects', 'Projects')}
                   </span>
                 </Link>
               </li>
@@ -283,27 +247,6 @@ const Navbar = ({
               </li>
             </ul>
           </div>
-          <div className="navbar-section">
-            <h3 className="navbar-section-title">
-              {t('navbar.sections.administrative', 'Administrative')}
-            </h3>
-            <ul className="navbar-menu">
-              <li className="navbar-item">
-                <Link
-                  to="/users"
-                  className={`navbar-link ${isActive('/users')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoPeople />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.users', 'Users')}
-                  </span>
-                </Link>
-              </li>
-            </ul>
-          </div>
           {/* Settings Section */}
           <div className="navbar-section">
             <h3 className="navbar-section-title">
@@ -321,37 +264,6 @@ const Navbar = ({
                   </span>
                   <span className="navbar-text">
                     {t('navbar.menuItems.myProfile', 'My Profile')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/account"
-                  className={`navbar-link ${isActive('/account')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoGear />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.accountSettings', 'Account Settings')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/notifications"
-                  className={`navbar-link ${isActive('/notifications')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <IoIosNotifications />
-                  </span>
-                  <span className="navbar-text">
-                    {t(
-                      'navbar.menuItems.notificationPreferences',
-                      'Notification Preferences'
-                    )}
                   </span>
                 </Link>
               </li>

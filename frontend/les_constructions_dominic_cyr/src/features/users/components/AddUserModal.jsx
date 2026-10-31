@@ -2,6 +2,41 @@
 import React, { useState, useEffect } from 'react';
 
 const USER_ROLES = ['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER'];
+const USER_ROLE_LABELS = {
+  OWNER: 'Owner',
+  SALESPERSON: 'Salesperson',
+  CONTRACTOR: 'Supplier',
+  CUSTOMER: 'Customer',
+};
+const SUPPLIER_TYPES = [
+  'Arpenteur',
+  'Excavateur',
+  'Fondation',
+  'Charpentier',
+  'Toiture',
+  'Plombier',
+  'Électricien',
+  'Cimentier',
+  'Porte de garage',
+  'Ventilation',
+  'Foyer',
+  'Alarme & balayeuse',
+  'Isolation',
+  'Poseur de gypse',
+  'Peintre',
+  'Poseur de céramique',
+  'Poseur de boiserie',
+  'Cuisiniste',
+  "Poseur d'escalier",
+  'Poseur de plancher',
+  'Aménagement garde-robe',
+  'Vitrier',
+  'Ménage',
+  'Briqueteur',
+  'Poseur revêtement extérieur',
+  'Crépi',
+  'Gouttières',
+];
 
 export default function AddUserModal({
   isOpen,
@@ -15,6 +50,7 @@ export default function AddUserModal({
   const [secondaryEmail, setSecondaryEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [userRole, setUserRole] = useState('CUSTOMER');
+  const [supplierType, setSupplierType] = useState('');
 
   // Reset form when modal opens/closes
   useEffect(() => {
@@ -25,6 +61,7 @@ export default function AddUserModal({
       setSecondaryEmail('');
       setPhone('');
       setUserRole('CUSTOMER');
+      setSupplierType('');
     }
   }, [isOpen]);
 
@@ -39,6 +76,7 @@ export default function AddUserModal({
       secondaryEmail,
       phone,
       userRole,
+      supplierType: userRole === 'CONTRACTOR' ? supplierType : null,
     });
   };
 
@@ -49,9 +87,7 @@ export default function AddUserModal({
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">
             <label>
-              <span>
-                First Name<span className="required">*</span>
-              </span>
+              <span>{userRole === 'CONTRACTOR' ? 'Company Name' : 'First Name'}<span className="required">*</span></span>
               <input
                 type="text"
                 value={firstName}
@@ -61,13 +97,18 @@ export default function AddUserModal({
             </label>
             <label>
               <span>
-                Last Name<span className="required">*</span>
+                {userRole === 'CONTRACTOR'
+                  ? 'Representative Full Name'
+                  : 'Last Name'}
+                {userRole !== 'CONTRACTOR' && (
+                  <span className="required">*</span>
+                )}
               </span>
               <input
                 type="text"
                 value={lastName}
                 onChange={e => setLastName(e.target.value)}
-                required
+                required={userRole !== 'CONTRACTOR'}
               />
             </label>
           </div>
@@ -94,6 +135,28 @@ export default function AddUserModal({
             </label>
           </div>
 
+          {userRole === 'CONTRACTOR' && (
+            <div className="form-row">
+              <label>
+                <span>
+                  Supplier Type<span className="required">*</span>
+                </span>
+                <select
+                  value={supplierType}
+                  onChange={e => setSupplierType(e.target.value)}
+                  required
+                >
+                  <option value="">Select a supplier type</option>
+                  {SUPPLIER_TYPES.map(type => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          )}
+
           <div className="form-row">
             <label>
               <span>
@@ -118,7 +181,7 @@ export default function AddUserModal({
               >
                 {USER_ROLES.map(role => (
                   <option key={role} value={role}>
-                    {role}
+                    {USER_ROLE_LABELS[role]}
                   </option>
                 ))}
               </select>

@@ -11,10 +11,8 @@ import {
   GoPackage,
   GoFileDiff,
   GoFile,
-  GoGear,
   GoHome,
 } from 'react-icons/go';
-import { IoIosNotifications } from 'react-icons/io';
 import { CiLogout } from 'react-icons/ci';
 import { CgProfile } from 'react-icons/cg';
 
@@ -224,37 +222,6 @@ const Navbar = ({
                   </span>
                   <span className="navbar-text">
                     {t('navbar.menuItems.myProfile', 'My Profile')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/account"
-                  className={`navbar-link ${isActive('/account')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoGear />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.accountSettings', 'Account Settings')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/notifications"
-                  className={`navbar-link ${isActive('/notifications')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <IoIosNotifications />
-                  </span>
-                  <span className="navbar-text">
-                    {t(
-                      'navbar.menuItems.notificationPreferences',
-                      'Notification Preferences'
-                    )}
                   </span>
                 </Link>
               </li>

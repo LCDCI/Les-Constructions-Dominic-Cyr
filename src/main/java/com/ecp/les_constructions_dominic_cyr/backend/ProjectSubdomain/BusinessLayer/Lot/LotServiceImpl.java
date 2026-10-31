@@ -96,7 +96,7 @@ public class LotServiceImpl implements LotService {
 
         log.info("Found project: {} with projectId: {}", project.getProjectName(), project.getProjectIdentifier());
 
-        validateLotRequest(lotRequestModel);
+        validateLotRequest(lotRequestModel, false);
         if (lotRequestModel.getId() != null
                 && lotRepository.existsById(lotRequestModel.getId())) {
             throw new InvalidInputException("Lot ID is already in use: " + lotRequestModel.getId());
@@ -143,7 +143,7 @@ public class LotServiceImpl implements LotService {
             throw new NotFoundException("Unknown Lot Id: " + lotId);
         }
 
-        validateLotRequest(lotRequestModel);
+        validateLotRequest(lotRequestModel, false);
         if (lotRequestModel.getId() != null
                 && !lotRequestModel.getId().equals(foundLot.getId())
                 && lotRepository.existsById(lotRequestModel.getId())) {
@@ -152,7 +152,9 @@ public class LotServiceImpl implements LotService {
         if (lotRequestModel.getId() != null) {
             foundLot.setId(lotRequestModel.getId());
         }
-        foundLot.setLotNumber(lotRequestModel.getLotNumber());
+        if (lotRequestModel.getLotNumber() != null && !lotRequestModel.getLotNumber().isBlank()) {
+            foundLot.setLotNumber(lotRequestModel.getLotNumber());
+        }
         foundLot.setCivicAddress(lotRequestModel.getCivicAddress());
         foundLot.setPrice(lotRequestModel.getPrice());
         foundLot.setDimensionsSquareFeet(lotRequestModel.getDimensionsSquareFeet());
@@ -271,11 +273,12 @@ public class LotServiceImpl implements LotService {
                 .collect(Collectors.toList());
     }
 
-    private void validateLotRequest(LotRequestModel requestModel) {
+    private void validateLotRequest(LotRequestModel requestModel, boolean cadastralNumberRequired) {
         if (requestModel.getId() != null && requestModel.getId() < 1) {
             throw new InvalidInputException("Lot ID must be positive");
         }
-        if (requestModel.getLotNumber() == null || requestModel.getLotNumber().isBlank()) {
+        if (cadastralNumberRequired
+                && (requestModel.getLotNumber() == null || requestModel.getLotNumber().isBlank())) {
             throw new InvalidInputException("Lot number is required");
         }
         if (requestModel.getCivicAddress() == null || requestModel.getCivicAddress().isBlank()) {

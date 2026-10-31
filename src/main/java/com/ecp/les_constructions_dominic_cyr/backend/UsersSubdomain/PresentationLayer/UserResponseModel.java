@@ -17,6 +17,7 @@ public class UserResponseModel {
 
     private String phone;
     private UserRole userRole;
+    private String supplierType;
     private UserStatus userStatus;
     private String inviteLink;
 
@@ -77,6 +78,14 @@ public class UserResponseModel {
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public String getSupplierType() {
+        return supplierType;
+    }
+
+    public void setSupplierType(String supplierType) {
+        this.supplierType = supplierType;
     }
 
     public UserStatus getUserStatus() {

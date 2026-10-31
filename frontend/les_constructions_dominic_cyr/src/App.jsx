@@ -771,8 +771,6 @@ export default function App() {
             />
 
             <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="/account" element={<ComingSoonPage />} />
-            <Route path="/notifications" element={<ComingSoonPage />} />
             <Route
               path="/projects/:projectIdentifier/overview"
               element={<ProjectsOverviewPage />}

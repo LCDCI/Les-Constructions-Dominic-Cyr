@@ -100,10 +100,6 @@ const OwnerLotFormModal = ({
       newErrors.id = t('errors.duplicateLotId');
     }
 
-    if (!lot && !formData.cadastralNumber.trim()) {
-      newErrors.cadastralNumber = t('form.cadastralNumberRequired');
-    }
-
     if (!formData.civicAddress.trim()) {
       newErrors.civicAddress = t('form.civicAddressRequired');
     }
@@ -201,7 +197,6 @@ const OwnerLotFormModal = ({
             <div className="form-group">
               <label htmlFor="lotNumber">
                 {t('form.lotNumber')}{' '}
-                {!lot && <span className="required">{t('form.required')}</span>}
               </label>
               <input
                 id="lotNumber"
@@ -239,7 +234,6 @@ const OwnerLotFormModal = ({
           <div className="form-group">
             <label htmlFor="cadastralNumber">
               {t('form.cadastralNumber')}{' '}
-              {!lot && <span className="required">{t('form.required')}</span>}
             </label>
             <input
               id="cadastralNumber"

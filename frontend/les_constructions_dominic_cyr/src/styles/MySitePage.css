@@ -113,6 +113,48 @@
   margin-bottom: 0.75rem;
 }
 
+.my-site-project-editor {
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid #dfe4df;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #29312d;
+}
+
+.my-site-project-editor > label {
+  color: #29312d;
+  font-weight: 700;
+}
+
+.my-site-color-input {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.35rem;
+  border: 1px solid #dfe4df;
+  border-radius: 0.35rem;
+  background: #f8faf8;
+}
+
+.my-site-color-input input[type='color'] {
+  width: 3rem;
+  height: 2.25rem;
+  padding: 0.15rem;
+  border: 1px solid #cbd4cc;
+  border-radius: 0.25rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.my-site-color-input output {
+  color: #66706a;
+  font-family: monospace;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
 .my-site-subpage-actions {
   display: grid;
   gap: 0.35rem;

@@ -1485,19 +1485,26 @@ const MySitePage = () => {
                 ×
               </button>
             </div>
-            {['primaryColor', 'tertiaryColor', 'buyerColor'].map(field => (
+            {[
+              ['primaryColor', t('primaryColor', 'Primary Color')],
+              ['tertiaryColor', t('secondaryColor', 'Secondary Color')],
+              ['buyerColor', t('tertiaryColor', 'Tertiary Color')],
+            ].map(([field, label]) => (
               <label key={field}>
-                {getContentLabel(field, t)}
-                <input
-                  type="color"
-                  value={projectEditor[field] || '#ffffff'}
-                  onChange={event =>
-                    setProjectEditor(current => ({
-                      ...current,
-                      [field]: event.target.value,
-                    }))
-                  }
-                />
+                <span>{label}</span>
+                <span className="my-site-color-input">
+                  <input
+                    type="color"
+                    value={projectEditor[field] || '#ffffff'}
+                    onChange={event =>
+                      setProjectEditor(current => ({
+                        ...current,
+                        [field]: event.target.value,
+                      }))
+                    }
+                  />
+                  <output>{projectEditor[field] || '#ffffff'}</output>
+                </span>
               </label>
             ))}
             {[

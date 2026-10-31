@@ -1,6 +1,14 @@
 {
   "title": "Utilisateurs",
   "status": "Statut :",
+  "role": "Rôle :",
+  "roleOptions": {
+    "all": "Tous",
+    "owner": "Propriétaire",
+    "supplier": "Fournisseur",
+    "salesperson": "Vendeur",
+    "customer": "Client"
+  },
   "addUser": "Ajouter un utilisateur",
   "loading": "Chargement des utilisateurs...",
   "error": "Échec du chargement des utilisateurs.",

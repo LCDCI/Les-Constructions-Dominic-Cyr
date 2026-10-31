@@ -19,6 +19,14 @@ export default function UsersTable({
     );
   };
 
+  const getRoleLabel = role =>
+    ({
+      OWNER: t('roleOptions.owner', 'Owner'),
+      CONTRACTOR: t('roleOptions.supplier', 'Supplier'),
+      SALESPERSON: t('roleOptions.salesperson', 'Salesperson'),
+      CUSTOMER: t('roleOptions.customer', 'Customer'),
+    })[role] || role;
+
   if (!users || users.length === 0) {
     return <p>{t('table.noUsersFound', 'No users found.')}</p>;
   }
@@ -39,14 +47,25 @@ export default function UsersTable({
           </tr>
         </thead>
         <tbody>
-          {users.map(u => (
-            <tr key={u.userIdentifier}>
+          {Object.entries(
+            users.reduce((groups, user) => {
+              const role = user.userRole || 'UNKNOWN';
+              groups[role] = [...(groups[role] || []), user];
+              return groups;
+            }, {})
+          ).map(([role, roleUsers]) => (
+            <React.Fragment key={role}>
+              <tr className="users-role-divider">
+                <th colSpan="8">{getRoleLabel(role)}</th>
+              </tr>
+              {roleUsers.map(u => (
+                <tr key={u.userIdentifier}>
               <td>{u.firstName}</td>
               <td>{u.lastName}</td>
               <td>{u.primaryEmail}</td>
               <td>{u.secondaryEmail || t('table.notAvailable', 'N/A')}</td>
               <td>{u.phone || t('table.notAvailable', 'N/A')}</td>
-              <td>{u.userRole}</td>
+              <td>{getRoleLabel(u.userRole)}</td>
               <td>{getStatusBadge(u.userStatus)}</td>
               <td>
                 <button className="btn-edit" onClick={() => onEditUser(u)}>
@@ -61,7 +80,9 @@ export default function UsersTable({
                   </button>
                 )}
               </td>
-            </tr>
+                </tr>
+              ))}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

@@ -1,6 +1,14 @@
 {
   "title": "Users",
   "status": "Status:",
+  "role": "Role:",
+  "roleOptions": {
+    "all": "All",
+    "owner": "Owner",
+    "supplier": "Supplier",
+    "salesperson": "Salesperson",
+    "customer": "Customer"
+  },
   "addUser": "Add User",
   "loading": "Loading users...",
   "error": "Failed to load users.",
