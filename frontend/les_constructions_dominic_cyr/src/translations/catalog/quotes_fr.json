@@ -56,7 +56,7 @@
     "noProjects": "Aucun projet trouvé",
     "noProjectsContractor": "Vous n'êtes assigné à aucun projet pour le moment.",
     "noProjectsOwner": "Aucun projet disponible.",
-    "subtitleContractor": "Voir et gérer vos factures",
+    "subtitleContractor": "Voir et gérer vos devis en tant que fournisseur",
     "subtitleOwner": "Voir toutes les factures de vos projets",
     "createBillEstimate": "Créer une estimation de devis",
     "newBill": "Nouveau devis",
@@ -74,7 +74,7 @@
     "details": "Détails du devis",
     "created": "Créé",
     "projectInfo": "Information du projet",
-    "contractor": "Entrepreneur",
+    "contractor": "Fournisseur",
     "noItems": "Aucun article",
     "approvalInfo": "Information d'approbation",
     "approvedDate": "Date d'approbation",
@@ -92,8 +92,8 @@
       "approveSuccess": "Devis approuvé avec succès",
       "rejectSuccess": "Devis rejeté avec succès",
       "title": "Approbation des devis",
-      "subtitle": "Examiner et gérer les devis des entrepreneurs",
-      "searchPlaceholder": "Devis #, Projet, Entrepreneur...",
+      "subtitle": "Examiner et gérer les devis des fournisseurs",
+      "searchPlaceholder": "Devis #, Projet, Fournisseur...",
       "approve": "Approuver",
       "reject": "Rejeter",
       "confirmApprove": "Approuver le devis",
@@ -101,7 +101,7 @@
       "reasonRequired": "Veuillez fournir une raison de rejet",
       "reasonPlaceholder": "Expliquez pourquoi ce devis est rejeté...",
       "approveMessage": "Êtes-vous sûr de vouloir approuver ce devis ? Il sera marqué comme valide pour l'envoi aux clients.",
-      "rejectMessage": "Êtes-vous sûr de vouloir rejeter ce devis ? Une raison doit être fournie et l'entrepreneur sera notifié."
+      "rejectMessage": "Êtes-vous sûr de vouloir rejeter ce devis ? Une raison doit être fournie et le fournisseur sera notifié."
     },
     "noQuotes": "Aucun devis trouvé correspondant à vos filtres."
   },

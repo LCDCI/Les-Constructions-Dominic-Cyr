@@ -9,6 +9,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccess
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Lot.LotResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
@@ -96,6 +97,10 @@ public class LotServiceImpl implements LotService {
         log.info("Found project: {} with projectId: {}", project.getProjectName(), project.getProjectIdentifier());
 
         validateLotRequest(lotRequestModel);
+        if (lotRequestModel.getId() != null
+                && lotRepository.existsById(lotRequestModel.getId())) {
+            throw new InvalidInputException("Lot ID is already in use: " + lotRequestModel.getId());
+        }
 
         Lot lot = new Lot(
                 new LotIdentifier(),
@@ -105,6 +110,9 @@ public class LotServiceImpl implements LotService {
                 lotRequestModel.getDimensionsSquareFeet(),
                 lotRequestModel.getDimensionsSquareMeters(),
                 lotRequestModel.getLotStatus());
+        if (lotRequestModel.getId() != null) {
+            lot.setId(lotRequestModel.getId());
+        }
 
         // Set the project entity reference (like Schedule does)
         lot.setProject(project);
@@ -116,11 +124,7 @@ public class LotServiceImpl implements LotService {
             List<Users> assignedUsers = getUsersByIds(lotRequestModel.getAssignedUserIds());
             lot.setAssignedUsers(assignedUsers);
 
-            // Automatically set status to RESERVED when users are assigned (if not SOLD)
-            if (lot.getLotStatus() != LotStatus.SOLD) {
-                lot.setLotStatus(LotStatus.RESERVED);
-                log.info("Lot status automatically set to RESERVED due to user assignment");
-            }
+            lot.setLotStatus(hasCustomer(assignedUsers) ? LotStatus.SOLD : LotStatus.AVAILABLE);
 
             // Notify assigned users
             notifyAssignedUsers(assignedUsers, lot, project);
@@ -140,6 +144,14 @@ public class LotServiceImpl implements LotService {
         }
 
         validateLotRequest(lotRequestModel);
+        if (lotRequestModel.getId() != null
+                && !lotRequestModel.getId().equals(foundLot.getId())
+                && lotRepository.existsById(lotRequestModel.getId())) {
+            throw new InvalidInputException("Lot ID is already in use: " + lotRequestModel.getId());
+        }
+        if (lotRequestModel.getId() != null) {
+            foundLot.setId(lotRequestModel.getId());
+        }
         foundLot.setLotNumber(lotRequestModel.getLotNumber());
         foundLot.setCivicAddress(lotRequestModel.getCivicAddress());
         foundLot.setPrice(lotRequestModel.getPrice());
@@ -154,11 +166,7 @@ public class LotServiceImpl implements LotService {
             List<Users> assignedUsers = getUsersByIds(lotRequestModel.getAssignedUserIds());
             foundLot.setAssignedUsers(assignedUsers);
 
-            // Automatically set status to RESERVED when users are assigned (if not SOLD)
-            if (foundLot.getLotStatus() != LotStatus.SOLD) {
-                foundLot.setLotStatus(LotStatus.RESERVED);
-                log.info("Lot status automatically set to RESERVED due to user assignment");
-            }
+            foundLot.setLotStatus(hasCustomer(assignedUsers) ? LotStatus.SOLD : LotStatus.AVAILABLE);
 
             // Calculate new assignments and notify
             List<String> currentIds = currentAssignedUsers.stream()
@@ -175,12 +183,8 @@ public class LotServiceImpl implements LotService {
                 notifyAssignedUsers(usersToNotify, foundLot, project);
             }
         } else {
-            // When unassigning all users, revert to AVAILABLE unless it's SOLD
             foundLot.setAssignedUsers(new ArrayList<>());
-            if (foundLot.getLotStatus() == LotStatus.RESERVED) {
-                foundLot.setLotStatus(LotStatus.AVAILABLE);
-                log.info("Lot status automatically set to AVAILABLE due to user unassignment");
-            }
+            foundLot.setLotStatus(LotStatus.AVAILABLE);
         }
 
         Lot updatedLot = lotRepository.save(foundLot);
@@ -209,8 +213,13 @@ public class LotServiceImpl implements LotService {
             } catch (IllegalArgumentException e) {
                 throw new InvalidInputException("Invalid user ID format: " + userId);
             }
+
         }
         return users;
+    }
+
+    private boolean hasCustomer(List<Users> users) {
+        return users.stream().anyMatch(user -> user.getUserRole() == UserRole.CUSTOMER);
     }
 
     private LotResponseModel mapToResponse(Lot lot) {
@@ -263,6 +272,9 @@ public class LotServiceImpl implements LotService {
     }
 
     private void validateLotRequest(LotRequestModel requestModel) {
+        if (requestModel.getId() != null && requestModel.getId() < 1) {
+            throw new InvalidInputException("Lot ID must be positive");
+        }
         if (requestModel.getLotNumber() == null || requestModel.getLotNumber().isBlank()) {
             throw new InvalidInputException("Lot number is required");
         }

@@ -63,7 +63,7 @@ export default function LotSelectPage() {
     } catch (e) {
       // ignore
     }
-    navigate('/projects');
+    navigate('/owner/my-site/residential-projects');
   };
 
   return (
@@ -82,7 +82,7 @@ export default function LotSelectPage() {
             <div style={{ marginTop: '1rem' }}>
               <button
                 className="btn-secondary"
-                onClick={() => navigate('/projects')}
+                onClick={() => navigate('/owner/my-site/residential-projects')}
               >
                 Back to projects
               </button>

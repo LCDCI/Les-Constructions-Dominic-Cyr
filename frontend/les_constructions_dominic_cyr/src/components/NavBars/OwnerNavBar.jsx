@@ -202,8 +202,8 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/projects"
-                  className={`navbar-link ${isActive('/projects')}`}
+                  to="/owner/my-site/residential-projects"
+                  className={`navbar-link ${isActive('/owner/my-site/residential-projects')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">

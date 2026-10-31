@@ -308,8 +308,7 @@ const QuoteApprovalPage = () => {
       <div className="page-header">
         <h1>{t('quote.approval.title') || 'Quote Approvals'}</h1>
         <p>
-          {t('quote.approval.subtitle') ||
-            'Review and manage contractor quotes'}
+          {t('quote.approval.subtitle') || 'Review and manage supplier quotes'}
         </p>
       </div>
 
@@ -323,7 +322,7 @@ const QuoteApprovalPage = () => {
             className="search-input"
             placeholder={
               t('quote.approval.searchPlaceholder') ||
-              'Quote #, Project, Contractor...'
+              'Quote #, Project, Supplier...'
             }
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
@@ -375,7 +374,7 @@ const QuoteApprovalPage = () => {
                 <th>{t('quote.number') || 'Quote #'}</th>
                 <th>{t('quote.project') || 'Project'}</th>
                 <th className="quote-contractor">
-                  {t('quote.contractor') || 'Contractor'}
+                  {t('quote.contractor') || 'Supplier'}
                 </th>
                 <th className="quote-date">{t('quote.date') || 'Date'}</th>
                 <th>{t('quote.amount') || 'Amount'}</th>
@@ -398,7 +397,7 @@ const QuoteApprovalPage = () => {
                   </td>
                   <td
                     className="quote-contractor"
-                    data-label={t('quote.contractor') || 'Contractor'}
+                    data-label={t('quote.contractor') || 'Supplier'}
                   >
                     {contractorNames[quote.contractorId] || quote.contractorId}
                   </td>

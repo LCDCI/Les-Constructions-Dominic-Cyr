@@ -432,7 +432,7 @@ const MySitePage = () => {
   const [editorLanguage, setEditorLanguage] = useState(language);
   const [projectEditor, setProjectEditor] = useState(null);
   const [createProjectOpen, setCreateProjectOpen] = useState(false);
-  const [activeProjectsOnly, setActiveProjectsOnly] = useState(true);
+  const [projectFilter, setProjectFilter] = useState('active');
 
   useEffect(() => {
     let cancelled = false;
@@ -1156,21 +1156,38 @@ const MySitePage = () => {
               <button type="button" onClick={() => setCreateProjectOpen(true)}>
                 {t('createProject', 'Create New Project')}
               </button>
-              <button
-                type="button"
-                onClick={() => setActiveProjectsOnly(value => !value)}
-              >
-                {activeProjectsOnly
-                  ? t('showAllProjects', 'Show All Projects')
-                  : t('activeProjects', 'Active Projects')}
-              </button>
+              <label className="my-site-project-filter">
+                <span className="sr-only">
+                  {t('projectFilterLabel', 'Project visibility')}
+                </span>
+                <select
+                  value={projectFilter}
+                  onChange={event => setProjectFilter(event.target.value)}
+                >
+                  <option value="all">
+                    {t('allProjects', 'All Projects')}
+                  </option>
+                  <option value="active">
+                    {t('activeProjects', 'Active Projects')}
+                  </option>
+                  <option value="archived">
+                    {t('archivedProjects', 'Archived Projects')}
+                  </option>
+                </select>
+              </label>
             </div>
           </div>
           <div className="my-site-page-grid">
             {projects
-              .filter(
-                project => !activeProjectsOnly || project.status !== 'ARCHIVED'
-              )
+              .filter(project => {
+                if (projectFilter === 'archived') {
+                  return project.status === 'ARCHIVED';
+                }
+                if (projectFilter === 'active') {
+                  return project.status !== 'ARCHIVED';
+                }
+                return true;
+              })
               .map(project => (
                 <article
                   className="my-site-page-card"

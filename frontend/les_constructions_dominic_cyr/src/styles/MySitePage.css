@@ -32,6 +32,66 @@
   border-bottom: 1px solid var(--border-color-light);
 }
 
+.my-site-control-actions button,
+.my-site-project-actions button,
+.my-site-project-filter select {
+  border: 1px solid #cbd4cc;
+  border-radius: 0.35rem;
+  padding: 0.55rem 0.8rem;
+  background: #fff;
+  color: #2c3531;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.my-site-control-actions button:first-child,
+.my-site-project-actions button:first-child {
+  border-color: #6a7a67;
+  background: #6a7a67;
+  color: #fff;
+}
+
+.my-site-project-filter {
+  display: block;
+}
+
+.my-site-project-filter select {
+  min-width: 10rem;
+  cursor: pointer;
+}
+
+.my-site-control-actions button:hover,
+.my-site-project-actions button:hover {
+  border-color: #6a7a67;
+  background: #eef2ed;
+}
+
+.my-site-control-actions button:first-child:hover,
+.my-site-project-actions button:first-child:hover {
+  background: #536451;
+  color: #fff;
+}
+
+.my-site-project-actions {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.my-site-project-actions button:last-child {
+  border-color: #c98b8b;
+  color: #9c4545;
+}
+
+.my-site-project-actions button:last-child:hover {
+  background: #fff4f4;
+  border-color: #9c4545;
+}
+
 .my-site-control-actions,
 .my-site-project-actions,
 .my-site-modal-actions {

@@ -11,6 +11,8 @@ import java.util.UUID;
 
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Integer> {
+    boolean existsById(Integer id);
+
     Lot findByLotIdentifier_LotId(UUID lotId);
     
     @Query("SELECT l FROM Lot l LEFT JOIN FETCH l.assignedUsers WHERE l.lotIdentifier.lotId = :lotId")

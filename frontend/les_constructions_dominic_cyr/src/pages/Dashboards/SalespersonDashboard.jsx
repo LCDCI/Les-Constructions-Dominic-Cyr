@@ -17,7 +17,9 @@ const SalespersonDashboard = () => {
 
   const handleSeeMore = () => {
     const projectId = schedules?.[0]?.projectIdentifier;
-    navigate(projectId ? `/projects/${projectId}/schedule` : '/projects');
+    navigate(
+      projectId ? `/projects/${projectId}/schedule` : '/salesperson/dashboard'
+    );
   };
 
   const dashboardCards = useMemo(
@@ -26,7 +28,7 @@ const SalespersonDashboard = () => {
         icon: <GoPackage />,
         title: t('cards.projects.title', 'My Projects'),
         buttonText: t('cards.projects.button', 'View Projects'),
-        action: () => navigate('/projects'),
+        action: () => navigate('/salesperson/dashboard'),
       },
       {
         icon: <GoInbox />,

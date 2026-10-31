@@ -12,7 +12,7 @@ const CreateProjectPage = () => {
   const pageTitle = isFrench ? 'Créer un nouveau projet' : 'Create New Project';
 
   const handleCancel = () => {
-    navigate('/projects');
+    navigate('/owner/my-site/residential-projects');
   };
 
   const handleSuccess = projectIdentifier => {

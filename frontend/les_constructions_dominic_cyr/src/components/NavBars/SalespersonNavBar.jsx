@@ -156,15 +156,15 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/projects"
-                  className={`navbar-link ${isActive('/projects')}`}
+                  to="/salesperson/dashboard"
+                  className={`navbar-link ${isActive('/salesperson/dashboard')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">
                     <GoPackage />
                   </span>
                   <span className="navbar-text">
-                    {t('navbar.menuItems.projects', 'Projects')}
+                    {t('navbar.menuItems.dashboard', 'Dashboard')}
                   </span>
                 </Link>
               </li>

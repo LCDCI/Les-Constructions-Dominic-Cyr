@@ -13,7 +13,6 @@ import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/Public_Facing/LotsPage';
 import LivingEnvironmentPage from './pages/Public_Facing/LivingEnvironmentPage';
 import OwnerLotsPage from './pages/Project/OwnerLotsPage';
-import ProjectsPage from './pages/Project/ProjectsPage';
 import CreateProjectPage from './pages/Project/CreateProjectPage';
 import RealizationsPage from './pages/Public_Facing/RealizationsPage';
 import RenovationsPage from './pages/Public_Facing/RenovationsPage';
@@ -111,7 +110,6 @@ function SalespersonLotsDocuments() {
 }
 
 const PRIVATE_FOOTER_ROUTE_PATTERNS = [
-  '/projects',
   '/projects/create',
   '/projects/:projectIdentifier',
   '/projects/:projectId/files',
@@ -335,20 +333,6 @@ export default function App() {
             <Route
               path="/"
               element={<RoleBasedRedirect fallback={<Home />} />}
-            />
-            <Route
-              path="/projects"
-              element={
-                <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
-                  element={<ProjectsPage />}
-                />
-              }
             />
             <Route
               path="/projects/create"

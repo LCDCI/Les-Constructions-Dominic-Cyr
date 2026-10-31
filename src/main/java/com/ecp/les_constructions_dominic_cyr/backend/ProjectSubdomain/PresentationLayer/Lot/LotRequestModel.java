@@ -9,6 +9,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class LotRequestModel {
+    private Integer id;
     private String lotNumber;
     private String civicAddress;
     private Float price;

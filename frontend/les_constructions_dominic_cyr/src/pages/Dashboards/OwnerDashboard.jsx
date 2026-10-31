@@ -19,7 +19,7 @@ const OwnerDashboard = () => {
 
   const handleSeeMore = () => {
     const projectId = schedules?.[0]?.projectIdentifier;
-    navigate(projectId ? `/projects/${projectId}/schedule` : '/projects');
+    navigate(projectId ? `/projects/${projectId}/schedule` : '/owner/my-site');
   };
 
   const dashboardCards = useMemo(

@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { FiPlus, FiArrowLeft } from 'react-icons/fi';
+import { FiPlus, FiUsers } from 'react-icons/fi';
 import {
   fetchLots,
   resolveProjectIdentifier,
@@ -14,6 +14,7 @@ import { projectApi } from '../../features/projects/api/projectApi';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import OwnerLotList from '../../features/lots/components/OwnerLotList';
 import OwnerLotFormModal from '../../features/lots/components/OwnerLotFormModal';
+import BulkLotAssignmentModal from '../../features/lots/components/BulkLotAssignmentModal';
 import ConfirmationModal from '../../features/lots/components/ConfirmationModal';
 import '../../styles/lots.css';
 
@@ -37,18 +38,16 @@ const OwnerLotsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [sortConfig, setSortConfig] = useState({
-    key: 'lotNumber',
-    direction: 'asc',
-  });
 
   // Modal states
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isBulkAssignModalOpen, setIsBulkAssignModalOpen] = useState(false);
   const [currentLot, setCurrentLot] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentToken, setCurrentToken] = useState(null);
+  const [isBulkAssigning, setIsBulkAssigning] = useState(false);
 
   const roles = user?.['https://construction-api.loca/roles'] || [];
   const isOwner =
@@ -86,11 +85,12 @@ const OwnerLotsPage = () => {
         const data = await fetchLots({ projectIdentifier: resolved, token });
 
         if (!cancelled) {
-          // Sort the fetched lots by lotNumber (numeric)
+          // Keep the owner table ordered by the database lot ID.
           const sortedData = (data || []).sort((a, b) => {
-            const numA = parseInt(a.lotNumber, 10) || 0;
-            const numB = parseInt(b.lotNumber, 10) || 0;
-            return numA - numB;
+            return (
+              (a.id ?? Number.MAX_SAFE_INTEGER) -
+              (b.id ?? Number.MAX_SAFE_INTEGER)
+            );
           });
           setLots(sortedData);
           setFilteredLots(sortedData);
@@ -147,6 +147,10 @@ const OwnerLotsPage = () => {
   };
 
   const handleCreateLot = async lotData => {
+    if (lots.some(lot => Number(lot.id) === Number(lotData.id))) {
+      setError(t('errors.duplicateLotId'));
+      return;
+    }
     setIsSubmitting(true);
     setError('');
     try {
@@ -180,6 +184,16 @@ const OwnerLotsPage = () => {
 
   const handleUpdateLot = async lotData => {
     if (!currentLot) return;
+    if (
+      lots.some(
+        lot =>
+          Number(lot.id) === Number(lotData.id) &&
+          String(lot.lotId) !== String(currentLot.lotId)
+      )
+    ) {
+      setError(t('errors.duplicateLotId'));
+      return;
+    }
 
     setIsSubmitting(true);
     setError('');
@@ -214,6 +228,50 @@ const OwnerLotsPage = () => {
     }
   };
 
+  const handleBulkAssign = async userId => {
+    setIsBulkAssigning(true);
+    setError('');
+    try {
+      const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+      const token = isAuthenticated ? await getAccessTokenSilently() : null;
+      await Promise.all(
+        lots
+          .filter(lot => lot.lotStatus?.toUpperCase() === 'AVAILABLE')
+          .map(lot =>
+            updateLot({
+              projectIdentifier: resolved,
+              lotId: lot.lotId,
+              lotData: {
+                id: lot.id,
+                lotNumber: lot.lotNumber || '',
+                civicAddress: lot.civicAddress || '',
+                dimensionsSquareFeet: lot.dimensionsSquareFeet || '',
+                dimensionsSquareMeters: lot.dimensionsSquareMeters || '',
+                lotStatus: lot.lotStatus || 'AVAILABLE',
+                assignedUserIds: [
+                  ...(lot.assignedUsers || []).map(
+                    user => user.userId || user.userIdentifier
+                  ),
+                  userId,
+                ].filter((id, index, ids) => ids.indexOf(id) === index),
+              },
+              token,
+            })
+          )
+      );
+      const updatedLots = await fetchLots({
+        projectIdentifier: resolved,
+        token,
+      });
+      setLots(updatedLots);
+      setIsBulkAssignModalOpen(false);
+    } catch (err) {
+      setError(err.message || t('errors.bulkAssignmentFailed'));
+    } finally {
+      setIsBulkAssigning(false);
+    }
+  };
+
   const handleConfirmDelete = async () => {
     if (!currentLot) return;
 
@@ -238,6 +296,7 @@ const OwnerLotsPage = () => {
       });
       setLots(updatedLots);
       setIsDeleteModalOpen(false);
+      setIsBulkAssignModalOpen(false);
       setCurrentLot(null);
     } catch (err) {
       setError(err.message || 'Failed to delete lot');
@@ -251,6 +310,7 @@ const OwnerLotsPage = () => {
       setIsAddModalOpen(false);
       setIsEditModalOpen(false);
       setIsDeleteModalOpen(false);
+      setIsBulkAssignModalOpen(false);
       setCurrentLot(null);
     }
   };
@@ -269,28 +329,17 @@ const OwnerLotsPage = () => {
       result = result.filter(
         lot =>
           lot.civicAddress?.toLowerCase().includes(term) ||
+          String(lot.id ?? '').includes(term) ||
           lot.lotNumber?.toLowerCase().includes(term)
       );
     }
-    // Sort by lotNumber (numeric) by default
     result.sort((a, b) => {
-      const numA = parseInt(a.lotNumber, 10) || 0;
-      const numB = parseInt(b.lotNumber, 10) || 0;
-      return numA - numB;
+      return (
+        (a.id ?? Number.MAX_SAFE_INTEGER) - (b.id ?? Number.MAX_SAFE_INTEGER)
+      );
     });
-    if (sortConfig.key !== 'none') {
-      result.sort((a, b) => {
-        const valA = String(a[sortConfig.key] ?? '');
-        const valB = String(b[sortConfig.key] ?? '');
-        const cmp = valA.localeCompare(valB, undefined, {
-          numeric: true,
-          sensitivity: 'base',
-        });
-        return sortConfig.direction === 'asc' ? cmp : -cmp;
-      });
-    }
     setFilteredLots(result);
-  }, [searchTerm, statusFilter, sortConfig, lots]);
+  }, [searchTerm, statusFilter, lots]);
 
   if (authLoading || translationsLoading || !isOwner) {
     return (
@@ -320,10 +369,6 @@ const OwnerLotsPage = () => {
         </div>
 
         <div className="manage-lots-actions">
-          <button className="back-btn" onClick={() => navigate('/projects')}>
-            <FiArrowLeft size={18} />
-            {t('backToProjects')}
-          </button>
           <button
             className="add-lot-btn"
             onClick={handleAddLot}
@@ -331,6 +376,14 @@ const OwnerLotsPage = () => {
           >
             <FiPlus size={18} />
             {t('addLot')}
+          </button>
+          <button
+            className="add-lot-btn"
+            onClick={() => setIsBulkAssignModalOpen(true)}
+            disabled={loading || lots.length === 0}
+          >
+            <FiUsers size={18} />
+            {t('assignToAllLots')}
           </button>
         </div>
 
@@ -357,27 +410,6 @@ const OwnerLotsPage = () => {
               <option value="sold">{t('filters.sold')}</option>
               <option value="pending">{t('filters.pending')}</option>
             </select>
-            <select
-              className="filter-select"
-              onChange={e => {
-                const [key, dir] = e.target.value.split('-');
-                setSortConfig({ key, direction: dir });
-              }}
-            >
-              <option value="none-asc">{t('sort.sortBy')}</option>
-              <option value="lotNumber-asc">
-                {t('sort.lotNumberAsc', 'Lot # (low → high)')}
-              </option>
-              <option value="lotNumber-desc">
-                {t('sort.lotNumberDesc', 'Lot # (high → low)')}
-              </option>
-              <option value="dimensionsSquareFeet-asc">
-                {t('sort.sizeSmallest')}
-              </option>
-              <option value="dimensionsSquareFeet-desc">
-                {t('sort.sizeLargest')}
-              </option>
-            </select>
           </div>
         </div>
 
@@ -401,6 +433,15 @@ const OwnerLotsPage = () => {
         onSubmit={handleCreateLot}
         token={currentToken}
         isSubmitting={isSubmitting}
+        existingLotIds={lots.map(lot => lot.id)}
+      />
+
+      <BulkLotAssignmentModal
+        isOpen={isBulkAssignModalOpen}
+        onClose={handleCloseModals}
+        onSubmit={handleBulkAssign}
+        token={currentToken}
+        isSubmitting={isBulkAssigning}
       />
 
       <OwnerLotFormModal
@@ -410,6 +451,7 @@ const OwnerLotsPage = () => {
         lot={currentLot}
         token={currentToken}
         isSubmitting={isSubmitting}
+        existingLotIds={lots.map(lot => lot.id)}
       />
 
       <ConfirmationModal

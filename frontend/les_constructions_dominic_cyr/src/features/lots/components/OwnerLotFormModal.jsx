@@ -11,6 +11,7 @@ const OwnerLotFormModal = ({
   lot = null,
   token,
   isSubmitting = false,
+  existingLotIds = [],
 }) => {
   const { t } = usePageTranslations('ownerLots');
 
@@ -22,9 +23,9 @@ const OwnerLotFormModal = ({
   ];
 
   const [formData, setFormData] = useState({
-    lotNumber: '',
+    id: '',
+    cadastralNumber: '',
     civicAddress: '',
-    price: '',
     dimensionsSquareFeet: '',
     dimensionsSquareMeters: '',
     lotStatus: 'AVAILABLE',
@@ -32,23 +33,25 @@ const OwnerLotFormModal = ({
   });
 
   const [errors, setErrors] = useState({});
+  const [eligibleUsers, setEligibleUsers] = useState([]);
 
   useEffect(() => {
     if (lot) {
       setFormData({
-        lotNumber: lot.lotNumber || '',
+        id: lot.id?.toString() || '',
+        cadastralNumber: lot.lotNumber || '',
         civicAddress: lot.civicAddress || '',
-        price: lot.price?.toString() || '',
         dimensionsSquareFeet: lot.dimensionsSquareFeet || '',
         dimensionsSquareMeters: lot.dimensionsSquareMeters || '',
         lotStatus: lot.lotStatus || 'AVAILABLE',
-        assignedUserIds: lot.assignedUsers?.map(u => u.userId) || [],
+        assignedUserIds:
+          lot.assignedUsers?.map(u => u.userIdentifier || u.userId) || [],
       });
     } else {
       setFormData({
-        lotNumber: '',
+        id: '',
+        cadastralNumber: '',
         civicAddress: '',
-        price: '',
         dimensionsSquareFeet: '',
         dimensionsSquareMeters: '',
         lotStatus: 'AVAILABLE',
@@ -88,16 +91,21 @@ const OwnerLotFormModal = ({
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.lotNumber.trim()) {
-      newErrors.lotNumber = t('form.lotNumberRequired');
+    if (!formData.id.trim()) {
+      newErrors.id = t('form.lotNumberRequired');
+    } else if (
+      existingLotIds.some(id => Number(id) === Number(formData.id)) &&
+      (!lot || Number(lot.id) !== Number(formData.id))
+    ) {
+      newErrors.id = t('errors.duplicateLotId');
+    }
+
+    if (!lot && !formData.cadastralNumber.trim()) {
+      newErrors.cadastralNumber = t('form.cadastralNumberRequired');
     }
 
     if (!formData.civicAddress.trim()) {
       newErrors.civicAddress = t('form.civicAddressRequired');
-    }
-
-    if (formData.price && parseFloat(formData.price) < 0) {
-      newErrors.price = t('form.priceNegativeError');
     }
 
     if (!formData.dimensionsSquareFeet.trim()) {
@@ -119,13 +127,20 @@ const OwnerLotFormModal = ({
       return;
     }
 
+    const assignedCustomer = formData.assignedUserIds.some(userId =>
+      eligibleUsers.some(
+        user =>
+          (user.userIdentifier || user.userId) === userId &&
+          user.userRole?.toUpperCase() === 'CUSTOMER'
+      )
+    );
     const submitData = {
-      lotNumber: formData.lotNumber,
+      id: Number(formData.id),
+      lotNumber: formData.cadastralNumber,
       civicAddress: formData.civicAddress,
-      price: formData.price ? parseFloat(formData.price) : null,
       dimensionsSquareFeet: formData.dimensionsSquareFeet,
       dimensionsSquareMeters: formData.dimensionsSquareMeters,
-      lotStatus: formData.lotStatus,
+      lotStatus: assignedCustomer ? 'SOLD' : 'AVAILABLE',
       assignedUserIds: formData.assignedUserIds,
     };
 
@@ -186,20 +201,19 @@ const OwnerLotFormModal = ({
             <div className="form-group">
               <label htmlFor="lotNumber">
                 {t('form.lotNumber')}{' '}
-                <span className="required">{t('form.required')}</span>
+                {!lot && <span className="required">{t('form.required')}</span>}
               </label>
               <input
                 id="lotNumber"
-                type="text"
-                value={formData.lotNumber}
-                onChange={e => handleChange('lotNumber', e.target.value)}
+                type="number"
+                min="1"
+                value={formData.id}
+                onChange={e => handleChange('id', e.target.value)}
                 placeholder={t('form.lotNumberPlaceholder')}
                 disabled={isSubmitting}
-                className={errors.lotNumber ? 'error' : ''}
+                className={errors.id ? 'error' : ''}
               />
-              {errors.lotNumber && (
-                <span className="error-text">{errors.lotNumber}</span>
-              )}
+              {errors.id && <span className="error-text">{errors.id}</span>}
             </div>
 
             <div className="form-group">
@@ -222,6 +236,24 @@ const OwnerLotFormModal = ({
             </div>
           </div>
 
+          <div className="form-group">
+            <label htmlFor="cadastralNumber">
+              {t('form.cadastralNumber')}{' '}
+              {!lot && <span className="required">{t('form.required')}</span>}
+            </label>
+            <input
+              id="cadastralNumber"
+              type="text"
+              value={formData.cadastralNumber}
+              onChange={e => handleChange('cadastralNumber', e.target.value)}
+              placeholder={t('form.cadastralNumberPlaceholder')}
+              disabled={isSubmitting}
+              className={errors.cadastralNumber ? 'error' : ''}
+            />
+            {errors.cadastralNumber && (
+              <span className="error-text">{errors.cadastralNumber}</span>
+            )}
+          </div>
           <div className="form-group">
             <label htmlFor="civicAddress">
               {t('form.civicAddress')}{' '}
@@ -246,6 +278,7 @@ const OwnerLotFormModal = ({
             <MultiUserSelector
               selectedUserIds={formData.assignedUserIds}
               onChange={value => handleChange('assignedUserIds', value)}
+              onUsersLoaded={setEligibleUsers}
               token={token}
               placeholder={t('form.assignedUsersPlaceholder')}
             />
@@ -255,22 +288,6 @@ const OwnerLotFormModal = ({
                   ℹ️ {t('form.assignedUsersInfo')}
                 </div>
               )}
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="price">{t('form.price')}</label>
-            <input
-              id="price"
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.price}
-              onChange={e => handleChange('price', e.target.value)}
-              placeholder={t('form.pricePlaceholder')}
-              disabled={isSubmitting}
-              className={errors.price ? 'error' : ''}
-            />
-            {errors.price && <span className="error-text">{errors.price}</span>}
           </div>
 
           <div className="form-row">
@@ -355,6 +372,7 @@ OwnerLotFormModal.propTypes = {
   lot: PropTypes.object,
   token: PropTypes.string,
   isSubmitting: PropTypes.bool,
+  existingLotIds: PropTypes.arrayOf(PropTypes.number),
 };
 
 export default OwnerLotFormModal;

@@ -82,6 +82,7 @@ export async function createLot({ projectIdentifier, lotData, token }) {
 
   const payload = {
     ...lotData,
+    id: lotData?.id ? Number(lotData.id) : undefined,
     assignedUserIds: lotData?.assignedUserIds || [],
     projectId,
     projectIdentifier: projectId,
@@ -117,6 +118,7 @@ export async function updateLot({ projectIdentifier, lotId, lotData, token }) {
 
   const payload = {
     ...lotData,
+    id: lotData?.id ? Number(lotData.id) : undefined,
     assignedUserIds: lotData?.assignedUserIds || [],
     projectId,
     projectIdentifier: projectId,

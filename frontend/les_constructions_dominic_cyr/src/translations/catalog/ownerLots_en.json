@@ -13,6 +13,7 @@
   "pageTitle": "Lot Management",
   "backToProjects": "Back to Projects",
   "addLot": "Add Lot",
+  "assignToAllLots": "Assign to all lots",
   "searchPlaceholder": "Search by address or lot...",
   "filters": {
     "allStatuses": "All Statuses",
@@ -32,11 +33,12 @@
   "loadingLots": "Loading project lots data...",
   "table": {
     "assignedUsers": "Assigned Users",
-    "lotNumber": "Lot #",
+    "lotNumber": "Lot # (ID)",
+    "buyer": "Buyer",
+    "buyerEmail": "Buyer Email",
     "civicAddress": "Civic Address",
     "areaSqft": "Area (sqft)",
     "areaSqm": "Area (m²)",
-    "price": "Price",
     "status": "Status",
     "actions": "Actions",
     "noLotsFound": "No lots found.",
@@ -52,7 +54,7 @@
   },
   "roles": {
     "customer": "CUSTOMER",
-    "contractor": "CONTRACTOR",
+    "contractor": "SUPPLIER",
     "salesperson": "SALESPERSON"
   },
   "modal": {
@@ -67,19 +69,19 @@
     "createLot": "Create Lot"
   },
   "form": {
-    "lotNumber": "Lot Number",
+    "lotNumber": "Lot Number (ID)",
     "lotNumberPlaceholder": "e.g., Lot 53",
     "lotNumberRequired": "Lot number is required",
+    "cadastralNumber": "Cadastral Number",
+    "cadastralNumberPlaceholder": "e.g., 6 690 952",
+    "cadastralNumberRequired": "Cadastral number is required",
     "status": "Status",
     "civicAddress": "Civic Address",
     "civicAddressPlaceholder": "e.g., 123 Main Street, City, QC",
     "civicAddressRequired": "Civic address is required",
     "assignedUsers": "Assigned Users",
     "assignedUsersPlaceholder": "Select users to assign (any role)...",
-    "assignedUsersInfo": "Lot status will automatically be set to \"Reserved\" when users are assigned",
-    "price": "Price (CAD)",
-    "pricePlaceholder": "e.g., 150000",
-    "priceNegativeError": "Price cannot be negative",
+    "assignedUsersInfo": "A customer assignment marks the lot as sold. Supplier or salesperson assignments keep it available.",
     "dimensionsSqFt": "Dimensions (sq ft)",
     "dimensionsSqFtPlaceholder": "e.g., 5000",
     "dimensionsSqFtRequired": "Square feet dimension is required",
@@ -95,10 +97,19 @@
     "noUsersAvailable": "No eligible users available"
   },
   "errors": {
+    "duplicateLotId": "This Lot ID is already in use in this project.",
+    "bulkAssignmentFailed": "The user could not be assigned to all lots.",
     "errorCreating": "Error creating lot: ",
     "errorUpdating": "Error updating lot: ",
     "unknownError": "Unknown error",
     "projectMissing": "Project identifier is missing. Please reopen this page from a project."
+  },
+  "bulkAssignment": {
+    "title": "Assign to all lots",
+    "description": "Select one supplier or salesperson to assign to every lot in this project.",
+    "placeholder": "Search suppliers or salespersons...",
+    "assigning": "Assigning...",
+    "submit": "Assign to all lots"
   },
   "projectSelection": {
     "title": "Select a Project",
