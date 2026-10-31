@@ -3,10 +3,6 @@
   "thisWeek": "This week:",
   "seeMore": "See more",
   "cards": {
-    "projects": {
-      "title": "Projects",
-      "button": "View Projects"
-    },
     "inbox": {
       "title": "Inbox",
       "button": "View Inbox"

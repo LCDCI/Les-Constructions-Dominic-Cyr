@@ -95,7 +95,7 @@
 /* Amenities Grid */
 .le-amenities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--spacing-md, 2rem);
   max-width: var(--content-max-width, 1400px);
   margin: 0 auto;
@@ -235,7 +235,7 @@
   }
 
   .le-amenities-grid {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--spacing-sm, 1.25rem);
   }
 
@@ -292,7 +292,7 @@
   }
 
   .le-amenities-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-xs, 0.75rem);
   }
 

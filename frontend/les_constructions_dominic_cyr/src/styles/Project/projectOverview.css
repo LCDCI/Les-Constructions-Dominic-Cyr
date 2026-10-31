@@ -212,6 +212,10 @@
 
 .overview-section {
   background-color: var(--color-white, #ffffff);
+  border: 2px solid var(--primary-color, #2c3e50);
+  border-radius: 16px;
+  margin: 2rem auto;
+  max-width: 1400px;
 }
 
 .features-section {
@@ -352,6 +356,10 @@
 /* Lots Section */
 .lots-section {
   background-color: #f8f9fa;
+  border: 2px solid var(--tertiary-color, #628db5);
+  border-radius: 16px;
+  margin: 2rem auto;
+  max-width: 1400px;
 }
 
 .lots-grid {
@@ -707,7 +715,13 @@
   justify-content: center;
   cursor: pointer;
   transition: transform 0.3s ease;
-  background: none;
+  min-width: 220px;
+  padding: 1.5rem 1.25rem;
+  background: var(--color-white, #ffffff);
+  border: 2px solid var(--tertiary-color, #628db5);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px
+    color-mix(in srgb, var(--primary-color, #2c3e50) 18%, transparent);
 }
 
 .icon-container {

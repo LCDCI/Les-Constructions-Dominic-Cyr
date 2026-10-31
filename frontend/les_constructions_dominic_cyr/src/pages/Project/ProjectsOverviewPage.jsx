@@ -87,7 +87,7 @@ MapClickHandler.propTypes = {
 
 const LocationMap = ({ locationAddress, mapCoords, setShowModal }) => {
   const centerCoords = mapCoords || DEFAULT_COORDS;
-  const defaultZoom = 13;
+  const defaultZoom = 11;
   const [mapKey, setMapKey] = useState(0);
   const { t } = usePageTranslations('projectOverview');
 
@@ -159,7 +159,7 @@ LocationMap.propTypes = {
 
 const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
   const centerCoords = mapCoords || DEFAULT_COORDS;
-  const modalZoom = 15;
+  const modalZoom = 13;
   const { t } = usePageTranslations('projectOverview');
 
   if (!show) return null;

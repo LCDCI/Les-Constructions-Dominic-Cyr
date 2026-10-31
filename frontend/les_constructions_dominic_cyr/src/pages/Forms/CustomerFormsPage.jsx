@@ -7,9 +7,10 @@ import {
   updateFormData,
   getFormHistory,
   downloadFinalizedForm,
-  viewFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import { uploadFile, downloadFile } from '../../features/files/api/filesApi';
+import { getFileUrl } from '../../utils/filesService';
+import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Forms/customer-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -26,7 +27,7 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
  *
  * Fields whose name starts with "__" are UI-only and skipped during validation/save.
  */
-const FORM_FIELDS = {
+export const FORM_FIELDS = {
   /* ── Exterior Doors ─────────────────────────────────────── */
   EXTERIOR_DOORS: [
     {
@@ -350,8 +351,10 @@ const FORM_FIELDS = {
   ],
 };
 
+const FORM_OPTION_FALLBACK_IMAGE = '/fallback.jpg';
+
 const CustomerFormsPage = () => {
-  const { t } = usePageTranslations('customerForms');
+  const { t, currentLanguage } = usePageTranslations('customerForms');
   const { projectId, lotId } = useParams();
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -366,6 +369,7 @@ const CustomerFormsPage = () => {
   const [uploadError, setUploadError] = useState(null);
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
   const [isViewOnly, setIsViewOnly] = useState(false);
+  const [formConfiguration, setFormConfiguration] = useState({});
   const fileInputRef = useRef(null);
 
   const { getAccessTokenSilently, user } = useAuth0();
@@ -391,6 +395,35 @@ const CustomerFormsPage = () => {
   useEffect(() => {
     fetchForms();
   }, []);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([
+      fetchPublicSiteContent('en', 'forms-config'),
+      currentLanguage === 'en'
+        ? Promise.resolve([])
+        : fetchPublicSiteContent(currentLanguage, 'forms-config'),
+    ])
+      .then(([defaultItems, languageItems]) => {
+        if (!active) return;
+        const configuration = {};
+        [...(defaultItems || []), ...(languageItems || [])].forEach(item => {
+          try {
+            configuration[item.pageKey] = JSON.parse(item.contentText || '{}');
+          } catch {
+            // Ignore malformed optional configuration and use defaults.
+          }
+        });
+        setFormConfiguration(configuration);
+      })
+      .catch(() => {
+        if (active) setFormConfiguration({});
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [currentLanguage]);
 
   const fetchForms = async () => {
     try {
@@ -516,7 +549,7 @@ const CustomerFormsPage = () => {
 
   const handleSubmitFormClick = () => {
     // Validate required fields before showing confirmation
-    const fields = FORM_FIELDS[selectedForm.formType] || [];
+    const fields = getFieldsForForm(selectedForm.formType);
     const requiredFields = fields.filter(
       f => f.required && !f.name.startsWith('__')
     );
@@ -610,6 +643,39 @@ const CustomerFormsPage = () => {
       form.formStatus === 'IN_PROGRESS' ||
       form.formStatus === 'REOPENED'
     );
+  };
+
+  const getFieldsForForm = formType => {
+    const defaults = FORM_FIELDS[formType] || [];
+    const configuredFields = formConfiguration[formType]?.fields || [];
+    const defaultNames = new Set(defaults.map(field => field.name));
+    const fields = defaults.map(field => {
+      const configured = configuredFields.find(
+        item => item.name === field.name
+      );
+      if (!configured?.options) return field;
+      return {
+        ...field,
+        type: configured.options.length ? 'image-radio' : field.type,
+        translationKey: configured.label || field.translationKey,
+        options: configured.options.map(option => ({
+          ...option,
+          label: option.label || option.value,
+        })),
+      };
+    });
+    configuredFields
+      .filter(field => !defaultNames.has(field.name) && field.options?.length)
+      .forEach(field => {
+        fields.push({
+          name: field.name,
+          type: 'image-radio',
+          translationKey: field.label || field.name,
+          options: field.options,
+          required: false,
+        });
+      });
+    return fields;
   };
 
   const formatHistoryValue = value => {
@@ -743,8 +809,18 @@ const CustomerFormsPage = () => {
               disabled={isViewOnly}
             >
               <span className="forms-radio-indicator" />
+              <img
+                src={
+                  getFileUrl(opt.imageIdentifier) || FORM_OPTION_FALLBACK_IMAGE
+                }
+                alt={opt.label || opt.value}
+                className="forms-radio-image"
+                onError={event => {
+                  event.currentTarget.src = FORM_OPTION_FALLBACK_IMAGE;
+                }}
+              />
               <span className="forms-radio-label">
-                {t(opt.labelKey, opt.label || opt.value)}
+                {opt.label || t(opt.labelKey, opt.value)}
               </span>
             </button>
           ))}
@@ -793,20 +869,36 @@ const CustomerFormsPage = () => {
         {t(field.translationKey, field.name)}{' '}
         {field.required && <span className="required">*</span>}
       </label>
-      <select
-        id={field.name}
-        value={formData[field.name] || ''}
-        onChange={e => handleFieldChange(field.name, e.target.value)}
-        className="forms-form-select"
-        disabled={isViewOnly}
-      >
-        <option value="">{t('modal.selectOption', '-- Select --')}</option>
+      <div className="forms-radio-grid">
         {(field.options || []).map(opt => (
-          <option key={opt.value} value={opt.value}>
-            {t(opt.labelKey, opt.label || opt.value)}
-          </option>
+          <button
+            key={opt.value}
+            type="button"
+            className={`forms-radio-card${
+              formData[field.name] === opt.value ? ' selected' : ''
+            }`}
+            onClick={() =>
+              !isViewOnly && handleFieldChange(field.name, opt.value)
+            }
+            disabled={isViewOnly}
+          >
+            <span className="forms-radio-indicator" />
+            <img
+              src={
+                getFileUrl(opt.imageIdentifier) || FORM_OPTION_FALLBACK_IMAGE
+              }
+              alt={opt.label || opt.value}
+              className="forms-radio-image"
+              onError={event => {
+                event.currentTarget.src = FORM_OPTION_FALLBACK_IMAGE;
+              }}
+            />
+            <span className="forms-radio-label">
+              {opt.label || t(opt.labelKey, opt.value)}
+            </span>
+          </button>
         ))}
-      </select>
+      </div>
     </div>
   );
 
@@ -835,7 +927,7 @@ const CustomerFormsPage = () => {
 
   const renderFormFields = () => {
     if (!selectedForm) return null;
-    const fields = FORM_FIELDS[selectedForm.formType] || [];
+    const fields = getFieldsForForm(selectedForm.formType);
     return fields.map(field => renderField(field));
   };
 
