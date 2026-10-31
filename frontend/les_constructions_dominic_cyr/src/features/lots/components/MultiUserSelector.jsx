@@ -5,13 +5,15 @@ import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import PropTypes from 'prop-types';
 import './MultiUserSelector.css';
 
+const DEFAULT_ALLOWED_ROLES = ['CONTRACTOR', 'CUSTOMER', 'SALESPERSON'];
+
 const MultiUserSelector = ({
   selectedUserIds = [],
   onChange,
   token,
   placeholder = 'Select users...',
   onUsersLoaded,
-  allowedRoles = ['CONTRACTOR', 'CUSTOMER', 'SALESPERSON'],
+  allowedRoles = DEFAULT_ALLOWED_ROLES,
 }) => {
   const { t } = usePageTranslations('ownerLots');
 

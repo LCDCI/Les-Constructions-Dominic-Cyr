@@ -4,6 +4,8 @@ import MultiUserSelector from './MultiUserSelector';
 import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import './LotFormModal.css';
 
+const BULK_ASSIGNMENT_ROLES = ['CONTRACTOR', 'SALESPERSON'];
+
 const BulkLotAssignmentModal = ({
   isOpen,
   onClose,
@@ -52,7 +54,7 @@ const BulkLotAssignmentModal = ({
             selectedUserIds={selectedUserIds}
             onChange={value => setSelectedUserIds(value.slice(-1))}
             token={token}
-            allowedRoles={['CONTRACTOR', 'SALESPERSON']}
+            allowedRoles={BULK_ASSIGNMENT_ROLES}
             placeholder={t('bulkAssignment.placeholder')}
           />
           <div className="modal-actions">

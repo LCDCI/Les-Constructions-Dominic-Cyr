@@ -19,6 +19,10 @@
       "title": "Boîte de réception",
       "button": "Voir la boîte de réception"
     },
+    "quotes": {
+      "title": "Estimés",
+      "button": "Voir les estimés"
+    },
     "documents": {
       "title": "Documents",
       "button": "Voir les documents"

@@ -100,6 +100,56 @@
   gap: 0.5rem;
 }
 
+.my-site-project-editor .my-site-modal-actions {
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dfe4df;
+}
+
+.my-site-project-editor .my-site-modal-actions button,
+.my-site-project-image-field > button {
+  min-width: 9rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid #687a68;
+  border-radius: 0.35rem;
+  background: #687a68;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.my-site-project-editor .my-site-modal-actions button:hover,
+.my-site-project-image-field > button:hover {
+  border-color: #536451;
+  background: #536451;
+}
+
+.my-site-project-editor .my-site-modal-actions button:first-child {
+  border-color: #cbd4cc;
+  background: #fff;
+  color: #536451;
+}
+
+.my-site-project-editor .my-site-modal-actions button:first-child:hover {
+  background: #eef2ed;
+}
+
+.my-site-project-image-field > button {
+  min-width: 0;
+  justify-self: start;
+  border-color: #d3b1b1;
+  background: #fff5f5;
+  color: #9c4545;
+}
+
+.my-site-project-image-field > button:hover {
+  border-color: #9c4545;
+  background: #ffeaea;
+}
+
 .my-site-project-image-field {
   display: grid;
   gap: 0.5rem;

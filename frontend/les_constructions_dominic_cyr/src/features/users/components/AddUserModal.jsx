@@ -1,42 +1,37 @@
 // src/features/users/components/AddUserModal.jsx
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const USER_ROLES = ['OWNER', 'SALESPERSON', 'CONTRACTOR', 'CUSTOMER'];
-const USER_ROLE_LABELS = {
-  OWNER: 'Owner',
-  SALESPERSON: 'Salesperson',
-  CONTRACTOR: 'Supplier',
-  CUSTOMER: 'Customer',
-};
 const SUPPLIER_TYPES = [
-  'Arpenteur',
-  'Excavateur',
-  'Fondation',
-  'Charpentier',
-  'Toiture',
-  'Plombier',
-  'Électricien',
-  'Cimentier',
-  'Porte de garage',
-  'Ventilation',
-  'Foyer',
-  'Alarme & balayeuse',
-  'Isolation',
-  'Poseur de gypse',
-  'Peintre',
-  'Poseur de céramique',
-  'Poseur de boiserie',
-  'Cuisiniste',
-  "Poseur d'escalier",
-  'Poseur de plancher',
-  'Aménagement garde-robe',
-  'Vitrier',
-  'Ménage',
-  'Briqueteur',
-  'Poseur revêtement extérieur',
-  'Crépi',
-  'Gouttières',
-];
+  ['arpenteur', 'Arpenteur'],
+  ['excavateur', 'Excavateur'],
+  ['fondation', 'Fondation'],
+  ['charpentier', 'Charpentier'],
+  ['toiture', 'Toiture'],
+  ['plombier', 'Plombier'],
+  ['electricien', 'Électricien'],
+  ['cimentier', 'Cimentier'],
+  ['porteDeGarage', 'Porte de garage'],
+  ['ventilation', 'Ventilation'],
+  ['foyer', 'Foyer'],
+  ['alarmeBalayeuse', 'Alarme & balayeuse'],
+  ['isolation', 'Isolation'],
+  ['poseurDeGypse', 'Poseur de gypse'],
+  ['peintre', 'Peintre'],
+  ['poseurDeCeramique', 'Poseur de céramique'],
+  ['poseurDeBoiserie', 'Poseur de boiserie'],
+  ['cuisiniste', 'Cuisiniste'],
+  ['poseurDEscalier', "Poseur d'escalier"],
+  ['poseurDePlancher', 'Poseur de plancher'],
+  ['amenagementGardeRobe', 'Aménagement garde-robe'],
+  ['vitrier', 'Vitrier'],
+  ['menage', 'Ménage'],
+  ['briqueteur', 'Briqueteur'],
+  ['poseurRevetementExterieur', 'Poseur revêtement extérieur'],
+  ['crepi', 'Crépi'],
+  ['gouttieres', 'Gouttières'],
+].sort((a, b) => a[1].localeCompare(b[1], 'fr'));
 
 export default function AddUserModal({
   isOpen,
@@ -44,6 +39,7 @@ export default function AddUserModal({
   onCreate,
   isSubmitting,
 }) {
+  const { t } = useTranslation('usersPage');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [primaryEmail, setPrimaryEmail] = useState('');
@@ -83,11 +79,11 @@ export default function AddUserModal({
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        <h2>Add User</h2>
+        <h2>{t('addUserModal.title')}</h2>
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">
             <label>
-              <span>{userRole === 'CONTRACTOR' ? 'Company Name' : 'First Name'}<span className="required">*</span></span>
+              <span>{userRole === 'CONTRACTOR' ? t('addUserModal.companyName') : t('addUserModal.firstName')}<span className="required">*</span></span>
               <input
                 type="text"
                 value={firstName}
@@ -98,8 +94,8 @@ export default function AddUserModal({
             <label>
               <span>
                 {userRole === 'CONTRACTOR'
-                  ? 'Representative Full Name'
-                  : 'Last Name'}
+                  ? t('addUserModal.representativeName')
+                  : t('addUserModal.lastName')}
                 {userRole !== 'CONTRACTOR' && (
                   <span className="required">*</span>
                 )}
@@ -116,7 +112,7 @@ export default function AddUserModal({
           <div className="form-row">
             <label>
               <span>
-                Primary Email<span className="required">*</span>
+                {t('addUserModal.primaryEmail')}<span className="required">*</span>
               </span>
               <input
                 type="email"
@@ -126,7 +122,7 @@ export default function AddUserModal({
               />
             </label>
             <label>
-              <span>Secondary Email</span>
+              <span>{t('addUserModal.secondaryEmail')}</span>
               <input
                 type="email"
                 value={secondaryEmail}
@@ -139,17 +135,17 @@ export default function AddUserModal({
             <div className="form-row">
               <label>
                 <span>
-                  Supplier Type<span className="required">*</span>
+                  {t('addUserModal.supplierType')}<span className="required">*</span>
                 </span>
                 <select
                   value={supplierType}
                   onChange={e => setSupplierType(e.target.value)}
                   required
                 >
-                  <option value="">Select a supplier type</option>
-                  {SUPPLIER_TYPES.map(type => (
-                    <option key={type} value={type}>
-                      {type}
+                  <option value="">{t('addUserModal.selectSupplierType')}</option>
+                  {SUPPLIER_TYPES.map(([key, value]) => (
+                    <option key={key} value={value}>
+                      {t(`addUserModal.supplierTypes.${key}`)}
                     </option>
                   ))}
                 </select>
@@ -160,7 +156,7 @@ export default function AddUserModal({
           <div className="form-row">
             <label>
               <span>
-                Phone<span className="required">*</span>
+                {t('addUserModal.phone')}<span className="required">*</span>
               </span>
               <input
                 type="tel"
@@ -172,7 +168,7 @@ export default function AddUserModal({
 
             <label>
               <span>
-                Role<span className="required">*</span>
+                {t('addUserModal.role')}<span className="required">*</span>
               </span>
               <select
                 value={userRole}
@@ -181,7 +177,7 @@ export default function AddUserModal({
               >
                 {USER_ROLES.map(role => (
                   <option key={role} value={role}>
-                    {USER_ROLE_LABELS[role]}
+                    {t(`roleOptions.${role === 'CONTRACTOR' ? 'supplier' : role.toLowerCase()}`)}
                   </option>
                 ))}
               </select>
@@ -195,14 +191,14 @@ export default function AddUserModal({
               disabled={isSubmitting}
               className="btn-cancel"
             >
-              Cancel
+              {t('addUserModal.cancel')}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
               className="btn-submit"
             >
-              {isSubmitting ? 'Creating...' : 'Create User'}
+              {isSubmitting ? t('addUserModal.creating') : t('addUserModal.create')}
             </button>
           </div>
         </form>

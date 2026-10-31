@@ -53,6 +53,15 @@ const OwnerLotsPage = () => {
   const isOwner =
     isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
 
+  const normalizeLotStatus = lot => {
+    const hasCustomer = (lot.assignedUsers || []).some(
+      assignedUser =>
+        (assignedUser.role || assignedUser.userRole)?.toUpperCase() ===
+        'CUSTOMER'
+    );
+    return hasCustomer ? { ...lot, lotStatus: 'SOLD' } : lot;
+  };
+
   // Redirect non-owners
   useEffect(() => {
     if (!authLoading && !isOwner) {
@@ -86,7 +95,7 @@ const OwnerLotsPage = () => {
 
         if (!cancelled) {
           // Keep the owner table ordered by the database lot ID.
-          const sortedData = (data || []).sort((a, b) => {
+          const sortedData = (data || []).map(normalizeLotStatus).sort((a, b) => {
             return (
               (a.id ?? Number.MAX_SAFE_INTEGER) -
               (b.id ?? Number.MAX_SAFE_INTEGER)
@@ -110,7 +119,6 @@ const OwnerLotsPage = () => {
     urlProjectIdentifier,
     isAuthenticated,
     authLoading,
-    getAccessTokenSilently,
     isOwner,
   ]);
 
@@ -170,7 +178,7 @@ const OwnerLotsPage = () => {
         projectIdentifier: resolved,
         token,
       });
-      setLots(updatedLots);
+      setLots(updatedLots.map(normalizeLotStatus));
       setIsAddModalOpen(false);
     } catch (err) {
       alert(
@@ -215,7 +223,7 @@ const OwnerLotsPage = () => {
         projectIdentifier: resolved,
         token,
       });
-      setLots(updatedLots);
+      setLots(updatedLots.map(normalizeLotStatus));
       setIsEditModalOpen(false);
       setCurrentLot(null);
     } catch (err) {
@@ -263,7 +271,7 @@ const OwnerLotsPage = () => {
         projectIdentifier: resolved,
         token,
       });
-      setLots(updatedLots);
+      setLots(updatedLots.map(normalizeLotStatus));
       setIsBulkAssignModalOpen(false);
     } catch (err) {
       setError(err.message || t('errors.bulkAssignmentFailed'));

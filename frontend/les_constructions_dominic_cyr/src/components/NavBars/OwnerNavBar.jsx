@@ -155,6 +155,16 @@ const Navbar = ({
                   <span className="navbar-text">{t('navbar.menuItems.users', 'Users')}</span>
                 </Link>
               </li>
+              <li className="navbar-item">
+                <Link
+                  to="/owner/my-site"
+                  className={`navbar-link ${isActive('/owner/my-site')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon"><GoGlobe /></span>
+                  <span className="navbar-text">{t('navbar.menuItems.mySite', 'My site')}</span>
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -189,20 +199,6 @@ const Navbar = ({
                   </span>
                   <span className="navbar-text">
                     {t('navbar.menuItems.forms', 'Forms')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/owner/my-site"
-                  className={`navbar-link ${isActive('/owner/my-site')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoGlobe />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.mySite', 'My site')}
                   </span>
                 </Link>
               </li>

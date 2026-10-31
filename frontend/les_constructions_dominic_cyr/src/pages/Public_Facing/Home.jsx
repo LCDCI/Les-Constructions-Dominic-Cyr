@@ -169,7 +169,7 @@ export default function Home() {
                 )}
               </p>
               <div className="hero-buttons">
-                <Link to="/realizations" className="btn btn-primary">
+                <Link to="/projects/proj-001-foresta/overview" className="btn btn-primary">
                   {t('hero.button1', 'Discover')}
                 </Link>
                 <Link to="/contact" className="btn btn-secondary">
@@ -339,6 +339,9 @@ export default function Home() {
                   'Your home is one of the most important investments of your life. Choose reliability and lasting quality.'
                 )}
               </p>
+              <Link to="/renovations" className="link-arrow">
+                {t('live.link', 'Explore renovations')}
+              </Link>
             </div>
           </div>
         </section>
@@ -367,7 +370,7 @@ export default function Home() {
                   'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
                 )}
               </p>
-              <Link to="/contact" className="link-arrow">
+              <Link to="/projectmanagement" className="link-arrow">
                 {t('build.link', 'Contact Us')}
               </Link>
             </div>
@@ -512,18 +515,6 @@ export default function Home() {
       </section>
 
       <section className="public-page__cta home-contact-cta">
-        <span className="public-page__eyebrow">
-          {t('contact.kicker', 'Get In Touch')}
-        </span>
-        <h2 className="public-page__heading">
-          {t('contact.title', "Let's Build Your Dream Home Together")}
-        </h2>
-        <p className="public-page__copy">
-          {t(
-            'contact.description',
-            "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc."
-          )}
-        </p>
         <Link to="/contact" className="public-page__button">
           {t('contact.button', 'Contact Us')}
         </Link>
