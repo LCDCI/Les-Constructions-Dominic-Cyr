@@ -105,6 +105,10 @@
   transition: background-color 0.2s ease;
 }
 
+.lots-table-row:nth-of-type(even) {
+  background-color: var(--project-buyer, #fff);
+}
+
 .lots-table-row:last-child {
   border-bottom: none;
 }

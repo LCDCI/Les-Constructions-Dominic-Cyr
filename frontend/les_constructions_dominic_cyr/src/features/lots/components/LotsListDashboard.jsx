@@ -158,7 +158,13 @@ const LotsListDashboard = ({ userId }) => {
           const projectColor = project.primaryColor || '#aab2a6';
 
           return (
-            <div key={project.projectIdentifier} className="project-section">
+            <div
+              key={project.projectIdentifier}
+              className="project-section"
+              style={{
+                '--project-buyer': project.buyerColor || '#f8fafc',
+              }}
+            >
               <div
                 className="project-header"
                 style={{ background: projectColor }}

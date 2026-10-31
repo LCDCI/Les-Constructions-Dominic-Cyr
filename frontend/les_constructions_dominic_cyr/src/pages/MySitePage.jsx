@@ -998,6 +998,7 @@ const MySitePage = () => {
   };
 
   const openProjectEditor = async project => {
+    setCreateProjectOpen(false);
     try {
       const token = await getToken();
       const overview = await projectApi.getProjectById(
@@ -1153,7 +1154,13 @@ const MySitePage = () => {
               </p>
             </div>
             <div className="my-site-control-actions">
-              <button type="button" onClick={() => setCreateProjectOpen(true)}>
+              <button
+                type="button"
+                onClick={() => {
+                  setProjectEditor(null);
+                  setCreateProjectOpen(true);
+                }}
+              >
                 {t('createProject', 'Create New Project')}
               </button>
               <label className="my-site-project-filter">

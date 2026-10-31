@@ -363,7 +363,7 @@ const OwnerLotsPage = () => {
           '--color-tertiary': project?.tertiaryColor || undefined,
           '--color-accent': project?.buyerColor || undefined,
           '--color-light': project?.tertiaryColor || undefined,
-          '--project-light-color': project?.tertiaryColor || undefined,
+          '--project-light-color': project?.buyerColor || undefined,
         }}
       >
         <div className="lots-content">{t('loading')}</div>
@@ -385,7 +385,7 @@ const OwnerLotsPage = () => {
           '--color-accent': project?.buyerColor || project?.tertiaryColor,
           '--color-light': project?.tertiaryColor || project?.buyerColor,
           '--project-light-color':
-            project?.tertiaryColor || project?.buyerColor,
+            project?.buyerColor || project?.tertiaryColor,
         }}
       >
         <div className="lots-content">{t('loadingLots')}</div>
@@ -405,7 +405,7 @@ const OwnerLotsPage = () => {
         '--color-tertiary': project?.tertiaryColor || project?.buyerColor,
         '--color-accent': project?.buyerColor || project?.tertiaryColor,
         '--color-light': project?.tertiaryColor || project?.buyerColor,
-        '--project-light-color': project?.tertiaryColor || project?.buyerColor,
+        '--project-light-color': project?.buyerColor || project?.tertiaryColor,
       }}
     >
       <div className="lots-content">

@@ -50,7 +50,8 @@ const LotsPage = () => {
     '--color-secondary': projectColors.secondary,
     '--color-light': projectColors.secondary,
     '--color-accent': projectColors.accent,
-    '--project-light-color': projectColors.secondary,
+    '--project-buyer': projectColors.accent,
+    '--project-light-color': projectColors.accent,
   };
 
   const mapButtons = {

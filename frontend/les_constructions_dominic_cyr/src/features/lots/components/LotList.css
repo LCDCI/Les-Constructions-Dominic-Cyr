@@ -82,7 +82,7 @@
 }
 
 .fixed-table tbody tr:nth-child(even) td {
-  background-color: var(--project-light-color, #f8fafc);
+  background-color: var(--project-buyer, var(--project-light-color, #f8fafc));
 }
 
 .id-cell {

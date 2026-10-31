@@ -12,19 +12,22 @@ export default function ProjectBanner({
   const [loadedProject, setLoadedProject] = useState(project || null);
 
   useEffect(() => {
-    if (project) {
-      setLoadedProject(project);
-      return undefined;
+    let active = true;
+    setLoadedProject(project || null);
+
+    if (project?.bannerImageIdentifier) {
+      return () => {
+        active = false;
+      };
     }
 
-    let active = true;
     projectApi
       .getProjectById(projectIdentifier)
       .then(result => {
-        if (active) setLoadedProject(result);
+        if (active) setLoadedProject(current => ({ ...current, ...result }));
       })
       .catch(() => {
-        if (active) setLoadedProject(null);
+        if (active && !project) setLoadedProject(null);
       });
 
     return () => {
@@ -33,7 +36,8 @@ export default function ProjectBanner({
   }, [project, projectIdentifier]);
 
   const bannerIdentifier =
-    loadedProject?.bannerImageIdentifier || loadedProject?.imageIdentifier;
+    loadedProject?.bannerImageIdentifier ||
+    (!project ? loadedProject?.imageIdentifier : null);
   const logoIdentifier = loadedProject?.imageIdentifier;
   const backgroundColor = loadedProject?.primaryColor || '#aab2a6';
 
