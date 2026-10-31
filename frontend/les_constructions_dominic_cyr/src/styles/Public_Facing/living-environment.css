@@ -52,7 +52,7 @@
 .le-tagline {
   font-size: clamp(1rem, 2.5vw, 1.5rem);
   color: var(--tertiary-color, var(--color-text-muted, #6b7280));
-  font-style: italic;
+  font-style: normal;
   margin-top: var(--spacing-sm, 1.25rem);
   font-weight: 300;
   font-family: var(--font-body, 'Segoe UI', sans-serif);
@@ -95,21 +95,21 @@
 /* Amenities Grid */
 .le-amenities-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--spacing-md, 2rem);
-  max-width: var(--content-max-width, 1400px);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.4rem, 0.8vw, 0.75rem);
+  max-width: 1080px;
   margin: 0 auto;
 }
 
 .le-amenity-box {
   background: #fff;
-  border-radius: 12px;
-  padding: var(--spacing-lg, 3rem) var(--spacing-md, 2rem);
+  border-radius: 6px;
+  padding: clamp(0.55rem, 1vw, 0.9rem) clamp(0.4rem, 0.8vw, 0.7rem);
   text-align: center;
   transition: all 0.3s var(--easing, cubic-bezier(0.25, 0.46, 0.45, 0.94));
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  border: 1.5px solid var(--primary-color, #628db5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--primary-color, #628db5);
 }
 
 .le-amenity-box:hover {
@@ -118,16 +118,16 @@
 }
 
 .le-amenity-icon {
-  font-size: 3rem;
+  font-size: 1.35rem;
   color: var(--primary-color, #4c4d4f);
-  margin-bottom: var(--spacing-sm, 1.25rem);
+  margin-bottom: 0.4rem;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .le-amenity-label {
-  font-size: 1rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--primary-color, #4c4d4f);
   text-transform: uppercase;
@@ -149,7 +149,7 @@
   font-size: clamp(1rem, 2vw, 1.2rem);
   color: var(--color-text-muted, #6b7280);
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   font-family: var(--font-body, 'Segoe UI', sans-serif);
 }
 
@@ -189,7 +189,7 @@
   font-size: clamp(1rem, 2vw, 1.2rem);
   color: var(--color-text-muted, #6b7280);
   font-weight: 400;
-  font-style: italic;
+  font-style: normal;
   font-family: var(--font-body, 'Segoe UI', sans-serif);
 }
 
@@ -201,7 +201,7 @@
 
   .le-header-section {
     margin-bottom: var(--spacing-lg, 3rem);
-    padding: var(--spacing-md, 2rem) var(--spacing-sm, 1.25rem);
+    padding: 1rem 0.75rem;
     width: calc(100% - 4%);
     margin-left: 2%;
     margin-right: 2%;
@@ -235,7 +235,7 @@
   }
 
   .le-amenities-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--spacing-sm, 1.25rem);
   }
 
@@ -244,11 +244,11 @@
   }
 
   .le-amenity-icon {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
   }
 
   .le-amenity-label {
-    font-size: 0.85rem;
+    font-size: 0.7rem;
   }
 
   .le-footer-section {

@@ -4,6 +4,13 @@
   color: var(--charcoal-gray, #2c3531);
 }
 
+.project-overview-page .overview-section,
+.project-overview-page .features-section,
+.project-overview-page .lots-section,
+.project-overview-page .living-environment-section {
+  border: none !important;
+}
+
 .project-overview-page .section-title,
 .project-overview-page .section-content,
 .project-overview-page .section-description,
@@ -57,6 +64,9 @@
 }
 
 .project-hero {
+  width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
   min-height: 280px;
   padding: 6.4rem var(--spacing-lg);
   background: var(--public-banner-bg, #aab2a6);
@@ -73,6 +83,23 @@
 
 .project-hero--image {
   background-color: var(--public-banner-bg, #aab2a6);
+}
+
+.project-banner-content {
+  position: relative;
+  z-index: 4;
+  width: min(100%, 1040px);
+  padding: 1rem;
+}
+
+.lots-page > .lots-content > .project-hero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.project-banner-content .lots-heading-content {
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .project-logo-above-banner {
@@ -250,7 +277,10 @@
   transform: translateX(-50%);
   width: 60px;
   height: 4px;
-  background: var(--color-secondary, #aab2a6);
+  background: var(
+    --project-tertiary,
+    var(--project-buyer, var(--tertiary-color, #aab2a6))
+  );
   border-radius: 2px;
 }
 

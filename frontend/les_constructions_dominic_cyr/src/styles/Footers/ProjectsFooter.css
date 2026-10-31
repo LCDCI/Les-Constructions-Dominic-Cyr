@@ -1,15 +1,3 @@
-/* Foresta Project Colors */
-.app-footer[data-project='proj-001-foresta'] {
-  --icon-primary: #a9b3aa;
-  --icon-secondary: #89938a;
-}
-
-/* Panorama Project Colors */
-.app-footer[data-project='proj-002-panorama'] {
-  --icon-primary: #545454;
-  --icon-secondary: #737373;
-}
-
 .app-footer {
   background: #ffffff;
   border-top: 1px solid #e6e6e6;
@@ -74,7 +62,7 @@
 }
 
 .app-footer[data-project] .footer-title {
-  color: var(--charcoal-gray, #2c3531);
+  color: var(--project-tertiary, var(--project-buyer, #2c3531));
 }
 
 .footer-content {
@@ -100,22 +88,51 @@
 }
 
 .footer-mini-icon {
-  color: var(--icon-primary, #aab2a6);
+  color: var(--project-tertiary, var(--icon-primary, #aab2a6));
   font-size: 0.9rem;
   flex-shrink: 0;
 }
 
 .footer-link {
   font-size: 15px;
-  color: var(--icon-primary, #aab2a6);
+  color: var(--project-tertiary, var(--icon-primary, #aab2a6));
   text-decoration: none;
   transition: color 0.2s ease;
   line-height: 1.5;
 }
 
 .footer-link:hover {
-  color: var(--icon-secondary, #3a7a8c);
-  text-decoration: underline;
+  color: var(--project-tertiary, var(--icon-secondary, #3a7a8c));
+  text-decoration: none;
+}
+
+.app-footer[data-project] .footer-section-icon {
+  color: var(
+    --project-tertiary,
+    var(--project-buyer, var(--icon-primary, #aab2a6))
+  );
+}
+
+.app-footer[data-project] .footer-vertical-divider {
+  background-color: var(
+    --project-tertiary,
+    var(--project-buyer, var(--icon-primary, #aab2a6))
+  );
+}
+
+.app-footer[data-project] .footer-contact-link {
+  background-color: var(
+    --project-tertiary,
+    var(--project-buyer, var(--icon-primary, #aab2a6))
+  );
+}
+
+.app-footer[data-project] .footer-contact-link:hover {
+  background-color: var(
+    --project-tertiary,
+    var(--project-buyer, var(--icon-secondary, #8a9287))
+  );
+  filter: brightness(0.9);
 }
 
 .footer-bottom {

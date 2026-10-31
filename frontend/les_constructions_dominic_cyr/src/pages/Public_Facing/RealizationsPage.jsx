@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
@@ -214,12 +213,6 @@ const RealizationsPage = () => {
               </article>
             ))}
         </div>
-        <Link
-          to="/contact"
-          className="public-page__button realizations-contact-link"
-        >
-          {t('gallery.contactLink', 'Contact us')}
-        </Link>
       </section>
     </div>
   );

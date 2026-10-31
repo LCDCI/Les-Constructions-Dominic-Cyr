@@ -47,14 +47,14 @@
 }
 
 .footer-section-icon {
-  color: #aab2a6;
+  color: var(--project-tertiary, #aab2a6);
   font-size: clamp(1rem, 2vw, 1.2rem);
 }
 
 .footer-title {
   font-size: clamp(0.9rem, 2vw, 1.1rem);
   font-weight: 700;
-  color: #aab2a6;
+  color: var(--project-tertiary, #aab2a6);
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -74,7 +74,7 @@
 }
 
 .footer-mini-icon {
-  color: #aab2a6;
+  color: var(--project-tertiary, #aab2a6);
   font-size: clamp(0.8rem, 1.5vw, 0.9rem);
 }
 
@@ -92,8 +92,8 @@
 }
 
 .footer-link:hover {
-  color: #aab2a6;
-  text-decoration: underline;
+  color: var(--project-tertiary, #aab2a6);
+  text-decoration: none;
 }
 
 .footer-section-middle {
@@ -108,7 +108,7 @@
 .footer-vertical-divider {
   width: 1px;
   height: clamp(60px, 15vw, 100px);
-  background-color: #aab2a6;
+  background-color: var(--project-tertiary, #aab2a6);
   opacity: 0.3;
 }
 
@@ -119,7 +119,7 @@
   font-size: clamp(13px, 2vw, 15px);
   font-weight: 500;
   color: #ffffff;
-  background-color: #aab2a6;
+  background-color: var(--project-tertiary, #aab2a6);
   text-decoration: none;
   padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px);
   border-radius: 8px;
@@ -132,7 +132,8 @@
 }
 
 .footer-contact-link:hover {
-  background-color: #8a9287;
+  background-color: var(--project-tertiary, #8a9287);
+  filter: brightness(0.9);
   transform: translateY(-1px);
 }
 

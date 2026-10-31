@@ -1,10 +1,14 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLayer.Quote;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.Quote;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.MailerServiceClient;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.BusinessLayer.NotificationService;
+import com.ecp.les_constructions_dominic_cyr.backend.CommunicationSubdomain.DataAccessLayer.NotificationCategory;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Quote.QuoteRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Project.ProjectRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer.QuoteMapper;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Quote.QuoteRequestModel;
@@ -31,6 +35,8 @@ public class QuoteService {
     private final UsersRepository usersRepository;
     private final QuoteNumberGenerator quoteNumberGenerator;
     private final QuoteMapper quoteMapper;
+    private final NotificationService notificationService;
+    private final MailerServiceClient mailerServiceClient;
 
     /**
      * Create a new quote for a project.
@@ -98,6 +104,7 @@ public class QuoteService {
         // Save quote to database
         Quote savedQuote = quoteRepository.save(quote);
         log.info("Quote created with number: {}", quoteNumber);
+        notifyQuoteSubmitted(savedQuote);
 
         return quoteMapper.entityToResponseModel(savedQuote);
     }
@@ -227,6 +234,7 @@ public class QuoteService {
 
         Quote savedQuote = quoteRepository.save(quote);
         log.info("Quote approved: {}", quoteNumber);
+        notifyQuoteDecision(savedQuote, "approved", null);
 
         return quoteMapper.entityToResponseModel(savedQuote);
     }
@@ -264,6 +272,7 @@ public class QuoteService {
 
         Quote savedQuote = quoteRepository.save(quote);
         log.info("Quote rejected: {}", quoteNumber);
+        notifyQuoteDecision(savedQuote, "rejected", rejectionReason);
 
         return quoteMapper.entityToResponseModel(savedQuote);
     }
@@ -300,5 +309,48 @@ public class QuoteService {
                 throw new InvalidProjectDataException("Display order must be >= 0");
             }
         });
+    }
+
+    private void notifyQuoteSubmitted(Quote quote) {
+        String title = "Quote submitted: " + quote.getQuoteNumber();
+        String message = "A contractor submitted a quote for project " + quote.getProjectIdentifier() + ".";
+        String link = "/quotes/" + quote.getQuoteNumber();
+        usersRepository.findByUserRole(UserRole.OWNER).forEach(owner ->
+                notifyAndEmail(owner, title, message, NotificationCategory.QUOTE_SUBMITTED, link,
+                        "Quote submitted for approval", message));
+    }
+
+    private void notifyQuoteDecision(Quote quote, String decision, String reason) {
+        Users contractor = usersRepository.findByAuth0UserId(quote.getContractorId())
+                .or(() -> usersRepository.findByUserIdentifier(quote.getContractorId()))
+                .orElse(null);
+        if (contractor == null) {
+            return;
+        }
+        String title = "Quote " + decision + ": " + quote.getQuoteNumber();
+        String message = "Your quote " + quote.getQuoteNumber() + " was " + decision + "."
+                + (reason == null ? "" : " Reason: " + reason);
+        notifyAndEmail(contractor, title, message,
+                "approved".equals(decision) ? NotificationCategory.QUOTE_APPROVED : NotificationCategory.QUOTE_REJECTED,
+                "/quotes/" + quote.getQuoteNumber(), title, message);
+    }
+
+    private void notifyAndEmail(Users recipient, String title, String message,
+                                NotificationCategory category, String link,
+                                String emailSubject, String emailBody) {
+        try {
+            notificationService.createNotification(recipient.getUserIdentifier().getUserId(),
+                    title, message, category, link);
+            if (recipient.getPrimaryEmail() != null && !recipient.getPrimaryEmail().isBlank()) {
+                mailerServiceClient.sendEmail(recipient.getPrimaryEmail(), emailSubject,
+                        "<html><body><p>" + emailBody + "</p></body></html>",
+                        "Les Constructions Dominic Cyr").subscribe(
+                        null,
+                        error -> log.error("Failed to send quote email to {}", recipient.getPrimaryEmail(), error),
+                        () -> log.info("Quote email sent to {}", recipient.getPrimaryEmail()));
+            }
+        } catch (Exception error) {
+            log.error("Failed to create quote notification for {}", recipient.getPrimaryEmail(), error);
+        }
     }
 }

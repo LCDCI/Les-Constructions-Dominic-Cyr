@@ -4,16 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import {
   getAllForms,
   createForm,
-  reopenForm,
-  completeForm,
   deleteForm,
-  downloadFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import { fetchCustomersWithSharedLots } from '../../features/users/api/usersApi';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchLots } from '../../features/lots/api/lots';
 import '../../styles/Forms/salesperson-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import CustomerFormsPage from './CustomerFormsPage';
 
 const FORM_TYPES = [
   { value: 'EXTERIOR_DOORS', translationKey: 'formTypes.exteriorDoors' },
@@ -38,16 +36,14 @@ const SalespersonFormsPage = () => {
   const [selectedFormType, setSelectedFormType] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
-  const [formToReopen, setFormToReopen] = useState(null);
-  const [reopenReason, setReopenReason] = useState('');
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [formToView, setFormToView] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formToDelete, setFormToDelete] = useState(null);
   const [submitError, setSubmitError] = useState(null);
+  const [completedFormToView, setCompletedFormToView] = useState(null);
 
-  const { getAccessTokenSilently, user } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
   const createModalRef = useRef(null);
 
@@ -143,10 +139,10 @@ const SalespersonFormsPage = () => {
         customerId: selectedCustomer, // Filter lots by both salesperson and customer
         token,
       });
-      // Sort lots by lotNumber (numeric)
+      // Keep assignment choices ordered by the database lot ID.
       const sortedLots = (lotsData || []).sort((a, b) => {
-        const numA = parseInt(a.lotNumber, 10) || 0;
-        const numB = parseInt(b.lotNumber, 10) || 0;
+        const numA = Number(a.id) || 0;
+        const numB = Number(b.id) || 0;
         return numA - numB;
       });
       setLots(sortedLots);
@@ -215,72 +211,6 @@ const SalespersonFormsPage = () => {
     setSubmitError(null);
   };
 
-  const handleReopenForm = async () => {
-    try {
-      if (!reopenReason.trim()) {
-        setSubmitError('Please provide a reason for reopening');
-        return;
-      }
-
-      const { getAuthAudience } = await import('../../utils/authConfig');
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: getAuthAudience() || 'https://construction-api.loca',
-        },
-      });
-
-      await reopenForm(formToReopen.formId, { reopenReason }, token);
-
-      setIsReopenModalOpen(false);
-      setFormToReopen(null);
-      setReopenReason('');
-      await fetchData();
-    } catch (error) {
-      if (error?.response?.status === 404) {
-        redirectToError(404);
-      } else if (error?.response?.data?.message) {
-        setSubmitError(error.response.data.message);
-      } else {
-        setSubmitError('Failed to reopen form. Please try again.');
-      }
-    }
-  };
-
-  const handleCompleteForm = async formId => {
-    try {
-      const { getAuthAudience } = await import('../../utils/authConfig');
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: getAuthAudience() || 'https://construction-api.loca',
-        },
-      });
-
-      await completeForm(formId, token);
-      await fetchData();
-    } catch (error) {
-      if (error?.response?.status === 404) {
-        redirectToError(404);
-      } else {
-        redirectToError();
-      }
-    }
-  };
-
-  const handleDownloadForm = async form => {
-    try {
-      const { getAuthAudience } = await import('../../utils/authConfig');
-      const token = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: getAuthAudience() || 'https://construction-api.loca',
-        },
-      });
-
-      await downloadFinalizedForm(form.formId, token);
-    } catch (error) {
-      setSubmitError('Failed to download form. Please try again.');
-    }
-  };
-
   const handleViewForm = form => {
     setFormToView(form);
     setIsViewModalOpen(true);
@@ -338,6 +268,9 @@ const SalespersonFormsPage = () => {
   const filteredForms = forms.filter(form => {
     const matchesSearch =
       form.customerName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      form.customerId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      form.lotNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      form.lotIdentifier?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       form.formType?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
@@ -345,6 +278,11 @@ const SalespersonFormsPage = () => {
 
     return matchesSearch && matchesStatus;
   });
+  const formsByLot = filteredForms.reduce((groups, form) => {
+    const lot = form.lotNumber || t('labels.unknownLot', 'Unknown lot');
+    (groups[lot] ||= []).push(form);
+    return groups;
+  }, {});
 
   const getCustomerName = customerId => {
     const customer = customers.find(c => c.userIdentifier === customerId);
@@ -445,111 +383,103 @@ const SalespersonFormsPage = () => {
               <p>{t('noForms', 'No forms found')}</p>
             </div>
           ) : (
-            <div className="forms-list">
-              {filteredForms.map(form => (
-                <div key={form.formId} className="form-card">
-                  <div className="form-card-header">
-                    <h3 className="form-card-title">
-                      {t(
-                        `formTypes.${form.formType}`,
-                        form.formType.replace(/_/g, ' ')
-                      )}
-                    </h3>
-                    <span
-                      className={`form-status form-status-${form.formStatus}`}
-                    >
-                      {t(
-                        `status.${form.formStatus.toLowerCase().replace('_', '')}`,
-                        form.formStatus
-                      )}
-                    </span>
+            <div className="forms-lot-groups">
+              {Object.entries(formsByLot).map(([lot, lotForms]) => (
+                <section key={lot} className="forms-lot-group">
+                  <h2 className="forms-lot-title">
+                    {t('labels.lot', 'Lot')}: {lot}
+                  </h2>
+                  <div className="forms-list">
+                    {lotForms.map(form => (
+                      <div key={form.formId} className="form-card">
+                        <div className="form-card-header">
+                          <h3 className="form-card-title">
+                            {t(
+                              `formTypes.${form.formType}`,
+                              form.formType.replace(/_/g, ' ')
+                            )}
+                          </h3>
+                          <span
+                            className={`form-status form-status-${form.formStatus}`}
+                          >
+                            {t(
+                              `status.${form.formStatus.toLowerCase().replace('_', '')}`,
+                              form.formStatus
+                            )}
+                          </span>
+                        </div>
+                        <div className="form-card-body">
+                          <p>
+                            <strong>{t('labels.customer', 'Customer')}:</strong>{' '}
+                            {getCustomerName(form.customerId)}
+                          </p>
+                          <p>
+                            <strong>{t('labels.project', 'Project')}:</strong>{' '}
+                            {getProjectName(form.projectIdentifier)}
+                          </p>
+                          <p>
+                            <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
+                            {form.lotNumber || form.lotIdentifier}
+                          </p>
+                          <p>
+                            <strong>{t('labels.assigned', 'Assigned')}:</strong>{' '}
+                            {new Date(form.assignedDate).toLocaleDateString()}
+                          </p>
+                          {form.lastSubmittedDate && (
+                            <p>
+                              <strong>
+                                {t('labels.submitted', 'Submitted')}:
+                              </strong>{' '}
+                              {new Date(
+                                form.lastSubmittedDate
+                              ).toLocaleDateString()}
+                            </p>
+                          )}
+                          {form.reopenedDate && (
+                            <p>
+                              <strong>
+                                {t('labels.reopened', 'Reopened')}:
+                              </strong>{' '}
+                              {new Date(form.reopenedDate).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                        <div className="form-card-actions">
+                          {form.formStatus === 'SUBMITTED' && (
+                            <>
+                              <button
+                                className="form-action-button form-action-view"
+                                onClick={() => handleViewForm(form)}
+                              >
+                                {t('buttons.viewHistory', 'View History')}
+                              </button>
+                            </>
+                          )}
+                          {form.formStatus === 'COMPLETED' && (
+                            <button
+                              className="form-action-button form-action-view"
+                              onClick={() => setCompletedFormToView(form)}
+                            >
+                              {t('buttons.viewForm', 'View form')}
+                            </button>
+                          )}
+                          {(form.formStatus === 'ASSIGNED' ||
+                            form.formStatus === 'DRAFT') && (
+                            <button
+                              className="form-action-button form-action-delete"
+                              onClick={() => {
+                                setFormToDelete(form);
+                                setIsDeleteModalOpen(true);
+                              }}
+                            >
+                              {t('buttons.delete', 'Delete')}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="form-card-body">
-                    <p>
-                      <strong>{t('labels.customer', 'Customer')}:</strong>{' '}
-                      {getCustomerName(form.customerId)}
-                    </p>
-                    <p>
-                      <strong>{t('labels.project', 'Project')}:</strong>{' '}
-                      {getProjectName(form.projectIdentifier)}
-                    </p>
-                    <p>
-                      <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
-                      {form.lotIdentifier}
-                    </p>
-                    <p>
-                      <strong>{t('labels.assigned', 'Assigned')}:</strong>{' '}
-                      {new Date(form.assignedDate).toLocaleDateString()}
-                    </p>
-                    {form.lastSubmittedDate && (
-                      <p>
-                        <strong>{t('labels.submitted', 'Submitted')}:</strong>{' '}
-                        {new Date(form.lastSubmittedDate).toLocaleDateString()}
-                      </p>
-                    )}
-                    {form.reopenedDate && (
-                      <p>
-                        <strong>{t('labels.reopened', 'Reopened')}:</strong>{' '}
-                        {new Date(form.reopenedDate).toLocaleDateString()}
-                      </p>
-                    )}
-                  </div>
-                  <div className="form-card-actions">
-                    {form.formStatus === 'SUBMITTED' && (
-                      <>
-                        <button
-                          className="form-action-button form-action-view"
-                          onClick={() => handleViewForm(form)}
-                        >
-                          {t('buttons.viewHistory', 'View History')}
-                        </button>
-                        <button
-                          className="form-action-button form-action-reopen"
-                          onClick={() => {
-                            setFormToReopen(form);
-                            setIsReopenModalOpen(true);
-                          }}
-                        >
-                          {t('buttons.reopen', 'Reopen')}
-                        </button>
-                        <button
-                          className="form-action-button form-action-complete"
-                          onClick={() => handleCompleteForm(form.formId)}
-                        >
-                          {t('buttons.complete', 'Complete')}
-                        </button>
-                      </>
-                    )}
-                    {form.formStatus === 'COMPLETED' && (
-                      <>
-                        <button
-                          className="form-action-button form-action-view"
-                          onClick={() => handleViewForm(form)}
-                        >
-                          {t('buttons.viewHistory', 'View History')}
-                        </button>
-                        <button
-                          className="form-action-button form-action-download"
-                          onClick={() => handleDownloadForm(form)}
-                        >
-                          {t('buttons.downloadPdf', 'Download PDF')}
-                        </button>
-                      </>
-                    )}
-                    {(form.formStatus === 'ASSIGNED' ||
-                      form.formStatus === 'DRAFT') && (
-                      <button
-                        className="form-action-button form-action-delete"
-                        onClick={() => {
-                          setFormToDelete(form);
-                          setIsDeleteModalOpen(true);
-                        }}
-                      >
-                        {t('buttons.delete', 'Delete')}
-                      </button>
-                    )}
-                  </div>
-                </div>
+                </section>
               ))}
             </div>
           )}
@@ -658,7 +588,7 @@ const SalespersonFormsPage = () => {
                   </option>
                   {lots.map(lot => (
                     <option key={lot.lotId} value={lot.lotId}>
-                      {lot.lotNumber} -{' '}
+                      {lot.id ?? lot.lotId} -{' '}
                       {lot.civicAddress ||
                         t('modal.create.noAddress', 'No address')}
                     </option>
@@ -705,65 +635,6 @@ const SalespersonFormsPage = () => {
         </div>
       )}
 
-      {/* Reopen Form Modal */}
-      {isReopenModalOpen && (
-        <div
-          className="forms-modal-overlay"
-          onClick={() => setIsReopenModalOpen(false)}
-        >
-          <div className="forms-modal" onClick={e => e.stopPropagation()}>
-            <div className="forms-modal-header">
-              <h2>{t('modal.reopen.title', 'Reopen Form')}</h2>
-              <button
-                className="forms-modal-close"
-                onClick={() => setIsReopenModalOpen(false)}
-              >
-                ×
-              </button>
-            </div>
-            <div className="forms-modal-body">
-              {submitError && (
-                <div className="forms-error forms-error-modal">
-                  <p>{submitError}</p>
-                  <button onClick={() => setSubmitError(null)}>×</button>
-                </div>
-              )}
-              <div className="forms-form-group">
-                <label htmlFor="reopenReason">
-                  {t('modal.reopen.reasonLabel', 'Reason for Reopening')}{' '}
-                  {t('modal.reopen.required', '*')}
-                </label>
-                <textarea
-                  id="reopenReason"
-                  value={reopenReason}
-                  onChange={e => setReopenReason(e.target.value)}
-                  className="forms-form-textarea"
-                  placeholder={t(
-                    'modal.reopen.reasonPlaceholder',
-                    'Explain why this form needs to be reopened...'
-                  )}
-                  rows="4"
-                />
-              </div>
-            </div>
-            <div className="forms-modal-footer">
-              <button
-                className="forms-modal-button forms-modal-button-secondary"
-                onClick={() => setIsReopenModalOpen(false)}
-              >
-                {t('buttons.cancel', 'Cancel')}
-              </button>
-              <button
-                className="forms-modal-button forms-modal-button-primary"
-                onClick={handleReopenForm}
-              >
-                {t('modal.reopen.buttonReopen', 'Reopen Form')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* View Form Modal */}
       {isViewModalOpen && formToView && (
         <div className="forms-modal-overlay" onClick={closeViewModal}>
@@ -789,7 +660,7 @@ const SalespersonFormsPage = () => {
                 </p>
                 <p>
                   <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
-                  {formToView.lotIdentifier}
+                  {formToView.lotNumber || formToView.lotIdentifier}
                 </p>
               </div>
               <div className="forms-data-block">
@@ -866,6 +737,13 @@ const SalespersonFormsPage = () => {
             </div>
           </div>
         </div>
+      )}
+      {completedFormToView && (
+        <CustomerFormsPage
+          initialForm={completedFormToView}
+          embedded
+          onClose={() => setCompletedFormToView(null)}
+        />
       )}
     </div>
   );

@@ -3,7 +3,13 @@
   "subtitle": "Review and manage customer form submissions",
   "loading": "Loading forms...",
   "noForms": "No forms found",
+  "status": {
+    "submitted": "Submitted",
+    "reopened": "Reopened",
+    "completed": "Completed"
+  },
   "filters": {
+    "search": "Search by customer or lot",
     "type": "Form Type",
     "status": "Status",
     "allStatuses": "All",
@@ -30,16 +36,26 @@
     "lot": "Lot",
     "submitted": "Submitted",
     "reopened": "Reopened",
-    "reopenReason": "Reopen Reason"
+    "reopenReason": "Reopen Reason",
+    "form": "Form"
   },
   "buttons": {
+    "editForms": "Edit Forms",
     "viewForm": "View Form",
     "reopen": "Request Changes",
     "complete": "Approve & Complete",
     "downloadPdf": "Download PDF",
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save"
   },
   "modal": {
+    "editForms": {
+      "title": "Edit Form Options",
+      "noOptions": "This form has no configurable options yet.",
+      "image": "Option image",
+      "addOption": "Add option"
+    },
     "cancel": "Cancel",
     "formData": "Form Data",
     "noFormData": "No form data available",

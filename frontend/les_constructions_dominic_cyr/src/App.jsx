@@ -52,10 +52,8 @@ import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import InboxPage from './pages/Inbox/InboxPage';
 import RoleBasedRedirect from './components/RoleBasedRedirect';
 import SalespersonFormsPage from './pages/Forms/SalespersonFormsPage';
-import CustomerFormsPage from './pages/Forms/CustomerFormsPage';
 import CustomerFormsSelectionPage from './pages/Forms/CustomerFormsSelectionPage';
 import OwnerReviewFormsPage from './pages/Forms/OwnerReviewFormsPage';
-import ComingSoonPage from './pages/ComingSoonPage';
 // loadTheme from './utils/themeLoader';
 import { setupAxiosInterceptors } from './utils/axios';
 import { clearAppSession } from './features/users/api/clearAppSession';
@@ -117,7 +115,6 @@ const PRIVATE_FOOTER_ROUTE_PATTERNS = [
   '/projects/:projectId/schedule',
   '/projects/:projectIdentifier/lots/select',
   '/projects/:projectIdentifier/lots/:lotId/documents',
-  '/projects/:projectIdentifier/lots/:lotId/forms',
   '/projects/:projectIdentifier/manage-lots',
   '/projects/:projectIdentifier/overview',
   '/projects/:projectIdentifier/living-environment',
@@ -557,16 +554,6 @@ export default function App() {
                 />
               }
             />
-            <Route
-              path="/projects/:projectId/lots/:lotId/forms"
-              element={
-                <ProtectedRoute
-                  allowedRoles={['CUSTOMER']}
-                  element={<CustomerFormsPage />}
-                />
-              }
-            />
-
             <Route
               path="/customers/documents"
               element={

@@ -173,7 +173,14 @@ const LivingEnvironmentPage = () => {
 
   if (loading) {
     return (
-      <div className="living-environment-page">
+      <div
+        className="living-environment-page"
+        style={{
+          '--primary-color': data?.primaryColor || '#4c4d4f',
+          '--tertiary-color': data?.tertiaryColor || '#628db5',
+          '--buyer-color': data?.buyerColor || '#aab2a6',
+        }}
+      >
         <ProjectBanner projectIdentifier={projectIdentifier} />
         <div className="container">
           <div className="loading-spinner">

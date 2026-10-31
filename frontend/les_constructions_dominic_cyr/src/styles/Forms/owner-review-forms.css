@@ -114,6 +114,17 @@
   gap: 1.5rem;
 }
 
+.forms-lot-groups {
+  display: grid;
+  gap: 2rem;
+}
+
+.forms-lot-title {
+  margin: 0 0 1rem;
+  color: #333;
+  font-size: 1.25rem;
+}
+
 .form-card {
   background: white;
   border: 1px solid #e0e0e0;
@@ -395,7 +406,7 @@
 .forms-form-group .optional {
   color: #999;
   font-weight: normal;
-  font-style: italic;
+  font-style: normal;
 }
 
 .forms-form-textarea {

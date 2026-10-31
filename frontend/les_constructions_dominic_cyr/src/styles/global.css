@@ -260,8 +260,13 @@ button {
 }
 
 a {
-  text-decoration: none;
+  text-decoration: none !important;
   transition: var(--transition);
+}
+
+em,
+i {
+  font-style: normal !important;
 }
 
 input,

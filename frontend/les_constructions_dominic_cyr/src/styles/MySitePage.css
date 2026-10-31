@@ -277,7 +277,7 @@
 
 .my-site-nested-page:hover {
   color: var(--charcoal-gray);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .my-site-modal-item {

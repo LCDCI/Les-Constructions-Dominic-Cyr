@@ -7,6 +7,7 @@ public class InquiryResponseModel {
     private String name;
     private String email;
     private String phone;
+    private String contactSubject;
     private String message;
     private OffsetDateTime createdAt;
 
@@ -21,6 +22,8 @@ public class InquiryResponseModel {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+    public String getContactSubject() { return contactSubject; }
+    public void setContactSubject(String contactSubject) { this.contactSubject = contactSubject; }
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }

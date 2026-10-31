@@ -16,12 +16,14 @@ import {
   GoTrash,
 } from 'react-icons/go';
 import useBackendUser from '../../../hooks/useBackendUser';
+import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import './NotificationItem.css';
 
 const NotificationItem = ({ notification, onMarkAsRead, onDelete }) => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth0();
   const { role } = useBackendUser();
+  const { t, currentLanguage } = usePageTranslations('inbox');
 
   const resolveNotificationLink = link => {
     if (!link) return link;
@@ -62,20 +64,80 @@ const NotificationItem = ({ notification, onMarkAsRead, onDelete }) => {
     const diffInSeconds = Math.floor((now - date) / 1000);
 
     if (diffInSeconds < 60) {
-      return 'Just now';
+      return t('time.justNow', 'À l’instant');
     } else if (diffInSeconds < 3600) {
       const minutes = Math.floor(diffInSeconds / 60);
-      return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+      return t('time.minutesAgo', '{{count}} minute(s)', { count: minutes });
     } else if (diffInSeconds < 86400) {
       const hours = Math.floor(diffInSeconds / 3600);
-      return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      return t('time.hoursAgo', '{{count}} heure(s)', { count: hours });
     } else if (diffInSeconds < 604800) {
       const days = Math.floor(diffInSeconds / 86400);
-      return `${days} day${days > 1 ? 's' : ''} ago`;
+      return t('time.daysAgo', '{{count}} jour(s)', { count: days });
     } else {
       return date.toLocaleDateString();
     }
   };
+
+  const categoryLabel = t(
+    `categories.${notification.category}`,
+    notification.category.replace(/_/g, ' ')
+  );
+
+  const translateNotificationText = value => {
+    if (!value || currentLanguage !== 'fr') return value;
+    const replacements = [
+      [/^New Inquiry Received$/, 'Nouvelle demande reçue'],
+      [
+        /^A new inquiry has been received from (.+)$/,
+        'Une nouvelle demande a été reçue de $1',
+      ],
+      [/^New documents uploaded$/, 'Nouveaux documents téléversés'],
+      [/^(.+) uploaded (.+)$/, '$1 a téléversé $2'],
+      [/^Assigned to Lot (.+)$/, 'Assigné au lot $1'],
+      [
+        /^You have been assigned to lot (.+) at (.+)$/,
+        'Vous avez été assigné au lot $1 à l’adresse $2',
+      ],
+      [/^Task Updated$/, 'Tâche mise à jour'],
+      [
+        /^Task "(.+)" was updated\. Period: (.+) to (.+)\. Status: (.+)\.$/,
+        'La tâche « $1 » a été mise à jour. Période : $2 à $3. Statut : $4.',
+      ],
+      [/^Project Schedule Updated$/, 'Calendrier du projet mis à jour'],
+      [
+        /^The project schedule was updated\. Tasks: (.+)\. Start: (.+), End: (.+)\.$/,
+        'Le calendrier du projet a été mis à jour. Tâches : $1. Début : $2, fin : $3.',
+      ],
+      [/^New Form to Complete: (.+)$/, 'Nouveau formulaire à remplir : $1'],
+      [/^Form Submitted: (.+)$/, 'Formulaire soumis : $1'],
+      [/^Form Reopened: (.+)$/, 'Formulaire rouvert : $1'],
+      [
+        /^Your (.+) form for project (.+) has been reopened\. Reason: (.+)\. Please review and resubmit\.$/,
+        'Votre formulaire $1 pour le projet $2 a été rouvert. Motif : $3. Veuillez le réviser et le soumettre à nouveau.',
+      ],
+      [
+        /^(.+) has submitted their (.+) form for project (.+)\.$/,
+        '$1 a soumis son formulaire $2 pour le projet $3.',
+      ],
+      [/^Quote submitted: (.+)$/, 'Soumission envoyée : $1'],
+      [/^Quote approved: (.+)$/, 'Soumission approuvée : $1'],
+      [/^Quote rejected: (.+)$/, 'Soumission refusée : $1'],
+      [
+        /^A contractor submitted a quote for project (.+)\.$/,
+        'Un entrepreneur a soumis une soumission pour le projet $1.',
+      ],
+      [
+        /^Your quote (.+) was (approved|rejected)\.(.*)$/,
+        'Votre soumission $1 a été $2.$3',
+      ],
+    ];
+    const replacement = replacements.find(([pattern]) => pattern.test(value));
+    return replacement ? value.replace(replacement[0], replacement[1]) : value;
+  };
+
+  const translatedTitle = translateNotificationText(notification.title);
+  const translatedMessage = translateNotificationText(notification.message);
 
   const getCategoryIcon = category => {
     // Returns appropriate icon component based on notification category
@@ -126,23 +188,21 @@ const NotificationItem = ({ notification, onMarkAsRead, onDelete }) => {
       </div>
       <div className="notification-content">
         <div className="notification-header">
-          <h3 className="notification-title">{notification.title}</h3>
+          <h3 className="notification-title">{translatedTitle}</h3>
           {!notification.isRead && (
-            <span className="notification-badge">New</span>
+            <span className="notification-badge">{t('new', 'Nouveau')}</span>
           )}
         </div>
-        <p className="notification-message">{notification.message}</p>
+        <p className="notification-message">{translatedMessage}</p>
         <div className="notification-footer">
-          <span className="notification-category">
-            {notification.category.replace(/_/g, ' ')}
-          </span>
+          <span className="notification-category">{categoryLabel}</span>
           <span className="notification-time">
             {formatDate(notification.createdAt)}
           </span>
           <button
             type="button"
             className="notification-delete-button"
-            aria-label="Delete notification"
+            aria-label={t('deleteNotification', 'Supprimer la notification')}
             onClick={event => {
               event.stopPropagation();
               onDelete?.(notification.notificationId);

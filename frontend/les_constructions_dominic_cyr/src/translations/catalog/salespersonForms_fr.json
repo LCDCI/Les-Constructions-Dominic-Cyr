@@ -30,6 +30,9 @@
     "reopened": "Réouvert"
   },
   "buttons": {
+    "viewHistory": "Voir l'historique",
+    "downloadPdf": "Télécharger le PDF",
+    "close": "Fermer",
     "reopen": "Réouvrir",
     "complete": "Compléter",
     "delete": "Supprimer",

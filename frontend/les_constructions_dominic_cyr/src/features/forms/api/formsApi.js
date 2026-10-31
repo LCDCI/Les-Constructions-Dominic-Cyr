@@ -119,7 +119,7 @@ export async function reopenForm(formId, payload, token) {
 }
 
 /**
- * Complete a form (salesperson/owner action)
+ * Complete a form (owner-only approval action)
  * @param {string} formId - Form ID
  * @param {string} token - Auth token
  */
@@ -185,11 +185,20 @@ export async function getFormsByLot(lotId, options = {}, token) {
  * @param {string} formId - Form ID
  * @param {string} token - Auth token
  */
-export async function downloadFinalizedForm(formId, token) {
-  const response = await axios.get(`${API_BASE}/forms/${formId}/download`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    responseType: 'blob',
-  });
+export async function downloadFinalizedForm(
+  formId,
+  token,
+  language = 'en',
+  { forceGenerated = false } = {}
+) {
+  const generatedQuery = forceGenerated ? '&generated=true' : '';
+  const response = await axios.get(
+    `${API_BASE}/forms/${formId}/download?language=${encodeURIComponent(language)}${generatedQuery}`,
+    {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      responseType: 'blob',
+    }
+  );
 
   const contentDisposition = response.headers['content-disposition'] || '';
   const fileNameMatch = contentDisposition.match(/filename="?([^";]+)"?/i);

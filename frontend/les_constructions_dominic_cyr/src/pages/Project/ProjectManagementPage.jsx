@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Project/project-management.css';
@@ -309,11 +308,6 @@ export default function ProjectManagementPage() {
                 'Selon l’ampleur et la complexité du projet, la tarification pourrait être à coût fixe ou à prix majoré. Contactez-nous pour en discuter.'
               )}
             </p>
-            <div className="pm-contact-link-wrapper">
-              <Link to="/contact" className="pm-contact-link">
-                {t('advantages.contactLink', 'Contactez-nous')}
-              </Link>
-            </div>
           </div>
         </div>
       </section>

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import 'react-phone-number-input/style.css';
 import PhoneInput from 'react-phone-number-input';
 import { validate } from 'react-email-validator';
 import { useTranslation } from 'react-i18next';
+import { projectApi } from '../features/projects/api/projectApi';
 /**
  * Reusable InquiryForm component
  * Props:
@@ -23,6 +25,11 @@ export default function InquiryForm({ onSuccess, className }) {
       emailPlaceholder: 'votre.courriel@exemple.com',
       phoneLabel: 'Téléphone',
       phonePlaceholder: 'Entrez votre numéro de téléphone',
+      contactSubjectLabel: 'Je vous contacte au sujet de',
+      projectOption: 'Projet',
+      renovationOption: 'Rénovation',
+      projectManagementOption: 'Gestion de projet',
+      otherOption: 'Autre',
       messageLabel: 'Message',
       messagePlaceholder: 'Parlez-nous de votre projet...',
       submitButton: 'Soumettre la demande',
@@ -40,6 +47,11 @@ export default function InquiryForm({ onSuccess, className }) {
       emailPlaceholder: 'your.email@example.com',
       phoneLabel: 'Phone',
       phonePlaceholder: 'Enter phone number',
+      contactSubjectLabel: 'I am contacting about',
+      projectOption: 'Project',
+      renovationOption: 'Renovation',
+      projectManagementOption: 'Project management',
+      otherOption: 'Other',
       messageLabel: 'Message',
       messagePlaceholder: 'Tell us about your project...',
       submitButton: 'Submit Inquiry',
@@ -56,10 +68,38 @@ export default function InquiryForm({ onSuccess, className }) {
     name: '',
     email: '',
     phone: '',
+    contactSubject: '',
     message: '',
   });
+  const [projects, setProjects] = useState([]);
   const [status, setStatus] = useState({ message: '', type: '' });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    projectApi
+      .getAllProjects()
+      .then(projectsData => {
+        if (active)
+          setProjects(Array.isArray(projectsData) ? projectsData : []);
+      })
+      .catch(() => {
+        if (active) {
+          setProjects([
+            { projectIdentifier: 'proj-001-foresta', projectName: 'FÖRESTA' },
+            { projectIdentifier: 'proj-002-panorama', projectName: 'PANORAMA' },
+          ]);
+        }
+
+        InquiryForm.propTypes = {
+          onSuccess: PropTypes.func,
+          className: PropTypes.string,
+        };
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (status.type === 'success' && status.message) {
@@ -86,7 +126,7 @@ export default function InquiryForm({ onSuccess, className }) {
 
   const onSubmit = async e => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.message) {
+    if (!form.name || !form.email || !form.contactSubject || !form.message) {
       setStatus({
         message: t('inquiryForm.requiredFields', f.requiredFields),
         type: 'error',
@@ -117,7 +157,13 @@ export default function InquiryForm({ onSuccess, className }) {
         const message =
           data.message || 'Thank you! Your inquiry has been received.';
         setStatus({ message, type: 'success' });
-        setForm({ name: '', email: '', phone: '', message: '' });
+        setForm({
+          name: '',
+          email: '',
+          phone: '',
+          contactSubject: '',
+          message: '',
+        });
         onSuccess && onSuccess(message);
       } else {
         let errorMessage = t(
@@ -182,6 +228,43 @@ export default function InquiryForm({ onSuccess, className }) {
             disabled={loading}
             defaultCountry="CA"
           />
+        </div>
+        <div className="form-group">
+          <label htmlFor="contactSubject">
+            {t('inquiryForm.contactSubjectLabel', f.contactSubjectLabel)} *
+          </label>
+          <select
+            id="contactSubject"
+            name="contactSubject"
+            value={form.contactSubject}
+            onChange={onChange}
+            disabled={loading}
+            required
+          >
+            <option value="">
+              {t('inquiryForm.contactSubjectPlaceholder', 'Select an option')}
+            </option>
+            {projects.map(project => (
+              <option
+                key={project.projectIdentifier}
+                value={project.projectIdentifier}
+              >
+                {project.projectName || project.projectIdentifier}
+              </option>
+            ))}
+            <option value="renovation">
+              {t('inquiryForm.renovationOption', f.renovationOption)}
+            </option>
+            <option value="project-management">
+              {t(
+                'inquiryForm.projectManagementOption',
+                f.projectManagementOption
+              )}
+            </option>
+            <option value="other">
+              {t('inquiryForm.otherOption', f.otherOption)}
+            </option>
+          </select>
         </div>
         <div className="form-group">
           <label>{t('inquiryForm.messageLabel', f.messageLabel)} *</label>

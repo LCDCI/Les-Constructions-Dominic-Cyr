@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useNavigate } from 'react-router-dom';
 import { getMyForms } from '../../features/forms/api/formsApi';
+import { fetchLots } from '../../features/lots/api/lots';
+import CustomerFormsPage from './CustomerFormsPage';
 import '../../styles/Forms/customer-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -9,9 +10,9 @@ const CustomerFormsSelectionPage = () => {
   const { t } = usePageTranslations('customerForms');
   const [formsByProject, setFormsByProject] = useState({});
   const [loading, setLoading] = useState(true);
+  const [activeForm, setActiveForm] = useState(null);
 
   const { getAccessTokenSilently } = useAuth0();
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -29,9 +30,30 @@ const CustomerFormsSelectionPage = () => {
 
       const formsData = await getMyForms(token);
       const forms = formsData || [];
+      const projectIds = [
+        ...new Set(forms.map(form => form.projectIdentifier).filter(Boolean)),
+      ];
+      const lotsByIdentifier = {};
+      await Promise.all(
+        projectIds.map(async projectIdentifier => {
+          const lots = await fetchLots({ projectIdentifier, token });
+          lots.forEach(lot => {
+            if (lot.lotId) {
+              lotsByIdentifier[lot.lotId] = lot.id ?? lot.lotNumber;
+            }
+          });
+        })
+      );
+      const formsWithLotNumbers = forms.map(form => ({
+        ...form,
+        lotNumber:
+          form.lotNumber ||
+          lotsByIdentifier[form.lotIdentifier] ||
+          form.lotIdentifier,
+      }));
 
       // Group forms by project
-      const grouped = forms.reduce((acc, form) => {
+      const grouped = formsWithLotNumbers.reduce((acc, form) => {
         const projectId = form.projectIdentifier || 'unknown';
         if (!acc[projectId]) {
           acc[projectId] = {
@@ -49,12 +71,6 @@ const CustomerFormsSelectionPage = () => {
       setFormsByProject({});
       setLoading(false);
     }
-  };
-
-  const handleFormClick = form => {
-    navigate(
-      `/projects/${form.projectIdentifier}/lots/${form.lotIdentifier}/forms`
-    );
   };
 
   const getStatusClass = status => {
@@ -119,56 +135,80 @@ const CustomerFormsSelectionPage = () => {
             <div className="forms-all-projects">
               {projectEntries.map(([projectId, projectData]) => (
                 <div key={projectId} className="forms-project-group">
-                  <h2 className="forms-project-title">
-                    {projectData.projectName}
-                  </h2>
-                  <div className="forms-list">
-                    {projectData.forms.map(form => (
-                      <div
-                        key={form.formId}
-                        className="form-card clickable"
-                        onClick={() => handleFormClick(form)}
-                      >
-                        <div className="form-card-header">
-                          <h3 className="form-card-title">
-                            {t(
-                              `formTypes.${form.formType}`,
-                              form.formType?.replace(/_/g, ' ') || 'Form'
-                            )}
-                          </h3>
-                          <span
-                            className={`form-status-badge ${getStatusClass(form.formStatus)}`}
+                  <h2 className="forms-project-title">{projectId}</h2>
+                  {Object.entries(
+                    projectData.forms.reduce((groups, form) => {
+                      const lot = form.lotNumber || form.lotIdentifier || '—';
+                      (groups[lot] ||= []).push(form);
+                      return groups;
+                    }, {})
+                  ).map(([lot, lotForms]) => (
+                    <section key={lot} className="forms-lot-group">
+                      <h3 className="forms-lot-title">
+                        {t('lot', 'Lot')}: {lot}
+                      </h3>
+                      <div className="forms-list">
+                        {lotForms.map(form => (
+                          <div
+                            key={form.formId}
+                            className="form-card clickable"
+                            onClick={() => setActiveForm(form)}
                           >
-                            {t(
-                              `status.${(form.formStatus || '').toLowerCase()}`,
-                              form.formStatus || 'Unknown'
-                            )}
-                          </span>
-                        </div>
-                        <div className="form-card-body">
-                          {form.lotNumber && (
-                            <p>
-                              <strong>{t('lot', 'Lot')}:</strong>{' '}
-                              {form.lotNumber}
-                            </p>
-                          )}
-                          {form.assignedAt && (
-                            <p>
-                              <strong>
-                                {t('labels.assigned', 'Assigned')}:
-                              </strong>{' '}
-                              {new Date(form.assignedAt).toLocaleDateString()}
-                            </p>
-                          )}
-                        </div>
+                            <div className="form-card-header">
+                              <h3 className="form-card-title">
+                                {t(
+                                  `formTypes.${form.formType}`,
+                                  form.formType?.replace(/_/g, ' ') || 'Form'
+                                )}
+                              </h3>
+                              <span
+                                className={`form-status-badge ${getStatusClass(form.formStatus)}`}
+                              >
+                                {t(
+                                  `status.${(form.formStatus || '').toLowerCase()}`,
+                                  form.formStatus || 'Unknown'
+                                )}
+                              </span>
+                            </div>
+                            <div className="form-card-body">
+                              {form.lotNumber && (
+                                <p>
+                                  <strong>{t('lot', 'Lot')}:</strong>{' '}
+                                  {form.lotNumber}
+                                </p>
+                              )}
+                              <button
+                                type="button"
+                                className="form-card-action"
+                                onClick={event => {
+                                  event.stopPropagation();
+                                  setActiveForm(form);
+                                }}
+                              >
+                                {form.formStatus === 'SUBMITTED' ||
+                                form.formStatus === 'COMPLETED'
+                                  ? t('viewForm', 'View form')
+                                  : t('openForm', 'Open form')}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </section>
+                  ))}
                 </div>
               ))}
             </div>
           )}
         </div>
+        {activeForm && (
+          <CustomerFormsPage
+            initialForm={activeForm}
+            embedded
+            onClose={() => setActiveForm(null)}
+            onSaved={fetchData}
+          />
+        )}
       </div>
     </div>
   );

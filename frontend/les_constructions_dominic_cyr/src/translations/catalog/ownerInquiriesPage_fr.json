@@ -7,6 +7,14 @@
     "name": "Nom",
     "email": "Courriel",
     "phone": "Téléphone",
+    "contactSubject": "Motif de la demande",
+    "contactSubjects": {
+      "proj-001-foresta": "FÖRESTA",
+      "proj-002-panorama": "PANORAMA",
+      "renovation": "Rénovation",
+      "project-management": "Gestion de projet",
+      "other": "Autre"
+    },
     "message": "Message",
     "timestamp": "Horodatage"
   }

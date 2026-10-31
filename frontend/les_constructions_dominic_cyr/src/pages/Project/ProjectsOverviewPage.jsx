@@ -370,7 +370,13 @@ const ProjectOverviewPage = () => {
     !isNaN(finalMapCoords[1]);
 
   return (
-    <div className={`project-overview-page`}>
+    <div
+      className="project-overview-page"
+      style={{
+        '--project-tertiary': overview.tertiaryColor || overview.buyerColor,
+        '--project-buyer': overview.buyerColor || overview.tertiaryColor,
+      }}
+    >
       <ProjectBanner projectIdentifier={projectIdentifier} project={overview} />
       <h1 className="sr-only">
         {overview.projectName ||

@@ -19,6 +19,9 @@ public class Inquiry {
     @Column(length = 30)
     private String phone;
 
+    @Column(name = "contact_subject", nullable = false, length = 120)
+    private String contactSubject;
+
     @Column(nullable = false, length = 2000)
     private String message;
 
@@ -44,6 +47,8 @@ public class Inquiry {
 
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+    public String getContactSubject() { return contactSubject; }
+    public void setContactSubject(String contactSubject) { this.contactSubject = contactSubject; }
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }

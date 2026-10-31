@@ -5,6 +5,8 @@ import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLay
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.FormStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.FormRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.FormResponseModel;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -13,7 +15,10 @@ import java.util.UUID;
  * Mapper for converting between Form entities and presentation models.
  */
 @Component
+@RequiredArgsConstructor
 public class FormMapper {
+
+    private final LotRepository lotRepository;
 
     /**
      * Convert FormRequestModel to Form entity
@@ -46,6 +51,7 @@ public class FormMapper {
                 .formStatus(form.getFormStatus())
                 .projectIdentifier(form.getProjectIdentifier())
                 .lotIdentifier(form.getLotIdentifier().toString())
+                .lotNumber(resolveLotNumber(form))
                 .customerId(form.getCustomerId().toString())
                 .customerName(form.getCustomerName())
                 .customerEmail(form.getCustomerEmail())
@@ -65,6 +71,14 @@ public class FormMapper {
                 .createdAt(form.getCreatedAt())
                 .updatedAt(form.getUpdatedAt())
                 .build();
+    }
+
+    private String resolveLotNumber(Form form) {
+        if (form.getLotIdentifier() == null) {
+            return null;
+        }
+        var lot = lotRepository.findByLotIdentifier_LotId(form.getLotIdentifier());
+        return lot == null || lot.getId() == null ? null : String.valueOf(lot.getId());
     }
 
     /**

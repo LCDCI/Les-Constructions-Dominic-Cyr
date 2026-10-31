@@ -10,6 +10,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationL
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
+import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UserRole;
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.UsersRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.InvalidInputException;
 import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
@@ -322,6 +323,7 @@ public class FormServiceImpl implements FormService {
 
         Form savedForm = formRepository.save(form);
         log.info("Form completed successfully");
+        sendFormCompletedNotification(savedForm);
 
         return formMapper.entityToResponseModel(savedForm);
     }
@@ -464,7 +466,6 @@ public class FormServiceImpl implements FormService {
             Users assignedBy = usersRepository.findByUserIdentifier_UserId(form.getAssignedByUserId()).orElse(null);
             if (assignedBy == null) {
                 log.warn("Cannot send form submitted notification: assigner not found");
-                return;
             }
 
             String formTypeName = getFormTypeDisplayName(form.getFormType());
@@ -477,27 +478,44 @@ public class FormServiceImpl implements FormService {
             );
 
             // Create system notification with salesperson route
-            notificationService.createNotification(
-                    assignedBy.getUserIdentifier().getUserId(),
-                    notificationTitle,
-                    notificationMessage,
-                    NotificationCategory.FORM_SUBMITTED,
-                    "/salesperson/forms"
-            );
-
             // Send email
             String emailSubject = "Form Submitted by " + customerName;
             String emailBody = buildFormSubmittedEmailBody(form, customerName);
 
-            mailerServiceClient.sendEmail(
-                    assignedBy.getPrimaryEmail(),
+            if (assignedBy != null) {
+                notificationService.createNotification(
+                        assignedBy.getUserIdentifier().getUserId(),
+                        notificationTitle,
+                        notificationMessage,
+                        NotificationCategory.FORM_SUBMITTED,
+                        "/salesperson/forms"
+                );
+
+                if (assignedBy.getPrimaryEmail() != null && !assignedBy.getPrimaryEmail().isBlank()) {
+                    mailerServiceClient.sendEmail(
+                            assignedBy.getPrimaryEmail(),
+                            emailSubject,
+                            emailBody,
+                            "Les Constructions Dominic Cyr"
+                    ).subscribe(
+                            null,
+                            error -> log.error("Failed to send form submitted email to {}: {}",
+                                    assignedBy.getPrimaryEmail(), error.getMessage()),
+                            () -> log.info("Form submitted email sent to: {}",
+                                    assignedBy.getPrimaryEmail())
+                    );
+                }
+            }
+
+            notifyOwners(
+                    form,
+                    notificationTitle,
+                    notificationMessage,
+                    NotificationCategory.FORM_SUBMITTED,
+                    "/owner/forms",
                     emailSubject,
                     emailBody,
-                    "Les Constructions Dominic Cyr"
-            ).subscribe(
-                    null,
-                    error -> log.error("Failed to send form submitted email to {}: {}", assignedBy.getPrimaryEmail(), error.getMessage()),
-                    () -> log.info("Form submitted email sent to: {}", assignedBy.getPrimaryEmail())
+                    assignedBy == null ? null : assignedBy.getUserIdentifier().getUserId()
             );
 
         } catch (Exception e) {
@@ -564,12 +582,110 @@ public class FormServiceImpl implements FormService {
                         NotificationCategory.FORM_REOPENED,
                         notificationLink
                 );
+                if (salesperson.getPrimaryEmail() != null && !salesperson.getPrimaryEmail().isBlank()) {
+                    mailerServiceClient.sendEmail(
+                            salesperson.getPrimaryEmail(),
+                            notificationTitle,
+                            "<html><body><p>" + escapeHtml(salespersonNotificationMessage)
+                                    + "</p></body></html>",
+                            "Les Constructions Dominic Cyr"
+                    ).subscribe(
+                            null,
+                            error -> log.error("Failed to send form reopened email to salesperson {}",
+                                    salesperson.getPrimaryEmail(), error),
+                            () -> log.info("Form reopened email sent to salesperson {}",
+                                    salesperson.getPrimaryEmail())
+                    );
+                }
                 log.info("Form reopened notification sent to salesperson: {}", salesperson.getUserIdentifier().getUserId());
             }
+
+            notifyOwners(
+                    form,
+                    notificationTitle,
+                    notificationMessage,
+                    NotificationCategory.FORM_REOPENED,
+                    "/owner/forms",
+                    emailSubject,
+                    emailBody,
+                    null
+            );
 
         } catch (Exception e) {
             log.error("Error sending form reopened notification: {}", e.getMessage(), e);
         }
+    }
+
+    private void sendFormCompletedNotification(Form form) {
+            try {
+                Users customer = usersRepository.findByUserIdentifier_UserId(form.getCustomerId()).orElse(null);
+                if (customer == null) {
+                    return;
+                }
+
+                String formTypeName = getFormTypeDisplayName(form.getFormType());
+                String title = "Form completed: " + formTypeName;
+                String message = "Your " + formTypeName + " form for project "
+                        + form.getProjectIdentifier() + " has been approved and completed.";
+                String link = "/customers/forms";
+                notificationService.createNotification(customer.getUserIdentifier().getUserId(),
+                        title, message, NotificationCategory.FORM_SIGNED, link);
+                if (customer.getPrimaryEmail() != null && !customer.getPrimaryEmail().isBlank()) {
+                    mailerServiceClient.sendEmail(customer.getPrimaryEmail(), title,
+                            "<html><body><p>" + escapeHtml(message) + "</p></body></html>",
+                            "Les Constructions Dominic Cyr").subscribe(
+                            null,
+                            error -> log.error("Failed to send form completed email to {}",
+                                    customer.getPrimaryEmail(), error),
+                            () -> log.info("Form completed email sent to {}", customer.getPrimaryEmail()));
+                }
+            } catch (Exception error) {
+                log.error("Error sending form completed notification", error);
+        }
+    }
+
+    private void notifyOwners(
+            Form form,
+            String title,
+            String message,
+            NotificationCategory category,
+            String link,
+            String emailSubject,
+            String emailBody,
+            UUID excludedUserId
+    ) {
+        usersRepository.findByUserRole(UserRole.OWNER).stream()
+                .filter(owner -> owner.getUserIdentifier() != null)
+                .filter(owner -> excludedUserId == null
+                        || !excludedUserId.equals(owner.getUserIdentifier().getUserId()))
+                .forEach(owner -> {
+                    try {
+                        notificationService.createNotification(
+                                owner.getUserIdentifier().getUserId(),
+                                title,
+                                message,
+                                category,
+                                link
+                        );
+                        if (owner.getPrimaryEmail() != null && !owner.getPrimaryEmail().isBlank()) {
+                            mailerServiceClient.sendEmail(
+                                    owner.getPrimaryEmail(),
+                                    emailSubject,
+                                    emailBody,
+                                    "Les Constructions Dominic Cyr"
+                            ).subscribe(
+                                    null,
+                                    error -> log.error("Failed to send form email to owner {}",
+                                            owner.getPrimaryEmail(), error),
+                                    () -> log.info("Form email sent to owner {}",
+                                            owner.getPrimaryEmail())
+                            );
+                        }
+                    } catch (Exception error) {
+                        log.error("Failed to notify owner {} about form {}",
+                                owner.getPrimaryEmail(), form.getFormIdentifier().getFormId(), error);
+                    }
+                });
     }
 
     private String getFullName(Users user) {

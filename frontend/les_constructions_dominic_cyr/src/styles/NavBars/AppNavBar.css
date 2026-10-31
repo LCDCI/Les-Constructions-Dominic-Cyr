@@ -71,7 +71,7 @@
 .desktop-nav a.active {
   color: #333;
   font-weight: 500;
-  text-decoration: underline;
+  text-decoration: none;
   text-decoration-thickness: 2px;
   text-decoration-color: #aab2a6;
   text-underline-offset: 6px;
@@ -96,7 +96,7 @@
 .projects-nav-trigger.active {
   color: #333;
   font-weight: 500;
-  text-decoration: underline;
+  text-decoration: none;
   text-decoration-color: #aab2a6;
   text-decoration-thickness: 2px;
   text-underline-offset: 6px;
@@ -175,7 +175,7 @@
 .project-page-dropdown a.active {
   color: #333;
   font-weight: 500;
-  text-decoration: underline;
+  text-decoration: none;
   text-decoration-color: #aab2a6;
   text-decoration-thickness: 2px;
   text-underline-offset: 4px;
@@ -377,7 +377,7 @@
 .mobile-nav a.active {
   color: #333;
   font-weight: 500;
-  text-decoration: underline;
+  text-decoration: none;
   text-decoration-color: #aab2a6;
   text-decoration-thickness: 2px;
   text-underline-offset: 5px;

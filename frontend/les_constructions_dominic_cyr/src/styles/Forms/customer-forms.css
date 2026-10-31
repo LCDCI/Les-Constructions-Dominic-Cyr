@@ -36,6 +36,15 @@
   background-color: var(--color-white);
 }
 
+.forms-embedded-shell > .forms-hero,
+.forms-embedded-shell > .forms-content {
+  display: none;
+}
+
+.forms-embedded-shell {
+  min-height: 0;
+}
+
 /* ========== HERO SECTION ========== */
 .forms-hero {
   position: relative;
@@ -232,6 +241,23 @@
 
 .form-card-body strong {
   color: var(--color-primary);
+}
+
+.form-card-action {
+  margin-top: 0.75rem;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 6px;
+  background: var(--color-primary);
+  color: var(--color-white);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.form-card-action:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .form-card-actions {
@@ -475,7 +501,7 @@
 }
 
 .forms-section-ref:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* ── File upload ────────────────────────────────────────── */
@@ -497,7 +523,7 @@
 
 .forms-file-uploading {
   color: var(--color-accent);
-  font-style: italic;
+  font-style: normal;
   margin-top: 0.5rem;
 }
 
@@ -788,7 +814,7 @@
 
 .no-forms-text {
   color: var(--color-text-muted);
-  font-style: italic;
+  font-style: normal;
 }
 
 .lots-list {
