@@ -84,7 +84,7 @@ export default function ProjectTeamModal({
         onClick={e => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h2>Assign Contractor to Project</h2>
+          <h2>Assign Supplier to Project</h2>
           <button className="modal-close" onClick={onClose} disabled={isSaving}>
             ×
           </button>
@@ -94,7 +94,7 @@ export default function ProjectTeamModal({
           {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
-            <label htmlFor="contractor-select">Select Contractor:</label>
+            <label htmlFor="contractor-select">Select Supplier:</label>
             {isLoading ? (
               <p>Loading contractors...</p>
             ) : contractors.length > 0 ? (
@@ -106,7 +106,7 @@ export default function ProjectTeamModal({
                   disabled={isSaving}
                   className="contractor-select"
                 >
-                  <option value="">-- No Contractor --</option>
+                  <option value="">-- No Supplier --</option>
                   {contractors.map(contractor => (
                     <option
                       key={contractor.userIdentifier}
@@ -117,10 +117,10 @@ export default function ProjectTeamModal({
                     </option>
                   ))}
                 </select>
-                <p className="hint-text">Only active contractors are shown</p>
+                <p className="hint-text">Only active suppliers are shown</p>
               </>
             ) : (
-              <p className="no-contractors">No active contractors available</p>
+              <p className="no-contractors">No active suppliers available</p>
             )}
           </div>
 
@@ -133,7 +133,7 @@ export default function ProjectTeamModal({
                 return selectedContractor ? (
                   <>
                     <p>
-                      <strong>Selected Contractor:</strong>
+                      <strong>Selected Supplier:</strong>
                     </p>
                     <p>
                       {selectedContractor.firstName}{' '}

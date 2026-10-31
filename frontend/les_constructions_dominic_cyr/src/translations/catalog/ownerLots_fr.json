@@ -13,6 +13,7 @@
   "pageTitle": "Gestion des lots",
   "backToProjects": "Retour aux projets",
   "addLot": "Ajouter un lot",
+  "assignToAllLots": "Assigner à tous les lots",
   "searchPlaceholder": "Rechercher par adresse ou lot...",
   "filters": {
     "allStatuses": "Tous les statuts",
@@ -32,11 +33,12 @@
   "loadingLots": "Chargement des données des lots...",
   "table": {
     "assignedUsers": "Utilisateurs assignés",
-    "lotNumber": "Lot #",
+    "lotNumber": "Lot # (ID)",
+    "buyer": "Acheteur",
+    "buyerEmail": "Courriel de l'acheteur",
     "civicAddress": "Adresse civique",
     "areaSqft": "Superficie (pi²)",
     "areaSqm": "Superficie (m²)",
-    "price": "Prix",
     "status": "Statut",
     "actions": "Actions",
     "noLotsFound": "Aucun lot trouvé.",
@@ -52,7 +54,7 @@
   },
   "roles": {
     "customer": "CLIENT",
-    "contractor": "ENTREPRENEUR",
+    "contractor": "FOURNISSEUR",
     "salesperson": "VENDEUR"
   },
   "modal": {
@@ -67,19 +69,19 @@
     "createLot": "Créer le lot"
   },
   "form": {
-    "lotNumber": "Numéro de lot",
+    "lotNumber": "Numéro de lot (ID)",
     "lotNumberPlaceholder": "ex: Lot 53",
     "lotNumberRequired": "Le numéro de lot est requis",
+    "cadastralNumber": "Numéro cadastral",
+    "cadastralNumberPlaceholder": "ex: 6 690 952",
+    "cadastralNumberRequired": "Le numéro cadastral est requis",
     "status": "Statut",
     "civicAddress": "Adresse civique",
     "civicAddressPlaceholder": "ex: 123 rue Principale, Ville, QC",
     "civicAddressRequired": "L'adresse civique est requise",
     "assignedUsers": "Utilisateurs assignés",
     "assignedUsersPlaceholder": "Sélectionner des utilisateurs (tout rôle)...",
-    "assignedUsersInfo": "Le statut du lot sera automatiquement défini sur \"Réservé\" lorsque des utilisateurs sont assignés",
-    "price": "Prix (CAD)",
-    "pricePlaceholder": "ex: 150000",
-    "priceNegativeError": "Le prix ne peut pas être négatif",
+    "assignedUsersInfo": "L'attribution d'un client marque le lot comme vendu. L'attribution d'un fournisseur ou d'un vendeur le laisse disponible.",
     "dimensionsSqFt": "Dimensions (pi²)",
     "dimensionsSqFtPlaceholder": "ex: 5000",
     "dimensionsSqFtRequired": "La dimension en pieds carrés est requise",
@@ -95,10 +97,19 @@
     "noUsersAvailable": "Aucun utilisateur éligible disponible"
   },
   "errors": {
+    "duplicateLotId": "Cet identifiant de lot est déjà utilisé dans ce projet.",
+    "bulkAssignmentFailed": "L'utilisateur n'a pas pu être assigné à tous les lots.",
     "errorCreating": "Erreur lors de la création du lot : ",
     "errorUpdating": "Erreur lors de la mise à jour du lot : ",
     "unknownError": "Erreur inconnue",
     "projectMissing": "Identifiant du projet manquant. Veuillez rouvrir cette page depuis un projet."
+  },
+  "bulkAssignment": {
+    "title": "Assigner à tous les lots",
+    "description": "Sélectionnez un fournisseur ou un vendeur à assigner à tous les lots de ce projet.",
+    "placeholder": "Rechercher des fournisseurs ou des vendeurs...",
+    "assigning": "Assignation...",
+    "submit": "Assigner à tous les lots"
   },
   "projectSelection": {
     "title": "Sélectionner un projet",

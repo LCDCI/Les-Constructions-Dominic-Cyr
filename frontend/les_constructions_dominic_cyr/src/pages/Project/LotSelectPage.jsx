@@ -6,7 +6,6 @@ import {
   resolveProjectIdentifier,
 } from '../../features/lots/api/lots';
 import useBackendUser from '../../hooks/useBackendUser';
-import '../../styles/Project/ProjectMetadata.css';
 
 export default function LotSelectPage() {
   const { projectIdentifier } = useParams();
@@ -64,7 +63,7 @@ export default function LotSelectPage() {
     } catch (e) {
       // ignore
     }
-    navigate('/projects');
+    navigate('/owner/my-site/residential-projects');
   };
 
   return (
@@ -83,7 +82,7 @@ export default function LotSelectPage() {
             <div style={{ marginTop: '1rem' }}>
               <button
                 className="btn-secondary"
-                onClick={() => navigate('/projects')}
+                onClick={() => navigate('/owner/my-site/residential-projects')}
               >
                 Back to projects
               </button>
@@ -101,9 +100,7 @@ export default function LotSelectPage() {
                   <button
                     className="btn-primary"
                     onClick={() =>
-                      navigate(
-                        `/projects/${projectIdentifier}/lots/${l.lotId}/metadata`
-                      )
+                      navigate(`/projects/${projectIdentifier}/overview`)
                     }
                   >
                     View lot information

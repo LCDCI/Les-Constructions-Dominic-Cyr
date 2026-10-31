@@ -417,7 +417,7 @@ const QuoteFormPage = () => {
           <div className="form-main">
             {/* Quote Details Section */}
             <div className="bill-details-section">
-              <h2 className="section-heading">Quote Details</h2>
+              <h2 className="section-heading">{t('quote.detailsHeading')}</h2>
               <div className="details-grid details-grid-3">
                 <div className="detail-item">
                   <label>{t('quote.billNumber') || 'Quote Number'}</label>
@@ -461,7 +461,7 @@ const QuoteFormPage = () => {
 
             {/* Customer/Project Section */}
             <div className="bill-details-section">
-              <h2 className="section-heading">Billed To</h2>
+              <h2 className="section-heading">{t('quote.billedTo')}</h2>
               {customerInfo ? (
                 <div className="customer-info-card">
                   <div className="customer-avatar">
@@ -487,14 +487,14 @@ const QuoteFormPage = () => {
                 </div>
               ) : (
                 <div className="customer-info-card placeholder">
-                  <p>Loading customer information...</p>
+                  <p>{t('quote.loadingCustomer')}</p>
                 </div>
               )}
             </div>
 
             {/* Form Fields Section */}
             <div className="form-fields-section">
-              <h2 className="section-heading">Quote Details</h2>
+              <h2 className="section-heading">{t('quote.detailsHeading')}</h2>
               <div className="form-grid form-grid-2">
                 <div className="form-group">
                   <label htmlFor="description">
@@ -506,7 +506,7 @@ const QuoteFormPage = () => {
                     onChange={e =>
                       setFormData({ ...formData, description: e.target.value })
                     }
-                    placeholder="Describe the work, materials, or services included in this quote..."
+                    placeholder={t('quote.descriptionPlaceholder')}
                     rows="4"
                     className="form-textarea"
                   />
@@ -519,7 +519,7 @@ const QuoteFormPage = () => {
                     onChange={e =>
                       setFormData({ ...formData, notes: e.target.value })
                     }
-                    placeholder="Add any additional notes or special instructions..."
+                    placeholder={t('quote.notesPlaceholder')}
                     rows="4"
                     className="form-textarea"
                   />
@@ -844,7 +844,7 @@ const QuoteFormPage = () => {
             </p>
             <div className="preview-content">
               <div className="preview-section">
-                <h3>Quote Summary</h3>
+                <h3>{t('quote.summaryHeading')}</h3>
                 <div className="preview-grid">
                   <div>
                     <p className="preview-label">From</p>
@@ -872,7 +872,7 @@ const QuoteFormPage = () => {
                     <tr>
                       <th>Description</th>
                       <th>Hours</th>
-                      <th>Rate ($/hr)</th>
+                      <th>{t('quote.rate')} ($/hr)</th>
                       <th>Amount</th>
                     </tr>
                   </thead>

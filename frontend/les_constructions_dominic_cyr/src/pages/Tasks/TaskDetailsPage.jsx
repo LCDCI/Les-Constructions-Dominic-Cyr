@@ -279,7 +279,7 @@ const TaskDetailsPage = () => {
 
       if (status === 403) {
         msg =
-          'You do not have permission to update this task. Please ensure you are the assigned contractor or an owner.';
+          'You do not have permission to update this task. Please ensure you are the assigned supplier or an owner.';
       }
 
       setEditError(msg);

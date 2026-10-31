@@ -29,6 +29,7 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
   const [statusFilter, setStatusFilter] = useState('ACTIVE');
+  const [roleFilter, setRoleFilter] = useState('ALL');
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,12 +75,14 @@ export default function UsersPage() {
   }, [getAccessTokenSilently]);
 
   useEffect(() => {
-    if (statusFilter === 'ALL') {
-      setFilteredUsers(users);
-    } else {
-      setFilteredUsers(users.filter(user => user.userStatus === statusFilter));
-    }
-  }, [users, statusFilter]);
+    setFilteredUsers(
+      users.filter(
+        user =>
+          (statusFilter === 'ALL' || user.userStatus === statusFilter) &&
+          (roleFilter === 'ALL' || user.userRole === roleFilter)
+      )
+    );
+  }, [users, statusFilter, roleFilter]);
 
   const openErrorModal = message => {
     setErrorMessage(message);
@@ -251,6 +254,27 @@ export default function UsersPage() {
                 {t('statusOptions.inactive', 'Inactive')}
               </option>
               <option value="ALL">{t('statusOptions.all', 'All')}</option>
+            </select>
+          </div>
+          <div className="filter-container">
+            <label htmlFor="role-filter">{t('role', 'Role:')}</label>
+            <select
+              id="role-filter"
+              value={roleFilter}
+              onChange={e => setRoleFilter(e.target.value)}
+              className="status-filter-select"
+            >
+              <option value="ALL">{t('roleOptions.all', 'All')}</option>
+              <option value="OWNER">{t('roleOptions.owner', 'Owner')}</option>
+              <option value="CONTRACTOR">
+                {t('roleOptions.supplier', 'Supplier')}
+              </option>
+              <option value="SALESPERSON">
+                {t('roleOptions.salesperson', 'Salesperson')}
+              </option>
+              <option value="CUSTOMER">
+                {t('roleOptions.customer', 'Customer')}
+              </option>
             </select>
           </div>
           <button onClick={() => setIsAddModalOpen(true)}>

@@ -17,6 +17,7 @@ public class UserMapper {
         entity.setSecondaryEmail(model.getSecondaryEmail());
         entity.setPhone(model.getPhone());
         entity.setUserRole(model.getUserRole());
+        entity.setSupplierType(model.getSupplierType());
         entity.setUserStatus(UserStatus.ACTIVE);
         return entity;
     }
@@ -34,6 +35,7 @@ public class UserMapper {
         model.setSecondaryEmail(entity.getSecondaryEmail());
         model.setPhone(entity.getPhone());
         model.setUserRole(entity.getUserRole());
+        model.setSupplierType(entity.getSupplierType());
         model.setUserStatus(entity.getUserStatus());
         model.setInviteLink(inviteLink);
 

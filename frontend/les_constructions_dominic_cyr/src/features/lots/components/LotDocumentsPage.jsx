@@ -409,7 +409,7 @@ const LotDocumentsPage = () => {
         ? '/contractors/documents'
         : lot?.projectIdentifier
           ? `/projects/${lot.projectIdentifier}/lots`
-          : '/projects';
+          : '/customer/dashboard';
 
   useEffect(() => {
     loadLotAndDocuments();

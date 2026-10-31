@@ -5,11 +5,15 @@ import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import PropTypes from 'prop-types';
 import './MultiUserSelector.css';
 
+const DEFAULT_ALLOWED_ROLES = ['CONTRACTOR', 'CUSTOMER', 'SALESPERSON'];
+
 const MultiUserSelector = ({
   selectedUserIds = [],
   onChange,
   token,
   placeholder = 'Select users...',
+  onUsersLoaded,
+  allowedRoles = DEFAULT_ALLOWED_ROLES,
 }) => {
   const { t } = usePageTranslations('ownerLots');
 
@@ -28,11 +32,10 @@ const MultiUserSelector = ({
         const allUsers = await fetchUsers(token);
         // Filter to only include contractors, customers, and salespersons
         const eligibleUsers = (allUsers || []).filter(user =>
-          ['CONTRACTOR', 'CUSTOMER', 'SALESPERSON'].includes(
-            user.userRole?.toUpperCase()
-          )
+          allowedRoles.includes(user.userRole?.toUpperCase())
         );
         setUsers(eligibleUsers);
+        onUsersLoaded?.(eligibleUsers);
       } catch (err) {
         console.error('Failed to load users:', err);
         setUsers([]);
@@ -42,7 +45,7 @@ const MultiUserSelector = ({
     };
 
     loadUsers();
-  }, [token]);
+  }, [token, onUsersLoaded, allowedRoles]);
 
   useEffect(() => {
     const handleClickOutside = event => {
@@ -205,6 +208,8 @@ MultiUserSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   token: PropTypes.string,
   placeholder: PropTypes.string,
+  onUsersLoaded: PropTypes.func,
+  allowedRoles: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default MultiUserSelector;

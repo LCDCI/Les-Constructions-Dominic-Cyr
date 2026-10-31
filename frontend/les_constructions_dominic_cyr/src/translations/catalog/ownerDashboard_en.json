@@ -19,6 +19,10 @@
       "title": "Inbox",
       "button": "View Inbox"
     },
+    "quotes": {
+      "title": "Estimates",
+      "button": "View Estimates"
+    },
     "documents": {
       "title": "Documents",
       "button": "View Documents"

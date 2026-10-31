@@ -2,6 +2,7 @@
   "name": "les_constructions_dominic_cyr",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite --port 3000 --host",
     "build": "vite build",
@@ -66,10 +67,14 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "4.6.2",
     "prettier": "^3.2.5",
-    "vite": "^8.3.4",
+    "vite": "^8.3.5",
     "vitest": "4.1.12"
   },
   "overrides": {
-    "esbuild": "0.25.0"
+    "esbuild": "0.25.0",
+    "minimatch": "11.0.1"
+  },
+  "optionalDependencies": {
+    "@rolldown/binding-win32-x64-msvc": "^1.2.16"
   }
 }

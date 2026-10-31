@@ -18,7 +18,9 @@ const ContractorDashboard = () => {
 
   const handleSeeMore = () => {
     const projectId = schedules?.[0]?.projectIdentifier;
-    navigate(projectId ? `/projects/${projectId}/schedule` : '/projects');
+    navigate(
+      projectId ? `/projects/${projectId}/schedule` : '/contractor/dashboard'
+    );
   };
 
   const dashboardCards = useMemo(
@@ -39,7 +41,7 @@ const ContractorDashboard = () => {
         icon: <GoPackage />,
         title: t('cards.projects.title', 'Projects'),
         buttonText: t('cards.projects.button', 'View Projects'),
-        action: () => navigate('/projects'),
+        action: () => navigate('/contractor/dashboard'),
       },
       {
         icon: <GoInbox />,

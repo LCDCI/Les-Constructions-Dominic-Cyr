@@ -6,13 +6,11 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { clearAppSession } from '../../features/users/api/clearAppSession';
 import '../../styles/NavBars/salespersonNavbar.css';
 import { GoInbox } from 'react-icons/go';
-import { GoGear } from 'react-icons/go';
 import { GoPackage } from 'react-icons/go';
 import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { GoProject } from 'react-icons/go';
 import { CiLogout } from 'react-icons/ci';
-import { IoIosNotifications } from 'react-icons/io';
 import { GoHome } from 'react-icons/go';
 import { CgProfile } from 'react-icons/cg';
 
@@ -156,15 +154,15 @@ const Navbar = ({
               </li>
               <li className="navbar-item">
                 <Link
-                  to="/projects"
-                  className={`navbar-link ${isActive('/projects')}`}
+                  to="/salesperson/dashboard"
+                  className={`navbar-link ${isActive('/salesperson/dashboard')}`}
                   onClick={closeMenu}
                 >
                   <span className="navbar-icon">
                     <GoPackage />
                   </span>
                   <span className="navbar-text">
-                    {t('navbar.menuItems.projects', 'Projects')}
+                    {t('navbar.menuItems.dashboard', 'Dashboard')}
                   </span>
                 </Link>
               </li>
@@ -216,37 +214,6 @@ const Navbar = ({
                   </span>
                   <span className="navbar-text">
                     {t('navbar.menuItems.myProfile', 'My Profile')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/account"
-                  className={`navbar-link ${isActive('/account')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoGear />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.accountSettings', 'Account Settings')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/notifications"
-                  className={`navbar-link ${isActive('/notifications')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <IoIosNotifications />
-                  </span>
-                  <span className="navbar-text">
-                    {t(
-                      'navbar.menuItems.notificationPreferences',
-                      'Notification Preferences'
-                    )}
                   </span>
                 </Link>
               </li>

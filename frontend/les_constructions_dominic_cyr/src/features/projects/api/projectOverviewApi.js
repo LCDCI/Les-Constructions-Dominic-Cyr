@@ -13,6 +13,17 @@ export const projectOverviewApi = {
     return response.json();
   },
 
+  updateProjectOverview: async (projectIdentifier, values, token) => {
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const response = await fetch(
+      `${API_BASE_URL}/projects/${projectIdentifier}/overview`,
+      { method: 'PUT', headers, body: JSON.stringify(values) }
+    );
+    if (!response.ok) throw new Error('Project overview update failed');
+    return response.json();
+  },
+
   geocodeAddress: async address => {
     if (!address) return null;
 

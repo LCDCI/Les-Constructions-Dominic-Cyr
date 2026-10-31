@@ -327,13 +327,6 @@ export default function AppNavBar() {
           >
             {t('nav.realizations', 'Realizations')}
           </NavLink>
-
-          <NavLink
-            to="/contact"
-            className={({ isActive }) => (isActive ? 'active' : '')}
-          >
-            {t('nav.contact', 'Contact')}
-          </NavLink>
         </nav>
 
         {/* Desktop actions */}
@@ -457,14 +450,6 @@ export default function AppNavBar() {
           onClick={() => setIsPublicMobileMenuOpen(false)}
         >
           {t('nav.realizations', 'Realizations')}
-        </NavLink>
-
-        <NavLink
-          to="/contact"
-          className={({ isActive }) => (isActive ? 'active' : '')}
-          onClick={() => setIsPublicMobileMenuOpen(false)}
-        >
-          {t('nav.contact', 'Contact')}
         </NavLink>
 
         <div className="mobile-actions">

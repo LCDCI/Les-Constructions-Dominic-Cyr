@@ -110,6 +110,17 @@
   font-weight: 600;
 }
 
+.users-table .users-role-divider th {
+  padding: 8px 12px;
+  border-top: 2px solid #cbd4cc;
+  border-bottom: 1px solid #dfe4df;
+  background: #eef2ed;
+  color: #536451;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .users-table tr:last-child td {
   border-bottom: none;
 }

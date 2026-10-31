@@ -169,7 +169,10 @@ export default function Home() {
                 )}
               </p>
               <div className="hero-buttons">
-                <Link to="/realizations" className="btn btn-primary">
+                <Link
+                  to="/projects/proj-001-foresta/overview"
+                  className="btn btn-primary"
+                >
                   {t('hero.button1', 'Discover')}
                 </Link>
                 <Link to="/contact" className="btn btn-secondary">
@@ -339,6 +342,9 @@ export default function Home() {
                   'Your home is one of the most important investments of your life. Choose reliability and lasting quality.'
                 )}
               </p>
+              <Link to="/renovations" className="link-arrow">
+                {t('live.link', 'Explore renovations')}
+              </Link>
             </div>
           </div>
         </section>
@@ -367,7 +373,7 @@ export default function Home() {
                   'Driven by our desire for perfection, we do everything to ensure you are more than satisfied with our work.'
                 )}
               </p>
-              <Link to="/contact" className="link-arrow">
+              <Link to="/projectmanagement" className="link-arrow">
                 {t('build.link', 'Contact Us')}
               </Link>
             </div>
@@ -509,6 +515,12 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </section>
+
+      <section className="public-page__cta home-contact-cta">
+        <Link to="/contact" className="public-page__button">
+          {t('contact.button', 'Contact Us')}
+        </Link>
       </section>
     </div>
   );

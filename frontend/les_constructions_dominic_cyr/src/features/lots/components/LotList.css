@@ -1,7 +1,9 @@
 .table-container {
-  width: 100%;
+  width: min(100%, 1180px);
+  margin: 0 auto;
   background: white;
   border-radius: 12px;
+  border: 1px solid #dbe3ec;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   overflow-x: auto;
@@ -9,9 +11,9 @@
 }
 
 .fixed-table {
-  width: 100% !important; /* Force fill */
-  min-width: 1200px; /* Ensure table doesn't get too compressed on mobile */
-  table-layout: fixed; /* Strict column sizing */
+  width: 100% !important;
+  min-width: 1080px;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 
@@ -24,6 +26,42 @@
   text-transform: uppercase;
   text-align: left;
   border-bottom: 2px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+}
+
+.fixed-table th:nth-child(1),
+.fixed-table td:nth-child(1) {
+  width: 18%;
+}
+
+.fixed-table th:nth-child(2),
+.fixed-table td:nth-child(2) {
+  width: 8%;
+}
+
+.fixed-table th:nth-child(3),
+.fixed-table td:nth-child(3) {
+  width: 14%;
+}
+
+.fixed-table th:nth-child(4),
+.fixed-table td:nth-child(4) {
+  width: 18%;
+}
+
+.fixed-table th:nth-child(5),
+.fixed-table td:nth-child(5) {
+  width: 20%;
+}
+
+.fixed-table th:nth-child(6),
+.fixed-table td:nth-child(6) {
+  width: 10%;
+}
+
+.fixed-table th:nth-child(7),
+.fixed-table td:nth-child(7) {
+  width: 12%;
 }
 
 .fixed-table td {
@@ -34,6 +72,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis; /* Keeps table from stretching */
+  border-right: 1px solid #edf1f5;
 }
 
 .id-cell {

@@ -22,6 +22,191 @@
   gap: 1rem;
 }
 
+.my-site-project-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 0;
+  border-top: 2px solid var(--border-color-light);
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.my-site-control-actions button,
+.my-site-project-actions button,
+.my-site-project-filter select {
+  border: 1px solid #cbd4cc;
+  border-radius: 0.35rem;
+  padding: 0.55rem 0.8rem;
+  background: #fff;
+  color: #2c3531;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.my-site-control-actions button:first-child,
+.my-site-project-actions button:first-child {
+  border-color: #6a7a67;
+  background: #6a7a67;
+  color: #fff;
+}
+
+.my-site-project-filter {
+  display: block;
+}
+
+.my-site-project-filter select {
+  min-width: 10rem;
+  cursor: pointer;
+}
+
+.my-site-control-actions button:hover,
+.my-site-project-actions button:hover {
+  border-color: #6a7a67;
+  background: #eef2ed;
+}
+
+.my-site-control-actions button:first-child:hover,
+.my-site-project-actions button:first-child:hover {
+  background: #536451;
+  color: #fff;
+}
+
+.my-site-project-actions {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.my-site-project-actions button:last-child {
+  border-color: #c98b8b;
+  color: #9c4545;
+}
+
+.my-site-project-actions button:last-child:hover {
+  background: #fff4f4;
+  border-color: #9c4545;
+}
+
+.my-site-control-actions,
+.my-site-project-actions,
+.my-site-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.my-site-project-editor .my-site-modal-actions {
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dfe4df;
+}
+
+.my-site-project-editor .my-site-modal-actions button,
+.my-site-project-image-field > button {
+  min-width: 9rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid #687a68;
+  border-radius: 0.35rem;
+  background: #687a68;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.my-site-project-editor .my-site-modal-actions button:hover,
+.my-site-project-image-field > button:hover {
+  border-color: #536451;
+  background: #536451;
+}
+
+.my-site-project-editor .my-site-modal-actions button:first-child {
+  border-color: #cbd4cc;
+  background: #fff;
+  color: #536451;
+}
+
+.my-site-project-editor .my-site-modal-actions button:first-child:hover {
+  background: #eef2ed;
+}
+
+.my-site-project-image-field > button {
+  min-width: 0;
+  justify-self: start;
+  border-color: #d3b1b1;
+  background: #fff5f5;
+  color: #9c4545;
+}
+
+.my-site-project-image-field > button:hover {
+  border-color: #9c4545;
+  background: #ffeaea;
+}
+
+.my-site-project-image-field {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border-color-light);
+}
+
+.my-site-project-editor label {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.my-site-project-editor {
+  gap: 1rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid #dfe4df;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #29312d;
+}
+
+.my-site-project-editor > label {
+  color: #29312d;
+  font-weight: 700;
+}
+
+.my-site-color-input {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.35rem;
+  border: 1px solid #dfe4df;
+  border-radius: 0.35rem;
+  background: #f8faf8;
+}
+
+.my-site-color-input input[type='color'] {
+  width: 3rem;
+  height: 2.25rem;
+  padding: 0.15rem;
+  border: 1px solid #cbd4cc;
+  border-radius: 0.25rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+.my-site-color-input output {
+  color: #66706a;
+  font-family: monospace;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
 .my-site-subpage-actions {
   display: grid;
   gap: 0.35rem;

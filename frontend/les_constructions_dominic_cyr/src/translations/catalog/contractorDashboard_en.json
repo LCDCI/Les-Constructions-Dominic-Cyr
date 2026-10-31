@@ -1,5 +1,5 @@
 {
-  "title": "Contractor Dashboard",
+  "title": "Supplier Dashboard",
   "upcomingTasks": "Here are your upcoming tasks:",
   "seeMore": "See more",
   "cards": {
@@ -8,8 +8,8 @@
       "button": "View My Tasks"
     },
     "quotes": {
-      "title": "Quotes",
-      "button": "Upload Quote"
+      "title": "Estimates",
+      "button": "Upload Estimate"
     },
     "projects": {
       "title": "Projects",

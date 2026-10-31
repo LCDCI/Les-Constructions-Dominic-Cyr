@@ -13,7 +13,6 @@ import Home from './pages/Public_Facing/Home';
 import LotsPage from './pages/Public_Facing/LotsPage';
 import LivingEnvironmentPage from './pages/Public_Facing/LivingEnvironmentPage';
 import OwnerLotsPage from './pages/Project/OwnerLotsPage';
-import ProjectsPage from './pages/Project/ProjectsPage';
 import CreateProjectPage from './pages/Project/CreateProjectPage';
 import RealizationsPage from './pages/Public_Facing/RealizationsPage';
 import RenovationsPage from './pages/Public_Facing/RenovationsPage';
@@ -24,10 +23,8 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import UsersPage from './pages/UsersPage';
 import OwnerDashboard from './pages/Dashboards/OwnerDashboard';
 import MySitePage from './pages/MySitePage';
-import ProjectMetadata from './pages/Project/ProjectMetadata';
 import ProjectEntryRouter from './pages/Project/ProjectEntryRouter';
 import LotSelectPage from './pages/Project/LotSelectPage';
-import LotMetadata from './pages/Project/LotMetadata';
 import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
 import HousesPage from './pages/Public_Facing/HousesPage';
@@ -113,11 +110,8 @@ function SalespersonLotsDocuments() {
 }
 
 const PRIVATE_FOOTER_ROUTE_PATTERNS = [
-  '/projects',
   '/projects/create',
   '/projects/:projectIdentifier',
-  '/projects/:projectId/metadata',
-  '/projects/:projectId/lots/:lotId/metadata',
   '/projects/:projectId/files',
   '/projects/:projectId/photos',
   '/projects/:projectId/schedule',
@@ -341,20 +335,6 @@ export default function App() {
               element={<RoleBasedRedirect fallback={<Home />} />}
             />
             <Route
-              path="/projects"
-              element={
-                <ProtectedRoute
-                  allowedRoles={[
-                    'OWNER',
-                    'SALESPERSON',
-                    'CONTRACTOR',
-                    'CUSTOMER',
-                  ]}
-                  element={<ProjectsPage />}
-                />
-              }
-            />
-            <Route
               path="/projects/create"
               element={
                 <ProtectedRoute
@@ -418,10 +398,6 @@ export default function App() {
               }
             />
 
-            <Route
-              path="/projects/:projectId/metadata"
-              element={<ProjectMetadata />}
-            />
             {/* Specific project routes must come before the generic /projects/:projectIdentifier route */}
             <Route
               path="/projects/:projectId/files"
@@ -464,10 +440,6 @@ export default function App() {
                   element={<ProjectSchedulePage />}
                 />
               }
-            />
-            <Route
-              path="/projects/:projectId/lots/:lotId/metadata"
-              element={<LotMetadata />}
             />
             <Route
               path="/projects/:projectIdentifier/lots/select"
@@ -799,8 +771,6 @@ export default function App() {
             />
 
             <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="/account" element={<ComingSoonPage />} />
-            <Route path="/notifications" element={<ComingSoonPage />} />
             <Route
               path="/projects/:projectIdentifier/overview"
               element={<ProjectsOverviewPage />}

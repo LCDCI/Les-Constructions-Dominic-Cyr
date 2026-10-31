@@ -75,7 +75,7 @@ const ApprovalModal = ({
             </div>
             <div className="summary-row">
               <span className="label">
-                {t('quote.contractor') || 'Contractor'}
+                {t('quote.contractor') || 'Supplier'}
               </span>
               <span className="value">
                 {contractorName || quote.contractorId}
@@ -120,7 +120,7 @@ const ApprovalModal = ({
             ) : (
               <p>
                 {t('quote.approval.rejectMessage') ||
-                  'Are you sure you want to reject this quote? A reason must be provided and the contractor will be notified.'}
+                  'Are you sure you want to reject this quote? A reason must be provided and the supplier will be notified.'}
               </p>
             )}
           </div>

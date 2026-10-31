@@ -251,7 +251,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
             </div>
             <div className="info-row">
               <span className="label">
-                {t('quote.contractor') || 'Contractor'}
+                {t('quote.contractor') || 'Supplier'}
               </span>
               <span className="value">
                 {contractorName || quote.contractorId}

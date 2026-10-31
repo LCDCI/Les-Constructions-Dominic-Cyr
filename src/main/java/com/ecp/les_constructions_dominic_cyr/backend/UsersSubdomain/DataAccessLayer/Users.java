@@ -28,6 +28,9 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @Column(name = "supplier_type")
+    private String supplierType;
+
     @Column(name = "auth0user_id")
     private String auth0UserId;
 
@@ -112,6 +115,14 @@ public class Users {
 
     public void setUserRole(UserRole userRole) {
         this.userRole = userRole;
+    }
+
+    public String getSupplierType() {
+        return supplierType;
+    }
+
+    public void setSupplierType(String supplierType) {
+        this.supplierType = supplierType;
     }
 
     public String getAuth0UserId() {
