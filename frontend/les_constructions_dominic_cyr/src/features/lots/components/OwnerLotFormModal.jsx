@@ -195,9 +195,7 @@ const OwnerLotFormModal = ({
         <form onSubmit={handleSubmit} className="lot-form">
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="lotNumber">
-                {t('form.lotNumber')}{' '}
-              </label>
+              <label htmlFor="lotNumber">{t('form.lotNumber')} </label>
               <input
                 id="lotNumber"
                 type="number"

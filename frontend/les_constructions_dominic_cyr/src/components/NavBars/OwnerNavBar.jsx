@@ -137,22 +137,48 @@ const Navbar = ({
             </h3>
             <ul className="navbar-menu">
               <li className="navbar-item">
-                <Link to="/inbox" className={`navbar-link ${isActive('/inbox')}`} onClick={closeMenu}>
-                  <span className="navbar-icon"><GoInbox /></span>
-                  <span className="navbar-text">{t('navbar.menuItems.inbox', 'Inbox')}</span>
-                  {unreadCount > 0 && <span className="navbar-badge">{unreadCount}</span>}
+                <Link
+                  to="/inbox"
+                  className={`navbar-link ${isActive('/inbox')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoInbox />
+                  </span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.inbox', 'Inbox')}
+                  </span>
+                  {unreadCount > 0 && (
+                    <span className="navbar-badge">{unreadCount}</span>
+                  )}
                 </Link>
               </li>
               <li className="navbar-item">
-                <Link to="/inquiries" className={`navbar-link ${isActive('/inquiries')}`} onClick={closeMenu}>
-                  <span className="navbar-icon"><GoCommentDiscussion /></span>
-                  <span className="navbar-text">{t('navbar.menuItems.inquiries', 'Inquiries')}</span>
+                <Link
+                  to="/inquiries"
+                  className={`navbar-link ${isActive('/inquiries')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoCommentDiscussion />
+                  </span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.inquiries', 'Inquiries')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">
-                <Link to="/users" className={`navbar-link ${isActive('/users')}`} onClick={closeMenu}>
-                  <span className="navbar-icon"><GoPeople /></span>
-                  <span className="navbar-text">{t('navbar.menuItems.users', 'Users')}</span>
+                <Link
+                  to="/users"
+                  className={`navbar-link ${isActive('/users')}`}
+                  onClick={closeMenu}
+                >
+                  <span className="navbar-icon">
+                    <GoPeople />
+                  </span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.users', 'Users')}
+                  </span>
                 </Link>
               </li>
               <li className="navbar-item">
@@ -161,8 +187,12 @@ const Navbar = ({
                   className={`navbar-link ${isActive('/owner/my-site')}`}
                   onClick={closeMenu}
                 >
-                  <span className="navbar-icon"><GoGlobe /></span>
-                  <span className="navbar-text">{t('navbar.menuItems.mySite', 'My site')}</span>
+                  <span className="navbar-icon">
+                    <GoGlobe />
+                  </span>
+                  <span className="navbar-text">
+                    {t('navbar.menuItems.mySite', 'My site')}
+                  </span>
                 </Link>
               </li>
             </ul>

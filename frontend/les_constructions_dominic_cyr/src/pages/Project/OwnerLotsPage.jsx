@@ -95,12 +95,14 @@ const OwnerLotsPage = () => {
 
         if (!cancelled) {
           // Keep the owner table ordered by the database lot ID.
-          const sortedData = (data || []).map(normalizeLotStatus).sort((a, b) => {
-            return (
-              (a.id ?? Number.MAX_SAFE_INTEGER) -
-              (b.id ?? Number.MAX_SAFE_INTEGER)
-            );
-          });
+          const sortedData = (data || [])
+            .map(normalizeLotStatus)
+            .sort((a, b) => {
+              return (
+                (a.id ?? Number.MAX_SAFE_INTEGER) -
+                (b.id ?? Number.MAX_SAFE_INTEGER)
+              );
+            });
           setLots(sortedData);
           setFilteredLots(sortedData);
         }
@@ -115,12 +117,7 @@ const OwnerLotsPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [
-    urlProjectIdentifier,
-    isAuthenticated,
-    authLoading,
-    isOwner,
-  ]);
+  }, [urlProjectIdentifier, isAuthenticated, authLoading, isOwner]);
 
   // Lot management functions
   const handleAddLot = async () => {

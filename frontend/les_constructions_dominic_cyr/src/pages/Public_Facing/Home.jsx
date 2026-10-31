@@ -169,7 +169,10 @@ export default function Home() {
                 )}
               </p>
               <div className="hero-buttons">
-                <Link to="/projects/proj-001-foresta/overview" className="btn btn-primary">
+                <Link
+                  to="/projects/proj-001-foresta/overview"
+                  className="btn btn-primary"
+                >
                   {t('hero.button1', 'Discover')}
                 </Link>
                 <Link to="/contact" className="btn btn-secondary">

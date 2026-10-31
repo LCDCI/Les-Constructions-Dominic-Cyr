@@ -118,7 +118,9 @@
   font: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .my-site-project-editor .my-site-modal-actions button:hover,

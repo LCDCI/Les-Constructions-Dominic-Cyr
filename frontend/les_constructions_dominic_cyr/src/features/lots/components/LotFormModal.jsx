@@ -165,9 +165,7 @@ const LotFormModal = ({
         <form onSubmit={handleSubmit} className="lot-form">
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="lotNumber">
-                Lot Number
-              </label>
+              <label htmlFor="lotNumber">Lot Number</label>
               <input
                 id="lotNumber"
                 type="text"

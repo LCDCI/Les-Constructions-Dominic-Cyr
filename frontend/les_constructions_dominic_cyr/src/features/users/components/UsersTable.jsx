@@ -60,26 +60,26 @@ export default function UsersTable({
               </tr>
               {roleUsers.map(u => (
                 <tr key={u.userIdentifier}>
-              <td>{u.firstName}</td>
-              <td>{u.lastName}</td>
-              <td>{u.primaryEmail}</td>
-              <td>{u.secondaryEmail || t('table.notAvailable', 'N/A')}</td>
-              <td>{u.phone || t('table.notAvailable', 'N/A')}</td>
-              <td>{getRoleLabel(u.userRole)}</td>
-              <td>{getStatusBadge(u.userStatus)}</td>
-              <td>
-                <button className="btn-edit" onClick={() => onEditUser(u)}>
-                  {t('table.edit', 'Edit')}
-                </button>
-                {isOwner && u.userRole !== 'OWNER' && (
-                  <button
-                    className="btn-manage-status"
-                    onClick={() => onManageStatus(u)}
-                  >
-                    {t('table.manageStatus', 'Manage Status')}
-                  </button>
-                )}
-              </td>
+                  <td>{u.firstName}</td>
+                  <td>{u.lastName}</td>
+                  <td>{u.primaryEmail}</td>
+                  <td>{u.secondaryEmail || t('table.notAvailable', 'N/A')}</td>
+                  <td>{u.phone || t('table.notAvailable', 'N/A')}</td>
+                  <td>{getRoleLabel(u.userRole)}</td>
+                  <td>{getStatusBadge(u.userStatus)}</td>
+                  <td>
+                    <button className="btn-edit" onClick={() => onEditUser(u)}>
+                      {t('table.edit', 'Edit')}
+                    </button>
+                    {isOwner && u.userRole !== 'OWNER' && (
+                      <button
+                        className="btn-manage-status"
+                        onClick={() => onManageStatus(u)}
+                      >
+                        {t('table.manageStatus', 'Manage Status')}
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </React.Fragment>
