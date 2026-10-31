@@ -24,10 +24,8 @@ import OwnerInquiriesPage from './pages/OwnerInquiriesPage';
 import UsersPage from './pages/UsersPage';
 import OwnerDashboard from './pages/Dashboards/OwnerDashboard';
 import MySitePage from './pages/MySitePage';
-import ProjectMetadata from './pages/Project/ProjectMetadata';
 import ProjectEntryRouter from './pages/Project/ProjectEntryRouter';
 import LotSelectPage from './pages/Project/LotSelectPage';
-import LotMetadata from './pages/Project/LotMetadata';
 import CustomerDashboard from './pages/Dashboards/CustomerDashboard';
 import SalespersonDashboard from './pages/Dashboards/SalespersonDashboard';
 import HousesPage from './pages/Public_Facing/HousesPage';
@@ -116,8 +114,6 @@ const PRIVATE_FOOTER_ROUTE_PATTERNS = [
   '/projects',
   '/projects/create',
   '/projects/:projectIdentifier',
-  '/projects/:projectId/metadata',
-  '/projects/:projectId/lots/:lotId/metadata',
   '/projects/:projectId/files',
   '/projects/:projectId/photos',
   '/projects/:projectId/schedule',
@@ -418,10 +414,6 @@ export default function App() {
               }
             />
 
-            <Route
-              path="/projects/:projectId/metadata"
-              element={<ProjectMetadata />}
-            />
             {/* Specific project routes must come before the generic /projects/:projectIdentifier route */}
             <Route
               path="/projects/:projectId/files"
@@ -464,10 +456,6 @@ export default function App() {
                   element={<ProjectSchedulePage />}
                 />
               }
-            />
-            <Route
-              path="/projects/:projectId/lots/:lotId/metadata"
-              element={<LotMetadata />}
             />
             <Route
               path="/projects/:projectIdentifier/lots/select"

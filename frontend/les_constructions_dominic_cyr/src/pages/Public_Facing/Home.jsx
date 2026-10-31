@@ -510,6 +510,24 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <section className="public-page__cta home-contact-cta">
+        <span className="public-page__eyebrow">
+          {t('contact.kicker', 'Get In Touch')}
+        </span>
+        <h2 className="public-page__heading">
+          {t('contact.title', "Let's Build Your Dream Home Together")}
+        </h2>
+        <p className="public-page__copy">
+          {t(
+            'contact.description',
+            "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc."
+          )}
+        </p>
+        <Link to="/contact" className="public-page__button">
+          {t('contact.button', 'Contact Us')}
+        </Link>
+      </section>
     </div>
   );
 }

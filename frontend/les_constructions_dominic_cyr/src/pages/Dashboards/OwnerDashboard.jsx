@@ -5,7 +5,7 @@ import ScheduleList from '../../features/schedules/components/ScheduleList';
 import DashboardCard from '../../components/DashboardCard';
 import ProjectSelectionModal from '../../features/lots/components/ProjectSelectionModal';
 import '../../styles/Dashboards/OwnerDashboard.css';
-import { GoInbox, GoPeople, GoPackage, GoFile, GoGlobe } from 'react-icons/go';
+import { GoInbox, GoPeople, GoFile, GoGlobe } from 'react-icons/go';
 
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { MdOutlineRequestQuote } from 'react-icons/md';
@@ -24,12 +24,6 @@ const OwnerDashboard = () => {
 
   const dashboardCards = useMemo(
     () => [
-      {
-        icon: <GoPackage />,
-        title: t('cards.projects.title', 'Projects'),
-        buttonText: t('cards.projects.button', 'View Projects'),
-        action: () => navigate('/projects'),
-      },
       {
         icon: <GoInbox />,
         title: t('cards.inbox.title', 'Inbox'),

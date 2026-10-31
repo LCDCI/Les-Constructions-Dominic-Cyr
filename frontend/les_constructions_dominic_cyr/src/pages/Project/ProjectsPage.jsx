@@ -11,7 +11,7 @@ import CreateProjectForm from '../../features/projects/components/CreateProjectF
 import EditProjectForm from '../../features/projects/components/EditProjectForm';
 import { fetchLots } from '../../features/lots/api/lots';
 import useBackendUser from '../../hooks/useBackendUser';
-import { canCreateProjects, canEditProjects } from '../../utils/permissions';
+import { canCreateProjects } from '../../utils/permissions';
 import { useTranslation } from 'react-i18next';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
@@ -44,7 +44,6 @@ const ProjectsPage = () => {
   const { role } = useBackendUser();
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
   // const canCreate = canCreateProjects(role); // Removed unused variable
-  const canEdit = canEditProjects(role);
 
   const filterMenuContainerRef = useRef(null);
   const originalBodyOverflow = useRef(null);
@@ -248,12 +247,6 @@ const ProjectsPage = () => {
   };
 
   const handleViewProject = async project => {
-    // Owners always go to project metadata page
-    if (role === 'OWNER') {
-      navigate(`/projects/${project.projectIdentifier}/metadata`);
-      return;
-    }
-
     try {
       // Get user's lots for this project
       let token = null;
@@ -264,7 +257,7 @@ const ProjectsPage = () => {
             authorizationParams: { audience: getAuthAudience() },
           });
         } catch (tokenErr) {
-          console.warn('Could not get token for lots fetch');
+          token = null;
         }
       }
 
@@ -280,15 +273,12 @@ const ProjectsPage = () => {
         setUserLotsForProject(lotsData);
         setIsLotSelectionOpen(true);
       } else if (lotsData && lotsData.length === 1) {
-        // Go directly to the lot's metadata page
-        navigate(
-          `/projects/${project.projectIdentifier}/lots/${lotsData[0].lotId}/metadata`
-        );
+        navigate(`/projects/${project.projectIdentifier}/overview`);
       } else {
-        navigate(`/projects/${project.projectIdentifier}/metadata`);
+        navigate(`/projects/${project.projectIdentifier}/overview`);
       }
     } catch (error) {
-      navigate(`/projects/${project.projectIdentifier}/metadata`);
+      navigate(`/projects/${project.projectIdentifier}/overview`);
     }
   };
 
@@ -296,19 +286,13 @@ const ProjectsPage = () => {
     setIsLotSelectionOpen(false);
     setProjectForLotSelection(null);
     setUserLotsForProject([]);
-    navigate(`/projects/${lot.projectIdentifier}/lots/${lot.lotId}/metadata`);
+    navigate(`/projects/${lot.projectIdentifier}/overview`);
   };
 
   const closeLotSelectionModal = () => {
     setIsLotSelectionOpen(false);
     setProjectForLotSelection(null);
     setUserLotsForProject([]);
-  };
-
-  const handleEditProject = project => {
-    setProjectToEdit(project);
-    setIsEditOpen(true);
-    setSubmitError(null);
   };
 
   const handleEditSuccess = () => {
@@ -323,11 +307,6 @@ const ProjectsPage = () => {
     setIsEditOpen(false);
     setProjectToEdit(null);
     setSubmitError(null);
-  };
-
-  const openArchiveModal = project => {
-    setProjectToArchive(project);
-    setIsArchiveOpen(true);
   };
 
   const closeArchiveModal = () => {
@@ -411,7 +390,7 @@ const ProjectsPage = () => {
           >
             <div />
             {/* Restore Create Project button for users with permission */}
-            {canCreateProjects(role) && (
+            {role !== 'OWNER' && canCreateProjects(role) && (
               <button
                 className="admin-create-project-button"
                 onClick={() => {
@@ -537,34 +516,6 @@ const ProjectsPage = () => {
                           >
                             {t('buttons.view', 'View this project')}
                           </button>
-
-                          {role === 'OWNER' && canEdit && (
-                            <>
-                              <button
-                                onClick={() => handleEditProject(project)}
-                                className="admin-project-button admin-edit-button"
-                              >
-                                {t('buttons.edit', 'Edit')}
-                              </button>
-                              <a
-                                href={`/projects/${project.projectIdentifier}/manage-lots`}
-                                className="admin-project-button admin-lots-button"
-                              >
-                                {t('buttons.lots', 'View Project Lots')}
-                              </a>
-                            </>
-                          )}
-
-                          {role === 'OWNER' &&
-                            canEdit &&
-                            project.status !== 'ARCHIVED' && (
-                              <button
-                                onClick={() => openArchiveModal(project)}
-                                className="admin-project-button archive-button"
-                              >
-                                {t('buttons.archive', 'Archive')}
-                              </button>
-                            )}
                         </div>
                       </div>
                     </div>
@@ -580,32 +531,6 @@ const ProjectsPage = () => {
                           >
                             {t('buttons.view', 'View this project')}
                           </button>
-                          {role === 'OWNER' && canEdit && (
-                            <>
-                              <button
-                                onClick={() => handleEditProject(project)}
-                                className="admin-project-button admin-edit-button"
-                              >
-                                {t('buttons.edit', 'Edit')}
-                              </button>
-                              <a
-                                href={`/projects/${project.projectIdentifier}/manage-lots`}
-                                className="admin-project-button admin-lots-button"
-                              >
-                                {t('buttons.lots', 'View Project Lots')}
-                              </a>
-                            </>
-                          )}
-                          {role === 'OWNER' &&
-                            canEdit &&
-                            project.status !== 'ARCHIVED' && (
-                              <button
-                                onClick={() => openArchiveModal(project)}
-                                className="admin-project-button archive-button"
-                              >
-                                {t('buttons.archive', 'Archive')}
-                              </button>
-                            )}
                         </div>
                       </details>
                     </div>
@@ -808,9 +733,9 @@ const ProjectsPage = () => {
             </div>
             <div className="confirmation-modal-body">
               <p>
-                You are assigned to multiple lots in "
-                {projectForLotSelection.projectName}". Please select which lot
-                you want to view:
+                You are assigned to multiple lots in &quot;
+                {projectForLotSelection.projectName}&quot;. Please select which
+                lot you want to view:
               </p>
               <div style={{ marginTop: '1rem' }}>
                 {userLotsForProject.map(lot => (
