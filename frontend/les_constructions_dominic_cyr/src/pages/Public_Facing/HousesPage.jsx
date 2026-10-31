@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import ProjectBanner from '../../components/ProjectBanner';
+import { projectApi } from '../../features/projects/api/projectApi';
 import '../../styles/Public_Facing/houses.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
@@ -24,6 +25,23 @@ export default function HousesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
+  const [project, setProject] = useState(null);
+
+  useEffect(() => {
+    if (!projectIdentifier) return undefined;
+    let active = true;
+    projectApi
+      .getProjectById(projectIdentifier)
+      .then(projectData => {
+        if (active) setProject(projectData);
+      })
+      .catch(() => {
+        if (active) setProject(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [projectIdentifier]);
 
   useEffect(() => {
     let cancelled = false;
@@ -78,14 +96,28 @@ export default function HousesPage() {
 
   if (loading) {
     return (
-      <div className="houses-page">
+      <div
+        className="houses-page"
+        style={{
+          '--tertiary-color': project?.tertiaryColor || undefined,
+          '--project-tertiary': project?.tertiaryColor || project?.buyerColor,
+          '--project-buyer': project?.buyerColor || project?.tertiaryColor,
+        }}
+      >
         <div className="houses-state">{t('loading', 'Loading houses...')}</div>
       </div>
     );
   }
 
   return (
-    <div className="houses-page">
+    <div
+      className="houses-page"
+      style={{
+        '--tertiary-color': project?.tertiaryColor || project?.buyerColor,
+        '--project-tertiary': project?.tertiaryColor || project?.buyerColor,
+        '--project-buyer': project?.buyerColor || project?.tertiaryColor,
+      }}
+    >
       <ProjectBanner projectIdentifier={projectIdentifier} />
 
       <main className="houses-content">

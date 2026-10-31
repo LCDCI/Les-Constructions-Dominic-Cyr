@@ -34,6 +34,7 @@ const OwnerLotsPage = () => {
   const [lots, setLots] = useState([]);
   const [filteredLots, setFilteredLots] = useState([]);
   const [projectName, setProjectName] = useState('');
+  const [project, setProject] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -86,7 +87,10 @@ const OwnerLotsPage = () => {
 
         try {
           const projectData = await projectApi.getProjectById(resolved, token);
-          if (!cancelled) setProjectName(projectData.projectName);
+          if (!cancelled) {
+            setProject(projectData);
+            setProjectName(projectData.projectName);
+          }
         } catch (e) {
           //
         }
@@ -348,7 +352,20 @@ const OwnerLotsPage = () => {
 
   if (authLoading || translationsLoading || !isOwner) {
     return (
-      <div className="lots-page">
+      <div
+        className="lots-page"
+        style={{
+          '--project-primary': project?.primaryColor || undefined,
+          '--project-tertiary': project?.tertiaryColor || undefined,
+          '--project-buyer': project?.buyerColor || undefined,
+          '--color-primary': project?.primaryColor || undefined,
+          '--color-secondary': project?.tertiaryColor || undefined,
+          '--color-tertiary': project?.tertiaryColor || undefined,
+          '--color-accent': project?.buyerColor || undefined,
+          '--color-light': project?.tertiaryColor || undefined,
+          '--project-light-color': project?.tertiaryColor || undefined,
+        }}
+      >
         <div className="lots-content">{t('loading')}</div>
       </div>
     );
@@ -356,14 +373,41 @@ const OwnerLotsPage = () => {
 
   if (loading) {
     return (
-      <div className="lots-page">
+      <div
+        className="lots-page"
+        style={{
+          '--project-primary': project?.primaryColor || undefined,
+          '--project-tertiary': project?.tertiaryColor || project?.buyerColor,
+          '--project-buyer': project?.buyerColor || project?.tertiaryColor,
+          '--color-primary': project?.primaryColor || undefined,
+          '--color-secondary': project?.tertiaryColor || project?.buyerColor,
+          '--color-tertiary': project?.tertiaryColor || project?.buyerColor,
+          '--color-accent': project?.buyerColor || project?.tertiaryColor,
+          '--color-light': project?.tertiaryColor || project?.buyerColor,
+          '--project-light-color':
+            project?.tertiaryColor || project?.buyerColor,
+        }}
+      >
         <div className="lots-content">{t('loadingLots')}</div>
       </div>
     );
   }
 
   return (
-    <div className="lots-page">
+    <div
+      className="lots-page"
+      style={{
+        '--project-primary': project?.primaryColor || undefined,
+        '--project-tertiary': project?.tertiaryColor || project?.buyerColor,
+        '--project-buyer': project?.buyerColor || project?.tertiaryColor,
+        '--color-primary': project?.primaryColor || undefined,
+        '--color-secondary': project?.tertiaryColor || project?.buyerColor,
+        '--color-tertiary': project?.tertiaryColor || project?.buyerColor,
+        '--color-accent': project?.buyerColor || project?.tertiaryColor,
+        '--color-light': project?.tertiaryColor || project?.buyerColor,
+        '--project-light-color': project?.tertiaryColor || project?.buyerColor,
+      }}
+    >
       <div className="lots-content">
         <div className="lots-header-section manage-lots-header">
           <h1>

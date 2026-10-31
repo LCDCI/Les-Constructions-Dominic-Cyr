@@ -4,7 +4,11 @@ import { projectApi } from '../features/projects/api/projectApi';
 import { getFileUrl } from '../utils/filesService';
 import '../styles/Project/projectOverview.css';
 
-export default function ProjectBanner({ projectIdentifier, project }) {
+export default function ProjectBanner({
+  projectIdentifier,
+  project,
+  children,
+}) {
   const [loadedProject, setLoadedProject] = useState(project || null);
 
   useEffect(() => {
@@ -44,6 +48,7 @@ export default function ProjectBanner({ projectIdentifier, project }) {
       }}
       aria-label={loadedProject?.projectName || 'Residential project'}
     >
+      {children && <div className="project-banner-content">{children}</div>}
       {logoIdentifier && (
         <div className="project-logo-above-banner">
           <img
@@ -69,8 +74,10 @@ ProjectBanner.propTypes = {
     bannerImageIdentifier: PropTypes.string,
     primaryColor: PropTypes.string,
   }),
+  children: PropTypes.node,
 };
 
 ProjectBanner.defaultProps = {
   project: null,
+  children: null,
 };

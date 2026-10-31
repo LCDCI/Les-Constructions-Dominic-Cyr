@@ -121,6 +121,30 @@
   transform: translateY(0);
 }
 
+.btn-delete-all {
+  background: transparent;
+  color: #b42318;
+  border: 1px solid #f0a6a0;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-delete-all:hover {
+  background: #fff1f0;
+  border-color: #b42318;
+  color: #8f1d14;
+  transform: translateY(-2px);
+  box-shadow: 0 0.25rem 0.75rem rgba(180, 35, 24, 0.18);
+}
+
+.btn-delete-all:active {
+  transform: translateY(0);
+}
+
 .btn-seed-test {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: var(--white);

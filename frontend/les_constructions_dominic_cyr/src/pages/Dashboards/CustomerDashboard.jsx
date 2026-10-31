@@ -5,7 +5,6 @@ import ScheduleList from '../../features/schedules/components/ScheduleList';
 import DashboardCard from '../../components/DashboardCard';
 import '../../styles/Dashboards/CustomerDashboard.css';
 import { GoInbox } from 'react-icons/go';
-import { GoPackage } from 'react-icons/go';
 import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
@@ -24,12 +23,6 @@ const CustomerDashboard = () => {
 
   const dashboardCards = useMemo(
     () => [
-      {
-        icon: <GoPackage />,
-        title: t('cards.projects.title', 'Projects'),
-        buttonText: t('cards.projects.button', 'View Projects'),
-        action: () => navigate('/customer/dashboard'),
-      },
       {
         icon: <GoInbox />,
         title: t('cards.inbox.title', 'Inbox'),

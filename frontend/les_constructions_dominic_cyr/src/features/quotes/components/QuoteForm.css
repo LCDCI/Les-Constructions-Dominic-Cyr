@@ -41,7 +41,7 @@
   color: #666;
   margin: 0;
   text-align: right;
-  font-style: italic;
+  font-style: normal;
 }
 
 /* Error Banner */
@@ -213,7 +213,7 @@
 
 .add-item-link:hover {
   color: #2471a3;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* Button Styles */

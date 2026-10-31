@@ -2,6 +2,9 @@
   "title": "Inbox",
   "unread": "unread",
   "markAllAsRead": "Mark all as read",
+  "deleteAll": "Delete all",
+  "deleteNotification": "Delete notification",
+  "new": "New",
   "searchPlaceholder": "Search notifications...",
   "filters": {
     "all": "All Notifications",
@@ -11,6 +14,36 @@
   "sort": {
     "newest": "Newest First",
     "oldest": "Oldest First"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} minute(s) ago",
+    "hoursAgo": "{{count}} hour(s) ago",
+    "daysAgo": "{{count}} day(s) ago"
+  },
+  "categories": {
+    "TASK_ASSIGNED": "Task assigned",
+    "TASK_COMPLETED": "Task completed",
+    "TASK_UPDATED": "Task updated",
+    "LOT_ASSIGNED": "Lot assigned",
+    "PROJECT_CREATED": "Project created",
+    "PROJECT_UPDATED": "Project updated",
+    "PROJECT_COMPLETED": "Project completed",
+    "FORM_ASSIGNED": "Form assigned",
+    "FORM_SUBMITTED": "Form submitted",
+    "FORM_SIGNED": "Form signed",
+    "FORM_REOPENED": "Form reopened",
+    "FORM_REJECTED": "Form rejected",
+    "SCHEDULE_CREATED": "Schedule created",
+    "SCHEDULE_UPDATED": "Schedule updated",
+    "DOCUMENT_UPLOADED": "Document uploaded",
+    "DOCUMENT_SHARED": "Document shared",
+    "TEAM_MEMBER_ASSIGNED": "Team member assigned",
+    "TEAM_MEMBER_REMOVED": "Team member removed",
+    "QUOTE_SUBMITTED": "Quote submitted",
+    "QUOTE_APPROVED": "Quote approved",
+    "QUOTE_REJECTED": "Quote rejected",
+    "INQUIRY_RECEIVED": "Inquiry received"
   },
   "loading": "Loading notifications...",
   "error": "Error loading notifications: {{error}}",

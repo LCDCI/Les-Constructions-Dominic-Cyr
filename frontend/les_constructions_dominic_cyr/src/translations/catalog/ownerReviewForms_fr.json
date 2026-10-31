@@ -3,7 +3,13 @@
   "subtitle": "Réviser et gérer les soumissions de formulaires clients",
   "loading": "Chargement des formulaires...",
   "noForms": "Aucun formulaire trouvé",
+  "status": {
+    "submitted": "Soumis",
+    "reopened": "Réouvert",
+    "completed": "Complété"
+  },
   "filters": {
+    "search": "Rechercher par client ou lot",
     "type": "Type de formulaire",
     "status": "Statut",
     "allStatuses": "Tous",
@@ -30,16 +36,26 @@
     "lot": "Lot",
     "submitted": "Soumis",
     "reopened": "Réouvert",
-    "reopenReason": "Raison de la réouverture"
+    "reopenReason": "Raison de la réouverture",
+    "form": "Formulaire"
   },
   "buttons": {
+    "editForms": "Modifier les formulaires",
     "viewForm": "Voir le formulaire",
     "reopen": "Demander des modifications",
     "complete": "Approuver et compléter",
     "downloadPdf": "Télécharger le PDF",
-    "close": "Fermer"
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer"
   },
   "modal": {
+    "editForms": {
+      "title": "Modifier les options des formulaires",
+      "noOptions": "Ce formulaire n'a pas encore d'options configurables.",
+      "image": "Image de l'option",
+      "addOption": "Ajouter une option"
+    },
     "cancel": "Annuler",
     "formData": "Données du formulaire",
     "noFormData": "Aucune donnée de formulaire disponible",

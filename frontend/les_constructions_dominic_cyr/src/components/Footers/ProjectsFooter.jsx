@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { FaClock, FaPhoneAlt, FaEnvelope, FaArrowRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import '../../styles/Footers/HomeFooter.css';
 import '../../styles/Footers/ProjectsFooter.css';
+import { projectApi } from '../../features/projects/api/projectApi';
 
 const PROJECT_INFO = {
   'proj-001-foresta': {
@@ -47,12 +48,37 @@ export default function ProjectsFooter({ projectId }) {
   const { i18n, t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const isFrench = i18n.language?.startsWith('fr');
+  const [project, setProject] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    projectApi
+      .getProjectById(projectId)
+      .then(result => {
+        if (active) setProject(result);
+      })
+      .catch(() => {
+        if (active) setProject(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, [projectId]);
 
   const projectData =
     PROJECT_INFO[projectId] || PROJECT_INFO['proj-001-foresta'];
 
   return (
-    <footer className="app-footer" data-project={projectId}>
+    <footer
+      className="app-footer"
+      data-project={projectId}
+      style={{
+        '--icon-primary': project?.primaryColor || undefined,
+        '--icon-secondary': project?.tertiaryColor || undefined,
+        '--project-tertiary': project?.tertiaryColor || project?.buyerColor,
+        '--project-buyer': project?.buyerColor || project?.tertiaryColor,
+      }}
+    >
       <div className="footer-inner">
         <div className="footer-section">
           <div className="footer-title-group">

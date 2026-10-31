@@ -111,14 +111,21 @@
   width: 100%;
   padding: 0.75rem 1rem;
   border-radius: 6px;
-  background: var(--button-primary-bg);
+  background: var(
+    --project-tertiary,
+    var(--project-buyer, var(--button-primary-bg))
+  );
   color: var(--button-primary-text);
   font: inherit;
   font-weight: 600;
 }
 
 .house-button:hover {
-  background: var(--button-primary-hover);
+  background: var(
+    --project-tertiary,
+    var(--project-buyer, var(--button-primary-hover))
+  );
+  filter: brightness(0.9);
 }
 
 .houses-state {

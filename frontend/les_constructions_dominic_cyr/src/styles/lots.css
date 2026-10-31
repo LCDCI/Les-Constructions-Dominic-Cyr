@@ -70,7 +70,7 @@
 
 /* Manage Lots Header - Light Green Banner */
 .manage-lots-header {
-  background-color: #aab2a6 !important;
+  background-color: var(--project-primary, #aab2a6) !important;
   padding: 5rem 2rem;
 }
 
@@ -110,7 +110,7 @@
 
 .manage-lots-actions .back-btn:hover {
   background-color: #f8f9fa;
-  border-color: #aab2a6;
+  border-color: var(--project-tertiary, #aab2a6);
   transform: translateY(-1px);
 }
 
@@ -119,7 +119,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background-color: #aab2a6;
+  background-color: var(--project-tertiary, #aab2a6);
   color: white;
   border: none;
   border-radius: 8px;
@@ -127,13 +127,16 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(170, 178, 166, 0.3);
+  box-shadow: 0 2px 4px
+    color-mix(in srgb, var(--project-tertiary, #aab2a6) 30%, transparent);
 }
 
 .manage-lots-actions .add-lot-btn:hover:not(:disabled) {
-  background-color: #96a18e;
+  background-color: var(--project-tertiary, #96a18e);
+  filter: brightness(0.9);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(170, 178, 166, 0.4);
+  box-shadow: 0 4px 8px
+    color-mix(in srgb, var(--project-tertiary, #aab2a6) 40%, transparent);
 }
 
 .manage-lots-actions .add-lot-btn:disabled {
@@ -175,7 +178,7 @@
   left: 25%;
   width: 50%;
   height: 2px;
-  /* Color is provided by React inline style */
+  background-color: var(--project-tertiary, #aab2a6);
   transition: background-color 0.4s ease;
 }
 
@@ -340,10 +343,14 @@
 .peace-tag {
   font-family: var(--font-heading); /* Georgia/Serif */
   font-size: 1.8rem;
-  font-style: italic;
+  font-style: normal;
   color: var(--color-text);
   margin: 0;
   opacity: 0.85;
+}
+
+.lots-page {
+  --project-light-color: var(--color-secondary, #f8fafc);
 }
 
 /* When inside the header banner, use light colors */

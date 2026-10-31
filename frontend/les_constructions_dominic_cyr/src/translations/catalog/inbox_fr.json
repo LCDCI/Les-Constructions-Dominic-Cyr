@@ -2,6 +2,9 @@
   "title": "Boîte de réception",
   "unread": "non lu",
   "markAllAsRead": "Marquer tout comme lu",
+  "deleteAll": "Tout supprimer",
+  "deleteNotification": "Supprimer la notification",
+  "new": "Nouveau",
   "searchPlaceholder": "Rechercher des notifications...",
   "filters": {
     "all": "Toutes les notifications",
@@ -11,6 +14,36 @@
   "sort": {
     "newest": "Plus récentes d'abord",
     "oldest": "Plus anciennes d'abord"
+  },
+  "time": {
+    "justNow": "À l’instant",
+    "minutesAgo": "{{count}} minute(s)",
+    "hoursAgo": "{{count}} heure(s)",
+    "daysAgo": "{{count}} jour(s)"
+  },
+  "categories": {
+    "TASK_ASSIGNED": "Tâche assignée",
+    "TASK_COMPLETED": "Tâche terminée",
+    "TASK_UPDATED": "Tâche mise à jour",
+    "LOT_ASSIGNED": "Lot assigné",
+    "PROJECT_CREATED": "Projet créé",
+    "PROJECT_UPDATED": "Projet mis à jour",
+    "PROJECT_COMPLETED": "Projet terminé",
+    "FORM_ASSIGNED": "Formulaire assigné",
+    "FORM_SUBMITTED": "Formulaire soumis",
+    "FORM_SIGNED": "Formulaire signé",
+    "FORM_REOPENED": "Formulaire rouvert",
+    "FORM_REJECTED": "Formulaire refusé",
+    "SCHEDULE_CREATED": "Calendrier créé",
+    "SCHEDULE_UPDATED": "Calendrier mis à jour",
+    "DOCUMENT_UPLOADED": "Document téléversé",
+    "DOCUMENT_SHARED": "Document partagé",
+    "TEAM_MEMBER_ASSIGNED": "Membre assigné",
+    "TEAM_MEMBER_REMOVED": "Membre retiré",
+    "QUOTE_SUBMITTED": "Soumission envoyée",
+    "QUOTE_APPROVED": "Soumission approuvée",
+    "QUOTE_REJECTED": "Soumission refusée",
+    "INQUIRY_RECEIVED": "Demande reçue"
   },
   "loading": "Chargement des notifications...",
   "error": "Erreur lors du chargement des notifications : {{error}}",

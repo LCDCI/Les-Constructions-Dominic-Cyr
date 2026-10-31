@@ -60,6 +60,11 @@ export default function OwnerInquiriesPage() {
     return d && !Number.isNaN(d.getTime()) ? d.toLocaleString() : 'N/A';
   };
 
+  const formatContactSubject = value => {
+    const key = String(value || '').toLowerCase();
+    return t(`table.contactSubjects.${key}`, value || '-');
+  };
+
   const unescapeHtml = str => {
     if (!str) return str;
     const decoder = document.createElement('textarea');
@@ -74,6 +79,7 @@ export default function OwnerInquiriesPage() {
         name: unescapeHtml(inq.name),
         email: unescapeHtml(inq.email),
         phone: unescapeHtml(inq.phone),
+        contactSubject: unescapeHtml(inq.contactSubject),
         message: unescapeHtml(inq.message),
       })),
     [inquiries]
@@ -109,6 +115,9 @@ export default function OwnerInquiriesPage() {
                   {t('table.phone', 'Phone')}
                 </th>
                 <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                  {t('table.contactSubject', 'Contacting about')}
+                </th>
+                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
                   {t('table.message', 'Message')}
                 </th>
                 <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
@@ -120,7 +129,7 @@ export default function OwnerInquiriesPage() {
               {decodedInquiries.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     style={{ textAlign: 'center', padding: '2rem' }}
                   >
                     {t('noInquiries', 'No inquiries found.')}
@@ -146,6 +155,9 @@ export default function OwnerInquiriesPage() {
                     </td>
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
                       {inq.phone ? inq.phone : '-'}
+                    </td>
+                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
+                      {formatContactSubject(inq.contactSubject)}
                     </td>
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
                       {inq.message}

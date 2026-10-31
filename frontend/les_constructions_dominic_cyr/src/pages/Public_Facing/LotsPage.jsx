@@ -10,6 +10,7 @@ import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import LotList from '../../features/lots/components/LotList';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
+import ProjectBanner from '../../components/ProjectBanner';
 import '../../styles/lots.css';
 import '../../styles/Public_Facing/foresta_LotsMap_Buttons.css';
 
@@ -43,6 +44,14 @@ const LotsPage = () => {
   });
   const [selectedLot, setSelectedLot] = useState(null);
   const [pageContent, setPageContent] = useState({});
+  const [projectData, setProjectData] = useState(null);
+  const projectStyle = {
+    '--color-primary': projectColors.primary,
+    '--color-secondary': projectColors.secondary,
+    '--color-light': projectColors.secondary,
+    '--color-accent': projectColors.accent,
+    '--project-light-color': projectColors.secondary,
+  };
 
   const mapButtons = {
     1: { top: '28.5%', left: '24%' },
@@ -95,10 +104,11 @@ const LotsPage = () => {
           token
         );
         if (!cancelled && projectData) {
+          setProjectData(projectData);
           setProjectColors({
             primary: projectData.primaryColor || '#737373',
-            secondary: projectData.secondaryColor || '#F6F4F1',
-            accent: projectData.accentColor || '#545454',
+            secondary: projectData.tertiaryColor || '#F6F4F1',
+            accent: projectData.buyerColor || '#545454',
           });
         }
         const data = await fetchLots({
@@ -212,17 +222,18 @@ const LotsPage = () => {
 
   if (loading)
     return (
-      <div className="lots-page">
+      <div className="lots-page" style={projectStyle}>
+        <ProjectBanner projectIdentifier={resolvedProjectId} />
         <div className="lots-content">{t('common.loading')}</div>
       </div>
     );
 
   return (
-    <div className="lots-page">
+    <div className="lots-page" style={projectStyle}>
       <div className="lots-content">
-        <section
-          className="lots-heading-section"
-          aria-labelledby="lots-page-title"
+        <ProjectBanner
+          projectIdentifier={resolvedProjectId}
+          project={projectData}
         >
           <div className="lots-heading-content">
             <span className="public-page__eyebrow">
@@ -237,11 +248,11 @@ const LotsPage = () => {
             </h1>
             <span
               className="lots-heading-divider"
-              style={{ backgroundColor: projectColors.accent }}
+              style={{ backgroundColor: projectColors.secondary }}
               aria-hidden="true"
             />
           </div>
-        </section>
+        </ProjectBanner>
         <div className="lots-data-layout">
           {resolvedProjectId === 'proj-002-panorama' && (
             <div className="lots-image-section">

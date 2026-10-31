@@ -7,6 +7,14 @@
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
+    "contactSubject": "Contacting about",
+    "contactSubjects": {
+      "proj-001-foresta": "FÖRESTA",
+      "proj-002-panorama": "PANORAMA",
+      "renovation": "Renovation",
+      "project-management": "Project management",
+      "other": "Other"
+    },
     "message": "Message",
     "timestamp": "Timestamp"
   }

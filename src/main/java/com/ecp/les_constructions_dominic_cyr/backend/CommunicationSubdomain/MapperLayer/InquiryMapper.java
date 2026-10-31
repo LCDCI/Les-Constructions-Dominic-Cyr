@@ -13,6 +13,7 @@ public class InquiryMapper {
         inquiry.setName(requestModel.getName());
         inquiry.setEmail(requestModel.getEmail());
         inquiry.setPhone(requestModel.getPhone());
+        inquiry.setContactSubject(requestModel.getContactSubject());
         inquiry.setMessage(requestModel.getMessage());
         return inquiry;
     }
@@ -23,6 +24,7 @@ public class InquiryMapper {
         responseModel.setName(inquiry.getName());
         responseModel.setEmail(inquiry.getEmail());
         responseModel.setPhone(inquiry.getPhone());
+        responseModel.setContactSubject(inquiry.getContactSubject());
         responseModel.setMessage(inquiry.getMessage());
         responseModel.setCreatedAt(inquiry.getCreatedAt());
         return responseModel;

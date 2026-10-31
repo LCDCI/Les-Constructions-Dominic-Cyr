@@ -7,11 +7,14 @@ import {
   updateFormData,
   getFormHistory,
   downloadFinalizedForm,
-  viewFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import { uploadFile, downloadFile } from '../../features/files/api/filesApi';
+import { getFileUrl } from '../../utils/filesService';
+import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Forms/customer-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import useBackendUser from '../../hooks/useBackendUser';
+import PropTypes from 'prop-types';
 
 /**
  * Form field configuration for each form type.
@@ -26,7 +29,7 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
  *
  * Fields whose name starts with "__" are UI-only and skipped during validation/save.
  */
-const FORM_FIELDS = {
+export const FORM_FIELDS = {
   /* ── Exterior Doors ─────────────────────────────────────── */
   EXTERIOR_DOORS: [
     {
@@ -350,9 +353,18 @@ const FORM_FIELDS = {
   ],
 };
 
-const CustomerFormsPage = () => {
-  const { t } = usePageTranslations('customerForms');
-  const { projectId, lotId } = useParams();
+const FORM_OPTION_FALLBACK_IMAGE = '/fallback.jpg';
+
+const CustomerFormsPage = ({
+  initialForm = null,
+  embedded = false,
+  onClose,
+  onSaved,
+}) => {
+  const { t, currentLanguage } = usePageTranslations('customerForms');
+  const routeParams = useParams();
+  const projectId = initialForm?.projectIdentifier || routeParams.projectId;
+  const lotId = initialForm?.lotIdentifier || routeParams.lotId;
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedForm, setSelectedForm] = useState(null);
@@ -366,10 +378,16 @@ const CustomerFormsPage = () => {
   const [uploadError, setUploadError] = useState(null);
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
   const [isViewOnly, setIsViewOnly] = useState(false);
+  const [formConfiguration, setFormConfiguration] = useState({});
   const fileInputRef = useRef(null);
 
   const { getAccessTokenSilently, user } = useAuth0();
+  const { profile } = useBackendUser();
   const navigate = useNavigate();
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    onClose?.();
+  };
 
   const getToken = async () => {
     const { getAuthAudience } = await import('../../utils/authConfig');
@@ -390,12 +408,56 @@ const CustomerFormsPage = () => {
 
   useEffect(() => {
     fetchForms();
-  }, []);
+  }, [initialForm]);
+
+  useEffect(() => {
+    if (initialForm) {
+      openEditModal(
+        initialForm,
+        initialForm.formStatus === 'SUBMITTED' ||
+          initialForm.formStatus === 'COMPLETED'
+      );
+    }
+  }, [initialForm]);
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([
+      fetchPublicSiteContent('en', 'forms-config'),
+      currentLanguage === 'en'
+        ? Promise.resolve([])
+        : fetchPublicSiteContent(currentLanguage, 'forms-config'),
+    ])
+      .then(([defaultItems, languageItems]) => {
+        if (!active) return;
+        const configuration = {};
+        [...(defaultItems || []), ...(languageItems || [])].forEach(item => {
+          try {
+            configuration[item.pageKey] = JSON.parse(item.contentText || '{}');
+          } catch {
+            // Ignore malformed optional configuration and use defaults.
+          }
+        });
+        setFormConfiguration(configuration);
+      })
+      .catch(() => {
+        if (active) setFormConfiguration({});
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [currentLanguage]);
 
   const fetchForms = async () => {
     try {
       setLoading(true);
       const token = await getToken();
+      if (initialForm) {
+        setForms([initialForm]);
+        setLoading(false);
+        return;
+      }
       const formsData = await getMyForms(token);
       // Filter forms by projectId and lotId from URL params
       const filteredForms =
@@ -486,7 +548,12 @@ const CustomerFormsPage = () => {
 
   const handleDownloadFile = async (fileId, fileName) => {
     try {
-      await downloadFile(fileId, fileName, 'CUSTOMER', user?.sub);
+      await downloadFile(
+        fileId,
+        fileName,
+        profile?.userRole || 'CUSTOMER',
+        profile?.userIdentifier || user?.sub
+      );
     } catch (err) {
       console.error('Failed to download file:', err);
       setUploadError(t('errors.downloadFailed', 'Failed to download file.'));
@@ -502,7 +569,9 @@ const CustomerFormsPage = () => {
       setIsEditModalOpen(false);
       setSelectedForm(null);
       setFormData({});
+      onClose?.();
       await fetchForms();
+      await onSaved?.();
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -516,7 +585,7 @@ const CustomerFormsPage = () => {
 
   const handleSubmitFormClick = () => {
     // Validate required fields before showing confirmation
-    const fields = FORM_FIELDS[selectedForm.formType] || [];
+    const fields = getFieldsForForm(selectedForm.formType);
     const requiredFields = fields.filter(
       f => f.required && !f.name.startsWith('__')
     );
@@ -561,7 +630,9 @@ const CustomerFormsPage = () => {
       setIsEditModalOpen(false);
       setSelectedForm(null);
       setFormData({});
+      onClose?.();
       await fetchForms();
+      await onSaved?.();
     } catch (error) {
       if (error.response?.data?.message) {
         setSubmitError(error.response.data.message);
@@ -598,9 +669,26 @@ const CustomerFormsPage = () => {
         },
       });
 
-      await downloadFinalizedForm(form.formId, token);
+      await downloadFinalizedForm(form.formId, token, currentLanguage);
     } catch (error) {
       setSubmitError('Failed to download form. Please try again.');
+    }
+  };
+
+  const handleExportForm = async form => {
+    try {
+      const { getAuthAudience } = await import('../../utils/authConfig');
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: getAuthAudience() || 'https://construction-api.loca',
+        },
+      });
+
+      await downloadFinalizedForm(form.formId, token, currentLanguage, {
+        forceGenerated: true,
+      });
+    } catch (error) {
+      setSubmitError('Failed to export form. Please try again.');
     }
   };
 
@@ -610,6 +698,39 @@ const CustomerFormsPage = () => {
       form.formStatus === 'IN_PROGRESS' ||
       form.formStatus === 'REOPENED'
     );
+  };
+
+  const getFieldsForForm = formType => {
+    const defaults = FORM_FIELDS[formType] || [];
+    const configuredFields = formConfiguration[formType]?.fields || [];
+    const defaultNames = new Set(defaults.map(field => field.name));
+    const fields = defaults.map(field => {
+      const configured = configuredFields.find(
+        item => item.name === field.name
+      );
+      if (!configured?.options) return field;
+      return {
+        ...field,
+        type: configured.options.length ? 'image-radio' : field.type,
+        translationKey: configured.label || field.translationKey,
+        options: configured.options.map(option => ({
+          ...option,
+          label: option.label || option.value,
+        })),
+      };
+    });
+    configuredFields
+      .filter(field => !defaultNames.has(field.name) && field.options?.length)
+      .forEach(field => {
+        fields.push({
+          name: field.name,
+          type: 'image-radio',
+          translationKey: field.label || field.name,
+          options: field.options,
+          required: false,
+        });
+      });
+    return fields;
   };
 
   const formatHistoryValue = value => {
@@ -724,7 +845,10 @@ const CustomerFormsPage = () => {
   };
 
   const renderImageRadio = field => {
-    const selected = formData[field.name] || '';
+    const selectedValue =
+      typeof formData[field.name] === 'object'
+        ? formData[field.name]?.value
+        : formData[field.name] || '';
     return (
       <div key={field.name} className="forms-form-group">
         <label>
@@ -736,15 +860,30 @@ const CustomerFormsPage = () => {
             <button
               key={opt.value}
               type="button"
-              className={`forms-radio-card${selected === opt.value ? ' selected' : ''}`}
+              className={`forms-radio-card${selectedValue === opt.value ? ' selected' : ''}`}
               onClick={() =>
-                !isViewOnly && handleFieldChange(field.name, opt.value)
+                !isViewOnly &&
+                handleFieldChange(field.name, {
+                  value: opt.value,
+                  label: opt.label || opt.value,
+                  imageIdentifier: opt.imageIdentifier || '',
+                })
               }
               disabled={isViewOnly}
             >
               <span className="forms-radio-indicator" />
+              <img
+                src={
+                  getFileUrl(opt.imageIdentifier) || FORM_OPTION_FALLBACK_IMAGE
+                }
+                alt={opt.label || opt.value}
+                className="forms-radio-image"
+                onError={event => {
+                  event.currentTarget.src = FORM_OPTION_FALLBACK_IMAGE;
+                }}
+              />
               <span className="forms-radio-label">
-                {t(opt.labelKey, opt.label || opt.value)}
+                {opt.label || t(opt.labelKey, opt.value)}
               </span>
             </button>
           ))}
@@ -762,7 +901,11 @@ const CustomerFormsPage = () => {
       <input
         id={field.name}
         type={field.type}
-        value={formData[field.name] || ''}
+        value={
+          typeof formData[field.name] === 'object'
+            ? formData[field.name]?.value || ''
+            : formData[field.name] || ''
+        }
         onChange={e => handleFieldChange(field.name, e.target.value)}
         className="forms-form-input"
         disabled={isViewOnly}
@@ -793,20 +936,45 @@ const CustomerFormsPage = () => {
         {t(field.translationKey, field.name)}{' '}
         {field.required && <span className="required">*</span>}
       </label>
-      <select
-        id={field.name}
-        value={formData[field.name] || ''}
-        onChange={e => handleFieldChange(field.name, e.target.value)}
-        className="forms-form-select"
-        disabled={isViewOnly}
-      >
-        <option value="">{t('modal.selectOption', '-- Select --')}</option>
+      <div className="forms-radio-grid">
         {(field.options || []).map(opt => (
-          <option key={opt.value} value={opt.value}>
-            {t(opt.labelKey, opt.label || opt.value)}
-          </option>
+          <button
+            key={opt.value}
+            type="button"
+            className={`forms-radio-card${
+              (typeof formData[field.name] === 'object'
+                ? formData[field.name]?.value
+                : formData[field.name]) === opt.value
+                ? ' selected'
+                : ''
+            }`}
+            onClick={() =>
+              !isViewOnly &&
+              handleFieldChange(field.name, {
+                value: opt.value,
+                label: opt.label || opt.value,
+                imageIdentifier: opt.imageIdentifier || '',
+              })
+            }
+            disabled={isViewOnly}
+          >
+            <span className="forms-radio-indicator" />
+            <img
+              src={
+                getFileUrl(opt.imageIdentifier) || FORM_OPTION_FALLBACK_IMAGE
+              }
+              alt={opt.label || opt.value}
+              className="forms-radio-image"
+              onError={event => {
+                event.currentTarget.src = FORM_OPTION_FALLBACK_IMAGE;
+              }}
+            />
+            <span className="forms-radio-label">
+              {opt.label || t(opt.labelKey, opt.value)}
+            </span>
+          </button>
         ))}
-      </select>
+      </div>
     </div>
   );
 
@@ -835,13 +1003,13 @@ const CustomerFormsPage = () => {
 
   const renderFormFields = () => {
     if (!selectedForm) return null;
-    const fields = FORM_FIELDS[selectedForm.formType] || [];
+    const fields = getFieldsForForm(selectedForm.formType);
     return fields.map(field => renderField(field));
   };
 
   if (loading) {
     return (
-      <div className="forms-page">
+      <div className={`forms-page${embedded ? ' forms-embedded-shell' : ''}`}>
         <div className="forms-hero">
           <div className="forms-hero-content">
             <h1 className="forms-hero-title">{t('title', 'My Forms')}</h1>
@@ -861,7 +1029,7 @@ const CustomerFormsPage = () => {
   }
 
   return (
-    <div className="forms-page">
+    <div className={`forms-page${embedded ? ' forms-embedded-shell' : ''}`}>
       <div className="forms-hero">
         <div className="forms-hero-content">
           <h1 className="forms-hero-title">{t('title', 'My Forms')}</h1>
@@ -983,10 +1151,7 @@ const CustomerFormsPage = () => {
 
       {/* Edit/Fill Form Modal */}
       {isEditModalOpen && selectedForm && (
-        <div
-          className="forms-modal-overlay"
-          onClick={() => setIsEditModalOpen(false)}
-        >
+        <div className="forms-modal-overlay" onClick={closeEditModal}>
           <div
             className="forms-modal forms-modal-large"
             onClick={e => e.stopPropagation()}
@@ -999,10 +1164,7 @@ const CustomerFormsPage = () => {
                 )}{' '}
                 {t('modal.editTitle', 'Form')}
               </h2>
-              <button
-                className="forms-modal-close"
-                onClick={() => setIsEditModalOpen(false)}
-              >
+              <button className="forms-modal-close" onClick={closeEditModal}>
                 ×
               </button>
             </div>
@@ -1018,7 +1180,7 @@ const CustomerFormsPage = () => {
             <div className="forms-modal-footer">
               <button
                 className="forms-modal-button forms-modal-button-secondary"
-                onClick={() => setIsEditModalOpen(false)}
+                onClick={closeEditModal}
               >
                 {isViewOnly
                   ? t('buttons.close', 'Close')
@@ -1039,6 +1201,14 @@ const CustomerFormsPage = () => {
                     {t('buttons.submitForm', 'Submit Form')}
                   </button>
                 </>
+              )}
+              {isViewOnly && (
+                <button
+                  className="forms-modal-button forms-modal-button-primary"
+                  onClick={() => handleExportForm(selectedForm)}
+                >
+                  {t('buttons.exportForm', 'Export Form')}
+                </button>
               )}
             </div>
           </div>
@@ -1172,3 +1342,10 @@ const CustomerFormsPage = () => {
 };
 
 export default CustomerFormsPage;
+
+CustomerFormsPage.propTypes = {
+  initialForm: PropTypes.object,
+  embedded: PropTypes.bool,
+  onClose: PropTypes.func,
+  onSaved: PropTypes.func,
+};

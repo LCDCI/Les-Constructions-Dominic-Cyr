@@ -516,12 +516,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      <section className="public-page__cta home-contact-cta">
-        <Link to="/contact" className="public-page__button">
-          {t('contact.button', 'Contact Us')}
-        </Link>
-      </section>
     </div>
   );
 }

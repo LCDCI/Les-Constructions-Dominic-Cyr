@@ -27,6 +27,7 @@ public class FormResponseModel {
     private FormStatus formStatus;
     private String projectIdentifier;
     private String lotIdentifier;
+    private String lotNumber;
     
     // Customer information
     private String customerId;

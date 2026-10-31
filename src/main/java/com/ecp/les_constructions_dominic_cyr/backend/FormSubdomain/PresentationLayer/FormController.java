@@ -14,6 +14,8 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.io.image.ImageDataFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +32,16 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * REST Controller for managing customer forms.
@@ -49,6 +56,9 @@ public class FormController {
     private final FormService formService;
     private final UserService userService;
     private final LotRepository lotRepository;
+
+    @Value("${files.service.base-url:http://localhost:8082}")
+    private String filesServiceBaseUrl;
 
     private static final String ROLE_OWNER = "ROLE_OWNER";
     private static final String ROLE_SALESPERSON = "ROLE_SALESPERSON";
@@ -195,7 +205,7 @@ public class FormController {
      * Get all forms for a specific project
      */
     @GetMapping("/project/{projectId}")
-    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_SALESPERSON')")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public ResponseEntity<List<FormResponseModel>> getFormsByProject(@PathVariable String projectId) {
         log.info("GET /api/v1/forms/project/{}", projectId);
         List<FormResponseModel> forms = formService.getFormsByProject(projectId);
@@ -316,10 +326,10 @@ public class FormController {
 
     /**
      * Mark form as completed
-     * Only salespersons and owners can complete forms
+     * Only owners can approve and complete submitted forms
      */
     @PostMapping("/{formId}/complete")
-    @PreAuthorize("hasAnyAuthority('ROLE_OWNER', 'ROLE_SALESPERSON')")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public ResponseEntity<FormResponseModel> completeForm(
             @PathVariable String formId,
             @AuthenticationPrincipal Jwt jwt
@@ -339,6 +349,8 @@ public class FormController {
     @GetMapping("/{formId}/download")
     public ResponseEntity<byte[]> downloadForm(
             @PathVariable String formId,
+            @RequestParam(defaultValue = "en") String language,
+            @RequestParam(defaultValue = "false") boolean generated,
             @AuthenticationPrincipal Jwt jwt,
             Authentication authentication
     ) {
@@ -360,7 +372,8 @@ public class FormController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        byte[] pdfBytes = buildFormPdf(form);
+        byte[] uploadedPdf = generated ? null : getUploadedPdf(form);
+        byte[] pdfBytes = uploadedPdf != null ? uploadedPdf : buildFormPdf(form, language);
         String fileName = buildFormFileName(form);
 
         return ResponseEntity.ok()
@@ -500,7 +513,7 @@ public class FormController {
         return form.getCustomerId().equals(currentUser.getUserIdentifier());
     }
 
-    private byte[] buildFormPdf(FormResponseModel form) {
+    private byte[] buildFormPdf(FormResponseModel form, String language) {
         ObjectMapper objectMapper = new ObjectMapper();
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(outputStream);
@@ -508,51 +521,69 @@ public class FormController {
         Document document = new Document(pdfDocument);
 
         try {
-            document.add(new Paragraph("Finalized Form")
+            document.add(new Paragraph("Formulaire finalisé")
                 .setBold()
                 .setFontSize(20)
                 .setMarginBottom(6));
-            document.add(new Paragraph(formatFormType(form.getFormType()))
+            document.add(new Paragraph(formatFormType(form.getFormType(), language))
                 .setFontSize(14)
                 .setMarginBottom(12));
 
-            document.add(new Paragraph("Summary")
+            document.add(new Paragraph("Résumé")
                 .setBold()
                 .setFontSize(14)
                 .setMarginBottom(6));
-            document.add(new Paragraph("Status: " + safeValue(form.getFormStatus())));
-            document.add(new Paragraph("Project: " + safeValue(form.getProjectIdentifier())));
-            document.add(new Paragraph("Lot: " + safeValue(form.getLotIdentifier()))
+            document.add(new Paragraph("Statut : " + safeValue(form.getFormStatus())));
+            document.add(new Paragraph("Projet : " + safeValue(form.getProjectIdentifier())));
+            document.add(new Paragraph("Lot : " + safeValue(
+                    form.getLotNumber() != null ? form.getLotNumber() : form.getLotIdentifier()))
                 .setMarginBottom(10));
 
-            document.add(new Paragraph("Customer")
+            document.add(new Paragraph("Client")
                 .setBold()
                 .setFontSize(14)
                 .setMarginBottom(6));
-            document.add(new Paragraph("Name: " + safeValue(form.getCustomerName())));
-            document.add(new Paragraph("Email: " + safeValue(form.getCustomerEmail()))
+            document.add(new Paragraph("Nom : " + safeValue(form.getCustomerName())));
+            document.add(new Paragraph("Courriel : " + safeValue(form.getCustomerEmail()))
                 .setMarginBottom(10));
 
-            document.add(new Paragraph("Completed")
+            document.add(new Paragraph("Finalisation")
                 .setBold()
                 .setFontSize(14)
                 .setMarginBottom(6));
-            document.add(new Paragraph("Date: " + safeValue(form.getCompletedDate()))
+            document.add(new Paragraph("Date : " + safeValue(form.getCompletedDate()))
                 .setMarginBottom(12));
 
-            document.add(new Paragraph("Form Data")
+            document.add(new Paragraph("Données du formulaire")
                 .setBold()
                 .setFontSize(14)
                 .setMarginBottom(6));
             Table table = new Table(2).useAllAvailableWidth();
-            table.addHeaderCell(new Cell().add(new Paragraph("Field").setBold()));
-            table.addHeaderCell(new Cell().add(new Paragraph("Value").setBold()));
+            table.addHeaderCell(new Cell().add(new Paragraph("Champ").setBold()));
+            table.addHeaderCell(new Cell().add(new Paragraph("Valeur").setBold()));
 
             if (form.getFormData() != null && !form.getFormData().isEmpty()) {
                 for (Map.Entry<String, Object> entry : form.getFormData().entrySet()) {
                     String value = stringifyValue(entry.getValue(), objectMapper);
                     table.addCell(new Cell().add(new Paragraph(entry.getKey())));
-                    table.addCell(new Cell().add(new Paragraph(value)));
+                    Cell valueCell = new Cell().add(new Paragraph(value));
+                    if (entry.getValue() instanceof Map<?, ?> selectedOption) {
+                        Object imageIdentifier = selectedOption.get("imageIdentifier");
+                        if (imageIdentifier != null && !String.valueOf(imageIdentifier).isBlank()) {
+                            try {
+                                String imageUrl = filesServiceBaseUrl.replaceAll("/$", "")
+                                        + "/files/" + imageIdentifier;
+                                valueCell.add(new Image(ImageDataFactory.create(imageUrl))
+                                        .setAutoScale(true)
+                                        .setMaxHeight(120)
+                                        .setMaxWidth(180));
+                            } catch (Exception imageError) {
+                                log.warn("Unable to add form selection image for field {}",
+                                        entry.getKey(), imageError);
+                            }
+                        }
+                    }
+                    table.addCell(valueCell);
                 }
             } else {
                 table.addCell(new Cell().add(new Paragraph("(No data)")));
@@ -571,9 +602,46 @@ public class FormController {
         return value == null ? "" : String.valueOf(value);
     }
 
+    private byte[] getUploadedPdf(FormResponseModel form) {
+        Object value = form.getFormData() == null ? null : form.getFormData().get("pdfFile");
+        if (!(value instanceof Map<?, ?> file)) {
+            return null;
+        }
+        Object fileId = file.get("fileId");
+        if (fileId == null) {
+            fileId = file.get("id");
+        }
+        if (fileId == null) {
+            return null;
+        }
+        try {
+            String url = filesServiceBaseUrl.replaceAll("/$", "") + "/files/" + fileId;
+            HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
+            HttpResponse<byte[]> response = HttpClient.newHttpClient()
+                    .send(request, HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() >= 200 && response.statusCode() < 300
+                    && response.body().length >= 4
+                    && response.body()[0] == '%'
+                    && response.body()[1] == 'P'
+                    && response.body()[2] == 'D'
+                    && response.body()[3] == 'F') {
+                return response.body();
+            }
+            log.warn("Uploaded form file {} was not a PDF or could not be downloaded", fileId);
+        } catch (Exception error) {
+            log.warn("Unable to download uploaded PDF {} for form {}", fileId, form.getFormId(), error);
+        }
+        return null;
+    }
+
     private String stringifyValue(Object value, ObjectMapper objectMapper) {
         if (value == null) {
             return "";
+        }
+
+        if (value instanceof Map<?, ?> selectedOption && selectedOption.containsKey("value")) {
+            Object label = selectedOption.get("label");
+            return safeValue(label != null ? label : selectedOption.get("value"));
         }
 
         if (value instanceof String || value instanceof Number || value instanceof Boolean) {
@@ -592,11 +660,41 @@ public class FormController {
         return "form_" + formType + "_" + form.getFormId() + ".pdf";
     }
 
-    private String formatFormType(FormType formType) {
+    private String formatFormType(FormType formType, String language) {
         if (formType == null) {
             return "Form";
         }
-        return formType.name().replace('_', ' ').toLowerCase();
+        Map<String, String> english = Map.ofEntries(
+                Map.entry("EXTERIOR_DOORS", "Exterior Doors"),
+                Map.entry("GARAGE_DOORS", "Garage Doors"),
+                Map.entry("WINDOWS", "Windows"),
+                Map.entry("ASPHALT_SHINGLES", "Asphalt Shingles"),
+                Map.entry("WOODWORK", "Woodwork"),
+                Map.entry("PAINT", "Paint"),
+                Map.entry("FLOORING", "Flooring"),
+                Map.entry("KITCHEN_CABINETS", "Kitchen Cabinets"),
+                Map.entry("BATHROOM_FIXTURES", "Bathroom Fixtures"),
+                Map.entry("LIGHTING", "Lighting"),
+                Map.entry("ROOFING", "Roofing"),
+                Map.entry("HVAC", "HVAC")
+        );
+        Map<String, String> french = Map.ofEntries(
+                Map.entry("EXTERIOR_DOORS", "Portes extérieures"),
+                Map.entry("GARAGE_DOORS", "Portes de garage"),
+                Map.entry("WINDOWS", "Fenêtres"),
+                Map.entry("ASPHALT_SHINGLES", "Bardeaux d'asphalte"),
+                Map.entry("WOODWORK", "Boiseries"),
+                Map.entry("PAINT", "Peinture"),
+                Map.entry("FLOORING", "Revêtement de sol"),
+                Map.entry("KITCHEN_CABINETS", "Armoires de cuisine"),
+                Map.entry("BATHROOM_FIXTURES", "Équipements de salle de bain"),
+                Map.entry("LIGHTING", "Éclairage"),
+                Map.entry("ROOFING", "Toiture"),
+                Map.entry("HVAC", "Chauffage et climatisation")
+        );
+        return "fr".equalsIgnoreCase(language)
+                ? french.getOrDefault(formType.name(), formType.name())
+                : english.getOrDefault(formType.name(), formType.name());
     }
 
     private UserResponseModel getUserByAuth0Id(String auth0UserId) {

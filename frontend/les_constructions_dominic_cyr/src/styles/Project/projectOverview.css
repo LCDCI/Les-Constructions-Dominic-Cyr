@@ -4,6 +4,13 @@
   color: var(--charcoal-gray, #2c3531);
 }
 
+.project-overview-page .overview-section,
+.project-overview-page .features-section,
+.project-overview-page .lots-section,
+.project-overview-page .living-environment-section {
+  border: none !important;
+}
+
 .project-overview-page .section-title,
 .project-overview-page .section-content,
 .project-overview-page .section-description,
@@ -57,6 +64,9 @@
 }
 
 .project-hero {
+  width: 100%;
+  align-self: stretch;
+  box-sizing: border-box;
   min-height: 280px;
   padding: 6.4rem var(--spacing-lg);
   background: var(--public-banner-bg, #aab2a6);
@@ -73,6 +83,23 @@
 
 .project-hero--image {
   background-color: var(--public-banner-bg, #aab2a6);
+}
+
+.project-banner-content {
+  position: relative;
+  z-index: 4;
+  width: min(100%, 1040px);
+  padding: 1rem;
+}
+
+.lots-page > .lots-content > .project-hero {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+.project-banner-content .lots-heading-content {
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .project-logo-above-banner {
@@ -212,6 +239,10 @@
 
 .overview-section {
   background-color: var(--color-white, #ffffff);
+  border: 2px solid var(--primary-color, #2c3e50);
+  border-radius: 16px;
+  margin: 2rem auto;
+  max-width: 1400px;
 }
 
 .features-section {
@@ -246,7 +277,10 @@
   transform: translateX(-50%);
   width: 60px;
   height: 4px;
-  background: var(--color-secondary, #aab2a6);
+  background: var(
+    --project-tertiary,
+    var(--project-buyer, var(--tertiary-color, #aab2a6))
+  );
   border-radius: 2px;
 }
 
@@ -352,6 +386,10 @@
 /* Lots Section */
 .lots-section {
   background-color: #f8f9fa;
+  border: 2px solid var(--tertiary-color, #628db5);
+  border-radius: 16px;
+  margin: 2rem auto;
+  max-width: 1400px;
 }
 
 .lots-grid {
@@ -707,7 +745,13 @@
   justify-content: center;
   cursor: pointer;
   transition: transform 0.3s ease;
-  background: none;
+  min-width: 220px;
+  padding: 1.5rem 1.25rem;
+  background: var(--color-white, #ffffff);
+  border: 2px solid var(--tertiary-color, #628db5);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px
+    color-mix(in srgb, var(--primary-color, #2c3e50) 18%, transparent);
 }
 
 .icon-container {

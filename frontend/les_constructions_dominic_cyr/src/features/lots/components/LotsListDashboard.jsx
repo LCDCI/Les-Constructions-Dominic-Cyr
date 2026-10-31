@@ -11,7 +11,7 @@ import '../../../styles/Public_Facing/residential-projects.css';
 /**
  * LotsListDashboard - Displays all projects with user's assigned lots grouped by project
  */
-const LotsListDashboard = ({ userId, isCustomer = false }) => {
+const LotsListDashboard = ({ userId }) => {
   const [allProjects, setAllProjects] = useState([]);
   const [lotsByProject, setLotsByProject] = useState({});
   const [selectedProjectId, setSelectedProjectId] = useState('');
@@ -68,7 +68,6 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
       setLotsByProject(grouped);
       setAllProjects(sortProjectsWithForestaFirst(projects || []));
     } catch (err) {
-      console.error('Failed to load data:', err);
       setError(t('error', 'Failed to load lots'));
     } finally {
       setLoading(false);
@@ -205,14 +204,14 @@ const LotsListDashboard = ({ userId, isCustomer = false }) => {
                     </div>
                   </div>
 
-                  {lots.map((lot, lotIndex) => (
+                  {lots.map(lot => (
                     <div
                       key={lot.lotId}
                       className="lots-table-row"
                       data-testid={`lot-card-${lot.lotId}`}
                     >
+                      <div className="lots-cell">{lot.id ?? '—'}</div>
                       <div className="lots-cell">{lot.lotNumber || '—'}</div>
-                      <div className="lots-cell">{`Lot ${lotIndex + 1}`}</div>
                       <div className="lots-cell">{lot.civicAddress || '—'}</div>
                       <div className="lots-cell">
                         {lot.dimensionsSquareFeet || '—'}

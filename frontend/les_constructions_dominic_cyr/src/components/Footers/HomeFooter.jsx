@@ -6,6 +6,7 @@ import {
   FaEnvelope,
 } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Footers/HomeFooter.css';
 
@@ -66,6 +67,12 @@ export default function HomeFooter() {
               </a>
             </div>
           </div>
+        </div>
+
+        <div className="footer-section footer-section-middle">
+          <Link to="/contact" className="footer-contact-link">
+            {t('footer.contactUs', 'Contact Us')}
+          </Link>
         </div>
 
         <div className="footer-section">

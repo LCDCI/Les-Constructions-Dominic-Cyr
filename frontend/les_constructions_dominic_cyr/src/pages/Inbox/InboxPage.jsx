@@ -138,7 +138,11 @@ const InboxPage = () => {
               </button>
             )}
             {notifications.length > 0 && (
-              <button className="btn-delete-all" onClick={handleDeleteAll}>
+              <button
+                className="btn-delete-all"
+                onClick={handleDeleteAll}
+                type="button"
+              >
                 {t('deleteAll', 'Delete all')}
               </button>
             )}

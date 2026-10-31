@@ -3,7 +3,8 @@
   margin: 0 auto;
   background: white;
   border-radius: 12px;
-  border: 1px solid #dbe3ec;
+  border: 1px solid
+    color-mix(in srgb, var(--project-tertiary, #dbe3ec) 35%, #dbe3ec);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   overflow-x: auto;
@@ -19,13 +20,18 @@
 
 .fixed-table th {
   padding: 20px 15px;
-  background-color: #f8fafc;
-  color: #475569;
+  background-color: color-mix(
+    in srgb,
+    var(--project-tertiary, #f8fafc) 12%,
+    #f8fafc
+  );
+  color: var(--project-primary, #475569);
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   text-align: left;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid
+    color-mix(in srgb, var(--project-tertiary, #e2e8f0) 45%, #e2e8f0);
   border-right: 1px solid #e2e8f0;
 }
 
@@ -73,6 +79,10 @@
   overflow: hidden;
   text-overflow: ellipsis; /* Keeps table from stretching */
   border-right: 1px solid #edf1f5;
+}
+
+.fixed-table tbody tr:nth-child(even) td {
+  background-color: var(--project-light-color, #f8fafc);
 }
 
 .id-cell {
@@ -136,7 +146,7 @@
 
 .no-customer {
   color: #94a3b8;
-  font-style: italic;
+  font-style: normal;
   font-size: 0.8rem;
 }
 
@@ -196,14 +206,23 @@
 }
 
 .fixed-table .edit-btn {
-  color: #0ea5e9 !important;
+  color: var(--project-buyer, var(--project-tertiary, #0ea5e9)) !important;
   background-color: transparent !important;
-  border: 1px solid #e0f2fe !important;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--project-buyer, var(--project-tertiary, #e0f2fe)) 35%,
+      #e0f2fe
+    ) !important;
 }
 
 .fixed-table .edit-btn:hover {
-  background-color: #f0f9ff !important;
-  color: #0284c7 !important;
+  background-color: color-mix(
+    in srgb,
+    var(--project-buyer, var(--project-tertiary, #f0f9ff)) 14%,
+    #f0f9ff
+  ) !important;
+  color: var(--project-buyer, var(--project-tertiary, #0284c7)) !important;
   transform: none !important;
 }
 
@@ -244,7 +263,7 @@
 
 .no-users {
   color: #94a3b8;
-  font-style: italic;
+  font-style: normal;
   font-size: 0.8rem;
 }
 

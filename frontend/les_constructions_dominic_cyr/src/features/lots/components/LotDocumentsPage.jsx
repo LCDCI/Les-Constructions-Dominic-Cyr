@@ -514,8 +514,8 @@ const LotDocumentsPage = () => {
       setProject(projectData);
 
       if (allLots) {
-        const idx = allLots.findIndex(l => l.lotId === lotId);
-        setLotIndex(idx >= 0 ? idx + 1 : null);
+        const matchingLot = allLots.find(l => l.lotId === lotId);
+        setLotIndex(matchingLot?.id ?? null);
       }
 
       // Fetch documents

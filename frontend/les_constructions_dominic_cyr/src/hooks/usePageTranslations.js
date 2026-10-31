@@ -14,14 +14,25 @@ const PUBLIC_PAGE_GROUPS = {
   houses: 'houses',
 };
 
+const BLOCKED_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+const isPlainObject = value => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return false;
+  }
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+};
+
 const mergeObjects = (target, source) => {
   Object.entries(source || {}).forEach(([key, value]) => {
     if (
-      value &&
-      typeof value === 'object' &&
-      !Array.isArray(value) &&
-      typeof target[key] === 'object'
+      BLOCKED_KEYS.has(key) ||
+      !Object.prototype.hasOwnProperty.call(source, key)
     ) {
+      return;
+    }
+    if (isPlainObject(value) && isPlainObject(target[key])) {
       mergeObjects(target[key], value);
     } else {
       target[key] = value;
@@ -32,12 +43,20 @@ const mergeObjects = (target, source) => {
 
 const setNestedValue = (target, path, value) => {
   const parts = path.split('.');
+  if (parts.some(part => BLOCKED_KEYS.has(part))) {
+    return;
+  }
   let current = target;
   parts.forEach((part, index) => {
     if (index === parts.length - 1) {
       current[part] = value;
     } else {
-      current[part] = current[part] || {};
+      if (
+        !Object.prototype.hasOwnProperty.call(current, part) ||
+        !isPlainObject(current[part])
+      ) {
+        current[part] = {};
+      }
       current = current[part];
     }
   });

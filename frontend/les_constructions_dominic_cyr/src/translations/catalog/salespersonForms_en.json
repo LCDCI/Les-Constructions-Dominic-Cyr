@@ -30,6 +30,9 @@
     "reopened": "Reopened"
   },
   "buttons": {
+    "viewHistory": "View History",
+    "downloadPdf": "Download PDF",
+    "close": "Close",
     "reopen": "Reopen",
     "complete": "Complete",
     "delete": "Delete",

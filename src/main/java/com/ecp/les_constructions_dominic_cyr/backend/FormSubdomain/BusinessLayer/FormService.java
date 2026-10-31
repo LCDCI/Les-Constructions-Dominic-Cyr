@@ -111,7 +111,7 @@ public interface FormService {
 
     /**
      * Mark form as completed (final approval)
-     * Only salespersons or owners can complete forms
+     * Only owners can approve and complete forms
      * 
      * @param formId Form identifier
      * @param completedByUserId User ID of person completing the form

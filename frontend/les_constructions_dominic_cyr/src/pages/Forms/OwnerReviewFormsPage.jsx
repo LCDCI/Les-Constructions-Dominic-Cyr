@@ -7,8 +7,18 @@ import {
   completeForm,
   downloadFinalizedForm,
 } from '../../features/forms/api/formsApi';
+import { FORM_FIELDS } from './CustomerFormsPage';
+import {
+  createSiteContent,
+  fetchSiteContent,
+  updateSiteContent,
+} from '../../features/siteContent/api/siteContentApi';
+import { uploadFile } from '../../features/files/api/filesApi';
+import { getFileUrl } from '../../utils/filesService';
 import '../../styles/Forms/owner-review-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+
+const FORM_OPTION_FALLBACK_IMAGE = '/fallback.jpg';
 
 const FORM_TYPES = [
   { value: 'ALL', translationKey: 'formTypes.all' },
@@ -24,12 +34,23 @@ const FORM_TYPES = [
   { value: 'HVAC', translationKey: 'formTypes.hvac' },
 ];
 
+const EDITABLE_FORM_TYPES = [
+  'EXTERIOR_DOORS',
+  'GARAGE_DOORS',
+  'WINDOWS',
+  'ASPHALT_SHINGLES',
+  'WOODWORK',
+  'PAINT',
+];
+
 const OwnerReviewFormsPage = () => {
-  const { t } = usePageTranslations('ownerReviewForms');
+  const { t, currentLanguage } = usePageTranslations('ownerReviewForms');
+  const { t: tCustomer } = usePageTranslations('customerForms');
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(false);
   const [typeFilter, setTypeFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('SUBMITTED');
+  const [searchTerm, setSearchTerm] = useState('');
   const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
   const [formToReopen, setFormToReopen] = useState(null);
   const [reopenReason, setReopenReason] = useState('');
@@ -37,9 +58,25 @@ const OwnerReviewFormsPage = () => {
   const [submitError, setSubmitError] = useState(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [formToView, setFormToView] = useState(null);
+  const [isFormEditorOpen, setIsFormEditorOpen] = useState(false);
+  const [editableFormType, setEditableFormType] = useState(
+    EDITABLE_FORM_TYPES[0]
+  );
+  const [formConfiguration, setFormConfiguration] = useState({});
+  const [editableFields, setEditableFields] = useState([]);
+  const [isSavingConfiguration, setIsSavingConfiguration] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+
+  const getToken = async () => {
+    const { getAuthAudience } = await import('../../utils/authConfig');
+    return getAccessTokenSilently({
+      authorizationParams: {
+        audience: getAuthAudience() || 'https://construction-api.loca',
+      },
+    });
+  };
 
   const redirectToError = (status = 500) => {
     if (status === 404) {
@@ -65,6 +102,20 @@ const OwnerReviewFormsPage = () => {
 
       const formsData = await getAllForms(token);
       setForms(formsData || []);
+      try {
+        const configurationItems = await fetchSiteContent(
+          'en',
+          token,
+          'forms-config'
+        );
+        setFormConfiguration(
+          Object.fromEntries(
+            (configurationItems || []).map(item => [item.pageKey, item])
+          )
+        );
+      } catch {
+        setFormConfiguration({});
+      }
     } catch (error) {
       if (error?.response?.status === 404) {
         redirectToError(404);
@@ -73,6 +124,130 @@ const OwnerReviewFormsPage = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getEditableFields = formType => {
+    const savedItem = formConfiguration[formType];
+    if (savedItem?.contentText) {
+      try {
+        const saved = JSON.parse(savedItem.contentText);
+        if (Array.isArray(saved.fields)) return saved.fields;
+      } catch {
+        // Use the built-in form definition when saved content is invalid.
+      }
+    }
+
+    return (FORM_FIELDS[formType] || []).map(field => ({
+      name: field.name,
+      label: tCustomer(field.translationKey, field.name),
+      options: (field.options || []).map(option => ({
+        value: option.value,
+        label: option.label || tCustomer(option.labelKey, option.value),
+        imageIdentifier: option.imageIdentifier || '',
+      })),
+    }));
+  };
+
+  const openFormEditor = () => {
+    setEditableFields(getEditableFields(editableFormType));
+    setIsFormEditorOpen(true);
+  };
+
+  const changeEditableFormType = formType => {
+    setEditableFormType(formType);
+    setEditableFields(getEditableFields(formType));
+  };
+
+  const updateOption = (fieldIndex, optionIndex, key, value) => {
+    setEditableFields(fields =>
+      fields.map((field, currentFieldIndex) =>
+        currentFieldIndex !== fieldIndex
+          ? field
+          : {
+              ...field,
+              options: field.options.map((option, currentOptionIndex) =>
+                currentOptionIndex === optionIndex
+                  ? { ...option, [key]: value }
+                  : option
+              ),
+            }
+      )
+    );
+  };
+
+  const addOption = fieldIndex => {
+    setEditableFields(fields =>
+      fields.map((field, index) =>
+        index === fieldIndex
+          ? {
+              ...field,
+              options: [
+                ...field.options,
+                {
+                  value: `option_${field.options.length + 1}`,
+                  label: `Option ${field.options.length + 1}`,
+                  imageIdentifier: '',
+                },
+              ],
+            }
+          : field
+      )
+    );
+  };
+
+  const updateFieldLabel = (fieldIndex, value) => {
+    setEditableFields(fields =>
+      fields.map((field, index) =>
+        index === fieldIndex ? { ...field, label: value } : field
+      )
+    );
+  };
+
+  const handleOptionImage = async (fieldIndex, optionIndex, file) => {
+    if (!file) return;
+    try {
+      const token = await getToken();
+      const data = new FormData();
+      data.append('file', file);
+      const result = await uploadFile(data, token);
+      const imageIdentifier = result.fileId || result.id;
+      updateOption(fieldIndex, optionIndex, 'imageIdentifier', imageIdentifier);
+    } catch {
+      setSubmitError(t('errors.imageUpload', 'Failed to upload image.'));
+    }
+  };
+
+  const saveFormConfiguration = async () => {
+    try {
+      setIsSavingConfiguration(true);
+      const token = await getToken();
+      const contentText = JSON.stringify({ fields: editableFields });
+      const existing = formConfiguration[editableFormType];
+      const saved = existing
+        ? await updateSiteContent(existing.id, contentText, null, token)
+        : await createSiteContent(
+            {
+              pageGroup: 'forms-config',
+              pageKey: editableFormType,
+              language: 'en',
+              contentText,
+              sortOrder: 0,
+            },
+            token
+          );
+      setFormConfiguration(current => ({
+        ...current,
+        [editableFormType]: saved,
+      }));
+      setIsFormEditorOpen(false);
+    } catch (error) {
+      setSubmitError(
+        error?.response?.data?.message ||
+          t('errors.saveConfiguration', 'Failed to save form options.')
+      );
+    } finally {
+      setIsSavingConfiguration(false);
     }
   };
 
@@ -141,7 +316,7 @@ const OwnerReviewFormsPage = () => {
         },
       });
 
-      await downloadFinalizedForm(formId, token);
+      await downloadFinalizedForm(formId, token, currentLanguage);
     } catch (error) {
       setSubmitError('Failed to download form. Please try again.');
     }
@@ -182,8 +357,24 @@ const OwnerReviewFormsPage = () => {
     const matchesType = typeFilter === 'ALL' || form.formType === typeFilter;
     const matchesStatus =
       statusFilter === 'ALL' || form.formStatus === statusFilter;
-    return matchesType && matchesStatus;
+    const search = searchTerm.trim().toLowerCase();
+    const matchesSearch =
+      !search ||
+      [
+        form.customerName,
+        form.lotNumber,
+        form.lotIdentifier,
+        form.projectIdentifier,
+      ]
+        .filter(Boolean)
+        .some(value => value.toLowerCase().includes(search));
+    return matchesType && matchesStatus && matchesSearch;
   });
+  const formsByLot = filteredForms.reduce((groups, form) => {
+    const lot = form.lotNumber || t('labels.unknownLot', 'Unknown lot');
+    (groups[lot] ||= []).push(form);
+    return groups;
+  }, {});
 
   const getStatusBadgeClass = status => {
     switch (status) {
@@ -198,6 +389,12 @@ const OwnerReviewFormsPage = () => {
     }
   };
 
+  const getTranslatedStatus = status =>
+    t(
+      `status.${String(status || '').toLowerCase()}`,
+      String(status || '').replace(/_/g, ' ')
+    );
+
   return (
     <div className="owner-review-forms-page">
       <div className="forms-header-banner">
@@ -208,6 +405,25 @@ const OwnerReviewFormsPage = () => {
       </div>
 
       <div className="forms-filters">
+        <div className="filter-group">
+          <label htmlFor="formsSearch">
+            {t('filters.search', 'Search by customer or lot')}
+          </label>
+          <input
+            id="formsSearch"
+            className="forms-search-input"
+            value={searchTerm}
+            onChange={event => setSearchTerm(event.target.value)}
+            placeholder={t('searchPlaceholder', 'Search forms...')}
+          />
+        </div>
+        <button
+          type="button"
+          className="form-action-button form-action-edit"
+          onClick={openFormEditor}
+        >
+          {t('buttons.editForms', 'Edit Forms')}
+        </button>
         <div className="filter-group">
           <label htmlFor="typeFilter">{t('filters.type', 'Form Type')}</label>
           <select
@@ -257,94 +473,247 @@ const OwnerReviewFormsPage = () => {
               <p>{t('noForms', 'No forms found')}</p>
             </div>
           ) : (
-            <div className="forms-list">
-              {filteredForms.map(form => (
-                <div key={form.formId} className="form-card">
-                  <div className="form-card-header">
-                    <h3>
-                      {form.formType
-                        ? form.formType.replace(/_/g, ' ')
-                        : 'Form'}
-                    </h3>
-                    <span
-                      className={`status-badge ${getStatusBadgeClass(form.formStatus)}`}
-                    >
-                      {form.formStatus}
-                    </span>
+            <div className="forms-lot-groups">
+              {Object.entries(formsByLot).map(([lot, lotForms]) => (
+                <section key={lot} className="forms-lot-group">
+                  <h2 className="forms-lot-title">
+                    {t('labels.lot', 'Lot')}: {lot}
+                  </h2>
+                  <div className="forms-list">
+                    {lotForms.map(form => (
+                      <div key={form.formId} className="form-card">
+                        <div className="form-card-header">
+                          <h3>
+                            {form.formType
+                              ? t(
+                                  `formTypes.${form.formType}`,
+                                  form.formType.replace(/_/g, ' ')
+                                )
+                              : t('labels.form', 'Form')}
+                          </h3>
+                          <span
+                            className={`status-badge ${getStatusBadgeClass(form.formStatus)}`}
+                          >
+                            {getTranslatedStatus(form.formStatus)}
+                          </span>
+                        </div>
+                        <div className="form-card-details">
+                          <p>
+                            <strong>{t('labels.customer', 'Customer')}:</strong>{' '}
+                            {form.customerName || 'N/A'}
+                          </p>
+                          <p>
+                            <strong>{t('labels.project', 'Project')}:</strong>{' '}
+                            {form.projectIdentifier}
+                          </p>
+                          <p>
+                            <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
+                            {form.lotNumber || form.lotIdentifier}
+                          </p>
+                          {form.lastSubmittedDate && (
+                            <p>
+                              <strong>
+                                {t('labels.submitted', 'Submitted')}:
+                              </strong>{' '}
+                              {new Date(
+                                form.lastSubmittedDate
+                              ).toLocaleDateString()}
+                            </p>
+                          )}
+                          {form.reopenedDate && (
+                            <p>
+                              <strong>
+                                {t('labels.reopened', 'Reopened')}:
+                              </strong>{' '}
+                              {new Date(form.reopenedDate).toLocaleDateString()}
+                            </p>
+                          )}
+                          {form.reopenReason && (
+                            <p>
+                              <strong>
+                                {t('labels.reopenReason', 'Reopen Reason')}:
+                              </strong>{' '}
+                              {form.reopenReason}
+                            </p>
+                          )}
+                        </div>
+                        <div className="form-card-actions">
+                          {form.formStatus === 'SUBMITTED' && (
+                            <>
+                              <button
+                                className="form-action-button form-action-view"
+                                onClick={() => handleViewForm(form)}
+                              >
+                                {t('buttons.viewForm', 'View Form')}
+                              </button>
+                              <button
+                                className="form-action-button form-action-reopen"
+                                onClick={() => {
+                                  setFormToReopen(form);
+                                  setIsReopenModalOpen(true);
+                                }}
+                              >
+                                {t('buttons.reopen', 'Request Changes')}
+                              </button>
+                              <button
+                                className="form-action-button form-action-complete"
+                                onClick={() => handleCompleteForm(form.formId)}
+                              >
+                                {t('buttons.complete', 'Approve & Complete')}
+                              </button>
+                            </>
+                          )}
+                          {form.formStatus === 'COMPLETED' && (
+                            <button
+                              className="form-action-button form-action-download"
+                              onClick={() => handleDownloadForm(form.formId)}
+                            >
+                              {t('buttons.downloadPdf', 'Download PDF')}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="form-card-details">
-                    <p>
-                      <strong>{t('labels.customer', 'Customer')}:</strong>{' '}
-                      {form.customerName || 'N/A'}
-                    </p>
-                    <p>
-                      <strong>{t('labels.project', 'Project')}:</strong>{' '}
-                      {form.projectIdentifier}
-                    </p>
-                    <p>
-                      <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
-                      {form.lotIdentifier}
-                    </p>
-                    {form.lastSubmittedDate && (
-                      <p>
-                        <strong>{t('labels.submitted', 'Submitted')}:</strong>{' '}
-                        {new Date(form.lastSubmittedDate).toLocaleDateString()}
-                      </p>
-                    )}
-                    {form.reopenedDate && (
-                      <p>
-                        <strong>{t('labels.reopened', 'Reopened')}:</strong>{' '}
-                        {new Date(form.reopenedDate).toLocaleDateString()}
-                      </p>
-                    )}
-                    {form.reopenReason && (
-                      <p>
-                        <strong>
-                          {t('labels.reopenReason', 'Reopen Reason')}:
-                        </strong>{' '}
-                        {form.reopenReason}
-                      </p>
-                    )}
-                  </div>
-                  <div className="form-card-actions">
-                    {form.formStatus === 'SUBMITTED' && (
-                      <>
-                        <button
-                          className="form-action-button form-action-view"
-                          onClick={() => handleViewForm(form)}
-                        >
-                          {t('buttons.viewForm', 'View Form')}
-                        </button>
-                        <button
-                          className="form-action-button form-action-reopen"
-                          onClick={() => {
-                            setFormToReopen(form);
-                            setIsReopenModalOpen(true);
-                          }}
-                        >
-                          {t('buttons.reopen', 'Request Changes')}
-                        </button>
-                        <button
-                          className="form-action-button form-action-complete"
-                          onClick={() => handleCompleteForm(form.formId)}
-                        >
-                          {t('buttons.complete', 'Approve & Complete')}
-                        </button>
-                      </>
-                    )}
-                    {form.formStatus === 'COMPLETED' && (
-                      <button
-                        className="form-action-button form-action-download"
-                        onClick={() => handleDownloadForm(form.formId)}
-                      >
-                        {t('buttons.downloadPdf', 'Download PDF')}
-                      </button>
-                    )}
-                  </div>
-                </div>
+                </section>
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {isFormEditorOpen && (
+        <div
+          className="forms-modal-overlay"
+          onClick={() => setIsFormEditorOpen(false)}
+        >
+          <div
+            className="forms-modal forms-config-modal"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="forms-modal-header">
+              <h2>{t('modal.editForms.title', 'Edit Form Options')}</h2>
+              <button
+                className="forms-modal-close"
+                onClick={() => setIsFormEditorOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="forms-modal-body">
+              <div className="filter-group">
+                <label htmlFor="editableFormType">
+                  {t('filters.type', 'Form Type')}
+                </label>
+                <select
+                  id="editableFormType"
+                  className="forms-filter-select"
+                  value={editableFormType}
+                  onChange={e => changeEditableFormType(e.target.value)}
+                >
+                  {EDITABLE_FORM_TYPES.map(type => (
+                    <option key={type} value={type}>
+                      {t(
+                        FORM_TYPES.find(item => item.value === type)
+                          ?.translationKey || '',
+                        type.replace(/_/g, ' ')
+                      )}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {editableFields.length === 0 ? (
+                <p className="forms-config-empty">
+                  {t(
+                    'modal.editForms.noOptions',
+                    'This form has no configurable options yet.'
+                  )}
+                </p>
+              ) : (
+                editableFields.map((field, fieldIndex) => (
+                  <section className="forms-config-field" key={field.name}>
+                    <input
+                      className="forms-config-field-label"
+                      value={field.label || field.name}
+                      aria-label={`Label for ${field.name}`}
+                      onChange={e =>
+                        updateFieldLabel(fieldIndex, e.target.value)
+                      }
+                    />
+                    {field.options.map((option, optionIndex) => (
+                      <div className="forms-config-option" key={option.value}>
+                        <input
+                          value={option.label || ''}
+                          aria-label={`Label for ${option.value}`}
+                          onChange={e =>
+                            updateOption(
+                              fieldIndex,
+                              optionIndex,
+                              'label',
+                              e.target.value
+                            )
+                          }
+                        />
+                        {option.imageIdentifier && (
+                          <img
+                            src={
+                              getFileUrl(option.imageIdentifier) ||
+                              FORM_OPTION_FALLBACK_IMAGE
+                            }
+                            alt={option.label || option.value}
+                            className="forms-config-image-preview"
+                            onError={event => {
+                              event.currentTarget.src =
+                                FORM_OPTION_FALLBACK_IMAGE;
+                            }}
+                          />
+                        )}
+                        <label className="forms-config-upload">
+                          {t('modal.editForms.image', 'Option image')}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={e =>
+                              handleOptionImage(
+                                fieldIndex,
+                                optionIndex,
+                                e.target.files?.[0]
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      className="form-action-button form-action-edit"
+                      onClick={() => addOption(fieldIndex)}
+                    >
+                      {t('modal.editForms.addOption', 'Add option')}
+                    </button>
+                  </section>
+                ))
+              )}
+            </div>
+            <div className="forms-modal-footer">
+              <button
+                type="button"
+                className="forms-modal-button forms-modal-button-secondary"
+                onClick={() => setIsFormEditorOpen(false)}
+              >
+                {t('buttons.cancel', 'Cancel')}
+              </button>
+              <button
+                type="button"
+                className="forms-modal-button forms-modal-button-primary"
+                onClick={saveFormConfiguration}
+                disabled={isSavingConfiguration}
+              >
+                {t('buttons.save', 'Save')}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -456,7 +825,7 @@ const OwnerReviewFormsPage = () => {
                 </p>
                 <p>
                   <strong>{t('labels.lot', 'Lot')}:</strong>{' '}
-                  {formToView.lotIdentifier}
+                  {formToView.lotNumber || formToView.lotIdentifier}
                 </p>
               </div>
               <div className="forms-data-block">

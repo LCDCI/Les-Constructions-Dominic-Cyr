@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import {
   FiAward,
   FiHeart,
@@ -175,9 +174,6 @@ const RenovationsPage = () => {
             "Your home is one of the most important investments you'll ever make. Choose a trusted partner with Dominic Cyr Construction Inc."
           )}
         </p>
-        <Link to="/contact" className="public-page__button">
-          {t('cta.button', 'Talk to an expert')}
-        </Link>
       </section>
     </div>
   );

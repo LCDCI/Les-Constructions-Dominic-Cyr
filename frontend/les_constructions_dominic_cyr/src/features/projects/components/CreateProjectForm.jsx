@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useTranslation } from 'react-i18next';
@@ -346,6 +346,9 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
   const handleCoverImageChange = file => {
     if (!file) {
+      if (coverImagePreviewUrl) {
+        URL.revokeObjectURL(coverImagePreviewUrl);
+      }
       setCoverImageFile(null);
       setCoverImagePreviewUrl(null);
       return;
@@ -358,6 +361,9 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         coverImage: t('form.validation.invalidImageType'),
       }));
       setCoverImageFile(null);
+      if (coverImagePreviewUrl) {
+        URL.revokeObjectURL(coverImagePreviewUrl);
+      }
       setCoverImagePreviewUrl(null);
       return;
     }
@@ -369,9 +375,21 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     });
 
     setCoverImageFile(file);
+    if (coverImagePreviewUrl) {
+      URL.revokeObjectURL(coverImagePreviewUrl);
+    }
     const url = URL.createObjectURL(file);
     setCoverImagePreviewUrl(url);
   };
+
+  useEffect(
+    () => () => {
+      if (coverImagePreviewUrl) {
+        URL.revokeObjectURL(coverImagePreviewUrl);
+      }
+    },
+    [coverImagePreviewUrl]
+  );
 
   const uploadTranslationFiles = async projectIdentifier => {
     // Use project identifier for filenames as requested

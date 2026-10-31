@@ -87,7 +87,7 @@ MapClickHandler.propTypes = {
 
 const LocationMap = ({ locationAddress, mapCoords, setShowModal }) => {
   const centerCoords = mapCoords || DEFAULT_COORDS;
-  const defaultZoom = 13;
+  const defaultZoom = 11;
   const [mapKey, setMapKey] = useState(0);
   const { t } = usePageTranslations('projectOverview');
 
@@ -159,7 +159,7 @@ LocationMap.propTypes = {
 
 const LocationModal = ({ show, handleClose, mapCoords, locationAddress }) => {
   const centerCoords = mapCoords || DEFAULT_COORDS;
-  const modalZoom = 15;
+  const modalZoom = 13;
   const { t } = usePageTranslations('projectOverview');
 
   if (!show) return null;
@@ -370,7 +370,13 @@ const ProjectOverviewPage = () => {
     !isNaN(finalMapCoords[1]);
 
   return (
-    <div className={`project-overview-page`}>
+    <div
+      className="project-overview-page"
+      style={{
+        '--project-tertiary': overview.tertiaryColor || overview.buyerColor,
+        '--project-buyer': overview.buyerColor || overview.tertiaryColor,
+      }}
+    >
       <ProjectBanner projectIdentifier={projectIdentifier} project={overview} />
       <h1 className="sr-only">
         {overview.projectName ||
