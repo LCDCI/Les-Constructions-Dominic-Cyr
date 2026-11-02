@@ -81,6 +81,7 @@ const LotsPage = () => {
     48: { top: '22%', left: '41.5%' },
     49: { top: '17%', left: '36%' },
     50: { top: '15.5%', left: '27%' },
+    52: { top: '58%', left: '42%' },
   };
 
   const roles = user?.['https://construction-api.loca/roles'] || [];
@@ -89,7 +90,8 @@ const LotsPage = () => {
   const isPubliclyVisibleId = num =>
     (num >= 1 && num <= 9) ||
     (num >= 33 && num <= 43) ||
-    (num >= 45 && num <= 50);
+    (num >= 45 && num <= 50) ||
+    num === 52;
 
   useEffect(() => {
     let cancelled = false;
@@ -259,7 +261,7 @@ const LotsPage = () => {
             <div className="lots-image-section">
               <div className="map-wrapper">
                 <img
-                  src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/panorama.png"
+                  src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/panorama.png?v=2026-11-02"
                   alt="Panorama Map"
                   className="phase-map-image"
                   style={{ cursor: 'default' }}
@@ -283,7 +285,7 @@ const LotsPage = () => {
             <div className="lots-image-section">
               <div className="map-wrapper">
                 <img
-                  src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/phase1.png"
+                  src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/phase1.png?v=2026-11-02-lot-52"
                   alt="Map"
                   className="phase-map-image"
                 />

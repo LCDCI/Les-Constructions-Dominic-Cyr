@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useTranslation } from 'react-i18next';
@@ -346,9 +346,6 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
 
   const handleCoverImageChange = file => {
     if (!file) {
-      if (coverImagePreviewUrl) {
-        URL.revokeObjectURL(coverImagePreviewUrl);
-      }
       setCoverImageFile(null);
       setCoverImagePreviewUrl(null);
       return;
@@ -361,9 +358,6 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
         coverImage: t('form.validation.invalidImageType'),
       }));
       setCoverImageFile(null);
-      if (coverImagePreviewUrl) {
-        URL.revokeObjectURL(coverImagePreviewUrl);
-      }
       setCoverImagePreviewUrl(null);
       return;
     }
@@ -375,21 +369,35 @@ const CreateProjectForm = ({ onCancel, onSuccess, onError }) => {
     });
 
     setCoverImageFile(file);
-    if (coverImagePreviewUrl) {
-      URL.revokeObjectURL(coverImagePreviewUrl);
-    }
-    const url = URL.createObjectURL(file);
-    setCoverImagePreviewUrl(url);
-  };
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      const isAllowedDataUrl =
+        result.startsWith('data:image/png;base64,') ||
+        result.startsWith('data:image/jpeg;base64,') ||
+        result.startsWith('data:image/webp;base64,');
 
-  useEffect(
-    () => () => {
-      if (coverImagePreviewUrl) {
-        URL.revokeObjectURL(coverImagePreviewUrl);
+      if (isAllowedDataUrl) {
+        setCoverImagePreviewUrl(result);
+      } else {
+        setCoverImageFile(null);
+        setCoverImagePreviewUrl(null);
+        setErrors(prev => ({
+          ...prev,
+          coverImage: t('form.validation.invalidImageType'),
+        }));
       }
-    },
-    [coverImagePreviewUrl]
-  );
+    };
+    reader.onerror = () => {
+      setCoverImageFile(null);
+      setCoverImagePreviewUrl(null);
+      setErrors(prev => ({
+        ...prev,
+        coverImage: t('form.validation.invalidImageType'),
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   const uploadTranslationFiles = async projectIdentifier => {
     // Use project identifier for filenames as requested

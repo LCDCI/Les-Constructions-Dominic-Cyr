@@ -789,8 +789,16 @@
 
 @media (max-width: 768px) {
   .project-features-grid {
+    flex-direction: column;
     gap: 2rem;
+    margin: 2rem auto;
   }
+
+  .feature-item {
+    width: min(100%, 320px);
+    min-width: 0;
+  }
+
   .base-react-icon {
     width: 60px;
     height: 60px;
