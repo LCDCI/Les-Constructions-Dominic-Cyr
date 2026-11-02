@@ -6,8 +6,8 @@ import '../styles/Project/projectOverview.css';
 
 export default function ProjectBanner({
   projectIdentifier,
-  project,
-  children,
+  project = null,
+  children = null,
 }) {
   const [loadedProject, setLoadedProject] = useState(project || null);
 
@@ -79,9 +79,4 @@ ProjectBanner.propTypes = {
     primaryColor: PropTypes.string,
   }),
   children: PropTypes.node,
-};
-
-ProjectBanner.defaultProps = {
-  project: null,
-  children: null,
 };
