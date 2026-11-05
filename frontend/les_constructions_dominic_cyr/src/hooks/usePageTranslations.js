@@ -32,7 +32,11 @@ const mergeObjects = (target, source) => {
     ) {
       return;
     }
-    if (isPlainObject(value) && isPlainObject(target[key])) {
+    if (
+      Object.prototype.hasOwnProperty.call(target, key) &&
+      isPlainObject(value) &&
+      isPlainObject(target[key])
+    ) {
       mergeObjects(target[key], value);
     } else {
       target[key] = value;
