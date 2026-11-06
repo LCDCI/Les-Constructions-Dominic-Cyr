@@ -284,10 +284,42 @@
 
 .forms-config-option {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 96px auto;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.75rem;
-  align-items: center;
   margin-bottom: 0.75rem;
+}
+
+.forms-editor-add-option {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
+.forms-editor-add-option label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.forms-editor-add-option select {
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 12rem;
+  min-height: 34px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.35rem;
+}
+
+.forms-config-option-image {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .forms-config-option input[type='text'],

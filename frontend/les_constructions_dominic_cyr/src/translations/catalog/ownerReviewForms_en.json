@@ -22,6 +22,8 @@
     "exteriorDoors": "Exterior Doors",
     "garageDoors": "Garage Doors",
     "windows": "Windows",
+    "asphaltShingles": "Asphalt shingles",
+    "woodwork": "Woodwork",
     "flooring": "Flooring",
     "kitchenCabinets": "Kitchen Cabinets",
     "bathroomFixtures": "Bathroom Fixtures",
@@ -54,6 +56,7 @@
       "title": "Edit Form Options",
       "noOptions": "This form has no configurable options yet.",
       "image": "Option image",
+      "field": "Field",
       "addOption": "Add option"
     },
     "cancel": "Cancel",

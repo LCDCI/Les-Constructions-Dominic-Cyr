@@ -15,7 +15,7 @@ const getMetadata = (pathname, language) => {
   const forestaOverview = pathname === '/projects/proj-001-foresta/overview';
   const contact = pathname === '/contact';
   const projectPageMatch = pathname.match(
-    /^\/projects\/([^/]+)\/(overview|living-environment|houses|lots)$/
+    /^\/projects\/([^/]+)\/(overview|living-environment|houses|lots)(?:\/[^/]+)?$/
   );
   const publicPages = {
     '/realizations': isFrench
@@ -49,7 +49,9 @@ const getMetadata = (pathname, language) => {
     const projectName =
       projectIdentifier === 'proj-001-foresta'
         ? 'Föresta'
-        : 'Residential project';
+        : projectIdentifier === 'proj-002-panorama'
+          ? 'Panorama'
+          : 'Residential project';
     const pageNames = {
       overview: isFrench ? 'Projet résidentiel' : 'Residential project',
       'living-environment': isFrench ? 'Milieu de vie' : 'Living environment',
@@ -119,7 +121,11 @@ const setMeta = (attribute, key, content) => {
 };
 
 const setLink = (rel, href, id) => {
-  let element = document.head.querySelector(`link[rel="${rel}"]`);
+  const elements = document.head.querySelectorAll(`link[rel="${rel}"]`);
+  elements.forEach((element, index) => {
+    if (index > 0) element.remove();
+  });
+  let element = elements[0];
   if (!element) {
     element = document.createElement('link');
     element.setAttribute('rel', rel);
@@ -136,11 +142,12 @@ export default function SeoManager() {
 
   useEffect(() => {
     const metadata = getMetadata(pathname, language);
-    const canonicalUrl = `${SITE_URL}${pathname === '/' ? '/' : pathname}`;
+    const normalizedPath = pathname.replace(/\/+$/, '') || '/';
+    const canonicalUrl = `${SITE_URL}${normalizedPath}`;
     const isFrench = language === 'fr';
     const keywords = isFrench
-      ? 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Foresta Granby, Saint-Alphonse-de-Granby, Granby, construction résidentielle, rénovation résidentielle, projets résidentiels'
-      : 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Foresta Granby, Saint-Alphonse-de-Granby, Granby, residential construction, home renovations, residential projects';
+      ? 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Panorama, Panorama Granby, Saint-Alphonse-de-Granby, Granby, construction résidentielle, rénovation résidentielle, projets résidentiels'
+      : 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Panorama, Panorama Granby, Saint-Alphonse-de-Granby, Granby, residential construction, home renovations, residential projects';
     const structuredData = {
       '@context': 'https://schema.org',
       '@graph': [

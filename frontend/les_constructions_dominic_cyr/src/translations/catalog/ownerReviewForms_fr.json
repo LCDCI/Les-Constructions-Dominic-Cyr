@@ -22,6 +22,8 @@
     "exteriorDoors": "Portes extérieures",
     "garageDoors": "Portes de garage",
     "windows": "Fenêtres",
+    "asphaltShingles": "Bardeaux d'asphalte",
+    "woodwork": "Boiseries",
     "flooring": "Revêtement de sol",
     "kitchenCabinets": "Armoires de cuisine",
     "bathroomFixtures": "Équipements de salle de bain",
@@ -54,6 +56,7 @@
       "title": "Modifier les options des formulaires",
       "noOptions": "Ce formulaire n'a pas encore d'options configurables.",
       "image": "Image de l'option",
+      "field": "Champ",
       "addOption": "Ajouter une option"
     },
     "cancel": "Annuler",

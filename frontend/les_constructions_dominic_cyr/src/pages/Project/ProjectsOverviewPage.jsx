@@ -384,18 +384,16 @@ const ProjectOverviewPage = () => {
             ? 'Föresta residential project in Saint-Alphonse-de-Granby'
             : 'Residential construction project')}
       </h1>
-      {overview.overviewSectionContent && (
+      {(overview.overviewSectionContent || overview.heroDescription) && (
         <section className="project-section overview-section">
           <div className="section-container">
             <h2 className="section-title">
-              {t('sections.overview', 'Overview')}
+              {overview.overviewSectionTitle ||
+                t('sections.overview', 'Overview')}
             </h2>
-            {overview.heroDescription && (
+            {(overview.overviewSectionContent || overview.heroDescription) && (
               <p className="section-description">
-                {t(
-                  `overviewDescriptions.${projectIdentifier}`,
-                  overview.heroDescription
-                )}
+                {overview.overviewSectionContent || overview.heroDescription}
               </p>
             )}
           </div>
@@ -470,15 +468,13 @@ const ProjectOverviewPage = () => {
         <section className="project-section location-section">
           <div className="section-container">
             <h2 className="section-title">
-              {t('sections.location', 'Location')}
+              {overview.locationSectionTitle ||
+                t('sections.location', 'Location')}
             </h2>
             <div className="location-content">
               <div className="location-text">
                 <p className="section-content">
-                  {t(
-                    `locationDescriptions.${projectIdentifier}`,
-                    overview.locationDescription
-                  )}
+                  {overview.locationDescription}
                 </p>
                 {overview.locationAddress && (
                   <div className="location-address">

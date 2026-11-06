@@ -25,13 +25,9 @@ const FORM_TYPES = [
   { value: 'EXTERIOR_DOORS', translationKey: 'formTypes.exteriorDoors' },
   { value: 'GARAGE_DOORS', translationKey: 'formTypes.garageDoors' },
   { value: 'WINDOWS', translationKey: 'formTypes.windows' },
-  { value: 'FLOORING', translationKey: 'formTypes.flooring' },
-  { value: 'KITCHEN_CABINETS', translationKey: 'formTypes.kitchenCabinets' },
-  { value: 'BATHROOM_FIXTURES', translationKey: 'formTypes.bathroomFixtures' },
+  { value: 'ASPHALT_SHINGLES', translationKey: 'formTypes.asphaltShingles' },
+  { value: 'WOODWORK', translationKey: 'formTypes.woodwork' },
   { value: 'PAINT', translationKey: 'formTypes.paint' },
-  { value: 'LIGHTING', translationKey: 'formTypes.lighting' },
-  { value: 'ROOFING', translationKey: 'formTypes.roofing' },
-  { value: 'HVAC', translationKey: 'formTypes.hvac' },
 ];
 
 const EDITABLE_FORM_TYPES = [
@@ -64,6 +60,7 @@ const OwnerReviewFormsPage = () => {
   );
   const [formConfiguration, setFormConfiguration] = useState({});
   const [editableFields, setEditableFields] = useState([]);
+  const [optionFieldIndex, setOptionFieldIndex] = useState(0);
   const [isSavingConfiguration, setIsSavingConfiguration] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
@@ -150,13 +147,27 @@ const OwnerReviewFormsPage = () => {
   };
 
   const openFormEditor = () => {
-    setEditableFields(getEditableFields(editableFormType));
+    const fields = getEditableFields(editableFormType);
+    setEditableFields(fields);
+    setOptionFieldIndex(
+      Math.max(
+        0,
+        fields.findIndex(field => field.options?.length)
+      )
+    );
     setIsFormEditorOpen(true);
   };
 
   const changeEditableFormType = formType => {
     setEditableFormType(formType);
-    setEditableFields(getEditableFields(formType));
+    const fields = getEditableFields(formType);
+    setEditableFields(fields);
+    setOptionFieldIndex(
+      Math.max(
+        0,
+        fields.findIndex(field => field.options?.length)
+      )
+    );
   };
 
   const updateOption = (fieldIndex, optionIndex, key, value) => {
@@ -621,6 +632,32 @@ const OwnerReviewFormsPage = () => {
                     </option>
                   ))}
                 </select>
+                <div className="forms-editor-add-option">
+                  <label htmlFor="optionField">
+                    {t('modal.editForms.field', 'Field')}
+                  </label>
+                  <select
+                    id="optionField"
+                    value={optionFieldIndex}
+                    onChange={event =>
+                      setOptionFieldIndex(Number(event.target.value))
+                    }
+                  >
+                    {editableFields.map((field, index) => (
+                      <option key={field.name} value={index}>
+                        {field.label || field.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="form-action-button form-action-edit"
+                    onClick={() => addOption(optionFieldIndex)}
+                    disabled={editableFields.length === 0}
+                  >
+                    {t('modal.editForms.addOption', 'Add option')}
+                  </button>
+                </div>
               </div>
 
               {editableFields.length === 0 ? (
@@ -655,43 +692,38 @@ const OwnerReviewFormsPage = () => {
                             )
                           }
                         />
-                        {option.imageIdentifier && (
-                          <img
-                            src={
-                              getFileUrl(option.imageIdentifier) ||
-                              FORM_OPTION_FALLBACK_IMAGE
-                            }
-                            alt={option.label || option.value}
-                            className="forms-config-image-preview"
-                            onError={event => {
-                              event.currentTarget.src =
-                                FORM_OPTION_FALLBACK_IMAGE;
-                            }}
-                          />
-                        )}
-                        <label className="forms-config-upload">
-                          {t('modal.editForms.image', 'Option image')}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={e =>
-                              handleOptionImage(
-                                fieldIndex,
-                                optionIndex,
-                                e.target.files?.[0]
-                              )
-                            }
-                          />
-                        </label>
+                        <div className="forms-config-option-image">
+                          {option.imageIdentifier && (
+                            <img
+                              src={
+                                getFileUrl(option.imageIdentifier) ||
+                                FORM_OPTION_FALLBACK_IMAGE
+                              }
+                              alt={option.label || option.value}
+                              className="forms-config-image-preview"
+                              onError={event => {
+                                event.currentTarget.src =
+                                  FORM_OPTION_FALLBACK_IMAGE;
+                              }}
+                            />
+                          )}
+                          <label className="forms-config-upload">
+                            {t('modal.editForms.image', 'Option image')}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={e =>
+                                handleOptionImage(
+                                  fieldIndex,
+                                  optionIndex,
+                                  e.target.files?.[0]
+                                )
+                              }
+                            />
+                          </label>
+                        </div>
                       </div>
                     ))}
-                    <button
-                      type="button"
-                      className="form-action-button form-action-edit"
-                      onClick={() => addOption(fieldIndex)}
-                    >
-                      {t('modal.editForms.addOption', 'Add option')}
-                    </button>
                   </section>
                 ))
               )}

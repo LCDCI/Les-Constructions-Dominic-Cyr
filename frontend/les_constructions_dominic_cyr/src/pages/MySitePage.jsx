@@ -943,7 +943,7 @@ const MySitePage = () => {
     const values = {};
     items.forEach(item => {
       const value = drafts[item.id]?.contentText;
-      if (!value) return;
+      if (value === undefined) return;
       if (item.pageKey === 'heroTitle') values.heroTitle = value;
       if (item.pageKey === 'heroSubtitle') values.heroSubtitle = value;
       if (item.pageKey === 'heroDescription') values.heroDescription = value;
