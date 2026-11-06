@@ -146,8 +146,8 @@ export default function SeoManager() {
     const canonicalUrl = `${SITE_URL}${normalizedPath}`;
     const isFrench = language === 'fr';
     const keywords = isFrench
-      ? 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Panorama, Panorama Granby, Saint-Alphonse-de-Granby, Granby, construction résidentielle, rénovation résidentielle, projets résidentiels'
-      : 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Panorama, Panorama Granby, Saint-Alphonse-de-Granby, Granby, residential construction, home renovations, residential projects';
+      ? 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Panorama, Foresta Granby, Saint-Alphonse-de-Granby, Granby, construction résidentielle, rénovation résidentielle, projets résidentiels'
+      : 'Les Constructions Dominic Cyr, Les Contructions Dominic Cyr, Föresta, Foresta, Panorama, Foresta Granby, Saint-Alphonse-de-Granby, Granby, residential construction, home renovations, residential projects';
     const structuredData = {
       '@context': 'https://schema.org',
       '@graph': [
