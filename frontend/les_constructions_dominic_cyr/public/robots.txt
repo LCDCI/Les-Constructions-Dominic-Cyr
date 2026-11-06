@@ -1,5 +1,11 @@
 User-agent: *
 Allow: /
+
+# Les endpoints publics sous /api/v1 sont nécessaires au rendu du contenu
+# public. Ils ne doivent pas apparaître dans les résultats de recherche.
+Allow: /api/v1/site-content
+Allow: /api/v1/projects
+
 Disallow: /portal/
 Disallow: /dashboard/
 Disallow: /owner/
@@ -7,5 +13,20 @@ Disallow: /salesperson/
 Disallow: /contractor/
 Disallow: /customer/
 Disallow: /api/
+Disallow: /projects/create
+Disallow: /projects/*/files
+Disallow: /projects/*/photos
+Disallow: /projects/*/schedule
+Disallow: /projects/*/manage-lots
+Disallow: /projects/*/lots/select
+Disallow: /projects/*/lots/*/documents
+Disallow: /inquiries
+Disallow: /users
+Disallow: /profile
+Disallow: /quotes
+Disallow: /tasks/
+Disallow: /lots
+Disallow: /unauthorized
+Disallow: /error
 
 Sitemap: https://constructions-dominiccyr.com/sitemap.xml
