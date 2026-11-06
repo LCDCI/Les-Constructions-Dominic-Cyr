@@ -310,6 +310,15 @@
   background-color: #f8f9fa;
 }
 
+.location-section .section-title {
+  font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.location-section .section-content {
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
