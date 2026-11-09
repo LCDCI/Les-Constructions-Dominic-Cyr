@@ -42,6 +42,9 @@
     "cancel": "Annuler",
     "saveDraft": "Sauvegarder le brouillon",
     "submitForm": "Soumettre le formulaire",
+    "changedMyMind": "J'ai changé d'idée",
+    "requestChanges": "Demander des modifications",
+    "confirmChanges": "Envoyer la demande",
     "confirmSubmit": "Oui, soumettre",
     "close": "Fermer"
   },
@@ -57,7 +60,9 @@
     "uploading": "Téléversement...",
     "selectOption": "-- Sélectionner --",
     "confirmSubmitTitle": "Confirmer la soumission",
-    "confirmSubmitMessage": "Êtes-vous sûr de vouloir soumettre ce formulaire ? Vous ne pourrez plus le modifier après la soumission."
+    "confirmSubmitMessage": "Êtes-vous sûr de vouloir soumettre ce formulaire ? Vous ne pourrez plus le modifier après la soumission.",
+    "confirmRevisionMessage": "Envoyer cette demande de modification au propriétaire pour examen ?",
+    "revisionReason": "Raison de la modification du formulaire"
   },
   "formTypes": {
     "EXTERIOR_DOORS": "Portes extérieures",
@@ -164,7 +169,8 @@
     "submitFailed": "Échec de la soumission du formulaire. Veuillez réessayer.",
     "missingFields": "Veuillez remplir tous les champs obligatoires : {{fields}}",
     "uploadFailed": "Échec du téléversement du fichier. Veuillez réessayer.",
-    "downloadFailed": "Échec du téléchargement du fichier."
+    "downloadFailed": "Échec du téléchargement du fichier.",
+    "revisionReasonRequired": "Veuillez expliquer pourquoi vous souhaitez modifier ce formulaire."
   },
   "page": {
     "loading": "Chargement...",

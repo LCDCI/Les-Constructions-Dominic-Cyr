@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
   getMyForms,
   updateFormData,
+  requestFormRevision,
   getFormHistory,
   downloadFinalizedForm,
 } from '../../features/forms/api/formsApi';
@@ -358,6 +359,8 @@ const FORM_OPTION_FALLBACK_IMAGE = '/fallback.jpg';
 const CustomerFormsPage = ({
   initialForm = null,
   embedded = false,
+  allowRevision = false,
+  startRevision = false,
   onClose,
   onSaved,
 }) => {
@@ -378,6 +381,8 @@ const CustomerFormsPage = ({
   const [uploadError, setUploadError] = useState(null);
   const [isSubmitConfirmOpen, setIsSubmitConfirmOpen] = useState(false);
   const [isViewOnly, setIsViewOnly] = useState(false);
+  const [isRevision, setIsRevision] = useState(false);
+  const [revisionReason, setRevisionReason] = useState('');
   const [formConfiguration, setFormConfiguration] = useState({});
   const fileInputRef = useRef(null);
 
@@ -412,13 +417,17 @@ const CustomerFormsPage = ({
 
   useEffect(() => {
     if (initialForm) {
-      openEditModal(
-        initialForm,
-        initialForm.formStatus === 'SUBMITTED' ||
-          initialForm.formStatus === 'COMPLETED'
-      );
+      if (startRevision && allowRevision) {
+        openRevisionModal(initialForm);
+      } else {
+        openEditModal(
+          initialForm,
+          initialForm.formStatus === 'SUBMITTED' ||
+            initialForm.formStatus === 'COMPLETED'
+        );
+      }
     }
-  }, [initialForm]);
+  }, [initialForm, startRevision, allowRevision]);
 
   useEffect(() => {
     let active = true;
@@ -477,6 +486,8 @@ const CustomerFormsPage = ({
   const openEditModal = (form, readOnly = false) => {
     setSelectedForm(form);
     setIsViewOnly(readOnly);
+    setIsRevision(false);
+    setRevisionReason('');
     // Normalize file data structure to use fileId consistently
     const normalizedData = { ...(form.formData || {}) };
     Object.keys(normalizedData).forEach(key => {
@@ -493,6 +504,11 @@ const CustomerFormsPage = ({
     setIsEditModalOpen(true);
     setSubmitError(null);
     setUploadError(null);
+  };
+
+  const openRevisionModal = form => {
+    openEditModal(form, false);
+    setIsRevision(true);
   };
 
   const handleFieldChange = (fieldName, value) => {
@@ -619,17 +635,36 @@ const CustomerFormsPage = ({
   const handleSubmitForm = async () => {
     try {
       setSubmitError(null);
+      if (isRevision && !revisionReason.trim()) {
+        setSubmitError(
+          t(
+            'errors.revisionReasonRequired',
+            'Please explain why you want to change this form.'
+          )
+        );
+        return;
+      }
       setIsSubmitConfirmOpen(false);
       const token = await getToken();
-      await updateFormData(
-        selectedForm.formId,
-        { formData, isSubmitting: true },
-        token
-      );
+      if (isRevision) {
+        await requestFormRevision(
+          selectedForm.formId,
+          { formData, reason: revisionReason.trim() },
+          token
+        );
+      } else {
+        await updateFormData(
+          selectedForm.formId,
+          { formData, isSubmitting: true },
+          token
+        );
+      }
 
       setIsEditModalOpen(false);
       setSelectedForm(null);
       setFormData({});
+      setIsRevision(false);
+      setRevisionReason('');
       onClose?.();
       await fetchForms();
       await onSaved?.();
@@ -733,21 +768,40 @@ const CustomerFormsPage = ({
     return fields;
   };
 
-  const formatHistoryValue = value => {
+  const getFieldDefinition = key =>
+    Object.values(FORM_FIELDS)
+      .flat()
+      .find(item => item.name === key);
+
+  const getFieldLabel = key => {
+    const field = getFieldDefinition(key);
+    return field ? t(field.translationKey, key) : key;
+  };
+
+  const formatHistoryValue = (value, fieldKey = null) => {
     if (value === null || value === undefined) {
       return '';
     }
 
     if (Array.isArray(value)) {
-      return value.map(formatHistoryValue).filter(Boolean).join(', ');
+      return value
+        .map(item => formatHistoryValue(item, fieldKey))
+        .filter(Boolean)
+        .join(', ');
     }
 
     if (typeof value === 'object') {
+      if ('label' in value || 'value' in value) {
+        const field = getFieldDefinition(fieldKey);
+        const option = field?.options?.find(item => item.value === value.value);
+        return option?.labelKey
+          ? t(option.labelKey, option.label || value.label || value.value)
+          : value.label || value.value || '';
+      }
       return Object.entries(value)
-        .map(([key, nestedValue]) => {
-          const formatted = formatHistoryValue(nestedValue);
-          return formatted ? `${key}: ${formatted}` : key;
-        })
+        .filter(([key]) => key !== 'imageIdentifier')
+        .map(([, nestedValue]) => formatHistoryValue(nestedValue, fieldKey))
+        .filter(Boolean)
         .join(', ');
     }
 
@@ -1117,13 +1171,24 @@ const CustomerFormsPage = ({
                           : t('buttons.editForm', 'Edit Form')}
                       </button>
                     )}
-                    {form.formStatus === 'SUBMITTED' && (
-                      <button
-                        className="form-action-button form-action-history"
-                        onClick={() => handleViewHistory(form)}
-                      >
-                        {t('buttons.viewHistory', 'View History')}
-                      </button>
+                    {(form.formStatus === 'SUBMITTED' ||
+                      form.formStatus === 'COMPLETED') && (
+                      <>
+                        <button
+                          className="form-action-button form-action-history"
+                          onClick={() => handleViewHistory(form)}
+                        >
+                          {t('buttons.viewHistory', 'View History')}
+                        </button>
+                        {allowRevision && !form.pendingRevisionId && (
+                          <button
+                            className="form-action-button form-action-edit"
+                            onClick={() => openRevisionModal(form)}
+                          >
+                            {t('buttons.changedMyMind', 'I changed my mind')}
+                          </button>
+                        )}
+                      </>
                     )}
                     {form.formStatus === 'COMPLETED' && (
                       <>
@@ -1176,6 +1241,20 @@ const CustomerFormsPage = ({
                 </div>
               )}
               {renderFormFields()}
+              {isRevision && (
+                <label className="form-field">
+                  <span>
+                    {t('modal.revisionReason', 'Reason for changing your form')}{' '}
+                    *
+                  </span>
+                  <textarea
+                    value={revisionReason}
+                    onChange={event => setRevisionReason(event.target.value)}
+                    required
+                    rows={4}
+                  />
+                </label>
+              )}
             </div>
             <div className="forms-modal-footer">
               <button
@@ -1198,7 +1277,9 @@ const CustomerFormsPage = ({
                     className="forms-modal-button forms-modal-button-success"
                     onClick={handleSubmitFormClick}
                   >
-                    {t('buttons.submitForm', 'Submit Form')}
+                    {isRevision
+                      ? t('buttons.requestChanges', 'Request Changes')
+                      : t('buttons.submitForm', 'Submit Form')}
                   </button>
                 </>
               )}
@@ -1235,7 +1316,15 @@ const CustomerFormsPage = ({
               <p>
                 {t(
                   'modal.confirmSubmitMessage',
-                  'Are you sure you want to submit this form? You will not be able to edit it after submission.'
+                  isRevision
+                    ? t(
+                        'modal.confirmRevisionMessage',
+                        'Send this change request to the owner for review?'
+                      )
+                    : t(
+                        'modal.confirmSubmitMessage',
+                        'Are you sure you want to submit this form? You will not be able to edit it after submission.'
+                      )
                 )}
               </p>
             </div>
@@ -1250,7 +1339,9 @@ const CustomerFormsPage = ({
                 className="forms-modal-button forms-modal-button-success"
                 onClick={handleSubmitForm}
               >
-                {t('buttons.confirmSubmit', 'Yes, Submit')}
+                {isRevision
+                  ? t('buttons.confirmChanges', 'Send Request')
+                  : t('buttons.confirmSubmit', 'Yes, Submit')}
               </button>
             </div>
           </div>
@@ -1310,10 +1401,10 @@ const CustomerFormsPage = ({
                               ([key, value]) => (
                                 <div key={key} className="history-data-row">
                                   <span className="history-data-key">
-                                    {key}
+                                    {getFieldLabel(key)}
                                   </span>
                                   <span className="history-data-value">
-                                    {formatHistoryValue(value)}
+                                    {formatHistoryValue(value, key)}
                                   </span>
                                 </div>
                               )
@@ -1346,6 +1437,8 @@ export default CustomerFormsPage;
 CustomerFormsPage.propTypes = {
   initialForm: PropTypes.object,
   embedded: PropTypes.bool,
+  allowRevision: PropTypes.bool,
+  startRevision: PropTypes.bool,
   onClose: PropTypes.func,
   onSaved: PropTypes.func,
 };

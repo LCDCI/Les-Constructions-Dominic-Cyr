@@ -11,6 +11,7 @@ const CustomerFormsSelectionPage = () => {
   const [formsByProject, setFormsByProject] = useState({});
   const [loading, setLoading] = useState(true);
   const [activeForm, setActiveForm] = useState(null);
+  const [startRevision, setStartRevision] = useState(false);
 
   const { getAccessTokenSilently } = useAuth0();
 
@@ -152,7 +153,10 @@ const CustomerFormsSelectionPage = () => {
                           <div
                             key={form.formId}
                             className="form-card clickable"
-                            onClick={() => setActiveForm(form)}
+                            onClick={() => {
+                              setStartRevision(false);
+                              setActiveForm(form);
+                            }}
                           >
                             <div className="form-card-header">
                               <h3 className="form-card-title">
@@ -165,7 +169,7 @@ const CustomerFormsSelectionPage = () => {
                                 className={`form-status-badge ${getStatusClass(form.formStatus)}`}
                               >
                                 {t(
-                                  `status.${(form.formStatus || '').toLowerCase()}`,
+                                  `status.${(form.formStatus || '').toLowerCase().replace('_', '')}`,
                                   form.formStatus || 'Unknown'
                                 )}
                               </span>
@@ -182,6 +186,7 @@ const CustomerFormsSelectionPage = () => {
                                 className="form-card-action"
                                 onClick={event => {
                                   event.stopPropagation();
+                                  setStartRevision(false);
                                   setActiveForm(form);
                                 }}
                               >
@@ -190,6 +195,24 @@ const CustomerFormsSelectionPage = () => {
                                   ? t('viewForm', 'View form')
                                   : t('openForm', 'Open form')}
                               </button>
+                              {(form.formStatus === 'SUBMITTED' ||
+                                form.formStatus === 'COMPLETED') &&
+                                !form.pendingRevisionId && (
+                                  <button
+                                    type="button"
+                                    className="form-card-action"
+                                    onClick={event => {
+                                      event.stopPropagation();
+                                      setStartRevision(true);
+                                      setActiveForm(form);
+                                    }}
+                                  >
+                                    {t(
+                                      'buttons.changedMyMind',
+                                      'I changed my mind'
+                                    )}
+                                  </button>
+                                )}
                             </div>
                           </div>
                         ))}
@@ -205,7 +228,12 @@ const CustomerFormsSelectionPage = () => {
           <CustomerFormsPage
             initialForm={activeForm}
             embedded
-            onClose={() => setActiveForm(null)}
+            allowRevision
+            startRevision={startRevision}
+            onClose={() => {
+              setStartRevision(false);
+              setActiveForm(null);
+            }}
             onSaved={fetchData}
           />
         )}

@@ -665,18 +665,26 @@ const MySitePage = () => {
               subtitle: lotsResource.foresta?.peaceTagline,
               preTitle: lotsResource.foresta?.exclusiveCount,
             };
-        data = Object.entries(fallbackValues)
-          .filter(([, value]) => value)
-          .map(([pageKey, contentText], index) => ({
-            id: `fallback-${effectivePageGroup}-${pageKey}`,
-            pageGroup: effectivePageGroup,
-            pageKey,
-            contentText,
-            imageIdentifier: '',
-            sortOrder: index,
-            fallbackContent: true,
-            projectIdentifier,
-          }));
+        const existingPageKeys = new Set(
+          (Array.isArray(data) ? data : []).map(item => item.pageKey)
+        );
+        data = [
+          ...(Array.isArray(data) ? data : []),
+          ...Object.entries(fallbackValues)
+            .filter(
+              ([pageKey, value]) => value && !existingPageKeys.has(pageKey)
+            )
+            .map(([pageKey, contentText], index) => ({
+              id: `fallback-${effectivePageGroup}-${pageKey}`,
+              pageGroup: effectivePageGroup,
+              pageKey,
+              contentText,
+              imageIdentifier: '',
+              sortOrder: data.length + index,
+              fallbackContent: true,
+              projectIdentifier,
+            })),
+        ];
       }
       const fallbackItems = selectedSubpage
         ? []

@@ -27,11 +27,20 @@ const NotificationItem = ({ notification, onMarkAsRead, onDelete }) => {
 
   const resolveNotificationLink = link => {
     if (!link) return link;
+    if (/^\/projects\/[^/]+\/lots\/[^/]+\/forms(?:\/.*)?$/.test(link)) {
+      if (role === 'OWNER') return '/owner/forms';
+      if (role === 'SALESPERSON') return '/salesperson/forms';
+      if (role === 'CONTRACTOR') return '/contractors/documents';
+      return '/customers/forms';
+    }
     if (link === '/forms') {
       if (!role) {
         return link;
       }
-      return role === 'CUSTOMER' ? '/customers/forms' : '/salesperson/forms';
+      if (role === 'OWNER') return '/owner/forms';
+      if (role === 'SALESPERSON') return '/salesperson/forms';
+      if (role === 'CONTRACTOR') return '/contractors/documents';
+      return '/customers/forms';
     }
     return link;
   };

@@ -62,4 +62,9 @@ public class FormResponseModel {
     // Audit fields
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private Long pendingRevisionId;
+    private Map<String, Object> pendingRevisionData;
+    private String pendingRevisionReason;
+    private LocalDateTime pendingRevisionCreatedAt;
 }

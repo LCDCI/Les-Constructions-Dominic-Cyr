@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 public class FormServiceImpl implements FormService {
 
     private final FormRepository formRepository;
+    private final FormRevisionRepository formRevisionRepository;
     private final FormSubmissionHistoryRepository historyRepository;
     private final FormMapper formMapper;
     private final FormSubmissionHistoryMapper historyMapper;
@@ -317,7 +318,6 @@ public class FormServiceImpl implements FormService {
             throw new InvalidInputException("Can only complete submitted forms");
         }
 
-        // Update form status
         form.setFormStatus(FormStatus.COMPLETED);
         form.setCompletedDate(LocalDateTime.now());
 
@@ -327,6 +327,93 @@ public class FormServiceImpl implements FormService {
 
         return formMapper.entityToResponseModel(savedForm);
     }
+
+    @Override
+        @Transactional
+        public FormResponseModel requestRevision(String formId, FormRevisionRequestModel request, String customerId) {
+            Form form = formRepository.findByFormIdentifier_FormId(formId)
+                    .orElseThrow(() -> new NotFoundException("Form not found with ID: " + formId));
+            if (!form.getCustomerId().equals(UUID.fromString(customerId))) {
+                throw new InvalidInputException("Customer is not authorized to request a revision");
+            }
+            if (form.getFormStatus() != FormStatus.SUBMITTED && form.getFormStatus() != FormStatus.COMPLETED) {
+                throw new InvalidInputException("A revision can only be requested after submission");
+            }
+            if (formRevisionRepository.findFirstByFormIdentifierAndStatusOrderByCreatedAtDesc(
+                    formId, FormRevisionStatus.PENDING).isPresent()) {
+                throw new InvalidInputException("A revision is already awaiting review");
+            }
+            FormRevision revision = new FormRevision();
+            revision.setFormIdentifier(formId);
+            revision.setCustomerId(UUID.fromString(customerId));
+            revision.setFormData(request.getFormData());
+            revision.setReason(request.getReason().trim());
+            formRevisionRepository.save(revision);
+
+            notifyOwners(form, "Form change request",
+                    "A customer requested changes to " + getFormTypeDisplayName(form.getFormType())
+                            + ". Reason: " + revision.getReason(),
+                    NotificationCategory.FORM_REOPENED, "/owner/forms",
+                    "Form change request",
+                    "<html><body><p>A customer requested changes to "
+                            + escapeHtml(getFormTypeDisplayName(form.getFormType()))
+                            + ".</p><p>Reason: " + escapeHtml(revision.getReason()) + "</p></body></html>",
+                    null);
+            return formMapper.entityToResponseModel(form);
+        }
+
+        @Override
+        @Transactional
+        public FormResponseModel acceptRevision(String formId, String reason, String decisionMakerAuth0Id) {
+            Form form = findFormForRevisionDecision(formId, decisionMakerAuth0Id);
+            FormRevision revision = getPendingRevision(formId);
+            form.setFormData(revision.getFormData());
+            form.setFormStatus(FormStatus.SUBMITTED);
+            revision.setStatus(FormRevisionStatus.ACCEPTED);
+            revision.setDecisionReason(reason.trim());
+            revision.setDecidedAt(LocalDateTime.now());
+            formRepository.save(form);
+            formRevisionRepository.save(revision);
+            notifyRevisionDecision(form, "Form changes accepted", "Your requested form changes were accepted. " + reason);
+            return formMapper.entityToResponseModel(form);
+        }
+
+        @Override
+        @Transactional
+        public FormResponseModel denyRevision(String formId, String reason, String decisionMakerAuth0Id) {
+            Form form = findFormForRevisionDecision(formId, decisionMakerAuth0Id);
+            FormRevision revision = getPendingRevision(formId);
+            formRevisionRepository.delete(revision);
+            notifyRevisionDecision(form, "Form changes denied", "Your requested form changes were denied. " + reason);
+            return formMapper.entityToResponseModel(form);
+        }
+
+        private Form findFormForRevisionDecision(String formId, String auth0UserId) {
+            usersRepository.findByAuth0UserId(auth0UserId)
+                    .filter(user -> user.getUserRole() == UserRole.OWNER)
+                    .orElseThrow(() -> new InvalidInputException("Only owners can decide form revisions"));
+            return formRepository.findByFormIdentifier_FormId(formId)
+                    .orElseThrow(() -> new NotFoundException("Form not found with ID: " + formId));
+        }
+
+        private FormRevision getPendingRevision(String formId) {
+            return formRevisionRepository.findFirstByFormIdentifierAndStatusOrderByCreatedAtDesc(
+                    formId, FormRevisionStatus.PENDING)
+                    .orElseThrow(() -> new NotFoundException("Pending form revision not found"));
+        }
+
+        private void notifyRevisionDecision(Form form, String title, String message) {
+            Users customer = usersRepository.findByUserIdentifier_UserId(form.getCustomerId()).orElse(null);
+            if (customer == null || customer.getUserIdentifier() == null) return;
+            notificationService.createNotification(customer.getUserIdentifier().getUserId(),
+                    title, message, NotificationCategory.FORM_SIGNED, "/customers/forms");
+            if (customer.getPrimaryEmail() != null && !customer.getPrimaryEmail().isBlank()) {
+                mailerServiceClient.sendEmail(customer.getPrimaryEmail(), title,
+                        "<html><body><p>" + escapeHtml(message) + "</p></body></html>",
+                        "Les Constructions Dominic Cyr").subscribe(
+                        null, error -> log.error("Failed to send revision decision email", error));
+            }
+        }
 
     @Override
     @Transactional
@@ -425,12 +512,7 @@ public class FormServiceImpl implements FormService {
                     formTypeName, form.getProjectIdentifier()
             );
 
-            // Create system notification with customer-specific route
-            String notificationLink = String.format(
-                    "/projects/%s/lots/%s/forms",
-                    form.getProjectIdentifier(),
-                    form.getLotIdentifier()
-            );
+            String notificationLink = getFormsPortalLink(customer);
             
             notificationService.createNotification(
                     customer.getUserIdentifier().getUserId(),
@@ -537,12 +619,7 @@ public class FormServiceImpl implements FormService {
                     formTypeName, form.getProjectIdentifier(), reopenReason
             );
 
-            // Create system notification with customer-specific route
-            String notificationLink = String.format(
-                    "/projects/%s/lots/%s/forms",
-                    form.getProjectIdentifier(),
-                    form.getLotIdentifier()
-            );
+            String notificationLink = getFormsPortalLink(customer);
             
             notificationService.createNotification(
                     customer.getUserIdentifier().getUserId(),
@@ -580,7 +657,7 @@ public class FormServiceImpl implements FormService {
                         notificationTitle,
                         salespersonNotificationMessage,
                         NotificationCategory.FORM_REOPENED,
-                        notificationLink
+                        getFormsPortalLink(salesperson)
                 );
                 if (salesperson.getPrimaryEmail() != null && !salesperson.getPrimaryEmail().isBlank()) {
                     mailerServiceClient.sendEmail(
@@ -614,6 +691,19 @@ public class FormServiceImpl implements FormService {
         } catch (Exception e) {
             log.error("Error sending form reopened notification: {}", e.getMessage(), e);
         }
+    }
+
+    private String getFormsPortalLink(Users user) {
+        if (user == null || user.getUserRole() == null) {
+            return "/customers/forms";
+        }
+
+        return switch (user.getUserRole()) {
+            case OWNER -> "/owner/forms";
+            case SALESPERSON -> "/salesperson/forms";
+            case CUSTOMER -> "/customers/forms";
+            case CONTRACTOR -> "/contractors/documents";
+        };
     }
 
     private void sendFormCompletedNotification(Form form) {

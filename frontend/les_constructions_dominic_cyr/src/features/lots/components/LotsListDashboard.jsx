@@ -56,12 +56,15 @@ const LotsListDashboard = ({ userId }) => {
         return acc;
       }, {});
 
-      // Sort lots within each project by lotNumber (numeric)
+      // The database ID is the authoritative order for owner documents.
       Object.keys(grouped).forEach(projectId => {
         grouped[projectId].sort((a, b) => {
-          const numA = parseInt(a.lotNumber, 10) || 0;
-          const numB = parseInt(b.lotNumber, 10) || 0;
-          return numA - numB;
+          const idA = Number(a.id);
+          const idB = Number(b.id);
+          if (Number.isFinite(idA) && Number.isFinite(idB)) return idA - idB;
+          if (Number.isFinite(idA)) return -1;
+          if (Number.isFinite(idB)) return 1;
+          return String(a.id || '').localeCompare(String(b.id || ''));
         });
       });
 

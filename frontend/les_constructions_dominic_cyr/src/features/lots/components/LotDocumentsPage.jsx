@@ -1439,7 +1439,10 @@ const LotDocumentsPage = () => {
                       <span
                         className={`lot-form-status lot-form-status-${(form.formStatus || '').toLowerCase()}`}
                       >
-                        {form.formStatus || 'Unknown'}
+                        {t(
+                          `status.${(form.formStatus || '').toLowerCase().replace('_', '')}`,
+                          form.formStatus || t('status.unknown', 'Unknown')
+                        )}
                       </span>
                     </div>
                     <div className="lot-form-meta">

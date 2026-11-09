@@ -342,6 +342,34 @@ public class FormController {
         return ResponseEntity.ok(updatedForm);
     }
 
+    @PostMapping("/{formId}/revision")
+    public ResponseEntity<FormResponseModel> requestRevision(
+            @PathVariable String formId,
+            @Valid @RequestBody FormRevisionRequestModel request,
+            @AuthenticationPrincipal Jwt jwt) {
+        UserResponseModel currentUser = getUserByAuth0Id(jwt.getSubject());
+        return ResponseEntity.ok(formService.requestRevision(
+                formId, request, currentUser.getUserIdentifier()));
+    }
+
+    @PostMapping("/{formId}/revision/accept")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+    public ResponseEntity<FormResponseModel> acceptRevision(
+            @PathVariable String formId,
+            @Valid @RequestBody FormRevisionDecisionRequestModel request,
+            @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(formService.acceptRevision(formId, request.getReason(), jwt.getSubject()));
+    }
+
+    @PostMapping("/{formId}/revision/deny")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+    public ResponseEntity<FormResponseModel> denyRevision(
+            @PathVariable String formId,
+            @Valid @RequestBody FormRevisionDecisionRequestModel request,
+            @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(formService.denyRevision(formId, request.getReason(), jwt.getSubject()));
+    }
+
     /**
      * Download a finalized form as PDF
      * Accessible by owner, salesperson assigned to the lot, or the customer who owns the form
@@ -361,7 +389,8 @@ public class FormController {
         }
 
         FormResponseModel form = formService.getFormById(formId);
-        if (form.getFormStatus() != FormStatus.COMPLETED) {
+        if (form.getFormStatus() != FormStatus.SUBMITTED
+                && form.getFormStatus() != FormStatus.COMPLETED) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -483,6 +512,10 @@ public class FormController {
             return userId.equals(form.getCustomerId()) && isAssignedToLot(form.getLotIdentifier(), userId);
         }
 
+        if (hasAuthority(authentication, ROLE_CONTRACTOR)) {
+            return isAssignedToLot(form.getLotIdentifier(), userId);
+        }
+
         return false;
     }
 
@@ -567,22 +600,7 @@ public class FormController {
                     String value = stringifyValue(entry.getValue(), objectMapper);
                     table.addCell(new Cell().add(new Paragraph(entry.getKey())));
                     Cell valueCell = new Cell().add(new Paragraph(value));
-                    if (entry.getValue() instanceof Map<?, ?> selectedOption) {
-                        Object imageIdentifier = selectedOption.get("imageIdentifier");
-                        if (imageIdentifier != null && !String.valueOf(imageIdentifier).isBlank()) {
-                            try {
-                                String imageUrl = filesServiceBaseUrl.replaceAll("/$", "")
-                                        + "/files/" + imageIdentifier;
-                                valueCell.add(new Image(ImageDataFactory.create(imageUrl))
-                                        .setAutoScale(true)
-                                        .setMaxHeight(120)
-                                        .setMaxWidth(180));
-                            } catch (Exception imageError) {
-                                log.warn("Unable to add form selection image for field {}",
-                                        entry.getKey(), imageError);
-                            }
-                        }
-                    }
+                    addFormValueImages(valueCell, entry.getValue(), entry.getKey());
                     table.addCell(valueCell);
                 }
             } else {
@@ -600,6 +618,36 @@ public class FormController {
 
     private String safeValue(Object value) {
         return value == null ? "" : String.valueOf(value);
+    }
+
+    private void addFormValueImages(Cell valueCell, Object value, String fieldName) {
+        if (value instanceof Map<?, ?> selectedOption) {
+            addFormImage(valueCell, selectedOption.get("imageIdentifier"), fieldName);
+            return;
+        }
+        if (value instanceof List<?> values) {
+            values.forEach(item -> {
+                if (item instanceof Map<?, ?> itemMap) {
+                    addFormImage(valueCell, itemMap.get("imageIdentifier"), fieldName);
+                }
+            });
+        }
+    }
+
+    private void addFormImage(Cell valueCell, Object imageIdentifier, String fieldName) {
+        if (imageIdentifier == null || String.valueOf(imageIdentifier).isBlank()) {
+            return;
+        }
+        try {
+            String imageUrl = filesServiceBaseUrl.replaceAll("/$", "")
+                    + "/files/" + imageIdentifier;
+            valueCell.add(new Image(ImageDataFactory.create(imageUrl))
+                    .setAutoScale(true)
+                    .setMaxHeight(120)
+                    .setMaxWidth(180));
+        } catch (Exception imageError) {
+            log.warn("Unable to add form selection image for field {}", fieldName, imageError);
+        }
     }
 
     private byte[] getUploadedPdf(FormResponseModel form) {
