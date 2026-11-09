@@ -134,6 +134,24 @@ export async function completeForm(formId, token) {
   return response.data;
 }
 
+export async function requestFormRevision(formId, payload, token) {
+  const response = await axios.post(
+    `${API_BASE}/forms/${formId}/revision`,
+    payload,
+    { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+  );
+  return response.data;
+}
+
+export async function decideFormRevision(formId, decision, reason, token) {
+  const response = await axios.post(
+    `${API_BASE}/forms/${formId}/revision/${decision}`,
+    { reason },
+    { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+  );
+  return response.data;
+}
+
 /**
  * Delete a form
  * @param {string} formId - Form ID

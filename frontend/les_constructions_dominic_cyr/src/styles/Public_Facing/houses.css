@@ -5,6 +5,39 @@
   background: var(--background-color);
 }
 
+.house-image-modal-nav {
+  position: absolute;
+  top: 42%;
+  z-index: 2;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
+}
+
+.house-image-modal-nav:hover {
+  background: var(--white);
+}
+
+.house-image-modal-prev {
+  left: 1rem;
+}
+
+.house-image-modal-next {
+  right: 1rem;
+}
+
+.house-image-modal-counter {
+  margin: 0;
+  padding: 0.5rem;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
 .houses-hero {
   background: var(--public-banner-bg, #aab2a6) !important;
 }
@@ -47,7 +80,7 @@
 
 .houses-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(1rem, 3vw, 2rem);
 }
 

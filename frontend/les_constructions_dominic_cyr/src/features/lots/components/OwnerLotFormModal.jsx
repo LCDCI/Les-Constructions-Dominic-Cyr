@@ -33,7 +33,7 @@ const OwnerLotFormModal = ({
   });
 
   const [errors, setErrors] = useState({});
-  const [eligibleUsers, setEligibleUsers] = useState([]);
+  const [, setEligibleUsers] = useState([]);
 
   useEffect(() => {
     if (lot) {
@@ -123,20 +123,13 @@ const OwnerLotFormModal = ({
       return;
     }
 
-    const assignedCustomer = formData.assignedUserIds.some(userId =>
-      eligibleUsers.some(
-        user =>
-          (user.userIdentifier || user.userId) === userId &&
-          user.userRole?.toUpperCase() === 'CUSTOMER'
-      )
-    );
     const submitData = {
       id: Number(formData.id),
       lotNumber: formData.cadastralNumber,
       civicAddress: formData.civicAddress,
       dimensionsSquareFeet: formData.dimensionsSquareFeet,
       dimensionsSquareMeters: formData.dimensionsSquareMeters,
-      lotStatus: assignedCustomer ? 'SOLD' : 'AVAILABLE',
+      lotStatus: formData.lotStatus,
       assignedUserIds: formData.assignedUserIds,
     };
 

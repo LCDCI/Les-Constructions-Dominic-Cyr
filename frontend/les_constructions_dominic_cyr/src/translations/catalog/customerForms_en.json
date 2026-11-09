@@ -42,6 +42,9 @@
     "cancel": "Cancel",
     "saveDraft": "Save Draft",
     "submitForm": "Submit Form",
+    "changedMyMind": "I changed my mind",
+    "requestChanges": "Request Changes",
+    "confirmChanges": "Send Request",
     "confirmSubmit": "Yes, Submit",
     "close": "Close"
   },
@@ -57,7 +60,9 @@
     "uploading": "Uploading...",
     "selectOption": "-- Select --",
     "confirmSubmitTitle": "Confirm Submission",
-    "confirmSubmitMessage": "Are you sure you want to submit this form? You will not be able to edit it after submission."
+    "confirmSubmitMessage": "Are you sure you want to submit this form? You will not be able to edit it after submission.",
+    "confirmRevisionMessage": "Send this change request to the owner for review?",
+    "revisionReason": "Reason for changing your form"
   },
   "formTypes": {
     "EXTERIOR_DOORS": "Exterior Doors",
@@ -164,7 +169,8 @@
     "submitFailed": "Failed to submit form. Please try again.",
     "missingFields": "Please fill in all required fields: {{fields}}",
     "uploadFailed": "Failed to upload file. Please try again.",
-    "downloadFailed": "Failed to download file."
+    "downloadFailed": "Failed to download file.",
+    "revisionReasonRequired": "Please explain why you want to change this form."
   },
   "page": {
     "loading": "Loading...",

@@ -62,7 +62,16 @@ export default function UsersPage() {
           getCurrentUser(token),
         ]);
 
-        setUsers(usersData);
+        const savedInviteLinks = JSON.parse(
+          localStorage.getItem('userInviteLinks') || '{}'
+        );
+        setUsers(
+          usersData.map(user => ({
+            ...user,
+            inviteLink:
+              user.inviteLink || savedInviteLinks[user.userIdentifier] || '',
+          }))
+        );
         setCurrentUser(currentUserData);
       } catch (err) {
         setLoadingError(t('error', 'Failed to load users.'));
@@ -96,6 +105,18 @@ export default function UsersPage() {
       const createdUser = await createUser(formValues, token);
 
       setUsers(prev => [...prev, createdUser]);
+      if (createdUser.inviteLink && createdUser.userIdentifier) {
+        const savedInviteLinks = JSON.parse(
+          localStorage.getItem('userInviteLinks') || '{}'
+        );
+        localStorage.setItem(
+          'userInviteLinks',
+          JSON.stringify({
+            ...savedInviteLinks,
+            [createdUser.userIdentifier]: createdUser.inviteLink,
+          })
+        );
+      }
 
       if (createdUser.inviteLink) {
         setInviteLink(createdUser.inviteLink);

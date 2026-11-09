@@ -238,6 +238,12 @@ body {
   animation: spin 1s linear infinite;
 }
 
+.page-loader-logo {
+  width: min(42vw, 192px);
+  height: auto;
+  object-fit: contain;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -384,6 +390,28 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.home .hero-loading-logo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  object-fit: contain;
+  background: #fff;
+}
+
+.home video.hero-image {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.home video.hero-image.is-loaded {
+  opacity: 1;
 }
 
 .home .hero-overlay {
@@ -641,6 +669,10 @@ body {
     opacity 0.6s var(--easing),
     transform 0.5s var(--easing),
     box-shadow 0.5s var(--easing);
+}
+
+.home .portfolio-card.project-logo-card {
+  border-radius: 1rem;
 }
 
 .home .portfolio-card.animated {

@@ -5,6 +5,7 @@ import {
   getAllForms,
   reopenForm,
   completeForm,
+  decideFormRevision,
   downloadFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import { FORM_FIELDS } from './CustomerFormsPage';
@@ -62,8 +63,10 @@ const OwnerReviewFormsPage = () => {
   const [editableFields, setEditableFields] = useState([]);
   const [optionFieldIndex, setOptionFieldIndex] = useState(0);
   const [isSavingConfiguration, setIsSavingConfiguration] = useState(false);
+  const [revisionDecision, setRevisionDecision] = useState(null);
+  const [revisionDecisionReason, setRevisionDecisionReason] = useState('');
 
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user } = useAuth0();
   const navigate = useNavigate();
 
   const getToken = async () => {
@@ -221,6 +224,9 @@ const OwnerReviewFormsPage = () => {
       const token = await getToken();
       const data = new FormData();
       data.append('file', file);
+      data.append('category', 'PHOTO');
+      data.append('uploadedBy', user?.sub || 'owner');
+      data.append('uploaderRole', 'OWNER');
       const result = await uploadFile(data, token);
       const imageIdentifier = result.fileId || result.id;
       updateOption(fieldIndex, optionIndex, 'imageIdentifier', imageIdentifier);
@@ -318,6 +324,32 @@ const OwnerReviewFormsPage = () => {
     }
   };
 
+  const handleRevisionDecision = async decision => {
+    if (!revisionDecisionReason.trim()) {
+      setSubmitError(
+        t('errors.decisionReasonRequired', 'Please provide a reason.')
+      );
+      return;
+    }
+    try {
+      const token = await getToken();
+      await decideFormRevision(
+        revisionDecision.formId,
+        decision,
+        revisionDecisionReason.trim(),
+        token
+      );
+      setRevisionDecision(null);
+      setRevisionDecisionReason('');
+      await fetchData();
+    } catch (error) {
+      setSubmitError(
+        error?.response?.data?.message ||
+          t('errors.revisionDecisionFailed', 'Failed to decide this revision.')
+      );
+    }
+  };
+
   const handleDownloadForm = async formId => {
     try {
       const { getAuthAudience } = await import('../../utils/authConfig');
@@ -343,21 +375,43 @@ const OwnerReviewFormsPage = () => {
     setFormToView(null);
   };
 
-  const formatFormValue = value => {
+  const getFieldDefinition = key =>
+    Object.values(FORM_FIELDS)
+      .flat()
+      .find(item => item.name === key);
+
+  const getFieldLabel = key => {
+    const field = getFieldDefinition(key);
+    return field ? tCustomer(field.translationKey, key) : key;
+  };
+
+  const formatFormValue = (value, fieldKey = null) => {
     if (value === null || value === undefined) {
       return '';
     }
 
     if (Array.isArray(value)) {
-      return value.map(formatFormValue).filter(Boolean).join(', ');
+      return value
+        .map(item => formatFormValue(item, fieldKey))
+        .filter(Boolean)
+        .join(', ');
     }
 
     if (typeof value === 'object') {
+      if ('label' in value || 'value' in value) {
+        const field = getFieldDefinition(fieldKey);
+        const option = field?.options?.find(item => item.value === value.value);
+        return option?.labelKey
+          ? tCustomer(
+              option.labelKey,
+              option.label || value.label || value.value
+            )
+          : value.label || value.value || '';
+      }
       return Object.entries(value)
-        .map(([key, nestedValue]) => {
-          const formatted = formatFormValue(nestedValue);
-          return formatted ? `${key}: ${formatted}` : key;
-        })
+        .filter(([key]) => key !== 'imageIdentifier')
+        .map(([, nestedValue]) => formatFormValue(nestedValue, fieldKey))
+        .filter(Boolean)
         .join(', ');
     }
 
@@ -402,7 +456,9 @@ const OwnerReviewFormsPage = () => {
 
   const getTranslatedStatus = status =>
     t(
-      `status.${String(status || '').toLowerCase()}`,
+      `status.${String(status || '')
+        .toLowerCase()
+        .replace('_', '')}`,
       String(status || '').replace(/_/g, ' ')
     );
 
@@ -557,6 +613,37 @@ const OwnerReviewFormsPage = () => {
                               >
                                 {t('buttons.viewForm', 'View Form')}
                               </button>
+                              {form.pendingRevisionId && (
+                                <>
+                                  <button
+                                    className="form-action-button form-action-complete"
+                                    onClick={() => {
+                                      setRevisionDecision({
+                                        formId: form.formId,
+                                        decision: 'accept',
+                                      });
+                                      setRevisionDecisionReason('');
+                                    }}
+                                  >
+                                    {t(
+                                      'buttons.acceptRevision',
+                                      'Accept Changes'
+                                    )}
+                                  </button>
+                                  <button
+                                    className="form-action-button form-action-reopen"
+                                    onClick={() => {
+                                      setRevisionDecision({
+                                        formId: form.formId,
+                                        decision: 'deny',
+                                      });
+                                      setRevisionDecisionReason('');
+                                    }}
+                                  >
+                                    {t('buttons.denyRevision', 'Deny Changes')}
+                                  </button>
+                                </>
+                              )}
                               <button
                                 className="form-action-button form-action-reopen"
                                 onClick={() => {
@@ -575,12 +662,45 @@ const OwnerReviewFormsPage = () => {
                             </>
                           )}
                           {form.formStatus === 'COMPLETED' && (
-                            <button
-                              className="form-action-button form-action-download"
-                              onClick={() => handleDownloadForm(form.formId)}
-                            >
-                              {t('buttons.downloadPdf', 'Download PDF')}
-                            </button>
+                            <>
+                              <button
+                                className="form-action-button form-action-download"
+                                onClick={() => handleDownloadForm(form.formId)}
+                              >
+                                {t('buttons.downloadPdf', 'Download PDF')}
+                              </button>
+                              {form.pendingRevisionId && (
+                                <>
+                                  <button
+                                    className="form-action-button form-action-complete"
+                                    onClick={() => {
+                                      setRevisionDecision({
+                                        formId: form.formId,
+                                        decision: 'accept',
+                                      });
+                                      setRevisionDecisionReason('');
+                                    }}
+                                  >
+                                    {t(
+                                      'buttons.acceptRevision',
+                                      'Accept Changes'
+                                    )}
+                                  </button>
+                                  <button
+                                    className="form-action-button form-action-reopen"
+                                    onClick={() => {
+                                      setRevisionDecision({
+                                        formId: form.formId,
+                                        decision: 'deny',
+                                      });
+                                      setRevisionDecisionReason('');
+                                    }}
+                                  >
+                                    {t('buttons.denyRevision', 'Deny Changes')}
+                                  </button>
+                                </>
+                              )}
+                            </>
                           )}
                         </div>
                       </div>
@@ -749,6 +869,62 @@ const OwnerReviewFormsPage = () => {
         </div>
       )}
 
+      {revisionDecision && (
+        <div
+          className="forms-modal-overlay"
+          onClick={() => setRevisionDecision(null)}
+        >
+          <div
+            className="forms-modal"
+            onClick={event => event.stopPropagation()}
+          >
+            <div className="forms-modal-header">
+              <h2>
+                {t('modal.revisionDecision.title', 'Review Form Changes')}
+              </h2>
+            </div>
+            <div className="forms-modal-body">
+              <p>
+                {t('modal.revisionDecision.reason', 'Customer reason')}:{' '}
+                {
+                  forms.find(form => form.formId === revisionDecision.formId)
+                    ?.pendingRevisionReason
+                }
+              </p>
+              <textarea
+                rows={4}
+                value={revisionDecisionReason}
+                onChange={event =>
+                  setRevisionDecisionReason(event.target.value)
+                }
+                placeholder={t(
+                  'modal.revisionDecision.placeholder',
+                  'Explain your decision'
+                )}
+              />
+            </div>
+            <div className="forms-modal-footer">
+              <button
+                className="forms-modal-button forms-modal-button-secondary"
+                onClick={() => setRevisionDecision(null)}
+              >
+                {t('buttons.cancel', 'Cancel')}
+              </button>
+              <button
+                className="forms-modal-button forms-modal-button-primary"
+                onClick={() =>
+                  handleRevisionDecision(revisionDecision.decision)
+                }
+              >
+                {revisionDecision.decision === 'accept'
+                  ? t('buttons.acceptRevision', 'Accept Changes')
+                  : t('buttons.denyRevision', 'Deny Changes')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Reopen Form Modal */}
       {isReopenModalOpen && (
         <div
@@ -871,9 +1047,11 @@ const OwnerReviewFormsPage = () => {
                     {Object.entries(formToView.formData || {}).map(
                       ([key, value]) => (
                         <div key={key} className="forms-data-row">
-                          <span className="forms-data-key">{key}</span>
+                          <span className="forms-data-key">
+                            {getFieldLabel(key)}
+                          </span>
                           <span className="forms-data-value">
-                            {formatFormValue(value)}
+                            {formatFormValue(value, key)}
                           </span>
                         </div>
                       )
@@ -881,6 +1059,37 @@ const OwnerReviewFormsPage = () => {
                   </div>
                 )}
               </div>
+              {formToView.pendingRevisionId && (
+                <div className="forms-data-block">
+                  <strong>
+                    {t('modal.pendingRevision', 'Pending Customer Revision')}:
+                  </strong>
+                  <p>{formToView.pendingRevisionReason}</p>
+                  <div className="forms-data-list">
+                    {Object.entries(formToView.pendingRevisionData || {}).map(
+                      ([key, value]) => (
+                        <div key={`revision-${key}`} className="forms-data-row">
+                          <span className="forms-data-key">
+                            {getFieldLabel(key)}
+                          </span>
+                          <span className="forms-data-value">
+                            {formatFormValue(value, key)}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
+              {formToView.formData?.pdfFile && (
+                <button
+                  type="button"
+                  className="form-action-button form-action-download"
+                  onClick={() => handleDownloadForm(formToView.formId)}
+                >
+                  {t('buttons.downloadPdf', 'Download PDF')}
+                </button>
+              )}
             </div>
             <div className="forms-modal-footer">
               <button

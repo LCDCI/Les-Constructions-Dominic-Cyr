@@ -4,6 +4,9 @@
   "loading": "Loading forms...",
   "noForms": "No forms found",
   "status": {
+    "draft": "Draft",
+    "assigned": "Assigned",
+    "inProgress": "In Progress",
     "submitted": "Submitted",
     "reopened": "Reopened",
     "completed": "Completed"
@@ -19,6 +22,12 @@
   },
   "formTypes": {
     "all": "All",
+    "EXTERIOR_DOORS": "Exterior Doors",
+    "GARAGE_DOORS": "Garage Doors",
+    "WINDOWS": "Windows",
+    "ASPHALT_SHINGLES": "Asphalt Shingles",
+    "WOODWORK": "Woodwork",
+    "PAINT": "Paint",
     "exteriorDoors": "Exterior Doors",
     "garageDoors": "Garage Doors",
     "windows": "Windows",
@@ -49,7 +58,9 @@
     "downloadPdf": "Download PDF",
     "close": "Close",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "acceptRevision": "Accept Changes",
+    "denyRevision": "Deny Changes"
   },
   "modal": {
     "editForms": {
@@ -72,6 +83,16 @@
     },
     "view": {
       "title": "Form Details"
+    },
+    "pendingRevision": "Pending Customer Revision",
+    "revisionDecision": {
+      "title": "Review Form Changes",
+      "reason": "Customer reason",
+      "placeholder": "Explain your decision"
     }
+  },
+  "errors": {
+    "decisionReasonRequired": "Please provide a reason.",
+    "revisionDecisionFailed": "Failed to decide this revision."
   }
 }

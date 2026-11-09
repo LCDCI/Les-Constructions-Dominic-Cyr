@@ -168,8 +168,6 @@ public class LotServiceImpl implements LotService {
             List<Users> assignedUsers = getUsersByIds(lotRequestModel.getAssignedUserIds());
             foundLot.setAssignedUsers(assignedUsers);
 
-            foundLot.setLotStatus(hasCustomer(assignedUsers) ? LotStatus.SOLD : LotStatus.AVAILABLE);
-
             // Calculate new assignments and notify
             List<String> currentIds = currentAssignedUsers.stream()
                     .map(u -> u.getUserIdentifier().getUserId().toString())
@@ -186,7 +184,6 @@ public class LotServiceImpl implements LotService {
             }
         } else {
             foundLot.setAssignedUsers(new ArrayList<>());
-            foundLot.setLotStatus(LotStatus.AVAILABLE);
         }
 
         Lot updatedLot = lotRepository.save(foundLot);
@@ -292,8 +289,8 @@ public class LotServiceImpl implements LotService {
     private void notifyAssignedUsers(List<Users> users, Lot lot, Project project) {
         for (Users user : users) {
             try {
-                // Create portal notification - link to projects page
-                String link = "/projects";
+                // Send users to the documents landing page for their portal.
+                String link = getDocumentsPortalLink(user);
 
                 String lotId = lot.getLotIdentifier() != null
                         ? lot.getLotIdentifier().getLotId().toString()
@@ -324,6 +321,19 @@ public class LotServiceImpl implements LotService {
                 log.error("Failed to notify user {}: {}", user.getUserIdentifier().getUserId(), e.getMessage());
             }
         }
+    }
+
+    private String getDocumentsPortalLink(Users user) {
+        if (user.getUserRole() == null) {
+            return "/customers/documents";
+        }
+
+        return switch (user.getUserRole()) {
+            case OWNER -> "/owner/documents";
+            case SALESPERSON -> "/salesperson/documents";
+            case CONTRACTOR -> "/contractors/documents";
+            case CUSTOMER -> "/customers/documents";
+        };
     }
 
     private String buildLotAssignmentEmailTemplate(String userName, String lotNumber, String address,

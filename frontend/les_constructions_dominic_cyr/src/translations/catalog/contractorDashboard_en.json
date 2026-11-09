@@ -1,5 +1,6 @@
 {
   "title": "Supplier Dashboard",
+  "welcome": "Welcome, {{name}}!",
   "upcomingTasks": "Here are your upcoming tasks:",
   "seeMore": "See more",
   "cards": {

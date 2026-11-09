@@ -14,6 +14,7 @@
   "backToProjects": "Back to Projects",
   "addLot": "Add Lot",
   "assignToAllLots": "Assign to all lots",
+  "unassignFromAllLots": "Unassign selected users from all lots",
   "searchPlaceholder": "Search by address or lot...",
   "filters": {
     "allStatuses": "All Statuses",

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { usePageTranslations } from '../../../hooks/usePageTranslations';
 
 export default function OwnerEditUserModal({
   isOpen,
@@ -7,6 +9,7 @@ export default function OwnerEditUserModal({
   onSave,
   isSaving,
 }) {
+  const { t } = usePageTranslations('usersPage');
   const [formValues, setFormValues] = useState({
     firstName: '',
     lastName: '',
@@ -45,14 +48,20 @@ export default function OwnerEditUserModal({
         className="modal owner-edit-modal"
         onClick={e => e.stopPropagation()}
       >
-        <h2>Edit User Details (Owner)</h2>
-        <p>As an owner, you can edit all fields for this user.</p>
+        <h2>{t('ownerEdit.title', 'Edit User Details (Owner)')}</h2>
+        <p>
+          {t(
+            'ownerEdit.description',
+            'As an owner, you can edit all fields for this user.'
+          )}
+        </p>
 
         <form className="modal-form" onSubmit={handleSubmit}>
           <div className="form-row">
             <label>
               <span>
-                First Name<span className="required">*</span>
+                {t('ownerEdit.firstName', 'First Name')}
+                <span className="required">*</span>
               </span>
               <input
                 type="text"
@@ -65,7 +74,8 @@ export default function OwnerEditUserModal({
 
             <label>
               <span>
-                Last Name<span className="required">*</span>
+                {t('ownerEdit.lastName', 'Last Name')}
+                <span className="required">*</span>
               </span>
               <input
                 type="text"
@@ -80,7 +90,7 @@ export default function OwnerEditUserModal({
           <div className="form-row">
             <label>
               <span>
-                Primary Email (Login)
+                {t('ownerEdit.primaryEmail', 'Primary Email (Login)')}
                 <span className="required">*</span>
               </span>
               <input
@@ -95,7 +105,7 @@ export default function OwnerEditUserModal({
 
           <div className="form-row">
             <label>
-              <span>Secondary Email</span>
+              <span>{t('ownerEdit.secondaryEmail', 'Secondary Email')}</span>
               <input
                 type="email"
                 name="secondaryEmail"
@@ -108,7 +118,7 @@ export default function OwnerEditUserModal({
 
           <div className="form-row">
             <label>
-              <span>Phone Number</span>
+              <span>{t('ownerEdit.phone', 'Phone Number')}</span>
               <input
                 type="tel"
                 name="phone"
@@ -120,15 +130,25 @@ export default function OwnerEditUserModal({
           </div>
 
           <div className="user-info-section">
-            <h3>Read-Only Information</h3>
+            <h3>{t('ownerEdit.readOnly', 'Read-Only Information')}</h3>
             <div className="info-grid">
               <div className="info-item">
-                <span className="info-label">Role:</span>
+                <span className="info-label">
+                  {t('ownerEdit.role', 'Role:')}
+                </span>
                 <span className="info-value role-badge">{user.userRole}</span>
               </div>
               <div className="info-item">
-                <span className="info-label">User ID:</span>
+                <span className="info-label">
+                  {t('ownerEdit.userId', 'User ID:')}
+                </span>
                 <span className="info-value">{user.userIdentifier}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">
+                  {t('ownerEdit.activationKey', 'Activation Key:')}
+                </span>
+                <span className="info-value">{user.inviteLink || ''}</span>
               </div>
             </div>
           </div>
@@ -140,10 +160,12 @@ export default function OwnerEditUserModal({
               disabled={isSaving}
               className="btn-cancel"
             >
-              Cancel
+              {t('ownerEdit.cancel', 'Cancel')}
             </button>
             <button type="submit" disabled={isSaving} className="btn-submit">
-              {isSaving ? 'Saving...' : 'Save Changes'}
+              {isSaving
+                ? t('ownerEdit.saving', 'Saving...')
+                : t('ownerEdit.save', 'Save Changes')}
             </button>
           </div>
         </form>
@@ -151,3 +173,20 @@ export default function OwnerEditUserModal({
     </div>
   );
 }
+
+OwnerEditUserModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  user: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    primaryEmail: PropTypes.string,
+    phone: PropTypes.string,
+    secondaryEmail: PropTypes.string,
+    userRole: PropTypes.string,
+    userIdentifier: PropTypes.string,
+    inviteLink: PropTypes.string,
+  }),
+  onClose: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  isSaving: PropTypes.bool,
+};

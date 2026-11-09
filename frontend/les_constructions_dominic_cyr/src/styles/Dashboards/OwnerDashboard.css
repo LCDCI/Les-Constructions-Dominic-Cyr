@@ -6,6 +6,12 @@
   min-height: 100vh;
 }
 
+.dashboard-welcome {
+  margin: 0 0 2rem;
+  color: #333;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
 .dashboard-title {
   text-align: center;
   font-size: clamp(1.5rem, 4vw, 2rem);

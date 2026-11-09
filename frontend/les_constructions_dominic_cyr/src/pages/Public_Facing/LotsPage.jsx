@@ -81,7 +81,7 @@ const LotsPage = () => {
     48: { top: '22%', left: '41.5%' },
     49: { top: '17%', left: '36%' },
     50: { top: '15.5%', left: '27%' },
-    52: { top: '58%', left: '42%' },
+    44: { top: '58%', left: '42%' },
   };
 
   const roles = user?.['https://construction-api.loca/roles'] || [];
@@ -89,9 +89,8 @@ const LotsPage = () => {
     isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
   const isPubliclyVisibleId = num =>
     (num >= 1 && num <= 9) ||
-    (num >= 33 && num <= 43) ||
-    (num >= 45 && num <= 50) ||
-    num === 52;
+    (num >= 33 && num <= 44) ||
+    (num >= 45 && num <= 50);
 
   useEffect(() => {
     let cancelled = false;
@@ -145,21 +144,39 @@ const LotsPage = () => {
     fetchPublicSiteContent(language, `lots-${resolvedProjectId}`)
       .then(items => {
         if (!active) return;
-        setPageContent(
-          Object.fromEntries(
-            (Array.isArray(items) ? items : [])
-              .filter(item => item.contentText)
-              .map(item => [item.pageKey, item.contentText])
-          )
+        const content = Object.fromEntries(
+          (Array.isArray(items) ? items : [])
+            .filter(item => item.contentText)
+            .map(item => [item.pageKey, item.contentText])
         );
+        setPageContent({
+          introSubtitle: t('content.introSubtitle', {
+            defaultValue:
+              language === 'fr'
+                ? 'Découvrez nos terrains'
+                : 'Discover our lots',
+          }),
+          introText: t('content.introText', {
+            defaultValue:
+              language === 'fr'
+                ? 'Consultez les informations disponibles sur les terrains.'
+                : 'Review the available lot information.',
+          }),
+          ...content,
+        });
       })
       .catch(() => {
-        if (active) setPageContent({});
+        if (active) {
+          setPageContent({
+            introSubtitle: t('content.introSubtitle'),
+            introText: t('content.introText'),
+          });
+        }
       });
     return () => {
       active = false;
     };
-  }, [i18n.language, resolvedProjectId]);
+  }, [i18n.language, resolvedProjectId, t]);
 
   useEffect(() => {
     if (!selectedLot) return;
@@ -285,7 +302,7 @@ const LotsPage = () => {
             <div className="lots-image-section">
               <div className="map-wrapper">
                 <img
-                  src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/phase1.png?v=2026-11-02-lot-52"
+                  src="https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-01-20/phase1.png?v=2026-11-02-lot-44"
                   alt="Map"
                   className="phase-map-image"
                 />
@@ -419,6 +436,18 @@ const LotsPage = () => {
                 </select>
               </div>
             </div>
+
+            {(pageContent.introSubtitle || pageContent.introText) && (
+              <section
+                className="lots-intro-content"
+                aria-label="Lot information"
+              >
+                {pageContent.introSubtitle && (
+                  <h2>{pageContent.introSubtitle}</h2>
+                )}
+                {pageContent.introText && <p>{pageContent.introText}</p>}
+              </section>
+            )}
 
             <div className="list-section">
               {error ? (

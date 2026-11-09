@@ -11,7 +11,6 @@ import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { GoProject } from 'react-icons/go';
 import { CiLogout } from 'react-icons/ci';
-import { GoHome } from 'react-icons/go';
 import { CgProfile } from 'react-icons/cg';
 
 const Navbar = ({
@@ -109,20 +108,6 @@ const Navbar = ({
                   </span>
                   <span className="navbar-text">
                     {t('navbar.menuItems.dashboard', 'Dashboard')}
-                  </span>
-                </Link>
-              </li>
-              <li className="navbar-item">
-                <Link
-                  to="/"
-                  className={`navbar-link ${isActive('/')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoHome />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.home', 'Home')}
                   </span>
                 </Link>
               </li>

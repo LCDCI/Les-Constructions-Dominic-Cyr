@@ -147,12 +147,6 @@ export default function Home() {
 
   return (
     <div className="home">
-      {!videoLoaded && (
-        <div className="page-loader">
-          <div className="loader-spinner"></div>
-        </div>
-      )}
-
       {/* HERO SECTION — framed box: text left, media right */}
       <section className="hero">
         <div className="hero-frame">
@@ -183,6 +177,13 @@ export default function Home() {
           </div>
 
           <div className="hero-background">
+            {!videoLoaded && (
+              <img
+                src="/logo192.png"
+                alt={t('loading', 'Loading')}
+                className="hero-loading-logo"
+              />
+            )}
             {isLocalHost ? (
               <img
                 src="/fallback.jpg"
@@ -196,7 +197,7 @@ export default function Home() {
             ) : (
               <video
                 src={getMediaUrl('media.hero')}
-                className="hero-image"
+                className={`hero-image ${videoLoaded ? 'is-loaded' : ''}`}
                 width="1000"
                 height="511"
                 autoPlay
@@ -423,7 +424,7 @@ export default function Home() {
           <div className="portfolio-grid">
             <Link
               to="/projects/proj-002-panorama/overview"
-              className="portfolio-card"
+              className="portfolio-card project-logo-card"
               data-animate
             >
               <img
@@ -448,7 +449,7 @@ export default function Home() {
 
             <Link
               to="/projects/proj-001-foresta/overview"
-              className="portfolio-card"
+              className="portfolio-card project-logo-card"
               data-animate
             >
               <img

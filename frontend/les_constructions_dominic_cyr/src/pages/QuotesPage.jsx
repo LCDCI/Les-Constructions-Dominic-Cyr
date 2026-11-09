@@ -162,12 +162,13 @@ const QuotesPage = () => {
         {/* Page Header */}
         <div className="quotes-header">
           <div className="header-content">
-            <h1>{t('quote.viewQuotes') || 'Quotes'}</h1>
+            <h1>{t('quote.viewQuotes') || 'Estimates'}</h1>
             <p className="header-subtitle">
               {userRole === 'CONTRACTOR'
-                ? t('quote.subtitleContractor') || 'View and manage your quotes'
+                ? t('quote.subtitleContractor') ||
+                  'View and manage your estimates'
                 : t('quote.subtitleOwner') ||
-                  'View all quotes for your projects'}
+                  'View all estimates for your projects'}
             </p>
           </div>
         </div>
@@ -209,7 +210,7 @@ const QuotesPage = () => {
           <div className="no-project-selected">
             <p>
               {t('quote.selectProjectToView') ||
-                'Select a project to view its quotes'}
+                'Select a project to view its estimates'}
             </p>
           </div>
         )}

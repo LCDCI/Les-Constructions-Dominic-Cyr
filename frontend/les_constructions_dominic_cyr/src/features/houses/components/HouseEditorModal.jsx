@@ -15,6 +15,7 @@ const emptyHouse = {
   descriptionEn: '',
   descriptionFr: '',
   imageIdentifier: '',
+  secondImageIdentifier: '',
   numberOfRooms: '',
   numberOfBedrooms: '',
   numberOfBathrooms: '',
@@ -38,7 +39,10 @@ export default function HouseEditorModal({
   const { getAccessTokenSilently, user } = useAuth0();
   const [form, setForm] = useState(emptyHouse);
   const [imageFile, setImageFile] = useState(null);
+  const [secondImageFile, setSecondImageFile] = useState(null);
   const [removeExistingImage, setRemoveExistingImage] = useState(false);
+  const [removeExistingSecondImage, setRemoveExistingSecondImage] =
+    useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -53,7 +57,9 @@ export default function HouseEditorModal({
           }
     );
     setImageFile(null);
+    setSecondImageFile(null);
     setRemoveExistingImage(false);
+    setRemoveExistingSecondImage(false);
     setError('');
   }, [house, initialProjectIdentifier, projects]);
 
@@ -72,17 +78,26 @@ export default function HouseEditorModal({
       ? form.imageIdentifier
       : getFileUrl(form.imageIdentifier)
     : '';
+  const secondImageUrl = form.secondImageIdentifier
+    ? String(form.secondImageIdentifier).startsWith('http')
+      ? form.secondImageIdentifier
+      : getFileUrl(form.secondImageIdentifier)
+    : '';
 
   const handleSubmit = async event => {
     event.preventDefault();
     setSaving(true);
     setError('');
     let uploadedImageIdentifier = null;
+    let uploadedSecondImageIdentifier = null;
     try {
       const token = await getToken();
       let imageIdentifier = removeExistingImage
         ? null
         : form.imageIdentifier || null;
+      let secondImageIdentifier = removeExistingSecondImage
+        ? null
+        : form.secondImageIdentifier || null;
       if (imageFile) {
         const formData = new FormData();
         formData.append('file', imageFile);
@@ -98,6 +113,22 @@ export default function HouseEditorModal({
         }
         imageIdentifier = uploadedImageIdentifier;
       }
+      if (secondImageFile) {
+        const secondFormData = new FormData();
+        secondFormData.append('file', secondImageFile);
+        secondFormData.append('category', 'PHOTO');
+        secondFormData.append('projectId', form.projectIdentifier);
+        secondFormData.append('uploadedBy', user?.sub || 'house-editor');
+        secondFormData.append('uploaderRole', 'OWNER');
+
+        const uploadedSecond = await uploadFile(secondFormData, token);
+        uploadedSecondImageIdentifier =
+          uploadedSecond.fileId || uploadedSecond.id;
+        secondImageIdentifier = uploadedSecondImageIdentifier;
+        if (!uploadedSecondImageIdentifier) {
+          throw new Error('Second image upload returned no file identifier.');
+        }
+      }
 
       const payload = {
         projectIdentifier: form.projectIdentifier,
@@ -106,6 +137,7 @@ export default function HouseEditorModal({
         descriptionEn: form.descriptionEn || null,
         descriptionFr: form.descriptionFr || null,
         imageIdentifier,
+        secondImageIdentifier,
         description:
           form.descriptionEn || form.descriptionFr || form.description || null,
         numberOfRooms: nullableNumber(form.numberOfRooms),
@@ -133,11 +165,36 @@ export default function HouseEditorModal({
           }
         }
       }
+      if (secondImageFile && house?.secondImageIdentifier) {
+        if (
+          house.secondImageIdentifier !== secondImageIdentifier &&
+          !String(house.secondImageIdentifier).startsWith('http')
+        ) {
+          try {
+            await deleteFile(house.secondImageIdentifier, {
+              deletedBy: user?.sub || 'house-editor',
+              token,
+            });
+          } catch {
+            // Preserve the successful replacement if the old object is missing.
+          }
+        }
+      }
       onSaved(finalHouse);
     } catch (saveError) {
       if (uploadedImageIdentifier) {
         try {
           await deleteFile(uploadedImageIdentifier, {
+            deletedBy: user?.sub || 'house-editor',
+            token: null,
+          });
+        } catch {
+          // Surface the original save error; cleanup is best effort.
+        }
+      }
+      if (uploadedSecondImageIdentifier) {
+        try {
+          await deleteFile(uploadedSecondImageIdentifier, {
             deletedBy: user?.sub || 'house-editor',
             token: null,
           });
@@ -335,6 +392,34 @@ export default function HouseEditorModal({
             onClick={() => setRemoveExistingImage(true)}
           >
             {t('removeHouseImage', 'Remove current image')}
+          </button>
+        )}
+        {secondImageUrl && !removeExistingSecondImage && (
+          <img
+            className="my-site-modal-image"
+            src={secondImageUrl}
+            alt={`${form.houseName || 'House'} second view`}
+          />
+        )}
+        <label>
+          {t('houseSecondImage', 'Second house image')}{' '}
+          <span className="my-site-optional">{t('optional', 'Optional')}</span>
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={event => {
+              setSecondImageFile(event.target.files?.[0] || null);
+              setRemoveExistingSecondImage(false);
+            }}
+          />
+        </label>
+        {form.secondImageIdentifier && !removeExistingSecondImage && (
+          <button
+            type="button"
+            className="my-site-modal-link danger"
+            onClick={() => setRemoveExistingSecondImage(true)}
+          >
+            {t('removeSecondHouseImage', 'Remove second image')}
           </button>
         )}
 

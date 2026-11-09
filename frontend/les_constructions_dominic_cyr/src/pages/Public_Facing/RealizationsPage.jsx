@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
+import { FaTimes } from 'react-icons/fa';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Public_Facing/realizations.css';
@@ -26,6 +27,8 @@ const RealizationsPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [imageIds, setImageIds] = useState(REALIZATION_IMAGE_IDS.slice(0, 8));
   const [galleryItems, setGalleryItems] = useState([]);
+  const [modalImages, setModalImages] = useState([]);
+  const [modalIndex, setModalIndex] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -100,6 +103,11 @@ const RealizationsPage = () => {
     );
   };
 
+  const openImageModal = (images, index = 0) => {
+    setModalImages(images);
+    setModalIndex(index);
+  };
+
   const pad = n => String(n).padStart(2, '0');
 
   return (
@@ -144,13 +152,18 @@ const RealizationsPage = () => {
 
           <div className="realizations-gallery" role="group" aria-live="polite">
             {imageIds.length > 0 ? (
-              <div className="gallery-image-item">
+              <button
+                type="button"
+                className="gallery-image-item"
+                onClick={() => openImageModal(imageIds, currentIndex)}
+                aria-label={t('gallery.openImage', 'Open image')}
+              >
                 <img
                   src={getImageUrl(imageIds[currentIndex])}
                   alt={t('gallery.imageAlt', `Realization ${currentIndex + 1}`)}
                   className="gallery-image"
                 />
-              </div>
+              </button>
             ) : (
               <p style={{ textAlign: 'center', padding: '5%' }} role="status">
                 {t('gallery.noResults', 'No realizations found')}
@@ -194,12 +207,21 @@ const RealizationsPage = () => {
             .filter(item => item.image)
             .map(item => (
               <article className="realizations-gallery-card" key={item.index}>
-                <img
-                  src={getImageUrl(item.image)}
-                  alt={item.description || t('gallery.imageAlt', 'Realization')}
-                  className="realizations-gallery-card-image"
-                  loading="lazy"
-                />
+                <button
+                  type="button"
+                  className="realizations-gallery-card-image-button"
+                  onClick={() => openImageModal([item.image])}
+                  aria-label={t('gallery.openImage', 'Open image')}
+                >
+                  <img
+                    src={getImageUrl(item.image)}
+                    alt={
+                      item.description || t('gallery.imageAlt', 'Realization')
+                    }
+                    className="realizations-gallery-card-image"
+                    loading="lazy"
+                  />
+                </button>
                 {(item.location || item.description) && (
                   <div className="realizations-gallery-card-content">
                     {item.location && (
@@ -214,6 +236,62 @@ const RealizationsPage = () => {
             ))}
         </div>
       </section>
+      {modalImages.length > 0 && (
+        <div
+          className="realizations-image-modal-overlay"
+          role="presentation"
+          onClick={() => setModalImages([])}
+        >
+          <div
+            className="realizations-image-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('gallery.openImage', 'Realization image')}
+            onClick={event => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="realizations-image-modal-close"
+              onClick={() => setModalImages([])}
+              aria-label={t('gallery.close', 'Close')}
+            >
+              <FaTimes />
+            </button>
+            {modalImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="realizations-image-modal-nav realizations-image-modal-prev"
+                  onClick={() =>
+                    setModalIndex(
+                      index =>
+                        (index - 1 + modalImages.length) % modalImages.length
+                    )
+                  }
+                  aria-label={t('gallery.previousAriaLabel', 'Previous image')}
+                >
+                  <MdArrowBackIos />
+                </button>
+                <button
+                  type="button"
+                  className="realizations-image-modal-nav realizations-image-modal-next"
+                  onClick={() =>
+                    setModalIndex(index => (index + 1) % modalImages.length)
+                  }
+                  aria-label={t('gallery.nextAriaLabel', 'Next image')}
+                >
+                  <MdArrowForwardIos />
+                </button>
+              </>
+            )}
+            <img
+              src={getImageUrl(modalImages[modalIndex])}
+              alt={t('gallery.imageAlt', 'Realization')}
+              className="realizations-image-modal-photo"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

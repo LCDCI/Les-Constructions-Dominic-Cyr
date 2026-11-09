@@ -10,6 +10,7 @@ const BulkLotAssignmentModal = ({
   isOpen,
   onClose,
   onSubmit,
+  onUnassignAll,
   token,
   isSubmitting = false,
 }) => {
@@ -20,8 +21,8 @@ const BulkLotAssignmentModal = ({
 
   const handleSubmit = event => {
     event.preventDefault();
-    if (selectedUserIds.length === 1) {
-      onSubmit(selectedUserIds[0]);
+    if (selectedUserIds.length > 0) {
+      onSubmit(selectedUserIds);
     }
   };
 
@@ -52,7 +53,7 @@ const BulkLotAssignmentModal = ({
           <p>{t('bulkAssignment.description')}</p>
           <MultiUserSelector
             selectedUserIds={selectedUserIds}
-            onChange={value => setSelectedUserIds(value.slice(-1))}
+            onChange={setSelectedUserIds}
             token={token}
             allowedRoles={BULK_ASSIGNMENT_ROLES}
             placeholder={t('bulkAssignment.placeholder')}
@@ -63,11 +64,18 @@ const BulkLotAssignmentModal = ({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || selectedUserIds.length !== 1}
+              disabled={isSubmitting || selectedUserIds.length === 0}
             >
               {isSubmitting
                 ? t('bulkAssignment.assigning')
                 : t('bulkAssignment.submit')}
+            </button>
+            <button
+              type="button"
+              onClick={() => onUnassignAll(selectedUserIds)}
+              disabled={isSubmitting || selectedUserIds.length === 0}
+            >
+              {t('unassignFromAllLots')}
             </button>
           </div>
         </form>
@@ -80,6 +88,7 @@ BulkLotAssignmentModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  onUnassignAll: PropTypes.func.isRequired,
   token: PropTypes.string,
   isSubmitting: PropTypes.bool,
 };

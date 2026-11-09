@@ -3,6 +3,8 @@ package com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.MapperLayer;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.Form;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.FormIdentifier;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.FormStatus;
+import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.FormRevisionRepository;
+import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.DataAccessLayer.FormRevisionStatus;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.FormRequestModel;
 import com.ecp.les_constructions_dominic_cyr.backend.FormSubdomain.PresentationLayer.FormResponseModel;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
@@ -19,6 +21,7 @@ import java.util.UUID;
 public class FormMapper {
 
     private final LotRepository lotRepository;
+    private final FormRevisionRepository formRevisionRepository;
 
     /**
      * Convert FormRequestModel to Form entity
@@ -45,7 +48,7 @@ public class FormMapper {
      * Convert Form entity to FormResponseModel
      */
     public FormResponseModel entityToResponseModel(Form form) {
-        return FormResponseModel.builder()
+        var response = FormResponseModel.builder()
                 .formId(form.getFormIdentifier().getFormId())
                 .formType(form.getFormType())
                 .formStatus(form.getFormStatus())
@@ -71,6 +74,15 @@ public class FormMapper {
                 .createdAt(form.getCreatedAt())
                 .updatedAt(form.getUpdatedAt())
                 .build();
+        formRevisionRepository.findFirstByFormIdentifierAndStatusOrderByCreatedAtDesc(
+                        form.getFormIdentifier().getFormId(), FormRevisionStatus.PENDING)
+                .ifPresent(revision -> {
+                    response.setPendingRevisionId(revision.getId());
+                    response.setPendingRevisionData(revision.getFormData());
+                    response.setPendingRevisionReason(revision.getReason());
+                    response.setPendingRevisionCreatedAt(revision.getCreatedAt());
+                });
+        return response;
     }
 
     private String resolveLotNumber(Form form) {

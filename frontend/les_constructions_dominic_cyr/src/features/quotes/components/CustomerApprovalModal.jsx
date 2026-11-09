@@ -16,7 +16,7 @@ const CustomerApprovalModal = ({ quote, onConfirm, onCancel }) => {
     if (!acknowledged) {
       alert(
         t('customerApproval.acknowledgmentRequired') ||
-          'Please acknowledge that you have reviewed the quote'
+          'Please acknowledge that you have reviewed the estimate'
       );
       return;
     }

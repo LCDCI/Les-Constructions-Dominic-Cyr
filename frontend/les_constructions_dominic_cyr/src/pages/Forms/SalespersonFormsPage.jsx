@@ -5,13 +5,14 @@ import {
   getAllForms,
   createForm,
   deleteForm,
+  downloadFinalizedForm,
 } from '../../features/forms/api/formsApi';
 import { fetchCustomersWithSharedLots } from '../../features/users/api/usersApi';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchLots } from '../../features/lots/api/lots';
 import '../../styles/Forms/salesperson-forms.css';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
-import CustomerFormsPage from './CustomerFormsPage';
+import CustomerFormsPage, { FORM_FIELDS } from './CustomerFormsPage';
 
 const FORM_TYPES = [
   { value: 'EXTERIOR_DOORS', translationKey: 'formTypes.exteriorDoors' },
@@ -24,6 +25,7 @@ const FORM_TYPES = [
 
 const SalespersonFormsPage = () => {
   const { t } = usePageTranslations('salespersonForms');
+  const { t: tCustomer } = usePageTranslations('customerForms');
   const [forms, setForms] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -221,21 +223,51 @@ const SalespersonFormsPage = () => {
     setFormToView(null);
   };
 
-  const formatFormValue = value => {
+  const handleDownloadForm = async form => {
+    try {
+      const token = await getAccessTokenSilently();
+      await downloadFinalizedForm(form.formId, token, 'en');
+    } catch (error) {
+      setSubmitError(t('errors.downloadFailed', 'Failed to download PDF.'));
+    }
+  };
+
+  const getFieldDefinition = key =>
+    Object.values(FORM_FIELDS)
+      .flat()
+      .find(item => item.name === key);
+  const getFieldLabel = key => {
+    const field = getFieldDefinition(key);
+    return field ? tCustomer(field.translationKey, key) : key;
+  };
+
+  const formatFormValue = (value, fieldKey = null) => {
     if (value === null || value === undefined) {
       return '';
     }
 
     if (Array.isArray(value)) {
-      return value.map(formatFormValue).filter(Boolean).join(', ');
+      return value
+        .map(item => formatFormValue(item, fieldKey))
+        .filter(Boolean)
+        .join(', ');
     }
 
     if (typeof value === 'object') {
+      if ('label' in value || 'value' in value) {
+        const field = getFieldDefinition(fieldKey);
+        const option = field?.options?.find(item => item.value === value.value);
+        return option?.labelKey
+          ? tCustomer(
+              option.labelKey,
+              option.label || value.label || value.value
+            )
+          : value.label || value.value || '';
+      }
       return Object.entries(value)
-        .map(([key, nestedValue]) => {
-          const formatted = formatFormValue(nestedValue);
-          return formatted ? `${key}: ${formatted}` : key;
-        })
+        .filter(([key]) => key !== 'imageIdentifier')
+        .map(([, nestedValue]) => formatFormValue(nestedValue, fieldKey))
+        .filter(Boolean)
         .join(', ');
     }
 
@@ -674,9 +706,11 @@ const SalespersonFormsPage = () => {
                     {Object.entries(formToView.formData || {}).map(
                       ([key, value]) => (
                         <div key={key} className="forms-data-row">
-                          <span className="forms-data-key">{key}</span>
+                          <span className="forms-data-key">
+                            {getFieldLabel(key)}
+                          </span>
                           <span className="forms-data-value">
-                            {formatFormValue(value)}
+                            {formatFormValue(value, key)}
                           </span>
                         </div>
                       )
@@ -684,6 +718,15 @@ const SalespersonFormsPage = () => {
                   </div>
                 )}
               </div>
+              {formToView.formData?.pdfFile && (
+                <button
+                  type="button"
+                  className="form-action-button form-action-download"
+                  onClick={() => handleDownloadForm(formToView)}
+                >
+                  {t('buttons.downloadPdf', 'Download PDF')}
+                </button>
+              )}
             </div>
             <div className="forms-modal-footer">
               <button

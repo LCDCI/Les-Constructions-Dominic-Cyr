@@ -99,9 +99,9 @@ const getMetadata = (pathname, language) => {
   return isFrench
     ? {
         title:
-          'Les Constructions Dominic Cyr Inc. | Construction résidentielle',
+          '| Les Constructions Dominic Cyr Inc. | Construction résidentielle ',
         description:
-          'Les Constructions Dominic Cyr Inc. — construction résidentielle, rénovation et gestion de projets à Granby, Saint-Alphonse-de-Granby et partout en Montérégie. Découvrez aussi le projet Föresta.',
+          'Les Constructions Dominic Cyr Inc. réalise des projets résidentiels, des maisons neuves, des rénovations et bien plus. Venez découvrir le projet Föresta présentement en cours à Saint-Alphonse-de-Granby.',
       }
     : {
         title: 'Les Constructions Dominic Cyr Inc. | Residential Construction',

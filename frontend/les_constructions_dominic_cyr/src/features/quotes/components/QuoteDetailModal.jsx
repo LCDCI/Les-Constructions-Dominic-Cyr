@@ -131,7 +131,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
       <div className="quote-detail-modal-overlay" onClick={onClose}>
         <div className="quote-detail-modal" onClick={e => e.stopPropagation()}>
           <div className="modal-header">
-            <h2>Quote Details</h2>
+            <h2>Estimate Details</h2>
             <button onClick={onClose} className="close-button">
               <MdClose />
             </button>
@@ -152,7 +152,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
       <div className="quote-detail-modal-overlay" onClick={onClose}>
         <div className="quote-detail-modal" onClick={e => e.stopPropagation()}>
           <div className="modal-header">
-            <h2>Quote Details</h2>
+            <h2>Estimate Details</h2>
             <button onClick={onClose} className="close-button">
               <MdClose />
             </button>
@@ -193,7 +193,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
     <div className="quote-detail-modal-overlay" onClick={onClose}>
       <div className="quote-detail-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{t('quote.details') || 'Quote Details'}</h2>
+          <h2>{t('quote.details') || 'Estimate Details'}</h2>
           <button onClick={onClose} className="close-button">
             <MdClose />
           </button>
@@ -203,7 +203,7 @@ const QuoteDetailModal = ({ quoteNumber, token, onClose }) => {
           {/* Quote Header */}
           <div className="quote-summary-grid">
             <div className="header-item">
-              <span className="label">{t('quote.number') || 'Quote #'}</span>
+              <span className="label">{t('quote.number') || 'Estimate #'}</span>
               <span className="value">{quote.quoteNumber}</span>
             </div>
             <div className="header-item">

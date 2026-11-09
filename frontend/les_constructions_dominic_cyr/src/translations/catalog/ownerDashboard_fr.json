@@ -1,5 +1,6 @@
 {
   "title": "Tableau de bord propriétaire",
+  "welcome": "Bienvenue, {{name}} !",
   "thisWeek": "Cette semaine :",
   "seeMore": "Voir plus",
   "cards": {

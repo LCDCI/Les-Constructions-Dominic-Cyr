@@ -155,4 +155,8 @@ public interface FormService {
      * @return true if form exists, false otherwise
      */
     boolean hasFormOfType(String projectIdentifier, String customerId, FormType formType);
+
+    FormResponseModel requestRevision(String formId, FormRevisionRequestModel request, String customerId);
+    FormResponseModel acceptRevision(String formId, String reason, String decisionMakerAuth0Id);
+    FormResponseModel denyRevision(String formId, String reason, String decisionMakerAuth0Id);
 }

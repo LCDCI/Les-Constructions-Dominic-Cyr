@@ -156,6 +156,9 @@
   border: 1px solid #f3f4f6;
   border-radius: 0.75rem;
   box-shadow: 0 20px 40px -15px rgba(26, 37, 48, 0.07);
+  padding: 0;
+  border: 1px solid #f3f4f6;
+  cursor: zoom-in;
 }
 
 .gallery-image {
@@ -260,6 +263,79 @@
   height: 180px;
   object-fit: cover;
   object-position: center;
+}
+
+.realizations-gallery-card-image-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.realizations-image-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.realizations-image-modal {
+  position: relative;
+  display: flex;
+  max-width: 92vw;
+  max-height: 92vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.realizations-image-modal-photo {
+  display: block;
+  max-width: 90vw;
+  max-height: 88vh;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.realizations-image-modal-close,
+.realizations-image-modal-nav {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  border: 0;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.realizations-image-modal-close {
+  top: -1rem;
+  right: -1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+}
+
+.realizations-image-modal-nav {
+  top: 50%;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.realizations-image-modal-prev {
+  left: 1rem;
+}
+
+.realizations-image-modal-next {
+  right: 1rem;
 }
 
 .realizations-gallery-card-placeholder {

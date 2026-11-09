@@ -54,14 +54,7 @@ const OwnerLotsPage = () => {
   const isOwner =
     isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
 
-  const normalizeLotStatus = lot => {
-    const hasCustomer = (lot.assignedUsers || []).some(
-      assignedUser =>
-        (assignedUser.role || assignedUser.userRole)?.toUpperCase() ===
-        'CUSTOMER'
-    );
-    return hasCustomer ? { ...lot, lotStatus: 'SOLD' } : lot;
-  };
+  const normalizeLotStatus = lot => lot;
 
   // Redirect non-owners
   useEffect(() => {
@@ -237,7 +230,14 @@ const OwnerLotsPage = () => {
     }
   };
 
-  const handleBulkAssign = async userId => {
+  const handleBulkAssign = async userIds => {
+    await handleBulkAssignment(userIds);
+  };
+
+  const handleBulkAssignment = async userIds => {
+    if (!Array.isArray(userIds) || userIds.length === 0) return;
+
+    const selectedUserIds = userIds.map(String);
     setIsBulkAssigning(true);
     setError('');
     try {
@@ -261,8 +261,13 @@ const OwnerLotsPage = () => {
                   ...(lot.assignedUsers || []).map(
                     user => user.userId || user.userIdentifier
                   ),
-                  userId,
-                ].filter((id, index, ids) => ids.indexOf(id) === index),
+                  ...selectedUserIds,
+                ].filter(
+                  (id, index, ids) =>
+                    ids.findIndex(
+                      existingId => String(existingId) === String(id)
+                    ) === index
+                ),
               },
               token,
             })
@@ -273,6 +278,58 @@ const OwnerLotsPage = () => {
         token,
       });
       setLots(updatedLots.map(normalizeLotStatus));
+      setIsBulkAssignModalOpen(false);
+    } catch (err) {
+      setError(err.message || t('errors.bulkAssignmentFailed'));
+    } finally {
+      setIsBulkAssigning(false);
+    }
+  };
+
+  const handleBulkUnassign = async userIds => {
+    if (!Array.isArray(userIds) || userIds.length === 0) return;
+
+    const selectedUserIds = new Set(userIds.map(String));
+
+    setIsBulkAssigning(true);
+    setError('');
+    try {
+      const resolved = urlProjectIdentifier || resolveProjectIdentifier();
+      const token = isAuthenticated ? await getAccessTokenSilently() : null;
+      await Promise.all(
+        lots
+          .filter(lot =>
+            (lot.assignedUsers || []).some(user =>
+              selectedUserIds.has(String(user.userId || user.userIdentifier))
+            )
+          )
+          .map(lot =>
+            updateLot({
+              projectIdentifier: resolved,
+              lotId: lot.lotId,
+              lotData: {
+                id: lot.id,
+                lotNumber: lot.lotNumber || '',
+                civicAddress: lot.civicAddress || '',
+                dimensionsSquareFeet: lot.dimensionsSquareFeet || '',
+                dimensionsSquareMeters: lot.dimensionsSquareMeters || '',
+                lotStatus: lot.lotStatus || 'AVAILABLE',
+                assignedUserIds: (lot.assignedUsers || [])
+                  .map(user => user.userId || user.userIdentifier)
+                  .filter(
+                    assignedUserId =>
+                      !selectedUserIds.has(String(assignedUserId))
+                  ),
+              },
+              token,
+            })
+          )
+      );
+      const updatedLots = await fetchLots({
+        projectIdentifier: resolved,
+        token,
+      });
+      setLots(updatedLots);
       setIsBulkAssignModalOpen(false);
     } catch (err) {
       setError(err.message || t('errors.bulkAssignmentFailed'));
@@ -489,6 +546,7 @@ const OwnerLotsPage = () => {
         isOpen={isBulkAssignModalOpen}
         onClose={handleCloseModals}
         onSubmit={handleBulkAssign}
+        onUnassignAll={handleBulkUnassign}
         token={currentToken}
         isSubmitting={isBulkAssigning}
       />

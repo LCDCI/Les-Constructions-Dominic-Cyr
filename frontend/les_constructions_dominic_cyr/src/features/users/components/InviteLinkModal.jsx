@@ -1,18 +1,22 @@
 // src/features/users/components/InviteLinkModal.jsx
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { usePageTranslations } from '../../../hooks/usePageTranslations';
 
 export default function InviteLinkModal({ isOpen, inviteLink, onClose }) {
   const [copyStatus, setCopyStatus] = useState('');
+  const { t } = usePageTranslations('usersPage');
 
   if (!isOpen) return null;
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(inviteLink);
-      setCopyStatus('Link copied to clipboard.');
-    } catch (err) {
-      console.error('Failed to copy:', err);
-      setCopyStatus('Could not copy. Please copy manually.');
+      setCopyStatus(t('inviteLink.copied', 'Link copied to clipboard.'));
+    } catch {
+      setCopyStatus(
+        t('inviteLink.copyFailed', 'Could not copy. Please copy manually.')
+      );
     }
   };
 
@@ -24,10 +28,12 @@ export default function InviteLinkModal({ isOpen, inviteLink, onClose }) {
   return (
     <div className="modal-backdrop">
       <div className="modal">
-        <h2>User Invite Link</h2>
+        <h2>{t('inviteLink.title', 'User Invite Link')}</h2>
         <p>
-          Send this link to the client so they can set their password and access
-          the portal.
+          {t(
+            'inviteLink.description',
+            'Send this link to the user so they can set their password and access the portal.'
+          )}
         </p>
         <div className="invite-link-row">
           <input
@@ -37,7 +43,7 @@ export default function InviteLinkModal({ isOpen, inviteLink, onClose }) {
             onFocus={e => e.target.select()}
           />
           <button type="button" onClick={handleCopy}>
-            Copy
+            {t('inviteLink.copy', 'Copy')}
           </button>
         </div>
 
@@ -45,10 +51,16 @@ export default function InviteLinkModal({ isOpen, inviteLink, onClose }) {
 
         <div className="modal-actions">
           <button type="button" onClick={handleClose}>
-            Close
+            {t('inviteLink.close', 'Close')}
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+InviteLinkModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  inviteLink: PropTypes.string.isRequired,
+  onClose: PropTypes.func.isRequired,
+};

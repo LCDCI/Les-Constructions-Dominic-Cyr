@@ -233,7 +233,7 @@ const QuoteApprovalPage = () => {
         await quoteApi.approveQuote(selectedQuote.quoteNumber, token);
         showNotification(
           'success',
-          t('quote.approval.approveSuccess') || 'Quote approved successfully'
+          t('quote.approval.approveSuccess') || 'Estimate approved successfully'
         );
       } else {
         await quoteApi.rejectQuote(
@@ -243,7 +243,7 @@ const QuoteApprovalPage = () => {
         );
         showNotification(
           'success',
-          t('quote.approval.rejectSuccess') || 'Quote rejected successfully'
+          t('quote.approval.rejectSuccess') || 'Estimate rejected successfully'
         );
       }
 
@@ -306,7 +306,7 @@ const QuoteApprovalPage = () => {
   return (
     <div className="quote-approval-page">
       <div className="page-header">
-        <h1>{t('quote.approval.title') || 'Quote Approvals'}</h1>
+        <h1>{t('quote.approval.title') || 'Estimate Approvals'}</h1>
         <p>
           {t('quote.approval.subtitle') || 'Review and manage supplier quotes'}
         </p>
@@ -322,7 +322,7 @@ const QuoteApprovalPage = () => {
             className="search-input"
             placeholder={
               t('quote.approval.searchPlaceholder') ||
-              'Quote #, Project, Supplier...'
+              'Estimate #, Project, Supplier...'
             }
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
@@ -364,14 +364,15 @@ const QuoteApprovalPage = () => {
         {filteredQuotes.length === 0 ? (
           <div className="empty-state">
             <p>
-              {t('quote.noQuotes') || 'No quotes found matching your filters.'}
+              {t('quote.noQuotes') ||
+                'No estimates found matching your filters.'}
             </p>
           </div>
         ) : (
           <table className="quotes-table">
             <thead>
               <tr>
-                <th>{t('quote.number') || 'Quote #'}</th>
+                <th>{t('quote.number') || 'Estimate #'}</th>
                 <th>{t('quote.project') || 'Project'}</th>
                 <th className="quote-contractor">
                   {t('quote.contractor') || 'Supplier'}
@@ -387,7 +388,7 @@ const QuoteApprovalPage = () => {
                 <tr key={quote.quoteNumber}>
                   <td
                     className="quote-number"
-                    data-label={t('quote.number') || 'Quote #'}
+                    data-label={t('quote.number') || 'Estimate #'}
                   >
                     {quote.quoteNumber}
                   </td>

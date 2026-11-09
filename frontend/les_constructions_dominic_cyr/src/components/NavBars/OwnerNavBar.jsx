@@ -214,7 +214,7 @@ const Navbar = ({
                     <GoCheckCircle />
                   </span>
                   <span className="navbar-text">
-                    {t('navbar.menuItems.quoteApproval', 'Quote Approval')}
+                    {t('navbar.menuItems.quoteApproval', 'Estimate Approval')}
                   </span>
                 </Link>
               </li>

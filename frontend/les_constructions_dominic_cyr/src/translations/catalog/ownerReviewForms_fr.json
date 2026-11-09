@@ -4,6 +4,9 @@
   "loading": "Chargement des formulaires...",
   "noForms": "Aucun formulaire trouvé",
   "status": {
+    "draft": "Brouillon",
+    "assigned": "Assigné",
+    "inProgress": "En cours",
     "submitted": "Soumis",
     "reopened": "Réouvert",
     "completed": "Complété"
@@ -19,6 +22,12 @@
   },
   "formTypes": {
     "all": "Tous",
+    "EXTERIOR_DOORS": "Portes extérieures",
+    "GARAGE_DOORS": "Portes de garage",
+    "WINDOWS": "Fenêtres",
+    "ASPHALT_SHINGLES": "Bardeaux d'asphalte",
+    "WOODWORK": "Boiseries",
+    "PAINT": "Peinture",
     "exteriorDoors": "Portes extérieures",
     "garageDoors": "Portes de garage",
     "windows": "Fenêtres",
@@ -49,7 +58,9 @@
     "downloadPdf": "Télécharger le PDF",
     "close": "Fermer",
     "cancel": "Annuler",
-    "save": "Enregistrer"
+    "save": "Enregistrer",
+    "acceptRevision": "Accepter les modifications",
+    "denyRevision": "Refuser les modifications"
   },
   "modal": {
     "editForms": {
@@ -72,6 +83,16 @@
     },
     "view": {
       "title": "Détails du formulaire"
+    },
+    "pendingRevision": "Modification du client en attente",
+    "revisionDecision": {
+      "title": "Examiner les modifications",
+      "reason": "Raison du client",
+      "placeholder": "Expliquez votre décision"
     }
+  },
+  "errors": {
+    "decisionReasonRequired": "Veuillez fournir une raison.",
+    "revisionDecisionFailed": "Échec du traitement de cette modification."
   }
 }

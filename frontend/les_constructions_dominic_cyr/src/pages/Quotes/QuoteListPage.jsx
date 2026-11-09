@@ -284,7 +284,7 @@ const QuoteListPage = () => {
             </div>
           </div>
           <div className="header-right">
-            <h1>{t('quote.bills') || 'Quotes'}</h1>
+            <h1>{t('quote.bills') || 'Estimates'}</h1>
           </div>
         </div>
 
@@ -295,7 +295,7 @@ const QuoteListPage = () => {
             <input
               type="text"
               placeholder={
-                t('quote.searchBills') || 'Search anything on Quotes'
+                t('quote.searchBills') || 'Search anything on Estimates'
               }
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
@@ -303,7 +303,7 @@ const QuoteListPage = () => {
             />
           </div>
           <button className="btn btn-create" onClick={handleCreateNewBill}>
-            {t('quote.createNewBill') || 'Create New Quote'}
+            {t('quote.createNewBill') || 'Create New Estimate'}
           </button>
         </div>
 
@@ -321,7 +321,7 @@ const QuoteListPage = () => {
                 'Create your first quote to get started'}
             </p>
             <button className="btn btn-primary" onClick={handleCreateNewBill}>
-              <MdAdd /> {t('quote.createNewBill') || 'Create New Quote'}
+              <MdAdd /> {t('quote.createNewBill') || 'Create New Estimate'}
             </button>
           </div>
         ) : (

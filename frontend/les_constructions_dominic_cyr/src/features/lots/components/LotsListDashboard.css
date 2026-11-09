@@ -91,7 +91,7 @@
 }
 
 .lots-table-header {
-  background: #f6f7f9;
+  background: #ffffff;
   color: #444;
   font-weight: 700;
   font-size: 0.92rem;
@@ -106,7 +106,7 @@
 }
 
 .lots-table-row:nth-of-type(even) {
-  background-color: var(--project-buyer, #fff);
+  background-color: #ffffff;
 }
 
 .lots-table-row:last-child {

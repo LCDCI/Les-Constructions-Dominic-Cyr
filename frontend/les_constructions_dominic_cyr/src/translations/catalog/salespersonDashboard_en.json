@@ -1,5 +1,6 @@
 {
   "title": "Salesperson Dashboard",
+  "welcome": "Welcome, {{name}}!",
   "thisWeek": "This week:",
   "seeMore": "See more",
   "cards": {

@@ -76,7 +76,13 @@
     "realizations": "Realizations",
     "contact": "Contact",
     "accessPortal": "Access Portal",
-    "logout": "Logout"
+    "logout": "Logout",
+    "portalRoles": {
+      "owner": "Owner Portal",
+      "salesperson": "Salesperson Portal",
+      "contractor": "Contractor Portal",
+      "customer": "Customer Portal"
+    }
   },
   "modals": {
     "idle": {

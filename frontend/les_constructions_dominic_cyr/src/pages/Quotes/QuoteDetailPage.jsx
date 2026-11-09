@@ -229,7 +229,7 @@ const QuoteDetailPage = () => {
             </button>
           </div>
           <div className="empty-state">
-            <h3>{t('quote.notFound') || 'Quote not found'}</h3>
+            <h3>{t('quote.notFound') || 'Estimate not found'}</h3>
             <button className="btn btn-primary" onClick={handleBack}>
               {t('common.goBack') || 'Go Back'}
             </button>
@@ -237,7 +237,7 @@ const QuoteDetailPage = () => {
         </div>
         <ErrorModal
           isOpen={isErrorModalOpen}
-          title={t('quote.errorTitle') || 'Quote Error'}
+          title={t('quote.errorTitle') || 'Estimate Error'}
           message={error}
           onClose={() => setIsErrorModalOpen(false)}
         />
@@ -249,7 +249,7 @@ const QuoteDetailPage = () => {
     return (
       <div className="quote-detail-page">
         <div className="empty-state">
-          <h3>{t('quote.notFound') || 'Quote not found'}</h3>
+          <h3>{t('quote.notFound') || 'Estimate not found'}</h3>
           <button className="btn btn-primary" onClick={handleBack}>
             {t('common.goBack') || 'Go Back'}
           </button>
@@ -286,7 +286,7 @@ const QuoteDetailPage = () => {
         {/* Quote Header */}
         <div className="quote-header-section">
           <div className="quote-title">
-            <h1>{t('quote.billEstimate') || 'Quote Estimate'}</h1>
+            <h1>{t('quote.billEstimate') || 'Estimate'}</h1>
             <span className="quote-number">{quote.quoteNumber}</span>
           </div>
           <div className="quote-meta">

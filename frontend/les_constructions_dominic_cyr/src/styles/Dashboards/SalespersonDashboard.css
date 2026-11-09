@@ -324,3 +324,8 @@
     display: none;
   }
 }
+.dashboard-welcome {
+  margin: 0 0 2rem;
+  color: #333;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}

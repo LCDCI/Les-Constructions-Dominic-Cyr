@@ -40,9 +40,9 @@
     "DOCUMENT_SHARED": "Document shared",
     "TEAM_MEMBER_ASSIGNED": "Team member assigned",
     "TEAM_MEMBER_REMOVED": "Team member removed",
-    "QUOTE_SUBMITTED": "Quote submitted",
-    "QUOTE_APPROVED": "Quote approved",
-    "QUOTE_REJECTED": "Quote rejected",
+    "QUOTE_SUBMITTED": "Estimate submitted",
+    "QUOTE_APPROVED": "Estimate approved",
+    "QUOTE_REJECTED": "Estimate rejected",
     "INQUIRY_RECEIVED": "Inquiry received"
   },
   "loading": "Loading notifications...",

@@ -206,7 +206,9 @@
     "downloadPdf": "Télécharger le PDF"
   },
   "deleteModal": {
-    "title": "Confirmer la suppression",    "message": "\u00cates-vous s\u00fbr de vouloir supprimer \"{{fileName}}\" ?",    "warning": "Cette action est irréversible.",
+    "title": "Confirmer la suppression",
+    "message": "Êtes-vous sûr de vouloir supprimer \"{{fileName}}\" ?",
+    "warning": "Cette action est irréversible.",
     "cancel": "Annuler",
     "delete": "Supprimer"
   }

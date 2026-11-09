@@ -10,9 +10,11 @@ import { GoInbox, GoPeople, GoFile, GoGlobe } from 'react-icons/go';
 import { FaMapLocationDot } from 'react-icons/fa6';
 import { MdOutlineRequestQuote } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { useBackendUser } from '../../hooks/useBackendUser';
 
 const OwnerDashboard = () => {
   const { t } = usePageTranslations('ownerDashboard');
+  const { profile } = useBackendUser();
   const { schedules, loading, error } = ownerUseSchedules(false);
   const navigate = useNavigate();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -50,9 +52,15 @@ const OwnerDashboard = () => {
       },
       {
         icon: <MdOutlineRequestQuote />,
-        title: t('cards.quotes.title', 'Quotes'),
-        buttonText: t('cards.quotes.button', 'View Quotes'),
+        title: t('cards.quotes.title', 'Estimates'),
+        buttonText: t('cards.quotes.button', 'View Estimates'),
         action: () => navigate('/quotes/approval'),
+      },
+      {
+        icon: <GoFile />,
+        title: t('cards.forms.title', 'Forms'),
+        buttonText: t('cards.forms.button', 'View Forms'),
+        action: () => navigate('/owner/forms'),
       },
       {
         icon: <GoGlobe />,
@@ -66,6 +74,12 @@ const OwnerDashboard = () => {
 
   return (
     <div className="owner-dashboard">
+      <h1 className="dashboard-welcome">
+        {t('welcome', {
+          defaultValue: 'Welcome, {{name}}!',
+          name: profile?.firstName || '',
+        })}
+      </h1>
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard

@@ -187,11 +187,11 @@ public class LotDocumentServiceImpl implements LotDocumentService {
         int count = fileNames.size();
         String documentLabel = count == 1 ? "1 document" : count + " documents";
 
-        String notificationTitle = "New documents uploaded";
-        String notificationMessage = uploaderName + " uploaded " + documentLabel + ": " + fileNamesList;
+        String notificationTitle = "Nouveaux documents téléversés";
+        String notificationMessage = uploaderName + " a téléversé " + documentLabel + " : " + fileNamesList;
         String link = "/projects/" + projectIdentifier + "/lots/" + lotId + "/documents";
 
-        String emailSubject = "New documents uploaded to your lot";
+        String emailSubject = "Nouveaux documents téléversés dans votre lot";
         String emailBody = buildDocumentUploadEmailBody(uploaderName, fileNamesList, documentLabel, link);
 
         UUID uploaderUserId = uploader.getUserIdentifier().getUserId();
@@ -254,23 +254,26 @@ public class LotDocumentServiceImpl implements LotDocumentService {
 
     private String buildDocumentUploadEmailBody(String uploaderName, String fileNamesList, String documentLabel, String link) {
         StringBuilder html = new StringBuilder();
-        html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'>");
+        html.append("<!DOCTYPE html><html lang='fr'><head><meta charset='UTF-8'>");
         html.append("<style>");
-        html.append("body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }");
-        html.append(".container { max-width: 600px; margin: 0 auto; padding: 20px; }");
-        html.append(".header { background-color: #2c3e50; color: white; padding: 20px; text-align: center; }");
-        html.append(".content { background-color: #f9f9f9; padding: 20px; margin-top: 20px; }");
-        html.append(".field { margin-bottom: 15px; } .label { font-weight: bold; color: #555; }");
-        html.append(".value { margin-top: 5px; padding: 10px; background-color: white; border-left: 3px solid #2c3e50; }");
-        html.append(".link { margin-top: 20px; } .link a { color: #3498db; }");
+        html.append("body { margin: 0; padding: 24px 12px; background: #f5f5f5; font-family: Arial, sans-serif; line-height: 1.6; color: #1a1a1a; }");
+        html.append(".container { max-width: 600px; margin: 0 auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }");
+        html.append(".header { background: #2c3531; color: #fff; padding: 28px 24px; text-align: center; }");
+        html.append(".logo { display: block; width: 220px; max-width: 80%; height: auto; margin: 0 auto 18px; background: #fff; border-radius: 4px; padding: 8px; }");
+        html.append(".header h1 { margin: 0; font-size: 24px; }");
+        html.append(".content { background: #fafbfc; padding: 28px 24px; }");
+        html.append(".field { margin-bottom: 18px; } .label { display: block; margin-bottom: 6px; font-weight: bold; color: #6a7266; }");
+        html.append(".value { padding: 12px 14px; background: #fff; border: 1px solid #e5e7eb; border-left: 4px solid #aab2a6; border-radius: 4px; }");
+        html.append(".link { margin-top: 24px; } .link a { display: inline-block; padding: 11px 18px; color: #fff; background: #aab2a6; border-radius: 4px; text-decoration: none; font-weight: bold; }");
+        html.append(".footer { padding: 16px 24px; text-align: center; color: #6b7280; font-size: 12px; background: #fff; border-top: 1px solid #e5e7eb; }");
         html.append("</style></head><body>");
         html.append("<div class='container'>");
-        html.append("<div class='header'><h1>New documents uploaded</h1></div>");
+        html.append("<div class='header'><img class='logo' src='https://constructions-dominiccyr.com/fallback.jpg' alt='Les Constructions Dominic Cyr'><h1>Nouveaux documents téléversés</h1></div>");
         html.append("<div class='content'>");
-        html.append("<div class='field'><span class='label'>Uploaded by:</span><div class='value'>").append(escapeHtml(uploaderName)).append("</div></div>");
-        html.append("<div class='field'><span class='label'>").append(escapeHtml(documentLabel)).append(":</span><div class='value'>").append(escapeHtml(fileNamesList)).append("</div></div>");
-        html.append("<div class='link'><a href='").append(escapeHtml(link)).append("'>View documents</a></div>");
-        html.append("</div></div></body></html>");
+        html.append("<div class='field'><span class='label'>Téléversé par :</span><div class='value'>").append(escapeHtml(uploaderName)).append("</div></div>");
+        html.append("<div class='field'><span class='label'>Documents téléversés (").append(escapeHtml(documentLabel)).append(") :</span><div class='value'>").append(escapeHtml(fileNamesList)).append("</div></div>");
+        html.append("<div class='link'><a href='").append(escapeHtml(link)).append("'>Voir les documents</a></div>");
+        html.append("</div><div class='footer'>Les Constructions Dominic Cyr Inc.</div></div></body></html>");
         return html.toString();
     }
 

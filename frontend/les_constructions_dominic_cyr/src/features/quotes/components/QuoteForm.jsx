@@ -237,7 +237,7 @@ const QuoteForm = ({
           <div className="header-right">
             <p className="note">
               {t('quote.noteQuoteNumberAuto') ||
-                'Quote number will be auto-generated'}
+                'Estimate number will be auto-generated'}
             </p>
           </div>
         </div>

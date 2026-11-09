@@ -1,7 +1,6 @@
 {
   "loadingLot": "Loading lot details...",
   "notSet": "Not set",
-
   "lot": "Lot",
   "lotOverview": "Lot Overview",
   "civicAddress": "Civic Address",
@@ -11,11 +10,9 @@
   "progress": "Progress",
   "lotDescription": "Description",
   "tasksCompleted": "tasks completed",
-
   "assignedUsers": "Assigned Users",
   "unnamedUser": "Unnamed User",
   "noEmail": "No email",
-
   "userRole": {
     "owner": "Owner",
     "contractor": "Contractor",
@@ -24,13 +21,11 @@
     "admin": "Admin",
     "other": "Other"
   },
-
   "completedTasks": "Completed Tasks",
   "remainingTasks": "Remaining Tasks",
   "noDescription": "No description",
   "noCompletedTasks": "No completed tasks yet.",
   "noRemainingTasks": "No remaining tasks.",
-
   "taskStatus": {
     "todo": "To Do",
     "pending": "Pending",
@@ -39,7 +34,6 @@
     "onhold": "On Hold",
     "cancelled": "Cancelled"
   },
-
   "lotStatus": {
     "available": "Available",
     "reserved": "Reserved",
@@ -48,7 +42,6 @@
     "pending": "Pending",
     "contract": "Under Contract"
   },
-
   "backToLotSelection": "Back to lot selection",
   "backToProjects": "Back to projects",
   "viewFiles": "View files",

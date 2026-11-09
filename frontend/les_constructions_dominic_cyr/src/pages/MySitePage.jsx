@@ -126,6 +126,7 @@ const EDITABLE_TEXT_KEYS = {
       'advantages.item5',
       'advantages.item6',
       'advantages.item7',
+      'gallery.heading',
       'advantages.pricing',
       'advantages.contactLink',
     ],
@@ -163,6 +164,8 @@ const EDITABLE_TEXT_KEYS = {
     ],
   },
 };
+
+const LOT_CONTENT_KEYS = ['introSubtitle', 'introText'];
 
 const EDITOR_PAGE_ORDER = {
   home: [
@@ -565,8 +568,39 @@ const MySitePage = () => {
       }
       if (selectedSubpage === 'lots') {
         data = (Array.isArray(data) ? data : []).filter(item =>
-          ['title', 'subtitle', 'preTitle'].includes(item.pageKey)
+          ['title', 'subtitle', 'preTitle', ...LOT_CONTENT_KEYS].includes(
+            item.pageKey
+          )
         );
+        const existingLotKeys = new Set(data.map(item => item.pageKey));
+        const lotsResource = i18n.getResource(selectedLanguage, 'lots') || {};
+        const fallbackLotContent = {
+          introSubtitle:
+            lotsResource.content?.introSubtitle ||
+            (selectedLanguage === 'fr'
+              ? 'Découvrez nos terrains'
+              : 'Discover our lots'),
+          introText:
+            lotsResource.content?.introText ||
+            (selectedLanguage === 'fr'
+              ? 'Consultez les informations disponibles sur les terrains.'
+              : 'Review the available lot information.'),
+        };
+        data = [
+          ...data,
+          ...LOT_CONTENT_KEYS.filter(key => !existingLotKeys.has(key)).map(
+            (pageKey, index) => ({
+              id: `fallback-${effectivePageGroup}-${pageKey}`,
+              pageGroup: effectivePageGroup,
+              pageKey,
+              contentText: fallbackLotContent[pageKey],
+              imageIdentifier: '',
+              sortOrder: data.length + index,
+              fallbackContent: true,
+              projectIdentifier,
+            })
+          ),
+        ];
       }
       if (selectedSubpage === 'living-environment' && projectIdentifier) {
         const response = await fetch(
@@ -606,7 +640,10 @@ const MySitePage = () => {
       if (
         selectedSubpage === 'lots' &&
         projectIdentifier &&
-        (!Array.isArray(data) || data.length === 0)
+        (!Array.isArray(data) ||
+          !data.some(item =>
+            ['title', 'subtitle', 'preTitle'].includes(item.pageKey)
+          ))
       ) {
         const project = projects.find(
           item => item.projectIdentifier === projectIdentifier
@@ -628,18 +665,26 @@ const MySitePage = () => {
               subtitle: lotsResource.foresta?.peaceTagline,
               preTitle: lotsResource.foresta?.exclusiveCount,
             };
-        data = Object.entries(fallbackValues)
-          .filter(([, value]) => value)
-          .map(([pageKey, contentText], index) => ({
-            id: `fallback-${effectivePageGroup}-${pageKey}`,
-            pageGroup: effectivePageGroup,
-            pageKey,
-            contentText,
-            imageIdentifier: '',
-            sortOrder: index,
-            fallbackContent: true,
-            projectIdentifier,
-          }));
+        const existingPageKeys = new Set(
+          (Array.isArray(data) ? data : []).map(item => item.pageKey)
+        );
+        data = [
+          ...(Array.isArray(data) ? data : []),
+          ...Object.entries(fallbackValues)
+            .filter(
+              ([pageKey, value]) => value && !existingPageKeys.has(pageKey)
+            )
+            .map(([pageKey, contentText], index) => ({
+              id: `fallback-${effectivePageGroup}-${pageKey}`,
+              pageGroup: effectivePageGroup,
+              pageKey,
+              contentText,
+              imageIdentifier: '',
+              sortOrder: data.length + index,
+              fallbackContent: true,
+              projectIdentifier,
+            })),
+        ];
       }
       const fallbackItems = selectedSubpage
         ? []
@@ -1005,7 +1050,33 @@ const MySitePage = () => {
         project.projectIdentifier,
         token
       );
-      setProjectEditor({ ...project, ...overview });
+      const lotContent = {};
+      await Promise.all(
+        ['en', 'fr'].map(async contentLanguage => {
+          const items = await fetchSiteContent(
+            contentLanguage,
+            token,
+            `lots-${project.projectIdentifier}`
+          );
+          const content = Object.fromEntries(
+            (Array.isArray(items) ? items : []).map(item => [
+              item.pageKey,
+              item.contentText || '',
+            ])
+          );
+          lotContent[`lotsIntroSubtitle${contentLanguage.toUpperCase()}`] =
+            content.introSubtitle ||
+            (contentLanguage === 'fr'
+              ? 'Découvrez nos terrains'
+              : 'Discover our lots');
+          lotContent[`lotsIntroText${contentLanguage.toUpperCase()}`] =
+            content.introText ||
+            (contentLanguage === 'fr'
+              ? 'Consultez les informations disponibles sur les terrains.'
+              : 'Review the available lot information.');
+        })
+      );
+      setProjectEditor({ ...project, ...overview, ...lotContent });
     } catch {
       setProjectEditor(project);
     }
@@ -1033,6 +1104,62 @@ const MySitePage = () => {
           bannerImageIdentifier: projectEditor.bannerImageIdentifier || '',
         },
         token
+      );
+      const lotPageGroup = `lots-${projectEditor.projectIdentifier}`;
+      const existingLotContent = {};
+      await Promise.all(
+        ['en', 'fr'].map(async contentLanguage => {
+          const items = await fetchSiteContent(
+            contentLanguage,
+            token,
+            lotPageGroup
+          );
+          existingLotContent[contentLanguage] = Object.fromEntries(
+            (Array.isArray(items) ? items : []).map(item => [
+              item.pageKey,
+              item,
+            ])
+          );
+        })
+      );
+      await Promise.all(
+        ['en', 'fr']
+          .flatMap(contentLanguage =>
+            [
+              [
+                'introSubtitle',
+                projectEditor[
+                  `lotsIntroSubtitle${contentLanguage.toUpperCase()}`
+                ],
+              ],
+              [
+                'introText',
+                projectEditor[`lotsIntroText${contentLanguage.toUpperCase()}`],
+              ],
+            ].map(([pageKey, contentText], index) => ({
+              contentLanguage,
+              pageKey,
+              contentText,
+              sortOrder: index,
+            }))
+          )
+          .map(async ({ contentLanguage, pageKey, contentText, sortOrder }) => {
+            const existing = existingLotContent[contentLanguage]?.[pageKey];
+            if (existing) {
+              await updateSiteContent(existing.id, contentText, null, token);
+            } else {
+              await createSiteContent(
+                {
+                  pageGroup: lotPageGroup,
+                  pageKey,
+                  language: contentLanguage,
+                  contentText,
+                  sortOrder,
+                },
+                token
+              );
+            }
+          })
       );
       setProjects(current =>
         current.map(project =>
@@ -1542,6 +1669,61 @@ const MySitePage = () => {
                 </button>
               </div>
             ))}
+            <fieldset className="my-site-project-text-section">
+              <legend>{t('lotsSectionTitle', 'Lots section')}</legend>
+              <label>
+                <span>{t('lotsTitleEnglish', 'Lots title (English)')}</span>
+                <input
+                  type="text"
+                  value={projectEditor.lotsIntroSubtitleEN || ''}
+                  onChange={event =>
+                    setProjectEditor(current => ({
+                      ...current,
+                      lotsIntroSubtitleEN: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+              <label>
+                <span>{t('lotsTextEnglish', 'Lots text (English)')}</span>
+                <textarea
+                  rows={3}
+                  value={projectEditor.lotsIntroTextEN || ''}
+                  onChange={event =>
+                    setProjectEditor(current => ({
+                      ...current,
+                      lotsIntroTextEN: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+              <label>
+                <span>{t('lotsTitleFrench', 'Lots title (French)')}</span>
+                <input
+                  type="text"
+                  value={projectEditor.lotsIntroSubtitleFR || ''}
+                  onChange={event =>
+                    setProjectEditor(current => ({
+                      ...current,
+                      lotsIntroSubtitleFR: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+              <label>
+                <span>{t('lotsTextFrench', 'Lots text (French)')}</span>
+                <textarea
+                  rows={3}
+                  value={projectEditor.lotsIntroTextFR || ''}
+                  onChange={event =>
+                    setProjectEditor(current => ({
+                      ...current,
+                      lotsIntroTextFR: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+            </fieldset>
             <div className="my-site-modal-actions">
               <button type="button" onClick={() => setProjectEditor(null)}>
                 {t('cancel', 'Cancel')}
