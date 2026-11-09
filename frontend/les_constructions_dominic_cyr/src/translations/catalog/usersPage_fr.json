@@ -99,5 +99,29 @@
     "updateFailed": "Échec de la mise à jour de l'utilisateur. Veuillez réessayer.",
     "statusFailed": "Échec de la mise à jour du statut de l'utilisateur. Veuillez réessayer.",
     "operationFailed": "Échec de l'opération utilisateur"
+  },
+  "inviteLink": {
+    "title": "Lien d'activation de l'utilisateur",
+    "description": "Envoyez ce lien à l'utilisateur afin qu'il définisse son mot de passe et accède au portail.",
+    "copy": "Copier",
+    "close": "Fermer",
+    "copied": "Lien copié dans le presse-papiers.",
+    "copyFailed": "Impossible de copier. Veuillez le copier manuellement."
+  },
+  "ownerEdit": {
+    "title": "Modifier les détails de l'utilisateur (propriétaire)",
+    "description": "En tant que propriétaire, vous pouvez modifier tous les champs de cet utilisateur.",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "primaryEmail": "Courriel principal (connexion)",
+    "secondaryEmail": "Courriel secondaire",
+    "phone": "Téléphone",
+    "readOnly": "Informations en lecture seule",
+    "role": "Rôle :",
+    "userId": "ID utilisateur :",
+    "activationKey": "Clé d'activation :",
+    "cancel": "Annuler",
+    "saving": "Enregistrement...",
+    "save": "Enregistrer les modifications"
   }
 }

@@ -355,6 +355,16 @@
   margin: 0 auto;
 }
 
+.pm-gallery-heading {
+  max-width: 52rem;
+  margin: 0 auto 2rem;
+  color: var(--pm-charcoal);
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 400;
+  line-height: 1.25;
+  text-align: center;
+}
+
 .pm-pricing-text {
   margin: 0 0 2rem;
   font-size: clamp(0.9rem, 1.4vw, 1rem);
@@ -372,7 +382,7 @@
 }
 
 .pm-projects-container .pm-pricing-card {
-  margin: 0 auto 2.5rem;
+  margin: 2.5rem auto 0;
   background: transparent;
   border-color: transparent;
   box-shadow: none;

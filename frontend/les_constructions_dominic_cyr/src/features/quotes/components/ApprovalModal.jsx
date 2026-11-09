@@ -37,8 +37,8 @@ const ApprovalModal = ({
 
   const isApproval = action === 'APPROVE';
   const modalTitle = isApproval
-    ? t('quote.approval.confirmApprove') || 'Approve Quote'
-    : t('quote.approval.confirmReject') || 'Reject Quote';
+    ? t('quote.approval.confirmApprove') || 'Approve Estimate'
+    : t('quote.approval.confirmReject') || 'Reject Estimate';
 
   const formatCurrency = amount => {
     if (!amount) return '$0.00';
@@ -66,7 +66,7 @@ const ApprovalModal = ({
           {/* Quote Summary */}
           <div className="quote-summary">
             <div className="summary-row">
-              <span className="label">{t('quote.number') || 'Quote #'}</span>
+              <span className="label">{t('quote.number') || 'Estimate #'}</span>
               <span className="value">{quote.quoteNumber}</span>
             </div>
             <div className="summary-row">
@@ -96,7 +96,7 @@ const ApprovalModal = ({
                 onChange={e => setRejectionReason(e.target.value)}
                 placeholder={
                   t('quote.approval.reasonPlaceholder') ||
-                  'Explain why this quote is being rejected...'
+                  'Explain why this estimate is being rejected...'
                 }
                 rows="4"
                 disabled={isProcessing}
@@ -115,12 +115,12 @@ const ApprovalModal = ({
             {isApproval ? (
               <p>
                 {t('quote.approval.approveMessage') ||
-                  'Are you sure you want to approve this quote? It will be marked as valid for sending to customers.'}
+                  'Are you sure you want to approve this estimate? It will be marked as valid for sending to customers.'}
               </p>
             ) : (
               <p>
                 {t('quote.approval.rejectMessage') ||
-                  'Are you sure you want to reject this quote? A reason must be provided and the supplier will be notified.'}
+                  'Are you sure you want to reject this estimate? A reason must be provided and the supplier will be notified.'}
               </p>
             )}
           </div>

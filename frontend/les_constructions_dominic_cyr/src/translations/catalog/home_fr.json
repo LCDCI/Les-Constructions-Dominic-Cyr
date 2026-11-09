@@ -76,7 +76,13 @@
     "realizations": "Réalisations",
     "contact": "Contact",
     "accessPortal": "Portail d'accès",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "portalRoles": {
+      "owner": "Portail propriétaire",
+      "salesperson": "Portail vendeur",
+      "contractor": "Portail fournisseur",
+      "customer": "Portail client"
+    }
   },
   "modals": {
     "idle": {
@@ -109,7 +115,6 @@
     "gcr": "11084",
     "gcrLink": "garantiegcr.com"
   },
-
   "projects": {
     "foresta": {
       "title": "FORESTA",

@@ -1,5 +1,6 @@
 {
   "title": "Tableau de bord fournisseur",
+  "welcome": "Bienvenue, {{name}} !",
   "upcomingTasks": "Voici vos tâches à venir :",
   "seeMore": "Voir plus",
   "cards": {
@@ -9,7 +10,7 @@
     },
     "quotes": {
       "title": "Estimés",
-      "button": "Télécharger un estimé"
+      "button": "Télécharger une estimé"
     },
     "inbox": {
       "title": "Boîte de réception",

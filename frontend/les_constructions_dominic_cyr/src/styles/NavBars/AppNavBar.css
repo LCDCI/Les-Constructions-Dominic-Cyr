@@ -25,6 +25,29 @@
   position: relative;
 }
 
+.portal-label {
+  position: absolute;
+  right: calc(50% + 145px);
+  color: var(--charcoal-gray, #333);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.authenticated-brand {
+  position: absolute;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+}
+
+.authenticated-brand .logo-image {
+  height: 92px;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -578,6 +601,18 @@
 
   .logo-image {
     height: 82px;
+  }
+
+  .authenticated-brand .logo-image {
+    height: 68px;
+  }
+
+  .portal-label {
+    right: calc(50% + 110px);
+    max-width: 7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.8rem;
   }
 }
 

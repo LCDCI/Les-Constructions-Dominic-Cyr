@@ -671,6 +671,10 @@ body {
     box-shadow 0.5s var(--easing);
 }
 
+.home .portfolio-card.project-logo-card {
+  border-radius: 1rem;
+}
+
 .home .portfolio-card.animated {
   opacity: 1;
   transform: translateY(0);

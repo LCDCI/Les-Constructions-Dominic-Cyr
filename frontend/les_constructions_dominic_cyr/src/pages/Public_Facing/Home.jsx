@@ -424,7 +424,7 @@ export default function Home() {
           <div className="portfolio-grid">
             <Link
               to="/projects/proj-002-panorama/overview"
-              className="portfolio-card"
+              className="portfolio-card project-logo-card"
               data-animate
             >
               <img
@@ -449,7 +449,7 @@ export default function Home() {
 
             <Link
               to="/projects/proj-001-foresta/overview"
-              className="portfolio-card"
+              className="portfolio-card project-logo-card"
               data-animate
             >
               <img

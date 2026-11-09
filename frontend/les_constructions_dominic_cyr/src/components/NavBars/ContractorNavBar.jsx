@@ -11,7 +11,6 @@ import {
   GoPackage,
   GoArrowUp,
   GoFile,
-  GoHome,
 } from 'react-icons/go';
 import { MdOutlineRequestQuote } from 'react-icons/md';
 import { CiLogout } from 'react-icons/ci';
@@ -122,20 +121,6 @@ const Navbar = ({
                   </span>
                 </Link>
               </li>
-              <li className="navbar-item">
-                <Link
-                  to="/"
-                  className={`navbar-link ${isActive('/')}`}
-                  onClick={closeMenu}
-                >
-                  <span className="navbar-icon">
-                    <GoHome />
-                  </span>
-                  <span className="navbar-text">
-                    {t('navbar.menuItems.home', 'Home')}
-                  </span>
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -186,7 +171,7 @@ const Navbar = ({
                     <MdOutlineRequestQuote />
                   </span>
                   <span className="navbar-text">
-                    {t('navbar.menuItems.quotes', 'Quotes')}
+                    {t('navbar.menuItems.quotes', 'Estimates')}
                   </span>
                 </Link>
               </li>

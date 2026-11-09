@@ -168,8 +168,6 @@ public class LotServiceImpl implements LotService {
             List<Users> assignedUsers = getUsersByIds(lotRequestModel.getAssignedUserIds());
             foundLot.setAssignedUsers(assignedUsers);
 
-            foundLot.setLotStatus(hasCustomer(assignedUsers) ? LotStatus.SOLD : LotStatus.AVAILABLE);
-
             // Calculate new assignments and notify
             List<String> currentIds = currentAssignedUsers.stream()
                     .map(u -> u.getUserIdentifier().getUserId().toString())
@@ -186,7 +184,6 @@ public class LotServiceImpl implements LotService {
             }
         } else {
             foundLot.setAssignedUsers(new ArrayList<>());
-            foundLot.setLotStatus(LotStatus.AVAILABLE);
         }
 
         Lot updatedLot = lotRepository.save(foundLot);

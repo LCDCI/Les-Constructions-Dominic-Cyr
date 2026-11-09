@@ -1,7 +1,7 @@
 {
   "sections": {
     "dashboard": "Tableau de bord",
-    "management": "Gestion",
+    "management": "Gestiméon",
     "administrative": "Administratif",
     "settings": "Paramètres"
   },
@@ -10,7 +10,7 @@
     "home": "Accueil",
     "inbox": "Boîte de réception",
     "inquiries": "Demandes",
-    "quoteApproval": "Approbation de devis",
+    "quoteApproval": "Approbation de estimés",
     "projects": "Projets",
     "forms": "Formulaires",
     "uploads": "Téléchargements",
@@ -18,7 +18,7 @@
     "lotDocuments": "Documents du lot",
     "lots": "Terrains",
     "users": "Utilisateurs",
-    "quotes": "Devis",
+    "quotes": "Estimés",
     "myProfile": "Mon profil",
     "accountSettings": "Paramètres du compte",
     "notificationPreferences": "Préférences de notification",

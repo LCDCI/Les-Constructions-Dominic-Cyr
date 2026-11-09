@@ -81,7 +81,6 @@
     "gcr": "11084",
     "gcrLink": "garantiegcr.com"
   },
-
   "projects": {
     "foresta": {
       "title": "FORESTA",
@@ -115,4 +114,4 @@
     "stackedHouse": "Maison empilée moderne",
     "interior": "Intérieur contemporain"
   }
- }
+}

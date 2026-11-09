@@ -9,9 +9,11 @@ import { GoFile } from 'react-icons/go';
 import { GoTasklist } from 'react-icons/go';
 import { MdOutlineRequestQuote } from 'react-icons/md';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { useBackendUser } from '../../hooks/useBackendUser';
 
 const ContractorDashboard = () => {
   const { t } = usePageTranslations('contractorDashboard');
+  const { profile } = useBackendUser();
   const { schedules, loading, error } = contractorUseSchedules(false);
   const navigate = useNavigate();
 
@@ -32,8 +34,8 @@ const ContractorDashboard = () => {
       },
       {
         icon: <MdOutlineRequestQuote />,
-        title: t('cards.quotes.title', 'Quotes'),
-        buttonText: t('cards.quotes.button', 'View Quotes'),
+        title: t('cards.quotes.title', 'Estimates'),
+        buttonText: t('cards.quotes.button', 'View Estimates'),
         action: () => navigate('/quotes'),
       },
       {
@@ -54,6 +56,12 @@ const ContractorDashboard = () => {
 
   return (
     <div className="contractor-dashboard">
+      <h1 className="dashboard-welcome">
+        {t('welcome', {
+          defaultValue: 'Welcome, {{name}}!',
+          name: profile?.firstName || '',
+        })}
+      </h1>
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard

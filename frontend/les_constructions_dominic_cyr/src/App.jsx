@@ -303,6 +303,7 @@ export default function App() {
       <SeoManager />
       <div className="app-container">
         <AppNavBar />
+        <span className="sr-only">Foresta</span>
 
         <main style={{ padding: '16px' }}>
           <Routes>

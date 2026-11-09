@@ -99,5 +99,29 @@
     "updateFailed": "Failed to update user. Please try again.",
     "statusFailed": "Failed to update user status. Please try again.",
     "operationFailed": "User Operation Failed"
+  },
+  "inviteLink": {
+    "title": "User Invite Link",
+    "description": "Send this link to the user so they can set their password and access the portal.",
+    "copy": "Copy",
+    "close": "Close",
+    "copied": "Link copied to clipboard.",
+    "copyFailed": "Could not copy. Please copy manually."
+  },
+  "ownerEdit": {
+    "title": "Edit User Details (Owner)",
+    "description": "As an owner, you can edit all fields for this user.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "primaryEmail": "Primary Email (Login)",
+    "secondaryEmail": "Secondary Email",
+    "phone": "Phone Number",
+    "readOnly": "Read-Only Information",
+    "role": "Role:",
+    "userId": "User ID:",
+    "activationKey": "Activation Key:",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "save": "Save Changes"
   }
 }

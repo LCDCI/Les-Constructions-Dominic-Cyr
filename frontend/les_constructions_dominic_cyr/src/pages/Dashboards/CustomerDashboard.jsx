@@ -8,9 +8,11 @@ import { GoInbox } from 'react-icons/go';
 import { GoFileDiff } from 'react-icons/go';
 import { GoFile } from 'react-icons/go';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { useBackendUser } from '../../hooks/useBackendUser';
 
 const CustomerDashboard = () => {
   const { t } = usePageTranslations('customerDashboard');
+  const { profile } = useBackendUser();
   const { schedules, loading, error } = ownerUseSchedules(false);
   const navigate = useNavigate();
 
@@ -47,6 +49,12 @@ const CustomerDashboard = () => {
 
   return (
     <div className="customer-dashboard">
+      <h1 className="dashboard-welcome">
+        {t('welcome', {
+          defaultValue: 'Welcome, {{name}}!',
+          name: profile?.firstName || '',
+        })}
+      </h1>
       <div className="dashboard-grid">
         {dashboardCards.map((card, index) => (
           <DashboardCard

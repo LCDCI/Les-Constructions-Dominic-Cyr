@@ -261,7 +261,7 @@ const QuoteFormPage = () => {
     if (validItems.length === 0) {
       showError(
         t('quote.errors.atLeastOneItem') ||
-          'Please add at least one item to the quote'
+          'Please add at least one item to the estimate'
       );
       return false;
     }
@@ -360,7 +360,7 @@ const QuoteFormPage = () => {
 
       navigate('/quotes', {
         state: {
-          message: t('quote.createSuccess') || 'Quote created successfully!',
+          message: t('quote.createSuccess') || 'Estimate created successfully!',
         },
       });
     } catch (error) {
@@ -386,9 +386,9 @@ const QuoteFormPage = () => {
         {/* Header */}
         <div className="form-header">
           <div className="header-left">
-            <h1>{t('quote.createBillEstimate') || 'Create Quote Estimate'}</h1>
+            <h1>{t('quote.createBillEstimate') || 'Create Estimate'}</h1>
             <p className="bill-number-label">
-              {t('quote.newBill') || 'New Quote'}:{' '}
+              {t('quote.newBill') || 'New Estimate'}:{' '}
               <span className="bill-number-value">QT-XXXXXX</span>
             </p>
           </div>
@@ -420,7 +420,7 @@ const QuoteFormPage = () => {
               <h2 className="section-heading">{t('quote.detailsHeading')}</h2>
               <div className="details-grid details-grid-3">
                 <div className="detail-item">
-                  <label>{t('quote.billNumber') || 'Quote Number'}</label>
+                  <label>{t('quote.billNumber') || 'Estimate Number'}</label>
                   <p className="detail-value">
                     {generatedQuoteNumber || 'QT-XXXXXX'}
                   </p>
@@ -806,7 +806,7 @@ const QuoteFormPage = () => {
             >
               {isSubmitting
                 ? t('common.submitting') || 'Submitting...'
-                : t('quote.createQuote') || 'Create Quote'}
+                : t('quote.createQuote') || 'Create Estimate'}
             </button>
           </div>
         </div>
@@ -840,7 +840,7 @@ const QuoteFormPage = () => {
               </button>
             </div>
             <p id="quote-preview-description" className="sr-only">
-              Review the quote summary and items before sending.
+              Review the estimate summary and items before sending.
             </p>
             <div className="preview-content">
               <div className="preview-section">
@@ -867,7 +867,7 @@ const QuoteFormPage = () => {
 
               <div className="preview-section">
                 <h3>Items</h3>
-                <table className="preview-table" aria-label="Quote items">
+                <table className="preview-table" aria-label="Estimate items">
                   <thead>
                     <tr>
                       <th>Description</th>
