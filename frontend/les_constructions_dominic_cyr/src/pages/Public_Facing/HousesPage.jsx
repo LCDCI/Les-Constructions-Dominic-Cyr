@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
@@ -26,6 +27,7 @@ export default function HousesPage() {
   const [error, setError] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [project, setProject] = useState(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     if (!projectIdentifier) return undefined;
@@ -94,6 +96,15 @@ export default function HousesPage() {
   const hasHouseValue = value =>
     value !== null && value !== undefined && String(value).trim() !== '';
 
+  const selectedImages = selectedHouse
+    ? [
+        selectedHouse.imageIdentifier,
+        selectedHouse.secondImageIdentifier,
+      ].filter(Boolean)
+    : [];
+  const selectedImage =
+    selectedImages[selectedImageIndex] || selectedImages[0] || null;
+
   if (loading) {
     return (
       <div
@@ -147,6 +158,14 @@ export default function HousesPage() {
                         event.currentTarget.src = '/fallback.jpg';
                       }}
                     />
+                    {selectedImages.length > 1 && (
+                      <p
+                        className="house-image-modal-counter"
+                        aria-live="polite"
+                      >
+                        {selectedImageIndex + 1} / {selectedImages.length}
+                      </p>
+                    )}
                   </div>
                   <h2 className="house-title">{house.houseName}</h2>
                   {house.location && (
@@ -177,7 +196,10 @@ export default function HousesPage() {
                   <button
                     type="button"
                     className="house-button"
-                    onClick={() => setSelectedHouse(house)}
+                    onClick={() => {
+                      setSelectedHouse(house);
+                      setSelectedImageIndex(0);
+                    }}
                   >
                     {t('viewHouse', 'View this house')}
                   </button>
@@ -208,8 +230,38 @@ export default function HousesPage() {
             >
               ×
             </button>
+            {selectedImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="house-image-modal-nav house-image-modal-prev"
+                  onClick={() =>
+                    setSelectedImageIndex(
+                      index =>
+                        (index - 1 + selectedImages.length) %
+                        selectedImages.length
+                    )
+                  }
+                  aria-label={t('previousImage', 'Previous image')}
+                >
+                  <MdArrowBackIos />
+                </button>
+                <button
+                  type="button"
+                  className="house-image-modal-nav house-image-modal-next"
+                  onClick={() =>
+                    setSelectedImageIndex(
+                      index => (index + 1) % selectedImages.length
+                    )
+                  }
+                  aria-label={t('nextImage', 'Next image')}
+                >
+                  <MdArrowForwardIos />
+                </button>
+              </>
+            )}
             <img
-              src={getImageUrl(selectedHouse.imageIdentifier)}
+              src={getImageUrl(selectedImage)}
               alt={selectedHouse.houseName || t('imageAlt', 'House')}
               className="house-image-modal-photo"
             />

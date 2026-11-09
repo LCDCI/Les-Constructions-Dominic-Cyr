@@ -81,6 +81,7 @@ public class HouseController {
         existing.setDescriptionEn(trimToNull(request.descriptionEn()));
         existing.setDescriptionFr(trimToNull(request.descriptionFr()));
         existing.setImageIdentifier(trimToNull(request.imageIdentifier()));
+        existing.setSecondImageIdentifier(trimToNull(request.secondImageIdentifier()));
         existing.setNumberOfRooms(request.numberOfRooms());
         existing.setNumberOfBedrooms(request.numberOfBedrooms());
         existing.setNumberOfBathrooms(request.numberOfBathrooms());
@@ -153,6 +154,7 @@ public class HouseController {
                 .descriptionEn(trimToNull(request.descriptionEn()))
                 .descriptionFr(trimToNull(request.descriptionFr()))
                 .imageIdentifier(trimToNull(request.imageIdentifier()))
+                .secondImageIdentifier(trimToNull(request.secondImageIdentifier()))
                 .numberOfRooms(request.numberOfRooms())
                 .numberOfBedrooms(request.numberOfBedrooms())
                 .numberOfBathrooms(request.numberOfBathrooms())
@@ -173,6 +175,7 @@ public class HouseController {
             @Size(max = 100_000) String descriptionEn,
             @Size(max = 100_000) String descriptionFr,
             @Size(max = 500) String imageIdentifier,
+            @Size(max = 500) String secondImageIdentifier,
             @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal numberOfRooms,
             @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal numberOfBedrooms,
             @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal numberOfBathrooms,

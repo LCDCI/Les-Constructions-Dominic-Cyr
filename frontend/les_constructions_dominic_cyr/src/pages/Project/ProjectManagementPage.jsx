@@ -130,6 +130,9 @@ export default function ProjectManagementPage() {
                   'Planning, organization, and work follow-up'
                 )}
               </h2>
+              <p className="pm-title-subtitle">
+                {t('intro.subtitle', "We've got you covered!")}
+              </p>
               <p className="pm-tagline">
                 {t(
                   'intro.paragraph',
@@ -214,6 +217,14 @@ export default function ProjectManagementPage() {
 
       <section className="pm-projects-section">
         <div className="pm-projects-container">
+          <div className="pm-cta-card pm-pricing-card">
+            <p className="pm-pricing-text">
+              {t(
+                'advantages.pricing',
+                'Depending on the scope and complexity of the project, pricing could be at a fixed cost or at a marked-up price. Contact us to discuss.'
+              )}
+            </p>
+          </div>
           <div className="pm-images-grid">
             <div
               className="pm-image-card"
@@ -300,14 +311,6 @@ export default function ProjectManagementPage() {
               </div>
               <p className="pm-image-city">{PM_IMAGES.stHilaire.city}</p>
             </div>
-          </div>
-          <div className="pm-cta-card">
-            <p className="pm-pricing-text">
-              {t(
-                'advantages.pricing',
-                'Selon l’ampleur et la complexité du projet, la tarification pourrait être à coût fixe ou à prix majoré. Contactez-nous pour en discuter.'
-              )}
-            </p>
           </div>
         </div>
       </section>

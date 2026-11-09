@@ -112,6 +112,14 @@
   color: var(--pm-charcoal);
 }
 
+.pm-title-subtitle {
+  margin: -0.75rem 0 1.5rem;
+  color: var(--pm-sage-dark);
+  font-family: var(--pm-serif);
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+  font-style: italic;
+}
+
 .pm-tagline {
   margin: 0;
   padding: 0 0.5rem;
@@ -361,6 +369,10 @@
 
 .pm-projects-container .pm-cta-card {
   margin-top: 3rem;
+}
+
+.pm-projects-container .pm-pricing-card {
+  margin: 0 auto 2.5rem;
 }
 
 .pm-contact-link {

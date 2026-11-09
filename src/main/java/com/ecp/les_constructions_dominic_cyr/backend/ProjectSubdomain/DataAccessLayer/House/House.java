@@ -53,6 +53,9 @@ public class House {
     @Column(name = "image_identifier", length = 500)
     private String imageIdentifier;
 
+    @Column(name = "second_image_identifier", length = 500)
+    private String secondImageIdentifier;
+
     @Column(name = "number_of_rooms", precision = 5, scale = 2)
     private BigDecimal numberOfRooms;
 
