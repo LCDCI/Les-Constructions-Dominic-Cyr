@@ -179,14 +179,14 @@ export default function Home() {
           <div className="hero-background">
             {!videoLoaded && (
               <img
-                src="/logo192.png"
+                src="/METSA.png"
                 alt={t('loading', 'Loading')}
                 className="hero-loading-logo"
               />
             )}
             {isLocalHost ? (
               <img
-                src="/fallback.jpg"
+                src="/METSA.png"
                 alt="Hero placeholder"
                 className="hero-image"
                 width="1000"
@@ -205,7 +205,7 @@ export default function Home() {
                 loop
                 playsInline
                 preload="auto"
-                poster="/fallback.jpg"
+                poster="/METSA.png"
                 onError={() => setVideoLoaded(true)}
                 onLoadedMetadata={() => setVideoLoaded(true)}
                 onCanPlay={() => setVideoLoaded(true)}

@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"strings"
 
 	pkg "mailer-service/pkg/mailer"
 )
@@ -17,36 +19,68 @@ type Service interface {
 }
 
 type service struct {
-	apiKey  string
-	from    string
-	apiURL  string
-	httpClient *http.Client
+	apiKey           string
+	from             string
+	apiURL           string
+	blockedRecipient emailBlocker
+	httpClient       *http.Client
 }
 
-func NewService(apiKey string, from string) Service {
+type emailBlocker map[string]struct{}
+
+func newEmailBlocker(blockedRecipients []string) emailBlocker {
+	blocker := make(emailBlocker, len(blockedRecipients))
+	for _, recipient := range blockedRecipients {
+		normalized := strings.ToLower(strings.TrimSpace(recipient))
+		if normalized != "" {
+			blocker[normalized] = struct{}{}
+		}
+	}
+	return blocker
+}
+
+func (b emailBlocker) blocks(recipient string) bool {
+	_, blocked := b[strings.ToLower(strings.TrimSpace(recipient))]
+	return blocked
+}
+
+var ErrRecipientBlocked = errors.New("email recipient is blocked")
+
+func NewService(apiKey string, from string, blockedRecipients ...[]string) Service {
+	var recipients []string
+	if len(blockedRecipients) > 0 {
+		recipients = blockedRecipients[0]
+	}
+
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	return &service{
-		apiKey:     apiKey,
-		from:       from,
-		apiURL:     "https://api.brevo.com/v3/smtp/email",
-		httpClient: &http.Client{Transport: tr},
+		apiKey:           apiKey,
+		from:             from,
+		apiURL:           "https://api.brevo.com/v3/smtp/email",
+		blockedRecipient: newEmailBlocker(recipients),
+		httpClient:       &http.Client{Transport: tr},
 	}
 }
 
 // newServiceWithClient creates a service with a custom HTTP client (for testing)
-func newServiceWithClient(apiKey, from, apiURL string, client *http.Client) Service {
+func newServiceWithClient(apiKey, from, apiURL string, client *http.Client, blockedRecipients ...[]string) Service {
+	var recipients []string
+	if len(blockedRecipients) > 0 {
+		recipients = blockedRecipients[0]
+	}
 	return &service{
-		apiKey:     apiKey,
-		from:       from,
-		apiURL:     apiURL,
-		httpClient: client,
+		apiKey:           apiKey,
+		from:             from,
+		apiURL:           apiURL,
+		blockedRecipient: newEmailBlocker(recipients),
+		httpClient:       client,
 	}
 }
 
 type brevoRequest struct {
-	Sender      brevoSender    `json:"sender"`
+	Sender      brevoSender      `json:"sender"`
 	To          []brevoRecipient `json:"to"`
 	Subject     string         `json:"subject"`
 	HTMLContent string         `json:"htmlContent"`
@@ -67,6 +101,11 @@ type brevoResponse struct {
 }
 
 func (s *service) Send(m *pkg.Mail) error {
+	if s.blockedRecipient.blocks(m.To) {
+		log.Printf("Blocked email delivery to configured recipient")
+		return ErrRecipientBlocked
+	}
+
 	log.Printf("Attempting to send email to %s with subject: %s via Brevo API", m.To, m.Subject)
 
 	sender := brevoSender{

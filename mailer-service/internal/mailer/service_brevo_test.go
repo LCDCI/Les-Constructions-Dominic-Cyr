@@ -3,6 +3,7 @@ package mailer
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -83,6 +84,30 @@ func TestService_Send_SuccessfulSend_ReturnsNil(t *testing.T) {
 
 	if err != nil {
 		t.Errorf("expected nil error, got %v", err)
+	}
+}
+
+func TestService_Send_BlockedRecipient_DoesNotSend(t *testing.T) {
+	requests := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests++
+	}))
+	defer server.Close()
+
+	svc := newServiceWithClient("test-key", "from@example.com", server.URL, server.Client(),
+		[]string{"blocked@example.com"})
+
+	err := svc.Send(&pkg.Mail{
+		To:      " BLOCKED@example.com ",
+		Subject: "Test",
+		Body:    "<p>Test</p>",
+	})
+
+	if !errors.Is(err, ErrRecipientBlocked) {
+		t.Fatalf("expected ErrRecipientBlocked, got %v", err)
+	}
+	if requests != 0 {
+		t.Fatalf("expected no HTTP requests, got %d", requests)
 	}
 }
 

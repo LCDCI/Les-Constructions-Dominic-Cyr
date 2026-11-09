@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -31,7 +32,8 @@ func main() {
 		fromEmail = util.GetenvOrDefault("SMTP_FROM", "noreply@constructions-dominiccyr.com")
 	}
 
-	svc := mailsvc.NewService(apiKey, fromEmail)
+	blockedRecipients := strings.Split(util.GetenvOrDefault("EMAIL_BLOCKLIST", ""), ",")
+	svc := mailsvc.NewService(apiKey, fromEmail, blockedRecipients)
 
 	h := handlers.NewMailHandler(svc)
 	g := r.Group("/mail")
@@ -39,7 +41,7 @@ func main() {
 	g.POST("", h.Post)
 
 	port := util.GetenvOrDefault("MAILER_PORT", "8083")
-	
+
 	log.Printf("Mailer Service using Brevo REST API on port %s", port)
 	log.Printf("Sender email address: %s", fromEmail)
 
