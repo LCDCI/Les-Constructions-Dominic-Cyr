@@ -48,6 +48,7 @@ import ProjectsOverviewPage from './pages/Project/ProjectsOverviewPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomeFooter from './components/Footers/HomeFooter';
 import NavigationSetter from './components/NavigationSetter';
+import ScrollToTop from './components/ScrollToTop';
 import IdleTimeoutModal from './components/Modals/IdleTimeoutModal';
 import InboxPage from './pages/Inbox/InboxPage';
 import RoleBasedRedirect from './components/RoleBasedRedirect';
@@ -227,13 +228,7 @@ export default function App() {
   useEffect(() => {
     if (!isAuthenticated) return;
 
-    const idleMinutes = parseInt(
-      import.meta.env.VITE_SESSION_IDLE_MINUTES || '30',
-      10
-    );
-
-    const timeoutMs = Math.max(1, idleMinutes) * 60 * 1000;
-    const warningDurationSec = 120;
+    const timeoutMs = 2 * 60 * 1000;
 
     const clearTimers = () => {
       if (idleTimerRef.current) {
@@ -261,25 +256,8 @@ export default function App() {
       }
     };
 
-    const startCountdown = () => {
-      setRemainingSeconds(warningDurationSec);
-
-      countdownTimerRef.current = setInterval(() => {
-        setRemainingSeconds(s => {
-          if (s <= 1) {
-            clearInterval(countdownTimerRef.current);
-            countdownTimerRef.current = null;
-            performLogout();
-            return 0;
-          }
-          return s - 1;
-        });
-      }, 1000);
-    };
-
     const onIdle = () => {
-      setShowIdleModalSafe(true);
-      startCountdown();
+      performLogout();
     };
 
     const resetIdleTimer = () => {
@@ -321,6 +299,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <NavigationSetter />
+      <ScrollToTop />
       <SeoManager />
       <div className="app-container">
         <AppNavBar />

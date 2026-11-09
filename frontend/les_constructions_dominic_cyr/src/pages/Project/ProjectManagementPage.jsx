@@ -121,9 +121,6 @@ export default function ProjectManagementPage() {
           <div className="pm-intro-content">
             {/* Heading Section */}
             <div className="pm-heading-section">
-              <span className="public-page__eyebrow">
-                {t('intro.heading.kicker', 'Project management')}
-              </span>
               <h2 className="pm-main-heading" id="pm-intro-title">
                 {t(
                   'intro.heading.title',
@@ -217,14 +214,12 @@ export default function ProjectManagementPage() {
 
       <section className="pm-projects-section">
         <div className="pm-projects-container">
-          <div className="pm-cta-card pm-pricing-card">
-            <p className="pm-pricing-text">
-              {t(
-                'advantages.pricing',
-                'Depending on the scope and complexity of the project, pricing could be at a fixed cost or at a marked-up price. Contact us to discuss.'
-              )}
-            </p>
-          </div>
+          <h2 className="pm-gallery-heading">
+            {t(
+              'gallery.heading',
+              'Some project management achievements completed by Les Constructions Dominic Cyr Inc.'
+            )}
+          </h2>
           <div className="pm-images-grid">
             <div
               className="pm-image-card"
@@ -311,6 +306,14 @@ export default function ProjectManagementPage() {
               </div>
               <p className="pm-image-city">{PM_IMAGES.stHilaire.city}</p>
             </div>
+          </div>
+          <div className="pm-cta-card pm-pricing-card">
+            <p className="pm-pricing-text">
+              {t(
+                'advantages.pricing',
+                'Depending on the scope and complexity of the project, pricing could be at a fixed cost or at a marked-up price. Contact us to discuss.'
+              )}
+            </p>
           </div>
         </div>
       </section>

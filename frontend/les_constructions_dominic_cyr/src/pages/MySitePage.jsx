@@ -126,6 +126,7 @@ const EDITABLE_TEXT_KEYS = {
       'advantages.item5',
       'advantages.item6',
       'advantages.item7',
+      'gallery.heading',
       'advantages.pricing',
       'advantages.contactLink',
     ],
@@ -163,6 +164,8 @@ const EDITABLE_TEXT_KEYS = {
     ],
   },
 };
+
+const LOT_CONTENT_KEYS = ['introSubtitle', 'introText'];
 
 const EDITOR_PAGE_ORDER = {
   home: [
@@ -565,8 +568,39 @@ const MySitePage = () => {
       }
       if (selectedSubpage === 'lots') {
         data = (Array.isArray(data) ? data : []).filter(item =>
-          ['title', 'subtitle', 'preTitle'].includes(item.pageKey)
+          ['title', 'subtitle', 'preTitle', ...LOT_CONTENT_KEYS].includes(
+            item.pageKey
+          )
         );
+        const existingLotKeys = new Set(data.map(item => item.pageKey));
+        const lotsResource = i18n.getResource(selectedLanguage, 'lots') || {};
+        const fallbackLotContent = {
+          introSubtitle:
+            lotsResource.content?.introSubtitle ||
+            (selectedLanguage === 'fr'
+              ? 'Découvrez nos terrains'
+              : 'Discover our lots'),
+          introText:
+            lotsResource.content?.introText ||
+            (selectedLanguage === 'fr'
+              ? 'Consultez les informations disponibles sur les terrains.'
+              : 'Review the available lot information.'),
+        };
+        data = [
+          ...data,
+          ...LOT_CONTENT_KEYS.filter(key => !existingLotKeys.has(key)).map(
+            (pageKey, index) => ({
+              id: `fallback-${effectivePageGroup}-${pageKey}`,
+              pageGroup: effectivePageGroup,
+              pageKey,
+              contentText: fallbackLotContent[pageKey],
+              imageIdentifier: '',
+              sortOrder: data.length + index,
+              fallbackContent: true,
+              projectIdentifier,
+            })
+          ),
+        ];
       }
       if (selectedSubpage === 'living-environment' && projectIdentifier) {
         const response = await fetch(
@@ -606,7 +640,10 @@ const MySitePage = () => {
       if (
         selectedSubpage === 'lots' &&
         projectIdentifier &&
-        (!Array.isArray(data) || data.length === 0)
+        (!Array.isArray(data) ||
+          !data.some(item =>
+            ['title', 'subtitle', 'preTitle'].includes(item.pageKey)
+          ))
       ) {
         const project = projects.find(
           item => item.projectIdentifier === projectIdentifier

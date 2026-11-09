@@ -420,6 +420,18 @@ const LotsPage = () => {
               </div>
             </div>
 
+            {(pageContent.introSubtitle || pageContent.introText) && (
+              <section
+                className="lots-intro-content"
+                aria-label="Lot information"
+              >
+                {pageContent.introSubtitle && (
+                  <h2>{pageContent.introSubtitle}</h2>
+                )}
+                {pageContent.introText && <p>{pageContent.introText}</p>}
+              </section>
+            )}
+
             <div className="list-section">
               {error ? (
                 <div className="no-results">{error}</div>

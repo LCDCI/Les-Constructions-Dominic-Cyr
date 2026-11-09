@@ -373,6 +373,9 @@
 
 .pm-projects-container .pm-pricing-card {
   margin: 0 auto 2.5rem;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .pm-contact-link {

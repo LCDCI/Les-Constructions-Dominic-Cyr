@@ -53,7 +53,7 @@ export default function ProjectBanner({
       aria-label={loadedProject?.projectName || 'Residential project'}
     >
       {children && <div className="project-banner-content">{children}</div>}
-      {logoIdentifier && (
+      {logoIdentifier && !children && (
         <div className="project-logo-above-banner">
           <img
             src={getFileUrl(logoIdentifier)}

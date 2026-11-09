@@ -54,14 +54,7 @@ const OwnerLotsPage = () => {
   const isOwner =
     isAuthenticated && roles.some(role => role.toUpperCase() === 'OWNER');
 
-  const normalizeLotStatus = lot => {
-    const hasCustomer = (lot.assignedUsers || []).some(
-      assignedUser =>
-        (assignedUser.role || assignedUser.userRole)?.toUpperCase() ===
-        'CUSTOMER'
-    );
-    return hasCustomer ? { ...lot, lotStatus: 'SOLD' } : lot;
-  };
+  const normalizeLotStatus = lot => lot;
 
   // Redirect non-owners
   useEffect(() => {

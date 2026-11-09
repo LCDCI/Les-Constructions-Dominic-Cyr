@@ -249,7 +249,7 @@ export default function InquiryForm({ onSuccess, className }) {
                 key={project.projectIdentifier}
                 value={project.projectIdentifier}
               >
-                {project.projectName || project.projectIdentifier}
+                {`${i18n.language?.toLowerCase().startsWith('fr') ? 'Projet résidentiel' : 'Residential project'} — ${project.projectName || project.projectIdentifier}`}
               </option>
             ))}
             <option value="renovation">
