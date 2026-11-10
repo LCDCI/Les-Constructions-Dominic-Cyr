@@ -5,7 +5,12 @@
   "noInquiries": "Aucune demande trouvée.",
   "actionError": "Impossible de modifier la demande.",
   "status": { "active": "Active", "archived": "Archivée" },
-  "actions": { "archive": "Archiver", "unarchive": "Désarchiver", "delete": "Supprimer", "cancel": "Annuler" },
+  "actions": {
+    "archive": "Archiver",
+    "unarchive": "Désarchiver",
+    "delete": "Supprimer",
+    "cancel": "Annuler"
+  },
   "confirm": {
     "deleteTitle": "Supprimer la demande",
     "deleteMessage": "Voulez-vous vraiment supprimer définitivement cette demande ?",

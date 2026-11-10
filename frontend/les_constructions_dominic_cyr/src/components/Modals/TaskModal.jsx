@@ -103,7 +103,6 @@ const TaskModal = ({
                     ))}
                   </select>
                 </label>
-
               </div>
 
               <div className="task-row-grid">
@@ -165,7 +164,6 @@ const TaskModal = ({
                   rows={2}
                 />
               </label>
-
             </div>
           ))}
         </div>

@@ -158,13 +158,7 @@ const ContractorTasksPage = () => {
 
     // Filter by priority
     return result;
-  }, [
-    tasks,
-    selectedProject,
-    selectedLot,
-    statusFilter,
-    userId,
-  ]);
+  }, [tasks, selectedProject, selectedLot, statusFilter, userId]);
 
   // Group filtered tasks by project and lot
   const groupedTasks = useMemo(() => {
@@ -333,7 +327,6 @@ const ContractorTasksPage = () => {
             ))}
           </select>
         </div>
-
       </div>
 
       {filteredTasks.length === 0 ? (

@@ -282,7 +282,8 @@ const ProjectSchedulePage = () => {
         lot?.lotIdentifier?.lotId || lot?.lotId || lot?.lotIdentifier;
       return lotUuid && String(lotUuid) === String(normalizedLotId);
     });
-    const normalizedLotDatabaseId = schedule.lotDatabaseId ?? matchedLot?.id ?? '';
+    const normalizedLotDatabaseId =
+      schedule.lotDatabaseId ?? matchedLot?.id ?? '';
 
     const normalizedTasks = Array.isArray(schedule.tasks)
       ? schedule.tasks
@@ -1695,9 +1696,7 @@ const ProjectSchedulePage = () => {
               >
                 <div className="card-top">
                   <div>
-                    <div className="card-title">
-                      {lotLabel}
-                    </div>
+                    <div className="card-title">{lotLabel}</div>
                     <div className="card-meta">
                       {lotLabel} ·{' '}
                       {start

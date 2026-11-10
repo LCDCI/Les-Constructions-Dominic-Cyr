@@ -96,9 +96,12 @@ export default function OwnerInquiriesPage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      if (!response.ok) throw new Error(t('actionError', 'Unable to update inquiry.'));
+      if (!response.ok)
+        throw new Error(t('actionError', 'Unable to update inquiry.'));
       if (action === 'delete') {
-        setInquiries(current => current.filter(inquiry => inquiry.id !== inquiryId));
+        setInquiries(current =>
+          current.filter(inquiry => inquiry.id !== inquiryId)
+        );
       } else {
         const updated = await response.json();
         setInquiries(current =>
@@ -123,10 +126,19 @@ export default function OwnerInquiriesPage() {
               : t('confirm.unarchiveTitle', 'Unarchive inquiry'),
         message:
           pendingAction.action === 'delete'
-            ? t('confirm.deleteMessage', 'Are you sure you want to permanently delete this inquiry?')
+            ? t(
+                'confirm.deleteMessage',
+                'Are you sure you want to permanently delete this inquiry?'
+              )
             : pendingAction.action === 'archive'
-              ? t('confirm.archiveMessage', 'Are you sure you want to archive this inquiry?')
-              : t('confirm.unarchiveMessage', 'Are you sure you want to unarchive this inquiry?'),
+              ? t(
+                  'confirm.archiveMessage',
+                  'Are you sure you want to archive this inquiry?'
+                )
+              : t(
+                  'confirm.unarchiveMessage',
+                  'Are you sure you want to unarchive this inquiry?'
+                ),
         confirmText:
           pendingAction.action === 'delete'
             ? t('actions.delete', 'Delete')
@@ -216,7 +228,10 @@ export default function OwnerInquiriesPage() {
                 </tr>
               ) : (
                 decodedInquiries.map(inq => (
-                  <tr key={inq.id} style={inq.archived ? { opacity: 0.65 } : undefined}>
+                  <tr
+                    key={inq.id}
+                    style={inq.archived ? { opacity: 0.65 } : undefined}
+                  >
                     <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
                       {inq.name}
                     </td>
@@ -268,7 +283,10 @@ export default function OwnerInquiriesPage() {
                         type="button"
                         disabled={actionLoading}
                         onClick={() =>
-                          setPendingAction({ inquiryId: inq.id, action: 'delete' })
+                          setPendingAction({
+                            inquiryId: inq.id,
+                            action: 'delete',
+                          })
                         }
                       >
                         {t('actions.delete', 'Delete')}
