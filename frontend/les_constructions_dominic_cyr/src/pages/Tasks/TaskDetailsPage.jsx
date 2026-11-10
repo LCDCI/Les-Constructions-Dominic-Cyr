@@ -18,7 +18,6 @@ const TASK_STATUSES = [
   'ON_HOLD',
   'CANCELLED',
 ];
-const TASK_PRIORITIES = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'];
 
 const TaskDetailsPage = () => {
   const { taskId } = useParams();
@@ -106,7 +105,7 @@ const TaskDetailsPage = () => {
           setError(
             err?.response?.data?.message ||
               err.message ||
-              'Failed to load task details.'
+              t('errors.loadFailed', 'Failed to load task details.')
           );
         }
       } finally {
@@ -117,13 +116,20 @@ const TaskDetailsPage = () => {
     if (taskId) {
       loadTask();
     }
-  }, [taskId, getAccessTokenSilently, isAuthenticated, stateTask]);
+  }, [
+    taskId,
+    getAccessTokenSilently,
+    location.state?.projectId,
+    isAuthenticated,
+    stateTask,
+    t,
+  ]);
 
   if (loading) {
     return (
       <div className="schedule-loading">
         <div className="spinner"></div>
-        <p>Loading task...</p>
+        <p>{t('loading', 'Loading task...')}</p>
       </div>
     );
   }
@@ -131,10 +137,10 @@ const TaskDetailsPage = () => {
   if (error) {
     return (
       <div className="schedule-error">
-        <h2>Error</h2>
+        <h2>{t('error', 'Error')}</h2>
         <p>{error}</p>
         <button className="back-button" onClick={() => navigate(-1)}>
-          Go Back
+          {t('goBack', 'Go Back')}
         </button>
       </div>
     );
@@ -142,9 +148,9 @@ const TaskDetailsPage = () => {
 
   if (!task) return null;
 
-  const title = task.taskTitle || task.taskDescription || `Task ${taskId}`;
-  const status = task.taskStatus || 'Not set';
-  const priority = task.taskPriority || 'Not set';
+  const title =
+    task.taskTitle || task.taskDescription || `${t('task', 'Task')} ${taskId}`;
+  const status = task.taskStatus || 'notSet';
 
   const toDateOnly = value => {
     if (!value) return null;
@@ -157,8 +163,6 @@ const TaskDetailsPage = () => {
   const startOnly = toDateOnly(task.periodStart);
   const endOnly = toDateOnly(task.periodEnd);
   const dateMissing = !startOnly && !endOnly;
-
-  const numericOrDash = value => (value === 0 || value ? value : '—');
 
   const scheduleWindow = {
     start: startOnly || task.scheduleStartDate || undefined,
@@ -178,39 +182,16 @@ const TaskDetailsPage = () => {
   );
   const assigneeName = assigneeObj
     ? `${assigneeObj.firstName} ${assigneeObj.lastName}`
-    : assigneeIdentifier || 'Unassigned';
-
-  // Compute progress as hoursSpent / estimatedHours * 100 (rounded)
-  const computeProgress = (estimated, hours, fallback) => {
-    const e = Number(estimated);
-    const h = Number(hours);
-    if (!e || Number.isNaN(e) || e === 0) {
-      // if estimated missing/0, return any existing progress or 0
-      return fallback === undefined || fallback === null ? 0 : Number(fallback);
-    }
-    if (Number.isNaN(h)) return 0;
-    const pct = Math.round((h / e) * 100);
-    return pct < 0 ? 0 : pct;
-  };
-
-  const computedProgress = computeProgress(
-    task?.estimatedHours,
-    task?.hoursSpent,
-    task?.taskProgress
-  );
+    : assigneeIdentifier || t('unassigned', 'Unassigned');
 
   const openEditTaskModal = () => {
     setTaskDraft({
       taskTitle: task.taskTitle || '',
       taskStatus: task.taskStatus || TASK_STATUSES[0],
-      taskPriority: task.taskPriority || TASK_PRIORITIES[2],
       periodStart: startOnly || '',
       periodEnd: endOnly || startOnly || '',
       assignedToUserId: task.assignedToUserId || '',
       taskDescription: task.taskDescription || '',
-      estimatedHours: task.estimatedHours ?? '',
-      hoursSpent: task.hoursSpent ?? '',
-      taskProgress: task.taskProgress ?? '',
     });
     setEditError('');
     setIsEditTaskOpen(true);
@@ -221,7 +202,12 @@ const TaskDetailsPage = () => {
     setEditError('');
 
     if (!taskDraft.taskTitle?.trim() && !taskDraft.taskDescription?.trim()) {
-      setEditError('Please provide a title or description.');
+      setEditError(
+        t(
+          'errors.titleOrDescriptionRequired',
+          'Please provide a title or description.'
+        )
+      );
       return;
     }
 
@@ -236,33 +222,9 @@ const TaskDetailsPage = () => {
         });
       }
 
-      const toNumberOrNull = value =>
-        value === '' || value === undefined ? null : Number(value);
-
-      // Calculate progress from draft values (hoursSpent / estimatedHours * 100)
-      const draftEstimated = toNumberOrNull(taskDraft.estimatedHours);
-      const draftHours = toNumberOrNull(taskDraft.hoursSpent);
-      const computeDraftProgress = () => {
-        if (
-          !draftEstimated ||
-          Number.isNaN(draftEstimated) ||
-          draftEstimated === 0
-        ) {
-          return taskDraft.taskProgress === '' ||
-            taskDraft.taskProgress === undefined
-            ? null
-            : toNumberOrNull(taskDraft.taskProgress);
-        }
-        if (!draftHours || Number.isNaN(draftHours)) return 0;
-        const pct = Math.round((draftHours / draftEstimated) * 100);
-        return pct < 0 ? 0 : pct;
-      };
-
       const payload = {
         ...taskDraft,
-        estimatedHours: draftEstimated,
-        hoursSpent: draftHours,
-        taskProgress: computeDraftProgress(),
+        taskPriority: task.taskPriority || 'MEDIUM',
         scheduleId: task.scheduleId || task.scheduleIdentifier || null,
       };
 
@@ -275,11 +237,15 @@ const TaskDetailsPage = () => {
     } catch (err) {
       const status = err?.response?.status;
       let msg =
-        err?.response?.data?.message || err.message || 'Failed to update task.';
+        err?.response?.data?.message ||
+        err.message ||
+        t('errors.updateFailed', 'Failed to update task.');
 
       if (status === 403) {
-        msg =
-          'You do not have permission to update this task. Please ensure you are the assigned supplier or an owner.';
+        msg = t(
+          'errors.updateForbidden',
+          'You do not have permission to update this task. Please ensure you are the assigned supplier or an owner.'
+        );
       }
 
       setEditError(msg);
@@ -321,11 +287,15 @@ const TaskDetailsPage = () => {
     } catch (err) {
       const status = err?.response?.status;
       let msg =
-        err?.response?.data?.message || err.message || 'Failed to delete task.';
+        err?.response?.data?.message ||
+        err.message ||
+        t('errors.deleteFailed', 'Failed to delete task.');
 
       if (status === 403) {
-        msg =
-          'You do not have permission to delete this task. Only owners can delete tasks.';
+        msg = t(
+          'errors.deleteForbidden',
+          'You do not have permission to delete this task. Only owners can delete tasks.'
+        );
       }
 
       setDeleteError(msg);
@@ -344,23 +314,23 @@ const TaskDetailsPage = () => {
     <div className="project-schedule-page task-details-page">
       <div className="schedule-header">
         <div>
-          <div className="task-eyebrow">Task</div>
+          <div className="task-eyebrow">{t('task', 'Task')}</div>
           <h1>{title}</h1>
           <div className="task-subtle">ID: {taskId}</div>
         </div>
         <div className="task-header-actions">
           {role === ROLES.OWNER && (
             <button className="modal-danger" onClick={handleDeleteTask}>
-              Delete Task
+              {t('deleteTask', 'Delete Task')}
             </button>
           )}
           {canEditTask && (
             <button className="primary" onClick={openEditTaskModal}>
-              Edit Task
+              {t('editTask', 'Edit Task')}
             </button>
           )}
           <button className="back-button-small" onClick={goBack}>
-            ← Back
+            ← {t('back', 'Back')}
           </button>
         </div>
       </div>
@@ -368,55 +338,42 @@ const TaskDetailsPage = () => {
       <div className="task-sections">
         <div className="task-card task-card-row">
           <div className="task-meta-block">
-            <span className="task-label">Schedule window</span>
+            <span className="task-label">
+              {t('scheduleWindow', 'Schedule window')}
+            </span>
             {dateMissing ? (
-              <div className="task-value">No dates provided</div>
+              <div className="task-value">
+                {t('noDates', 'No dates provided')}
+              </div>
             ) : (
               <div className="task-value task-value-stacked">
-                <span>Start: {startOnly || '—'}</span>
-                <span>End: {endOnly || '—'}</span>
+                <span>
+                  {t('start', 'Start')}: {startOnly || '—'}
+                </span>
+                <span>
+                  {t('end', 'End')}: {endOnly || '—'}
+                </span>
               </div>
             )}
           </div>
           <div className="task-meta-block">
-            <span className="task-label">Assignee</span>
+            <span className="task-label">{t('assignee', 'Assignee')}</span>
             <div className="task-value">{assigneeName}</div>
           </div>
           <div className="task-meta-block">
-            <span className="task-label">Status</span>
-            <div className="task-value">{status}</div>
-          </div>
-          <div className="task-meta-block">
-            <span className="task-label">Priority</span>
-            <div className="task-value">{priority}</div>
+            <span className="task-label">{t('status', 'Status')}</span>
+            <div className="task-value">
+              {t(`statusValues.${status}`, status)}
+            </div>
           </div>
         </div>
 
         <div className="task-card">
-          <h3>Description</h3>
+          <h3>{t('description', 'Description')}</h3>
           <p className="task-body-text">
-            {task.taskDescription || 'No description provided.'}
+            {task.taskDescription ||
+              t('noDescription', 'No description provided.')}
           </p>
-        </div>
-
-        <div className="task-card task-stats-grid">
-          <h3>Time + effort</h3>
-          <div className="task-stats">
-            <div className="task-stat">
-              <span className="task-label">Estimated</span>
-              <div className="task-value">
-                {numericOrDash(task.estimatedHours)}
-              </div>
-            </div>
-            <div className="task-stat">
-              <span className="task-label">Spent</span>
-              <div className="task-value">{numericOrDash(task.hoursSpent)}</div>
-            </div>
-            <div className="task-stat">
-              <span className="task-label">Progress</span>
-              <div className="task-value">{computedProgress}%</div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -426,7 +383,7 @@ const TaskDetailsPage = () => {
         config={{
           title: t('deleteModal.title'),
           message: deleteError
-            ? `Error: ${deleteError}`
+            ? `${t('errors.errorPrefix', 'Error')}: ${deleteError}`
             : t('deleteModal.message'),
           onConfirm: confirmDeleteTask,
           confirmText: isDeleting
@@ -441,7 +398,6 @@ const TaskDetailsPage = () => {
         isOpen={isEditTaskOpen}
         task={taskDraft}
         statuses={TASK_STATUSES}
-        priorities={TASK_PRIORITIES}
         contractors={projectContractors}
         errorMessage={editError}
         isSaving={isSavingEdit}

@@ -3,6 +3,17 @@
   "loading": "Chargement des demandes...",
   "error": "Erreur :",
   "noInquiries": "Aucune demande trouvée.",
+  "actionError": "Impossible de modifier la demande.",
+  "status": { "active": "Active", "archived": "Archivée" },
+  "actions": { "archive": "Archiver", "unarchive": "Désarchiver", "delete": "Supprimer", "cancel": "Annuler" },
+  "confirm": {
+    "deleteTitle": "Supprimer la demande",
+    "deleteMessage": "Voulez-vous vraiment supprimer définitivement cette demande ?",
+    "archiveTitle": "Archiver la demande",
+    "archiveMessage": "Voulez-vous vraiment archiver cette demande ?",
+    "unarchiveTitle": "Désarchiver la demande",
+    "unarchiveMessage": "Voulez-vous vraiment désarchiver cette demande ?"
+  },
   "table": {
     "name": "Nom",
     "email": "Courriel",
@@ -16,6 +27,8 @@
       "other": "Autre"
     },
     "message": "Message",
-    "timestamp": "Horodatage"
+    "timestamp": "Horodatage",
+    "status": "Statut",
+    "actions": "Actions"
   }
 }

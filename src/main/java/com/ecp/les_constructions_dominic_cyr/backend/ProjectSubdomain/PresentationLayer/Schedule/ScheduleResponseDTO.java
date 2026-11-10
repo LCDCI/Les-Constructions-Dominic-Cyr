@@ -19,6 +19,7 @@ public class ScheduleResponseDTO {
     private LocalDate scheduleEndDate;
     private String scheduleDescription;
     private String lotId;
+    private String lotDatabaseId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<TaskDetailResponseDTO> tasks;

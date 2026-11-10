@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 // Modal for editing a single task, sharing the same layout conventions as other schedule modals.
 const EditTaskModal = ({
   isOpen,
   task,
   statuses,
-  priorities,
   contractors,
   errorMessage,
   isSaving,
@@ -14,6 +14,7 @@ const EditTaskModal = ({
   onSave,
   scheduleWindow,
 }) => {
+  const { t } = usePageTranslations('taskDetails');
   const originalOverflow = useRef(null);
 
   useEffect(() => {
@@ -62,11 +63,13 @@ const EditTaskModal = ({
         onMouseDown={e => e.stopPropagation()}
       >
         <div className="schedule-modal-header">
-          <div className="schedule-modal-title">Edit Task</div>
+          <div className="schedule-modal-title">
+            {t('editTask', 'Edit Task')}
+          </div>
           <button
             type="button"
             className="modal-close"
-            aria-label="Close"
+            aria-label={t('editModal.close', 'Close')}
             onClick={onClose}
           >
             ×
@@ -75,12 +78,15 @@ const EditTaskModal = ({
 
         {scheduleWindow?.start && scheduleWindow?.end && (
           <div className="schedule-modal-section">
-            <h4>Work window</h4>
+            <h4>{t('editModal.workWindow', 'Work window')}</h4>
             <div>
               {scheduleWindow.start} → {scheduleWindow.end}
             </div>
             <div className="tasks-subtitle">
-              Task dates must stay within this window.
+              {t(
+                'editModal.dateConstraint',
+                'Task dates must stay within this window.'
+              )}
             </div>
           </div>
         )}
@@ -88,38 +94,24 @@ const EditTaskModal = ({
         <div className="task-row single-task-row">
           <div className="task-row-grid">
             <label>
-              <span>Title</span>
+              <span>{t('editModal.title', 'Title')}</span>
               <input
                 type="text"
                 value={task.taskTitle}
                 onChange={e => handleField('taskTitle', e.target.value)}
-                placeholder="Task title"
+                placeholder={t('editModal.titlePlaceholder', 'Task title')}
               />
             </label>
 
             <label>
-              <span>Status</span>
+              <span>{t('status', 'Status')}</span>
               <select
                 value={task.taskStatus}
                 onChange={e => handleField('taskStatus', e.target.value)}
               >
                 {statuses.map(status => (
                   <option key={status} value={status}>
-                    {status.replaceAll('_', ' ')}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <span>Priority</span>
-              <select
-                value={task.taskPriority}
-                onChange={e => handleField('taskPriority', e.target.value)}
-              >
-                {priorities.map(priority => (
-                  <option key={priority} value={priority}>
-                    {priority.replaceAll('_', ' ')}
+                    {t(`statusValues.${status}`, status.replaceAll('_', ' '))}
                   </option>
                 ))}
               </select>
@@ -128,7 +120,7 @@ const EditTaskModal = ({
 
           <div className="task-row-grid">
             <label>
-              <span>Task Start Date</span>
+              <span>{t('editModal.taskStartDate', 'Task Start Date')}</span>
               <input
                 type="date"
                 value={task.periodStart}
@@ -139,7 +131,7 @@ const EditTaskModal = ({
             </label>
 
             <label>
-              <span>Task End Date</span>
+              <span>{t('editModal.taskEndDate', 'Task End Date')}</span>
               <input
                 type="date"
                 value={task.periodEnd}
@@ -150,12 +142,12 @@ const EditTaskModal = ({
             </label>
 
             <label>
-              <span>Assignee</span>
+              <span>{t('assignee', 'Assignee')}</span>
               <select
                 value={task.assignedToUserId}
                 onChange={e => handleField('assignedToUserId', e.target.value)}
               >
-                <option value="">Unassigned</option>
+                <option value="">{t('unassigned', 'Unassigned')}</option>
                 {contractors?.map(contractor => (
                   <option
                     key={contractor.userId || contractor.userIdentifier}
@@ -169,42 +161,17 @@ const EditTaskModal = ({
           </div>
 
           <label className="task-row-full">
-            <span>Description</span>
+            <span>{t('description', 'Description')}</span>
             <textarea
               value={task.taskDescription}
               onChange={e => handleField('taskDescription', e.target.value)}
-              placeholder="Describe the work to be completed"
+              placeholder={t(
+                'editModal.descriptionPlaceholder',
+                'Describe the work to be completed'
+              )}
               rows={3}
             />
           </label>
-
-          <div className="task-row-grid task-row-numbers">
-            <label>
-              <span>Estimated hours</span>
-              <input
-                type="number"
-                min="0"
-                step="0.5"
-                value={task.estimatedHours}
-                onChange={e => handleField('estimatedHours', e.target.value)}
-                placeholder="Optional"
-              />
-            </label>
-
-            <label>
-              <span>Hours spent</span>
-              <input
-                type="number"
-                min="0"
-                step="0.5"
-                value={task.hoursSpent}
-                onChange={e => handleField('hoursSpent', e.target.value)}
-                placeholder="Optional"
-              />
-            </label>
-
-            {/* Progress is computed from estimatedHours/hoursSpent; not editable in forms */}
-          </div>
         </div>
 
         {errorMessage && <div className="form-error">{errorMessage}</div>}
@@ -216,7 +183,7 @@ const EditTaskModal = ({
             onClick={onClose}
             disabled={isSaving}
           >
-            Cancel
+            {t('editModal.cancel', 'Cancel')}
           </button>
           <button
             type="button"
@@ -224,7 +191,9 @@ const EditTaskModal = ({
             onClick={onSave}
             disabled={isSaving}
           >
-            {isSaving ? 'Saving…' : 'Save changes'}
+            {isSaving
+              ? t('editModal.saving', 'Saving...')
+              : t('editModal.saveChanges', 'Save changes')}
           </button>
         </div>
       </div>

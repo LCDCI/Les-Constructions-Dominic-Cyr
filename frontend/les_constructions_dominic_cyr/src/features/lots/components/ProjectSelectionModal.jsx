@@ -51,7 +51,10 @@ const ProjectSelectionModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div
+      className="modal-backdrop project-selection-modal-backdrop"
+      onClick={onClose}
+    >
       <div className="project-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3>{t('projectSelection.title', 'Select a Project')}</h3>

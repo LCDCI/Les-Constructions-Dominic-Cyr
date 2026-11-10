@@ -1,6 +1,8 @@
 package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.MapperLayer;
 
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Schedule.Schedule;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.Lot;
+import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAccessLayer.Lot.LotRepository;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleRequestDTO;
 import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.PresentationLayer.Schedule.ScheduleResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +18,21 @@ import java.util.stream.Collectors;
 public class ScheduleMapper {
 
     private final TaskMapper taskMapper;
+    private final LotRepository lotRepository;
 
     public ScheduleResponseDTO entityToResponseDTO(Schedule schedule) {
+        Lot lot = schedule.getLotId() == null
+                ? null
+                : lotRepository.findByLotIdentifier_LotId(schedule.getLotId());
         return ScheduleResponseDTO.builder()
                 .scheduleIdentifier(schedule.getScheduleIdentifier())
                 .scheduleStartDate(schedule.getScheduleStartDate())
                 .scheduleEndDate(schedule.getScheduleEndDate())
                 .scheduleDescription(schedule.getScheduleDescription())
                 .lotId(schedule.getLotNumber())
+                .lotDatabaseId(lot != null && lot.getId() != null
+                        ? String.valueOf(lot.getId())
+                        : null)
                 .createdAt(schedule.getCreatedAt())
                 .updatedAt(schedule.getUpdatedAt())
                 .tasks(schedule.getTasks() != null ? taskMapper.entitiesToResponseDTOs(schedule.getTasks()) : new ArrayList<>())

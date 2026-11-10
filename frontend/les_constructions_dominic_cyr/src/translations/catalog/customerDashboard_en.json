@@ -1,7 +1,12 @@
 {
   "title": "Customer Dashboard",
   "welcome": "Welcome, {{name}}!",
-  "thisWeek": "This week:",
+  "thisWeek": "Upcoming work",
+  "upcomingWork": "Upcoming work",
+  "filterByLot": "Filter by lot",
+  "allLots": "All lots",
+  "due": "Due",
+  "lot": "Lot",
   "seeMore": "See more",
   "loadingSchedules": "Loading schedules...",
   "noSchedules": "No schedules available",

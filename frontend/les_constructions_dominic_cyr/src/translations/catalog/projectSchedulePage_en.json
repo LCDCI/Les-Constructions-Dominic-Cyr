@@ -19,9 +19,42 @@
   "createLotSchedule": {
     "title": "Create lot schedule",
     "button": "Create lot schedule",
-    "lot": "Lot"
+    "lot": "Lot",
+    "priority": "Task priority",
+    "priorities": {
+      "VERY_LOW": "Very low",
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "VERY_HIGH": "Very high"
+    }
   },
   "project": "Project",
+  "modal": {
+    "close": "Close",
+    "date": "Date",
+    "description": "Description",
+    "tasks": "Tasks",
+    "loadingTasks": "Loading tasks…",
+    "noTasks": "No tasks listed",
+    "editWork": "Edit work"
+  },
+  "form": {
+    "workDescription": "Work description",
+    "descriptionPlaceholder": "Foundation pour, framing, etc.",
+    "loadingLots": "Loading lots...",
+    "selectLot": "Select a lot",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "tasksNote": "After saving these schedule details, you will add tasks in the next step. Tasks will be constrained to the start and end dates you set here.",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "saveWork": "Save work"
+  },
+  "deleteModal": {
+    "title": "Delete work?",
+    "message": "This will delete the work and all associated tasks. This action cannot be undone."
+  },
   "startUnknown": "Start ?",
   "errors": {
     "descriptionRequired": "Schedule description is required.",

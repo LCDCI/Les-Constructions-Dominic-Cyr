@@ -58,6 +58,9 @@ public class TaskMapper {
             builder.lotId(task.getLotId().toString());
             Lot lot = lotRepository.findByLotIdentifier_LotId(task.getLotId());
             if (lot != null) {
+                if (lot.getId() != null) {
+                    builder.lotDatabaseId(String.valueOf(lot.getId()));
+                }
                 builder.lotNumber(lot.getLotNumber());
             } else {
                 builder.lotNumber(task.getLotId().toString());

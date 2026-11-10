@@ -31,5 +31,6 @@ public class TaskDetailResponseDTO {
     private String projectIdentifier;
     private String projectName;
     private String lotId;
+    private String lotDatabaseId;
     private String lotNumber;
 }

@@ -28,6 +28,9 @@ public class Inquiry {
     @Column(nullable = false, updatable = false)
     private OffsetDateTime createdAt;
 
+    @Column(nullable = false)
+    private boolean archived = false;
+
     /**
      * Sets the createdAt timestamp when the entity is first persisted to the database.
      */
@@ -55,4 +58,7 @@ public class Inquiry {
 
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
+
+    public boolean isArchived() { return archived; }
+    public void setArchived(boolean archived) { this.archived = archived; }
 }

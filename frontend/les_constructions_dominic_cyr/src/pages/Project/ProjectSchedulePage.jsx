@@ -53,7 +53,7 @@ const localizer = dateFnsLocalizer({
 });
 
 const TASK_STATUSES = ['TO_DO', 'IN_PROGRESS', 'COMPLETED', 'ON_HOLD'];
-const TASK_PRIORITIES = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'];
+const DEFAULT_TASK_PRIORITY = 'MEDIUM';
 
 const buildEmptyScheduleForm = () => ({
   scheduleDescription: '',
@@ -67,13 +67,11 @@ const buildEmptyTask = (start, end, isEditable = false) => ({
   taskId: null,
   taskTitle: '',
   taskStatus: TASK_STATUSES[0],
-  taskPriority: TASK_PRIORITIES[2],
+  taskPriority: DEFAULT_TASK_PRIORITY,
   periodStart: start || '',
   periodEnd: end || start || '',
   assignedToUserId: '',
   taskDescription: '',
-  estimatedHours: '',
-  hoursSpent: '',
   isEditable,
 });
 
@@ -113,7 +111,6 @@ const buildTaskFromExisting = (task, scheduleStart, scheduleEnd) => ({
   taskId: task?.taskId ?? task?.id ?? task?.identifier ?? null,
   taskTitle: task?.taskTitle ?? task?.title ?? '',
   taskStatus: task?.taskStatus ?? task?.status ?? TASK_STATUSES[0],
-  taskPriority: task?.taskPriority ?? task?.priority ?? TASK_PRIORITIES[2],
   periodStart: normalizeDateForInput(
     task?.periodStart || task?.startDate || scheduleStart
   ),
@@ -122,18 +119,8 @@ const buildTaskFromExisting = (task, scheduleStart, scheduleEnd) => ({
   ),
   assignedToUserId: task?.assignedToUserId ?? task?.assigneeId ?? '',
   taskDescription: task?.taskDescription ?? task?.description ?? '',
-  estimatedHours: task?.estimatedHours ?? '',
-  hoursSpent: task?.hoursSpent ?? '',
   isEditable: false,
 });
-
-const computeTaskProgress = (estimated, hours) => {
-  const e =
-    estimated === '' || estimated === undefined ? null : Number(estimated);
-  const h = hours === '' || hours === undefined ? null : Number(hours);
-  if (e === null || e === 0 || h === null) return null;
-  return Math.round((h / e) * 100);
-};
 
 const ProjectSchedulePage = () => {
   const { t, currentLanguage } = usePageTranslations('projectSchedulePage');
@@ -239,6 +226,7 @@ const ProjectSchedulePage = () => {
         lotId: '',
         lotIdentifier: '',
         lotNumber: '',
+        lotDatabaseId: '',
         projectName: 'Project',
         tasks: [],
       };
@@ -289,6 +277,12 @@ const ProjectSchedulePage = () => {
       schedule.lot?.lotIdentifier?.lotNumber ??
       schedule.lotName ??
       '';
+    const matchedLot = (lots || []).find(lot => {
+      const lotUuid =
+        lot?.lotIdentifier?.lotId || lot?.lotId || lot?.lotIdentifier;
+      return lotUuid && String(lotUuid) === String(normalizedLotId);
+    });
+    const normalizedLotDatabaseId = schedule.lotDatabaseId ?? matchedLot?.id ?? '';
 
     const normalizedTasks = Array.isArray(schedule.tasks)
       ? schedule.tasks
@@ -309,6 +303,9 @@ const ProjectSchedulePage = () => {
       scheduleStartDate: normalizedStartDate,
       scheduleEndDate: normalizedEndDate,
       lotId: normalizedLotId ? String(normalizedLotId) : '',
+      lotDatabaseId: normalizedLotDatabaseId
+        ? String(normalizedLotDatabaseId)
+        : '',
       lotIdentifier: normalizedLotId ? String(normalizedLotId) : '',
       lotNumber: normalizedLotNumber,
       projectName:
@@ -347,11 +344,9 @@ const ProjectSchedulePage = () => {
         normalized.id ??
         fallbackId ??
         Date.now(),
-      title:
-        normalized.scheduleDescription ||
-        (normalized.lotNumber
-          ? `${t('schedule', 'Schedule')} · ${normalized.lotNumber}`
-          : t('schedule', 'Schedule')),
+      title: normalized.lotDatabaseId
+        ? `${t('lot', 'Lot')} ${normalized.lotDatabaseId}`
+        : normalized.scheduleDescription || t('schedule', 'Schedule'),
       start: safeStart,
       end: safeEnd < safeStart ? safeStart : safeEnd,
       allDay:
@@ -1008,6 +1003,7 @@ const ProjectSchedulePage = () => {
         const createdTask = await taskApi.createTask(
           {
             taskStatus: TASK_STATUSES[0],
+            taskPriority: task.taskPriority || DEFAULT_TASK_PRIORITY,
             taskTitle: String(currentLanguage || '')
               .toLowerCase()
               .startsWith('fr')
@@ -1016,10 +1012,6 @@ const ProjectSchedulePage = () => {
             periodStart: task.periodStart,
             periodEnd: task.periodEnd,
             taskDescription: task.titleEn,
-            taskPriority: TASK_PRIORITIES[2],
-            estimatedHours: null,
-            hoursSpent: null,
-            taskProgress: 0,
             assignedToUserId: task.assignedToUserId || null,
             scheduleId: scheduleIdentifier,
             taskSequence: index + 1,
@@ -1148,7 +1140,6 @@ const ProjectSchedulePage = () => {
         periodStart: task.periodStart || editSchedule.scheduleStartDate,
         periodEnd: task.periodEnd || editSchedule.scheduleEndDate,
         taskStatus: task.taskStatus || TASK_STATUSES[0],
-        taskPriority: task.taskPriority || TASK_PRIORITIES[2],
       }));
 
     for (let i = 0; i < tasksToSave.length; i += 1) {
@@ -1198,20 +1189,11 @@ const ProjectSchedulePage = () => {
 
       const preparedTasks = tasksToSave.map((task, idx) => ({
         taskStatus: task.taskStatus,
+        taskPriority: DEFAULT_TASK_PRIORITY,
         taskTitle: task.taskTitle,
         periodStart: task.periodStart,
         periodEnd: task.periodEnd,
         taskDescription: task.taskDescription,
-        taskPriority: task.taskPriority,
-        estimatedHours:
-          task.estimatedHours === '' || task.estimatedHours === undefined
-            ? null
-            : Number(task.estimatedHours),
-        hoursSpent:
-          task.hoursSpent === '' || task.hoursSpent === undefined
-            ? null
-            : Number(task.hoursSpent),
-        taskProgress: computeTaskProgress(task.estimatedHours, task.hoursSpent),
         assignedToUserId: task.assignedToUserId || null,
         scheduleId: scheduleIdentifier,
         taskSequence: idx + 1,
@@ -1365,7 +1347,6 @@ const ProjectSchedulePage = () => {
         periodStart: task.periodStart || scheduleStart,
         periodEnd: task.periodEnd || scheduleEnd,
         taskStatus: task.taskStatus || TASK_STATUSES[0],
-        taskPriority: task.taskPriority || TASK_PRIORITIES[2],
       }));
 
     for (let i = 0; i < tasksToSave.length; i += 1) {
@@ -1410,20 +1391,11 @@ const ProjectSchedulePage = () => {
 
       const preparedTasks = tasksToSave.map((task, idx) => ({
         taskStatus: task.taskStatus,
+        taskPriority: DEFAULT_TASK_PRIORITY,
         taskTitle: task.taskTitle,
         periodStart: task.periodStart,
         periodEnd: task.periodEnd,
         taskDescription: task.taskDescription,
-        taskPriority: task.taskPriority,
-        estimatedHours:
-          task.estimatedHours === '' || task.estimatedHours === undefined
-            ? null
-            : Number(task.estimatedHours),
-        hoursSpent:
-          task.hoursSpent === '' || task.hoursSpent === undefined
-            ? null
-            : Number(task.hoursSpent),
-        taskProgress: computeTaskProgress(task.estimatedHours, task.hoursSpent),
         assignedToUserId: task.assignedToUserId || null,
         scheduleId: scheduleIdentifier,
         taskSequence: idx + 1,
@@ -1704,8 +1676,8 @@ const ProjectSchedulePage = () => {
                 ? schedule.scheduleTasks
                 : [];
             const taskCount = tasksArray.length;
-            const lotLabel = schedule.lotId
-              ? `${t('lot', 'Lot')} ${schedule.lotId}`
+            const lotLabel = schedule.lotDatabaseId
+              ? `${t('lot', 'Lot')} ${schedule.lotDatabaseId}`
               : t('lotUnknown', 'Lot unknown');
             return (
               <div
@@ -1724,8 +1696,7 @@ const ProjectSchedulePage = () => {
                 <div className="card-top">
                   <div>
                     <div className="card-title">
-                      {schedule.scheduleDescription ||
-                        t('schedule', 'Schedule')}
+                      {lotLabel}
                     </div>
                     <div className="card-meta">
                       {lotLabel} ·{' '}
@@ -1814,7 +1785,6 @@ const ProjectSchedulePage = () => {
         onRemoveTask={removeEditTaskRow}
         onToggleTaskEdit={toggleEditTask}
         taskStatuses={TASK_STATUSES}
-        taskPriorities={TASK_PRIORITIES}
         contractors={projectContractors}
         onDeleteSchedule={handleDeleteSchedule}
       />
@@ -1824,7 +1794,6 @@ const ProjectSchedulePage = () => {
         schedule={scheduleForTasks}
         tasks={taskDrafts}
         statuses={TASK_STATUSES}
-        priorities={TASK_PRIORITIES}
         contractors={projectContractors}
         errorMessage={taskFormError}
         isSaving={isSavingTasks}

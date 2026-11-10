@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef } from 'react';
 import { FiEdit2 } from 'react-icons/fi';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const ScheduleDetailModal = ({
   isOpen,
@@ -12,6 +13,7 @@ const ScheduleDetailModal = ({
   onEditSchedule,
   formatDisplayRange,
 }) => {
+  const { t } = usePageTranslations('projectSchedulePage');
   const shouldRender = isOpen && event;
 
   const tasks = Array.isArray(event?.tasks) ? event.tasks : null;
@@ -89,26 +91,26 @@ const ScheduleDetailModal = ({
         </div>
 
         <div className="schedule-modal-section">
-          <h4>Date</h4>
+          <h4>{t('modal.date', 'Date')}</h4>
           <div>{formatDisplayRange(event.start, event.end)}</div>
         </div>
 
         {event.description && (
           <div className="schedule-modal-section">
-            <h4>Description</h4>
+            <h4>{t('modal.description', 'Description')}</h4>
             <div>{event.description}</div>
           </div>
         )}
 
         {tasks && (
           <div className="schedule-modal-section schedule-modal-tasks">
-            <h4>Tasks</h4>
+            <h4>{t('modal.tasks', 'Tasks')}</h4>
             {event.tasksLoading ? (
-              <div>Loading tasks…</div>
+              <div>{t('modal.loadingTasks', 'Loading tasks…')}</div>
             ) : event.tasksError ? (
               <div>{event.tasksError}</div>
             ) : tasks.length === 0 ? (
-              <div>None listed</div>
+              <div>{t('modal.noTasks', 'No tasks listed')}</div>
             ) : (
               <ul className="schedule-task-list">
                 {tasks.map((task, idx) => {
@@ -163,7 +165,7 @@ const ScheduleDetailModal = ({
             onClick={() => onEditSchedule?.(event)}
           >
             <FiEdit2 aria-hidden="true" style={{ marginRight: 6 }} />
-            Edit Work
+            {t('modal.editWork', 'Edit work')}
           </button>
         </div>
       </div>

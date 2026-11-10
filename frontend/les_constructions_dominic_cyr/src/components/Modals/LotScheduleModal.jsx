@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { format, parseISO, addDays, isValid } from 'date-fns';
+import { format, parseISO, isValid } from 'date-fns';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Project/ProjectSchedule.css';
 
@@ -486,6 +486,8 @@ const taskDefinitions = [
   ],
 ];
 
+const TASK_PRIORITIES = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'];
+
 const optionalDefinitions = [
   ['stairGlass', 'Mesure verres de l’escalier', 'Stair glass measurement'],
   ['landscaping', 'Aménagement paysager', 'Landscaping'],
@@ -509,16 +511,23 @@ const normalize = value =>
     .toLowerCase()
     .trim();
 
-const addDate = (date, days) => {
+const addWorkingDays = (date, days) => {
   if (!date) return '';
   const parsed = parseISO(date);
-  return isValid(parsed) ? format(addDays(parsed, days), 'yyyy-MM-dd') : '';
-};
+  if (!isValid(parsed)) return '';
 
-const maxDate = (first, second) => {
-  if (!first) return second || '';
-  if (!second) return first;
-  return first > second ? first : second;
+  const direction = days < 0 ? -1 : 1;
+  let remaining = Math.abs(days);
+  const result = new Date(parsed);
+  while (remaining > 0) {
+    result.setDate(result.getDate() + direction);
+    const day = result.getDay();
+    if (day !== 0 && day !== 6) remaining -= 1;
+  }
+  while (result.getDay() === 0 || result.getDay() === 6) {
+    result.setDate(result.getDate() + (direction > 0 ? 1 : -1));
+  }
+  return format(result, 'yyyy-MM-dd');
 };
 
 const taskLabel = (definition, french) =>
@@ -526,17 +535,18 @@ const taskLabel = (definition, french) =>
 
 const getDependencyStartDate = (dependencyRow, offset) => {
   if (!dependencyRow) return '';
-  if (offset === -2) return addDate(dependencyRow.periodEnd, -2);
+  if (offset === -2) return addWorkingDays(dependencyRow.periodEnd, -2);
   if (offset === null || offset === undefined) {
-    return addDate(dependencyRow.periodEnd, 1);
+    return addWorkingDays(dependencyRow.periodEnd, 1);
   }
-  return addDate(dependencyRow.periodStart, offset);
+  return addWorkingDays(dependencyRow.periodStart, offset);
 };
 
 const buildTaskRows = (
   startDate,
   manualDates,
   assignments,
+  priority,
   includeOptional
 ) => {
   const rows = {};
@@ -551,21 +561,25 @@ const buildTaskRows = (
     const [key, , , dependency, offset, manual, supplierType, duration] =
       definition;
     const manualDate = manualDates[key];
-    let periodStart = optional
-      ? manualDate || ''
-      : manual
-        ? manualDate || ''
-        : '';
+    let periodStart = manualDate || '';
 
-    if (!manual && !optional && dependency && rows[dependency]?.periodStart) {
+    if (
+      !periodStart &&
+      !manual &&
+      !optional &&
+      dependency &&
+      rows[dependency]?.periodStart
+    ) {
       const dependencyRow = rows[dependency];
       const dependencyDate = getDependencyStartDate(dependencyRow, offset);
-      periodStart = maxDate(periodStart, dependencyDate);
+      periodStart = dependencyDate;
     }
 
-    if (!periodStart && !dependency && !optional) periodStart = startDate;
+    if (!periodStart && !dependency && !optional) {
+      periodStart = addWorkingDays(startDate, 0);
+    }
     const periodEnd = periodStart
-      ? addDate(periodStart, Math.max((duration || 1) - 1, 0))
+      ? addWorkingDays(periodStart, Math.max((duration || 1) - 1, 0))
       : '';
 
     rows[key] = {
@@ -575,6 +589,7 @@ const buildTaskRows = (
       periodStart,
       periodEnd,
       assignedToUserId: assignments[key] || '',
+      taskPriority: priority,
       supplierType: supplierType || '',
       duration: duration || 1,
       manual: Boolean(manual),
@@ -620,6 +635,7 @@ const LotScheduleModal = ({
     .startsWith('fr');
   const [lotId, setLotId] = useState('');
   const [startDate, setStartDate] = useState('');
+  const [priority, setPriority] = useState('MEDIUM');
   const [manualDates, setManualDates] = useState({});
   const [assignments, setAssignments] = useState({});
   const [assignmentByType, setAssignmentByType] = useState({});
@@ -632,6 +648,7 @@ const LotScheduleModal = ({
     if (!isOpen) return;
     setLotId('');
     setStartDate('');
+    setPriority('MEDIUM');
     setManualDates({});
     setAssignments({});
     setAssignmentByType({});
@@ -659,8 +676,15 @@ const LotScheduleModal = ({
   }, [isOpen]);
 
   const rows = useMemo(
-    () => buildTaskRows(startDate, manualDates, assignments, includeOptional),
-    [startDate, manualDates, assignments, includeOptional]
+    () =>
+      buildTaskRows(
+        startDate,
+        manualDates,
+        assignments,
+        priority,
+        includeOptional
+      ),
+    [startDate, manualDates, assignments, priority, includeOptional]
   );
 
   const getContractors = row => {
@@ -821,6 +845,27 @@ const LotScheduleModal = ({
             </label>
             <label>
               <span>
+                {t(
+                  'createLotSchedule.priority',
+                  french ? 'Priorité des tâches' : 'Task priority'
+                )}
+              </span>
+              <select
+                value={priority}
+                onChange={event => setPriority(event.target.value)}
+              >
+                {TASK_PRIORITIES.map(value => (
+                  <option key={value} value={value}>
+                    {t(
+                      `createLotSchedule.priorities.${value}`,
+                      value.replaceAll('_', ' ')
+                    )}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>
                 {french ? 'Promesse d’achat signée' : 'Signed purchase promise'}
               </span>
               <input
@@ -902,33 +947,31 @@ const LotScheduleModal = ({
                     )}
                   </div>
                   <div className="lot-schedule-task-meta">
-                    {row.manual || row.optional ? (
-                      <input
-                        type="date"
-                        aria-label={taskLabel(
-                          [row.key, row.titleFr, row.titleEn],
-                          french
-                        )}
-                        value={row.periodStart}
-                        min={row.minimumStartDate || undefined}
-                        onChange={event =>
-                          setManualDates(prev => ({
-                            ...prev,
-                            [row.key]: event.target.value,
-                          }))
-                        }
-                        required={row.manual}
-                      />
-                    ) : (
+                    <input
+                      type="date"
+                      aria-label={taskLabel(
+                        [row.key, row.titleFr, row.titleEn],
+                        french
+                      )}
+                      value={row.periodStart}
+                      min={row.minimumStartDate || undefined}
+                      onChange={event =>
+                        setManualDates(prev => ({
+                          ...prev,
+                          [row.key]: addWorkingDays(event.target.value, 0),
+                        }))
+                      }
+                      required={row.manual}
+                    />
+                    {!row.periodStart && (
                       <span>
-                        {row.periodStart ||
-                          (row.waitingForManualDependency
-                            ? french
-                              ? 'Ajoutez la date manuelle précédente pour calculer cette date'
-                              : 'Add the previous manual date to calculate this date'
-                            : french
-                              ? 'En attente d’une date précédente'
-                              : 'Waiting for a previous date')}
+                        {row.waitingForManualDependency
+                          ? french
+                            ? 'Ajoutez la date manuelle précédente'
+                            : 'Add the previous manual date'
+                          : french
+                            ? 'Date à ajouter'
+                            : 'Date to be added'}
                       </span>
                     )}
                     {row.periodEnd && row.periodEnd !== row.periodStart && (

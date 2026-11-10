@@ -2,6 +2,7 @@ package com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.DataAcces
 
 import com.ecp.les_constructions_dominic_cyr.backend.UsersSubdomain.DataAccessLayer.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,6 +13,18 @@ import java.util.UUID;
 @Repository
 public interface LotRepository extends JpaRepository<Lot, Integer> {
     boolean existsById(Integer id);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "UPDATE lots SET id = :newId WHERE lot_identifier = :lotIdentifier", nativeQuery = true)
+    int updateDatabaseId(@Param("lotIdentifier") UUID lotIdentifier, @Param("newId") Integer newId);
+
+    @Modifying
+    @Query(value = "DELETE FROM lot_assigned_users WHERE lot_id = :lotId", nativeQuery = true)
+    int deleteAssignedUsers(@Param("lotId") Integer lotId);
+
+    @Modifying
+    @Query(value = "INSERT INTO lot_assigned_users (lot_id, user_id) VALUES (:lotId, :userId)", nativeQuery = true)
+    void addAssignedUser(@Param("lotId") Integer lotId, @Param("userId") UUID userId);
 
     Lot findByLotIdentifier_LotId(UUID lotId);
     

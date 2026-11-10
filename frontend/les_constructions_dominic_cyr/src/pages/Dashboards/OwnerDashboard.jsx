@@ -15,7 +15,7 @@ import { useBackendUser } from '../../hooks/useBackendUser';
 const OwnerDashboard = () => {
   const { t } = usePageTranslations('ownerDashboard');
   const { profile } = useBackendUser();
-  const { schedules, loading, error } = ownerUseSchedules(false);
+  const { schedules, loading, error } = ownerUseSchedules(true);
   const navigate = useNavigate();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
@@ -97,13 +97,18 @@ const OwnerDashboard = () => {
       </div>
 
       <div className="schedule-section">
-        <h2>{t('thisWeek', 'This week:')}</h2>
+        <h2>{t('upcomingWork', 'Upcoming work')}</h2>
         <ScheduleList
           schedules={schedules}
           loading={loading}
           error={error}
           loadingMessage={t('loadingSchedules', 'Loading schedules...')}
           emptyMessage={t('noSchedules', 'No schedules available')}
+          upcomingWorkLabel={t('upcomingWork', 'Upcoming work')}
+          lotFilterLabel={t('filterByLot', 'Filter by lot')}
+          allLotsLabel={t('allLots', 'All lots')}
+          dateDueLabel={t('due', 'Due')}
+          lotLabel={t('lot', 'Lot')}
         />
         <button className="see-more-button" onClick={handleSeeMore}>
           {t('viewSchedule', 'View schedule')}
@@ -113,7 +118,7 @@ const OwnerDashboard = () => {
       <ProjectSelectionModal
         isOpen={isProjectModalOpen}
         onClose={() => setIsProjectModalOpen(false)}
-        destination="schedule"
+        destination="manage-lots"
       />
     </div>
   );

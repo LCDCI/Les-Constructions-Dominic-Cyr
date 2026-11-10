@@ -117,6 +117,28 @@
   overflow-y: auto;
 }
 
+.upcoming-work-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.upcoming-work-toolbar label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upcoming-work-toolbar select {
+  min-height: 34px;
+  padding: 5px 8px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  border-radius: 6px;
+  background: var(--white, #fff);
+}
+
 .list-title {
   font-weight: 700;
   color: var(--text-primary, #2c3e50);
@@ -140,9 +162,13 @@
 }
 
 .lot-schedule-modal {
-  width: min(1600px, 98vw);
+  box-sizing: border-box;
+  width: calc(100vw - 24px);
+  max-width: 1800px;
   min-height: 80vh;
   max-height: 96vh;
+  min-width: 0;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
@@ -179,6 +205,7 @@
 }
 
 .lot-schedule-task {
+  min-width: 0;
   display: grid;
   grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 1fr) minmax(
       180px,
@@ -238,6 +265,10 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(180px, 1fr));
   gap: 8px;
+}
+
+.lot-schedule-task-meta > input {
+  min-width: 0;
 }
 
 .lot-schedule-assignment-grid label {
@@ -787,6 +818,17 @@
   padding: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
   max-height: 80vh;
+  overflow-y: auto;
+}
+
+.schedule-modal.lot-schedule-modal {
+  box-sizing: border-box;
+  width: calc(100vw - 24px);
+  max-width: 1800px;
+  min-width: 0;
+  min-height: 80vh;
+  max-height: 96vh;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
