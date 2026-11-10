@@ -1,6 +1,13 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-const ScheduleList = ({ schedules, loading, error }) => {
+const ScheduleList = ({
+  schedules,
+  loading,
+  error,
+  loadingMessage = 'Loading schedules...',
+  emptyMessage = 'No schedules available',
+}) => {
   const formatDate = dateString => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -13,7 +20,7 @@ const ScheduleList = ({ schedules, loading, error }) => {
   if (loading) {
     return (
       <div className="schedule-loading">
-        <p>Loading schedules...</p>
+        <p>{loadingMessage}</p>
       </div>
     );
   }
@@ -29,7 +36,7 @@ const ScheduleList = ({ schedules, loading, error }) => {
   if (schedules.length === 0) {
     return (
       <div className="schedule-empty">
-        <p>No schedules for this week</p>
+        <p>{emptyMessage}</p>
       </div>
     );
   }
@@ -52,3 +59,18 @@ const ScheduleList = ({ schedules, loading, error }) => {
 };
 
 export default ScheduleList;
+
+ScheduleList.propTypes = {
+  schedules: PropTypes.arrayOf(
+    PropTypes.shape({
+      scheduleIdentifier: PropTypes.string,
+      scheduleStartDate: PropTypes.string,
+      scheduleDescription: PropTypes.string,
+      lotNumber: PropTypes.string,
+    })
+  ).isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+  loadingMessage: PropTypes.string,
+  emptyMessage: PropTypes.string,
+};

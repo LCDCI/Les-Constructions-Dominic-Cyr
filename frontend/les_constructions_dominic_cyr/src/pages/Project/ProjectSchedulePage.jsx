@@ -32,6 +32,7 @@ import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchAllContractors } from '../../features/users/api/usersApi';
 import ScheduleDetailModal from '../../components/Modals/ScheduleDetailModal';
 import ScheduleFormModal from '../../components/Modals/ScheduleFormModal';
+import LotScheduleModal from '../../components/Modals/LotScheduleModal';
 import EditScheduleModal from '../../components/Modals/EditScheduleModal';
 import TaskModal from '../../components/Modals/TaskModal';
 import { useBackendUser } from '../../hooks/useBackendUser';
@@ -135,7 +136,7 @@ const computeTaskProgress = (estimated, hours) => {
 };
 
 const ProjectSchedulePage = () => {
-  const { t } = usePageTranslations('projectSchedulePage');
+  const { t, currentLanguage } = usePageTranslations('projectSchedulePage');
   const { projectId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -156,6 +157,7 @@ const ProjectSchedulePage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isLotScheduleModalOpen, setIsLotScheduleModalOpen] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -168,6 +170,7 @@ const ProjectSchedulePage = () => {
   const [tasksToDelete, setTasksToDelete] = useState([]);
 
   const [projectContractors, setProjectContractors] = useState([]);
+  const [allContractors, setAllContractors] = useState([]);
 
   const [isSaving, setIsSaving] = useState(false);
   const [isSavingEdit, setIsSavingEdit] = useState(false);
@@ -412,9 +415,8 @@ const ProjectSchedulePage = () => {
     const civic = lot?.civicAddress;
     if (civic) return civic;
 
-    // Fall back to location, lot number, or the internal id
+    // Fall back to location or the internal identifier
     if (lot?.location) return `${lot.location} (${getLotId(lot)})`;
-    if (lot?.lotNumber) return `Lot ${lot.lotNumber} (${getLotId(lot)})`;
     return getLotId(lot) || 'Unknown lot';
   };
 
@@ -426,7 +428,11 @@ const ProjectSchedulePage = () => {
           return value
             ? {
                 value,
-                label: formatLotLabel(lot),
+                displayId: lot?.id,
+                label:
+                  lot?.id !== undefined && lot?.id !== null
+                    ? `Lot ${lot.id}`
+                    : formatLotLabel(lot),
               }
             : null;
         })
@@ -557,10 +563,10 @@ const ProjectSchedulePage = () => {
 
       const response = await fetchLots({ projectIdentifier: projectId, token });
       const lotsArray = Array.isArray(response) ? response : [];
-      // Sort lots by lotNumber (numeric)
+      // Sort lots by database id (numeric)
       const sortedLots = lotsArray.sort((a, b) => {
-        const numA = parseInt(a.lotNumber, 10) || 0;
-        const numB = parseInt(b.lotNumber, 10) || 0;
+        const numA = Number(a.id) || 0;
+        const numB = Number(b.id) || 0;
         return numA - numB;
       });
       setLots(sortedLots);
@@ -572,6 +578,31 @@ const ProjectSchedulePage = () => {
       setLotsLoading(false);
     }
   }, [isAuthenticated, getAccessTokenSilently, projectId]);
+
+  const openLotScheduleModal = async () => {
+    if (!lots.length && !lotsLoading) {
+      await loadLots();
+    }
+
+    try {
+      let token = null;
+      if (isAuthenticated) {
+        const { getAuthAudience } = await import('../../utils/authConfig');
+        token = await getAccessTokenSilently({
+          authorizationParams: { audience: getAuthAudience() },
+        });
+      }
+      setAllContractors(await fetchAllContractors(token));
+      setIsLotScheduleModalOpen(true);
+    } catch (err) {
+      setFormError(
+        t(
+          'errors.loadContractorsFailed',
+          'Unable to load contractors for the schedule.'
+        )
+      );
+    }
+  };
 
   useEffect(() => {
     loadLots();
@@ -932,6 +963,84 @@ const ProjectSchedulePage = () => {
       setIsTaskModalOpen(true);
       setTaskFormError('');
       setNewSchedule(buildEmptyScheduleForm());
+    } catch (err) {
+      const detailed = extractErrorMessage(err);
+      setFormError(
+        `${t('errors.createFailed', 'Failed to create schedule')}: ${detailed}`
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCreateLotSchedule = async scheduleData => {
+    setFormError('');
+    setIsSaving(true);
+
+    try {
+      let token = null;
+      if (isAuthenticated) {
+        const { getAuthAudience } = await import('../../utils/authConfig');
+        token = await getAccessTokenSilently({
+          authorizationParams: { audience: getAuthAudience() },
+        });
+      }
+
+      const created = await projectScheduleApi.createProjectSchedule(
+        projectId,
+        {
+          scheduleDescription: scheduleData.description,
+          scheduleStartDate: scheduleData.startDate,
+          scheduleEndDate: scheduleData.endDate,
+          lotId: scheduleData.lotId,
+        },
+        token
+      );
+      const createdSchedule = Array.isArray(created) ? created[0] : created;
+      const normalized = normalizeSchedule(
+        createdSchedule,
+        schedules.length + 1
+      );
+      const scheduleIdentifier = getScheduleIdentifier(normalized);
+
+      const createdTasks = [];
+      for (const [index, task] of scheduleData.tasks.entries()) {
+        const createdTask = await taskApi.createTask(
+          {
+            taskStatus: TASK_STATUSES[0],
+            taskTitle: String(currentLanguage || '')
+              .toLowerCase()
+              .startsWith('fr')
+              ? task.titleFr
+              : task.titleEn,
+            periodStart: task.periodStart,
+            periodEnd: task.periodEnd,
+            taskDescription: task.titleEn,
+            taskPriority: TASK_PRIORITIES[2],
+            estimatedHours: null,
+            hoursSpent: null,
+            taskProgress: 0,
+            assignedToUserId: task.assignedToUserId || null,
+            scheduleId: scheduleIdentifier,
+            taskSequence: index + 1,
+          },
+          token
+        );
+        createdTasks.push(
+          Array.isArray(createdTask) ? createdTask[0] : createdTask
+        );
+      }
+
+      normalized.tasks = createdTasks;
+      setSchedules(prev => [...prev, normalized]);
+      setEvents(prev => [
+        ...prev,
+        mapScheduleToEvent(normalized, schedules.length + 1),
+      ]);
+      setProjectName(
+        prev => prev || normalized.projectName || t('project', 'Project')
+      );
+      setIsLotScheduleModalOpen(false);
     } catch (err) {
       const detailed = extractErrorMessage(err);
       setFormError(
@@ -1525,24 +1634,35 @@ const ProjectSchedulePage = () => {
         </div>
         <div className="schedule-actions">
           {role !== ROLES.CONTRACTOR && (
-            <button
-              type="button"
-              className="primary"
-              onClick={async () => {
-                if (!lots.length && !lotsLoading) {
-                  await loadLots();
-                }
-                setIsCreateModalOpen(true);
-                setTaskDrafts([
-                  buildEmptyTask(
-                    newSchedule.scheduleStartDate,
-                    newSchedule.scheduleEndDate
-                  ),
-                ]);
-              }}
-            >
-              {t('newWork', '+ New Work')}
-            </button>
+            <>
+              {role === ROLES.OWNER && (
+                <button
+                  type="button"
+                  className="primary"
+                  onClick={openLotScheduleModal}
+                >
+                  {t('createLotSchedule.button', 'Create lot schedule')}
+                </button>
+              )}
+              <button
+                type="button"
+                className="primary"
+                onClick={async () => {
+                  if (!lots.length && !lotsLoading) {
+                    await loadLots();
+                  }
+                  setIsCreateModalOpen(true);
+                  setTaskDrafts([
+                    buildEmptyTask(
+                      newSchedule.scheduleStartDate,
+                      newSchedule.scheduleEndDate
+                    ),
+                  ]);
+                }}
+              >
+                {t('newWork', '+ New Work')}
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -1657,6 +1777,20 @@ const ProjectSchedulePage = () => {
         lotsError={lotsError}
         isSaving={isSaving}
         errorMessage={formError}
+      />
+
+      <LotScheduleModal
+        isOpen={isLotScheduleModalOpen}
+        lots={lotOptions}
+        lotsLoading={lotsLoading}
+        contractors={allContractors}
+        isSaving={isSaving}
+        errorMessage={formError}
+        onClose={() => {
+          setIsLotScheduleModalOpen(false);
+          setFormError('');
+        }}
+        onSubmit={handleCreateLotSchedule}
       />
 
       <EditScheduleModal

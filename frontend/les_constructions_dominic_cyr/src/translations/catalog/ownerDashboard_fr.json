@@ -3,6 +3,9 @@
   "welcome": "Bienvenue, {{name}} !",
   "thisWeek": "Cette semaine :",
   "seeMore": "Voir plus",
+  "loadingSchedules": "Chargement des calendriers...",
+  "noSchedules": "Aucun calendrier disponible",
+  "viewSchedule": "Voir le calendrier",
   "cards": {
     "uploads": {
       "title": "Téléchargements",

@@ -3,6 +3,9 @@
   "welcome": "Bienvenue, {{name}} !",
   "upcomingTasks": "Voici vos tâches à venir :",
   "seeMore": "Voir plus",
+  "loadingSchedules": "Chargement des calendriers...",
+  "noSchedules": "Aucun calendrier disponible",
+  "viewSchedule": "Voir le calendrier",
   "cards": {
     "myTasks": {
       "title": "Mes tâches",

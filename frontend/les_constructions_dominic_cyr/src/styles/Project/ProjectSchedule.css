@@ -139,6 +139,132 @@
   transform: translateY(1px);
 }
 
+.lot-schedule-modal {
+  width: min(1600px, 98vw);
+  min-height: 80vh;
+  max-height: 96vh;
+  overflow-y: auto;
+}
+
+.lot-schedule-setup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.lot-schedule-setup label,
+.lot-schedule-task select,
+.lot-schedule-task-meta input {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.lot-schedule-setup input,
+.lot-schedule-setup select,
+.lot-schedule-task select,
+.lot-schedule-task-meta input {
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  border-radius: 6px;
+  background: var(--white, #fff);
+}
+
+.lot-schedule-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lot-schedule-task {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) minmax(180px, 1fr) minmax(
+      180px,
+      1fr
+    );
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid var(--card-border, #e6eef5);
+  border-radius: 6px;
+  background: var(--white, #fff);
+}
+
+.lot-schedule-task.optional {
+  background: #fffde0;
+}
+
+.lot-schedule-task-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lot-schedule-task-title span {
+  color: var(--text-secondary, #6b7a90);
+  font-size: 0.78rem;
+}
+
+.lot-schedule-task-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-secondary, #6b7a90);
+  font-size: 0.85rem;
+}
+
+.lot-schedule-assignment-presets {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--card-border, #e6eef5);
+  border-radius: 6px;
+  background: var(--background-color, #f8fafc);
+}
+
+.lot-schedule-assignment-presets h4 {
+  margin: 0 0 4px;
+}
+
+.lot-schedule-assignment-presets p {
+  margin: 0 0 10px;
+  color: var(--text-secondary, #6b7a90);
+  font-size: 0.85rem;
+}
+
+.lot-schedule-assignment-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.lot-schedule-assignment-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.lot-schedule-assignment-grid select {
+  min-height: 36px;
+  padding: 6px 8px;
+  border: 1px solid var(--card-border, #d7e1ec);
+  border-radius: 6px;
+  background: var(--white, #fff);
+}
+
+@media (max-width: 760px) {
+  .lot-schedule-setup,
+  .lot-schedule-task {
+    grid-template-columns: 1fr;
+  }
+
+  .lot-schedule-assignment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .back-button-small {
   padding: 10px 20px;
   background-color: var(--primary-color, #3174ad);

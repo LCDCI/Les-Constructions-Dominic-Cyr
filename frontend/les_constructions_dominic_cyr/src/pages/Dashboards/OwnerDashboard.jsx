@@ -21,7 +21,11 @@ const OwnerDashboard = () => {
 
   const handleSeeMore = () => {
     const projectId = schedules?.[0]?.projectIdentifier;
-    navigate(projectId ? `/projects/${projectId}/schedule` : '/owner/my-site');
+    if (projectId) {
+      navigate(`/projects/${projectId}/schedule`);
+      return;
+    }
+    setIsProjectModalOpen(true);
   };
 
   const dashboardCards = useMemo(
@@ -94,15 +98,22 @@ const OwnerDashboard = () => {
 
       <div className="schedule-section">
         <h2>{t('thisWeek', 'This week:')}</h2>
-        <ScheduleList schedules={schedules} loading={loading} error={error} />
+        <ScheduleList
+          schedules={schedules}
+          loading={loading}
+          error={error}
+          loadingMessage={t('loadingSchedules', 'Loading schedules...')}
+          emptyMessage={t('noSchedules', 'No schedules available')}
+        />
         <button className="see-more-button" onClick={handleSeeMore}>
-          {t('seeMore', 'See more')}
+          {t('viewSchedule', 'View schedule')}
         </button>
       </div>
 
       <ProjectSelectionModal
         isOpen={isProjectModalOpen}
         onClose={() => setIsProjectModalOpen(false)}
+        destination="schedule"
       />
     </div>
   );

@@ -3,6 +3,9 @@
   "welcome": "Welcome, {{name}}!",
   "upcomingTasks": "Here are your upcoming tasks:",
   "seeMore": "See more",
+  "loadingSchedules": "Loading schedules...",
+  "noSchedules": "No schedules available",
+  "viewSchedule": "View schedule",
   "cards": {
     "myTasks": {
       "title": "My Tasks",

@@ -7,7 +7,11 @@ import { projectApi } from '../../projects/api/projectApi';
 import { usePageTranslations } from '../../../hooks/usePageTranslations';
 import './ProjectSelectionModal.css';
 
-const ProjectSelectionModal = ({ isOpen, onClose }) => {
+const ProjectSelectionModal = ({
+  isOpen,
+  onClose,
+  destination = 'manage-lots',
+}) => {
   const { t } = usePageTranslations('ownerLots');
   const navigate = useNavigate();
   const { getAccessTokenSilently } = useAuth0();
@@ -41,7 +45,7 @@ const ProjectSelectionModal = ({ isOpen, onClose }) => {
 
   const handleProjectSelect = projectIdentifier => {
     onClose();
-    navigate(`/projects/${projectIdentifier}/manage-lots`);
+    navigate(`/projects/${projectIdentifier}/${destination}`);
   };
 
   if (!isOpen) return null;
@@ -90,6 +94,7 @@ const ProjectSelectionModal = ({ isOpen, onClose }) => {
 ProjectSelectionModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  destination: PropTypes.string,
 };
 
 export default ProjectSelectionModal;

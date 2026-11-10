@@ -16,6 +16,11 @@
   "tasks": "tasks",
   "edit": "Edit",
   "createWork": "Create Work",
+  "createLotSchedule": {
+    "title": "Create lot schedule",
+    "button": "Create lot schedule",
+    "lot": "Lot"
+  },
   "project": "Project",
   "startUnknown": "Start ?",
   "errors": {
@@ -25,6 +30,7 @@
     "updateFailed": "Failed to update schedule",
     "deleteFailed": "Failed to delete schedule",
     "loadLotsFailed": "Unable to load lots.",
+    "loadContractorsFailed": "Unable to load suppliers for the schedule.",
     "loadTasksFailed": "Failed to load tasks for this schedule.",
     "noScheduleSelected": "No schedule selected. Please create a schedule first.",
     "noScheduleId": "Could not determine schedule id for tasks.",

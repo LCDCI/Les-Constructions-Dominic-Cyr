@@ -16,6 +16,11 @@
   "tasks": "tâches",
   "edit": "Modifier",
   "createWork": "Créer un travail",
+  "createLotSchedule": {
+    "title": "Créer le calendrier du lot",
+    "button": "Créer le calendrier du lot",
+    "lot": "Lot"
+  },
   "project": "Projet",
   "startUnknown": "Début ?",
   "errors": {
@@ -25,6 +30,7 @@
     "updateFailed": "Échec de la mise à jour du calendrier",
     "deleteFailed": "Échec de la suppression du calendrier",
     "loadLotsFailed": "Impossible de charger les lots.",
+    "loadContractorsFailed": "Impossible de charger les fournisseurs pour le calendrier.",
     "loadTasksFailed": "Échec du chargement des tâches pour ce calendrier.",
     "noScheduleSelected": "Aucun calendrier sélectionné. Veuillez d'abord créer un calendrier.",
     "noScheduleId": "Impossible de déterminer l'identifiant du calendrier pour les tâches.",

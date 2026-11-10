@@ -3,6 +3,9 @@
   "welcome": "Welcome, {{name}}!",
   "thisWeek": "This week:",
   "seeMore": "See more",
+  "loadingSchedules": "Loading schedules...",
+  "noSchedules": "No schedules available",
+  "viewSchedule": "View schedule",
   "cards": {
     "uploads": {
       "title": "Uploads",

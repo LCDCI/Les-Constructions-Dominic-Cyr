@@ -76,9 +76,15 @@ const ContractorDashboard = () => {
 
       <div className="schedule-section">
         <h2>{t('upcomingTasks', 'Here are your upcoming tasks:')}</h2>
-        <ScheduleList schedules={schedules} loading={loading} error={error} />
+        <ScheduleList
+          schedules={schedules}
+          loading={loading}
+          error={error}
+          loadingMessage={t('loadingSchedules', 'Loading schedules...')}
+          emptyMessage={t('noSchedules', 'No schedules available')}
+        />
         <button className="see-more-button" onClick={handleSeeMore}>
-          {t('seeMore', 'See more')}
+          {t('viewSchedule', 'View schedule')}
         </button>
       </div>
     </div>
