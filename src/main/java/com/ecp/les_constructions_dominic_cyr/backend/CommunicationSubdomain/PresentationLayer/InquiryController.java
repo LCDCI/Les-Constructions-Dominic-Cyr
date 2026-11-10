@@ -29,4 +29,19 @@ public class InquiryController {
         List<InquiryResponseModel> inquiries = service.getAllInquiries();
         return ResponseEntity.ok(inquiries);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.deleteInquiry(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/archive")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
+    public ResponseEntity<InquiryResponseModel> setArchived(
+            @PathVariable Long id,
+            @RequestParam boolean archived) {
+        return ResponseEntity.ok(service.setArchived(id, archived));
+    }
 }

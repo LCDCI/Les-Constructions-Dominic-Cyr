@@ -75,13 +75,13 @@ const LotsPage = () => {
     41: { top: '45.5%', left: '65.5%' },
     42: { top: '65.5%', left: '52.5%' },
     43: { top: '73%', left: '53%' },
+    44: { top: '58%', left: '42%' },
     45: { top: '47%', left: '41.5%' },
     46: { top: '39%', left: '41.5%' },
     47: { top: '30.5%', left: '41.5%' },
     48: { top: '22%', left: '41.5%' },
     49: { top: '17%', left: '36%' },
     50: { top: '15.5%', left: '27%' },
-    44: { top: '58%', left: '42%' },
   };
 
   const roles = user?.['https://construction-api.loca/roles'] || [];
@@ -91,6 +91,18 @@ const LotsPage = () => {
     (num >= 1 && num <= 9) ||
     (num >= 33 && num <= 44) ||
     (num >= 45 && num <= 50);
+  const getLotStatus = lot =>
+    String(lot.lotStatus || 'unknown')
+      .trim()
+      .toLowerCase();
+
+  const mapLots = lots
+    .map((lot, index) => {
+      const numericId = Number(lot.id);
+      const displayId = !isNaN(numericId) ? numericId : index + 1;
+      return { ...lot, lotNumber: displayId.toString() };
+    })
+    .filter(lot => isPubliclyVisibleId(Number(lot.lotNumber)));
 
   useEffect(() => {
     let cancelled = false;
@@ -306,20 +318,20 @@ const LotsPage = () => {
                   alt="Map"
                   className="phase-map-image"
                 />
-                {filteredLots.map(lot => {
+                {mapLots.map(lot => {
                   const coords = mapButtons[lot.lotNumber];
                   if (!coords) return null;
                   return (
                     <button
                       key={lot.id}
-                      className={`lot-map-button status-${lot.lotStatus?.toLowerCase()}`}
+                      className={`lot-map-button status-${getLotStatus(lot)}`}
                       style={{ top: coords.top, left: coords.left }}
                       onClick={() => setSelectedLot(lot)}
                       title={`${t('common.lot')} ${lot.lotNumber}`}
                       aria-label={
                         lot.lotStatus
                           ? `${t('common.lot')} ${lot.lotNumber} (${t(
-                              `status.${lot.lotStatus.toLowerCase()}`,
+                              `status.${getLotStatus(lot)}`,
                               lot.lotStatus
                             )})`
                           : `${t('common.lot')} ${lot.lotNumber}`

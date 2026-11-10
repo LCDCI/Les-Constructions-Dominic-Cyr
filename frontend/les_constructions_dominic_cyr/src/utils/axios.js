@@ -1,5 +1,6 @@
 // src/utils/axios.js
 import axios from 'axios';
+import { getAuthAudience } from './authConfig';
 
 const ERROR_PAGE_PATH = '/error.html';
 
@@ -20,8 +21,15 @@ export const setupAxiosInterceptors = (
   axiosInstance.interceptors.request.use(
     async config => {
       try {
-        const token = await getAccessTokenSilently();
-        if (token) {
+        const hasAuthorizationHeader = Boolean(
+          config.headers?.Authorization || config.headers?.authorization
+        );
+        const token = hasAuthorizationHeader
+          ? null
+          : await getAccessTokenSilently({
+              authorizationParams: { audience: getAuthAudience() },
+            });
+        if (token && !hasAuthorizationHeader) {
           config.headers.Authorization = `Bearer ${token}`;
         }
       } catch (error) {

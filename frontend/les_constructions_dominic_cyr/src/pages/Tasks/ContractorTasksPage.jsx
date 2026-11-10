@@ -16,14 +16,6 @@ const STATUS_LABELS = {
   CANCELLED: 'Cancelled',
 };
 
-const PRIORITY_LABELS = {
-  VERY_LOW: 'Very Low',
-  LOW: 'Low',
-  MEDIUM: 'Medium',
-  HIGH: 'High',
-  VERY_HIGH: 'Very High',
-};
-
 const ContractorTasksPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -41,7 +33,6 @@ const ContractorTasksPage = () => {
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedLot, setSelectedLot] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [priorityFilter, setPriorityFilter] = useState('all');
 
   const sortProjectsWithForestaFirst = projects => {
     if (!Array.isArray(projects)) return projects;
@@ -108,8 +99,9 @@ const ContractorTasksPage = () => {
     if (selectedProject === 'all') {
       const lotSet = new Set();
       myTasks.forEach(task => {
-        if (task.lotId) {
-          lotSet.add(task.lotId);
+        const lotId = task.lotDatabaseId || task.lotId;
+        if (lotId) {
+          lotSet.add(lotId);
         }
       });
       return Array.from(lotSet).sort((a, b) => {
@@ -124,8 +116,9 @@ const ContractorTasksPage = () => {
     );
     const lotSet = new Set();
     projectTasks.forEach(task => {
-      if (task.lotId) {
-        lotSet.add(task.lotId);
+      const lotId = task.lotDatabaseId || task.lotId;
+      if (lotId) {
+        lotSet.add(lotId);
       }
     });
     return Array.from(lotSet).sort((a, b) => {
@@ -153,7 +146,9 @@ const ContractorTasksPage = () => {
 
     // Filter by lot
     if (selectedLot !== 'all') {
-      result = result.filter(task => task.lotId === selectedLot);
+      result = result.filter(
+        task => (task.lotDatabaseId || task.lotId) === selectedLot
+      );
     }
 
     // Filter by status
@@ -162,19 +157,8 @@ const ContractorTasksPage = () => {
     }
 
     // Filter by priority
-    if (priorityFilter !== 'all') {
-      result = result.filter(task => task.taskPriority === priorityFilter);
-    }
-
     return result;
-  }, [
-    tasks,
-    selectedProject,
-    selectedLot,
-    statusFilter,
-    priorityFilter,
-    userId,
-  ]);
+  }, [tasks, selectedProject, selectedLot, statusFilter, userId]);
 
   // Group filtered tasks by project and lot
   const groupedTasks = useMemo(() => {
@@ -182,7 +166,7 @@ const ContractorTasksPage = () => {
 
     filteredTasks.forEach(task => {
       const projectKey = task.projectIdentifier || 'Unknown Project';
-      const lotKey = task.lotId || 'Unknown Lot';
+      const lotKey = task.lotDatabaseId || task.lotId || 'Unknown Lot';
 
       if (!groups[projectKey]) {
         groups[projectKey] = {
@@ -193,7 +177,7 @@ const ContractorTasksPage = () => {
 
       if (!groups[projectKey].lots[lotKey]) {
         groups[projectKey].lots[lotKey] = {
-          lotNumber: task.lotNumber || lotKey,
+          lotNumber: task.lotDatabaseId || lotKey,
           tasks: [],
         };
       }
@@ -243,17 +227,6 @@ const ContractorTasksPage = () => {
       CANCELLED: 'status-cancelled',
     };
     return statusMap[status] || '';
-  };
-
-  const getPriorityClass = priority => {
-    const priorityMap = {
-      VERY_LOW: 'priority-very-low',
-      LOW: 'priority-low',
-      MEDIUM: 'priority-medium',
-      HIGH: 'priority-high',
-      VERY_HIGH: 'priority-very-high',
-    };
-    return priorityMap[priority] || '';
   };
 
   // Reset lot filter when project changes
@@ -354,26 +327,6 @@ const ContractorTasksPage = () => {
             ))}
           </select>
         </div>
-
-        <div className="filter-group">
-          <label htmlFor="priority-filter">
-            {t('filters.priority', 'Priority')}:
-          </label>
-          <select
-            id="priority-filter"
-            value={priorityFilter}
-            onChange={e => setPriorityFilter(e.target.value)}
-          >
-            <option value="all">
-              {t('filters.allPriorities', 'All Priorities')}
-            </option>
-            {Object.entries(PRIORITY_LABELS).map(([key, label]) => (
-              <option key={key} value={key}>
-                {t(`priority.${key}`, label)}
-              </option>
-            ))}
-          </select>
-        </div>
       </div>
 
       {filteredTasks.length === 0 ? (
@@ -409,11 +362,9 @@ const ContractorTasksPage = () => {
                         <tr>
                           <th>{t('table.title', 'Title')}</th>
                           <th>{t('table.status', 'Status')}</th>
-                          <th>{t('table.priority', 'Priority')}</th>
                           <th>{t('table.startDate', 'Start Date')}</th>
                           <th>{t('table.endDate', 'End Date')}</th>
                           <th>{t('table.assignedTo', 'Assigned To')}</th>
-                          <th>{t('table.progress', 'Progress')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -441,18 +392,6 @@ const ContractorTasksPage = () => {
                                 )}
                               </span>
                             </td>
-                            <td data-label={t('table.priority', 'Priority')}>
-                              <span
-                                className={`priority-badge ${getPriorityClass(
-                                  task.taskPriority
-                                )}`}
-                              >
-                                {t(
-                                  `priority.${task.taskPriority}`,
-                                  PRIORITY_LABELS[task.taskPriority]
-                                )}
-                              </span>
-                            </td>
                             <td data-label={t('table.startDate', 'Start Date')}>
                               {formatDate(task.periodStart)}
                             </td>
@@ -463,18 +402,6 @@ const ContractorTasksPage = () => {
                               data-label={t('table.assignedTo', 'Assigned To')}
                             >
                               {task.assignedToUserName || '—'}
-                            </td>
-                            <td data-label={t('table.progress', 'Progress')}>
-                              <div className="progress-cell">
-                                <div className="progress-bar-container">
-                                  <div
-                                    className="progress-bar-fill"
-                                    style={{
-                                      width: `${task.taskProgress || 0}%`,
-                                    }}
-                                  ></div>
-                                </div>
-                              </div>
                             </td>
                           </tr>
                         ))}

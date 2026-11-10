@@ -27,6 +27,7 @@ public class InquiryMapper {
         responseModel.setContactSubject(inquiry.getContactSubject());
         responseModel.setMessage(inquiry.getMessage());
         responseModel.setCreatedAt(inquiry.getCreatedAt());
+        responseModel.setArchived(inquiry.isArchived());
         return responseModel;
     }
 }

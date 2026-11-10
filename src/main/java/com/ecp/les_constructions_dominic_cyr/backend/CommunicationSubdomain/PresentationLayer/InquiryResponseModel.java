@@ -10,6 +10,7 @@ public class InquiryResponseModel {
     private String contactSubject;
     private String message;
     private OffsetDateTime createdAt;
+    private boolean archived;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -30,4 +31,7 @@ public class InquiryResponseModel {
 
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
+
+    public boolean isArchived() { return archived; }
+    public void setArchived(boolean archived) { this.archived = archived; }
 }

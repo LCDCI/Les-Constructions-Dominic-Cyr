@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import '../../styles/Modals/DeleteScheduleConfirmationModal.css';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const DeleteScheduleConfirmationModal = ({
   isOpen,
@@ -8,6 +9,7 @@ const DeleteScheduleConfirmationModal = ({
   onConfirm,
   isDeleting = false,
 }) => {
+  const { t } = usePageTranslations('projectSchedulePage');
   if (!isOpen) return null;
 
   return (
@@ -23,7 +25,9 @@ const DeleteScheduleConfirmationModal = ({
         role="document"
       >
         <div className="schedule-modal-header">
-          <div className="schedule-modal-title">Delete work?</div>
+          <div className="schedule-modal-title">
+            {t('deleteModal.title', 'Delete work?')}
+          </div>
           <button
             type="button"
             className="modal-close"
@@ -36,8 +40,10 @@ const DeleteScheduleConfirmationModal = ({
         </div>
 
         <div className="delete-schedule-body">
-          This will delete the work and all associated tasks. This action be
-          undone.
+          {t(
+            'deleteModal.message',
+            'This will delete the work and all associated tasks. This action cannot be undone.'
+          )}
         </div>
 
         <div className="form-actions with-danger">

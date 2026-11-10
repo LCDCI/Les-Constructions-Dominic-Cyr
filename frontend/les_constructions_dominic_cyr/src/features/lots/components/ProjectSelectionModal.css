@@ -1,3 +1,7 @@
+.project-selection-modal-backdrop {
+  z-index: 10000;
+}
+
 .project-modal {
   background: white;
   border-radius: 8px;

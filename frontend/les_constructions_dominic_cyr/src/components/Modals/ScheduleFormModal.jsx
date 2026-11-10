@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useRef } from 'react';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const ScheduleFormModal = ({
   title,
@@ -14,6 +15,7 @@ const ScheduleFormModal = ({
   isSaving,
   errorMessage,
 }) => {
+  const { t } = usePageTranslations('projectSchedulePage');
   const originalOverflow = useRef(null);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ const ScheduleFormModal = ({
           <button
             type="button"
             className="modal-close"
-            aria-label="Close"
+            aria-label={t('modal.close', 'Close')}
             onClick={onClose}
           >
             ×
@@ -79,14 +81,17 @@ const ScheduleFormModal = ({
         <form className="create-schedule-form" onSubmit={onSubmit}>
           <div className="form-row">
             <label>
-              <span>Work description</span>
+              <span>{t('form.workDescription', 'Work description')}</span>
               <input
                 type="text"
                 value={schedule.scheduleDescription}
                 onChange={e =>
                   handleFieldChange('scheduleDescription', e.target.value)
                 }
-                placeholder="Foundation pour, framing, etc."
+                placeholder={t(
+                  'form.descriptionPlaceholder',
+                  'Foundation pour, framing, etc.'
+                )}
                 required
               />
             </label>
@@ -94,14 +99,16 @@ const ScheduleFormModal = ({
 
           <div className="form-row">
             <label>
-              <span>Lot</span>
+              <span>{t('createLotSchedule.lot', 'Lot')}</span>
               <select
                 value={schedule.lotId}
                 onChange={e => handleFieldChange('lotId', e.target.value)}
                 disabled={lotsLoading}
               >
                 <option value="" disabled>
-                  {lotsLoading ? 'Loading lots...' : 'Select a lot'}
+                  {lotsLoading
+                    ? t('form.loadingLots', 'Loading lots...')
+                    : t('form.selectLot', 'Select a lot')}
                 </option>
                 {lots.map(lot => (
                   <option key={lot.value} value={lot.value}>
@@ -117,7 +124,7 @@ const ScheduleFormModal = ({
 
           <div className="form-row two-col">
             <label>
-              <span>Start date</span>
+              <span>{t('form.startDate', 'Start date')}</span>
               <input
                 type="date"
                 value={schedule.scheduleStartDate}
@@ -129,7 +136,7 @@ const ScheduleFormModal = ({
             </label>
 
             <label>
-              <span>End date</span>
+              <span>{t('form.endDate', 'End date')}</span>
               <input
                 type="date"
                 value={schedule.scheduleEndDate}
@@ -143,9 +150,10 @@ const ScheduleFormModal = ({
 
           <div className="form-row form-row-note">
             <div className="tasks-subtitle">
-              After saving these schedule details, you will add tasks in the
-              next step. Tasks will be constrained to the start and end dates
-              you set here.
+              {t(
+                'form.tasksNote',
+                'After saving these schedule details, you will add tasks in the next step. Tasks will be constrained to the start and end dates you set here.'
+              )}
             </div>
           </div>
 
@@ -156,10 +164,12 @@ const ScheduleFormModal = ({
               onClick={onClose}
               disabled={isSaving}
             >
-              Cancel
+              {t('form.cancel', 'Cancel')}
             </button>
             <button type="submit" className="modal-primary" disabled={isSaving}>
-              {isSaving ? 'Saving…' : 'Save work'}
+              {isSaving
+                ? t('form.saving', 'Saving…')
+                : t('form.saveWork', 'Save work')}
             </button>
           </div>
         </form>

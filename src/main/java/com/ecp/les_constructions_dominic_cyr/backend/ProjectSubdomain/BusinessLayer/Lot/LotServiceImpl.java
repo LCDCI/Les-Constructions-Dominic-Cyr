@@ -149,9 +149,7 @@ public class LotServiceImpl implements LotService {
                 && lotRepository.existsById(lotRequestModel.getId())) {
             throw new InvalidInputException("Lot ID is already in use: " + lotRequestModel.getId());
         }
-        if (lotRequestModel.getId() != null) {
-            foundLot.setId(lotRequestModel.getId());
-        }
+        Integer requestedId = lotRequestModel.getId();
         if (lotRequestModel.getLotNumber() != null && !lotRequestModel.getLotNumber().isBlank()) {
             foundLot.setLotNumber(lotRequestModel.getLotNumber());
         }
@@ -187,6 +185,17 @@ public class LotServiceImpl implements LotService {
         }
 
         Lot updatedLot = lotRepository.save(foundLot);
+        if (requestedId != null && !requestedId.equals(foundLot.getId())) {
+            lotRepository.flush();
+            List<UUID> assignedUserIds = foundLot.getAssignedUsers().stream()
+                    .map(user -> user.getUserIdentifier().getUserId())
+                    .collect(Collectors.toList());
+            lotRepository.deleteAssignedUsers(foundLot.getId());
+            lotRepository.updateDatabaseId(lotUuid, requestedId);
+            assignedUserIds.forEach(userId -> lotRepository.addAssignedUser(requestedId, userId));
+            lotRepository.flush();
+            updatedLot = lotRepository.findByLotIdentifier_LotIdWithUsers(lotUuid);
+        }
         return mapToResponse(updatedLot);
     }
 

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.ecp.les_constructions_dominic_cyr.backend.utils.Exception.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,6 +70,7 @@ public class InquiryServiceImpl implements InquiryService {
                     if (request.getPhone() != null && !request.getPhone().isEmpty()) {
                         notificationMessageBuilder.append(". Téléphone : ").append(request.getPhone());
                     }
+
                     String notificationMessage = notificationMessageBuilder.toString();
                     
                     notificationService.createNotification(
@@ -110,6 +112,24 @@ public class InquiryServiceImpl implements InquiryService {
         }
         
         return mapper.entityToResponseModel(savedInquiry);
+    }
+
+    @Override
+    @Transactional
+    public void deleteInquiry(Long id) {
+        if (!repository.existsById(id)) {
+            throw new NotFoundException("Inquiry not found: " + id);
+        }
+        repository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public InquiryResponseModel setArchived(Long id, boolean archived) {
+        Inquiry inquiry = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Inquiry not found: " + id));
+        inquiry.setArchived(archived);
+        return mapper.entityToResponseModel(repository.save(inquiry));
     }
     
     private String buildInquiryEmailBody(InquiryRequestModel request) {

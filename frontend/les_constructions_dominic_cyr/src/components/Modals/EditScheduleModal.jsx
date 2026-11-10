@@ -21,7 +21,6 @@ const EditScheduleModal = ({
   onRemoveTask,
   onToggleTaskEdit,
   taskStatuses,
-  taskPriorities,
   contractors,
   onDeleteSchedule = null,
 }) => {
@@ -251,23 +250,6 @@ const EditScheduleModal = ({
                       ))}
                     </select>
                   </label>
-
-                  <label>
-                    <span>Priority</span>
-                    <select
-                      value={task.taskPriority}
-                      disabled={!task.isEditable}
-                      onChange={e =>
-                        onTaskChange(idx, 'taskPriority', e.target.value)
-                      }
-                    >
-                      {taskPriorities.map(priority => (
-                        <option key={priority} value={priority}>
-                          {priority.replaceAll('_', ' ')}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
                 </div>
 
                 <div className="task-row-grid">
@@ -333,40 +315,6 @@ const EditScheduleModal = ({
                     rows={2}
                   />
                 </label>
-
-                <div className="task-row-grid task-row-numbers">
-                  <label>
-                    <span>Estimated hours</span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      value={task.estimatedHours}
-                      disabled={!task.isEditable}
-                      onChange={e =>
-                        onTaskChange(idx, 'estimatedHours', e.target.value)
-                      }
-                      placeholder="Optional"
-                    />
-                  </label>
-
-                  <label>
-                    <span>Hours spent</span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      value={task.hoursSpent}
-                      disabled={!task.isEditable}
-                      onChange={e =>
-                        onTaskChange(idx, 'hoursSpent', e.target.value)
-                      }
-                      placeholder="Optional"
-                    />
-                  </label>
-
-                  {/* Progress is computed from estimatedHours/hoursSpent; not editable in forms */}
-                </div>
               </div>
             ))}
           </div>
@@ -453,7 +401,6 @@ EditScheduleModal.propTypes = {
   onRemoveTask: PropTypes.func.isRequired,
   onToggleTaskEdit: PropTypes.func.isRequired,
   taskStatuses: PropTypes.arrayOf(PropTypes.string).isRequired,
-  taskPriorities: PropTypes.arrayOf(PropTypes.string).isRequired,
   contractors: PropTypes.arrayOf(
     PropTypes.shape({
       userId: PropTypes.string,

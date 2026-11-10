@@ -2,7 +2,15 @@
   "title": "Supplier Dashboard",
   "welcome": "Welcome, {{name}}!",
   "upcomingTasks": "Here are your upcoming tasks:",
+  "upcomingWork": "Upcoming work",
+  "filterByLot": "Filter by lot",
+  "allLots": "All lots",
+  "due": "Due",
+  "lot": "Lot",
   "seeMore": "See more",
+  "loadingSchedules": "Loading schedules...",
+  "noSchedules": "No schedules available",
+  "viewSchedule": "View schedule",
   "cards": {
     "myTasks": {
       "title": "My Tasks",

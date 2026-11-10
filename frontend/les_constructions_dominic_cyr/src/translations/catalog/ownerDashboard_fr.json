@@ -1,8 +1,16 @@
 {
   "title": "Tableau de bord propriétaire",
   "welcome": "Bienvenue, {{name}} !",
-  "thisWeek": "Cette semaine :",
+  "thisWeek": "Travaux à venir",
+  "upcomingWork": "Travaux à venir",
+  "filterByLot": "Filtrer par lot",
+  "allLots": "Tous les lots",
+  "due": "Échéance",
+  "lot": "Lot",
   "seeMore": "Voir plus",
+  "loadingSchedules": "Chargement des calendriers...",
+  "noSchedules": "Aucun calendrier disponible",
+  "viewSchedule": "Voir le calendrier",
   "cards": {
     "uploads": {
       "title": "Téléchargements",

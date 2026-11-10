@@ -16,7 +16,45 @@
   "tasks": "tâches",
   "edit": "Modifier",
   "createWork": "Créer un travail",
+  "createLotSchedule": {
+    "title": "Créer le calendrier du lot",
+    "button": "Créer le calendrier du lot",
+    "lot": "Lot",
+    "priority": "Priorité des tâches",
+    "priorities": {
+      "VERY_LOW": "Très basse",
+      "LOW": "Basse",
+      "MEDIUM": "Moyenne",
+      "HIGH": "Haute",
+      "VERY_HIGH": "Très haute"
+    }
+  },
   "project": "Projet",
+  "modal": {
+    "close": "Fermer",
+    "date": "Date",
+    "description": "Description",
+    "tasks": "Tâches",
+    "loadingTasks": "Chargement des tâches…",
+    "noTasks": "Aucune tâche inscrite",
+    "editWork": "Modifier le calendrier"
+  },
+  "form": {
+    "workDescription": "Description du calendrier",
+    "descriptionPlaceholder": "Coulage des fondations, charpente, etc.",
+    "loadingLots": "Chargement des lots...",
+    "selectLot": "Sélectionner un lot",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "tasksNote": "Après l’enregistrement des détails du calendrier, vous ajouterez les tâches à l’étape suivante. Les tâches seront limitées aux dates de début et de fin indiquées.",
+    "cancel": "Annuler",
+    "saving": "Enregistrement…",
+    "saveWork": "Enregistrer le calendrier"
+  },
+  "deleteModal": {
+    "title": "Supprimer le calendrier ?",
+    "message": "Cette action supprimera le calendrier et toutes les tâches associées. Elle est irréversible."
+  },
   "startUnknown": "Début ?",
   "errors": {
     "descriptionRequired": "La description du calendrier est requise.",
@@ -25,6 +63,7 @@
     "updateFailed": "Échec de la mise à jour du calendrier",
     "deleteFailed": "Échec de la suppression du calendrier",
     "loadLotsFailed": "Impossible de charger les lots.",
+    "loadContractorsFailed": "Impossible de charger les fournisseurs pour le calendrier.",
     "loadTasksFailed": "Échec du chargement des tâches pour ce calendrier.",
     "noScheduleSelected": "Aucun calendrier sélectionné. Veuillez d'abord créer un calendrier.",
     "noScheduleId": "Impossible de déterminer l'identifiant du calendrier pour les tâches.",

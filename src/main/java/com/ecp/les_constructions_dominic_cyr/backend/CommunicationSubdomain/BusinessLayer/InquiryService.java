@@ -7,4 +7,6 @@ import java.util.List;
 public interface InquiryService {
     InquiryResponseModel submitInquiry(InquiryRequestModel request);
     List<InquiryResponseModel> getAllInquiries();
+    void deleteInquiry(Long id);
+    InquiryResponseModel setArchived(Long id, boolean archived);
 }

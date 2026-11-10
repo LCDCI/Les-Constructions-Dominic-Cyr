@@ -3,6 +3,22 @@
   "loading": "Loading inquiries...",
   "error": "Error:",
   "noInquiries": "No inquiries found.",
+  "actionError": "Unable to update inquiry.",
+  "status": { "active": "Active", "archived": "Archived" },
+  "actions": {
+    "archive": "Archive",
+    "unarchive": "Unarchive",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+  "confirm": {
+    "deleteTitle": "Delete inquiry",
+    "deleteMessage": "Are you sure you want to permanently delete this inquiry?",
+    "archiveTitle": "Archive inquiry",
+    "archiveMessage": "Are you sure you want to archive this inquiry?",
+    "unarchiveTitle": "Unarchive inquiry",
+    "unarchiveMessage": "Are you sure you want to unarchive this inquiry?"
+  },
   "table": {
     "name": "Name",
     "email": "Email",
@@ -16,6 +32,8 @@
       "other": "Other"
     },
     "message": "Message",
-    "timestamp": "Timestamp"
+    "timestamp": "Timestamp",
+    "status": "Status",
+    "actions": "Actions"
   }
 }

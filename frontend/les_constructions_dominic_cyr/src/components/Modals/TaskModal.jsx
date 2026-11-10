@@ -6,7 +6,6 @@ const TaskModal = ({
   schedule,
   tasks,
   statuses,
-  priorities,
   contractors,
   errorMessage,
   isSaving,
@@ -104,22 +103,6 @@ const TaskModal = ({
                     ))}
                   </select>
                 </label>
-
-                <label>
-                  <span>Priority</span>
-                  <select
-                    value={task.taskPriority}
-                    onChange={e =>
-                      onTaskChange(idx, 'taskPriority', e.target.value)
-                    }
-                  >
-                    {priorities.map(priority => (
-                      <option key={priority} value={priority}>
-                        {priority.replaceAll('_', ' ')}
-                      </option>
-                    ))}
-                  </select>
-                </label>
               </div>
 
               <div className="task-row-grid">
@@ -181,38 +164,6 @@ const TaskModal = ({
                   rows={2}
                 />
               </label>
-
-              <div className="task-row-grid task-row-numbers">
-                <label>
-                  <span>Estimated hours</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={task.estimatedHours}
-                    onChange={e =>
-                      onTaskChange(idx, 'estimatedHours', e.target.value)
-                    }
-                    placeholder="Optional"
-                  />
-                </label>
-
-                <label>
-                  <span>Hours spent</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.5"
-                    value={task.hoursSpent}
-                    onChange={e =>
-                      onTaskChange(idx, 'hoursSpent', e.target.value)
-                    }
-                    placeholder="Optional"
-                  />
-                </label>
-
-                {/* Progress is computed from estimatedHours/hoursSpent; not editable in forms */}
-              </div>
             </div>
           ))}
         </div>
