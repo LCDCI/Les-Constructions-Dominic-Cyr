@@ -5,6 +5,7 @@ import com.ecp.les_constructions_dominic_cyr.backend.ProjectSubdomain.BusinessLa
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/v1/projects")
@@ -22,6 +23,7 @@ public class ProjectOverviewController {
     }
 
     @PutMapping("/{projectIdentifier}/overview")
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public ResponseEntity<ProjectOverviewResponseModel> updateProjectOverview(
             @PathVariable String projectIdentifier,
             @RequestBody ProjectOverviewUpdateRequest request

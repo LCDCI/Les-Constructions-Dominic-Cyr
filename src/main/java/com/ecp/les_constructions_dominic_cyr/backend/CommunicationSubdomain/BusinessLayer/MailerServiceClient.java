@@ -26,11 +26,13 @@ public class MailerServiceClient {
     private final WebClient webClient;
 
     private final String baseUrl;
+    private final String serviceKey;
     
     public MailerServiceClient(
             Environment environment, 
             @Value("${MAILER_SERVICE_BASE_URL:}") String envVarDirect,
-            @Value("${mailer.service.base-url:}") String baseUrlFromConfig) {
+            @Value("${mailer.service.base-url:}") String baseUrlFromConfig,
+            @Value("${mailer.service.api-key:}") String serviceKey) {
         // Check environment variable first (both System.getenv and Spring Environment)
         String envUrl = System.getenv("MAILER_SERVICE_BASE_URL");
         if (envUrl == null || envUrl.isEmpty()) {
@@ -67,6 +69,10 @@ public class MailerServiceClient {
         this.webClient = WebClient.builder()
                 .baseUrl(this.baseUrl)
                 .build();
+        if (serviceKey == null || serviceKey.isBlank()) {
+            throw new IllegalStateException("mailer.service.api-key must be configured");
+        }
+        this.serviceKey = serviceKey;
     }
 
     /**
@@ -93,6 +99,7 @@ public class MailerServiceClient {
         return webClient.post()
                 .uri("/mail")
                 .contentType(MediaType.APPLICATION_JSON)
+                .header("X-Internal-Service-Key", serviceKey)
                 .bodyValue(emailPayload)
                 .retrieve()
                 .bodyToMono(String.class) // Read response to see if there are errors

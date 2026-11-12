@@ -19,6 +19,7 @@ services:
     environment:
       FILES_SERVICE_BASE_URL: "http://files-service:8080"
       MAILER_SERVICE_BASE_URL: "http://mailer-service:8080"
+      MAILER_SERVICE_API_KEY: "${MAILER_SERVICE_API_KEY}"
       FILE_SERVICE_URL: "${FILE_SERVICE_URL:-}"
       # Database: use env for managed DB, or defaults for local postgres1
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres1/cdc-db}"
@@ -134,6 +135,7 @@ services:
       BREVO_API_KEY: "${BREVO_API_KEY}"
       BREVO_FROM_EMAIL: "${BREVO_FROM_EMAIL:-noreply@constructions-dominiccyr.com}"
       MAILER_PORT: "8080"
+      MAILER_SERVICE_API_KEY: "${MAILER_SERVICE_API_KEY}"
     networks:
       - app-network
 
@@ -159,6 +161,7 @@ services:
       MINIO_ACCESS_KEY: "${SPACES_ACCESS_KEY}"
       MINIO_SECRET_KEY: "${SPACES_SECRET_KEY}"
       MINIO_USE_SSL: "true"
+      FILES_SERVICE_API_KEY: "${FILES_SERVICE_API_KEY}"
 
   #######################################################################
   # POSTGRES (files database - optional, profile: local-db)

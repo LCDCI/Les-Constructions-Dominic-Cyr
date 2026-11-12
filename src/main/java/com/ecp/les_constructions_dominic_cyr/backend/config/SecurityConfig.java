@@ -188,6 +188,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/lots").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/lots/**").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/users").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/projects/**").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/projects/**").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/projects/**").hasAuthority("ROLE_OWNER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/projects/**").hasAuthority("ROLE_OWNER")
 
 
                         // Task Management - Allow viewing, but only owners can delete via /owners/tasks endpoint

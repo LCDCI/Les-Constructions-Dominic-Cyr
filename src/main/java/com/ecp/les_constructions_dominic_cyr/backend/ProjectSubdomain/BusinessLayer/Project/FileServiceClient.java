@@ -13,9 +13,12 @@ public class FileServiceClient {
 
     private final WebClient webClient;
 
-    public FileServiceClient(@Value("${files.service.base-url:http://localhost:8082}") String baseUrl) {
+    public FileServiceClient(
+            @Value("${files.service.base-url:http://localhost:8082}") String baseUrl,
+            @Value("${files.service.api-key:}") String serviceKey) {
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)
+                .defaultHeader("X-Internal-Service-Key", serviceKey)
                 .build();
     }
 

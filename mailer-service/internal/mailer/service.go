@@ -53,7 +53,7 @@ func NewService(apiKey string, from string, blockedRecipients ...[]string) Servi
 	}
 
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		TLSClientConfig: &tls.Config{MinVersion: tls.VersionTLS12},
 	}
 	return &service{
 		apiKey:           apiKey,

@@ -14,9 +14,12 @@ public class GlobalPhotoService {
 
     private final WebClient webClient;
 
-    public GlobalPhotoService(@Value("${files.service.base-url}") String baseUrl) {
+    public GlobalPhotoService(
+            @Value("${files.service.base-url}") String baseUrl,
+            @Value("${files.service.api-key:}") String serviceKey) {
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl) // e.g. http://localhost:8082 (dev) or http://files-service:8080 (docker)
+                .defaultHeader("X-Internal-Service-Key", serviceKey)
                 .build();
     }
 

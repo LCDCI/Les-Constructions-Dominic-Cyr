@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/v1/projects/{projectIdentifier}/living-environment")
@@ -29,6 +30,7 @@ public class LivingEnvironmentController {
     }
 
     @PutMapping
+    @PreAuthorize("hasAuthority('ROLE_OWNER')")
     public ResponseEntity<LivingEnvironmentResponseModel> updateLivingEnvironment(
             @PathVariable String projectIdentifier,
             @RequestParam(defaultValue = "en") String lang,
