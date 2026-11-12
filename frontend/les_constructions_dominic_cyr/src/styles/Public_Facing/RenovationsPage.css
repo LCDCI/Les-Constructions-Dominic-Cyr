@@ -4,6 +4,17 @@
   overflow-x: hidden;
 }
 
+.renovations-page .public-page__cta .public-page__heading {
+  max-width: 34rem;
+  margin-right: auto;
+  margin-left: auto;
+  font-size: clamp(1.65rem, 3vw, 2.4rem);
+}
+
+.renovations-page .public-page__cta .public-page__copy {
+  max-width: 34rem;
+}
+
 /* Scoped hero overrides to match Residential Projects sizing and typography */
 .renovations-page .projects-hero {
   width: 100%;

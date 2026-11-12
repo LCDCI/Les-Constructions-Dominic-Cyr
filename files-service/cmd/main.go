@@ -42,7 +42,7 @@ func main() {
 	r.Use(middleware.CORSMiddleware())
 
 	r.Use(middleware.ErrorHandler)
-	r.Use(middleware.InjectFakeUser())
+	r.Use(middleware.RequireServiceKey())
 
 	fileController.RegisterRoutes(r)
 

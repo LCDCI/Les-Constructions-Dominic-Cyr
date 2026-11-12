@@ -1,23 +1,9 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Service Unavailable - Les Constructions Dominic Cyr</title>
-    <script>
-        (function () {
-            try {
-                var languages = navigator.languages && navigator.languages.length
-                    ? navigator.languages
-                    : [navigator.language || navigator.userLanguage || 'en'];
-                var primary = (languages[0] || 'en').toLowerCase();
-                var isFrench = primary === 'fr' || primary.indexOf('fr-') === 0;
-                document.documentElement.lang = isFrench ? 'fr' : 'en';
-            } catch (e) {
-                document.documentElement.lang = 'en';
-            }
-        })();
-    </script>
+    <title>Service temporairement indisponible - Les Constructions Dominic Cyr</title>
     <style>
         * {
             margin: 0;
@@ -155,77 +141,125 @@
             </svg>
         </div>
         
-        <h1>Service Temporarily Unavailable</h1>
+        <h1>Service temporairement indisponible</h1>
         
         <p class="error-message">
-            We are currently experiencing server issues. Our team is working on resolving this as quickly as possible.
+            Nous rencontrons actuellement des problèmes avec le serveur. Notre équipe travaille à les résoudre le plus rapidement possible.
         </p>
         
         <p class="error-submessage">
-            Please check back in a few minutes. We apologize for any inconvenience this may cause.
+            Veuillez réessayer dans quelques minutes. Nous nous excusons des inconvénients que cette situation pourrait causer.
         </p>
         
-        <button class="retry-button" onclick="location.reload()">
-            Retry Now
+        <button class="retry-button" onclick="goHome()">
+            Retour à l'accueil
         </button>
-        
-        <div class="status-info">
-            If this problem persists, please contact us at info@lcdci.ca
-        </div>
     </div>
 
     <script>
-        // Auto-retry configuration
-        const RETRY_INTERVAL_MS = 30000; // 30 seconds
+        // Configuration des nouvelles tentatives automatiques
+        const RETRY_INTERVAL_MS = 30000; // 30 secondes
         const MAX_RETRIES = 3;
-        const COOLDOWN_PERIOD_MS = 3600000; // 1 hour before resetting retry counter
+        const COOLDOWN_PERIOD_MS = 3600000; // 1 heure avant la réinitialisation du compteur
         const RETRY_STORAGE_KEY = 'lcdci_error_retry_count';
         const RETRY_TIMESTAMP_KEY = 'lcdci_error_retry_timestamp';
 
-        function getRetryData() {
-            const count = parseInt(localStorage.getItem(RETRY_STORAGE_KEY), 10);
-            const timestamp = parseInt(localStorage.getItem(RETRY_TIMESTAMP_KEY), 10);
-            
-            // If data is invalid or cooldown period has passed, reset
-            const now = Date.now();
-            if (isNaN(count) || count < 0 || isNaN(timestamp) || (now - timestamp) > COOLDOWN_PERIOD_MS) {
-                return { count: 0, shouldReset: true };
+        function updateStatus(message) {
+            const statusMessage = document.getElementById('status-message');
+            if (statusMessage) {
+                statusMessage.textContent = message;
             }
-            
-            return { count, shouldReset: false };
+        }
+
+        function goHome() {
+            try {
+                window.location.assign('/');
+            } catch (navigationError) {
+                try {
+                    window.location.href = `${window.location.origin}/`;
+                } catch (fallbackError) {
+                    updateStatus(
+                        "La page d'accueil n'a pas pu être ouverte. Veuillez utiliser l'adresse https://constructions-dominiccyr.com."
+                    );
+                }
+            }
+        }
+
+        function getRetryData() {
+            try {
+                const count = Number.parseInt(
+                    localStorage.getItem(RETRY_STORAGE_KEY),
+                    10
+                );
+                const timestamp = Number.parseInt(
+                    localStorage.getItem(RETRY_TIMESTAMP_KEY),
+                    10
+                );
+
+                // Réinitialiser si les données sont invalides ou si la période d'attente est écoulée
+                const now = Date.now();
+                if (
+                    !Number.isFinite(count) ||
+                    count < 0 ||
+                    !Number.isFinite(timestamp) ||
+                    now - timestamp > COOLDOWN_PERIOD_MS
+                ) {
+                    return { count: 0, shouldReset: true };
+                }
+
+                return { count, shouldReset: false };
+            } catch (storageError) {
+                updateStatus(
+                    "Les nouvelles tentatives automatiques sont indisponibles. Veuillez revenir à l'accueil ou réessayer plus tard."
+                );
+                return null;
+            }
         }
 
         function setRetryData(count) {
-            localStorage.setItem(RETRY_STORAGE_KEY, String(count));
-            localStorage.setItem(RETRY_TIMESTAMP_KEY, String(Date.now()));
-        }
-
-        function autoRetry() {
             try {
-                const { count: currentCount, shouldReset } = getRetryData();
-                
-                if (shouldReset) {
-                    // Reset and start fresh
-                    setRetryData(1);
-                    console.log(`Auto-retry attempt 1 of ${MAX_RETRIES}`);
-                    location.reload();
-                } else if (currentCount < MAX_RETRIES) {
-                    const nextCount = currentCount + 1;
-                    setRetryData(nextCount);
-                    console.log(`Auto-retry attempt ${nextCount} of ${MAX_RETRIES}`);
-                    location.reload();
-                } else {
-                    console.log('Max auto-retry attempts reached; no further automatic reloads will be performed for 1 hour.');
-                    // Don't remove the counter - it will reset after cooldown period
-                }
-            } catch (e) {
-                // If storage is unavailable (e.g., disabled), fail safe by not auto-retrying indefinitely.
-                console.error('Auto-retry disabled due to storage access error:', e);
+                localStorage.setItem(RETRY_STORAGE_KEY, String(count));
+                localStorage.setItem(RETRY_TIMESTAMP_KEY, String(Date.now()));
+                return true;
+            } catch (storageError) {
+                updateStatus(
+                    "Les nouvelles tentatives automatiques sont indisponibles. Veuillez revenir à l'accueil ou réessayer plus tard."
+                );
+                return false;
             }
         }
 
-        // Start auto-retry after configured interval
-        setTimeout(autoRetry, RETRY_INTERVAL_MS);
+        function autoRetry() {
+            const retryData = getRetryData();
+            if (!retryData) {
+                return;
+            }
+
+            if (retryData.shouldReset) {
+                // Réinitialiser et recommencer
+                if (setRetryData(1)) {
+                    window.location.reload();
+                }
+            } else if (retryData.count < MAX_RETRIES) {
+                const nextCount = retryData.count + 1;
+                if (setRetryData(nextCount)) {
+                    window.location.reload();
+                }
+            } else {
+                updateStatus(
+                    "Le nombre maximal de tentatives a été atteint. Veuillez revenir à l'accueil ou réessayer dans une heure."
+                );
+            }
+        }
+
+        // Démarrer les nouvelles tentatives après l’intervalle configuré
+        try {
+            window.setTimeout(autoRetry, RETRY_INTERVAL_MS);
+        } catch (timerError) {
+            updateStatus(
+                "La nouvelle tentative automatique est indisponible. Veuillez revenir à l'accueil ou réessayer plus tard."
+            );
+        }
     </script>
 </body>
 </html>

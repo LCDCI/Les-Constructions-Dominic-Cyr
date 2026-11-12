@@ -12,8 +12,8 @@
   --pm-text: #2c3531;
   --pm-muted: #5a6660;
   --pm-sand: #f9faf8;
-  --pm-serif: 'Playfair Display', Georgia, serif;
-  --pm-sans: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --pm-serif: var(--font-heading);
+  --pm-sans: var(--font-body);
   --pm-ease: cubic-bezier(0.16, 1, 0.3, 1);
 
   min-height: 100vh;

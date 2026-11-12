@@ -4,6 +4,12 @@
   "error": "Error:",
   "noInquiries": "No inquiries found.",
   "actionError": "Unable to update inquiry.",
+  "filters": {
+    "label": "Show inquiries",
+    "unarchived": "Unarchived",
+    "archived": "Archived",
+    "all": "All"
+  },
   "status": { "active": "Active", "archived": "Archived" },
   "actions": {
     "archive": "Archive",

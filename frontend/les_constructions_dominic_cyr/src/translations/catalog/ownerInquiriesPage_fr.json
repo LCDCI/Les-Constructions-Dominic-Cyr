@@ -4,6 +4,12 @@
   "error": "Erreur :",
   "noInquiries": "Aucune demande trouvée.",
   "actionError": "Impossible de modifier la demande.",
+  "filters": {
+    "label": "Afficher les demandes",
+    "unarchived": "Non archivées",
+    "archived": "Archivées",
+    "all": "Toutes"
+  },
   "status": { "active": "Active", "archived": "Archivée" },
   "actions": {
     "archive": "Archiver",

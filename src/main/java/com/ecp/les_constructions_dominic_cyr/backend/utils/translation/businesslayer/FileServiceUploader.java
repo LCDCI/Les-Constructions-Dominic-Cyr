@@ -26,11 +26,13 @@ public class FileServiceUploader {
 
     public FileServiceUploader(
             @Value("${files.service.base-url}") String baseUrl,
+            @Value("${files.service.api-key:}") String serviceKey,
             ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         this.dataBufferFactory = new DefaultDataBufferFactory();
         this.webClient = WebClient.builder()
                 .baseUrl(baseUrl)
+                .defaultHeader("X-Internal-Service-Key", serviceKey)
                 .build();
     }
 

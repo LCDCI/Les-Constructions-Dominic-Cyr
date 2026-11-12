@@ -352,12 +352,12 @@ body {
 }
 
 .portfolio-card:hover .card-image-bg {
-  transform: scale(1.08);
+  transform: none;
 }
 
 .portfolio-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  transform: none;
+  box-shadow: none;
 }
 
 .card-image-bg {
@@ -485,8 +485,7 @@ body {
 }
 
 .feature-card:hover {
-  border-color: var(--color-secondary);
-  transform: translateY(-5px);
+  transform: none;
 }
 
 .feature-title {

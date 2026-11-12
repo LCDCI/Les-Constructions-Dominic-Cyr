@@ -467,7 +467,7 @@ const LotsPage = () => {
               ) : filteredLots.length === 0 ? (
                 <div className="no-results">{t('common.noResults')}</div>
               ) : (
-                <LotList lots={filteredLots} isOwner={isOwner} />
+                <LotList lots={filteredLots} isOwner={isOwner} publicPage />
               )}
             </div>
           </div>

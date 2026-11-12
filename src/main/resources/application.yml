@@ -56,10 +56,12 @@ spring.datasource.hikari.initializationFailTimeout: 60000
 files:
   service:
     base-url: ${FILES_SERVICE_BASE_URL:http://localhost:8082}
+    api-key: ${FILES_SERVICE_API_KEY:}
 
 mailer:
   service:
     base-url: ${MAILER_SERVICE_BASE_URL:http://localhost:8083}
+    api-key: ${MAILER_SERVICE_API_KEY:}
 
 # DeepL API Configuration (for PDF translation)
 deepl:

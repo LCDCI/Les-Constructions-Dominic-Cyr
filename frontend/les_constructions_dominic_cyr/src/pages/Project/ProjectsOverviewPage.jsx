@@ -384,18 +384,23 @@ const ProjectOverviewPage = () => {
             ? 'Föresta residential project in Saint-Alphonse-de-Granby'
             : 'Residential construction project')}
       </h1>
-      {(overview.overviewSectionContent || overview.heroDescription) && (
+      {(overview.overviewSectionTitle ||
+        overview.heroTitle ||
+        overview.heroSubtitle) && (
         <section className="project-section overview-section">
           <div className="section-container">
             <h2 className="section-title">
-              {overview.overviewSectionTitle ||
-                t('sections.overview', 'Overview')}
+              <span>
+                {overview.overviewSectionTitle ||
+                  overview.heroTitle ||
+                  t('sections.overview', 'Overview')}
+              </span>
+              {overview.heroSubtitle && (
+                <span className="section-subtitle">
+                  {overview.heroSubtitle}
+                </span>
+              )}
             </h2>
-            {(overview.overviewSectionContent || overview.heroDescription) && (
-              <p className="section-description">
-                {overview.overviewSectionContent || overview.heroDescription}
-              </p>
-            )}
           </div>
           <div className="project-features-grid">
             {[

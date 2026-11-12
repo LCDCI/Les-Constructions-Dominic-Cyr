@@ -247,15 +247,29 @@ const LivingEnvironmentPage = () => {
   }
 
   return (
-    <div className="living-environment-page">
-      <ProjectBanner projectIdentifier={projectIdentifier} />
+    <div
+      className="living-environment-page"
+      style={{
+        '--primary-color': data.primaryColor || '#4c4d4f',
+        '--tertiary-color': data.tertiaryColor || '#628db5',
+        '--buyer-color': data.buyerColor || '#aab2a6',
+      }}
+    >
+      <ProjectBanner projectIdentifier={projectIdentifier}>
+        <div className="living-banner-content">
+          <h1 className="living-banner-title">
+            {introSectionTitle || t('title', 'Living Environment')}
+          </h1>
+          {data.headerTagline && (
+            <p className="living-banner-subtitle">{data.headerTagline}</p>
+          )}
+          <span className="living-banner-divider" aria-hidden="true" />
+        </div>
+      </ProjectBanner>
 
       <div className="container">
         {/* Description Section */}
         <section className="le-description-section">
-          {introSectionTitle && (
-            <h1 className="le-section-title">{introSectionTitle}</h1>
-          )}
           <p className="le-description-text">{data.descriptionText}</p>
         </section>
 

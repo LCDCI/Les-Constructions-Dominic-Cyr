@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +23,11 @@ import (
 // @BasePath /
 func main() {
 	r := gin.Default()
+	serviceKey := os.Getenv("MAILER_SERVICE_API_KEY")
+	if serviceKey == "" {
+		log.Fatal("MAILER_SERVICE_API_KEY must be configured")
+	}
+	r.Use(middleware.RequireServiceKey(serviceKey))
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.GET("/metrics", gin.WrapH(promhttp.Handler()))

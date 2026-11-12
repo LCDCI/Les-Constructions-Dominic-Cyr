@@ -21,6 +21,8 @@ services:
 
       FILES_SERVICE_BASE_URL: ${FILES_SERVICE_BASE_URL:-http://files-service:8080}
       MAILER_SERVICE_BASE_URL: ${MAILER_SERVICE_BASE_URL:-http://mailer-service:8080}
+      FILES_SERVICE_API_KEY: ${FILES_SERVICE_API_KEY}
+      MAILER_SERVICE_API_KEY: ${MAILER_SERVICE_API_KEY}
 
       AUTH0_DOMAIN: ${AUTH0_DOMAIN}
       AUTH0_AUDIENCE: ${AUTH0_AUDIENCE}
@@ -102,6 +104,7 @@ services:
       BREVO_API_KEY: "${BREVO_API_KEY}" # Brevo API v3 key (from .env or mailer.env)
       BREVO_FROM_EMAIL: "${BREVO_FROM_EMAIL:-noreply@constructions-dominiccyr.com}" # Sender email address (from .env or mailer.env)
       MAILER_PORT: "8080" # Internal port (matches Dockerfile EXPOSE)
+      MAILER_SERVICE_API_KEY: "${MAILER_SERVICE_API_KEY}"
     # Note: Healthcheck removed because scratch base image has no shell/tools
     # Service will be considered healthy once it starts listening on port 8080
     networks:
@@ -128,6 +131,7 @@ services:
       MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       MINIO_USE_SSL: "false"
       MINIO_REGION: us-east-1
+      FILES_SERVICE_API_KEY: "${FILES_SERVICE_API_KEY}"
     depends_on:
       files-db:
         condition: service_healthy

@@ -49,6 +49,9 @@ public class LotDocumentServiceImpl implements LotDocumentService {
     @Value("${files.service.base-url}")
     private String filesServiceBaseUrl;
 
+    @Value("${files.service.api-key:}")
+    private String filesServiceApiKey;
+
     private static final List<String> IMAGE_MIME_TYPES = List.of(
             "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp", "image/svg+xml"
     );
@@ -524,6 +527,7 @@ public class LotDocumentServiceImpl implements LotDocumentService {
             
             String response = webClient.post()
                     .uri("/files")
+                    .header("X-Internal-Service-Key", filesServiceApiKey)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .body(BodyInserters.fromMultipartData(bodyBuilder.build()))
                     .retrieve()
@@ -550,6 +554,7 @@ public class LotDocumentServiceImpl implements LotDocumentService {
 
             return webClient.get()
                     .uri("/files/" + storageKey)
+                    .header("X-Internal-Service-Key", filesServiceApiKey)
                     .retrieve()
                     .bodyToMono(byte[].class)
                     .timeout(Duration.ofSeconds(30))

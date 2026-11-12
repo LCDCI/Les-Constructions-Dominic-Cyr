@@ -28,11 +28,13 @@ public class TranslationService {
 
     public TranslationService(
             @Value("${files.service.base-url}") String fileServiceBaseUrl,
+            @Value("${files.service.api-key:}") String serviceKey,
             TranslationRegistry registry) {
         this.registry = registry;
         this.objectMapper = new ObjectMapper();
         this.webClient = WebClient.builder()
                 .baseUrl(fileServiceBaseUrl) // e.g. http://localhost:8082 (dev) or http://files-service:8080 (docker)
+                .defaultHeader("X-Internal-Service-Key", serviceKey)
                 .build();
     }
 
