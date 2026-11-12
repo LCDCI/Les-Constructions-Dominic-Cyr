@@ -20,6 +20,8 @@ import java.util.Map;
 public class MailerServiceClient {
 
     private static final Logger log = LoggerFactory.getLogger(MailerServiceClient.class);
+    private static final String COMPANY_NAME = "Les Constructions Dominic Cyr Inc.";
+    private static final String LOGO_URL = "https://constructions-dominiccyr.com/fallback.jpg";
     
     private final WebClient webClient;
 
@@ -80,7 +82,7 @@ public class MailerServiceClient {
         Map<String, String> emailPayload = Map.of(
             "EmailSendTo", to,
             "EmailTitle", subject,
-            "Body", body,
+            "Body", prepareEmailBody(subject, body),
             "SenderName", senderName != null ? senderName : "Les Constructions Dominic Cyr"
         );
 
@@ -128,5 +130,69 @@ public class MailerServiceClient {
                 .then() // Convert to Mono<Void>
                 .doOnSuccess(v -> log.info("Email send request completed successfully for {}", to))
                 .onErrorComplete(); // Complete successfully even if email fails
+    }
+
+    private String prepareEmailBody(String subject, String body) {
+        if (body == null || body.isBlank()) {
+            return buildBrandedEmail(subject, "");
+        }
+
+        String normalizedBody = body.trim();
+        String lowercaseBody = normalizedBody.toLowerCase();
+        if (lowercaseBody.contains("<style") || lowercaseBody.contains("style=")) {
+            return normalizedBody;
+        }
+
+        return buildBrandedEmail(subject, extractBodyContent(normalizedBody));
+    }
+
+    private String extractBodyContent(String body) {
+        String lowercaseBody = body.toLowerCase();
+        int bodyStart = lowercaseBody.indexOf("<body");
+        if (bodyStart >= 0) {
+            int contentStart = lowercaseBody.indexOf('>', bodyStart);
+            int contentEnd = lowercaseBody.lastIndexOf("</body>");
+            if (contentStart >= 0 && contentEnd > contentStart) {
+                return body.substring(contentStart + 1, contentEnd).trim();
+            }
+        }
+
+        return body
+                .replaceFirst("(?is)^\\s*<!doctype[^>]*>", "")
+                .replaceFirst("(?is)^\\s*<html[^>]*>", "")
+                .replaceFirst("(?is)</html>\\s*$", "")
+                .trim();
+    }
+
+    private String buildBrandedEmail(String subject, String content) {
+        return "<!DOCTYPE html><html><head><meta charset=\"UTF-8\">"
+                + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"></head>"
+                + "<body style=\"margin:0;padding:24px 12px;background:#f4f6f4;"
+                + "font-family:Arial,Helvetica,sans-serif;color:#29312d;line-height:1.6;\">"
+                + "<div style=\"width:100%;max-width:620px;margin:0 auto;background:#ffffff;"
+                + "border:1px solid #dfe4df;border-radius:10px;overflow:hidden;"
+                + "box-shadow:0 10px 28px rgba(41,49,45,0.12);\">"
+                + "<div style=\"padding:28px 24px;text-align:center;background:#2c3531;\">"
+                + "<img src=\"" + LOGO_URL + "\" alt=\"" + COMPANY_NAME + "\" "
+                + "style=\"display:block;width:220px;max-width:80%;height:auto;margin:0 auto 20px;"
+                + "padding:8px;background:#ffffff;border-radius:4px;\">"
+                + "<h1 style=\"margin:0;color:#ffffff;font-size:24px;line-height:1.3;\">"
+                + escapeHtml(subject) + "</h1></div>"
+                + "<div style=\"padding:30px 28px;background:#fbfcfb;font-size:15px;\">"
+                + content + "</div>"
+                + "<div style=\"padding:16px 24px;text-align:center;border-top:1px solid #e5e9e5;"
+                + "color:#687a68;font-size:12px;background:#ffffff;\">"
+                + COMPANY_NAME + "</div></div></body></html>";
+    }
+
+    private String escapeHtml(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 }

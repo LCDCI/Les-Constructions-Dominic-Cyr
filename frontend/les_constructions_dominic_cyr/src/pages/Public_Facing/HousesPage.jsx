@@ -6,6 +6,7 @@ import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import ProjectBanner from '../../components/ProjectBanner';
 import { projectApi } from '../../features/projects/api/projectApi';
+import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Public_Facing/houses.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
@@ -27,6 +28,7 @@ export default function HousesPage() {
   const [error, setError] = useState(null);
   const [selectedHouse, setSelectedHouse] = useState(null);
   const [project, setProject] = useState(null);
+  const [pageContent, setPageContent] = useState({});
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
@@ -44,6 +46,56 @@ export default function HousesPage() {
       active = false;
     };
   }, [projectIdentifier]);
+
+  useEffect(() => {
+    if (!projectIdentifier) return undefined;
+    let active = true;
+    const language = i18n.language?.toLowerCase().startsWith('fr')
+      ? 'fr'
+      : 'en';
+
+    fetchPublicSiteContent(language, `houses-${projectIdentifier}`)
+      .then(items => {
+        if (!active) return;
+        const content = Object.fromEntries(
+          (Array.isArray(items) ? items : [])
+            .filter(item => item.contentText)
+            .map(item => [item.pageKey, item.contentText])
+        );
+        setPageContent({
+          title: t('title', 'Houses'),
+          subtitle: t(
+            'subtitle',
+            'Explore available home designs for this project.'
+          ),
+          introSubtitle: t('introSubtitle', 'Available house models'),
+          introText: t(
+            'introText',
+            'Explore the house models available for this project.'
+          ),
+          ...content,
+        });
+      })
+      .catch(() => {
+        if (!active) return;
+        setPageContent({
+          title: t('title', 'Houses'),
+          subtitle: t(
+            'subtitle',
+            'Explore available home designs for this project.'
+          ),
+          introSubtitle: t('introSubtitle', 'Available house models'),
+          introText: t(
+            'introText',
+            'Explore the house models available for this project.'
+          ),
+        });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [i18n.language, projectIdentifier, t]);
 
   useEffect(() => {
     let cancelled = false;
@@ -124,12 +176,29 @@ export default function HousesPage() {
     <div
       className="houses-page"
       style={{
+        '--primary-color': project?.primaryColor || '#aab2a6',
+        '--project-primary': project?.primaryColor || '#aab2a6',
         '--tertiary-color': project?.tertiaryColor || project?.buyerColor,
         '--project-tertiary': project?.tertiaryColor || project?.buyerColor,
         '--project-buyer': project?.buyerColor || project?.tertiaryColor,
       }}
     >
-      <ProjectBanner projectIdentifier={projectIdentifier} />
+      <ProjectBanner projectIdentifier={projectIdentifier} project={project}>
+        <div className="houses-banner-content">
+          <h1 className="houses-banner-title">
+            {pageContent.title || t('title', 'Houses')}
+          </h1>
+          <span className="houses-banner-subtitle">
+            {pageContent.subtitle ||
+              t('subtitle', 'Explore available home designs for this project.')}
+          </span>
+          <span
+            className="houses-banner-divider"
+            style={{ backgroundColor: project?.tertiaryColor || '#ffffff' }}
+            aria-hidden="true"
+          />
+        </div>
+      </ProjectBanner>
 
       <main className="houses-content">
         <div className="houses-container">
@@ -138,6 +207,14 @@ export default function HousesPage() {
               ? 'Föresta homes in Saint-Alphonse-de-Granby'
               : 'Residential homes'}
           </h1>
+          {(pageContent.introSubtitle || pageContent.introText) && (
+            <section className="houses-intro-content" aria-label="House models">
+              {pageContent.introSubtitle && (
+                <h2>{pageContent.introSubtitle}</h2>
+              )}
+              {pageContent.introText && <p>{pageContent.introText}</p>}
+            </section>
+          )}
           {error ? (
             <p className="houses-state houses-error">
               {t(error, t('fetchFailed', 'Failed to load houses.'))}

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@300;400;500&display=swap');
 
 /* ========== ROOT VARIABLES (inchangées, partagées avec les autres pages) ========== */
 
@@ -23,8 +23,9 @@
   --content-width: 80%;
   --content-max-width: 1400px;
 
-  --font-heading: 'Playfair Display', Georgia, serif;
-  --font-body: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --font-heading: 'Source Serif 4', 'Times New Roman', serif;
+  --font-body: 'Source Serif 4', 'Times New Roman', serif;
+  --font-subtitle: 'Source Serif 4', 'Times New Roman', serif;
 
   --duration: 800ms;
   --easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -57,8 +58,8 @@ body {
   --h-sand: #e6e8e3;
   --h-sand-light: #f4f5f2;
   --h-border: #eef0ec;
-  --h-serif: 'Playfair Display', Georgia, serif;
-  --h-sans: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --h-serif: 'Source Serif 4', 'Times New Roman', serif;
+  --h-sans: 'Source Serif 4', 'Times New Roman', serif;
 
   width: 100%;
   overflow-x: hidden;
@@ -486,9 +487,6 @@ body {
 }
 
 .home .feature-card:hover {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
   transform: none;
 }
 
@@ -679,8 +677,8 @@ body {
 }
 
 .home .portfolio-card.animated:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px -12px rgba(43, 58, 74, 0.3);
+  transform: none;
+  box-shadow: none;
 }
 
 .home .card-image-bg {
@@ -689,11 +687,12 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 1rem;
   transition: transform 0.6s var(--easing);
 }
 
 .home .portfolio-card:hover .card-image-bg {
-  transform: scale(1.06);
+  transform: none;
 }
 
 .home .card-overlay {
@@ -714,12 +713,13 @@ body {
   width: 42%;
   height: 42%;
   object-fit: contain;
+  border-radius: 1rem;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.28));
 }
 
 .home .portfolio-card:hover .project-logo-image {
-  transform: translate(-50%, -50%) scale(1.04);
+  transform: translate(-50%, -50%);
 }
 
 .home .portfolio-card .card-content {

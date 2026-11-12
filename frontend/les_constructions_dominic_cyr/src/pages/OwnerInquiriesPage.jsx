@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { usePageTranslations } from '../hooks/usePageTranslations';
 import ConfirmationModal from '../components/Modals/ConfirmationModal';
+import '../styles/OwnerInquiriesPage.css';
 
 const fetchInquiries = async getAccessTokenSilently => {
   const { getAuthAudience } = await import('../utils/authConfig');
@@ -31,6 +32,7 @@ export default function OwnerInquiriesPage() {
   const [pendingAction, setPendingAction] = useState(null);
   const [actionError, setActionError] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
+  const [archiveFilter, setArchiveFilter] = useState('unarchived');
   const {
     isAuthenticated,
     isLoading,
@@ -153,15 +155,21 @@ export default function OwnerInquiriesPage() {
 
   const decodedInquiries = useMemo(
     () =>
-      inquiries.map(inq => ({
-        ...inq,
-        name: unescapeHtml(inq.name),
-        email: unescapeHtml(inq.email),
-        phone: unescapeHtml(inq.phone),
-        contactSubject: unescapeHtml(inq.contactSubject),
-        message: unescapeHtml(inq.message),
-      })),
-    [inquiries]
+      inquiries
+        .filter(inquiry => {
+          if (archiveFilter === 'archived') return inquiry.archived;
+          if (archiveFilter === 'unarchived') return !inquiry.archived;
+          return true;
+        })
+        .map(inq => ({
+          ...inq,
+          name: unescapeHtml(inq.name),
+          email: unescapeHtml(inq.email),
+          phone: unescapeHtml(inq.phone),
+          contactSubject: unescapeHtml(inq.contactSubject),
+          message: unescapeHtml(inq.message),
+        })),
+    [archiveFilter, inquiries]
   );
 
   return (
@@ -181,122 +189,152 @@ export default function OwnerInquiriesPage() {
           </p>
         )}
         {!loading && !error && (
-          <table
-            style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              marginTop: '2rem',
-            }}
-          >
-            <thead>
-              <tr style={{ background: '#f0f0f0' }}>
-                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  {t('table.name', 'Name')}
-                </th>
-                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  {t('table.email', 'Email')}
-                </th>
-                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  {t('table.phone', 'Phone')}
-                </th>
-                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  {t('table.contactSubject', 'Contacting about')}
-                </th>
-                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  {t('table.message', 'Message')}
-                </th>
-                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  {t('table.timestamp', 'Timestamp')}
-                </th>
-                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  {t('table.status', 'Status')}
-                </th>
-                <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
-                  {t('table.actions', 'Actions')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {decodedInquiries.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={8}
-                    style={{ textAlign: 'center', padding: '2rem' }}
-                  >
-                    {t('noInquiries', 'No inquiries found.')}
-                  </td>
+          <>
+            <div className="inquiries-toolbar">
+              <label htmlFor="inquiry-archive-filter">
+                {t('filters.label', 'Show inquiries')}
+              </label>
+              <select
+                id="inquiry-archive-filter"
+                value={archiveFilter}
+                onChange={event => setArchiveFilter(event.target.value)}
+              >
+                <option value="unarchived">
+                  {t('filters.unarchived', 'Unarchived')}
+                </option>
+                <option value="archived">
+                  {t('filters.archived', 'Archived')}
+                </option>
+                <option value="all">{t('filters.all', 'All')}</option>
+              </select>
+            </div>
+            <table className="inquiries-table">
+              <thead>
+                <tr style={{ background: '#f0f0f0' }}>
+                  <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                    {t('table.name', 'Name')}
+                  </th>
+                  <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                    {t('table.email', 'Email')}
+                  </th>
+                  <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                    {t('table.phone', 'Phone')}
+                  </th>
+                  <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                    {t('table.contactSubject', 'Contacting about')}
+                  </th>
+                  <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                    {t('table.message', 'Message')}
+                  </th>
+                  <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                    {t('table.timestamp', 'Timestamp')}
+                  </th>
+                  <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                    {t('table.status', 'Status')}
+                  </th>
+                  <th style={{ padding: '0.5rem', border: '1px solid #ccc' }}>
+                    {t('table.actions', 'Actions')}
+                  </th>
                 </tr>
-              ) : (
-                decodedInquiries.map(inq => (
-                  <tr
-                    key={inq.id}
-                    style={inq.archived ? { opacity: 0.65 } : undefined}
-                  >
-                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {inq.name}
-                    </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      <a
-                        href={`mailto:${encodeURIComponent(inq.email || '')}`}
-                        style={{
-                          color: '#0066cc',
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {inq.email}
-                      </a>
-                    </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {inq.phone ? inq.phone : '-'}
-                    </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {formatContactSubject(inq.contactSubject)}
-                    </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {inq.message}
-                    </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {formatDate(inq.createdAt)}
-                    </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      {inq.archived
-                        ? t('status.archived', 'Archived')
-                        : t('status.active', 'Active')}
-                    </td>
-                    <td style={{ padding: '0.5rem', border: '1px solid #eee' }}>
-                      <button
-                        type="button"
-                        disabled={actionLoading}
-                        onClick={() =>
-                          setPendingAction({
-                            inquiryId: inq.id,
-                            action: inq.archived ? 'unarchive' : 'archive',
-                          })
-                        }
-                      >
-                        {inq.archived
-                          ? t('actions.unarchive', 'Unarchive')
-                          : t('actions.archive', 'Archive')}
-                      </button>{' '}
-                      <button
-                        type="button"
-                        disabled={actionLoading}
-                        onClick={() =>
-                          setPendingAction({
-                            inquiryId: inq.id,
-                            action: 'delete',
-                          })
-                        }
-                      >
-                        {t('actions.delete', 'Delete')}
-                      </button>
+              </thead>
+              <tbody>
+                {decodedInquiries.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      style={{ textAlign: 'center', padding: '2rem' }}
+                    >
+                      {t('noInquiries', 'No inquiries found.')}
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  decodedInquiries.map(inq => (
+                    <tr
+                      key={inq.id}
+                      style={inq.archived ? { opacity: 0.65 } : undefined}
+                    >
+                      <td
+                        style={{ padding: '0.5rem', border: '1px solid #eee' }}
+                      >
+                        {inq.name}
+                      </td>
+                      <td
+                        style={{ padding: '0.5rem', border: '1px solid #eee' }}
+                      >
+                        <a
+                          href={`mailto:${encodeURIComponent(inq.email || '')}`}
+                          style={{
+                            color: '#0066cc',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {inq.email}
+                        </a>
+                      </td>
+                      <td
+                        style={{ padding: '0.5rem', border: '1px solid #eee' }}
+                      >
+                        {inq.phone ? inq.phone : '-'}
+                      </td>
+                      <td
+                        style={{ padding: '0.5rem', border: '1px solid #eee' }}
+                      >
+                        {formatContactSubject(inq.contactSubject)}
+                      </td>
+                      <td
+                        style={{ padding: '0.5rem', border: '1px solid #eee' }}
+                      >
+                        {inq.message}
+                      </td>
+                      <td
+                        style={{ padding: '0.5rem', border: '1px solid #eee' }}
+                      >
+                        {formatDate(inq.createdAt)}
+                      </td>
+                      <td
+                        style={{ padding: '0.5rem', border: '1px solid #eee' }}
+                      >
+                        {inq.archived
+                          ? t('status.archived', 'Archived')
+                          : t('status.active', 'Active')}
+                      </td>
+                      <td
+                        style={{ padding: '0.5rem', border: '1px solid #eee' }}
+                      >
+                        <button
+                          type="button"
+                          disabled={actionLoading}
+                          onClick={() =>
+                            setPendingAction({
+                              inquiryId: inq.id,
+                              action: inq.archived ? 'unarchive' : 'archive',
+                            })
+                          }
+                        >
+                          {inq.archived
+                            ? t('actions.unarchive', 'Unarchive')
+                            : t('actions.archive', 'Archive')}
+                        </button>{' '}
+                        <button
+                          type="button"
+                          disabled={actionLoading}
+                          onClick={() =>
+                            setPendingAction({
+                              inquiryId: inq.id,
+                              action: 'delete',
+                            })
+                          }
+                        >
+                          {t('actions.delete', 'Delete')}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </>
         )}
       </div>
       <ConfirmationModal

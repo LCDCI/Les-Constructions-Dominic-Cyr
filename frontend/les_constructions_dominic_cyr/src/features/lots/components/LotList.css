@@ -81,8 +81,8 @@
   border-right: 1px solid #edf1f5;
 }
 
-.fixed-table tbody tr:nth-child(even) td {
-  background-color: #fff;
+.fixed-table.lots-public-table tbody tr:nth-child(even) td {
+  background-color: var(--project-tertiary, #f8fafc);
 }
 
 .id-cell {

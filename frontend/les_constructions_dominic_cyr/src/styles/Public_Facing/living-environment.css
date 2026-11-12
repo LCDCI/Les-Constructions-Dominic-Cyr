@@ -4,7 +4,49 @@
   width: 100%;
   min-height: 100vh;
   background: var(--color-white, #ffffff);
-  padding: 0 0 var(--spacing-xl, 4rem) 0;
+  padding: 0 0 var(--spacing-xl, 4rem);
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.living-banner-content {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 5vw, 4rem);
+  border: 1px solid rgba(170, 178, 166, 0.2);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 40px -24px rgba(43, 58, 74, 0.22);
+  text-align: center;
+}
+
+.living-banner-title {
+  margin: 0;
+  color: var(--charcoal-gray, #2c3531);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.living-banner-subtitle {
+  margin: 0.85rem 0 0;
+  color: var(--tertiary-color, #aab2a6);
+  font-family: 'Times New Roman', Times, serif;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+}
+
+.living-banner-divider {
+  display: block;
+  width: 60px;
+  height: 4px;
+  margin: 0.9rem auto 0;
+  border-radius: 2px;
+  background: var(--tertiary-color, #aab2a6);
 }
 
 /* Header Section - Full width like residential projects page */
@@ -28,7 +70,7 @@
 .le-main-title,
 .le-subtitle,
 .le-subtitle-last {
-  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
+  font-family: 'Times New Roman', Times, serif;
   font-weight: 400;
   letter-spacing: 0.05em;
   margin: 0.5rem 0;
@@ -55,40 +97,55 @@
   font-style: normal;
   margin-top: var(--spacing-sm, 1.25rem);
   font-weight: 300;
-  font-family: var(--font-body, 'Segoe UI', sans-serif);
+  font-family: 'Times New Roman', Times, serif;
 }
 
 /* Description Section */
 .le-description-section {
-  margin-bottom: var(--spacing-xxl, 6rem);
-  padding: 0 var(--spacing-md, 2rem);
+  margin: 0 auto clamp(3rem, 7vw, 5rem);
+  padding: clamp(2.5rem, 6vw, 4rem) var(--spacing-md, 2rem) 0;
 }
 
 .le-section-title {
+  position: relative;
+  width: min(100%, 900px);
+  margin: 0 auto clamp(1.75rem, 4vw, 2.5rem);
+  padding-bottom: 1.15rem;
   text-align: center;
-  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
-  font-size: clamp(1.35rem, 2.8vw, 1.75rem);
+  font-family: 'Times New Roman', Times, serif;
+  color: var(--charcoal-gray, #2c3531);
+  font-size: clamp(1.4rem, 3vw, 2rem);
   font-weight: 400;
-  letter-spacing: 0.2em;
-  line-height: 1.55;
-  max-width: 26ch;
-  margin: 0 auto var(--spacing-md, 2rem) auto;
-  color: var(--primary-color, #4c4d4f);
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.le-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 60px;
+  height: 4px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: var(--tertiary-color, #aab2a6);
 }
 
 .le-description-text {
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  line-height: 1.8;
-  color: var(--color-text, #333333);
-  text-align: center;
   max-width: 900px;
   margin: 0 auto;
-  font-family: var(--font-body, 'Segoe UI', sans-serif);
+  color: var(--charcoal-gray, #2c3531);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.8;
+  text-align: center;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 /* Proximity Section */
 .le-proximity-section {
-  margin-bottom: var(--spacing-xxl, 6rem);
+  margin-bottom: clamp(3rem, 7vw, 5rem);
   padding: 0 var(--spacing-md, 2rem);
 }
 
@@ -97,8 +154,12 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(0.4rem, 0.8vw, 0.75rem);
-  max-width: 1080px;
+  max-width: 1200px;
   margin: 0 auto;
+}
+
+.le-proximity-section .le-section-title {
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
 }
 
 .le-amenity-box {
@@ -113,8 +174,8 @@
 }
 
 .le-amenity-box:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .le-amenity-icon {
@@ -134,7 +195,7 @@
   letter-spacing: 0.05em;
   margin: 0;
   word-wrap: break-word;
-  font-family: var(--font-body, 'Segoe UI', sans-serif);
+  font-family: 'Times New Roman', Times, serif;
 }
 
 /* Footer Section */
@@ -150,12 +211,12 @@
   color: var(--color-text-muted, #6b7280);
   font-weight: 400;
   font-style: normal;
-  font-family: var(--font-body, 'Segoe UI', sans-serif);
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .le-amenity-box:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .le-amenity-icon {
@@ -175,7 +236,7 @@
   letter-spacing: 0.05em;
   margin: 0;
   word-wrap: break-word;
-  font-family: var(--font-body, 'Segoe UI', sans-serif);
+  font-family: 'Times New Roman', Times, serif;
 }
 
 /* Footer Section */
@@ -190,7 +251,7 @@
   color: var(--color-text-muted, #6b7280);
   font-weight: 400;
   font-style: normal;
-  font-family: var(--font-body, 'Segoe UI', sans-serif);
+  font-family: 'Times New Roman', Times, serif;
 }
 
 /* Responsive Design */
@@ -324,7 +385,7 @@
 
 .error-message h2 {
   color: var(--primary-color, #4c4d4f);
-  font-family: var(--font-heading, 'Georgia', 'Times New Roman', serif);
+  font-family: 'Times New Roman', Times, serif;
   font-size: clamp(1.5rem, 4vw, 2rem);
   margin-bottom: var(--spacing-md, 2rem);
 }

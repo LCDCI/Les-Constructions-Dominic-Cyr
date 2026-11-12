@@ -9,6 +9,17 @@
   transition: transform 0.25s ease;
 }
 
+.site-nav a:focus-visible,
+.site-nav button:focus-visible {
+  outline: 2px solid #aab2a6;
+  outline-offset: 3px;
+}
+
+.site-nav a:active,
+.site-nav button:active {
+  transform: translateY(1px);
+}
+
 .site-nav.nav-hidden {
   transform: translateY(-100%);
 }
@@ -56,7 +67,8 @@
 }
 
 .brand:hover {
-  opacity: 0.8;
+  opacity: 1;
+  transform: none;
 }
 
 .logo-image {
@@ -77,23 +89,48 @@
 }
 
 .desktop-nav a {
+  position: relative;
   text-decoration: none;
   color: #4a4a4a;
-  padding: 8px 12px;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 400;
-  transition: color 0.2s ease;
+  padding: 8px 12px 6px;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: 500 !important;
+  border-bottom: 0;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
   white-space: nowrap;
+}
+
+.desktop-nav a::after,
+.projects-nav-trigger::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 24px;
+  height: 2px;
+  background: #aab2a6;
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  transition: transform 0.2s ease;
 }
 
 .desktop-nav a:hover {
   color: #333;
 }
 
+.desktop-nav a:hover::after,
+.desktop-nav a.active::after,
+.projects-nav-trigger:hover::after,
+.projects-nav-trigger.active::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
 .desktop-nav a.active {
   color: #333;
-  font-weight: 500;
+  font-weight: 500 !important;
   text-decoration: none;
   text-decoration-thickness: 2px;
   text-decoration-color: #aab2a6;
@@ -101,13 +138,18 @@
 }
 
 .projects-nav-trigger {
+  position: relative;
   background: transparent;
   border: 0;
   color: #4a4a4a;
   padding: 8px 12px;
-  border-radius: 6px;
+  border-radius: 0;
   font: inherit;
-  font-size: 15px;
+  font-size: 16px;
+  font-weight: 500 !important;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -175,7 +217,7 @@
   display: block;
   padding: 9px 14px 4px;
   font: inherit;
-  font-weight: 400;
+  font-weight: 500 !important;
   text-align: left;
 }
 
@@ -383,8 +425,8 @@
   text-decoration: none;
   color: #4a4a4a;
   padding: 12px 0;
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 17px;
+  font-weight: 500 !important;
   border-bottom: 1px solid #f0f0f0;
   transition: color 0.2s ease;
 }
@@ -399,7 +441,8 @@
 
 .mobile-nav a.active {
   color: #333;
-  font-weight: 500;
+  font-weight: 500 !important;
+  border-bottom-color: #aab2a6;
   text-decoration: none;
   text-decoration-color: #aab2a6;
   text-decoration-thickness: 2px;

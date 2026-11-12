@@ -42,6 +42,43 @@
   background: var(--public-banner-bg, #aab2a6) !important;
 }
 
+.houses-banner-content {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 5vw, 4rem);
+  border: 1px solid rgba(170, 178, 166, 0.2);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 20px 40px -24px rgba(43, 58, 74, 0.22);
+  text-align: center;
+}
+
+.houses-banner-subtitle {
+  display: block;
+  margin-bottom: 1rem;
+  color: var(--brand-primary-dark, var(--project-primary, #6a7266));
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.houses-banner-title {
+  margin: 0;
+  color: var(--charcoal-gray, #2c3531);
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.houses-banner-divider {
+  display: block;
+  width: 3rem;
+  height: 2px;
+  margin: 0.9rem auto 0;
+}
+
 .houses-content {
   flex: 1;
   width: 100%;
@@ -51,6 +88,27 @@
 .houses-container {
   width: min(100%, 1180px);
   margin: 0 auto;
+}
+
+.houses-intro-content {
+  max-width: 760px;
+  margin: 0 auto clamp(2rem, 4vw, 3rem);
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.houses-intro-content h2 {
+  margin: 0 0 0.6rem;
+  color: var(--project-primary, var(--text-primary));
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  font-weight: 400;
+}
+
+.houses-intro-content p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  white-space: pre-wrap;
 }
 
 .houses-search-label {
