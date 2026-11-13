@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md';
 import { FaTimes } from 'react-icons/fa';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
+import { getFileUrl } from '../../utils/filesService';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Public_Facing/realizations.css';
 import '../../styles/Public_Facing/residential-projects.css';
@@ -79,16 +80,8 @@ const RealizationsPage = () => {
     };
   }, [currentLanguage]);
 
-  const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL ||
-    (typeof window !== 'undefined' &&
-    window.location.hostname.includes('constructions-dominiccyr')
-      ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : window.location.origin);
-
   const getImageUrl = imageIdentifier => {
-    if (imageIdentifier.startsWith('http')) return imageIdentifier;
-    return `${filesServiceUrl.replace(/\/files$/, '')}/files/${imageIdentifier}`;
+    return getFileUrl(imageIdentifier);
   };
 
   const handlePrevious = () => {

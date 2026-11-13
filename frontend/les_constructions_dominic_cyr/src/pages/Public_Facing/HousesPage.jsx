@@ -5,18 +5,12 @@ import { useTranslation } from 'react-i18next';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import ProjectBanner from '../../components/ProjectBanner';
+import { getFileUrl } from '../../utils/filesService';
 import { projectApi } from '../../features/projects/api/projectApi';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
 import '../../styles/Public_Facing/houses.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '/api/v1';
-
-const getFilesServiceUrl = () =>
-  import.meta.env.VITE_FILES_SERVICE_URL ||
-  (typeof window !== 'undefined' &&
-  window.location.hostname.includes('constructions-dominiccyr')
-    ? 'https://files-service-app-xubs2.ondigitalocean.app'
-    : `${window.location.origin}/files`);
 
 export default function HousesPage() {
   const { t } = usePageTranslations('houses');
@@ -131,8 +125,7 @@ export default function HousesPage() {
 
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) return '/fallback.jpg';
-    if (String(imageIdentifier).startsWith('http')) return imageIdentifier;
-    return `${getFilesServiceUrl()}/files/${imageIdentifier}`;
+    return getFileUrl(imageIdentifier);
   };
 
   const getHouseDescription = house => {

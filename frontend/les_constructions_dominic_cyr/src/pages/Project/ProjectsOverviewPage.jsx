@@ -18,6 +18,7 @@ import { HiOutlineHomeModern } from 'react-icons/hi2';
 import ProjectsFooter from '../../components/Footers/ProjectsFooter';
 import '../../styles/Project/projectOverview.css';
 import ProjectBanner from '../../components/ProjectBanner';
+import { getFileUrl } from '../../utils/filesService';
 import '../../styles/Public_Facing/residential-projects.css';
 import '../../styles/Public_Facing/overviewMap.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -213,13 +214,6 @@ const ProjectOverviewPage = () => {
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
 
-  const filesServiceUrl =
-    import.meta.env.VITE_FILES_SERVICE_URL ||
-    (typeof window !== 'undefined' &&
-    window.location.hostname.includes('constructions-dominiccyr')
-      ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : window.location.origin);
-
   useEffect(() => {
     const fetchOverview = async () => {
       try {
@@ -282,7 +276,7 @@ const ProjectOverviewPage = () => {
 
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) return '/placeholder-project.png';
-    return `${filesServiceUrl.replace(/\/files$/, '')}/files/${imageIdentifier}`;
+    return getFileUrl(imageIdentifier);
   };
 
   const getFeatureIcon = featureTitle => {

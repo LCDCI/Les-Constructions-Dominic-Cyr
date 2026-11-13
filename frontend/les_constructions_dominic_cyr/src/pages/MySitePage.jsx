@@ -121,6 +121,7 @@ const EDITABLE_TEXT_KEYS = {
     keys: [
       'intro.heading.kicker',
       'intro.heading.title',
+      'intro.subtitle',
       'intro.paragraph',
       'advantages.heading',
       'advantages.item1',
@@ -202,6 +203,9 @@ const EDITOR_PAGE_ORDER = {
     'features.feature6',
     'features.feature6Description',
     'portfolio.title',
+    'portfolio.management',
+    'portfolio.managementSubtitle',
+    'portfolio.achievements',
     'portfolio.foresta',
     'portfolio.forestaSubtitle',
     'portfolio.forestaLocation',
@@ -338,6 +342,7 @@ const HOME_CONTENT_KEYS = new Set([
   'portfolio.panoramaLocation',
   'portfolio.management',
   'portfolio.managementSubtitle',
+  'portfolio.achievements',
 ]);
 
 const flattenContent = (value, prefix = '') => {

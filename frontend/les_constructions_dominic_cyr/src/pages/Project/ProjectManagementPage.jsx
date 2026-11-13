@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
+import { getFileUrl } from '../../utils/filesService';
 import '../../styles/Project/project-management.css';
 import '../../styles/Public_Facing/residential-projects.css';
 import {
@@ -74,7 +75,8 @@ export default function ProjectManagementPage() {
     },
   };
 
-  const imageFor = (slot, fallback) => imageOverrides[slot] || fallback;
+  const imageFor = (slot, fallback) =>
+    getFileUrl(imageOverrides[slot] || fallback);
 
   const openModal = (imageOrImages, index = 0) => {
     if (Array.isArray(imageOrImages)) {

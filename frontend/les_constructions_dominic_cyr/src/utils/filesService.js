@@ -4,6 +4,7 @@ export function getFilesServiceBase() {
   const useFrontendProxy =
     typeof window !== 'undefined' &&
     (browserHost === 'localhost' ||
+      browserHost === 'constructions-dominiccyr.com' ||
       browserHost.endsWith('.constructions-dominiccyr.com'));
 
   if (useFrontendProxy) {
@@ -34,6 +35,7 @@ export function getFileUrl(fileId) {
   const useFrontendProxy =
     typeof window !== 'undefined' &&
     (browserHost === 'localhost' ||
+      browserHost === 'constructions-dominiccyr.com' ||
       browserHost.endsWith('.constructions-dominiccyr.com'));
 
   // Rewrite stored files-service URLs through the frontend proxy so public
@@ -51,6 +53,12 @@ export function getFileUrl(fileId) {
     // not an absolute URL
   }
   const normalizedBase = base.replace(/\/$/, '');
+  if (String(fileId).startsWith('/files/')) {
+    const filePath = String(fileId);
+    return normalizedBase.endsWith('/files')
+      ? `${normalizedBase}${filePath.slice('/files'.length)}`
+      : `${normalizedBase}${filePath}`;
+  }
   const filesBase = normalizedBase.endsWith('/files')
     ? normalizedBase
     : `${normalizedBase}/files`;

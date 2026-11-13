@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
+import { getFileUrl } from './filesService';
 
 // eslint-disable-next-line react/prop-types
 export default function GlobalPhotoUpload({ onUploaded }) {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
-  const filesServiceBase =
-    import.meta.env.VITE_FILES_SERVICE_URL ??
-    (typeof window !== 'undefined' &&
-    window.location.hostname.includes('constructions-dominiccyr')
-      ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : `${window.location.origin}/files`);
-
   async function uploadPhoto() {
     if (!file) {
       setError('Choose a file first');
@@ -46,7 +40,7 @@ export default function GlobalPhotoUpload({ onUploaded }) {
         throw new Error('No file path returned from server');
       }
 
-      const fullUrl = `${filesServiceBase}${filePath}`;
+      const fullUrl = getFileUrl(filePath);
       setFile(null);
       if (onUploaded) onUploaded(fullUrl);
     } catch (err) {
