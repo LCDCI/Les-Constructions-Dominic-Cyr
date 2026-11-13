@@ -12,8 +12,8 @@ export default function GlobalPhotoDisplay({ filePath }) {
     (browserHost === 'localhost' ||
       browserHost.endsWith('.constructions-dominiccyr.com'))
       ? window.location.origin
-      : import.meta.env.VITE_FILES_SERVICE_URL ??
-        `${window.location.origin}/files`;
+      : (import.meta.env.VITE_FILES_SERVICE_URL ??
+        `${window.location.origin}/files`);
   // eslint-disable-next-line react/prop-types
   const src = filePath.startsWith('http')
     ? filePath
