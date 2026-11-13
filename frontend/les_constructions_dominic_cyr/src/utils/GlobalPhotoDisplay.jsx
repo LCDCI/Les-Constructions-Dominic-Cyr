@@ -5,12 +5,15 @@ export default function GlobalPhotoDisplay({ filePath }) {
   // filePath may be full URL or path. If it's a path like /files/uuid, prefix VITE_FILES_SERVICE_URL
   if (!filePath) return null;
 
+  const browserHost =
+    typeof window !== 'undefined' ? window.location.hostname : '';
   const filesServiceBase =
-    import.meta.env.VITE_FILES_SERVICE_URL ??
-    (typeof window !== 'undefined' &&
-    window.location.hostname.includes('constructions-dominiccyr')
-      ? 'https://files-service-app-xubs2.ondigitalocean.app'
-      : `${window.location.origin}/files`);
+    typeof window !== 'undefined' &&
+    (browserHost === 'localhost' ||
+      browserHost.endsWith('.constructions-dominiccyr.com'))
+      ? window.location.origin
+      : (import.meta.env.VITE_FILES_SERVICE_URL ??
+        `${window.location.origin}/files`);
   // eslint-disable-next-line react/prop-types
   const src = filePath.startsWith('http')
     ? filePath
