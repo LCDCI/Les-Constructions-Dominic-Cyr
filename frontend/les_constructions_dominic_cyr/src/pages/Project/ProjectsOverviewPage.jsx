@@ -380,7 +380,8 @@ const ProjectOverviewPage = () => {
       </h1>
       {(overview.overviewSectionTitle ||
         overview.heroTitle ||
-        overview.heroSubtitle) && (
+        overview.heroSubtitle ||
+        overview.locationDescription) && (
         <section className="project-section overview-section">
           <div className="section-container">
             <h2 className="section-title">
@@ -395,6 +396,11 @@ const ProjectOverviewPage = () => {
                 </span>
               )}
             </h2>
+            {overview.locationDescription && (
+              <p className="section-content overview-description">
+                {overview.locationDescription}
+              </p>
+            )}
           </div>
           <div className="project-features-grid">
             {[
@@ -463,7 +469,7 @@ const ProjectOverviewPage = () => {
           </div>
         </section>
       )}
-      {overview.locationDescription && (
+      {overview.locationAddress && (
         <section className="project-section location-section">
           <div className="section-container">
             <h2 className="section-title">
@@ -472,17 +478,12 @@ const ProjectOverviewPage = () => {
             </h2>
             <div className="location-content">
               <div className="location-text">
-                <p className="section-content">
-                  {overview.locationDescription}
-                </p>
-                {overview.locationAddress && (
-                  <div className="location-address">
-                    <strong>{t('addressLabel', 'Address')}:</strong>
-                    <p>{overview.locationAddress}</p>
-                  </div>
-                )}
+                <div className="location-address">
+                  <strong>{t('addressLabel', 'Address')}:</strong>
+                  <p>{overview.locationAddress}</p>
+                </div>
               </div>
-              {overview.locationAddress && isMapCoordsValid && (
+              {isMapCoordsValid && (
                 <div className="location-map">
                   <LocationMap
                     locationAddress={overview.locationAddress}

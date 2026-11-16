@@ -14,6 +14,7 @@ import { deleteFile, uploadFile } from '../features/files/api/filesApi';
 import { fetchHouses, deleteHouse } from '../features/houses/api/housesApi';
 import HouseEditorModal from '../features/houses/components/HouseEditorModal';
 import CreateProjectForm from '../features/projects/components/CreateProjectForm';
+import { useBackendUser } from '../hooks/useBackendUser';
 import { projectApi } from '../features/projects/api/projectApi';
 import { getFileUrl } from '../utils/filesService';
 import '../styles/MySitePage.css';
@@ -422,6 +423,7 @@ const MySitePage = () => {
   const { t } = usePageTranslations('mySite');
   const { i18n } = useTranslation();
   const { getAccessTokenSilently, user } = useAuth0();
+  const { profile } = useBackendUser();
   const navigate = useNavigate();
   const params = useParams();
   const sitePath = params['*'] || '';
@@ -883,10 +885,14 @@ const MySitePage = () => {
       );
       updateDraft(item.id, 'imageIdentifier', imageIdentifier);
 
-      if (oldImageIdentifier && !oldImageIdentifier.startsWith('http')) {
+      if (
+        oldImageIdentifier &&
+        !oldImageIdentifier.startsWith('http') &&
+        profile?.userIdentifier
+      ) {
         try {
           await deleteFile(oldImageIdentifier, {
-            deletedBy: user?.sub || 'site-content',
+            deletedBy: profile?.userIdentifier,
             token,
           });
         } catch {
@@ -928,10 +934,10 @@ const MySitePage = () => {
         current.map(entry => (entry.id === item.id ? updated : entry))
       );
       updateDraft(item.id, 'imageIdentifier', '');
-      if (!item.imageIdentifier.startsWith('http')) {
+      if (!item.imageIdentifier.startsWith('http') && profile?.userIdentifier) {
         try {
           await deleteFile(item.imageIdentifier, {
-            deletedBy: user?.sub || 'site-content',
+            deletedBy: profile?.userIdentifier,
             token,
           });
         } catch {
@@ -950,11 +956,12 @@ const MySitePage = () => {
       const token = await getToken();
       if (
         house.imageIdentifier &&
-        !String(house.imageIdentifier).startsWith('http')
+        !String(house.imageIdentifier).startsWith('http') &&
+        profile?.userIdentifier
       ) {
         try {
           await deleteFile(house.imageIdentifier, {
-            deletedBy: user?.sub || 'house-editor',
+            deletedBy: profile?.userIdentifier,
             token,
           });
         } catch {
