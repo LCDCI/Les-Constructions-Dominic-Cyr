@@ -32,7 +32,7 @@ RUN npm run build
 ############################################################
 # Serve with nginx
 ############################################################
-FROM nginx:1.29.1-alpine AS runtime
+FROM nginx:1.30.7-alpine AS runtime
 
 # Remove default nginx config
 RUN rm /etc/nginx/conf.d/default.conf
