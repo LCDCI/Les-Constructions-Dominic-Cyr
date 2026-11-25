@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 // Modal for editing a single task, sharing the same layout conventions as other schedule modals.
@@ -14,7 +15,7 @@ const EditTaskModal = ({
   onSave,
   scheduleWindow,
 }) => {
-  const { t } = usePageTranslations('taskDetails');
+  const { t, currentLanguage } = usePageTranslations('taskDetails');
   const originalOverflow = useRef(null);
 
   useEffect(() => {
@@ -50,6 +51,15 @@ const EditTaskModal = ({
 
   const minDate = scheduleWindow?.start || undefined;
   const maxDate = scheduleWindow?.end || undefined;
+  const locale = currentLanguage === 'fr' ? 'fr-CA' : 'en-US';
+  const formatDate = value =>
+    value
+      ? new Date(`${value}T00:00:00`).toLocaleDateString(locale, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
+      : '';
 
   return (
     <div
@@ -80,7 +90,8 @@ const EditTaskModal = ({
           <div className="schedule-modal-section">
             <h4>{t('editModal.workWindow', 'Work window')}</h4>
             <div>
-              {scheduleWindow.start} → {scheduleWindow.end}
+              {formatDate(scheduleWindow.start)} →{' '}
+              {formatDate(scheduleWindow.end)}
             </div>
             <div className="tasks-subtitle">
               {t(
@@ -202,3 +213,33 @@ const EditTaskModal = ({
 };
 
 export default EditTaskModal;
+
+EditTaskModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  task: PropTypes.shape({
+    taskTitle: PropTypes.string,
+    taskStatus: PropTypes.string,
+    periodStart: PropTypes.string,
+    periodEnd: PropTypes.string,
+    assignedToUserId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    taskDescription: PropTypes.string,
+  }),
+  statuses: PropTypes.arrayOf(PropTypes.string).isRequired,
+  contractors: PropTypes.arrayOf(
+    PropTypes.shape({
+      userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      userIdentifier: PropTypes.string,
+      firstName: PropTypes.string,
+      lastName: PropTypes.string,
+    })
+  ),
+  errorMessage: PropTypes.string,
+  isSaving: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onChange: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  scheduleWindow: PropTypes.shape({
+    start: PropTypes.string,
+    end: PropTypes.string,
+  }),
+};

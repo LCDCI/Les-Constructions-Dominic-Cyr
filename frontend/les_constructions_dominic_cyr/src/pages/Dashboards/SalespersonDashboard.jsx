@@ -72,7 +72,14 @@ const SalespersonDashboard = () => {
         <ScheduleList
           schedules={schedules}
           loading={loading}
-          error={error}
+          error={
+            error
+              ? t(
+                  'scheduleLoadError',
+                  'Unable to load schedules. Please try again.'
+                )
+              : null
+          }
           loadingMessage={t('loadingSchedules', 'Loading schedules...')}
           emptyMessage={t('noSchedules', 'No schedules available')}
           upcomingWorkLabel={t('upcomingWork', 'Upcoming work')}

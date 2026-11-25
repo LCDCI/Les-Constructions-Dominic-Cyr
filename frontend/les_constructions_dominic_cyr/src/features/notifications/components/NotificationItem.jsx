@@ -69,23 +69,37 @@ const NotificationItem = ({ notification, onMarkAsRead, onDelete }) => {
 
   const formatDate = dateString => {
     const date = new Date(dateString);
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
-
-    if (diffInSeconds < 60) {
-      return t('time.justNow', 'À l’instant');
-    } else if (diffInSeconds < 3600) {
-      const minutes = Math.floor(diffInSeconds / 60);
-      return t('time.minutesAgo', '{{count}} minute(s)', { count: minutes });
-    } else if (diffInSeconds < 86400) {
-      const hours = Math.floor(diffInSeconds / 3600);
-      return t('time.hoursAgo', '{{count}} heure(s)', { count: hours });
-    } else if (diffInSeconds < 604800) {
-      const days = Math.floor(diffInSeconds / 86400);
-      return t('time.daysAgo', '{{count}} jour(s)', { count: days });
-    } else {
-      return date.toLocaleDateString();
+    if (Number.isNaN(date.getTime())) {
+      return t('time.invalid');
     }
+
+    const diffInSeconds = (Date.now() - date.getTime()) / 1000;
+    if (Math.abs(diffInSeconds) < 60) return t('time.justNow');
+
+    const relativeTime = new Intl.RelativeTimeFormat(currentLanguage, {
+      numeric: 'auto',
+    });
+    const units = [
+      { threshold: 3600, divisor: 60, unit: 'minute' },
+      { threshold: 86400, divisor: 3600, unit: 'hour' },
+      { threshold: 604800, divisor: 86400, unit: 'day' },
+    ];
+    const elapsed = Math.abs(diffInSeconds);
+    const relativeUnit = units.find(({ threshold }) => elapsed < threshold);
+
+    if (relativeUnit) {
+      const count = Math.floor(elapsed / relativeUnit.divisor);
+      return relativeTime.format(
+        diffInSeconds > 0 ? -count : count,
+        relativeUnit.unit
+      );
+    }
+
+    return date.toLocaleDateString(currentLanguage, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
   };
 
   const categoryLabel = t(

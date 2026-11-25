@@ -9,6 +9,7 @@
   "lot": "Lot",
   "seeMore": "Voir plus",
   "loadingSchedules": "Chargement des calendriers...",
+  "scheduleLoadError": "Impossible de charger les calendriers. Veuillez réessayer.",
   "noSchedules": "Aucun calendrier disponible",
   "viewSchedule": "Voir le calendrier",
   "cards": {

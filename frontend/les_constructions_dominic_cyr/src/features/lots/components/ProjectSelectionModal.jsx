@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
@@ -50,7 +51,7 @@ const ProjectSelectionModal = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div
       className="modal-backdrop project-selection-modal-backdrop"
       onClick={onClose}
@@ -90,7 +91,8 @@ const ProjectSelectionModal = ({
           </ul>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

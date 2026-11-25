@@ -31,7 +31,7 @@ const DeleteScheduleConfirmationModal = ({
           <button
             type="button"
             className="modal-close"
-            aria-label="Close"
+            aria-label={t('modal.close', 'Close')}
             onClick={onCancel}
             disabled={isDeleting}
           >
@@ -53,7 +53,7 @@ const DeleteScheduleConfirmationModal = ({
             onClick={onCancel}
             disabled={isDeleting}
           >
-            Cancel
+            {t('form.cancel', 'Cancel')}
           </button>
           <button
             type="button"
@@ -61,7 +61,9 @@ const DeleteScheduleConfirmationModal = ({
             onClick={onConfirm}
             disabled={isDeleting}
           >
-            {isDeleting ? 'Deleting…' : 'Delete'}
+            {isDeleting
+              ? t('deleteModal.deleting', 'Deleting…')
+              : t('deleteModal.delete', 'Delete')}
           </button>
         </div>
       </div>

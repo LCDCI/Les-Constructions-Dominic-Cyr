@@ -25,7 +25,7 @@ const TaskDetailsPage = () => {
   const location = useLocation();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const { role, loading: roleLoading } = useBackendUser();
-  const { t } = usePageTranslations('taskDetails');
+  const { t, currentLanguage } = usePageTranslations('taskDetails');
   const stateTask = location.state?.task;
 
   const [task, setTask] = useState(null);
@@ -159,6 +159,13 @@ const TaskDetailsPage = () => {
       ? String(value)
       : parsed.toISOString().slice(0, 10);
   };
+  const formatDisplayDate = value =>
+    value
+      ? new Date(`${value}T00:00:00`).toLocaleDateString(
+          currentLanguage === 'fr' ? 'fr-CA' : 'en-US',
+          { year: 'numeric', month: 'short', day: 'numeric' }
+        )
+      : '—';
 
   const startOnly = toDateOnly(task.periodStart);
   const endOnly = toDateOnly(task.periodEnd);
@@ -316,7 +323,9 @@ const TaskDetailsPage = () => {
         <div>
           <div className="task-eyebrow">{t('task', 'Task')}</div>
           <h1>{title}</h1>
-          <div className="task-subtle">ID: {taskId}</div>
+          <div className="task-subtle">
+            {t('id', 'ID')}: {taskId}
+          </div>
         </div>
         <div className="task-header-actions">
           {role === ROLES.OWNER && (
@@ -348,10 +357,10 @@ const TaskDetailsPage = () => {
             ) : (
               <div className="task-value task-value-stacked">
                 <span>
-                  {t('start', 'Start')}: {startOnly || '—'}
+                  {t('start', 'Start')}: {formatDisplayDate(startOnly)}
                 </span>
                 <span>
-                  {t('end', 'End')}: {endOnly || '—'}
+                  {t('end', 'End')}: {formatDisplayDate(endOnly)}
                 </span>
               </div>
             )}

@@ -18,7 +18,7 @@ import { MdAttachMoney } from 'react-icons/md';
 import { CiStopwatch } from 'react-icons/ci';
 
 export default function ProjectManagementPage() {
-  const { t } = usePageTranslations('projectManagement');
+  const { t, currentLanguage } = usePageTranslations('projectManagement');
   const [modalOpen, setModalOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(null);
   const [currentImageSet, setCurrentImageSet] = useState([]);
@@ -27,7 +27,8 @@ export default function ProjectManagementPage() {
 
   useEffect(() => {
     let active = true;
-    fetchPublicSiteContent('en', 'project-management')
+    setImageOverrides({});
+    fetchPublicSiteContent(currentLanguage, 'project-management')
       .then(items => {
         if (!active) return;
         setImageOverrides(
@@ -48,7 +49,7 @@ export default function ProjectManagementPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [currentLanguage]);
 
   const CDN_BASE_URL =
     'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16';

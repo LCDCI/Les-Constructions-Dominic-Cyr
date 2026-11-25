@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 const ScheduleList = ({
   schedules,
@@ -12,12 +13,16 @@ const ScheduleList = ({
   allLotsLabel = 'All lots',
   dateDueLabel = 'Due',
   lotLabel = 'Lot',
-  locale = 'en-US',
+  locale,
 }) => {
+  const { i18n } = useTranslation();
   const [selectedLot, setSelectedLot] = useState('all');
+  const dateLocale =
+    locale ||
+    (i18n.language?.toLowerCase().startsWith('fr') ? 'fr-CA' : 'en-US');
   const formatDate = dateString => {
     const date = new Date(dateString);
-    return date.toLocaleDateString(locale, {
+    return date.toLocaleDateString(dateLocale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',

@@ -487,6 +487,35 @@ const taskDefinitions = [
 ];
 
 const TASK_PRIORITIES = ['VERY_LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'];
+const SUPPLIER_TYPE_KEYS = {
+  Arpenteur: 'surveyor',
+  Excavateur: 'excavator',
+  Fondation: 'foundation',
+  Charpentier: 'framer',
+  Toiture: 'roofing',
+  Plombier: 'plumber',
+  Électricien: 'electrician',
+  Cimentier: 'concreteFinisher',
+  Ventilation: 'ventilation',
+  Foyer: 'fireplace',
+  'Porte de garage': 'garageDoorInstaller',
+  'Alarme & balayeuse': 'alarmAndVacuum',
+  Isolation: 'insulation',
+  'Poseur de gypse': 'drywallInstaller',
+  Peintre: 'painter',
+  'Poseur de céramique': 'tileInstaller',
+  'Poseur de boiserie': 'finishCarpenter',
+  Cuisiniste: 'cabinetmaker',
+  "Poseur d'escalier": 'stairInstaller',
+  'Poseur de plancher': 'flooringInstaller',
+  'Aménagement garde-robe': 'closetInstaller',
+  Vitrier: 'glazier',
+  Ménage: 'cleaning',
+  Briqueteur: 'mason',
+  'Poseur revêtement extérieur': 'sidingInstaller',
+  Crépi: 'stucco',
+  Gouttières: 'gutters',
+};
 
 const optionalDefinitions = [
   ['stairGlass', 'Mesure verres de l’escalier', 'Stair glass measurement'],
@@ -633,6 +662,18 @@ const LotScheduleModal = ({
   const french = String(currentLanguage || '')
     .toLowerCase()
     .startsWith('fr');
+  const formatDisplayDate = value =>
+    value
+      ? new Date(`${value}T00:00:00`).toLocaleDateString(
+          french ? 'fr-CA' : 'en-US',
+          { year: 'numeric', month: 'short', day: 'numeric' }
+        )
+      : '';
+  const supplierTypeLabel = supplierType =>
+    t(
+      `lotSchedule.supplierTypes.${SUPPLIER_TYPE_KEYS[supplierType]}`,
+      supplierType
+    );
   const [lotId, setLotId] = useState('');
   const [startDate, setStartDate] = useState('');
   const [priority, setPriority] = useState('MEDIUM');
@@ -695,16 +736,13 @@ const LotScheduleModal = ({
     );
   };
 
-  const supplierTypes = useMemo(
-    () =>
-      Array.from(
-        new Set(
-          taskDefinitions.map(definition => definition[6]).filter(Boolean)
-        )
-      ).sort((first, second) =>
-        first.localeCompare(second, french ? 'fr' : 'en')
-      ),
-    [french]
+  const supplierTypes = Array.from(
+    new Set(taskDefinitions.map(definition => definition[6]).filter(Boolean))
+  ).sort((first, second) =>
+    supplierTypeLabel(first).localeCompare(
+      supplierTypeLabel(second),
+      french ? 'fr' : 'en'
+    )
   );
 
   const handleTypeAssignmentChange = (supplierType, userId) => {
@@ -728,40 +766,51 @@ const LotScheduleModal = ({
 
   const lotLabel = lot =>
     lot.displayId !== undefined && lot.displayId !== null
-      ? `${french ? 'Lot' : 'Lot'} ${lot.displayId}`
-      : french
-        ? 'Lot inconnu'
-        : 'Unknown lot';
+      ? `${t('createLotSchedule.lot', 'Lot')} ${lot.displayId}`
+      : t('lotUnknown', 'Lot unknown');
 
   const handleSubmit = event => {
     event.preventDefault();
     const requiredManual = rows.find(row => row.manual && !row.periodStart);
     if (!startDate) {
       setLocalError(
-        french
-          ? 'Veuillez saisir la date de la promesse d’achat signée.'
-          : 'Enter the signed purchase promise date.'
+        t(
+          'lotSchedule.errors.startDateRequired',
+          'Enter the signed purchase promise date.'
+        )
       );
       return;
     }
     if (!lotId) {
-      setLocalError(french ? 'Veuillez sélectionner un lot.' : 'Select a lot.');
+      setLocalError(t('errors.lotRequired', 'Please select a lot.'));
       return;
     }
     if (requiredManual) {
       setLocalError(
-        french
-          ? `Veuillez saisir la date de « ${requiredManual.titleFr} ».`
-          : `Enter the date for “${requiredManual.titleEn}”.`
+        t('lotSchedule.errors.taskDateRequired', {
+          defaultValue: 'Enter the date for “{{task}}”.',
+          task: taskLabel(
+            [
+              requiredManual.key,
+              requiredManual.titleFr,
+              requiredManual.titleEn,
+            ],
+            french
+          ),
+        })
       );
       return;
     }
     const unresolved = rows.find(row => !row.optional && !row.periodStart);
     if (unresolved) {
       setLocalError(
-        french
-          ? `La date de « ${unresolved.titleFr} » ne peut pas être calculée.`
-          : `The date for “${unresolved.titleEn}” cannot be calculated.`
+        t('lotSchedule.errors.dateUnavailable', {
+          defaultValue: 'The date for “{{task}}” cannot be calculated.',
+          task: taskLabel(
+            [unresolved.key, unresolved.titleFr, unresolved.titleEn],
+            french
+          ),
+        })
       );
       return;
     }
@@ -779,7 +828,10 @@ const LotScheduleModal = ({
       startDate,
       endDate: scheduleEndDate,
       tasks: activeRows,
-      description: `${french ? 'Calendrier du lot' : 'Lot schedule'} ${lotId}`,
+      description: t('lotSchedule.generatedDescription', {
+        defaultValue: 'Lot schedule {{lotId}}',
+        lotId,
+      }),
     });
   };
 
@@ -800,15 +852,12 @@ const LotScheduleModal = ({
       >
         <div className="schedule-modal-header">
           <div className="schedule-modal-title">
-            {t(
-              'createLotSchedule.title',
-              french ? 'Créer le calendrier du lot' : 'Create lot schedule'
-            )}
+            {t('createLotSchedule.title', 'Create lot schedule')}
           </div>
           <button
             type="button"
             className="modal-close"
-            aria-label={french ? 'Fermer' : 'Close'}
+            aria-label={t('modal.close', 'Close')}
             onClick={onClose}
           >
             ×
@@ -820,7 +869,7 @@ const LotScheduleModal = ({
         <form onSubmit={handleSubmit}>
           <div className="lot-schedule-setup">
             <label>
-              <span>{t('createLotSchedule.lot', french ? 'Lot' : 'Lot')}</span>
+              <span>{t('createLotSchedule.lot', 'Lot')}</span>
               <select
                 value={lotId}
                 onChange={event => setLotId(event.target.value)}
@@ -829,12 +878,8 @@ const LotScheduleModal = ({
               >
                 <option value="">
                   {lotsLoading
-                    ? french
-                      ? 'Chargement…'
-                      : 'Loading…'
-                    : french
-                      ? 'Sélectionner un lot'
-                      : 'Select a lot'}
+                    ? t('form.loadingLots', 'Loading lots...')
+                    : t('form.selectLot', 'Select a lot')}
                 </option>
                 {lots.map(lot => (
                   <option key={lot.value} value={lot.value}>
@@ -844,12 +889,7 @@ const LotScheduleModal = ({
               </select>
             </label>
             <label>
-              <span>
-                {t(
-                  'createLotSchedule.priority',
-                  french ? 'Priorité des tâches' : 'Task priority'
-                )}
-              </span>
+              <span>{t('createLotSchedule.priority', 'Task priority')}</span>
               <select
                 value={priority}
                 onChange={event => setPriority(event.target.value)}
@@ -866,7 +906,10 @@ const LotScheduleModal = ({
             </label>
             <label>
               <span>
-                {french ? 'Promesse d’achat signée' : 'Signed purchase promise'}
+                {t(
+                  'lotSchedule.signedPurchasePromise',
+                  'Signed purchase promise'
+                )}
               </span>
               <input
                 type="date"
@@ -879,14 +922,16 @@ const LotScheduleModal = ({
 
           <div className="lot-schedule-assignment-presets">
             <h4>
-              {french
-                ? 'Assignation par type de fournisseur'
-                : 'Assignment by supplier type'}
+              {t(
+                'lotSchedule.assignmentBySupplier',
+                'Assignment by supplier type'
+              )}
             </h4>
             <p>
-              {french
-                ? 'Choisissez un fournisseur par type; vous pouvez modifier chaque tâche individuellement.'
-                : 'Choose a supplier for each type; individual task assignments can still be changed below.'}
+              {t(
+                'lotSchedule.assignmentHelp',
+                'Choose a supplier for each type; individual task assignments can still be changed below.'
+              )}
             </p>
             <div className="lot-schedule-assignment-grid">
               {supplierTypes.map(supplierType => {
@@ -897,7 +942,7 @@ const LotScheduleModal = ({
                 );
                 return (
                   <label key={supplierType}>
-                    <span>{supplierType}</span>
+                    <span>{supplierTypeLabel(supplierType)}</span>
                     <select
                       value={assignmentByType[supplierType] || ''}
                       onChange={event =>
@@ -908,7 +953,7 @@ const LotScheduleModal = ({
                       }
                     >
                       <option value="">
-                        {french ? 'Non assigné' : 'Unassigned'}
+                        {t('taskForm.unassigned', 'Unassigned')}
                       </option>
                       {eligibleContractors.map(contractor => (
                         <option
@@ -938,11 +983,11 @@ const LotScheduleModal = ({
                       {taskLabel([row.key, row.titleFr, row.titleEn], french)}
                     </strong>
                     {row.optional && (
-                      <span>{french ? 'Optionnel' : 'Optional'}</span>
+                      <span>{t('lotSchedule.optional', 'Optional')}</span>
                     )}
                     {!row.optional && row.manual && (
                       <span>
-                        {french ? 'À inscrire manuellement' : 'Enter manually'}
+                        {t('lotSchedule.enterManually', 'Enter manually')}
                       </span>
                     )}
                   </div>
@@ -966,16 +1011,15 @@ const LotScheduleModal = ({
                     {!row.periodStart && (
                       <span>
                         {row.waitingForManualDependency
-                          ? french
-                            ? 'Ajoutez la date manuelle précédente'
-                            : 'Add the previous manual date'
-                          : french
-                            ? 'Date à ajouter'
-                            : 'Date to be added'}
+                          ? t(
+                              'lotSchedule.previousManualDate',
+                              'Add the previous manual date'
+                            )
+                          : t('lotSchedule.dateToAdd', 'Date to be added')}
                       </span>
                     )}
                     {row.periodEnd && row.periodEnd !== row.periodStart && (
-                      <span>→ {row.periodEnd}</span>
+                      <span>→ {formatDisplayDate(row.periodEnd)}</span>
                     )}
                   </div>
                   <select
@@ -983,10 +1027,16 @@ const LotScheduleModal = ({
                     onChange={event =>
                       handleTaskAssignmentChange(row.key, event.target.value)
                     }
-                    aria-label={`${french ? 'Assigné' : 'Assigned'}: ${taskLabel([row.key, row.titleFr, row.titleEn], french)}`}
+                    aria-label={t('lotSchedule.assignedAriaLabel', {
+                      defaultValue: 'Assigned: {{task}}',
+                      task: taskLabel(
+                        [row.key, row.titleFr, row.titleEn],
+                        french
+                      ),
+                    })}
                   >
                     <option value="">
-                      {french ? 'Non assigné' : 'Unassigned'}
+                      {t('taskForm.unassigned', 'Unassigned')}
                     </option>
                     {eligibleContractors.map(contractor => (
                       <option
@@ -1009,16 +1059,12 @@ const LotScheduleModal = ({
               onClick={onClose}
               disabled={isSaving}
             >
-              {french ? 'Annuler' : 'Cancel'}
+              {t('form.cancel', 'Cancel')}
             </button>
             <button type="submit" className="modal-primary" disabled={isSaving}>
               {isSaving
-                ? french
-                  ? 'Création…'
-                  : 'Creating…'
-                : french
-                  ? 'Créer le calendrier'
-                  : 'Create schedule'}
+                ? t('lotSchedule.creating', 'Creating…')
+                : t('lotSchedule.createSchedule', 'Create schedule')}
             </button>
           </div>
         </form>

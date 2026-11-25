@@ -17,6 +17,7 @@
   "deleteTask": "Delete Task",
   "editTask": "Edit Task",
   "back": "Back",
+  "id": "ID",
   "scheduleWindow": "Schedule window",
   "noDates": "No dates provided",
   "start": "Start",

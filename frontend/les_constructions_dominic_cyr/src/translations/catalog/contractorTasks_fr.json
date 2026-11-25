@@ -2,6 +2,9 @@
   "title": "Mes tâches assignées",
   "loading": "Chargement des tâches...",
   "retry": "Réessayer",
+  "errors": {
+    "loadFailed": "Échec du chargement des tâches. Veuillez réessayer."
+  },
   "tasksFound": "{{count}} tâche trouvée",
   "tasksFound_plural": "{{count}} tâches trouvées",
   "tasksCount": "{{count}} tâche",

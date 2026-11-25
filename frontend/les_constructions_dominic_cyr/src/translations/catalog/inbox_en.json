@@ -17,9 +17,7 @@
   },
   "time": {
     "justNow": "Just now",
-    "minutesAgo": "{{count}} minute(s) ago",
-    "hoursAgo": "{{count}} hour(s) ago",
-    "daysAgo": "{{count}} day(s) ago"
+    "invalid": "Unknown date"
   },
   "categories": {
     "TASK_ASSIGNED": "Task assigned",

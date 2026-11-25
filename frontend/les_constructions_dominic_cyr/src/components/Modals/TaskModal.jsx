@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 
 const TaskModal = ({
   isOpen,
@@ -15,7 +16,17 @@ const TaskModal = ({
   onAddTask,
   onRemoveTask,
 }) => {
+  const { t, currentLanguage } = usePageTranslations('projectSchedulePage');
   if (!isOpen || !schedule) return null;
+  const locale = currentLanguage === 'fr' ? 'fr-CA' : 'en-US';
+  const formatDate = value =>
+    value
+      ? new Date(`${value}T00:00:00`).toLocaleDateString(locale, {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        })
+      : '';
 
   const handleOverlayMouseDown = event => {
     if (event.target === event.currentTarget) {
@@ -36,12 +47,15 @@ const TaskModal = ({
       >
         <div className="schedule-modal-header">
           <div className="schedule-modal-title">
-            Add tasks for {schedule.scheduleDescription}
+            {t('taskForm.title', {
+              defaultValue: 'Add tasks for {{work}}',
+              work: schedule.scheduleDescription,
+            })}
           </div>
           <button
             type="button"
             className="modal-close"
-            aria-label="Close"
+            aria-label={t('modal.close', 'Close')}
             onClick={onClose}
           >
             ×
@@ -49,13 +63,18 @@ const TaskModal = ({
         </div>
 
         <div className="schedule-modal-section">
-          <h4>Work window</h4>
+          <h4>{t('taskForm.workWindow', 'Work window')}</h4>
           <div>
-            {schedule.scheduleStartDate} → {schedule.scheduleEndDate}
-            {schedule.lotNumber && ` · Lot ${schedule.lotNumber}`}
+            {formatDate(schedule.scheduleStartDate)} →{' '}
+            {formatDate(schedule.scheduleEndDate)}
+            {schedule.lotNumber &&
+              ` · ${t('lot', 'Lot')} ${schedule.lotNumber}`}
           </div>
           <div className="tasks-subtitle">
-            Task dates must stay within this window.
+            {t(
+              'taskForm.dateConstraint',
+              'Task dates must stay within this window.'
+            )}
           </div>
         </div>
 
@@ -63,33 +82,43 @@ const TaskModal = ({
           {tasks?.map((task, idx) => (
             <div key={`task-${idx}`} className="task-row">
               <div className="task-row-header">
-                <span className="task-row-title">Task {idx + 1}</span>
+                <span className="task-row-title">
+                  {t('taskForm.taskNumber', {
+                    defaultValue: 'Task {{number}}',
+                    number: idx + 1,
+                  })}
+                </span>
                 <button
                   type="button"
                   className="task-remove-button"
                   onClick={() => onRemoveTask(idx)}
-                  aria-label={`Remove task ${idx + 1}`}
+                  aria-label={t('taskForm.removeTask', {
+                    defaultValue: 'Remove task {{number}}',
+                    number: idx + 1,
+                  })}
                   disabled={tasks.length === 1}
                 >
-                  Remove
+                  {t('taskForm.remove', 'Remove')}
                 </button>
               </div>
 
               <div className="task-row-grid">
                 <label>
-                  <span>Title</span>
+                  <span>{t('taskForm.taskTitle', 'Title')}</span>
                   <input
                     type="text"
                     value={task.taskTitle}
                     onChange={e =>
                       onTaskChange(idx, 'taskTitle', e.target.value)
                     }
-                    placeholder={`Task ${idx + 1} title`}
+                    placeholder={t('taskForm.taskTitlePlaceholder', {
+                      number: idx + 1,
+                    })}
                   />
                 </label>
 
                 <label>
-                  <span>Status</span>
+                  <span>{t('taskForm.status', 'Status')}</span>
                   <select
                     value={task.taskStatus}
                     onChange={e =>
@@ -98,7 +127,10 @@ const TaskModal = ({
                   >
                     {statuses.map(status => (
                       <option key={status} value={status}>
-                        {status.replaceAll('_', ' ')}
+                        {t(
+                          `statusValues.${status}`,
+                          status.replaceAll('_', ' ')
+                        )}
                       </option>
                     ))}
                   </select>
@@ -107,7 +139,7 @@ const TaskModal = ({
 
               <div className="task-row-grid">
                 <label>
-                  <span>Task Start Date</span>
+                  <span>{t('taskForm.taskStartDate', 'Task Start Date')}</span>
                   <input
                     type="date"
                     value={task.periodStart}
@@ -120,7 +152,7 @@ const TaskModal = ({
                 </label>
 
                 <label>
-                  <span>Task End Date</span>
+                  <span>{t('taskForm.taskEndDate', 'Task End Date')}</span>
                   <input
                     type="date"
                     value={task.periodEnd}
@@ -133,14 +165,16 @@ const TaskModal = ({
                 </label>
 
                 <label>
-                  <span>Assignee</span>
+                  <span>{t('taskForm.assignee', 'Assignee')}</span>
                   <select
                     value={task.assignedToUserId}
                     onChange={e =>
                       onTaskChange(idx, 'assignedToUserId', e.target.value)
                     }
                   >
-                    <option value="">Unassigned</option>
+                    <option value="">
+                      {t('taskForm.unassigned', 'Unassigned')}
+                    </option>
                     {contractors?.map(contractor => (
                       <option
                         key={contractor.userId || contractor.userIdentifier}
@@ -154,13 +188,16 @@ const TaskModal = ({
               </div>
 
               <label className="task-row-full">
-                <span>Description</span>
+                <span>{t('taskForm.description', 'Description')}</span>
                 <textarea
                   value={task.taskDescription}
                   onChange={e =>
                     onTaskChange(idx, 'taskDescription', e.target.value)
                   }
-                  placeholder="Describe the work to be completed"
+                  placeholder={t(
+                    'taskForm.descriptionPlaceholder',
+                    'Describe the work to be completed'
+                  )}
                   rows={2}
                 />
               </label>
@@ -176,7 +213,7 @@ const TaskModal = ({
               onAddTask(schedule.scheduleStartDate, schedule.scheduleEndDate)
             }
           >
-            + Add task
+            {t('taskForm.addTask', '+ Add task')}
           </button>
         </div>
 
@@ -189,7 +226,7 @@ const TaskModal = ({
             onClick={onClose}
             disabled={isSaving}
           >
-            Skip for now
+            {t('taskForm.skip', 'Skip for now')}
           </button>
           <button
             type="button"
@@ -197,7 +234,9 @@ const TaskModal = ({
             onClick={onSave}
             disabled={isSaving}
           >
-            {isSaving ? 'Saving tasks…' : 'Save tasks'}
+            {isSaving
+              ? t('taskForm.saving', 'Saving tasks…')
+              : t('taskForm.save', 'Save tasks')}
           </button>
         </div>
       </div>

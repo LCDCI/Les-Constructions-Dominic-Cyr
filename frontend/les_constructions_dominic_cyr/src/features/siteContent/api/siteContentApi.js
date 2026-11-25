@@ -6,7 +6,8 @@ const API_BASE_URL =
 export async function fetchPublicSiteContent(language, pageGroup) {
   const params = new URLSearchParams({ language, pageGroup });
   const response = await fetch(
-    `${API_BASE_URL}/site-content?${params.toString()}`
+    `${API_BASE_URL}/site-content?${params.toString()}`,
+    { cache: 'no-store' }
   );
   if (!response.ok) return [];
   return response.json();

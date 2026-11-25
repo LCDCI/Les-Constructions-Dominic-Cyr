@@ -17,9 +17,7 @@
   },
   "time": {
     "justNow": "À l’instant",
-    "minutesAgo": "{{count}} minute(s)",
-    "hoursAgo": "{{count}} heure(s)",
-    "daysAgo": "{{count}} jour(s)"
+    "invalid": "Date inconnue"
   },
   "categories": {
     "TASK_ASSIGNED": "Tâche assignée",

@@ -30,6 +30,10 @@
     }
   },
   "project": "Projet",
+  "calendar": {
+    "showMore": "+{{count}} de plus",
+    "noEventsInRange": "Aucun événement dans cette période."
+  },
   "modal": {
     "close": "Fermer",
     "date": "Date",
@@ -37,11 +41,14 @@
     "tasks": "Tâches",
     "loadingTasks": "Chargement des tâches…",
     "noTasks": "Aucune tâche inscrite",
-    "editWork": "Modifier le calendrier"
+    "editWork": "Modifier le calendrier",
+    "untitledTask": "Tâche sans titre",
+    "id": "ID"
   },
   "form": {
     "workDescription": "Description du calendrier",
     "descriptionPlaceholder": "Coulage des fondations, charpente, etc.",
+    "lot": "Lot",
     "loadingLots": "Chargement des lots...",
     "selectLot": "Sélectionner un lot",
     "startDate": "Date de début",
@@ -53,7 +60,10 @@
   },
   "deleteModal": {
     "title": "Supprimer le calendrier ?",
-    "message": "Cette action supprimera le calendrier et toutes les tâches associées. Elle est irréversible."
+    "message": "Cette action supprimera le calendrier et toutes les tâches associées. Elle est irréversible.",
+    "delete": "Supprimer",
+    "deleting": "Suppression…",
+    "deleteWork": "Supprimer le travail"
   },
   "startUnknown": "Début ?",
   "errors": {
@@ -68,7 +78,15 @@
     "noScheduleSelected": "Aucun calendrier sélectionné. Veuillez d'abord créer un calendrier.",
     "noScheduleId": "Impossible de déterminer l'identifiant du calendrier pour les tâches.",
     "saveTasksFailed": "Échec de l'enregistrement des tâches",
-    "authRequired": " Veuillez vous assurer que vous êtes connecté avec un rôle qui peut créer des tâches."
+    "authRequired": " Veuillez vous assurer que vous êtes connecté avec un rôle qui peut créer des tâches.",
+    "taskDatesRequired": "Les dates de début et de fin de la tâche sont requises.",
+    "taskEndBeforeStart": "La date de fin de la tâche ne peut pas précéder sa date de début.",
+    "taskStartBeforeSchedule": "La date de début de la tâche précède la période du calendrier.",
+    "taskEndAfterSchedule": "La date de fin de la tâche dépasse la période du calendrier.",
+    "scheduleDatesRequired": "Les dates de début et de fin sont requises.",
+    "scheduleEndBeforeStart": "La date de fin du calendrier ne peut pas précéder sa date de début.",
+    "taskValidation": "Tâche {{number}} : {{error}}",
+    "unexpected": "Une erreur inattendue est survenue."
   },
   "selectMonth": "Sélectionner le mois",
   "selectYear": "Sélectionner l'année",
@@ -85,5 +103,90 @@
     "october": "Octobre",
     "november": "Novembre",
     "december": "Décembre"
+  },
+  "statusValues": {
+    "notSet": "Non défini",
+    "TO_DO": "À faire",
+    "IN_PROGRESS": "En cours",
+    "COMPLETED": "Terminée",
+    "ON_HOLD": "En attente",
+    "CANCELLED": "Annulée"
+  },
+  "taskForm": {
+    "title": "Ajouter des tâches pour {{work}}",
+    "workWindow": "Période de travail",
+    "dateConstraint": "Les dates des tâches doivent rester dans cette période.",
+    "taskNumber": "Tâche {{number}}",
+    "removeTask": "Supprimer la tâche {{number}}",
+    "remove": "Supprimer",
+    "taskTitle": "Titre",
+    "taskTitlePlaceholder": "Titre de la tâche {{number}}",
+    "status": "Statut",
+    "taskStartDate": "Date de début de la tâche",
+    "taskEndDate": "Date de fin de la tâche",
+    "assignee": "Responsable",
+    "unassigned": "Non assignée",
+    "description": "Description",
+    "descriptionPlaceholder": "Décrivez le travail à effectuer",
+    "tasks": "Tâches",
+    "addTask": "+ Ajouter une tâche",
+    "skip": "Ignorer pour le moment",
+    "saving": "Enregistrement des tâches…",
+    "save": "Enregistrer les tâches"
+  },
+  "editForm": {
+    "title": "Modifier le travail",
+    "tasksNote": "Modifiez, supprimez ou ajoutez des tâches pour ce travail.",
+    "toggleTask": "Activer ou désactiver la modification de la tâche {{number}}",
+    "done": "Terminé",
+    "edit": "Modifier",
+    "saveChanges": "Enregistrer les modifications"
+  },
+  "lotSchedule": {
+    "generatedDescription": "Calendrier du lot {{lotId}}",
+    "signedPurchasePromise": "Promesse d’achat signée",
+    "assignmentBySupplier": "Assignation par type de fournisseur",
+    "assignmentHelp": "Choisissez un fournisseur par type; vous pouvez modifier chaque tâche individuellement ci-dessous.",
+    "optional": "Optionnel",
+    "enterManually": "À inscrire manuellement",
+    "previousManualDate": "Ajoutez la date manuelle précédente",
+    "dateToAdd": "Date à ajouter",
+    "assignedAriaLabel": "Assigné : {{task}}",
+    "creating": "Création…",
+    "createSchedule": "Créer le calendrier",
+    "supplierTypes": {
+      "surveyor": "Arpenteur",
+      "excavator": "Excavateur",
+      "foundation": "Entrepreneur en fondations",
+      "framer": "Charpentier",
+      "roofing": "Couvreur",
+      "plumber": "Plombier",
+      "electrician": "Électricien",
+      "concreteFinisher": "Cimentier",
+      "ventilation": "Entrepreneur en ventilation",
+      "fireplace": "Entrepreneur en foyer",
+      "garageDoorInstaller": "Installateur de portes de garage",
+      "alarmAndVacuum": "Alarme et aspirateur central",
+      "insulation": "Entrepreneur en isolation",
+      "drywallInstaller": "Poseur de gypse",
+      "painter": "Peintre",
+      "tileInstaller": "Poseur de céramique",
+      "finishCarpenter": "Poseur de boiserie",
+      "cabinetmaker": "Cuisiniste",
+      "stairInstaller": "Poseur d’escalier",
+      "flooringInstaller": "Poseur de plancher",
+      "closetInstaller": "Aménagiste de garde-robes",
+      "glazier": "Vitrier",
+      "cleaning": "Ménage",
+      "mason": "Briqueteur",
+      "sidingInstaller": "Poseur de revêtement extérieur",
+      "stucco": "Crépi",
+      "gutters": "Gouttières"
+    },
+    "errors": {
+      "startDateRequired": "Veuillez saisir la date de la promesse d’achat signée.",
+      "taskDateRequired": "Veuillez saisir la date de « {{task}} ».",
+      "dateUnavailable": "La date de « {{task}} » ne peut pas être calculée."
+    }
   }
 }
