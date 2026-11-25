@@ -5,14 +5,14 @@
 ############################################################
 # 1) BACKEND BUILD (Spring Boot)
 ############################################################
-FROM gradle:8.5-jdk21 AS backend-build
+FROM eclipse-temurin:21.0.13.1_2-jdk AS backend-build
 WORKDIR /app
 
 # Copy entire project (so Gradle sees build.gradle + src/)
 COPY . .
 
 # Build Spring Boot JAR
-RUN gradle clean build -x test --no-daemon
+RUN chmod +x ./gradlew && ./gradlew clean build -x test --no-daemon
 
 ############################################################
 # 2) FRONTEND BUILD (Node)
@@ -85,7 +85,7 @@ RUN go build -o mailer-service ./cmd/mailer
 ############################################################
 # 5) FINAL RUNTIME IMAGE (backend + files-service + mailer-service)
 ############################################################
-FROM eclipse-temurin:21-jdk AS final
+FROM eclipse-temurin:21.0.13.1_2-jdk AS final
 WORKDIR /app
 
 # Copy backend JAR
