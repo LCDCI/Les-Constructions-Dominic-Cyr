@@ -20,9 +20,7 @@ const ContractorTasksPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const { userId } = useBackendUser();
-  // eslint-disable-next-line no-unused-vars
-  const { t, isLoading: translationsLoading } =
-    usePageTranslations('contractorTasks');
+  const { t, currentLanguage } = usePageTranslations('contractorTasks');
 
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -80,7 +78,7 @@ const ContractorTasksPage = () => {
         }
       } catch (err) {
         console.error('Error fetching tasks:', err);
-        setError('Failed to load tasks. Please try again.');
+        setError('loadFailed');
       } finally {
         setLoading(false);
       }
@@ -211,11 +209,14 @@ const ContractorTasksPage = () => {
   const formatDate = dateString => {
     if (!dateString) return '—';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return date.toLocaleDateString(
+      currentLanguage === 'fr' ? 'fr-CA' : 'en-US',
+      {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      }
+    );
   };
 
   const getStatusClass = status => {
@@ -249,7 +250,9 @@ const ContractorTasksPage = () => {
     return (
       <div className="contractor-tasks-page">
         <div className="error-container">
-          <p className="error-message">{error}</p>
+          <p className="error-message">
+            {t('errors.loadFailed', 'Failed to load tasks. Please try again.')}
+          </p>
           <button onClick={() => window.location.reload()}>
             {t('retry', 'Retry')}
           </button>

@@ -651,11 +651,7 @@
   }
 
   .portal-label {
-    right: calc(50% + 110px);
-    max-width: 7rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.8rem;
+    display: none;
   }
 }
 

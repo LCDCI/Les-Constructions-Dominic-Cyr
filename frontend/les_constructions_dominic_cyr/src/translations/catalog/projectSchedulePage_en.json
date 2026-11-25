@@ -30,6 +30,10 @@
     }
   },
   "project": "Project",
+  "calendar": {
+    "showMore": "+{{count}} more",
+    "noEventsInRange": "There are no events in this range."
+  },
   "modal": {
     "close": "Close",
     "date": "Date",
@@ -37,11 +41,14 @@
     "tasks": "Tasks",
     "loadingTasks": "Loading tasks…",
     "noTasks": "No tasks listed",
-    "editWork": "Edit work"
+    "editWork": "Edit work",
+    "untitledTask": "Untitled task",
+    "id": "ID"
   },
   "form": {
     "workDescription": "Work description",
     "descriptionPlaceholder": "Foundation pour, framing, etc.",
+    "lot": "Lot",
     "loadingLots": "Loading lots...",
     "selectLot": "Select a lot",
     "startDate": "Start date",
@@ -53,7 +60,10 @@
   },
   "deleteModal": {
     "title": "Delete work?",
-    "message": "This will delete the work and all associated tasks. This action cannot be undone."
+    "message": "This will delete the work and all associated tasks. This action cannot be undone.",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "deleteWork": "Delete work"
   },
   "startUnknown": "Start ?",
   "errors": {
@@ -68,7 +78,15 @@
     "noScheduleSelected": "No schedule selected. Please create a schedule first.",
     "noScheduleId": "Could not determine schedule id for tasks.",
     "saveTasksFailed": "Failed to save tasks",
-    "authRequired": " Please make sure you are signed in with a role that can create tasks."
+    "authRequired": " Please make sure you are signed in with a role that can create tasks.",
+    "taskDatesRequired": "Task start and end dates are required.",
+    "taskEndBeforeStart": "Task end date cannot be before the start date.",
+    "taskStartBeforeSchedule": "Task start date is before the schedule window.",
+    "taskEndAfterSchedule": "Task end date is after the schedule window.",
+    "scheduleDatesRequired": "Start and end dates are required.",
+    "scheduleEndBeforeStart": "Schedule end date cannot be before the start date.",
+    "taskValidation": "Task {{number}}: {{error}}",
+    "unexpected": "Unexpected error"
   },
   "selectMonth": "Select month",
   "selectYear": "Select year",
@@ -85,5 +103,90 @@
     "october": "October",
     "november": "November",
     "december": "December"
+  },
+  "statusValues": {
+    "notSet": "Not set",
+    "TO_DO": "To do",
+    "IN_PROGRESS": "In progress",
+    "COMPLETED": "Completed",
+    "ON_HOLD": "On hold",
+    "CANCELLED": "Cancelled"
+  },
+  "taskForm": {
+    "title": "Add tasks for {{work}}",
+    "workWindow": "Work window",
+    "dateConstraint": "Task dates must stay within this window.",
+    "taskNumber": "Task {{number}}",
+    "removeTask": "Remove task {{number}}",
+    "remove": "Remove",
+    "taskTitle": "Title",
+    "taskTitlePlaceholder": "Task {{number}} title",
+    "status": "Status",
+    "taskStartDate": "Task Start Date",
+    "taskEndDate": "Task End Date",
+    "assignee": "Assignee",
+    "unassigned": "Unassigned",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the work to be completed",
+    "tasks": "Tasks",
+    "addTask": "+ Add task",
+    "skip": "Skip for now",
+    "saving": "Saving tasks…",
+    "save": "Save tasks"
+  },
+  "editForm": {
+    "title": "Edit work",
+    "tasksNote": "Edit, remove, or add tasks for this work.",
+    "toggleTask": "Toggle edit for task {{number}}",
+    "done": "Done",
+    "edit": "Edit",
+    "saveChanges": "Save changes"
+  },
+  "lotSchedule": {
+    "generatedDescription": "Lot schedule {{lotId}}",
+    "signedPurchasePromise": "Signed purchase promise",
+    "assignmentBySupplier": "Assignment by supplier type",
+    "assignmentHelp": "Choose a supplier for each type; individual task assignments can still be changed below.",
+    "optional": "Optional",
+    "enterManually": "Enter manually",
+    "previousManualDate": "Add the previous manual date",
+    "dateToAdd": "Date to be added",
+    "assignedAriaLabel": "Assigned: {{task}}",
+    "creating": "Creating…",
+    "createSchedule": "Create schedule",
+    "supplierTypes": {
+      "surveyor": "Land surveyor",
+      "excavator": "Excavator",
+      "foundation": "Foundation contractor",
+      "framer": "Framer",
+      "roofing": "Roofer",
+      "plumber": "Plumber",
+      "electrician": "Electrician",
+      "concreteFinisher": "Concrete finisher",
+      "ventilation": "Ventilation contractor",
+      "fireplace": "Fireplace contractor",
+      "garageDoorInstaller": "Garage door installer",
+      "alarmAndVacuum": "Alarm and central vacuum",
+      "insulation": "Insulation contractor",
+      "drywallInstaller": "Drywall installer",
+      "painter": "Painter",
+      "tileInstaller": "Tile installer",
+      "finishCarpenter": "Finish carpenter",
+      "cabinetmaker": "Cabinetmaker",
+      "stairInstaller": "Stair installer",
+      "flooringInstaller": "Flooring installer",
+      "closetInstaller": "Closet installer",
+      "glazier": "Glazier",
+      "cleaning": "Cleaning",
+      "mason": "Mason",
+      "sidingInstaller": "Siding installer",
+      "stucco": "Stucco",
+      "gutters": "Gutters"
+    },
+    "errors": {
+      "startDateRequired": "Enter the signed purchase promise date.",
+      "taskDateRequired": "Enter the date for “{{task}}”.",
+      "dateUnavailable": "The date for “{{task}}” cannot be calculated."
+    }
   }
 }

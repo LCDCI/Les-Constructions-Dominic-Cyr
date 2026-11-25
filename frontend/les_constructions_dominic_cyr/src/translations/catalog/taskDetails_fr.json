@@ -17,6 +17,7 @@
   "deleteTask": "Supprimer la tâche",
   "editTask": "Modifier la tâche",
   "back": "Retour",
+  "id": "ID",
   "scheduleWindow": "Période planifiée",
   "noDates": "Aucune date fournie",
   "start": "Début",

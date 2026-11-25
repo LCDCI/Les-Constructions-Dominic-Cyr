@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FiEdit2 } from 'react-icons/fi';
+import { usePageTranslations } from '../../hooks/usePageTranslations';
 import DeleteScheduleConfirmationModal from './DeleteScheduleConfirmationModal';
 
 const EditScheduleModal = ({
@@ -24,6 +25,7 @@ const EditScheduleModal = ({
   contractors,
   onDeleteSchedule = null,
 }) => {
+  const { t } = usePageTranslations('projectSchedulePage');
   const originalOverflow = useRef(null);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
 
@@ -99,11 +101,13 @@ const EditScheduleModal = ({
         onMouseDown={e => e.stopPropagation()}
       >
         <div className="schedule-modal-header">
-          <div className="schedule-modal-title">Edit Work</div>
+          <div className="schedule-modal-title">
+            {t('editForm.title', 'Edit work')}
+          </div>
           <button
             type="button"
             className="modal-close"
-            aria-label="Close"
+            aria-label={t('modal.close', 'Close')}
             onClick={onClose}
           >
             ×
@@ -115,14 +119,17 @@ const EditScheduleModal = ({
         <form className="create-schedule-form" onSubmit={handleFormSubmit}>
           <div className="form-row">
             <label>
-              <span>Work description</span>
+              <span>{t('form.workDescription', 'Work description')}</span>
               <input
                 type="text"
                 value={schedule.scheduleDescription}
                 onChange={e =>
                   handleFieldChange('scheduleDescription', e.target.value)
                 }
-                placeholder="Foundation pour, framing, etc."
+                placeholder={t(
+                  'form.descriptionPlaceholder',
+                  'Foundation pour, framing, etc.'
+                )}
                 required
               />
             </label>
@@ -130,13 +137,15 @@ const EditScheduleModal = ({
 
           <div className="form-row">
             <label>
-              <span>Lot</span>
+              <span>{t('form.lot', 'Lot')}</span>
               <select
                 value={schedule.lotId}
                 onChange={e => handleFieldChange('lotId', e.target.value)}
               >
                 <option value="" disabled>
-                  {lotsLoading ? 'Loading lots...' : 'Select a lot'}
+                  {lotsLoading
+                    ? t('form.loadingLots', 'Loading lots...')
+                    : t('form.selectLot', 'Select a lot')}
                 </option>
                 {lots.map(lot => (
                   <option key={lot.value} value={lot.value}>
@@ -152,7 +161,7 @@ const EditScheduleModal = ({
 
           <div className="form-row two-col">
             <label>
-              <span>Work Start Date</span>
+              <span>{t('form.startDate', 'Start date')}</span>
               <input
                 type="date"
                 value={schedule.scheduleStartDate}
@@ -164,7 +173,7 @@ const EditScheduleModal = ({
             </label>
 
             <label>
-              <span>Work End Date</span>
+              <span>{t('form.endDate', 'End date')}</span>
               <input
                 type="date"
                 value={schedule.scheduleEndDate}
@@ -178,9 +187,12 @@ const EditScheduleModal = ({
 
           <div className="tasks-header" style={{ marginTop: '6px' }}>
             <div>
-              <div className="tasks-title">Tasks</div>
+              <div className="tasks-title">{t('taskForm.tasks', 'Tasks')}</div>
               <div className="tasks-subtitle">
-                Edit, remove, or add tasks for this work.
+                {t(
+                  'editForm.tasksNote',
+                  'Edit, remove, or add tasks for this work.'
+                )}
               </div>
             </div>
             <button
@@ -190,7 +202,7 @@ const EditScheduleModal = ({
                 onAddTask(schedule.scheduleStartDate, schedule.scheduleEndDate)
               }
             >
-              + Add task
+              {t('taskForm.addTask', '+ Add task')}
             </button>
           </div>
 
@@ -198,31 +210,45 @@ const EditScheduleModal = ({
             {taskDrafts.map((task, idx) => (
               <div key={`edit-task-${idx}`} className="task-row">
                 <div className="task-row-header">
-                  <span className="task-row-title">Task {idx + 1}</span>
+                  <span className="task-row-title">
+                    {t('taskForm.taskNumber', {
+                      defaultValue: 'Task {{number}}',
+                      number: idx + 1,
+                    })}
+                  </span>
                   <div className="task-row-actions">
                     <button
                       type="button"
                       className={`task-edit-button ${task.isEditable ? 'is-active' : ''}`}
                       onClick={() => onToggleTaskEdit(idx)}
-                      aria-label={`Toggle edit for task ${idx + 1}`}
+                      aria-label={t('editForm.toggleTask', {
+                        defaultValue: 'Toggle edit for task {{number}}',
+                        number: idx + 1,
+                      })}
                     >
-                      <FiEdit2 size={14} /> {task.isEditable ? 'Done' : 'Edit'}
+                      <FiEdit2 size={14} />{' '}
+                      {task.isEditable
+                        ? t('editForm.done', 'Done')
+                        : t('editForm.edit', 'Edit')}
                     </button>
                     <button
                       type="button"
                       className="task-remove-button"
                       onClick={() => onRemoveTask(idx)}
-                      aria-label={`Remove task ${idx + 1}`}
+                      aria-label={t('taskForm.removeTask', {
+                        defaultValue: 'Remove task {{number}}',
+                        number: idx + 1,
+                      })}
                       disabled={false}
                     >
-                      Remove
+                      {t('taskForm.remove', 'Remove')}
                     </button>
                   </div>
                 </div>
 
                 <div className="task-row-grid">
                   <label>
-                    <span>Title</span>
+                    <span>{t('taskForm.taskTitle', 'Title')}</span>
                     <input
                       type="text"
                       value={task.taskTitle}
@@ -230,12 +256,14 @@ const EditScheduleModal = ({
                       onChange={e =>
                         onTaskChange(idx, 'taskTitle', e.target.value)
                       }
-                      placeholder={`Task ${idx + 1} title`}
+                      placeholder={t('taskForm.taskTitlePlaceholder', {
+                        number: idx + 1,
+                      })}
                     />
                   </label>
 
                   <label>
-                    <span>Status</span>
+                    <span>{t('taskForm.status', 'Status')}</span>
                     <select
                       value={task.taskStatus}
                       disabled={!task.isEditable}
@@ -245,7 +273,10 @@ const EditScheduleModal = ({
                     >
                       {taskStatuses.map(status => (
                         <option key={status} value={status}>
-                          {status.replaceAll('_', ' ')}
+                          {t(
+                            `statusValues.${status}`,
+                            status.replaceAll('_', ' ')
+                          )}
                         </option>
                       ))}
                     </select>
@@ -254,7 +285,9 @@ const EditScheduleModal = ({
 
                 <div className="task-row-grid">
                   <label>
-                    <span>Task Start Date</span>
+                    <span>
+                      {t('taskForm.taskStartDate', 'Task Start Date')}
+                    </span>
                     <input
                       type="date"
                       value={task.periodStart}
@@ -268,7 +301,7 @@ const EditScheduleModal = ({
                   </label>
 
                   <label>
-                    <span>Task End Date</span>
+                    <span>{t('taskForm.taskEndDate', 'Task End Date')}</span>
                     <input
                       type="date"
                       value={task.periodEnd}
@@ -282,7 +315,7 @@ const EditScheduleModal = ({
                   </label>
 
                   <label>
-                    <span>Assignee</span>
+                    <span>{t('taskForm.assignee', 'Assignee')}</span>
                     <select
                       value={task.assignedToUserId}
                       disabled={!task.isEditable}
@@ -290,7 +323,9 @@ const EditScheduleModal = ({
                         onTaskChange(idx, 'assignedToUserId', e.target.value)
                       }
                     >
-                      <option value="">Unassigned</option>
+                      <option value="">
+                        {t('taskForm.unassigned', 'Unassigned')}
+                      </option>
                       {contractors?.map(contractor => (
                         <option
                           key={contractor.userId || contractor.userIdentifier}
@@ -304,14 +339,17 @@ const EditScheduleModal = ({
                 </div>
 
                 <label className="task-row-full">
-                  <span>Description</span>
+                  <span>{t('taskForm.description', 'Description')}</span>
                   <textarea
                     value={task.taskDescription}
                     disabled={!task.isEditable}
                     onChange={e =>
                       onTaskChange(idx, 'taskDescription', e.target.value)
                     }
-                    placeholder="Describe the work to be completed"
+                    placeholder={t(
+                      'taskForm.descriptionPlaceholder',
+                      'Describe the work to be completed'
+                    )}
                     rows={2}
                   />
                 </label>
@@ -330,7 +368,9 @@ const EditScheduleModal = ({
                   onClick={handleDeleteClick}
                   disabled={isSaving || isDeleting}
                 >
-                  {isDeleting ? 'Deleting…' : 'Delete Work'}
+                  {isDeleting
+                    ? t('deleteModal.deleting', 'Deleting…')
+                    : t('deleteModal.deleteWork', 'Delete work')}
                 </button>
               </div>
             ) : null}
@@ -341,7 +381,7 @@ const EditScheduleModal = ({
                 onClick={onClose}
                 disabled={isSaving}
               >
-                Cancel
+                {t('form.cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -349,7 +389,9 @@ const EditScheduleModal = ({
                 onClick={handleFormSubmit}
                 disabled={isSaving}
               >
-                {isSaving ? 'Saving…' : 'Save changes'}
+                {isSaving
+                  ? t('form.saving', 'Saving…')
+                  : t('editForm.saveChanges', 'Save changes')}
               </button>
             </div>
           </div>

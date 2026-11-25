@@ -83,7 +83,7 @@ const ScheduleDetailModal = ({
           <button
             type="button"
             className="modal-close"
-            aria-label="Close"
+            aria-label={t('modal.close', 'Close')}
             onClick={onClose}
           >
             ×
@@ -124,8 +124,8 @@ const ScheduleDetailModal = ({
                     task.taskDescription ||
                     task.description ||
                     task.name ||
-                    'Untitled task';
-                  const status = task.taskStatus || 'Not set';
+                    t('modal.untitledTask', 'Untitled task');
+                  const status = task.taskStatus || 'notSet';
                   const taskPath = taskId ? `/tasks/${taskId}` : null;
                   const isClickable = Boolean(taskPath && onTaskNavigate);
 
@@ -142,11 +142,13 @@ const ScheduleDetailModal = ({
                       >
                         <div className="schedule-task-copy">
                           <div className="schedule-task-title">{title}</div>
-                          <div className="schedule-task-meta">ID: {taskId}</div>
+                          <div className="schedule-task-meta">
+                            {t('modal.id', 'ID')}: {taskId}
+                          </div>
                         </div>
                         <div className="schedule-task-status">
                           <span className="task-chip task-chip-inline">
-                            {status}
+                            {t(`statusValues.${status}`, status)}
                           </span>
                         </div>
                       </button>

@@ -9,6 +9,7 @@
   "lot": "Lot",
   "seeMore": "See more",
   "loadingSchedules": "Loading schedules...",
+  "scheduleLoadError": "Unable to load schedules. Please try again.",
   "noSchedules": "No schedules available",
   "viewSchedule": "View schedule",
   "cards": {

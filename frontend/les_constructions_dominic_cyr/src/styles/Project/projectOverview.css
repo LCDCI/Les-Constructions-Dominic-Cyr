@@ -122,22 +122,24 @@
   place-items: center;
   box-sizing: border-box;
   width: min(320px, 72vw);
-  height: min(170px, 36vw);
+  height: min(320px, calc(100% - 2rem));
   padding: 1.25rem;
-  background-color: rgba(243, 245, 243, 0.35);
-  background: color-mix(
-    in srgb,
-    var(--primary-color, #2c3e50) 22%,
-    transparent
-  );
+  background-color: rgba(243, 245, 243, 0.92);
+  border-radius: 0.75rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
   transform: translate(-50%, -50%);
+  overflow: hidden;
   pointer-events: none;
 }
 
 .project-logo-above-banner .project-logo {
+  display: block;
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18));
 }
@@ -248,9 +250,9 @@
   }
 
   .project-logo-above-banner {
-    width: min(260px, 72vw);
-    height: min(130px, 32vw);
-    padding: 0.75rem;
+    width: min(200px, 72vw);
+    height: min(200px, calc(100% - 2rem));
+    padding: 1rem;
   }
 }
 

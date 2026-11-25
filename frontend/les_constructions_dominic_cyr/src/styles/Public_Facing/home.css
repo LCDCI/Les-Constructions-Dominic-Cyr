@@ -668,7 +668,12 @@ body {
 }
 
 .home .portfolio-card.project-logo-card {
-  border-radius: 1rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.home .portfolio-card.project-logo-card .card-image-bg {
+  border-radius: inherit;
 }
 
 .home .portfolio-card.animated {

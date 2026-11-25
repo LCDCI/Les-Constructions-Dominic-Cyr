@@ -22,7 +22,8 @@ import {
   setMinutes,
   isSameDay,
 } from 'date-fns';
-import enUS from 'date-fns/locale/en-US';
+import englishLocale from 'date-fns/locale/en-US';
+import frenchLocale from 'date-fns/locale/fr';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { projectScheduleApi } from '../../features/schedules/api/projectScheduleApi';
@@ -41,7 +42,8 @@ import { usePageTranslations } from '../../hooks/usePageTranslations';
 import '../../styles/Project/ProjectSchedule.css';
 
 const locales = {
-  'en-US': enUS,
+  'en-US': englishLocale,
+  fr: frenchLocale,
 };
 
 const localizer = dateFnsLocalizer({
@@ -132,7 +134,7 @@ const ProjectSchedulePage = () => {
 
   const [events, setEvents] = useState([]);
   const [schedules, setSchedules] = useState([]);
-  const [projectName, setProjectName] = useState('Project');
+  const [projectName, setProjectName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lots, setLots] = useState([]);
@@ -169,6 +171,30 @@ const ProjectSchedulePage = () => {
 
   const originalOverflow = useRef(null);
   const didLockBody = useRef(false);
+  const translationRef = useRef(t);
+  translationRef.current = t;
+
+  useEffect(() => {
+    const localizeEventTitle = event => {
+      const localizedTitle = event.lotDatabaseId
+        ? `${translationRef.current('lot', 'Lot')} ${event.lotDatabaseId}`
+        : event.scheduleDescription ||
+          translationRef.current('schedule', 'Schedule');
+      return event.title === localizedTitle
+        ? event
+        : { ...event, title: localizedTitle };
+    };
+
+    setEvents(previous => {
+      const localized = previous.map(localizeEventTitle);
+      return localized.some((event, index) => event !== previous[index])
+        ? localized
+        : previous;
+    });
+    setSelectedEvent(previous =>
+      previous ? localizeEventTitle(previous) : previous
+    );
+  }, [currentLanguage]);
 
   const parseDateSafe = input => {
     if (!input) return null;
@@ -227,7 +253,7 @@ const ProjectSchedulePage = () => {
         lotIdentifier: '',
         lotNumber: '',
         lotDatabaseId: '',
-        projectName: 'Project',
+        projectName: translationRef.current('project', 'Project'),
         tasks: [],
       };
     }
@@ -313,7 +339,7 @@ const ProjectSchedulePage = () => {
         schedule.projectName ??
         schedule.project?.projectName ??
         schedule.project?.name ??
-        'Project',
+        translationRef.current('project', 'Project'),
       tasks: normalizedTasks,
     };
   };
@@ -346,8 +372,9 @@ const ProjectSchedulePage = () => {
         fallbackId ??
         Date.now(),
       title: normalized.lotDatabaseId
-        ? `${t('lot', 'Lot')} ${normalized.lotDatabaseId}`
-        : normalized.scheduleDescription || t('schedule', 'Schedule'),
+        ? `${translationRef.current('lot', 'Lot')} ${normalized.lotDatabaseId}`
+        : normalized.scheduleDescription ||
+          translationRef.current('schedule', 'Schedule'),
       start: safeStart,
       end: safeEnd < safeStart ? safeStart : safeEnd,
       allDay:
@@ -372,13 +399,27 @@ const ProjectSchedulePage = () => {
     const scheduleStartDate = parseDateSafe(scheduleStart);
     const scheduleEndDate = parseDateSafe(scheduleEnd || scheduleStart);
 
-    if (!taskStart || !taskEnd) return 'Task start and end dates are required.';
+    if (!taskStart || !taskEnd) {
+      return t(
+        'errors.taskDatesRequired',
+        'Task start and end dates are required.'
+      );
+    }
     if (taskEnd < taskStart)
-      return 'Task end date cannot be before the start date.';
+      return t(
+        'errors.taskEndBeforeStart',
+        'Task end date cannot be before the start date.'
+      );
     if (scheduleStartDate && taskStart < scheduleStartDate)
-      return 'Task start date is before the schedule window.';
+      return t(
+        'errors.taskStartBeforeSchedule',
+        'Task start date is before the schedule window.'
+      );
     if (scheduleEndDate && taskEnd > scheduleEndDate)
-      return 'Task end date is after the schedule window.';
+      return t(
+        'errors.taskEndAfterSchedule',
+        'Task end date is after the schedule window.'
+      );
     return null;
   };
 
@@ -390,31 +431,29 @@ const ProjectSchedulePage = () => {
       if (Array.isArray(responseData.errors))
         return responseData.errors.join(', ');
     }
-    return err?.message || 'Unexpected error';
+    return err?.message || t('errors.unexpected', 'Unexpected error');
   };
 
   const validateScheduleRange = (start, end) => {
     const startDate = parseDateSafe(start);
     const endDate = parseDateSafe(end);
-    if (!startDate || !endDate) return 'Start and end dates are required.';
+    if (!startDate || !endDate) {
+      return t(
+        'errors.scheduleDatesRequired',
+        'Start and end dates are required.'
+      );
+    }
     if (endDate < startDate) {
-      return 'Schedule end date cannot be before the start date.';
+      return t(
+        'errors.scheduleEndBeforeStart',
+        'Schedule end date cannot be before the start date.'
+      );
     }
     return null;
   };
 
   const getLotId = lot =>
     lot?.lotIdentifier?.lotId || lot?.lotId || (lot?.id ? String(lot.id) : '');
-
-  const formatLotLabel = lot => {
-    // Prefer human-friendly civic address when available
-    const civic = lot?.civicAddress;
-    if (civic) return civic;
-
-    // Fall back to location or the internal identifier
-    if (lot?.location) return `${lot.location} (${getLotId(lot)})`;
-    return getLotId(lot) || 'Unknown lot';
-  };
 
   const lotOptions = useMemo(
     () =>
@@ -427,13 +466,16 @@ const ProjectSchedulePage = () => {
                 displayId: lot?.id,
                 label:
                   lot?.id !== undefined && lot?.id !== null
-                    ? `Lot ${lot.id}`
-                    : formatLotLabel(lot),
+                    ? `${t('lot', 'Lot')} ${lot.id}`
+                    : lot?.civicAddress ||
+                      (lot?.location
+                        ? `${lot.location} (${getLotId(lot)})`
+                        : getLotId(lot) || t('lotUnknown', 'Lot unknown')),
               }
             : null;
         })
         .filter(Boolean),
-    [lots]
+    [lots, t]
   );
 
   const getScheduleIdentifier = entity =>
@@ -478,7 +520,7 @@ const ProjectSchedulePage = () => {
         if (!scheduleResponse || scheduleResponse.length === 0) {
           setSchedules([]);
           setEvents([]);
-          setProjectName(t('project', 'Project'));
+          setProjectName(translationRef.current('project', 'Project'));
           setDefaultDate(new Date());
           setCurrentDate(new Date());
           setError(null);
@@ -502,7 +544,8 @@ const ProjectSchedulePage = () => {
         setEvents(mappedEvents);
         setSchedules(scheduleWithIds);
         setProjectName(
-          scheduleWithIds[0]?.projectName || t('project', 'Project')
+          scheduleWithIds[0]?.projectName ||
+            translationRef.current('project', 'Project')
         );
 
         // Fetch project data to get contractor IDs
@@ -529,7 +572,7 @@ const ProjectSchedulePage = () => {
         setError(null);
       } catch (err) {
         setError(
-          t(
+          translationRef.current(
             'error',
             'Failed to load project schedules. Please try again later.'
           )
@@ -569,7 +612,9 @@ const ProjectSchedulePage = () => {
       setLotsError(null);
     } catch (err) {
       console.error('Lots loading error:', err);
-      setLotsError(t('errors.loadLotsFailed', 'Unable to load lots.'));
+      setLotsError(
+        translationRef.current('errors.loadLotsFailed', 'Unable to load lots.')
+      );
     } finally {
       setLotsLoading(false);
     }
@@ -766,7 +811,12 @@ const ProjectSchedulePage = () => {
 
   const formatDisplayRange = (start, end) => {
     if (!start) return '';
-    const startText = formatDate(start, 'eee, MMM d, yyyy h:mm a');
+    const dateLocale = currentLanguage === 'fr' ? frenchLocale : englishLocale;
+    const startPattern =
+      currentLanguage === 'fr'
+        ? 'EEE d MMM yyyy HH:mm'
+        : 'eee, MMM d, yyyy h:mm a';
+    const startText = formatDate(start, startPattern, { locale: dateLocale });
     if (!end || end.getTime() === start.getTime()) return startText;
     const sameDay =
       start.getFullYear() === end.getFullYear() &&
@@ -774,7 +824,8 @@ const ProjectSchedulePage = () => {
       start.getDate() === end.getDate();
     const endText = formatDate(
       end,
-      sameDay ? 'h:mm a' : 'eee, MMM d, yyyy h:mm a'
+      sameDay ? (currentLanguage === 'fr' ? 'HH:mm' : 'h:mm a') : startPattern,
+      { locale: dateLocale }
     );
     return `${startText} → ${endText}`;
   };
@@ -1133,11 +1184,19 @@ const ProjectSchedulePage = () => {
       .filter(task => task.taskTitle?.trim() || task.taskDescription?.trim())
       .map((task, idx) => ({
         ...task,
-        taskTitle: task.taskTitle?.trim() || `Task ${idx + 1}`,
+        taskTitle:
+          task.taskTitle?.trim() ||
+          t('taskForm.taskNumber', {
+            defaultValue: 'Task {{number}}',
+            number: idx + 1,
+          }),
         taskDescription:
           task.taskDescription?.trim() ||
           task.taskTitle?.trim() ||
-          `Task ${idx + 1}`,
+          t('taskForm.taskNumber', {
+            defaultValue: 'Task {{number}}',
+            number: idx + 1,
+          }),
         periodStart: task.periodStart || editSchedule.scheduleStartDate,
         periodEnd: task.periodEnd || editSchedule.scheduleEndDate,
         taskStatus: task.taskStatus || TASK_STATUSES[0],
@@ -1150,7 +1209,13 @@ const ProjectSchedulePage = () => {
         editSchedule.scheduleEndDate
       );
       if (validation) {
-        setEditFormError(`Task ${i + 1}: ${validation}`);
+        setEditFormError(
+          t('errors.taskValidation', {
+            defaultValue: 'Task {{number}}: {{error}}',
+            number: i + 1,
+            error: validation,
+          })
+        );
         return false;
       }
     }
@@ -1340,11 +1405,19 @@ const ProjectSchedulePage = () => {
       .filter(task => task.taskTitle?.trim() || task.taskDescription?.trim())
       .map((task, idx) => ({
         ...task,
-        taskTitle: task.taskTitle?.trim() || `Task ${idx + 1}`,
+        taskTitle:
+          task.taskTitle?.trim() ||
+          t('taskForm.taskNumber', {
+            defaultValue: 'Task {{number}}',
+            number: idx + 1,
+          }),
         taskDescription:
           task.taskDescription?.trim() ||
           task.taskTitle?.trim() ||
-          `Task ${idx + 1}`,
+          t('taskForm.taskNumber', {
+            defaultValue: 'Task {{number}}',
+            number: idx + 1,
+          }),
         periodStart: task.periodStart || scheduleStart,
         periodEnd: task.periodEnd || scheduleEnd,
         taskStatus: task.taskStatus || TASK_STATUSES[0],
@@ -1357,7 +1430,13 @@ const ProjectSchedulePage = () => {
         scheduleEnd
       );
       if (validation) {
-        setTaskFormError(`Task ${i + 1}: ${validation}`);
+        setTaskFormError(
+          t('errors.taskValidation', {
+            defaultValue: 'Task {{number}}: {{error}}',
+            number: i + 1,
+            error: validation,
+          })
+        );
         return;
       }
     }
@@ -1508,7 +1587,15 @@ const ProjectSchedulePage = () => {
               {t('today', 'Today')}
             </button>
             <span className="toolbar-today-label">
-              {t('today', 'Today')}: {formatDate(today, 'eee, MMM d')}
+              {t('today', 'Today')}:{' '}
+              {formatDate(
+                today,
+                currentLanguage === 'fr' ? 'EEE d MMM' : 'eee, MMM d',
+                {
+                  locale:
+                    currentLanguage === 'fr' ? frenchLocale : englishLocale,
+                }
+              )}
             </span>
           </div>
           <div className="toolbar-nav">
@@ -1644,6 +1731,7 @@ const ProjectSchedulePage = () => {
         <div className="calendar-section">
           <Calendar
             localizer={localizer}
+            culture={currentLanguage === 'fr' ? 'fr' : 'en-US'}
             events={events}
             startAccessor="start"
             endAccessor="end"
@@ -1657,6 +1745,10 @@ const ProjectSchedulePage = () => {
             onSelectSlot={onSlotSelect}
             onSelectEvent={onEventClick}
             eventPropGetter={eventStyleGetter}
+            messages={{
+              showMore: total => t('calendar.showMore', { count: total }),
+              noEventsInRange: t('calendar.noEventsInRange'),
+            }}
             components={{ toolbar: CustomToolbar }}
             style={{ minHeight: '70vh', height: '100%' }}
           />
@@ -1700,9 +1792,33 @@ const ProjectSchedulePage = () => {
                     <div className="card-meta">
                       {lotLabel} ·{' '}
                       {start
-                        ? formatDate(start, 'MMM d, yyyy')
+                        ? formatDate(
+                            start,
+                            currentLanguage === 'fr'
+                              ? 'd MMM yyyy'
+                              : 'MMM d, yyyy',
+                            {
+                              locale:
+                                currentLanguage === 'fr'
+                                  ? frenchLocale
+                                  : englishLocale,
+                            }
+                          )
                         : t('startUnknown', 'Start ?')}
-                      {end ? ` → ${formatDate(end, 'MMM d, yyyy')}` : ''}
+                      {end
+                        ? ` → ${formatDate(
+                            end,
+                            currentLanguage === 'fr'
+                              ? 'd MMM yyyy'
+                              : 'MMM d, yyyy',
+                            {
+                              locale:
+                                currentLanguage === 'fr'
+                                  ? frenchLocale
+                                  : englishLocale,
+                            }
+                          )}`
+                        : ''}
                       {isToday ? ` · ${t('today', 'Today')}` : ''}
                     </div>
                     <div className="card-meta">
