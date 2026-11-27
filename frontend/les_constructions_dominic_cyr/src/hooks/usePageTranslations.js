@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fetchPageTranslations } from '../utils/translationApi';
 import { fetchPublicSiteContent } from '../features/siteContent/api/siteContentApi';
@@ -218,9 +218,10 @@ export const usePageTranslations = pageName => {
   }, [currentLanguage, pageName, isInitialized, i18nInstance]);
 
   // Create a translation function that uses the page namespace
-  const t = (key, options) => {
-    return i18nInstance.t(`${pageName}:${key}`, options);
-  };
+  const t = useCallback(
+    (key, options) => i18nInstance.t(`${pageName}:${key}`, options),
+    [i18nInstance, pageName]
+  );
 
   return {
     t,

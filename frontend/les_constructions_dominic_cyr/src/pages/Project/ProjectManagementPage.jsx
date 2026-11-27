@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePageTranslations } from '../../hooks/usePageTranslations';
 import { fetchPublicSiteContent } from '../../features/siteContent/api/siteContentApi';
+import { mergeProjectManagementImageOverrides } from '../../features/siteContent/projectManagementGallery';
 import { getFileUrl } from '../../utils/filesService';
 import '../../styles/Project/project-management.css';
 import '../../styles/Public_Facing/residential-projects.css';
@@ -18,101 +19,117 @@ import { MdAttachMoney } from 'react-icons/md';
 import { CiStopwatch } from 'react-icons/ci';
 
 export default function ProjectManagementPage() {
-  const { t, currentLanguage } = usePageTranslations('projectManagement');
+  const { t } = usePageTranslations('projectManagement');
   const [modalOpen, setModalOpen] = useState(false);
-  const [currentImage, setCurrentImage] = useState(null);
-  const [currentImageSet, setCurrentImageSet] = useState([]);
+  const [selectedProjectKey, setSelectedProjectKey] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [imageOverrides, setImageOverrides] = useState({});
 
   useEffect(() => {
     let active = true;
     setImageOverrides({});
-    fetchPublicSiteContent(currentLanguage, 'project-management')
-      .then(items => {
-        if (!active) return;
-        setImageOverrides(
-          Object.fromEntries(
-            (items || [])
-              .filter(
-                item =>
-                  item.pageKey?.startsWith('galleryImage.') &&
-                  item.imageIdentifier
-              )
-              .map(item => [item.pageKey, item.imageIdentifier])
-          )
+    Promise.allSettled([
+      fetchPublicSiteContent('en', 'project-management'),
+      fetchPublicSiteContent('fr', 'project-management'),
+    ]).then(([englishResult, frenchResult]) => {
+      if (!active) return;
+
+      const getItems = (result, language) => {
+        if (result.status === 'fulfilled') return result.value;
+        // eslint-disable-next-line no-console
+        console.error(
+          `Unable to load project-management gallery images for ${language}.`,
+          result.reason
         );
-      })
-      .catch(() => {
-        if (active) setImageOverrides({});
-      });
+        return [];
+      };
+
+      setImageOverrides(
+        mergeProjectManagementImageOverrides(
+          getItems(englishResult, 'en'),
+          getItems(frenchResult, 'fr')
+        )
+      );
+    });
     return () => {
       active = false;
     };
-  }, [currentLanguage]);
+  }, []);
 
   const CDN_BASE_URL =
     'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16';
 
-  const PM_IMAGES = {
-    bromont: {
-      url: `${CDN_BASE_URL}/BromontFrl.JPEG`,
-      city: 'Bromont',
+  const projectCards = [
+    {
+      key: 'bromont',
+      imageSlots: ['galleryImage.1', 'galleryImage.6', 'galleryImage.7'],
+      imageFallbacks: [`${CDN_BASE_URL}/BromontFrl.JPEG`, '', ''],
       alt: 'Bromont construction project',
+      location: t('galleryItem.1.location', 'Bromont'),
+      caption: t('galleryItem.1.caption', 'Bromont'),
     },
-    shefford: {
-      urls: [
+    {
+      key: 'shefford',
+      imageSlots: ['galleryImage.2', 'galleryImage.3', 'galleryImage.4'],
+      imageFallbacks: [
         `${CDN_BASE_URL}/shefford1.JPG`,
         `${CDN_BASE_URL}/shefford2.JPG`,
         `${CDN_BASE_URL}/shefford3.JPG`,
       ],
-      city: 'Shefford',
       alt: 'Shefford construction project',
+      location: t('galleryItem.2.location', 'Shefford'),
+      caption: t('galleryItem.2.caption', 'Shefford'),
     },
-    stHilaire: {
-      url: `${CDN_BASE_URL}/st-hilaire.png`,
-      city: 'St-Bruno',
+    {
+      key: 'st-bruno',
+      imageSlots: ['galleryImage.5', 'galleryImage.8', 'galleryImage.9'],
+      imageFallbacks: [`${CDN_BASE_URL}/st-hilaire.png`, '', ''],
       alt: 'St-Bruno construction project',
+      location: t('galleryItem.3.location', 'St-Bruno'),
+      caption: t('galleryItem.3.caption', 'St-Bruno'),
     },
+  ];
+
+  const imageFor = (slot, fallback = '') => {
+    const imageIdentifier = imageOverrides[slot] || fallback;
+    return imageIdentifier ? getFileUrl(imageIdentifier) : null;
   };
+  const imagesFor = project =>
+    project.imageSlots
+      .map((slot, index) => imageFor(slot, project.imageFallbacks[index]))
+      .filter(Boolean);
 
-  const imageFor = (slot, fallback) =>
-    getFileUrl(imageOverrides[slot] || fallback);
+  const currentProject = projectCards.find(
+    project => project.key === selectedProjectKey
+  );
+  const currentImageSet = currentProject ? imagesFor(currentProject) : [];
+  const currentImageIndex =
+    currentIndex < currentImageSet.length ? currentIndex : 0;
+  const currentImage = currentImageSet[currentImageIndex] || null;
 
-  const openModal = (imageOrImages, index = 0) => {
-    if (Array.isArray(imageOrImages)) {
-      setCurrentImageSet(imageOrImages);
-      setCurrentIndex(index);
-      setCurrentImage(imageOrImages[index]);
-    } else {
-      setCurrentImageSet([imageOrImages]);
-      setCurrentIndex(0);
-      setCurrentImage(imageOrImages);
-    }
+  const openModal = projectKey => {
+    setSelectedProjectKey(projectKey);
+    setCurrentIndex(0);
     setModalOpen(true);
   };
 
   const closeModal = () => {
     setModalOpen(false);
-    setCurrentImage(null);
-    setCurrentImageSet([]);
+    setSelectedProjectKey(null);
     setCurrentIndex(0);
   };
 
   const nextImage = () => {
     if (currentImageSet.length > 1) {
-      const newIndex = (currentIndex + 1) % currentImageSet.length;
-      setCurrentIndex(newIndex);
-      setCurrentImage(currentImageSet[newIndex]);
+      setCurrentIndex(index => (index + 1) % currentImageSet.length);
     }
   };
 
   const prevImage = () => {
     if (currentImageSet.length > 1) {
-      const newIndex =
-        (currentIndex - 1 + currentImageSet.length) % currentImageSet.length;
-      setCurrentIndex(newIndex);
-      setCurrentImage(currentImageSet[newIndex]);
+      setCurrentIndex(
+        index => (index - 1 + currentImageSet.length) % currentImageSet.length
+      );
     }
   };
 
@@ -224,91 +241,33 @@ export default function ProjectManagementPage() {
             )}
           </h2>
           <div className="pm-images-grid">
-            <div
-              className="pm-image-card"
-              onClick={() =>
-                openModal(imageFor('galleryImage.1', PM_IMAGES.bromont.url))
-              }
-              role="button"
-              tabIndex="0"
-              onKeyDown={event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  openModal(imageFor('galleryImage.1', PM_IMAGES.bromont.url));
-                }
-              }}
-            >
-              <div className="pm-image-container">
-                <img
-                  src={imageFor('galleryImage.1', PM_IMAGES.bromont.url)}
-                  alt={PM_IMAGES.bromont.alt}
-                  className="pm-image"
-                />
-                <span className="pm-image-badge">{PM_IMAGES.bromont.city}</span>
-              </div>
-              <p className="pm-image-city">{PM_IMAGES.bromont.city}</p>
-            </div>
-            <div
-              className="pm-image-card"
-              onClick={() =>
-                openModal(
-                  PM_IMAGES.shefford.urls.map((image, index) =>
-                    imageFor(`galleryImage.${index + 2}`, image)
-                  ),
-                  0
-                )
-              }
-              role="button"
-              tabIndex="0"
-              onKeyDown={event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  openModal(
-                    PM_IMAGES.shefford.urls.map((image, index) =>
-                      imageFor(`galleryImage.${index + 2}`, image)
-                    ),
-                    0
-                  );
-                }
-              }}
-            >
-              <div className="pm-image-container">
-                <img
-                  src={imageFor('galleryImage.2', PM_IMAGES.shefford.urls[0])}
-                  alt={PM_IMAGES.shefford.alt}
-                  className="pm-image"
-                />
-                <span className="pm-image-badge">
-                  {PM_IMAGES.shefford.city}
-                </span>
-              </div>
-              <p className="pm-image-city">{PM_IMAGES.shefford.city}</p>
-            </div>
-            <div
-              className="pm-image-card"
-              onClick={() =>
-                openModal(imageFor('galleryImage.5', PM_IMAGES.stHilaire.url))
-              }
-              role="button"
-              tabIndex="0"
-              onKeyDown={event => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  openModal(
-                    imageFor('galleryImage.5', PM_IMAGES.stHilaire.url)
-                  );
-                }
-              }}
-            >
-              <div className="pm-image-container">
-                <img
-                  src={imageFor('galleryImage.5', PM_IMAGES.stHilaire.url)}
-                  alt={PM_IMAGES.stHilaire.alt}
-                  className="pm-image"
-                />
-                <span className="pm-image-badge">
-                  {PM_IMAGES.stHilaire.city}
-                </span>
-              </div>
-              <p className="pm-image-city">{PM_IMAGES.stHilaire.city}</p>
-            </div>
+            {projectCards.map(project => {
+              const images = imagesFor(project);
+              return (
+                <div
+                  key={project.key}
+                  className="pm-image-card"
+                  onClick={() => openModal(project.key)}
+                  role="button"
+                  tabIndex="0"
+                  onKeyDown={event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      openModal(project.key);
+                    }
+                  }}
+                >
+                  <div className="pm-image-container">
+                    <img
+                      src={images[0]}
+                      alt={project.alt}
+                      className="pm-image"
+                    />
+                    <span className="pm-image-badge">{project.location}</span>
+                  </div>
+                  <p className="pm-image-city">{project.caption}</p>
+                </div>
+              );
+            })}
           </div>
           <div className="pm-cta-card pm-pricing-card">
             <p className="pm-pricing-text">
@@ -329,6 +288,7 @@ export default function ProjectManagementPage() {
             onClick={e => e.stopPropagation()}
           >
             <button
+              type="button"
               className="pm-modal-close"
               onClick={closeModal}
               aria-label="Close modal"
@@ -339,6 +299,7 @@ export default function ProjectManagementPage() {
             {currentImageSet.length > 1 && (
               <>
                 <button
+                  type="button"
                   className="pm-modal-nav pm-modal-prev"
                   onClick={prevImage}
                   aria-label="Previous image"
@@ -346,6 +307,7 @@ export default function ProjectManagementPage() {
                   <FaChevronLeft />
                 </button>
                 <button
+                  type="button"
                   className="pm-modal-nav pm-modal-next"
                   onClick={nextImage}
                   aria-label="Next image"
@@ -354,19 +316,27 @@ export default function ProjectManagementPage() {
                 </button>
               </>
             )}
-
-            <img src={currentImage} alt="Project" className="pm-modal-image" />
+            {currentImage && (
+              <img
+                src={currentImage}
+                alt="Project"
+                className="pm-modal-image"
+              />
+            )}
 
             {currentImageSet.length > 1 && (
               <div className="pm-modal-indicators">
-                {currentImageSet.map((_, index) => (
-                  <span
-                    key={index}
-                    className={`pm-modal-indicator ${index === currentIndex ? 'active' : ''}`}
-                    onClick={() => {
-                      setCurrentIndex(index);
-                      setCurrentImage(currentImageSet[index]);
-                    }}
+                <span className="pm-modal-index" aria-live="polite">
+                  {currentImageIndex + 1} / {currentImageSet.length}
+                </span>
+                {currentImageSet.map((image, index) => (
+                  <button
+                    key={image}
+                    type="button"
+                    className={`pm-modal-indicator ${index === currentImageIndex ? 'active' : ''}`}
+                    onClick={() => setCurrentIndex(index)}
+                    aria-label={`${t('image', 'Image')} ${index + 1}`}
+                    aria-pressed={index === currentImageIndex}
                   />
                 ))}
               </div>

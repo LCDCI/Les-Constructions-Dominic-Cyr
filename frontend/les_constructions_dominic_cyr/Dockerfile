@@ -1,7 +1,7 @@
 ############################################################
 # Build Vite frontend
 ############################################################
-FROM node:20-alpine AS build
+FROM node:26.13.1-alpine AS build
 
 WORKDIR /app
 

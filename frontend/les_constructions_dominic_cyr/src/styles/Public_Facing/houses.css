@@ -31,13 +31,6 @@
   right: 1rem;
 }
 
-.house-image-modal-counter {
-  margin: 0;
-  padding: 0.5rem;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
 .houses-hero {
   background: var(--public-banner-bg, #aab2a6) !important;
 }
@@ -48,7 +41,7 @@
   padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 5vw, 4rem);
   border: 1px solid rgba(170, 178, 166, 0.2);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.55);
   box-shadow: 0 20px 40px -24px rgba(43, 58, 74, 0.22);
   text-align: center;
 }
@@ -275,6 +268,36 @@
   max-height: 72vh;
   object-fit: contain;
   background: var(--gray-900);
+}
+
+.house-image-modal-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 0.75rem 1rem 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.house-image-modal-indicators {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.house-image-modal-indicator {
+  width: 0.6rem;
+  height: 0.6rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--gray-300);
+  cursor: pointer;
+}
+
+.house-image-modal-indicator.active {
+  background: var(--project-primary, var(--brand-primary));
 }
 
 .house-image-modal-caption {

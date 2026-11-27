@@ -17,7 +17,7 @@ RUN chmod +x ./gradlew && ./gradlew clean build -x test --no-daemon
 ############################################################
 # 2) FRONTEND BUILD (Node)
 ############################################################
-FROM node:20 AS frontend-build
+FROM node:26.13.1 AS frontend-build
 WORKDIR /frontend
 
 # Build arguments for Vite environment variables
