@@ -676,6 +676,20 @@ body {
   border-radius: inherit;
 }
 
+.home .portfolio-card.project-logo-card::before {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 42%;
+  height: 42%;
+  border-radius: 1rem;
+  background-color: rgba(243, 245, 243, 0.7);
+  content: '';
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
 .home .portfolio-card.animated {
   opacity: 1;
   transform: translateY(0);
@@ -712,7 +726,7 @@ body {
 
 .home .project-logo-image {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   top: 50%;
   left: 50%;
   width: 42%;

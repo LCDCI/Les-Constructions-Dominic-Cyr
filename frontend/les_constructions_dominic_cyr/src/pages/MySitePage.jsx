@@ -9,6 +9,8 @@ import {
   fetchSiteContent,
   updateSiteContent,
 } from '../features/siteContent/api/siteContentApi';
+import { mergeProjectManagementImageOverrides } from '../features/siteContent/projectManagementGallery';
+import { saveProjectManagementGalleryImage } from '../features/siteContent/projectManagementGalleryContent';
 import { fetchPageTranslations } from '../utils/translationApi';
 import { deleteFile, uploadFile } from '../features/files/api/filesApi';
 import { fetchHouses, deleteHouse } from '../features/houses/api/housesApi';
@@ -47,6 +49,28 @@ const FIELD_LABEL_KEYS = {
   proximityTitle: 'fields.livingProximityTitle',
   footerText: 'fields.livingFooterText',
 };
+
+const PROJECT_MANAGEMENT_FIELD_LABEL_KEYS = {
+  'galleryItem.1.location': 'fields.projectManagementBromontBadge',
+  'galleryItem.1.caption': 'fields.projectManagementBromontCaption',
+  'galleryItem.2.location': 'fields.projectManagementSheffordBadge',
+  'galleryItem.2.caption': 'fields.projectManagementSheffordCaption',
+  'galleryItem.3.location': 'fields.projectManagementSaintBrunoBadge',
+  'galleryItem.3.caption': 'fields.projectManagementSaintBrunoCaption',
+  'galleryImage.1': 'fields.projectManagementBromontImage1',
+  'galleryImage.6': 'fields.projectManagementBromontImage2',
+  'galleryImage.7': 'fields.projectManagementBromontImage3',
+  'galleryImage.2': 'fields.projectManagementSheffordImage1',
+  'galleryImage.3': 'fields.projectManagementSheffordImage2',
+  'galleryImage.4': 'fields.projectManagementSheffordImage3',
+  'galleryImage.5': 'fields.projectManagementSaintBrunoImage1',
+  'galleryImage.8': 'fields.projectManagementSaintBrunoImage2',
+  'galleryImage.9': 'fields.projectManagementSaintBrunoImage3',
+};
+
+const isProjectManagementGalleryImage = item =>
+  item.pageGroup === 'project-management' &&
+  item.pageKey?.startsWith('galleryImage.');
 
 const EDITORIAL_PAGES = [
   { key: 'home', label: 'homePage' },
@@ -133,6 +157,12 @@ const EDITABLE_TEXT_KEYS = {
       'advantages.item6',
       'advantages.item7',
       'gallery.heading',
+      'galleryItem.1.location',
+      'galleryItem.1.caption',
+      'galleryItem.2.location',
+      'galleryItem.2.caption',
+      'galleryItem.3.location',
+      'galleryItem.3.caption',
       'advantages.pricing',
       'advantages.contactLink',
     ],
@@ -223,7 +253,18 @@ const EDITOR_PAGE_ORDER = {
     'media.panorama',
   ],
   renovations: EDITABLE_TEXT_KEYS.renovations.keys,
-  'project-management': EDITABLE_TEXT_KEYS['project-management'].keys,
+  'project-management': [
+    ...EDITABLE_TEXT_KEYS['project-management'].keys,
+    'galleryImage.1',
+    'galleryImage.6',
+    'galleryImage.7',
+    'galleryImage.2',
+    'galleryImage.3',
+    'galleryImage.4',
+    'galleryImage.5',
+    'galleryImage.8',
+    'galleryImage.9',
+  ],
   realizations: EDITABLE_TEXT_KEYS.realizations.keys,
   contact: EDITABLE_TEXT_KEYS.contact.keys,
   footer: [
@@ -261,6 +302,8 @@ const PUBLIC_IMAGE_SLOTS = {
       'galleryImage.1',
       'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/BromontFrl.JPEG',
     ],
+    ['galleryImage.6', ''],
+    ['galleryImage.7', ''],
     [
       'galleryImage.2',
       'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/shefford1.JPG',
@@ -277,6 +320,8 @@ const PUBLIC_IMAGE_SLOTS = {
       'galleryImage.5',
       'https://lcdi-storage.tor1.cdn.digitaloceanspaces.com/photos/global/2026-02-16/st-hilaire.png',
     ],
+    ['galleryImage.8', ''],
+    ['galleryImage.9', ''],
   ],
   realizations: [
     [
@@ -365,13 +410,17 @@ const getHouseImageUrl = imageIdentifier => {
   return getFileUrl(imageIdentifier);
 };
 
-const getContentLabel = (pageKey, translate) => {
+const getContentLabel = (pageKey, translate, pageGroup) => {
   const fallback = pageKey
     .split(/[._-]+|(?=[A-Z])/)
     .filter(Boolean)
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
-  return translate(FIELD_LABEL_KEYS[pageKey] || pageKey, fallback);
+  const labelKey =
+    pageGroup === 'project-management'
+      ? PROJECT_MANAGEMENT_FIELD_LABEL_KEYS[pageKey]
+      : FIELD_LABEL_KEYS[pageKey];
+  return translate(labelKey || pageKey, fallback);
 };
 
 const SiteImagePreview = ({ imageIdentifier }) => {
@@ -549,11 +598,31 @@ const MySitePage = () => {
         ['lots', 'houses'].includes(selectedSubpage) && projectIdentifier
           ? `${selectedSubpage}-${projectIdentifier}`
           : pageGroup;
-      let data = await fetchSiteContent(
-        selectedLanguage,
-        token,
-        effectivePageGroup
-      );
+      let data;
+      let otherLanguageData = [];
+      if (pageGroup === 'project-management') {
+        const otherLanguage = selectedLanguage === 'fr' ? 'en' : 'fr';
+        const [currentLanguageResult, otherLanguageResult] =
+          await Promise.allSettled([
+            fetchSiteContent(selectedLanguage, token, effectivePageGroup),
+            fetchSiteContent(otherLanguage, token, effectivePageGroup),
+          ]);
+        if (currentLanguageResult.status === 'rejected') {
+          throw currentLanguageResult.reason;
+        }
+        data = currentLanguageResult.value;
+        if (otherLanguageResult.status === 'fulfilled') {
+          otherLanguageData = otherLanguageResult.value;
+        } else {
+          setError('loadError');
+        }
+      } else {
+        data = await fetchSiteContent(
+          selectedLanguage,
+          token,
+          effectivePageGroup
+        );
+      }
       if (pageGroup === 'home') {
         data = (Array.isArray(data) ? data : []).filter(
           item =>
@@ -742,6 +811,21 @@ const MySitePage = () => {
         ...(Array.isArray(data) ? data : []),
         ...fallbackItems.filter(item => !existingKeys.has(item.pageKey)),
       ];
+      if (pageGroup === 'project-management') {
+        const englishItems =
+          selectedLanguage === 'en' ? data : otherLanguageData;
+        const frenchItems =
+          selectedLanguage === 'fr' ? data : otherLanguageData;
+        const sharedImages = mergeProjectManagementImageOverrides(
+          englishItems,
+          frenchItems
+        );
+        data = data.map(item =>
+          isProjectManagementGalleryImage(item) && sharedImages[item.pageKey]
+            ? { ...item, imageIdentifier: sharedImages[item.pageKey] }
+            : item
+        );
+      }
       if (
         (!Array.isArray(data) || data.length === 0) &&
         selectedSubpage &&
@@ -817,6 +901,62 @@ const MySitePage = () => {
     }));
   };
 
+  const updateProjectManagementImageInEditor = (
+    item,
+    savedItem,
+    imageIdentifier
+  ) => {
+    setItems(current =>
+      current.map(entry => {
+        if (
+          entry.pageGroup !== 'project-management' ||
+          entry.pageKey !== item.pageKey
+        ) {
+          return entry;
+        }
+        return savedItem
+          ? { ...savedItem, fallbackContent: false }
+          : { ...entry, imageIdentifier: '' };
+      })
+    );
+    setDrafts(current => {
+      const next = { ...current };
+      delete next[item.id];
+      const draftId = savedItem?.id ?? item.id;
+      next[draftId] = {
+        contentText: savedItem?.contentText ?? item.contentText ?? '',
+        imageIdentifier: imageIdentifier || '',
+      };
+      return next;
+    });
+  };
+
+  const deleteReplacedSiteContentImages = async (
+    imageIdentifiers,
+    currentImageIdentifier,
+    token
+  ) => {
+    if (!profile?.userIdentifier) return;
+
+    const obsoleteIdentifiers = [
+      ...new Set(imageIdentifiers.filter(Boolean)),
+    ].filter(
+      imageIdentifier =>
+        imageIdentifier !== currentImageIdentifier &&
+        !String(imageIdentifier).startsWith('http')
+    );
+    for (const imageIdentifier of obsoleteIdentifiers) {
+      try {
+        await deleteFile(imageIdentifier, {
+          deletedBy: profile.userIdentifier,
+          token,
+        });
+      } catch {
+        // Keep a successful content update if an old file cannot be deleted.
+      }
+    }
+  };
+
   const getToken = async () => {
     const { getAuthAudience } = await import('../utils/authConfig');
     return getAccessTokenSilently({
@@ -857,6 +997,28 @@ const MySitePage = () => {
         );
         updateDraft(item.id, 'imageIdentifier', imageIdentifier);
         setSavingId(null);
+        return;
+      }
+      if (isProjectManagementGalleryImage(item)) {
+        const result = await saveProjectManagementGalleryImage(
+          item,
+          imageIdentifier,
+          token
+        );
+        const savedItem = result.items.find(
+          entry => entry.language === editorLanguage
+        );
+        if (!savedItem) {
+          throw new Error(
+            `Project-management image slot was not saved for ${editorLanguage}.`
+          );
+        }
+        updateProjectManagementImageInEditor(item, savedItem, imageIdentifier);
+        await deleteReplacedSiteContentImages(
+          result.previousImageIdentifiers,
+          imageIdentifier,
+          token
+        );
         return;
       }
       const updated = item.fallbackContent
@@ -922,6 +1084,23 @@ const MySitePage = () => {
           token
         );
         updateDraft(item.id, 'imageIdentifier', '');
+        return;
+      }
+      if (isProjectManagementGalleryImage(item)) {
+        const result = await saveProjectManagementGalleryImage(
+          item,
+          null,
+          token
+        );
+        const savedItem = result.items.find(
+          entry => entry.language === editorLanguage
+        );
+        updateProjectManagementImageInEditor(item, savedItem, '');
+        await deleteReplacedSiteContentImages(
+          result.previousImageIdentifiers,
+          null,
+          token
+        );
         return;
       }
       const updated = await updateSiteContent(
@@ -1699,8 +1878,12 @@ const MySitePage = () => {
             <p className="my-site-image-count" role="status">
               {t('imagesAvailable', 'Images available')}: {availableImageCount}.{' '}
               {t(
-                'imageSlotsNote',
-                'Only existing image slots can be replaced; no new image slots can be added here.'
+                contentModal === 'project-management'
+                  ? 'projectManagementImageSlotsNote'
+                  : 'imageSlotsNote',
+                contentModal === 'project-management'
+                  ? 'Each project can have one main image and two optional additional images.'
+                  : 'Only existing image slots can be replaced; no new image slots can be added here.'
               )}
             </p>
             {items.length === 0 ? (
@@ -1720,11 +1903,16 @@ const MySitePage = () => {
                   item.pageKey.toLowerCase().includes('image') &&
                   (item.projectOverviewContent ||
                     PUBLIC_IMAGE_SLOTS[item.pageGroup]);
+                const imageLabel =
+                  item.projectOverviewContent ||
+                  item.pageGroup === 'project-management'
+                    ? getContentLabel(item.pageKey, t, item.pageGroup)
+                    : t('imageLabel', 'Image');
                 return (
                   <div className="my-site-modal-item" key={item.id}>
                     {!isImageSlot && (
                       <label>
-                        {getContentLabel(item.pageKey, t)}
+                        {getContentLabel(item.pageKey, t, item.pageGroup)}
                         <textarea
                           value={draft.contentText || ''}
                           onChange={event =>
@@ -1742,15 +1930,11 @@ const MySitePage = () => {
                       <>
                         <label className="my-site-image-editor">
                           <span>
-                            {item.projectOverviewContent
-                              ? getContentLabel(item.pageKey, t)
-                              : t('imageLabel', 'Image')}{' '}
+                            {imageLabel}{' '}
                             <small>
                               {t(
                                 'imagePositionNote',
-                                item.projectOverviewContent
-                                  ? 'Choose an image for this slot'
-                                  : 'Existing image slot for this content'
+                                'Upload to add or replace this image.'
                               )}
                             </small>
                           </span>
@@ -1811,7 +1995,10 @@ const MySitePage = () => {
                     ) {
                       await saveLivingEnvironment();
                     } else {
-                      for (const item of items) await saveItem(item);
+                      for (const item of items) {
+                        if (isProjectManagementGalleryImage(item)) continue;
+                        await saveItem(item);
+                      }
                     }
                     setContentModal(null);
                   } catch {

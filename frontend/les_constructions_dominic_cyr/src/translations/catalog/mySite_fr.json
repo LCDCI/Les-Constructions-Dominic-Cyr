@@ -10,7 +10,8 @@
   "emptyPage": "Aucun contenu n'a encore été initialisé pour cette page.",
   "imagesAvailable": "Images disponibles",
   "imageSlotsNote": "Seuls les emplacements d'image existants peuvent être remplacés; aucun nouvel emplacement ne peut être ajouté ici.",
-  "imagePositionNote": "Emplacement d'image existant pour ce contenu",
+  "projectManagementImageSlotsNote": "Chaque projet peut contenir une image principale et deux images supplémentaires facultatives.",
+  "imagePositionNote": "Téléversez une image pour ajouter ou remplacer cette image.",
   "modifyPage": "Modifier {{page}}",
   "modifyPageContent": "Modifier la page",
   "modify": "Modifier",
@@ -139,6 +140,21 @@
     "livingProximityTitle": "Titre de la section proximité",
     "livingFooterText": "Texte de pied de page du milieu de vie",
     "heroImage": "Image du projet",
-    "bannerImage": "Image de la bannière"
+    "bannerImage": "Image de la bannière",
+    "projectManagementBromontBadge": "Bromont - étiquette supérieure",
+    "projectManagementBromontCaption": "Bromont - légende de la carte",
+    "projectManagementSheffordBadge": "Shefford - étiquette supérieure",
+    "projectManagementSheffordCaption": "Shefford - légende de la carte",
+    "projectManagementSaintBrunoBadge": "St-Bruno - étiquette supérieure",
+    "projectManagementSaintBrunoCaption": "St-Bruno - légende de la carte",
+    "projectManagementBromontImage1": "Bromont - image principale",
+    "projectManagementBromontImage2": "Bromont - image facultative 2",
+    "projectManagementBromontImage3": "Bromont - image facultative 3",
+    "projectManagementSheffordImage1": "Shefford - image principale",
+    "projectManagementSheffordImage2": "Shefford - image facultative 2",
+    "projectManagementSheffordImage3": "Shefford - image facultative 3",
+    "projectManagementSaintBrunoImage1": "St-Bruno - image principale",
+    "projectManagementSaintBrunoImage2": "St-Bruno - image facultative 2",
+    "projectManagementSaintBrunoImage3": "St-Bruno - image facultative 3"
   }
 }

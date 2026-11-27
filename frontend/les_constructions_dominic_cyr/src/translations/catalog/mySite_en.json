@@ -10,7 +10,8 @@
   "emptyPage": "No content has been seeded for this page yet.",
   "imagesAvailable": "Images available",
   "imageSlotsNote": "Only existing image slots can be replaced; no new image slots can be added here.",
-  "imagePositionNote": "Existing image slot for this content",
+  "projectManagementImageSlotsNote": "Each project can have one main image and two optional additional images.",
+  "imagePositionNote": "Upload to add or replace this image.",
   "modifyPage": "Modify {{page}}",
   "modifyPageContent": "Modify page",
   "modify": "Modify",
@@ -139,6 +140,21 @@
     "livingProximityTitle": "Proximity section title",
     "livingFooterText": "Living environment footer text",
     "heroImage": "Project image",
-    "bannerImage": "Banner image"
+    "bannerImage": "Banner image",
+    "projectManagementBromontBadge": "Bromont - top badge",
+    "projectManagementBromontCaption": "Bromont - card caption",
+    "projectManagementSheffordBadge": "Shefford - top badge",
+    "projectManagementSheffordCaption": "Shefford - card caption",
+    "projectManagementSaintBrunoBadge": "St-Bruno - top badge",
+    "projectManagementSaintBrunoCaption": "St-Bruno - card caption",
+    "projectManagementBromontImage1": "Bromont - main image",
+    "projectManagementBromontImage2": "Bromont - optional image 2",
+    "projectManagementBromontImage3": "Bromont - optional image 3",
+    "projectManagementSheffordImage1": "Shefford - main image",
+    "projectManagementSheffordImage2": "Shefford - optional image 2",
+    "projectManagementSheffordImage3": "Shefford - optional image 3",
+    "projectManagementSaintBrunoImage1": "St-Bruno - main image",
+    "projectManagementSaintBrunoImage2": "St-Bruno - optional image 2",
+    "projectManagementSaintBrunoImage3": "St-Bruno - optional image 3"
   }
 }

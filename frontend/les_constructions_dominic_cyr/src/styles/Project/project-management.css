@@ -545,12 +545,21 @@
 }
 
 .pm-modal-indicator {
+  display: block;
   width: 12px;
   height: 12px;
+  padding: 0;
+  border: 0;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   transition: background 0.2s ease;
+}
+
+.pm-modal-index {
+  color: white;
+  font-size: 0.875rem;
+  line-height: 12px;
 }
 
 .pm-modal-indicator.active {

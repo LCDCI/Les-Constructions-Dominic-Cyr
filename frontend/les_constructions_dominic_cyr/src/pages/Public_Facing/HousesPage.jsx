@@ -118,15 +118,25 @@ export default function HousesPage() {
   }, [projectIdentifier]);
 
   useEffect(() => {
-    if (!houseId) return;
+    if (!houseId) {
+      setSelectedHouse(null);
+      setSelectedImageIndex(0);
+      return;
+    }
     const house = houses.find(item => item.houseIdentifier === houseId);
-    if (house) setSelectedHouse(house);
+    if (house) {
+      setSelectedHouse(house);
+      setSelectedImageIndex(0);
+    }
   }, [houseId, houses]);
 
   const getImageUrl = imageIdentifier => {
     if (!imageIdentifier) return '/fallback.jpg';
     return getFileUrl(imageIdentifier);
   };
+
+  const getHouseImages = house =>
+    [house.imageIdentifier, house.secondImageIdentifier].filter(Boolean);
 
   const getHouseDescription = house => {
     const isFrench = i18n.language?.startsWith('fr');
@@ -141,12 +151,7 @@ export default function HousesPage() {
   const hasHouseValue = value =>
     value !== null && value !== undefined && String(value).trim() !== '';
 
-  const selectedImages = selectedHouse
-    ? [
-        selectedHouse.imageIdentifier,
-        selectedHouse.secondImageIdentifier,
-      ].filter(Boolean)
-    : [];
+  const selectedImages = selectedHouse ? getHouseImages(selectedHouse) : [];
   const selectedImage =
     selectedImages[selectedImageIndex] || selectedImages[0] || null;
 
@@ -216,65 +221,60 @@ export default function HousesPage() {
             <p className="houses-state">{t('empty', 'No houses found.')}</p>
           ) : (
             <div className="houses-grid">
-              {houses.map(house => (
-                <article key={house.houseIdentifier} className="house-card">
-                  <div className="house-image-container">
-                    <img
-                      src={getImageUrl(house.imageIdentifier)}
-                      alt={house.houseName || t('imageAlt', 'House')}
-                      className="house-image"
-                      onError={event => {
-                        event.currentTarget.onerror = null;
-                        event.currentTarget.src = '/fallback.jpg';
-                      }}
-                    />
-                    {selectedImages.length > 1 && (
-                      <p
-                        className="house-image-modal-counter"
-                        aria-live="polite"
-                      >
-                        {selectedImageIndex + 1} / {selectedImages.length}
+              {houses.map(house => {
+                return (
+                  <article key={house.houseIdentifier} className="house-card">
+                    <div className="house-image-container">
+                      <img
+                        src={getImageUrl(house.imageIdentifier)}
+                        alt={house.houseName || t('imageAlt', 'House')}
+                        className="house-image"
+                        onError={event => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.src = '/fallback.jpg';
+                        }}
+                      />
+                    </div>
+                    <h2 className="house-title">{house.houseName}</h2>
+                    {house.location && (
+                      <p className="house-location">{house.location}</p>
+                    )}
+                    {getHouseDescription(house) && (
+                      <p className="house-description">
+                        {getHouseDescription(house)}
                       </p>
                     )}
-                  </div>
-                  <h2 className="house-title">{house.houseName}</h2>
-                  {house.location && (
-                    <p className="house-location">{house.location}</p>
-                  )}
-                  {getHouseDescription(house) && (
-                    <p className="house-description">
-                      {getHouseDescription(house)}
-                    </p>
-                  )}
-                  <div className="house-details">
-                    {hasHouseValue(house.numberOfBedrooms) && (
-                      <span>
-                        {t('bedrooms', 'Bedrooms')}: {house.numberOfBedrooms}
-                      </span>
-                    )}
-                    {hasHouseValue(house.numberOfBathrooms) && (
-                      <span>
-                        {t('bathrooms', 'Bathrooms')}: {house.numberOfBathrooms}
-                      </span>
-                    )}
-                    {hasHouseValue(house.numberOfRooms) && (
-                      <span>
-                        {t('rooms', 'Rooms')}: {house.numberOfRooms}
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    className="house-button"
-                    onClick={() => {
-                      setSelectedHouse(house);
-                      setSelectedImageIndex(0);
-                    }}
-                  >
-                    {t('viewHouse', 'View this house')}
-                  </button>
-                </article>
-              ))}
+                    <div className="house-details">
+                      {hasHouseValue(house.numberOfBedrooms) && (
+                        <span>
+                          {t('bedrooms', 'Bedrooms')}: {house.numberOfBedrooms}
+                        </span>
+                      )}
+                      {hasHouseValue(house.numberOfBathrooms) && (
+                        <span>
+                          {t('bathrooms', 'Bathrooms')}:{' '}
+                          {house.numberOfBathrooms}
+                        </span>
+                      )}
+                      {hasHouseValue(house.numberOfRooms) && (
+                        <span>
+                          {t('rooms', 'Rooms')}: {house.numberOfRooms}
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className="house-button"
+                      onClick={() => {
+                        setSelectedHouse(house);
+                        setSelectedImageIndex(0);
+                      }}
+                    >
+                      {t('viewHouse', 'View this house')}
+                    </button>
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
@@ -335,6 +335,29 @@ export default function HousesPage() {
               alt={selectedHouse.houseName || t('imageAlt', 'House')}
               className="house-image-modal-photo"
             />
+            {selectedImages.length > 1 && (
+              <div
+                className="house-image-modal-pagination"
+                role="group"
+                aria-label={t('imageCarousel', 'Image carousel')}
+              >
+                <span aria-live="polite">
+                  {selectedImageIndex + 1} / {selectedImages.length}
+                </span>
+                <div className="house-image-modal-indicators">
+                  {selectedImages.map((image, index) => (
+                    <button
+                      key={image}
+                      type="button"
+                      className={`house-image-modal-indicator${index === selectedImageIndex ? ' active' : ''}`}
+                      onClick={() => setSelectedImageIndex(index)}
+                      aria-label={`${t('imageAlt', 'House')} ${index + 1}`}
+                      aria-pressed={index === selectedImageIndex}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="house-image-modal-caption">
               <h2 id="house-image-modal-title">{selectedHouse.houseName}</h2>
               {selectedHouse.location && <p>{selectedHouse.location}</p>}

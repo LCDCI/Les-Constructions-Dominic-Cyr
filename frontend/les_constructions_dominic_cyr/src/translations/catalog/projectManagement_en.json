@@ -62,5 +62,19 @@
     "image3": {
       "alt": "Residence"
     }
+  },
+  "galleryItem": {
+    "1": {
+      "location": "Bromont",
+      "caption": "Bromont"
+    },
+    "2": {
+      "location": "Shefford",
+      "caption": "Shefford"
+    },
+    "3": {
+      "location": "St-Bruno",
+      "caption": "St-Bruno"
+    }
   }
 }

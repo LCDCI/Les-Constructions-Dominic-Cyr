@@ -3,7 +3,7 @@
   "name": "Les Constructions Dominic Cyr Inc.",
   "icons": [
     {
-      "src": "/LOGO_DM-DZbMAsMG.png",
+      "src": "/src/assets/LOGO_DM-DZbMAsMG.png",
       "sizes": "480x480",
       "type": "image/png"
     }
