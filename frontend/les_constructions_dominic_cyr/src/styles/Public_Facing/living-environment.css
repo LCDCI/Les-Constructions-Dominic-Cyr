@@ -14,7 +14,7 @@
   padding: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 5vw, 4rem);
   border: 1px solid rgba(170, 178, 166, 0.2);
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.7);
   box-shadow: 0 20px 40px -24px rgba(43, 58, 74, 0.22);
   text-align: center;
 }

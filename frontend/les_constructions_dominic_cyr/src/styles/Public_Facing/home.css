@@ -684,7 +684,7 @@ body {
   width: 42%;
   height: 42%;
   border-radius: 1rem;
-  background-color: rgba(243, 245, 243, 0.55);
+  background-color: rgba(243, 245, 243, 0.7);
   content: '';
   pointer-events: none;
   transform: translate(-50%, -50%);
